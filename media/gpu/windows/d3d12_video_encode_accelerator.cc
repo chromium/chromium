@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <tuple>
 #include <utility>
 
 #include "base/bits.h"
@@ -898,27 +899,29 @@ bool D3D12VideoEncodeAccelerator::EnsureUploadBuffer(uint64_t size) {
   return true;
 }
 
-bool D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
+std::optional<gfx::ColorSpace>
+D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
     const VideoFrame& frame,
     DXGI_FORMAT dxgi_format,
     VideoPixelFormat pixel_format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (!EnsureInputTexture(dxgi_format)) {
-    return false;
+    return std::nullopt;
   }
 
   const BiPlanarUploadLayout layout =
       GetBiPlanarUploadLayout(pixel_format, config_.input_visible_size);
 
   if (!EnsureUploadBuffer(layout.buffer_size)) {
-    return false;
+    return std::nullopt;
   }
 
+  gfx::ColorSpace uploaded_color_space;
   {
     ScopedD3D12ResourceMap map;
     if (!map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
-      return false;
+      return std::nullopt;
     }
     scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
         pixel_format, config_.input_visible_size,
@@ -931,8 +934,9 @@ bool D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
         frame_converter_.ConvertAndScale(frame, *upload_frame);
     if (!result.is_ok()) {
       LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
-      return false;
+      return std::nullopt;
     }
+    uploaded_color_space = upload_frame->ColorSpace();
   }
 
   if (!copy_command_queue_->CopyBufferToBiPlanarTexture(
@@ -942,25 +946,26 @@ bool D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
           base::checked_cast<uint32_t>(layout.uv_offset),
           base::checked_cast<uint32_t>(layout.uv_pitch))) {
     LOG(ERROR) << "Failed to CopyBufferToBiPlanarTexture";
-    return false;
+    return std::nullopt;
   }
-  return true;
+  return uploaded_color_space;
 }
 
-bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
+std::optional<gfx::ColorSpace>
+D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
     const VideoFrame& frame,
     DXGI_FORMAT dxgi_format,
     VideoPixelFormat source_format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (!EnsureInputTexture(dxgi_format)) {
-    return false;
+    return std::nullopt;
   }
 
   const size_t row_bytes =
       GetPackedDxgiRowBytes(dxgi_format, config_.input_visible_size.width());
   if (row_bytes == 0) {
     LOG(ERROR) << "Unsupported packed encoder input format";
-    return false;
+    return std::nullopt;
   }
   // CopyTextureRegion() reads the buffer as a placed footprint, whose row pitch
   // must be D3D12_TEXTURE_DATA_PITCH_ALIGNMENT aligned.
@@ -972,10 +977,10 @@ bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
       base::CheckMul(row_pitch, height);
   if (!buffer_size.IsValid()) {
     LOG(ERROR) << "Upload buffer size overflowed";
-    return false;
+    return std::nullopt;
   }
   if (!EnsureUploadBuffer(buffer_size.ValueOrDie())) {
-    return false;
+    return std::nullopt;
   }
 
   // DXGIFramePacker interleaves from a planar or bi-planar frame, which is
@@ -998,7 +1003,7 @@ bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
           base::TimeDelta());
       if (!packing_source_frame_) {
         LOG(ERROR) << "Failed to allocate packing source frame";
-        return false;
+        return std::nullopt;
       }
     }
 
@@ -1006,21 +1011,22 @@ bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
         frame_converter_.ConvertAndScale(frame, *packing_source_frame_);
     if (!result.is_ok()) {
       LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
-      return false;
+      return std::nullopt;
     }
     pack_source_frame = packing_source_frame_.get();
   }
+  const gfx::ColorSpace uploaded_color_space = pack_source_frame->ColorSpace();
 
   {
     ScopedD3D12ResourceMap map;
     if (!map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
-      return false;
+      return std::nullopt;
     }
     if (!packed_dxgi_packer_.Pack(*pack_source_frame, dxgi_format, map.data(),
                                   row_pitch)) {
       LOG(ERROR) << "Failed to pack frame into the encoder input format";
-      return false;
+      return std::nullopt;
     }
   }
 
@@ -1042,12 +1048,12 @@ bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
                    .Depth = 1,
                    .RowPitch = base::checked_cast<UINT>(row_pitch)}}})) {
     LOG(ERROR) << "Failed to copy packed frame into input_texture";
-    return false;
+    return std::nullopt;
   }
-  return true;
+  return uploaded_color_space;
 }
 
-D3D12PictureBuffer
+std::pair<D3D12PictureBuffer, gfx::ColorSpace>
 D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -1067,20 +1073,22 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
   // pass is skipped entirely, and so packed 4:2:2/4:4:4 inputs keep their
   // chroma resolution instead of going through a 4:2:0 intermediate.
   const DXGI_FORMAT dxgi_format = encoder_->GetInputFormat();
-  bool uploaded = false;
+  std::optional<gfx::ColorSpace> uploaded_color_space;
   if (const VideoPixelFormat packed_source_format =
           GetPackedDxgiSourceFormat(dxgi_format);
       packed_source_format != PIXEL_FORMAT_UNKNOWN) {
-    uploaded = UploadPackedVideoFrame(frame, dxgi_format, packed_source_format);
+    uploaded_color_space =
+        UploadPackedVideoFrame(frame, dxgi_format, packed_source_format);
   } else if (const VideoPixelFormat bi_planar_format =
                  GetBiPlanarUploadFormat(dxgi_format);
              bi_planar_format != PIXEL_FORMAT_UNKNOWN) {
-    uploaded = UploadBiPlanarVideoFrame(frame, dxgi_format, bi_planar_format);
+    uploaded_color_space =
+        UploadBiPlanarVideoFrame(frame, dxgi_format, bi_planar_format);
   } else {
     LOG(ERROR) << "Unsupported encoder input format for shared memory upload";
     return {};
   }
-  if (!uploaded) {
+  if (!uploaded_color_space) {
     return {};
   }
 
@@ -1090,7 +1098,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     return {};
   }
 
-  return {input_texture_, 0, fence_and_value};
+  return {{input_texture_, 0, fence_and_value}, *uploaded_color_space};
 }
 
 void D3D12VideoEncodeAccelerator::EncodeTask(
@@ -1177,6 +1185,10 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
   // of the upload texture, so the content covers |config_.input_visible_size|
   // starting at the origin and the frame's visible rect no longer applies.
   gfx::Rect input_visible_rect;
+  // The color space of the content of |picture_buffer|. The shared memory path
+  // converts the frame into the encoder's YUV input format and reports the
+  // color space it ended up in, which for an RGB frame is not the frame's.
+  gfx::ColorSpace input_color_space = frame->ColorSpace();
   if (frame->HasMappableSharedImage()) {
     if (frame->HasNativeMappableSharedImage()) {
       picture_buffer = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
@@ -1189,11 +1201,13 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
              "Failed to convert shared memory mappable SI for encoding"});
         return false;
       }
-      picture_buffer = CreateResourceForSharedMemoryVideoFrame(*frame);
+      std::tie(picture_buffer, input_color_space) =
+          CreateResourceForSharedMemoryVideoFrame(*frame);
       input_visible_rect = gfx::Rect(config_.input_visible_size);
     }
   } else if (frame->storage_type() == VideoFrame::STORAGE_SHMEM) {
-    picture_buffer = CreateResourceForSharedMemoryVideoFrame(*frame);
+    std::tie(picture_buffer, input_color_space) =
+        CreateResourceForSharedMemoryVideoFrame(*frame);
     input_visible_rect = gfx::Rect(config_.input_visible_size);
   } else if (frame->HasSharedImage()) {
     picture_buffer = input_frame.resolved_picture;
@@ -1210,7 +1224,7 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
   }
 
   auto result_or_error = encoder_->Encode(
-      picture_buffer, input_visible_rect, frame->ColorSpace(), bitstream_buffer,
+      picture_buffer, input_visible_rect, input_color_space, bitstream_buffer,
       input_frame.options, frame->hdr_metadata(), frame->timestamp());
   if (!result_or_error.has_value()) {
     NotifyError(std::move(result_or_error).error());

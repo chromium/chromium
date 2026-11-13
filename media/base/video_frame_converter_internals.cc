@@ -4,8 +4,15 @@
 
 #include "media/base/video_frame_converter_internals.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace {
 
@@ -938,6 +945,210 @@ void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {
         dest_frame.GetWritableVisibleData(i), dest_frame.stride(i),
         /*scale=*/256, cols, dest_frame.GetVisibleRows(i));
   }
+}
+
+namespace {
+
+constexpr int kRgbaF16BitDepth = 10;
+constexpr float kRgbaF16MaxValue = (1 << kRgbaF16BitDepth) - 1;
+// P0xx/P2xx/P4xx keep the 10 significant bits in the high bits of a word.
+constexpr int kRgbaF16Shift = 16 - kRgbaF16BitDepth;
+// The number of rows color managed by one Skia call. Skia sets up a conversion
+// for every call, which is too much to pay per row. A multiple of the chroma
+// subsampling height, so a chroma row never straddles two strips.
+constexpr int kRgbaF16StripRows = 8;
+
+// The rows of the RGB to YUV matrix, with the offset in w.
+struct RgbToYuvRows {
+  SkV4 y;
+  SkV4 u;
+  SkV4 v;
+};
+
+struct Yuv {
+  float y;
+  float u;
+  float v;
+};
+
+// Clips the color managed RGB to the encodable range before the matrix, so
+// out of range colors are clipped in RGB like they are on the GPU rather than
+// per YUV component. NaN becomes 0.
+float ClipRgb(float value) {
+  return value > 0.0f ? std::min(value, 1.0f) : 0.0f;
+}
+
+// Rounds a value in [0, 1] to the nearest sample. Unlike std::lround(), this
+// compiles to an inline conversion instead of a call per sample.
+uint16_t QuantizeP10(float value) {
+  const auto sample = static_cast<uint16_t>(
+      std::clamp(value, 0.0f, 1.0f) * kRgbaF16MaxValue + 0.5f);
+  return static_cast<uint16_t>(sample << kRgbaF16Shift);
+}
+
+Yuv ToYuv(const RgbToYuvRows& matrix, float r, float g, float b) {
+  r = ClipRgb(r);
+  g = ClipRgb(g);
+  b = ClipRgb(b);
+  return {
+      matrix.y.x * r + matrix.y.y * g + matrix.y.z * b + matrix.y.w,
+      matrix.u.x * r + matrix.u.y * g + matrix.u.z * b + matrix.u.w,
+      matrix.v.x * r + matrix.v.y * g + matrix.v.z * b + matrix.v.w,
+  };
+}
+
+// Converts a row of color managed RGBA floats to Y samples, and adds the U and
+// V of its pixels to the sums of the chroma samples they belong to.
+template <int kSubsampleWidth>
+void ConvertRgbRow(const RgbToYuvRows& matrix,
+                   base::span<const float> rgb,
+                   int width,
+                   base::span<uint16_t> y_row,
+                   base::span<float> uv_sums) {
+  static_assert(kSubsampleWidth == 1 || kSubsampleWidth == 2);
+  int x = 0;
+  if constexpr (kSubsampleWidth == 2) {
+    // Both pixels of a pair belong to chroma sample x / 2.
+    for (; x + 1 < width; x += 2) {
+      const Yuv first =
+          ToYuv(matrix, rgb[x * 4], rgb[x * 4 + 1], rgb[x * 4 + 2]);
+      const Yuv second =
+          ToYuv(matrix, rgb[x * 4 + 4], rgb[x * 4 + 5], rgb[x * 4 + 6]);
+      y_row[x] = QuantizeP10(first.y);
+      y_row[x + 1] = QuantizeP10(second.y);
+      uv_sums[x] += first.u + second.u;
+      uv_sums[x + 1] += first.v + second.v;
+    }
+  }
+  // What is left is every pixel without horizontal subsampling, or the last
+  // pixel of an odd width.
+  for (; x < width; ++x) {
+    const Yuv yuv = ToYuv(matrix, rgb[x * 4], rgb[x * 4 + 1], rgb[x * 4 + 2]);
+    y_row[x] = QuantizeP10(yuv.y);
+    uv_sums[(x / kSubsampleWidth) * 2] += yuv.u;
+    uv_sums[(x / kSubsampleWidth) * 2 + 1] += yuv.v;
+  }
+}
+
+}  // namespace
+
+bool RGBAF16ToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK_EQ(src_frame.format(), PIXEL_FORMAT_RGBAF16);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+
+  const gfx::ColorSpace& dest_color_space = dest_frame.ColorSpace();
+  const gfx::ColorSpace dest_rgb = dest_color_space.GetAsFullRangeRGB();
+  const gfx::ColorSpace src_rgb =
+      src_frame.ColorSpace().IsValid()
+          ? src_frame.ColorSpace().GetAsFullRangeRGB()
+          : dest_rgb;
+  // PQ and HLG need an SDR white level to map to Skia's linear space. Both
+  // sides use the same one, so it cancels out when the transfers match.
+  constexpr float kSdrWhiteLevel = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  sk_sp<SkColorSpace> src_sk_color_space =
+      src_rgb.ToSkColorSpace(kSdrWhiteLevel);
+  sk_sp<SkColorSpace> dest_sk_color_space =
+      dest_rgb.ToSkColorSpace(kSdrWhiteLevel);
+  if (!src_sk_color_space || !dest_sk_color_space) {
+    return false;
+  }
+
+  // GetTransferMatrix() maps RGB to full range YUV, and GetRangeAdjustMatrix()
+  // expands the YUV range for decoding, so its inverse narrows it here.
+  SkM44 range_narrowing;
+  if (!dest_color_space.GetRangeAdjustMatrix(kRgbaF16BitDepth)
+           .invert(&range_narrowing)) {
+    return false;
+  }
+  const SkM44 rgb_to_yuv =
+      range_narrowing * dest_color_space.GetTransferMatrix(kRgbaF16BitDepth);
+  const RgbToYuvRows matrix = {rgb_to_yuv.row(0), rgb_to_yuv.row(1),
+                               rgb_to_yuv.row(2)};
+
+  const int width = dest_frame.visible_rect().width();
+  const int height = dest_frame.visible_rect().height();
+  const gfx::Size subsample =
+      VideoFrame::SampleSize(dest_frame.format(), VideoFrame::Plane::kUV);
+  const int chroma_width = (width + subsample.width() - 1) / subsample.width();
+
+  const SkImageInfo src_info =
+      SkImageInfo::Make(width, kRgbaF16StripRows, kRGBA_F16_SkColorType,
+                        kUnpremul_SkAlphaType, std::move(src_sk_color_space));
+  const SkImageInfo rgb_info =
+      SkImageInfo::Make(width, kRgbaF16StripRows, kRGBA_F32_SkColorType,
+                        kUnpremul_SkAlphaType, std::move(dest_sk_color_space));
+  const size_t row_floats = static_cast<size_t>(width) * 4;
+  std::vector<float> rgb_strip(row_floats * kRgbaF16StripRows);
+  // Sums of the U and V of the pixels each chroma sample covers.
+  std::vector<float> uv_sums(chroma_width * 2);
+
+  const auto src = src_frame.GetVisiblePlaneData(VideoFrame::Plane::kARGB);
+  const size_t src_stride = src_frame.stride(VideoFrame::Plane::kARGB);
+  auto dest_y = base::subtle::reinterpret_span<uint16_t>(
+      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kY));
+  const size_t dest_y_stride = Stride16(dest_frame, VideoFrame::Plane::kY);
+  auto dest_uv = base::subtle::reinterpret_span<uint16_t>(
+      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kUV));
+  const size_t dest_uv_stride = Stride16(dest_frame, VideoFrame::Plane::kUV);
+
+  // Skia rejects a row stride that is not a whole number of pixels, which a
+  // frame does not guarantee. Such a frame is read one row at a time, where
+  // the row bytes only need to hold the row.
+  const bool can_read_strips = src_stride % src_info.bytesPerPixel() == 0;
+  auto read_strip = [&](int first_row, int rows) {
+    if (can_read_strips) {
+      const SkPixmap from(src_info.makeWH(width, rows),
+                          src.subspan(first_row * src_stride).data(),
+                          rows == 1 ? src_info.minRowBytes() : src_stride);
+      const SkPixmap to(rgb_info.makeWH(width, rows), rgb_strip.data(),
+                        rgb_info.minRowBytes());
+      return from.readPixels(to);
+    }
+    for (int i = 0; i < rows; ++i) {
+      const SkPixmap from(src_info.makeWH(width, 1),
+                          src.subspan((first_row + i) * src_stride).data(),
+                          src_info.minRowBytes());
+      const SkPixmap to(rgb_info.makeWH(width, 1),
+                        base::span(rgb_strip).subspan(i * row_floats).data(),
+                        rgb_info.minRowBytes());
+      if (!from.readPixels(to)) {
+        return false;
+      }
+    }
+    return true;
+  };
+  const auto convert_row =
+      subsample.width() == 1 ? &ConvertRgbRow<1> : &ConvertRgbRow<2>;
+
+  for (int strip_row = 0; strip_row < height; strip_row += kRgbaF16StripRows) {
+    const int strip_height = std::min(kRgbaF16StripRows, height - strip_row);
+    if (!read_strip(strip_row, strip_height)) {
+      return false;
+    }
+    for (int first = 0; first < strip_height; first += subsample.height()) {
+      const int rows = std::min(subsample.height(), strip_height - first);
+      std::ranges::fill(uv_sums, 0.0f);
+      for (int i = first; i < first + rows; ++i) {
+        convert_row(matrix, base::span(rgb_strip).subspan(i * row_floats),
+                    width, dest_y.subspan((strip_row + i) * dest_y_stride),
+                    uv_sums);
+      }
+      const int chroma_row = (strip_row + first) / subsample.height();
+      auto uv_row = dest_uv.subspan(chroma_row * dest_uv_stride);
+      for (int chroma_x = 0; chroma_x < chroma_width; ++chroma_x) {
+        const int columns =
+            std::min(subsample.width(), width - chroma_x * subsample.width());
+        const float pixels = static_cast<float>(columns * rows);
+        uv_row[chroma_x * 2] = QuantizeP10(uv_sums[chroma_x * 2] / pixels);
+        uv_row[chroma_x * 2 + 1] =
+            QuantizeP10(uv_sums[chroma_x * 2 + 1] / pixels);
+      }
+    }
+  }
+  return true;
 }
 
 }  // namespace media::internals

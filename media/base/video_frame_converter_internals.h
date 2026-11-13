@@ -103,6 +103,19 @@ bool Px10ToI420(const VideoFrame& src_frame, VideoFrame& dst_frame);
 // Scaling not supported.
 void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
+// Converts RGBAF16 to P010LE, P210LE or P410LE. libyuv has no half float
+// input, so this is not a libyuv wrapper: the pixels are color managed by Skia
+// from the source color space into the RGB form of `dst_frame`'s color space,
+// then converted with that color space's matrix and range at 10 bits, and
+// chroma is box filtered. An invalid source color space is taken to be the RGB
+// form of the destination, which leaves only the matrix, like the 8-bit RGB
+// conversions. Values outside the encodable range are clamped and alpha is
+// dropped. Returns false if a color space has no SkColorSpace equivalent.
+//
+// Scaling not supported.
+MEDIA_EXPORT bool RGBAF16ToPx10(const VideoFrame& src_frame,
+                                VideoFrame& dst_frame);
+
 }  // namespace media::internals
 
 #endif  // MEDIA_BASE_VIDEO_FRAME_CONVERTER_INTERNALS_H_

@@ -110,6 +110,9 @@ EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
     case PIXEL_FORMAT_ARGB:
       return ConvertAndScaleRGB(&src_frame, dest_frame);
 
+    case PIXEL_FORMAT_RGBAF16:
+      return ConvertAndScaleRGBAF16(&src_frame, dest_frame);
+
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I422:
@@ -335,6 +338,41 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
           .WithData("src", src_frame->AsHumanReadableString())
           .WithData("dst", dest_frame.AsHumanReadableString());
   }
+}
+
+EncoderStatus VideoFrameConverter::ConvertAndScaleRGBAF16(
+    const VideoFrame* src_frame,
+    VideoFrame& dest_frame) {
+  switch (dest_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      break;
+    default:
+      return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
+          .WithData("src", src_frame->AsHumanReadableString())
+          .WithData("dst", dest_frame.AsHumanReadableString());
+  }
+
+  if (src_frame->visible_rect().size() == dest_frame.visible_rect().size()) {
+    return internals::RGBAF16ToPx10(*src_frame, dest_frame)
+               ? OkStatus()
+               : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+  }
+
+  // Convert at the source size with full resolution chroma, then let the Px10
+  // path scale and subsample, so the chroma is filtered only once.
+  const gfx::Size src_size = src_frame->visible_rect().size();
+  auto tmp_frame = CreateTempFrame(PIXEL_FORMAT_P410LE, src_size,
+                                   gfx::Rect(src_size), src_size);
+  if (!tmp_frame) {
+    return EncoderStatus::Codes::kScalingError;
+  }
+  tmp_frame->set_color_space(dest_frame.ColorSpace());
+  if (!internals::RGBAF16ToPx10(*src_frame, *tmp_frame)) {
+    return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+  }
+  return ConvertAndScalePx10(tmp_frame.get(), dest_frame);
 }
 
 EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(

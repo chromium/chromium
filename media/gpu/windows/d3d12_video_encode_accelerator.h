@@ -12,6 +12,8 @@
 #include <wrl.h>
 
 #include <atomic>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -142,8 +144,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   D3D12PictureBuffer CreateResourceForDXGIHandleBackedVideoFrame(
       const VideoFrame& frame);
 
-  D3D12PictureBuffer CreateResourceForSharedMemoryVideoFrame(
-      const VideoFrame& frame);
+  // Returns the input texture filled from a shared memory frame, whose resource
+  // is null on failure, and the color space of its content, which differs from
+  // the frame's when an RGB frame is converted to YUV.
+  std::pair<D3D12PictureBuffer, gfx::ColorSpace>
+  CreateResourceForSharedMemoryVideoFrame(const VideoFrame& frame);
 
   // Create |input_texture_|/|upload_buffer_| unless the cached one can already
   // hold the frame. Return false if allocation failed.
@@ -154,13 +159,16 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   // |copy_command_queue_|, without executing it. |dxgi_format| is the encoder
   // input format; the bi-planar overload takes the VideoPixelFormat it
   // corresponds to, the packed one the format the frame is converted to before
-  // being interleaved. Return false if an error was encountered.
-  bool UploadBiPlanarVideoFrame(const VideoFrame& frame,
-                                DXGI_FORMAT dxgi_format,
-                                VideoPixelFormat pixel_format);
-  bool UploadPackedVideoFrame(const VideoFrame& frame,
-                              DXGI_FORMAT dxgi_format,
-                              VideoPixelFormat source_format);
+  // being interleaved. Return the color space of the uploaded content, or
+  // nullopt if an error was encountered.
+  std::optional<gfx::ColorSpace> UploadBiPlanarVideoFrame(
+      const VideoFrame& frame,
+      DXGI_FORMAT dxgi_format,
+      VideoPixelFormat pixel_format);
+  std::optional<gfx::ColorSpace> UploadPackedVideoFrame(
+      const VideoFrame& frame,
+      DXGI_FORMAT dxgi_format,
+      VideoPixelFormat source_format);
 
   void EncodeTask(scoped_refptr<VideoFrame> frame,
                   const VideoEncoder::EncodeOptions& options);

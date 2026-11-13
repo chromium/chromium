@@ -1472,6 +1472,61 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return outputs_count == 1; }));
 }
 
+// A half float RGB frame in CPU memory, such as an F16 canvas read back by
+// WebCodecs, is converted to the 10-bit 4:2:2 session format in the YUV form
+// of its color space.
+TEST_F(VideoEncodeAcceleratorAdapterTest, ConvertsCpuRGBAF16ToRext422) {
+  profile_ = HEVCPROFILE_REXT;
+  VideoEncodeAccelerator::SupportedProfile ten_bit_422(
+      profile_, gfx::Size(3840, 2160), 30, 1,
+      VideoEncodeAccelerator::kConstantMode |
+          VideoEncodeAccelerator::kVariableMode);
+  ten_bit_422.gpu_supported_pixel_formats = {PIXEL_FORMAT_P210LE};
+  ten_bit_422.chroma_sampling = VideoChromaSampling::k422;
+  ten_bit_422.bit_depth = 10;
+  supported_profiles_ = {ten_bit_422};
+  EXPECT_CALL(*gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
+
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.subsampling = VideoChromaSampling::k422;
+  options.bit_depth = 10;
+  adapter()->SetInputBufferPreferenceForTesting(
+      VideoEncodeAcceleratorAdapter::InputBufferKind::CpuMemBuf);
+
+  auto rgba_frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_RGBAF16, options.frame_size, gfx::Rect(options.frame_size),
+      options.frame_size, base::Milliseconds(1));
+  ASSERT_TRUE(rgba_frame);
+  rgba_frame->set_color_space(gfx::ColorSpace::CreateHDR10());
+
+  int outputs_count = 0;
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        EXPECT_EQ(frame->format(), PIXEL_FORMAT_P210LE);
+        EXPECT_EQ(frame->ColorSpace(),
+                  gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                  gfx::ColorSpace::TransferID::PQ,
+                                  gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                  gfx::ColorSpace::RangeID::FULL));
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&](VideoEncoderOutput,
+                                std::optional<VideoEncoder::CodecDescription>) {
+                              outputs_count++;
+                            }),
+                        ValidatingStatusCB());
+
+  adapter()->Encode(rgba_frame, VideoEncoder::EncodeOptions(true),
+                    ValidatingStatusCB());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return outputs_count == 1; }));
+}
+
 TEST_F(VideoEncodeAcceleratorAdapterTest,
        RextDestDoesNotNeedGpuSupportedFormats) {
   profile_ = HEVCPROFILE_REXT;

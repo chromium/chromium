@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file.h"
@@ -16,9 +17,13 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_converter_internals.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace media {
 
@@ -97,6 +102,11 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   if (!IsOpaque(dest) && IsOpaque(src)) {
     // We can't make an alpha channel from nothing.
     return false;
+  }
+
+  if (src == PIXEL_FORMAT_RGBAF16) {
+    return dest == PIXEL_FORMAT_P010LE || dest == PIXEL_FORMAT_P210LE ||
+           dest == PIXEL_FORMAT_P410LE;
   }
 
   switch (src) {
@@ -734,6 +744,322 @@ TEST(VideoFrameConverterUnsupportedTest, UnsupportedConversions) {
       }
     }
   }
+}
+
+constexpr VideoPixelFormat kPx10Formats[] = {
+    PIXEL_FORMAT_P010LE, PIXEL_FORMAT_P210LE, PIXEL_FORMAT_P410LE};
+
+// Creates an RGBAF16 frame whose visible pixel (x, y) is `color(x, y)`. Skia
+// converts the floats to half floats.
+template <typename ColorFunction>
+scoped_refptr<VideoFrame> CreateRGBAF16Frame(const gfx::Size& size,
+                                             const gfx::ColorSpace& color_space,
+                                             ColorFunction color) {
+  auto frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_RGBAF16, size, gfx::Rect(size), size, base::TimeDelta());
+  if (!frame) {
+    return nullptr;
+  }
+  frame->set_color_space(color_space);
+  const SkImageInfo f32_info = SkImageInfo::Make(
+      size.width(), 1, kRGBA_F32_SkColorType, kUnpremul_SkAlphaType);
+  const SkImageInfo f16_info = f32_info.makeColorType(kRGBA_F16_SkColorType);
+  std::vector<SkColor4f> row(size.width());
+  auto data = frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kARGB);
+  const size_t stride = frame->stride(VideoFrame::Plane::kARGB);
+  for (int y = 0; y < size.height(); ++y) {
+    for (int x = 0; x < size.width(); ++x) {
+      row[x] = color(x, y);
+    }
+    const SkPixmap f32_row(f32_info, row.data(), f32_info.minRowBytes());
+    const SkPixmap f16_row(f16_info, data.subspan(y * stride).data(), stride);
+    if (!f32_row.readPixels(f16_row)) {
+      return nullptr;
+    }
+  }
+  return frame;
+}
+
+scoped_refptr<VideoFrame> CreateSolidRGBAF16Frame(
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    const SkColor4f& color) {
+  return CreateRGBAF16Frame(size, color_space, [&](int, int) { return color; });
+}
+
+scoped_refptr<VideoFrame> CreatePx10Frame(VideoPixelFormat format,
+                                          const gfx::Size& size) {
+  return VideoFrame::CreateZeroInitializedFrame(format, size, gfx::Rect(size),
+                                                size, base::TimeDelta());
+}
+
+// Returns the 10-bit value of the `index`th sample of row `row` of a visible
+// Px10 plane. The UV plane interleaves U and V, so chroma sample x has U at 2x
+// and V at 2x + 1.
+int Px10Sample(const VideoFrame& frame, size_t plane, int index, int row) {
+  const auto data = base::subtle::reinterpret_span<const uint16_t>(
+      frame.GetVisiblePlaneData(plane));
+  return data[row * frame.stride(plane) / sizeof(uint16_t) + index] >> 6;
+}
+
+struct Yuv10 {
+  int y;
+  int u;
+  int v;
+};
+
+// Expects every visible sample of a Px10 frame to be `expected` within 1, to
+// allow for the rounding of the color space conversion.
+void ExpectSolidPx10(const VideoFrame& frame, const Yuv10& expected) {
+  for (int row = 0; row < frame.GetVisibleRows(VideoFrame::Plane::kY); ++row) {
+    for (int x = 0; x < frame.GetVisibleColumns(VideoFrame::Plane::kY); ++x) {
+      SCOPED_TRACE(testing::Message() << "Y (" << x << ", " << row << ")");
+      ASSERT_NEAR(Px10Sample(frame, VideoFrame::Plane::kY, x, row), expected.y,
+                  1);
+    }
+  }
+  for (int row = 0; row < frame.GetVisibleRows(VideoFrame::Plane::kUV); ++row) {
+    for (int x = 0; x < frame.GetVisibleColumns(VideoFrame::Plane::kUV); ++x) {
+      SCOPED_TRACE(testing::Message() << "UV (" << x << ", " << row << ")");
+      ASSERT_NEAR(Px10Sample(frame, VideoFrame::Plane::kUV, 2 * x, row),
+                  expected.u, 1);
+      ASSERT_NEAR(Px10Sample(frame, VideoFrame::Plane::kUV, 2 * x + 1, row),
+                  expected.v, 1);
+    }
+  }
+}
+
+// The expected values follow from the BT.709 and BT.2020 equations at 10 bits,
+// where the chroma midpoint is 512.
+TEST(VideoFrameConverterRGBAF16Test, ConvertsWithDestinationMatrix) {
+  constexpr gfx::Size kSize(6, 4);
+  struct TestCase {
+    gfx::ColorSpace src_color_space;
+    SkColor4f color;
+    Yuv10 expected;
+  };
+  const TestCase kTestCases[] = {
+      // sRGB becomes full range BT.709 YUV.
+      {gfx::ColorSpace::CreateSRGB(), SkColors::kWhite, {1023, 512, 512}},
+      {gfx::ColorSpace::CreateSRGB(), SkColors::kBlack, {0, 512, 512}},
+      // Y = 0.2126, U = 0.5 - 0.2126 / 1.8556 and V = 1, clamped.
+      {gfx::ColorSpace::CreateSRGB(), SkColors::kRed, {217, 395, 1023}},
+      // Values outside [0, 1] of extended range content are clamped.
+      {gfx::ColorSpace::CreateSRGB(),
+       {2.0f, 2.0f, 2.0f, 1.0f},
+       {1023, 512, 512}},
+      {gfx::ColorSpace::CreateSRGB(),
+       {-1.0f, -1.0f, -1.0f, 1.0f},
+       {0, 512, 512}},
+      // PQ content keeps its transfer, so only the BT.2020 matrix applies.
+      {gfx::ColorSpace::CreateHDR10(),
+       {0.25f, 0.25f, 0.25f, 1.0f},
+       {256, 512, 512}},
+      // Y = 0.0593 * 0.5, U = 0.5 + 0.5 * 0.5 and V = 0.5 - 0.0593 / 1.4746 *
+      // 0.5.
+      {gfx::ColorSpace::CreateHDR10(),
+       {0.0f, 0.0f, 0.5f, 1.0f},
+       {30, 768, 491}},
+  };
+  for (const auto& test_case : kTestCases) {
+    auto src = CreateSolidRGBAF16Frame(kSize, test_case.src_color_space,
+                                       test_case.color);
+    ASSERT_TRUE(src);
+    for (auto format : kPx10Formats) {
+      SCOPED_TRACE(testing::Message()
+                   << test_case.src_color_space.ToString() << " ("
+                   << test_case.color.fR << ", " << test_case.color.fG << ", "
+                   << test_case.color.fB << ") -> " << format);
+      auto dest = CreatePx10Frame(format, kSize);
+      ASSERT_TRUE(dest);
+      VideoFrameConverter converter;
+      ASSERT_TRUE(converter.ConvertAndScale(*src, *dest).is_ok());
+      EXPECT_EQ(dest->ColorSpace(),
+                VideoFrameConverter::GetDestinationColorSpace(*src));
+      ExpectSolidPx10(*dest, test_case.expected);
+    }
+  }
+}
+
+// An RGB source without a color space is treated like the 8-bit RGB formats:
+// it is taken to be in the RGB form of limited range BT.709.
+TEST(VideoFrameConverterRGBAF16Test, InvalidColorSpaceUsesLimitedRangeBT709) {
+  constexpr gfx::Size kSize(4, 4);
+  auto white =
+      CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace(), SkColors::kWhite);
+  auto black =
+      CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace(), SkColors::kBlack);
+  ASSERT_TRUE(white);
+  ASSERT_TRUE(black);
+  for (auto format : kPx10Formats) {
+    SCOPED_TRACE(format);
+    auto dest = CreatePx10Frame(format, kSize);
+    ASSERT_TRUE(dest);
+    VideoFrameConverter converter;
+    ASSERT_TRUE(converter.ConvertAndScale(*white, *dest).is_ok());
+    EXPECT_EQ(dest->ColorSpace(), gfx::ColorSpace::CreateREC709());
+    ExpectSolidPx10(*dest, {940, 512, 512});
+    ASSERT_TRUE(converter.ConvertAndScale(*black, *dest).is_ok());
+    ExpectSolidPx10(*dest, {64, 512, 512});
+  }
+}
+
+// The source is color managed into the destination color space, not only
+// re-matrixed. Linear 0.05088 is sRGB encoded 0.25.
+TEST(VideoFrameConverterRGBAF16Test, ColorManagesIntoDestinationTransfer) {
+  constexpr gfx::Size kSize(4, 2);
+  auto src = CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace::CreateSRGBLinear(),
+                                     {0.05088f, 0.05088f, 0.05088f, 1.0f});
+  ASSERT_TRUE(src);
+  for (auto format : kPx10Formats) {
+    SCOPED_TRACE(format);
+    auto dest = CreatePx10Frame(format, kSize);
+    ASSERT_TRUE(dest);
+    dest->set_color_space(gfx::ColorSpace(
+        gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+        gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL));
+    ASSERT_TRUE(internals::RGBAF16ToPx10(*src, *dest));
+    ExpectSolidPx10(*dest, {256, 512, 512});
+  }
+}
+
+// Subsampled chroma is the average of the chroma of the pixels it covers,
+// including the partial samples at odd edges.
+TEST(VideoFrameConverterRGBAF16Test, AveragesSubsampledChroma) {
+  // The second size has odd dimensions and spans several strips of rows,
+  // the last of them partial.
+  for (const gfx::Size size : {gfx::Size(5, 3), gfx::Size(13, 19)}) {
+    SCOPED_TRACE(size.ToString());
+    auto color = [](int x, int y) {
+      return SkColor4f{(x % 6) * 0.2f, (y % 3) * 0.4f,
+                       (x + y) % 2 ? 1.0f : 0.1f, 1.0f};
+    };
+    auto src = CreateRGBAF16Frame(size, gfx::ColorSpace::CreateSRGB(), color);
+    ASSERT_TRUE(src);
+    // Full resolution chroma is the reference to average.
+    auto reference = CreatePx10Frame(PIXEL_FORMAT_P410LE, size);
+    ASSERT_TRUE(reference);
+    VideoFrameConverter converter;
+    ASSERT_TRUE(converter.ConvertAndScale(*src, *reference).is_ok());
+
+    for (auto format : {PIXEL_FORMAT_P010LE, PIXEL_FORMAT_P210LE}) {
+      SCOPED_TRACE(format);
+      auto dest = CreatePx10Frame(format, size);
+      ASSERT_TRUE(dest);
+      ASSERT_TRUE(converter.ConvertAndScale(*src, *dest).is_ok());
+      const gfx::Size subsample =
+          VideoFrame::SampleSize(format, VideoFrame::Plane::kUV);
+      for (int y = 0; y < size.height(); ++y) {
+        for (int x = 0; x < size.width(); ++x) {
+          EXPECT_EQ(Px10Sample(*dest, VideoFrame::Plane::kY, x, y),
+                    Px10Sample(*reference, VideoFrame::Plane::kY, x, y));
+        }
+      }
+      for (int cy = 0; cy < dest->GetVisibleRows(VideoFrame::Plane::kUV);
+           ++cy) {
+        for (int cx = 0; cx < dest->GetVisibleColumns(VideoFrame::Plane::kUV);
+             ++cx) {
+          for (int component = 0; component < 2; ++component) {
+            int sum = 0;
+            int count = 0;
+            for (int y = cy * subsample.height();
+                 y < std::min((cy + 1) * subsample.height(), size.height());
+                 ++y) {
+              for (int x = cx * subsample.width();
+                   x < std::min((cx + 1) * subsample.width(), size.width());
+                   ++x) {
+                sum += Px10Sample(*reference, VideoFrame::Plane::kUV,
+                                  2 * x + component, y);
+                ++count;
+              }
+            }
+            SCOPED_TRACE(testing::Message() << "chroma (" << cx << ", " << cy
+                                            << ") component " << component);
+            // The reference is quantized before averaging, the result after.
+            EXPECT_NEAR(Px10Sample(*dest, VideoFrame::Plane::kUV,
+                                   2 * cx + component, cy),
+                        static_cast<float>(sum) / count, 1.0f);
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(VideoFrameConverterRGBAF16Test, ScalesSolidColor) {
+  auto src = CreateSolidRGBAF16Frame({64, 48}, gfx::ColorSpace::CreateSRGB(),
+                                     SkColors::kRed);
+  ASSERT_TRUE(src);
+  for (auto format : kPx10Formats) {
+    for (const auto& size : {gfx::Size(32, 24), gfx::Size(100, 70)}) {
+      SCOPED_TRACE(testing::Message() << format << ", " << size.ToString());
+      auto dest = CreatePx10Frame(format, size);
+      ASSERT_TRUE(dest);
+      VideoFrameConverter converter;
+      ASSERT_TRUE(converter.ConvertAndScale(*src, *dest).is_ok());
+      ExpectSolidPx10(*dest, {217, 395, 1023});
+    }
+  }
+}
+
+// Alpha is dropped, not composited: the color is converted as is.
+TEST(VideoFrameConverterRGBAF16Test, DropsAlpha) {
+  constexpr gfx::Size kSize(4, 2);
+  auto src = CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace::CreateREC709(),
+                                     {1.0f, 1.0f, 1.0f, 0.5f});
+  ASSERT_TRUE(src);
+  for (auto format : kPx10Formats) {
+    SCOPED_TRACE(format);
+    auto dest = CreatePx10Frame(format, kSize);
+    ASSERT_TRUE(dest);
+    VideoFrameConverter converter;
+    ASSERT_TRUE(converter.ConvertAndScale(*src, *dest).is_ok());
+    ExpectSolidPx10(*dest, {940, 512, 512});
+  }
+}
+
+// Values outside [0, 1] are clipped in RGB before the matrix. Clipping the YUV
+// components instead would turn 2.0 red into a different, more saturated color
+// than plain red.
+TEST(VideoFrameConverterRGBAF16Test, OutOfRangeIsClippedInRgb) {
+  constexpr gfx::Size kSize(4, 2);
+  const struct {
+    SkColor4f color;
+    Yuv10 expected;
+  } kTestCases[] = {
+      {{2.0f, 0.0f, 0.0f, 1.0f}, {250, 409, 960}},
+      {{2.0f, 2.0f, 2.0f, 1.0f}, {940, 512, 512}},
+      {{-1.0f, -1.0f, -1.0f, 1.0f}, {64, 512, 512}},
+  };
+  for (const auto& test_case : kTestCases) {
+    auto src = CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace::CreateREC709(),
+                                       test_case.color);
+    ASSERT_TRUE(src);
+    for (auto format : kPx10Formats) {
+      SCOPED_TRACE(testing::Message()
+                   << format << ", " << test_case.color.fR << ", "
+                   << test_case.color.fG << ", " << test_case.color.fB);
+      auto dest = CreatePx10Frame(format, kSize);
+      ASSERT_TRUE(dest);
+      VideoFrameConverter converter;
+      ASSERT_TRUE(converter.ConvertAndScale(*src, *dest).is_ok());
+      ExpectSolidPx10(*dest, test_case.expected);
+    }
+  }
+}
+
+// RGBAF16 can only be converted to the 10-bit semi-planar formats.
+TEST(VideoFrameConverterRGBAF16Test, UnsupportedDestinationFormat) {
+  constexpr gfx::Size kSize(4, 2);
+  auto src = CreateSolidRGBAF16Frame(kSize, gfx::ColorSpace::CreateREC709(),
+                                     SkColors::kWhite);
+  ASSERT_TRUE(src);
+  auto dest = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_I420, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+  ASSERT_TRUE(dest);
+  VideoFrameConverter converter;
+  EXPECT_EQ(converter.ConvertAndScale(*src, *dest).code(),
+            EncoderStatus::Codes::kUnsupportedFrameFormat);
 }
 
 class VideoFrameConverterExtentsTest : public VideoFrameConverterTest {};

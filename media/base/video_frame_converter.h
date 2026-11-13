@@ -50,6 +50,9 @@ class MEDIA_EXPORT VideoFrameConverter {
   //   * PIXEL_FORMAT_P010LE
   //   * PIXEL_FORMAT_P210LE
   //   * PIXEL_FORMAT_P410LE
+  //   * PIXEL_FORMAT_RGBAF16 (to PIXEL_FORMAT_P010LE, PIXEL_FORMAT_P210LE and
+  //     PIXEL_FORMAT_P410LE only, color managed into the destination color
+  //     space)
   //
   // Output formats:
   //   * PIXEL_FORMAT_I420
@@ -100,6 +103,8 @@ class MEDIA_EXPORT VideoFrameConverter {
 
   EncoderStatus ConvertAndScaleRGB(const VideoFrame* src_frame,
                                    VideoFrame& dest_frame);
+  EncoderStatus ConvertAndScaleRGBAF16(const VideoFrame* src_frame,
+                                       VideoFrame& dest_frame);
   EncoderStatus ConvertAndScaleI4xxx(const VideoFrame* src_frame,
                                      VideoFrame& dest_frame);
   EncoderStatus ConvertAndScaleNVxx(const VideoFrame* src_frame,
