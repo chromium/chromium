@@ -452,8 +452,7 @@ void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
 void ChromeFeaturesServiceProvider::IsRootNsDnsProxyEnabled(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  SendResponse(method_call, std::move(response_sender),
-               base::FeatureList::IsEnabled(features::kEnableRootNsDnsProxy));
+  SendResponse(method_call, std::move(response_sender), true);
 }
 
 }  // namespace ash

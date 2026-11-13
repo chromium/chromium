@@ -7663,13 +7663,6 @@ inline constexpr char kEnableRFC8925Description[] =
     "Let ChromeOS DHCPv4 client voluntarily drop DHCPv4 lease and prefer to"
     "operate IPv6-only, if the network is also IPv6-only capable.";
 
-inline constexpr char kEnableRootNsDnsProxyName[] =
-    "Enable DNS proxy service running on the root network namespace for "
-    "ChromeOS";
-inline constexpr char kEnableRootNsDnsProxyDescription[] =
-    "When enabled, DNS proxy service runs on the root network namespace "
-    "instead of inside a specified network namespace";
-
 inline constexpr char kTiledDisplaySupportName[] =
     "Enable tile display support";
 inline constexpr char kTiledDisplaySupportDescription[] =
