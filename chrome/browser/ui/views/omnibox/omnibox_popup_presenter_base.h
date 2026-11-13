@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,7 +62,8 @@ extern const void* kOmniboxWebUIPopupWidgetId;
 // concerns and communication between native omnibox code and the WebUI code,
 // work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenterBase
-    : public OmniboxPopupContentDelegate,
+    : public OmniboxPopupHost,
+      public OmniboxPopupContentDelegate,
       public OmniboxPopupContentSizer,
       public content::WebContentsObserver,
       public permissions::PermissionRequestManager::Observer {
@@ -105,7 +107,8 @@ class OmniboxPopupPresenterBase
   // Creates and returns a new deactivation blocker. The caller is responsible
   // for managing the lifecycle of the returned blocker (typically via
   // std::unique_ptr). Returns nullptr if
-  // `omnibox::kOmniboxKeepOpenOnFileSelection` is disabled.
+  // `omnibox::kOmniboxKeepOpenOnFileSelection` is disabled. Overrides both
+  // OmniboxPopupContentDelegate and OmniboxPopupHost.
   std::unique_ptr<OmniboxPopupDeactivationBlocker> CreateDeactivationBlocker()
       override;
   void OnFileSelectionClosed() override;
@@ -113,14 +116,14 @@ class OmniboxPopupPresenterBase
   bool has_active_blockers() const { return deactivation_blockers_count_ > 0; }
 
   // Show or hide the popup widget with web view.
-  virtual void Show();
-  virtual void Hide();
+  void Show() override;
+  void Hide() override;
 
   // Tells whether the popup widget exists.
   bool IsShown() const override;
 
   // Request focus on the popup widget and its web contents.
-  virtual void RequestFocus();
+  void RequestFocus() override;
 
   // Caches the height of the WebUI content, which is then used to compute the
   // popup widget bounds.
@@ -131,7 +134,7 @@ class OmniboxPopupPresenterBase
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
-  OmniboxPopupWebUIBaseContent* GetWebUIContent();
+  OmniboxPopupWebUIBaseContent* GetWebUIContent() override;
   const OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
   // Returns the WebUI content, first creating it with `CreateWebUIContent()`
@@ -183,7 +186,7 @@ class OmniboxPopupPresenterBase
   // When the presenter's creation strategy is `kOnOmniboxFocus`, creates the
   // WebUI content once the browser window has presented its first frame, so
   // the page loads while the user types without delaying window presentation.
-  virtual void OnOmniboxFocused();
+  void OnOmniboxFocused() override;
 
   // Returns the per-popup content behavior this presenter was created with.
   const OmniboxPopupContentConfig& config() const { return config_; }
@@ -192,7 +195,7 @@ class OmniboxPopupPresenterBase
   // non-empty paint. `LocationBarView` drops its native focus ring under the
   // full popup once this is true. The full popup's content reports the paint
   // through the delegate's `OnPopupFirstVisuallyNonEmptyPaint()`.
-  bool CompletedFirstVisuallyNonEmptyPaint();
+  bool CompletedFirstVisuallyNonEmptyPaint() override;
   void SetCompletedFirstVisuallyNonEmptyPaintForTesting(bool completed);
 
   virtual std::string_view GetPopupMetricPrefix() const = 0;
@@ -223,7 +226,7 @@ class OmniboxPopupPresenterBase
   // Sets explicit permission prompt showing state. Called by permission request
   // observer callbacks, PermissionPromptFactory, and WebUI media request
   // handlers.
-  void SetPermissionPromptShowing(bool showing);
+  void SetPermissionPromptShowing(bool showing) override;
 
   // Resets prompt showing and dismissal state flags.
   void ResetPermissionPromptShowingState();
@@ -234,6 +237,10 @@ class OmniboxPopupPresenterBase
   // Returns true if a permission prompt is showing or being dismissed,
   // which should prevent out-of-focus activation events from hiding the popup.
   bool IsPermissionPromptPreventingClose() const;
+
+  // Returns whether a deactivation blocker or a permission prompt keeps the
+  // popup open.
+  bool IsClosePrevented() const override;
 
   // Returns whether the WebUI content view receives focus.
   bool ShouldReceiveFocus() const override;

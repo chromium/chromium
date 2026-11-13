@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 
 namespace omnibox {
 
@@ -74,11 +74,10 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   auto* location_bar = browser_view_->GetLocationBar();
   auto* popup_view = location_bar->GetOmniboxPopupView();
   if (popup_view) {
-    if (auto* presenter = popup_view->presenter()) {
+    if (auto* popup_host = popup_view->popup_host()) {
       // Note: ESC key notifications (`PopupCloseReason::kEscapeKeyPressed`)
       // are handled via `OmniboxPopupWebUIBaseContent::OnPreHandleEscapeKey()`.
-      if (presenter->has_active_blockers() ||
-          presenter->IsPermissionPromptPreventingClose()) {
+      if (popup_host->IsClosePrevented()) {
         return;
       }
     }

@@ -546,8 +546,7 @@ OmniboxPopupPresenterBase::ReleaseWebUIContents() {
 
 bool OmniboxPopupPresenterBase::CanReleaseWebUIContents() {
   OmniboxPopupWebUIBaseContent* content = GetWebUIContent();
-  return content && !IsShown() && !is_open_ && !has_active_blockers() &&
-         !IsPermissionPromptPreventingClose() &&
+  return content && !IsShown() && !is_open_ && !IsClosePrevented() &&
          content->CanReleaseContentsWrapper();
 }
 
@@ -1055,4 +1054,8 @@ void OmniboxPopupPresenterBase::OnWidgetActivated() {
 
 bool OmniboxPopupPresenterBase::IsPermissionPromptPreventingClose() const {
   return is_prompt_showing_ || is_handling_prompt_dismissal_;
+}
+
+bool OmniboxPopupPresenterBase::IsClosePrevented() const {
+  return has_active_blockers() || IsPermissionPromptPreventingClose();
 }

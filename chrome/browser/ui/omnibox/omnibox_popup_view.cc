@@ -17,6 +17,10 @@ OmniboxPopupPresenterBase* OmniboxPopupView::presenter() {
   return nullptr;
 }
 
+OmniboxPopupHost* OmniboxPopupView::popup_host() const {
+  return nullptr;
+}
+
 OmniboxController* OmniboxPopupView::controller() {
   return const_cast<OmniboxController*>(
       const_cast<const OmniboxPopupView*>(this)->controller());

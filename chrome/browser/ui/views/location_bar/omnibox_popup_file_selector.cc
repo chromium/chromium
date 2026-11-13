@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -99,8 +100,8 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
           }
         } else {
           if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-            if (auto* presenter = popup_view->presenter()) {
-              deactivation_blocker_ = presenter->CreateDeactivationBlocker();
+            if (auto* popup_host = popup_view->popup_host()) {
+              deactivation_blocker_ = popup_host->CreateDeactivationBlocker();
             }
           }
         }

@@ -22,6 +22,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class OmniboxController;
+class OmniboxPopupHost;
 class OmniboxPopupPresenterBase;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
@@ -43,6 +44,10 @@ class OmniboxPopupView {
   virtual ~OmniboxPopupView();
 
   virtual OmniboxPopupPresenterBase* presenter();
+
+  // Returns the OmniboxPopupHost that shows the popup's WebUI, or null if the
+  // popup has none.
+  virtual OmniboxPopupHost* popup_host() const;
 
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const = 0;

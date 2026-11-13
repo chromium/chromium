@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
@@ -259,8 +260,8 @@ LocationBarView::LocationBarView(BrowserWindowInterface* browser,
               v->is_full_webui_omnibox_ &&
               v->GetOmniboxController()->popup_state_manager()->popup_state() ==
                   OmniboxPopupState::kFull &&
-              v->omnibox_popup_view_ && v->omnibox_popup_view_->presenter() &&
-              v->omnibox_popup_view_->presenter()
+              v->omnibox_popup_view_ && v->omnibox_popup_view_->popup_host() &&
+              v->omnibox_popup_view_->popup_host()
                   ->CompletedFirstVisuallyNonEmptyPaint();
           return v->GetOmniboxController()->edit_model()->is_caret_visible() &&
                  !v->ShouldUsePopupOpenAppearance() &&
@@ -1300,19 +1301,19 @@ bool LocationBarView::is_full_webui_omnibox() const {
 // ensures the omnibox knows as soon as possible and ignores focus-loss events
 // during the whole time that the embedded permission prompt is showing.
 void LocationBarView::SetPermissionPromptShowing(bool showing) {
-  OmniboxPopupPresenterBase* presenter = nullptr;
-  // Get Omnibox popup presenter for AIM or normal omnibox, depending
-  // on which is showing.
+  OmniboxPopupHost* popup_host = nullptr;
+  // Get Omnibox popup host for AIM or normal omnibox, depending on which is
+  // showing.
   if (auto* aim_presenter = GetOmniboxPopupAimPresenter();
       aim_presenter && aim_presenter->IsShown()) {
-    presenter = aim_presenter;
+    popup_host = aim_presenter;
   } else if (auto* popup_view = GetOmniboxPopupView();
-             popup_view && popup_view->presenter() &&
-             popup_view->presenter()->IsShown()) {
-    presenter = popup_view->presenter();
+             popup_view && popup_view->popup_host() &&
+             popup_view->popup_host()->IsShown()) {
+    popup_host = popup_view->popup_host();
   }
-  if (presenter) {
-    presenter->SetPermissionPromptShowing(showing);
+  if (popup_host) {
+    popup_host->SetPermissionPromptShowing(showing);
   }
 }
 
@@ -1994,8 +1995,8 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       }
       break;
     case OmniboxPopupState::kFull:
-      if (omnibox_popup_view_->presenter()) {
-        omnibox_popup_view_->presenter()->Hide();
+      if (omnibox_popup_view_->popup_host()) {
+        omnibox_popup_view_->popup_host()->Hide();
       }
       break;
     case OmniboxPopupState::kAim:
@@ -2014,8 +2015,8 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       // updating the popup state.
       break;
     case OmniboxPopupState::kFull:
-      if (omnibox_popup_view_->presenter()) {
-        omnibox_popup_view_->presenter()->Show();
+      if (omnibox_popup_view_->popup_host()) {
+        omnibox_popup_view_->popup_host()->Show();
       }
       break;
     case OmniboxPopupState::kAim:
@@ -2191,8 +2192,8 @@ void LocationBarView::OnOmniboxFocused() {
 
   // Lets a popup that creates its content on demand start loading it.
   if (OmniboxPopupView* popup_view = GetOmniboxPopupView()) {
-    if (OmniboxPopupPresenterBase* presenter = popup_view->presenter()) {
-      presenter->OnOmniboxFocused();
+    if (OmniboxPopupHost* popup_host = popup_view->popup_host()) {
+      popup_host->OnOmniboxFocused();
     }
   }
 }
