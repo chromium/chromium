@@ -39,7 +39,7 @@ export type {PasskeysBrowserProxy} from './passkeys_browser_proxy.js';
 export {PasswordChangeDetailsElement} from './password_change_details.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
-export type {ImportEntry, ImportResults} from './password_manager.mojom-webui.js';
+export type {DomainInfo, ImportEntry, ImportResults} from './password_manager.mojom-webui.js';
 export {ExportPasswordsResult, ExportProgressStatus, ImportEntryStatus, ImportResultsStatus, PageCallbackRouter, PasswordAutomaticChangeState, PasswordManagerActionableError} from './password_manager.mojom-webui.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';
 export type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy} from './password_manager_proxy.js';

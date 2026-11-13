@@ -8,7 +8,7 @@ import {ExportPasswordsResult, ExportProgressStatus, ImportResultsStatus, PageCa
 import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ImportResults, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
+import type {ActorLoginPermission, DomainInfo} from './password_manager.mojom-webui.js';
 import {makeFamilyFetchResults, makePasswordCheckStatus} from './test_util.js';
 
 /**
@@ -53,8 +53,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private requestCredentialsDetailsResponse_:
       chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
 
-  private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
-      null = null;
+  private getDomainInfoResponse_: DomainInfo|null = null;
 
   private switchBiometricAuthBeforeFillingStateResult_: boolean = false;
 
@@ -92,7 +91,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getInsecureCredentials',
       'getPasswordCheckStatus',
       'getSavedPasswordList',
-      'getUrlCollection',
+      'getDomainInfo',
       'importPasswords',
       'isConnectedToCloudAuthenticator',
       'isAccountStorageActive',
@@ -329,14 +328,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('showLastExportedFileInShell');
   }
 
-  getUrlCollection(url: string) {
-    this.methodCalled('getUrlCollection', url);
-    return Promise.resolve(this.getUrlCollectionResponse_);
+  getDomainInfo(url: string) {
+    this.methodCalled('getDomainInfo', url);
+    return Promise.resolve(this.getDomainInfoResponse_);
   }
 
-  setGetUrlCollectionResponse(
-      response: chrome.passwordsPrivate.UrlCollection|null) {
-    this.getUrlCollectionResponse_ = response;
+  setGetDomainInfoResponse(response: DomainInfo|null) {
+    this.getDomainInfoResponse_ = response;
   }
 
   addPasswordManagerAuthTimeoutListener(

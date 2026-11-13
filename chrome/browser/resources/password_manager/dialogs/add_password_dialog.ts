@@ -17,6 +17,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {DomainInfo} from '../password_manager.mojom-webui.js';
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
@@ -143,7 +144,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       username_: {type: String},
       password_: {type: String},
       note_: {type: String},
-      urlCollection_: {type: Object},
+      domainInfo_: {type: Object},
       usernamesBySignonRealm_: {type: Object},
 
       /**
@@ -167,8 +168,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   protected accessor usernameErrorMessage_: string|null = null;
   protected accessor canAddPassword_: boolean = false;
   protected accessor isPasswordInvalid_: boolean = false;
-  private accessor urlCollection_: chrome.passwordsPrivate.UrlCollection|null =
-      null;
+  private accessor domainInfo_: DomainInfo|null = null;
   protected readonly storeOptionAccountValue_: string =
       chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
   protected readonly storeOptionDeviceValue_: string =
@@ -204,7 +204,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('urlCollection_') ||
+    if (changedPrivateProperties.has('domainInfo_') ||
         changedPrivateProperties.has('username_') ||
         changedPrivateProperties.has('usernamesBySignonRealm_')) {
       this.usernameErrorMessage_ = this.computeUsernameErrorMessage_();
@@ -212,7 +212,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
     if (changedPrivateProperties.has('websiteErrorMessage_') ||
         changedPrivateProperties.has('website_') ||
-        changedPrivateProperties.has('urlCollection_') ||
+        changedPrivateProperties.has('domainInfo_') ||
         changedPrivateProperties.has('username_') ||
         changedPrivateProperties.has('usernamesBySignonRealm_') ||
         changedPrivateProperties.has('password_') ||
@@ -270,11 +270,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       return;
     }
     PasswordManagerImpl.getInstance()
-        .getUrlCollection(this.website_)
-        .then(urlCollection => {
-          this.urlCollection_ = urlCollection;
+        .getDomainInfo(this.website_)
+        .then(domainInfo => {
+          this.domainInfo_ = domainInfo;
           this.websiteErrorMessage_ =
-              !urlCollection ? this.i18n('notValidWebsite') : null;
+              !domainInfo ? this.i18n('notValidWebsite') : null;
         });
   }
 
@@ -296,7 +296,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private computeUsernameErrorMessage_(): string|null {
-    const signonRealm = this.urlCollection_?.signonRealm;
+    const signonRealm = this.domainInfo_?.signonRealm;
     if (!signonRealm) {
       return null;
     }
@@ -359,7 +359,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   protected onAddClick_() {
     assert(this.computeCanAddPassword_());
-    assert(this.urlCollection_);
+    assert(this.domainInfo_);
     recordAddCredentialInteraction(
         AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED);
     const useAccountStore = this.isAccountStoreUser &&
@@ -370,7 +370,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
     PasswordManagerImpl.getInstance()
         .addPassword({
-          url: this.urlCollection_.signonRealm,
+          url: this.domainInfo_.signonRealm,
           username: this.username_,
           password: this.password_,
           note: this.note_,
@@ -383,10 +383,10 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   protected getViewExistingPasswordAriaDescription_(): string {
-    return this.urlCollection_ ?
+    return this.domainInfo_ ?
         this.i18n(
             'viewExistingPasswordAriaDescription', this.username_,
-            this.urlCollection_.shown) :
+            this.domainInfo_.humanReadableName) :
         '';
   }
 
@@ -395,7 +395,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED);
     e.preventDefault();
     Router.getInstance().navigateTo(
-        Page.PASSWORD_DETAILS, this.urlCollection_?.shown);
+        Page.PASSWORD_DETAILS, this.domainInfo_?.humanReadableName);
     this.closeDialog_();
   }
 }

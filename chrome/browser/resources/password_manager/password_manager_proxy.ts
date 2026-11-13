@@ -12,7 +12,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ImportEntryStatus, ImportResultsStatus, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PasswordManagerActionableError, PasswordStoreSet as MojoPasswordStoreSet} from './password_manager.mojom-webui.js';
-import type {ActorLoginPermission, ExportPasswordsResult, ExportProgressStatus, ImportResults} from './password_manager.mojom-webui.js';
+import type {ActorLoginPermission, DomainInfo, ExportPasswordsResult, ExportProgressStatus, ImportResults} from './password_manager.mojom-webui.js';
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
@@ -328,13 +328,12 @@ export interface PasswordManagerProxy {
   showLastExportedFileInShell(): void;
 
   /**
-   * Requests whether the given |url| meets the requirements to save a password
+   * Requests whether the given `url` meets the requirements to save a password
    * for it (e.g. valid, has proper scheme etc.).
-   * @return A promise that resolves to the corresponding URLCollection on
+   * @return A promise that resolves to the corresponding `DomainInfo` on
    *     success and to null otherwise.
    */
-  getUrlCollection(url: string):
-      Promise<chrome.passwordsPrivate.UrlCollection|null>;
+  getDomainInfo(url: string): Promise<DomainInfo|null>;
 
   /**
    * Add an observer for authentication timeout.
@@ -585,6 +584,19 @@ export function toMojoPasswordStoreSet(
 }
 
 /**
+ * Maps `chrome.passwordsPrivate.UrlCollection` to
+ * `password_manager.mojom.DomainInfo`.
+ */
+export function toMojoDomainInfo(
+    urlCollection: chrome.passwordsPrivate.UrlCollection): DomainInfo {
+  return {
+    humanReadableName: urlCollection.shown,
+    url: urlCollection.link,
+    signonRealm: urlCollection.signonRealm,
+  };
+}
+
+/**
  * Implementation that accesses the private API.
  */
 export class PasswordManagerImpl implements PasswordManagerProxy {
@@ -792,8 +804,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     this.handler.showLastExportedFileInShell();
   }
 
-  getUrlCollection(url: string) {
-    return chrome.passwordsPrivate.getUrlCollection(url).catch(() => null);
+  getDomainInfo(url: string) {
+    return chrome.passwordsPrivate.getUrlCollection(url)
+        .then(result => result ? toMojoDomainInfo(result) : null)
+        .catch(() => null);
   }
 
   addPasswordManagerAuthTimeoutListener(

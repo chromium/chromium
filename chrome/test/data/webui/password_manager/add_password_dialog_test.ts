@@ -13,7 +13,7 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-import {createPasswordEntry, createUrlCollection} from './test_util.js';
+import {createDomainInfo, createPasswordEntry} from './test_util.js';
 
 suite('AddPasswordDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -46,18 +46,18 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(dialog.$.websiteInput.invalid);
 
     // Make url invalid
-    passwordManager.setGetUrlCollectionResponse(null);
+    passwordManager.setGetDomainInfoResponse(null);
     await enterWebsite(dialog, 'invalid');
     assertTrue(dialog.$.websiteInput.invalid);
     assertEquals(
         dialog.i18n('notValidWebsite'), dialog.$.websiteInput.errorMessage);
 
     // Now make URL valid again
-    passwordManager.setGetUrlCollectionResponse(createUrlCollection('example'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example'));
     await enterWebsite(dialog, 'example');
     assertFalse(dialog.$.websiteInput.invalid);
     assertDeepEquals(
-        ['invalid', 'example'], passwordManager.getArgs('getUrlCollection'));
+        ['invalid', 'example'], passwordManager.getArgs('getDomainInfo'));
 
     // But after losing focus url is no longer valid due to missing '.'
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
@@ -81,8 +81,7 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website for which user has a saved password.
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
     await enterWebsite(dialog, 'example.com');
     assertFalse(dialog.$.usernameInput.invalid);
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
@@ -104,8 +103,7 @@ suite('AddPasswordDialogTest', function() {
 
     // Update website input to match a second existing password and observe
     // error again.
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example2.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example2.com'));
     await enterWebsite(dialog, 'example2.com');
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
@@ -127,13 +125,13 @@ suite('AddPasswordDialogTest', function() {
 
         dialog.$.usernameInput.value = 'test';
         await microtasksFinished();
-        passwordManager.setGetUrlCollectionResponse(
-            createUrlCollection('example.com'));
+        passwordManager.setGetDomainInfoResponse(
+            createDomainInfo('example.com'));
         await enterWebsite(dialog, 'example.com');
         assertTrue(dialog.$.usernameInput.invalid);
         assertFalse(dialog.$.viewExistingPasswordLink.hidden);
 
-        passwordManager.setGetUrlCollectionResponse(null);
+        passwordManager.setGetDomainInfoResponse(null);
         await enterWebsite(dialog, 'invalid');
 
         assertTrue(dialog.$.websiteInput.invalid);
@@ -221,8 +219,7 @@ suite('AddPasswordDialogTest', function() {
     await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
     await enterWebsite(dialog, 'example.com');
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
@@ -258,8 +255,7 @@ suite('AddPasswordDialogTest', function() {
     await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
     await enterWebsite(dialog, 'www.example.com');
     dialog.$.usernameInput.value = 'test';
     await microtasksFinished();
@@ -315,8 +311,7 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.storePicker.value =
         chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
 
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
     await enterWebsite(dialog, 'example.com');
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
@@ -348,8 +343,7 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.storePicker.value =
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
 
-    passwordManager.setGetUrlCollectionResponse(
-        createUrlCollection('example.com'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
     await enterWebsite(dialog, 'example.com');
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
@@ -385,7 +379,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals('', dialog.$.websiteInput.errorMessage);
 
     // Enter a website without a TLD and lose focus.
-    passwordManager.setGetUrlCollectionResponse(createUrlCollection('example'));
+    passwordManager.setGetDomainInfoResponse(createDomainInfo('example'));
     await enterWebsite(dialog, 'example');
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
     await microtasksFinished();
