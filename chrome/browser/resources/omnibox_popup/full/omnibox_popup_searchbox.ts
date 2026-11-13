@@ -269,8 +269,8 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('omniboxDogfoodFeedbackEnabled');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
-  protected accessor dsePlaceholderText_: string = '';
-  protected accessor aimButtonFocused_: boolean = false;
+  private accessor dsePlaceholderText_: string = '';
+  private accessor aimButtonFocused_: boolean = false;
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
