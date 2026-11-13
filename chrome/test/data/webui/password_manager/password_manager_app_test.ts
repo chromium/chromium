@@ -10,9 +10,8 @@ import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -38,7 +37,7 @@ suite('PasswordManagerAppTest', function() {
     app = document.createElement('password-manager-app');
     document.body.appendChild(app);
     app.setNarrowForTesting(false);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('check layout', function() {
@@ -83,7 +82,7 @@ suite('PasswordManagerAppTest', function() {
       }));
 
   test('app drawer', async () => {
-    assertEquals(null, app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertEquals(null, app.shadowRoot.querySelector('#drawerSidebar'));
     assertFalse(app.$.drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
@@ -92,7 +91,7 @@ suite('PasswordManagerAppTest', function() {
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(app.$.drawer.open);
-    assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertTrue(!!app.shadowRoot.querySelector('#drawerSidebar'));
 
     const drawerClosed = eventToPromise('close', app.$.drawer);
     app.$.drawer.cancel();
@@ -101,13 +100,13 @@ suite('PasswordManagerAppTest', function() {
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
-    assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertTrue(!!app.shadowRoot.querySelector('#drawerSidebar'));
   });
 
   test('drawer hides when enough space', async () => {
     app.setNarrowForTesting(true);
 
-    assertEquals(null, app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertEquals(null, app.shadowRoot.querySelector('#drawerSidebar'));
     assertFalse(app.$.drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
@@ -116,7 +115,7 @@ suite('PasswordManagerAppTest', function() {
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(app.$.drawer.open);
-    assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertTrue(!!app.shadowRoot.querySelector('#drawerSidebar'));
 
     const drawerClosed = eventToPromise('close', app.$.drawer);
     app.setNarrowForTesting(false);
@@ -125,7 +124,7 @@ suite('PasswordManagerAppTest', function() {
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
-    assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
+    assertTrue(!!app.shadowRoot.querySelector('#drawerSidebar'));
   });
 
   test('Search navigates to Passwords and updates URL parameters', function() {
@@ -162,19 +161,20 @@ suite('PasswordManagerAppTest', function() {
     });
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
     const detailsSection =
-        app.shadowRoot!.querySelector('password-details-section');
+        app.shadowRoot.querySelector('password-details-section');
     assertTrue(!!detailsSection);
 
     detailsSection.fire('password-removed', {
       removedFromStores: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     });
+    await microtasksFinished();
 
     assertTrue(app.$.toast.open);
-    const undoButton = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const undoButton = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!undoButton);
     assertFalse(undoButton.hidden);
     undoButton.click();
@@ -191,19 +191,20 @@ suite('PasswordManagerAppTest', function() {
     });
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
     const detailsSection =
-        app.shadowRoot!.querySelector('password-details-section');
+        app.shadowRoot.querySelector('password-details-section');
     assertTrue(!!detailsSection);
 
     detailsSection.fire('passkey-removed');
+    await microtasksFinished();
 
     assertTrue(app.$.toast.open);
 
     // The undo button should be hidden for passkeys.
-    const undoButton = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const undoButton = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!undoButton);
     assertTrue(undoButton.hidden);
   });
@@ -219,20 +220,20 @@ suite('PasswordManagerAppTest', function() {
     });
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
     const detailsSection =
-        app.shadowRoot!.querySelector('password-details-section');
+        app.shadowRoot.querySelector('password-details-section');
     assertTrue(!!detailsSection);
-    await flushTasks();
+    await microtasksFinished();
     detailsSection.fire('passwords-moved', {
       accountEmail: testEmail,
       numberOfPasswords: 1,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
@@ -250,18 +251,18 @@ suite('PasswordManagerAppTest', function() {
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
     const VALUE_COPIED_TOAST_LABEL = 'Username copied!';
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
     const detailsSection =
-        app.shadowRoot!.querySelector('password-details-section');
+        app.shadowRoot.querySelector('password-details-section');
     assertTrue(!!detailsSection);
 
     // Copy password.
     detailsSection.fire('value-copied', {
       toastMessage: 'Password copied!',
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(app.$.toast.open);
 
     // Copy username.
@@ -269,11 +270,11 @@ suite('PasswordManagerAppTest', function() {
       toastMessage: VALUE_COPIED_TOAST_LABEL,
     });
 
-    await flushTasks();
-    assertEquals(app.shadowRoot!.querySelectorAll('cr-toast').length, 1);
+    await microtasksFinished();
+    assertEquals(app.shadowRoot.querySelectorAll('cr-toast').length, 1);
     assertTrue(app.$.toast.open);
 
-    const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
@@ -292,19 +293,19 @@ suite('PasswordManagerAppTest', function() {
     });
     Router.getInstance().navigateTo(Page.SETTINGS, group);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
-    const settingsSection = app.shadowRoot!.querySelector('settings-section');
+    const settingsSection = app.shadowRoot.querySelector('settings-section');
     assertTrue(!!settingsSection);
-    await flushTasks();
+    await microtasksFinished();
     settingsSection.fire('passwords-moved', {
       accountEmail: testEmail,
       numberOfPasswords: 1,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
@@ -323,19 +324,19 @@ suite('PasswordManagerAppTest', function() {
     });
     Router.getInstance().navigateTo(Page.PASSWORDS, group);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(app.$.toast.open);
-    const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
+    const passwordsSection = app.shadowRoot.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
 
     passwordsSection.fire('passwords-moved', {
       accountEmail: testEmail,
       numberOfPasswords: 1,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
@@ -347,23 +348,23 @@ suite('PasswordManagerAppTest', function() {
   test.skip('import can be triggered from empty state', async function() {
     // This is done to avoid flakiness.
     Router.getInstance().navigateTo(Page.PASSWORDS);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
 
-    const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
+    const passwordsSection = app.shadowRoot.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
     const importLink = passwordsSection.$.importPasswords.querySelector('a');
     assertTrue(!!importLink);
 
     // Should redirect ot Settings page.
     importLink.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
-    const settingsSection = app.shadowRoot!.querySelector('settings-section');
+    const settingsSection = app.shadowRoot.querySelector('settings-section');
     assertTrue(!!settingsSection);
-    await flushTasks();
+    await microtasksFinished();
 
     const importer =
         settingsSection.shadowRoot.querySelector('passwords-importer');
@@ -385,23 +386,23 @@ suite('PasswordManagerAppTest', function() {
   test('change password page', async function() {
     // Simulate direct navigation.
     Router.getInstance().navigateTo(Page.PASSWORD_CHANGE);
-    await flushTasks();
+    await microtasksFinished();
 
     const passwordsSection =
-        app.shadowRoot!.querySelector('password-change-details');
+        app.shadowRoot.querySelector('password-change-details');
     assertTrue(!!passwordsSection);
     passwordsSection?.$.back.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
   });
 
   test('opens trusted vault error dialog when locked', async function() {
     app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-    await flushTasks();
+    await microtasksFinished();
 
     const errorDialog =
-        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+        app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     assertTrue(errorDialog.$.dialog.open);
@@ -413,32 +414,30 @@ suite('PasswordManagerAppTest', function() {
         loadTimeData.overrideValues({enableTrustedVaultUnlock: false});
         app.actionableError =
             PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-        await flushTasks();
+        await microtasksFinished();
 
         assertFalse(
-            !!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+            !!app.shadowRoot.querySelector('trusted-vault-error-dialog'));
       });
 
   test(
       'does not open trusted vault error dialog for different actionable error',
       async function() {
         app.actionableError = PasswordManagerActionableError.kNoError;
-        await flushTasks();
+        await microtasksFinished();
 
         assertFalse(
-            !!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+            !!app.shadowRoot.querySelector('trusted-vault-error-dialog'));
       });
 
   test('opens unlock dialog on show event', async function() {
-    app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
-      bubbles: true,
-      composed: true,
-      detail: {source: TrustedVaultUnlockDialogSource.ADD_PASSWORD},
-    }));
-    await flushTasks();
+    app.fire('show-trusted-vault-error-dialog', {
+      source: TrustedVaultUnlockDialogSource.ADD_PASSWORD,
+    });
+    await microtasksFinished();
 
     const errorDialog =
-        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+        app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     assertTrue(errorDialog.$.dialog.open);
@@ -453,12 +452,8 @@ suite('PasswordManagerAppTest', function() {
         `records shown with source ${source} from show event`,
         async function() {
           const metrics = fakeMetricsPrivate();
-          app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
-            bubbles: true,
-            composed: true,
-            detail: {source},
-          }));
-          await flushTasks();
+          app.fire('show-trusted-vault-error-dialog', {source});
+          await microtasksFinished();
 
           const prefix = 'PasswordManager.TrustedVaultUnlockDialog.Action.';
           assertEquals(
@@ -475,10 +470,10 @@ suite('PasswordManagerAppTest', function() {
   test('records shown with AutoOnLoad source when locked', async function() {
     const metrics = fakeMetricsPrivate();
     app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-    await flushTasks();
+    await microtasksFinished();
 
     const errorDialog =
-        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+        app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     assertEquals(
@@ -496,17 +491,15 @@ suite('PasswordManagerAppTest', function() {
         const metrics = fakeMetricsPrivate();
         app.actionableError =
             PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-        await flushTasks();
+        await microtasksFinished();
 
-        app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
-          bubbles: true,
-          composed: true,
-          detail: {source: TrustedVaultUnlockDialogSource.IMPORT},
-        }));
-        await flushTasks();
+        app.fire('show-trusted-vault-error-dialog', {
+          source: TrustedVaultUnlockDialogSource.IMPORT,
+        });
+        await microtasksFinished();
 
         const errorDialog =
-            app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+            app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
                 'trusted-vault-error-dialog');
         assertTrue(!!errorDialog);
         assertEquals(
@@ -525,26 +518,24 @@ suite('PasswordManagerAppTest', function() {
   test('uses new source when dialog is reopened', async function() {
     const metrics = fakeMetricsPrivate();
     app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-    await flushTasks();
+    await microtasksFinished();
 
     let errorDialog =
-        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+        app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     const whenClosed = eventToPromise('close', errorDialog);
     errorDialog.shadowRoot.querySelector<HTMLElement>('#cancelButton')!.click();
     await whenClosed;
-    await flushTasks();
-    assertFalse(!!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+    await microtasksFinished();
+    assertFalse(!!app.shadowRoot.querySelector('trusted-vault-error-dialog'));
 
-    app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
-      bubbles: true,
-      composed: true,
-      detail: {source: TrustedVaultUnlockDialogSource.IMPORT},
-    }));
-    await flushTasks();
+    app.fire('show-trusted-vault-error-dialog', {
+      source: TrustedVaultUnlockDialogSource.IMPORT,
+    });
+    await microtasksFinished();
 
-    errorDialog = app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+    errorDialog = app.shadowRoot.querySelector<TrustedVaultErrorDialogElement>(
         'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     assertEquals(TrustedVaultUnlockDialogSource.IMPORT, errorDialog.source);
@@ -582,7 +573,7 @@ suite('WebuiRefresh2026', function() {
   function createApp() {
     app = document.createElement('password-manager-app');
     document.body.appendChild(app);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('Enabled', async () => {

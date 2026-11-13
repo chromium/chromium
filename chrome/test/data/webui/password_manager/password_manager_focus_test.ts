@@ -7,7 +7,6 @@ import 'chrome://password-manager/password_manager.js';
 import {CheckupSubpage, Page, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -30,7 +29,7 @@ suite('PasswordManagerAppTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     const query = new URLSearchParams();
     Router.getInstance().updateRouterParams(query);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('Clicking enter during search focuses first result', async function() {
@@ -53,9 +52,9 @@ suite('PasswordManagerAppTest', function() {
     document.body.appendChild(app);
     await app.$.toolbar.updateComplete;
     app.setNarrowForTesting(false);
-    await flushTasks();
+    await microtasksFinished();
 
-    assertEquals(app.shadowRoot!.activeElement, app.$.toolbar);
+    assertEquals(app.shadowRoot.activeElement, app.$.toolbar);
 
     app.$.toolbar.searchField.setValue('.org');
     await microtasksFinished();
@@ -65,7 +64,7 @@ suite('PasswordManagerAppTest', function() {
         app.$.passwords.shadowRoot.querySelector('password-list-item');
     assertTrue(!!firstMatch);
     assertEquals('bbc.org', firstMatch.item.name);
-    assertEquals(app.shadowRoot!.activeElement, app.$.passwords);
+    assertEquals(app.shadowRoot.activeElement, app.$.passwords);
     assertEquals(app.$.passwords.shadowRoot.activeElement, firstMatch);
   });
 
@@ -86,35 +85,34 @@ suite('PasswordManagerAppTest', function() {
         const app = document.createElement('password-manager-app');
         document.body.appendChild(app);
         app.setNarrowForTesting(false);
-        await flushTasks();
+        await microtasksFinished();
 
 
         const passwordListItem =
             app.$.passwords.shadowRoot.querySelector('password-list-item');
         assertTrue(!!passwordListItem);
         passwordListItem.click();
-        await flushTasks();
+        await microtasksFinished();
         await microtasksFinished();
 
         // Verify that password details page is shown with back button focused.
         assertEquals(
             Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
         const passwordDetailsPage =
-            app.shadowRoot!.querySelector('password-details-section');
+            app.shadowRoot.querySelector('password-details-section');
         assertTrue(!!passwordDetailsPage);
-        assertEquals(app.shadowRoot!.activeElement, passwordDetailsPage);
+        assertEquals(app.shadowRoot.activeElement, passwordDetailsPage);
         assertEquals(
             passwordDetailsPage.shadowRoot.activeElement,
             passwordDetailsPage.$.backButton);
 
         passwordDetailsPage.$.backButton.click();
-        await flushTasks();
         await microtasksFinished();
 
         // Verify that passwords page is opened and the password item is
         // focused.
         assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
-        assertEquals(app.shadowRoot!.activeElement, app.$.passwords);
+        assertEquals(app.shadowRoot.activeElement, app.$.passwords);
         assertEquals(
             app.$.passwords.shadowRoot.activeElement, passwordListItem);
       });
@@ -139,14 +137,14 @@ suite('PasswordManagerAppTest', function() {
                 const app = document.createElement('password-manager-app');
                 document.body.appendChild(app);
                 app.setNarrowForTesting(false);
-                await flushTasks();
+                await microtasksFinished();
 
                 const listRow =
                     app.$.checkup.shadowRoot.querySelector<HTMLElement>(
                         `#${type}Row`);
                 assertTrue(!!listRow);
                 listRow.click();
-                await flushTasks();
+                await microtasksFinished();
                 await microtasksFinished();
 
                 // Verify that checkup details page is shown with back button
@@ -155,22 +153,21 @@ suite('PasswordManagerAppTest', function() {
                     Page.CHECKUP_DETAILS,
                     Router.getInstance().currentRoute.page);
                 const checkupDetailsPage =
-                    app.shadowRoot!.querySelector('checkup-details-section');
+                    app.shadowRoot.querySelector('checkup-details-section');
                 assertTrue(!!checkupDetailsPage);
-                assertEquals(app.shadowRoot!.activeElement, checkupDetailsPage);
+                assertEquals(app.shadowRoot.activeElement, checkupDetailsPage);
                 assertEquals(
                     checkupDetailsPage.shadowRoot.activeElement,
                     checkupDetailsPage.$.backButton);
 
                 checkupDetailsPage.$.backButton.click();
-                await flushTasks();
                 await microtasksFinished();
 
                 // Verify that checkup page is opened and the correct row is
                 // focused.
                 assertEquals(
                     Page.CHECKUP, Router.getInstance().currentRoute.page);
-                assertEquals(app.shadowRoot!.activeElement, app.$.checkup);
+                assertEquals(app.shadowRoot.activeElement, app.$.checkup);
                 assertEquals(app.$.checkup.shadowRoot.activeElement, listRow);
               }));
 });

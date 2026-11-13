@@ -97,7 +97,6 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "find_shortcut_mixin.ts",
     "focus_config.ts",
     "notification_cards/notification_cards_browser_proxy.ts",
     "passkeys_browser_proxy.ts",
@@ -109,7 +108,6 @@ build_webui("build") {
     "sharing/metrics_utils.ts",
     "show_password_mixin_lit.ts",
     "sync_browser_proxy.ts",
-    "user_utils_mixin.ts",
     "user_utils_mixin_lit.ts",
   ]
 
@@ -118,8 +116,6 @@ build_webui("build") {
     "checkup_details_section.css",
     "checkup_list_item.css",
     "checkup_section.css",
-    "cr_page_host_style.css",
-    "cr_scrollable.css",
     "credential_details/backup_password_details_card.css",
     "credential_details/credential_details_card_lit.css",
     "credential_details/credential_note.css",
@@ -139,12 +135,12 @@ build_webui("build") {
     "password_change_details.css",
     "password_details_section.css",
     "password_list_item.css",
+    "password_manager_app.css",
     "passwords_exporter.css",
     "passwords_importer.css",
     "passwords_section.css",
     "prefs/pref_toggle_button.css",
     "settings_section.css",
-    "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
     "sharing/share_password_confirmation_dialog.css",

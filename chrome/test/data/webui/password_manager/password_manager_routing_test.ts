@@ -5,38 +5,35 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {Route} from 'chrome://password-manager/password_manager.js';
-import {CheckupSubpage, Page, RouteObserverMixin, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CheckupSubpage, Page, RouteObserverMixinLit, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-const TestElementBase = RouteObserverMixin(PolymerElement);
-class TestElement extends TestElementBase {
-  static get properties() {
-    return {
-      newRoute: Object,
-      oldRoute: Object,
-    };
+const TestDummyElementBase = RouteObserverMixinLit(CrLitElement);
+class TestDummyElement extends TestDummyElementBase {
+  static get is() {
+    return 'test-dummy';
   }
 
-  declare newRoute: Route|undefined;
-  declare oldRoute: Route|undefined;
+  newRoute: Route|undefined;
+  oldRoute: Route|undefined;
 
   override currentRouteChanged(newRoute: Route, oldRoute: Route): void {
     this.newRoute = newRoute;
     this.oldRoute = oldRoute;
   }
 }
-customElements.define('test-element', TestElement);
+customElements.define(TestDummyElement.is, TestDummyElement);
 
 suite('PasswordManagerAppTest', function() {
-  let testElement: TestElement;
+  let testElement: TestDummyElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('test-element') as TestElement;
+    testElement = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(testElement);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('navigating notifies observers', function() {
