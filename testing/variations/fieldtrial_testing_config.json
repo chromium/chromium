@@ -20434,8 +20434,16 @@
             "experiments": [
                 {
                     "name": "MaglevAsTopTier",
+                    "params": {
+                        "max_maglev_inlined_bytecode_size": "460",
+                        "max_maglev_inlined_bytecode_size_small_total": "30000",
+                        "min_maglev_inlining_frequency": "0.1"
+                    },
                     "enable_features": [
-                        "V8Flag_maglev_as_top_tier"
+                        "V8Flag_maglev"
+                    ],
+                    "disable_features": [
+                        "V8Flag_turbofan"
                     ]
                 }
             ]
