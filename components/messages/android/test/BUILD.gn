@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources =
       [ "java/src/org/chromium/components/messages/MessagesTestHelper.java" ]
+  deps = [ "//components/messages/android:jni_headers" ]
 }
 
 android_library("test_support_java") {
@@ -39,5 +40,6 @@ static_library("test_support_cpp") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/messages/android",
   ]
 }

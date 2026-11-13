@@ -4,12 +4,17 @@
 
 package org.chromium.components.messages;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,12 +23,15 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A helper class providing utility methods that are intended to be used in tests using messages. */
+/**
+ * A helper class providing utility methods that are intended to be used in tests using messages.
+ */
 @JNINamespace("messages")
+@NullMarked
 public class MessagesTestHelper {
-    private TestMessageDispatcherWrapper mWrapper;
-    private ManagedMessageDispatcher mOriginalDispatcher;
-    private WeakReference<WindowAndroid> mWindowRef;
+    private @Nullable TestMessageDispatcherWrapper mWrapper;
+    private @Nullable ManagedMessageDispatcher mOriginalDispatcher;
+    private @Nullable WeakReference<WindowAndroid> mWindowRef;
     private final long mNativePointer;
 
     private MessagesTestHelper(long nativePointer) {
@@ -70,9 +78,10 @@ public class MessagesTestHelper {
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
         if (dispatcher instanceof TestMessageDispatcherWrapper) {
             return (MessageDispatcherImpl)
-                    ((TestMessageDispatcherWrapper) dispatcher).getWrappedDispatcher();
+                    assumeNonNull(
+                            ((TestMessageDispatcherWrapper) dispatcher).getWrappedDispatcher());
         }
-        return (MessageDispatcherImpl) dispatcher;
+        return (MessageDispatcherImpl) assumeNonNull(dispatcher);
     }
 
     /**
@@ -128,9 +137,11 @@ public class MessagesTestHelper {
         if (dispatcher instanceof TestMessageDispatcherWrapper) {
             messageDispatcherImpl =
                     (MessageDispatcherImpl)
-                            ((TestMessageDispatcherWrapper) dispatcher).getWrappedDispatcher();
+                            assumeNonNull(
+                                    ((TestMessageDispatcherWrapper) dispatcher)
+                                            .getWrappedDispatcher());
         } else {
-            messageDispatcherImpl = (MessageDispatcherImpl) dispatcher;
+            messageDispatcherImpl = (MessageDispatcherImpl) assumeNonNull(dispatcher);
         }
         MessageQueueManager queueManager =
                 messageDispatcherImpl.getMessageQueueManagerForTesting(); // IN-TEST
@@ -140,7 +151,8 @@ public class MessagesTestHelper {
     }
 
     @CalledByNativeForTesting
-    public static long getNativePtr(MessageWrapper messageWrapper) {
+    public static @Nullable JniPtr<MessageWrapper.NativeMessageWrapper> getNativePtr(
+            MessageWrapper messageWrapper) {
         return messageWrapper.getNativePtrForTesting();
     }
 

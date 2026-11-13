@@ -103,7 +103,8 @@ public class SurveyUiDelegateBridgeUnitTest {
     public void createBridgeFromMessage_Success() {
         SurveyUiDelegate mockDelegate = Mockito.mock(SurveyUiDelegate.class);
         SurveyUiDelegateBridge.setDelegateForTesting(mockDelegate);
-        MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
+        MessageWrapper wrapper =
+                MessageWrapper.createForTesting(/*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
                 SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNotNull(delegate);
@@ -119,7 +120,8 @@ public class SurveyUiDelegateBridgeUnitTest {
 
     @Test
     public void createFromMessage_FailedWithoutWindow() {
-        MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
+        MessageWrapper wrapper =
+                MessageWrapper.createForTesting(/*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate = SurveyUiDelegateBridge.createFromMessage(wrapper, null);
         assertNull(delegate);
     }
@@ -127,7 +129,8 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Test
     public void createBridgeFromMessage_FailedWithoutTabModel() {
         TabModelSelectorSupplier.setInstanceForTesting(null);
-        MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
+        MessageWrapper wrapper =
+                MessageWrapper.createForTesting(/*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
                 SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNull(delegate);
@@ -136,7 +139,8 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Test
     public void createBridgeFromMessage_FailedWithoutMessageDispatcher() {
         MessagesFactory.detachMessageDispatcher(mMockMessageDispatcher);
-        MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
+        MessageWrapper wrapper =
+                MessageWrapper.createForTesting(/*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
                 SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNull(delegate);

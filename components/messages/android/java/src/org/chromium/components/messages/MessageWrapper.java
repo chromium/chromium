@@ -15,6 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -29,7 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @JNINamespace("messages")
 @NullMarked
 public final class MessageWrapper implements ListMenu.Delegate {
-    private long mNativeMessageWrapper;
+    @JniType("::messages::MessageWrapper")
+    interface NativeMessageWrapper extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeMessageWrapper> mNativeMessageWrapper;
     private final PropertyModel mMessageProperties;
     private @MonotonicNonNull MessageSecondaryMenuItems mMessageSecondaryMenuItems;
 
@@ -42,11 +49,17 @@ public final class MessageWrapper implements ListMenu.Delegate {
      */
     @CalledByNative
     @VisibleForTesting
-    public static MessageWrapper create(long nativeMessageWrapper, int messageIdentifier) {
+    static MessageWrapper create(
+            JniRawPtr<NativeMessageWrapper> nativeMessageWrapper, int messageIdentifier) {
         return new MessageWrapper(nativeMessageWrapper, messageIdentifier);
     }
 
-    private MessageWrapper(long nativeMessageWrapper, int messageIdentifier) {
+    public static MessageWrapper createForTesting(int messageIdentifier) {
+        return new MessageWrapper(null, messageIdentifier);
+    }
+
+    private MessageWrapper(
+            @Nullable JniRawPtr<NativeMessageWrapper> nativeMessageWrapper, int messageIdentifier) {
         mNativeMessageWrapper = nativeMessageWrapper;
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -251,10 +264,13 @@ public final class MessageWrapper implements ListMenu.Delegate {
 
     @CalledByNative
     void clearNativePtr() {
-        mNativeMessageWrapper = 0;
+        if (mNativeMessageWrapper != null) {
+            mNativeMessageWrapper.release();
+            mNativeMessageWrapper = null;
+        }
     }
 
-    long getNativePtrForTesting() {
+    @Nullable JniPtr<NativeMessageWrapper> getNativePtrForTesting() {
         return mNativeMessageWrapper;
     }
 
@@ -266,39 +282,41 @@ public final class MessageWrapper implements ListMenu.Delegate {
     }
 
     private @PrimaryActionClickBehavior int handleActionClick() {
-        if (mNativeMessageWrapper != 0) {
+        if (mNativeMessageWrapper != null) {
             MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
         }
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private void handleSecondaryActionClick() {
-        if (mNativeMessageWrapper == 0) return;
+        if (mNativeMessageWrapper == null) return;
         MessageWrapperJni.get().handleSecondaryActionClick(mNativeMessageWrapper);
     }
 
     private void handleMessageDismissed(@DismissReason int dismissReason) {
         // mNativeMessageWrapper can be null if the message was dismissed from native API.
         // In this case dismiss callback should have already been called.
-        if (mNativeMessageWrapper == 0) return;
+        if (mNativeMessageWrapper == null) return;
         MessageWrapperJni.get().handleDismissCallback(mNativeMessageWrapper, dismissReason);
     }
 
     @Override
-    public void onItemSelected(PropertyModel item, View view) {
+    public void onItemSelected(PropertyModel item, @Nullable View view) {
         assert item.getAllSetProperties().contains(ListMenuItemProperties.MENU_ITEM_ID);
+        if (mNativeMessageWrapper == null) return;
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         MessageWrapperJni.get().handleSecondaryMenuItemSelected(mNativeMessageWrapper, itemId);
     }
 
     @NativeMethods
     interface Natives {
-        void handleActionClick(long nativeMessageWrapper);
+        void handleActionClick(JniPtr<NativeMessageWrapper> self);
 
-        void handleSecondaryActionClick(long nativeMessageWrapper);
+        void handleSecondaryActionClick(JniPtr<NativeMessageWrapper> self);
 
-        void handleSecondaryMenuItemSelected(long nativeMessageWrapper, int itemId);
+        void handleSecondaryMenuItemSelected(JniPtr<NativeMessageWrapper> self, int itemId);
 
-        void handleDismissCallback(long nativeMessageWrapper, @DismissReason int dismissReason);
+        void handleDismissCallback(
+                JniPtr<NativeMessageWrapper> self, @DismissReason int dismissReason);
     }
 }

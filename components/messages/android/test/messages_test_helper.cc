@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
+#include "components/messages/android/message_wrapper.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/messages/android/test/jni_headers/MessagesTestHelper_jni.h"
@@ -37,7 +38,8 @@ int MessagesTestHelper::GetMessageIdentifier(ui::WindowAndroid* window_android,
 int64_t MessagesTestHelper::GetNativePtr(
     const base::android::JavaRef<jobject>& message_wrapper) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_MessagesTestHelper_getNativePtr(env, message_wrapper);
+  return reinterpret_cast<int64_t>(
+      Java_MessagesTestHelper_getNativePtr(env, message_wrapper));
 }
 
 void MessagesTestHelper::AttachTestMessageDispatcherForTesting(
