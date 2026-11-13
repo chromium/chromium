@@ -350,6 +350,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // written.
   IdToRange tab_to_available_range_;
 
+  // Tabs one step past their rebuild-time range bound.
+  base::flat_set<SessionID> tabs_past_rebuild_bound_;
+
   // Force session commands to be rebuild before next save event.
   bool rebuild_on_next_save_ = false;
 

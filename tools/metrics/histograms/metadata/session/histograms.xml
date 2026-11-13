@@ -251,6 +251,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.Counterfactual.FullRewriteAvoided" enum="BooleanHit"
+    expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded when a tab navigates forward to a new page and the browser saves
+    the change as a small update, in a case where the code before the fix for
+    https://crbug.com/582857520 would have rewritten the whole session file from
+    scratch instead. Not recorded when a full rewrite is already pending, since
+    the old rewrite would have merged into it. Each record is one full session
+    file rewrite that no longer happens. This measures saved disk writes, not
+    lost data.
+  </summary>
+</histogram>
+
 <histogram name="Session.Counterfactual.RebuildWouldHaveDroppedTabs"
     enum="Boolean" expires_after="2027-11-09">
   <owner>dljames@chromium.org</owner>

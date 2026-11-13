@@ -456,6 +456,18 @@ void SessionServiceBase::SetSelectedNavigationIndex(SessionID window_id,
       ResetFromCurrentBrowsers();
       return;
     }
+    // The old code rewrote the file on a tab's second step past its
+    // rebuild-time bound, which reset every tab's bound.
+    if (index == range.second + 1 &&
+        !tabs_past_rebuild_bound_.insert(tab_id).second) {
+      tabs_past_rebuild_bound_.clear();
+      // A rewrite that is already pending would have absorbed the old one.
+      if (!command_storage_manager_->pending_reset() &&
+          !rebuild_on_next_save_) {
+        base::UmaHistogramBoolean("Session.Counterfactual.FullRewriteAvoided",
+                                  true);
+      }
+    }
   }
   ScheduleCommand(
       sessions::CreateSetSelectedNavigationIndexCommand(tab_id, index));
@@ -823,6 +835,7 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
   windows_empty_at_last_rebuild_.clear();
+  tabs_past_rebuild_bound_.clear();
   CHECK(is_saving_enabled_, base::NotFatalUntil::M163);
   // The platform session id is only written once, when the platform session is
   // initialized, so it has to be carried over when the commands are rebuilt.
