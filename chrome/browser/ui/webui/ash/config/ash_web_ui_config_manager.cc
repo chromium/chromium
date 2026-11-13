@@ -464,10 +464,22 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                                       ChromeFilesInternalsUIDelegate>(),
       /*is_stateful=*/false);
   AddWebUIConfig(
-      MakeComponentConfigWithDelegate<file_manager::FileManagerUIConfig,
-                                      file_manager::FileManagerUI,
-                                      ChromeFileManagerUIDelegate>(),
-      /*is_stateful=*/false);
+      std::make_unique<file_manager::FileManagerUIConfig>(base::BindRepeating(
+          [](const ApplicationLocaleStorage* application_locale_storage,
+             const variations::VariationsService* variations_service,
+             content::WebUI* web_ui,
+             const GURL& url) -> std::unique_ptr<content::WebUIController> {
+            return std::make_unique<file_manager::FileManagerUI>(
+                CHECK_DEREF(application_locale_storage).GetTag(),
+                CHECK_DEREF(variations_service), web_ui,
+                std::make_unique<ChromeFileManagerUIDelegate>(web_ui));
+          },
+          base::Unretained(&application_locale_storage_.get()),
+          // Safe because `CreateWebUIController()` is never called after
+          // `BrowserProcessImpl::StartTearDown()` destroys
+          // `VariationsService`.
+          base::Unretained(variations_service_.get()))),
+      /*is_stateful=*/true);
   AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>(),
                  /*is_stateful=*/false);
   AddWebUIConfig(std::make_unique<FocusModeUIConfig>(), /*is_stateful=*/false);

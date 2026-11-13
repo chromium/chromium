@@ -70,8 +70,11 @@ bool FileManagerUIConfig::IsWebUIEnabled(
          IsKioskSession();
 }
 
-FileManagerUI::FileManagerUI(content::WebUI* web_ui,
-                             std::unique_ptr<FileManagerUIDelegate> delegate)
+FileManagerUI::FileManagerUI(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
+    content::WebUI* web_ui,
+    std::unique_ptr<FileManagerUIDelegate> delegate)
     : MojoWebDialogUI(web_ui), delegate_(std::move(delegate)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -87,15 +90,19 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
 
   delegate_->ShouldPollDriveHostedPinStates(true);
 
-  CreateAndAddTrustedAppDataSource(web_ui, window_counter_);
+  CreateAndAddTrustedAppDataSource(app_locale, variations_service, web_ui,
+                                   window_counter_);
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
   // Add a handler to provide pluralized strings.
   web_ui->AddMessageHandler(delegate_->GetPluralStringHandler());
 }
 
-void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
-                                                     int window_number) {
+void FileManagerUI::CreateAndAddTrustedAppDataSource(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
+    content::WebUI* web_ui,
+    int window_number) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
@@ -109,7 +116,8 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();
-  base::DictValue dict = delegate_->GetLoadTimeData();
+  base::DictValue dict =
+      delegate_->GetLoadTimeData(app_locale, variations_service);
   dict.Set("WINDOW_NUMBER", window_number);
   source->AddLocalizedStrings(dict);
   source->UseStringsJs();

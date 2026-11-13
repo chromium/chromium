@@ -8,6 +8,14 @@
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash {
 
 // Delegate to expose //chrome services to //components FileManagerUI.
@@ -16,7 +24,9 @@ class FileManagerUIDelegate {
   virtual ~FileManagerUIDelegate() = default;
 
   // Populates (writes) load time data to the source.
-  virtual base::DictValue GetLoadTimeData() const = 0;
+  virtual base::DictValue GetLoadTimeData(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service) const = 0;
 
   // Get a PluralStringHandler to populate plural strings to the source.
   virtual std::unique_ptr<content::WebUIMessageHandler> GetPluralStringHandler()

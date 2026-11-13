@@ -28,7 +28,9 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   // Fetches a map that maps message IDs to actual strings shown to the user.
   // Extends the map with properties used by the files app, such as which
   // features are enabled. Returns the populated map to the caller.
-  base::DictValue GetLoadTimeData() const override;
+  base::DictValue GetLoadTimeData(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service) const override;
 
   // Returns a PluralStringHandler which has localized plural strings inside.
   std::unique_ptr<content::WebUIMessageHandler> GetPluralStringHandler()

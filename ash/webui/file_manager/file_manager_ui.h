@@ -18,6 +18,14 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash {
 namespace file_manager {
 
@@ -37,7 +45,11 @@ class FileManagerUIConfig : public SystemWebAppUIConfig<FileManagerUI> {
 class FileManagerUI : public ui::MojoWebDialogUI,
                       public mojom::PageHandlerFactory {
  public:
-  FileManagerUI(content::WebUI* web_ui,
+  // `app_locale` and `variations_service` are used only during construction
+  // and are not retained.
+  FileManagerUI(const base::i18n::LanguageTag& app_locale,
+                const variations::VariationsService& variations_service,
+                content::WebUI* web_ui,
                 std::unique_ptr<FileManagerUIDelegate> delegate);
   ~FileManagerUI() override;
 
@@ -52,8 +64,11 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   static int GetNumInstances();
 
  private:
-  void CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
-                                        int window_number);
+  void CreateAndAddTrustedAppDataSource(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service,
+      content::WebUI* web_ui,
+      int window_number);
 
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
