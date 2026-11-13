@@ -318,7 +318,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
         SetEnd(start()->CreateNextCharacterPosition(
             {AXBoundaryBehavior::kCrossBoundary,
              AXBoundaryDetection::kDontCheckInitialPosition}));
-        CHECK(!end()->IsNullPosition(), base::NotFatalUntil::M163);
+        // TODO(crbug.com/582998459): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(!end()->IsNullPosition());
       }
 
       AXPositionInstance normalized_start = start()->Clone();
@@ -439,8 +441,10 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     default:
       return UIA_E_NOTSUPPORTED;
   }
-  CHECK(!start()->IsNullPosition(), base::NotFatalUntil::M163);
-  CHECK(!end()->IsNullPosition(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/582998459): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!start()->IsNullPosition());
+  DCHECK(!end()->IsNullPosition());
   return S_OK;
 }
 
