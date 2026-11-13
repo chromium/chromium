@@ -501,26 +501,26 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicActivityHubTest,
   ASSERT_TRUE(primary_button);
   const std::u16string default_label(primary_button->GetText());
   ASSERT_FALSE(default_label.empty());
-  auto* task_icon = toolbar_view->glic_actor_task_icon();
-  ASSERT_TRUE(task_icon);
+  auto* secondary_button = toolbar_view->glic_secondary_button();
+  ASSERT_TRUE(secondary_button);
 
   // 1. Show kChevron: primary button stays expanded, secondary is focusable.
   GlicSplitButtonUiState state;
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kChevron;
   UpdateGlicSplitButtonUi(state);
-  EXPECT_TRUE(task_icon->GetVisible());
-  EXPECT_TRUE(task_icon->IsFocusable());
-  EXPECT_EQ(task_icon->GetText(), u"");
+  EXPECT_TRUE(secondary_button->GetVisible());
+  EXPECT_TRUE(secondary_button->IsFocusable());
+  EXPECT_EQ(secondary_button->GetText(), u"");
   EXPECT_EQ(primary_button->GetText(), default_label);
 
   // 2. Transition from kChevron to kText with label collapses primary button.
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
   state.secondary_label = u"Check task";
   UpdateGlicSplitButtonUi(state);
-  EXPECT_TRUE(task_icon->GetVisible());
-  EXPECT_TRUE(task_icon->IsFocusable());
-  EXPECT_TRUE(toolbar_view->GetIsShowingGlicActorTaskIconNudge());
-  EXPECT_EQ(task_icon->GetText(), u"Check task");
+  EXPECT_TRUE(secondary_button->GetVisible());
+  EXPECT_TRUE(secondary_button->IsFocusable());
+  EXPECT_TRUE(toolbar_view->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(secondary_button->GetText(), u"Check task");
   EXPECT_EQ(primary_button->GetText(), u"");
 
   // 3. Transition from kText back to kChevron clears the secondary label,
@@ -528,16 +528,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicActivityHubTest,
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kChevron;
   state.secondary_label = u"";
   UpdateGlicSplitButtonUi(state);
-  EXPECT_TRUE(task_icon->GetVisible());
-  EXPECT_TRUE(task_icon->IsFocusable());
-  EXPECT_FALSE(toolbar_view->GetIsShowingGlicActorTaskIconNudge());
-  EXPECT_EQ(task_icon->GetText(), u"");
+  EXPECT_TRUE(secondary_button->GetVisible());
+  EXPECT_TRUE(secondary_button->IsFocusable());
+  EXPECT_FALSE(toolbar_view->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(secondary_button->GetText(), u"");
   EXPECT_EQ(primary_button->GetText(), default_label);
 
   // 4. Transition from kChevron to kNone hides the secondary button.
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kNone;
   UpdateGlicSplitButtonUi(state);
-  EXPECT_FALSE(task_icon->GetVisible());
+  EXPECT_FALSE(secondary_button->GetVisible());
 }
 
 }  // namespace

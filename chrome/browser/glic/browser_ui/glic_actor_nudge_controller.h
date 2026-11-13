@@ -53,10 +53,10 @@ class GlicActorNudgeController {
   void UpdateCurrentActorNudgeState();
 
  protected:
-  virtual void ShowGlicActorTaskIcon();
-  virtual void HideGlicActorTaskIcon();
-  virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
-  virtual void TriggerGlicActorNudge(const std::u16string& nudge_label);
+  virtual void ShowGlicSecondaryButton();
+  virtual void HideGlicSecondaryButton();
+  virtual void SetGlicSecondaryNudgeLabel(const std::u16string& nudge_label);
+  virtual void TriggerGlicSecondaryNudge(const std::u16string& nudge_label);
   virtual void ShowBubble();
   virtual void CloseBubble();
   virtual bool IsShowingNudge();

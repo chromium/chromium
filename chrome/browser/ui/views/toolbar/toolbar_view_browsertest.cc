@@ -825,7 +825,7 @@ class ToolbarViewGlicAvatarCrashTest
 };
 
 IN_PROC_BROWSER_TEST_P(ToolbarViewGlicAvatarCrashTest,
-                       ShowAndHideGlicActorTaskIcon) {
+                       ShowAndHideGlicSecondaryButton) {
   ToolbarView* toolbar_view =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
 
@@ -864,33 +864,33 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewGlicAvatarCrashTest,
   };
   expect_expected_slot();
 
-  auto* task_icon = toolbar_view->glic_actor_task_icon();
-  ASSERT_TRUE(task_icon);
-  EXPECT_FALSE(task_icon->GetVisible());
+  auto* secondary_button = toolbar_view->glic_secondary_button();
+  ASSERT_TRUE(secondary_button);
+  EXPECT_FALSE(secondary_button->GetVisible());
 
-  // Showing the Glic actor task icon reparents `glic_button` into the actor
+  // Showing the Glic secondary button reparents `glic_button` into the actor
   // buttons container.
-  toolbar_view->ShowGlicActorTaskIcon();
-  EXPECT_TRUE(task_icon->GetVisible());
-  EXPECT_TRUE(task_icon->parent()->GetVisible());
+  toolbar_view->ShowGlicSecondaryButton();
+  EXPECT_TRUE(secondary_button->GetVisible());
+  EXPECT_TRUE(secondary_button->parent()->GetVisible());
   EXPECT_EQ(toolbar_view->GetGlicButton(), glic_button);
-  EXPECT_EQ(glic_button->parent(), task_icon->parent());
+  EXPECT_EQ(glic_button->parent(), secondary_button->parent());
   EXPECT_NE(glic_button->parent(), toolbar_view);
   EXPECT_FALSE(toolbar_view->GetIndexOf(glic_button).has_value());
 
-  // Hiding the Glic actor task icon must not crash when `avatar_` is null and
+  // Hiding the Glic secondary button must not crash when `avatar_` is null and
   // must restore `glic_button` to its original toolbar index.
-  toolbar_view->HideGlicActorTaskIcon();
-  EXPECT_FALSE(task_icon->GetVisible());
-  EXPECT_FALSE(task_icon->parent()->GetVisible());
+  toolbar_view->HideGlicSecondaryButton();
+  EXPECT_FALSE(secondary_button->GetVisible());
+  EXPECT_FALSE(secondary_button->parent()->GetVisible());
   EXPECT_TRUE(glic_button->GetVisible());
   EXPECT_EQ(toolbar_view->GetGlicButton(), glic_button);
   EXPECT_EQ(glic_button->parent(), toolbar_view);
   expect_expected_slot();
 
-  // Re-running `FinalizeHideGlicActorTaskIcon()` when `glic_button` is already
-  // parented to `toolbar_view` must remain a no-op on child ordering.
-  toolbar_view->FinalizeHideGlicActorTaskIcon();
+  // Re-running `FinalizeHideGlicSecondaryButton()` when `glic_button` is
+  // already parented to `toolbar_view` must remain a no-op on child ordering.
+  toolbar_view->FinalizeHideGlicSecondaryButton();
   expect_expected_slot();
 }
 

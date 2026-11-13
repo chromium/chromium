@@ -227,8 +227,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // services disconnect.
   void DestroyWebUIToolbarWebContents();
 
-  glic::ToolbarGlicActorTaskIcon* glic_actor_task_icon() {
-    return glic_actor_task_icon_;
+  glic::ToolbarGlicActorTaskIcon* glic_secondary_button() {
+    return glic_secondary_button_;
   }
 
   // LocationBarView::Delegate:
@@ -266,20 +266,20 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override;
   void OnHideGlicNudgeUI() override;
   bool GetIsShowingGlicNudge() override;
-  void ShowGlicActorTaskIcon() override;
-  void HideGlicActorTaskIcon() override;
-  bool GetIsShowingGlicActorTaskIconNudge() override;
-  void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override;
-  void TriggerGlicActorNudge(const std::u16string& nudge_label) override;
-  void SetGlicActorNudgePressedState(bool pressed) override;
+  void ShowGlicSecondaryButton() override;
+  void HideGlicSecondaryButton() override;
+  bool GetIsShowingGlicSecondaryNudge() override;
+  void SetGlicSecondaryNudgeLabel(const std::u16string& nudge_label) override;
+  void TriggerGlicSecondaryNudge(const std::u16string& nudge_label) override;
+  void SetGlicSecondaryButtonPressedState(bool pressed) override;
   void UpdateGlicSplitButtonUi(
       const glic::GlicSplitButtonUiState& state) override;
   void ShowActivityListBubble() override;
   void CloseActivityListBubble() override;
   bool IsActivityListBubbleShowing() override;
 
-  // Updates glic button parenting after hiding glic actor task icon.
-  void FinalizeHideGlicActorTaskIcon();
+  // Updates glic button parenting after hiding glic secondary button.
+  void FinalizeHideGlicSecondaryButton();
 
  protected:
   // This controls Toolbar, LocationBar and CustomTabBar visibility.
@@ -388,16 +388,16 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnGlicButtonAnimationEnded();
   void ShowToolbarNudge(glic::GlicButtonInterface* button);
   void HideToolbarNudge(glic::GlicButtonInterface* button);
-  void ShowGlicActorNudge(const std::u16string nudge_label);
+  void ShowGlicSecondaryNudge(const std::u16string nudge_label);
   void ExecuteShowToolbarNudge(glic::GlicButtonInterface* button);
   void ExecuteHideToolbarNudge(glic::GlicButtonInterface* button);
-  void UpdateGlicActorVisibility();
+  void UpdateGlicSecondaryButtonVisibility();
   void UpdateGlicButtonVisibility();
-  void SetGlicActorShowState(bool show);
+  void SetGlicSecondaryButtonShowState(bool show);
   void UpdateGlicActorButtonContainerBorders();
 
-  std::unique_ptr<glic::ToolbarGlicActorTaskIcon> CreateGlicActorTaskIcon();
-  void OnGlicActorTaskIconClicked();
+  std::unique_ptr<glic::ToolbarGlicActorTaskIcon> CreateGlicSecondaryButton();
+  void OnGlicSecondaryButtonClicked();
   std::unique_ptr<GlicAndActorButtonsContainer>
   CreateGlicActorButtonContainer();
 
@@ -445,7 +445,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_view_ = nullptr;
   // An alias for `glic_button_view_` or `toolbar_webview_->GetGlicControl()`.
   raw_ptr<glic::ToolbarGlicButtonInterface> glic_button_ = nullptr;
-  raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
+  raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_secondary_button_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
   std::unique_ptr<glic::GlicActivityListBubble> activity_list_bubble_;
 
@@ -510,7 +510,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   bool should_display_vertical_tabs_ = false;
   bool should_show_glic_button_ = false;
-  bool should_show_glic_actor_ = false;
+  bool should_show_glic_secondary_button_ = false;
 
   bool was_mouse_down_ = false;
 };

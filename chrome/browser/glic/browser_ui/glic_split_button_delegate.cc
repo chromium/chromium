@@ -28,16 +28,17 @@ void GlicSplitButtonDelegate::OnHideGlicNudgeUI() {}
 bool GlicSplitButtonDelegate::GetIsShowingGlicNudge() {
   return false;
 }
-void GlicSplitButtonDelegate::ShowGlicActorTaskIcon() {}
-void GlicSplitButtonDelegate::HideGlicActorTaskIcon() {}
-bool GlicSplitButtonDelegate::GetIsShowingGlicActorTaskIconNudge() {
+void GlicSplitButtonDelegate::ShowGlicSecondaryButton() {}
+void GlicSplitButtonDelegate::HideGlicSecondaryButton() {}
+bool GlicSplitButtonDelegate::GetIsShowingGlicSecondaryNudge() {
   return false;
 }
-void GlicSplitButtonDelegate::SetGlicActorNudgeLabel(
+void GlicSplitButtonDelegate::SetGlicSecondaryNudgeLabel(
     const std::u16string& nudge_label) {}
-void GlicSplitButtonDelegate::TriggerGlicActorNudge(
+void GlicSplitButtonDelegate::TriggerGlicSecondaryNudge(
     const std::u16string& nudge_label) {}
-void GlicSplitButtonDelegate::SetGlicActorNudgePressedState(bool pressed) {}
+void GlicSplitButtonDelegate::SetGlicSecondaryButtonPressedState(bool pressed) {
+}
 void GlicSplitButtonDelegate::UpdateGlicSplitButtonUi(
     const GlicSplitButtonUiState& state) {}
 void GlicSplitButtonDelegate::ShowActivityListBubble() {}

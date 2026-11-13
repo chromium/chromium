@@ -83,32 +83,32 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
         AttachCurrentThread(), j_delegate_);
   }
 
-  void ShowGlicActorTaskIcon() override {
+  void ShowGlicSecondaryButton() override {
     Java_GlicSplitButtonDelegateBridge_showGlicActorTaskIcon(
         AttachCurrentThread(), j_delegate_);
   }
 
-  void HideGlicActorTaskIcon() override {
+  void HideGlicSecondaryButton() override {
     Java_GlicSplitButtonDelegateBridge_hideGlicActorTaskIcon(
         AttachCurrentThread(), j_delegate_);
   }
 
-  bool GetIsShowingGlicActorTaskIconNudge() override {
+  bool GetIsShowingGlicSecondaryNudge() override {
     return Java_GlicSplitButtonDelegateBridge_getIsShowingGlicActorTaskIconNudge(
         AttachCurrentThread(), j_delegate_);
   }
 
-  void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override {
+  void SetGlicSecondaryNudgeLabel(const std::u16string& nudge_label) override {
     Java_GlicSplitButtonDelegateBridge_setGlicActorNudgeLabel(
         AttachCurrentThread(), j_delegate_, nudge_label);
   }
 
-  void TriggerGlicActorNudge(const std::u16string& nudge_label) override {
+  void TriggerGlicSecondaryNudge(const std::u16string& nudge_label) override {
     Java_GlicSplitButtonDelegateBridge_triggerGlicActorNudge(
         AttachCurrentThread(), j_delegate_, nudge_label);
   }
 
-  void SetGlicActorNudgePressedState(bool pressed) override {
+  void SetGlicSecondaryButtonPressedState(bool pressed) override {
     Java_GlicSplitButtonDelegateBridge_setGlicActorNudgePressedState(
         AttachCurrentThread(), j_delegate_, pressed);
   }

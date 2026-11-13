@@ -109,8 +109,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
         tab_strip_action_container()->GetGlicButtonForTesting());
   }
 
-  glic::TabStripGlicActorTaskIcon* GlicActorTaskIcon() {
-    return tab_strip_action_container()->glic_actor_task_icon();
+  glic::TabStripGlicActorTaskIcon* GlicSecondaryButton() {
+    return tab_strip_action_container()->glic_secondary_button();
   }
 
   views::FlexLayoutView* GlicActorButtonContainer() {
@@ -144,8 +144,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   void OnButtonClicked(TabStripNudgeButton* button) {
     if (button == GlicNudgeButton()) {
       tab_strip_action_container()->OnGlicButtonClicked();
-    } else if (button == GlicActorTaskIcon()) {
-      tab_strip_action_container()->OnGlicActorTaskIconClicked();
+    } else if (button == GlicSecondaryButton()) {
+      tab_strip_action_container()->OnGlicSecondaryButtonClicked();
     }
   }
   void OnButtonDismissed(TabStripNudgeButton* button) {
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicActorCheckTasksNudge) {
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  EXPECT_EQ(GlicSecondaryButton()->GetText(), std::u16string());
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
@@ -321,8 +321,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   actor_service()->GetTask(task_id)->Pause(/*from_actor=*/true);
   EXPECT_TRUE(
-      RunUntil([&]() { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+      RunUntil([&]() { return GlicSecondaryButton()->GetIsShowingNudge(); }));
+  EXPECT_EQ(GlicSecondaryButton()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
@@ -331,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor_service()->GetTask(task_id)->Resume();
 
   EXPECT_TRUE(
-      RunUntil([&]() { return !GlicActorTaskIcon()->GetIsShowingNudge(); }));
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+      RunUntil([&]() { return !GlicSecondaryButton()->GetIsShowingNudge(); }));
+  EXPECT_EQ(GlicSecondaryButton()->GetText(), std::u16string());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -343,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor_service()->GetTask(task_id)->Pause(/*from_actor=*/true);
 
   EXPECT_TRUE(
-      RunUntil([&]() { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+      RunUntil([&]() { return GlicSecondaryButton()->GetIsShowingNudge(); }));
+  EXPECT_EQ(GlicSecondaryButton()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor_service()->GetTask(task_id)->Resume();
 
   EXPECT_TRUE(
-      RunUntil([&]() { return !GlicActorTaskIcon()->GetIsShowingNudge(); }));
+      RunUntil([&]() { return !GlicSecondaryButton()->GetIsShowingNudge(); }));
   // Ensure the shown histogram was not recorded as the default state doesn't
   // show a nudge.
   EXPECT_EQ(
@@ -362,15 +362,15 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       0);
   // Check that Task Icon remains in the GlicActorButtonContainer.
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(3));
-  EXPECT_EQ(GlicActorTaskIcon(), GlicActorButtonContainer()->children()[2]);
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
-  EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+  EXPECT_EQ(GlicSecondaryButton(), GlicActorButtonContainer()->children()[2]);
+  EXPECT_EQ(GlicSecondaryButton()->GetText(), std::u16string());
+  EXPECT_FALSE(GlicSecondaryButton()->GetIsShowingNudge());
 }
 
 IN_PROC_BROWSER_TEST_F(
     TabStripActionContainerBrowserTest,
     GlicActorNudgeDoesNotRetriggerOnSingleTaskNeedsAttentionToMultipleTextChange) {
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  EXPECT_EQ(GlicSecondaryButton()->GetText(), std::u16string());
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
@@ -379,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(
   actor_service()->GetTask(task_id)->Pause(/*from_actor=*/true);
 
   EXPECT_TRUE(
-      RunUntil([&]() { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+      RunUntil([&]() { return GlicSecondaryButton()->GetIsShowingNudge(); }));
+  EXPECT_EQ(GlicSecondaryButton()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
@@ -394,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(RunUntil(
       [&]() { return manager->actor_task_list_bubble_rows().size() == 2; }));
   EXPECT_TRUE(
-      RunUntil([&]() { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+      RunUntil([&]() { return GlicSecondaryButton()->GetIsShowingNudge(); }));
+  EXPECT_EQ(GlicSecondaryButton()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 2));
 }
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        GlicActorCompleteShowsNudge) {
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  EXPECT_EQ(GlicSecondaryButton()->GetText(), std::u16string());
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
@@ -417,12 +417,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 
   ASSERT_TRUE(RunUntil([&]() {
-    return GlicActorTaskIcon()->GetText() ==
+    return GlicSecondaryButton()->GetText() ==
            l10n_util::GetPluralStringFUTF16(
                IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, 1);
   }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  EXPECT_TRUE(GlicSecondaryButton()->GetIsShowingNudge());
   EXPECT_EQ(histogram_tester.GetBucketCount(
                 "Actor.Ui.GlobalTaskIndicator.Nudge.Shown",
                 ActorTaskNudgeState::Text::kCompleteTasks),
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   manager->UpdateTaskIconComponents(task_id);
 
   EXPECT_TRUE(
-      RunUntil([&]() { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
+      RunUntil([&]() { return GlicSecondaryButton()->GetIsShowingNudge(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   }));
 
   base::UserActionTester user_action_tester;
-  OnButtonClicked(GlicActorTaskIcon());
+  OnButtonClicked(GlicSecondaryButton());
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
 

@@ -201,7 +201,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
       case GlicSplitButtonUiState::SecondaryAction::kChevron:
         this->SetVectorIcon(vector_icons::kKeyboardArrowDownIcon);
         SetTaskIconToDefault();
-        delegate.ShowGlicActorTaskIcon();
+        delegate.ShowGlicSecondaryButton();
         break;
       case GlicSplitButtonUiState::SecondaryAction::kText:
         // TODO(b/582808470): Plumb per-alert secondary icons (e.g. chat spark
@@ -209,15 +209,15 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
         this->SetVectorIcon(kCursorSparkIcon);
         if (state.secondary_label.empty()) {
           SetTaskIconToDefault();
-          delegate.ShowGlicActorTaskIcon();
-        } else if (delegate.GetIsShowingGlicActorTaskIconNudge()) {
-          delegate.SetGlicActorNudgeLabel(state.secondary_label);
+          delegate.ShowGlicSecondaryButton();
+        } else if (delegate.GetIsShowingGlicSecondaryNudge()) {
+          delegate.SetGlicSecondaryNudgeLabel(state.secondary_label);
         } else {
-          delegate.TriggerGlicActorNudge(state.secondary_label);
+          delegate.TriggerGlicSecondaryNudge(state.secondary_label);
         }
         break;
       case GlicSplitButtonUiState::SecondaryAction::kNone:
-        delegate.HideGlicActorTaskIcon();
+        delegate.HideGlicSecondaryButton();
         break;
     }
   }

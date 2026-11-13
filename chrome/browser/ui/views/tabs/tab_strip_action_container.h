@@ -107,8 +107,8 @@ class TabStripActionContainer : public views::View,
   views::LabelButton* GetGlicButtonForTesting() { return glic_button_; }
   views::Separator* GetSeparatorForTesting() { return separator_; }
 
-  glic::TabStripGlicActorTaskIcon* glic_actor_task_icon() {
-    return glic_actor_task_icon_;
+  glic::TabStripGlicActorTaskIcon* glic_secondary_button() {
+    return glic_secondary_button_;
   }
 
   // views::View:
@@ -123,12 +123,12 @@ class TabStripActionContainer : public views::View,
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override;
   void OnHideGlicNudgeUI() override;
   bool GetIsShowingGlicNudge() override;
-  void ShowGlicActorTaskIcon() override;
-  void HideGlicActorTaskIcon() override;
-  bool GetIsShowingGlicActorTaskIconNudge() override;
-  void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override;
-  void TriggerGlicActorNudge(const std::u16string& nudge_label) override;
-  void SetGlicActorNudgePressedState(bool pressed) override;
+  void ShowGlicSecondaryButton() override;
+  void HideGlicSecondaryButton() override;
+  bool GetIsShowingGlicSecondaryNudge() override;
+  void SetGlicSecondaryNudgeLabel(const std::u16string& nudge_label) override;
+  void TriggerGlicSecondaryNudge(const std::u16string& nudge_label) override;
+  void SetGlicSecondaryButtonPressedState(bool pressed) override;
   void UpdateGlicSplitButtonUi(
       const glic::GlicSplitButtonUiState& state) override;
   void ShowActivityListBubble() override;
@@ -136,7 +136,7 @@ class TabStripActionContainer : public views::View,
   bool IsActivityListBubbleShowing() override;
 
   views::FlexLayoutView* glic_actor_button_container();
-  void ShowGlicActorNudge(const std::u16string& nudge_label);
+  void ShowGlicSecondaryNudge(const std::u16string& nudge_label);
 
   void UpdateButtonBorders(gfx::Insets button_insets);
 
@@ -156,8 +156,8 @@ class TabStripActionContainer : public views::View,
   void OnGlicButtonDismissed();
   void OnGlicButtonAnimationEnded();
 
-  std::unique_ptr<glic::TabStripGlicActorTaskIcon> CreateGlicActorTaskIcon();
-  void OnGlicActorTaskIconClicked();
+  std::unique_ptr<glic::TabStripGlicActorTaskIcon> CreateGlicSecondaryButton();
+  void OnGlicSecondaryButtonClicked();
 
   // TODO(crbug.com/431015299): Clean up when GlicButton and GlicActorTaskIcon
   // have been combined.
@@ -193,11 +193,11 @@ class TabStripActionContainer : public views::View,
 
   bool ButtonOwnsAnimation(const TabStripNudgeButton* button) const;
 
-  // Helper to handles teardown logic when the task icon is fully gone.
-  void FinalizeHideGlicActorTaskIcon();
+  // Helper to handles teardown logic when the secondary button is fully gone.
+  void FinalizeHideGlicSecondaryButton();
 
-  // Update visibility of glic actor button
-  void UpdateGlicActorVisibility(bool should_show);
+  // Update visibility of glic secondary button
+  void UpdateGlicSecondaryButtonVisibility(bool should_show);
 
   // Update visibility of glic button and action container
   void UpdateGlicButtonVisibility(bool should_show);
@@ -212,7 +212,7 @@ class TabStripActionContainer : public views::View,
 
   raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::TabStripGlicButton> glic_button_ = nullptr;
-  raw_ptr<glic::TabStripGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
+  raw_ptr<glic::TabStripGlicActorTaskIcon> glic_secondary_button_ = nullptr;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
   base::WeakPtr<glic::GlicSplitButtonController> glic_split_button_controller_;

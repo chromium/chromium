@@ -50,26 +50,26 @@ class GlicSplitButtonDelegate
   // Called when we want to check if the UI is currently showing.
   virtual bool GetIsShowingGlicNudge();
 
-  // Methods related to actor task icon visibility, nudge, highlight, and
-  // task list bubble.
+  // Methods related to secondary button visibility, nudge, highlight, and
+  // activity list bubble.
 
-  // Show the actor icon with no nudge text.
-  virtual void ShowGlicActorTaskIcon();
+  // Show the secondary button with no nudge text.
+  virtual void ShowGlicSecondaryButton();
 
-  // Hide the actor icon.
-  virtual void HideGlicActorTaskIcon();
+  // Hide the secondary button.
+  virtual void HideGlicSecondaryButton();
 
-  // Returns true if the actor icon is showing with nudge text.
-  virtual bool GetIsShowingGlicActorTaskIconNudge();
+  // Returns true if the secondary button is showing with nudge text.
+  virtual bool GetIsShowingGlicSecondaryNudge();
 
-  // Update the nudge label.
-  virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
+  // Update the secondary nudge label.
+  virtual void SetGlicSecondaryNudgeLabel(const std::u16string& nudge_label);
 
-  // Show the actor nudge with text.
-  virtual void TriggerGlicActorNudge(const std::u16string& nudge_label);
+  // Show the secondary nudge with text.
+  virtual void TriggerGlicSecondaryNudge(const std::u16string& nudge_label);
 
-  // Update the nudge button "pressed state".
-  virtual void SetGlicActorNudgePressedState(bool pressed);
+  // Update the secondary button "pressed state".
+  virtual void SetGlicSecondaryButtonPressedState(bool pressed);
 
   // Update the secondary split button UI state.
   virtual void UpdateGlicSplitButtonUi(const GlicSplitButtonUiState& state);

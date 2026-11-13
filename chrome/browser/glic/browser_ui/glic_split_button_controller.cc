@@ -254,7 +254,7 @@ void GlicSplitButtonController::UpdateSplitButtonState() {
           GlicSplitButtonUiState::SecondaryAction::kText &&
       !current_ui_state_.secondary_label.empty()) {
     if (auto* delegate = GetActiveDelegate();
-        delegate && delegate->GetIsShowingGlicActorTaskIconNudge()) {
+        delegate && delegate->GetIsShowingGlicSecondaryNudge()) {
       if (auto nudge_state = ToActorTaskNudgeStateForMetrics(
               glic_service_->activity_manager()
                   .GetCurrentActivityNudgeState()
@@ -340,7 +340,7 @@ void GlicSplitButtonController::OnActivityNudgeStateChanged(
 void GlicSplitButtonController::OnBubbleVisibilityChange(bool is_bubble_open) {
   CallOnBoth(base::BindRepeating(
       [](bool is_bubble_open, GlicSplitButtonDelegate& delegate) {
-        delegate.SetGlicActorNudgePressedState(is_bubble_open);
+        delegate.SetGlicSecondaryButtonPressedState(is_bubble_open);
       },
       is_bubble_open));
 }
