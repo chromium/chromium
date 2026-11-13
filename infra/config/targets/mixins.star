@@ -191,6 +191,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chrome-redfin-fleet-pool",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "redfin",
+            "device_os": "T",
+            "pool": "chrome.tests",
+            "os": "Android",
+        },
+    ),
+)
+
+targets.mixin(
     name = "chrome-swarming-pool",
     swarming = targets.swarming(
         dimensions = {
