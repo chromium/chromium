@@ -18,9 +18,7 @@
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,6 +37,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
@@ -402,16 +404,14 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                     ntp_url, profile_.get()));
 }
 
-// ChromeOS and Android don't have the System Profile.
-// TODO(crbug.com/531575122): Run this test with TopChromeWebUIProfile so that
-// it also covers ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-// Overrides are ignored for profiles with extensions disabled (e.g., System
-// Profile).
-TEST_F(ExtensionWebUITest, OverridesIgnoredWhenExtensionsDisabled) {
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager.SetUp());
-  TestingProfile* system_profile = profile_manager.CreateSystemProfile();
+// TopChromeWebUIProfile isn't available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// The overrides pref isn't read for profiles with extensions disabled (e.g.,
+// TopChromeWebUIProfile).
+TEST_F(ExtensionWebUITest, HandlersSkipPrefWhenExtensionsDisabled) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
 
   const char kOverrideResource[] = "1.html";
   scoped_refptr<const Extension> extension =
@@ -433,22 +433,19 @@ TEST_F(ExtensionWebUITest, OverridesIgnoredWhenExtensionsDisabled) {
       &url, profile_.get()));
   EXPECT_EQ(kBookmarksUrl, url);
 
-  // Extensions are disabled for the System Profile, so it can't have overrides
-  // in practice. Add the override directly to check that the handlers would
-  // ignore it even if it did. With no override, they would return false even
-  // without the extensions-disabled check.
-  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
-      system_profile, URLOverrides::GetChromeURLOverrides(extension.get()));
+  // Extensions are disabled for TopChromeWebUIProfile, and it doesn't register
+  // the overrides pref. The handlers should return false without reading the
+  // pref, since reading an unregistered pref crashes.
   url = kBookmarksUrl;
-  EXPECT_FALSE(
-      ExtensionUrlOverrides::HandleChromeURLOverride(&url, system_profile));
+  EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverride(
+      &url, top_chrome_webui_profile));
   EXPECT_EQ(kBookmarksUrl, url);
   url = kOverrideUrl;
   EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
-      &url, system_profile));
+      &url, top_chrome_webui_profile));
   EXPECT_EQ(kOverrideUrl, url);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ExtensionWebUIOverrideURLTest : public ExtensionServiceTestWithInstall {
  public:

@@ -2147,6 +2147,10 @@ source_set("unit_tests") {
     deps += [ "//components/search" ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
+  }
+
   if (!is_chromeos) {
     sources += [ "preinstalled_extensions_unittest.cc" ]
   }
