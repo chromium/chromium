@@ -260,6 +260,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar-shared:content_paste_off", IconType::kIconSet}},
           {{&vector_icons::kContentPasteOldIcon},
            {"webui-toolbar-shared:content_paste", IconType::kIconSet}},
+          {{&vector_icons::kCropAutoIcon},
+           {"webui-toolbar:crop_auto", IconType::kIconSet}},
           {{&vector_icons::kDangerousChromeRefreshOldIcon},
            {"webui-toolbar:dangerous_filled", IconType::kIconSet}},
           {{&vector_icons::kDangerousFilledIcon},

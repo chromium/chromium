@@ -389,6 +389,10 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : vector_icons::kMicChromeRefreshOldIcon));
 #endif
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar;
+    case kActionGlicSmartSelectionToolbar:
+      CHECK_EQ(icon, &vector_icons::kCropAutoIcon);
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kGlicSmartSelectionToolbar;
     case kActionSidePanelShowHistory:
       CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
                            ? vector_icons::kHistoryIcon
@@ -480,6 +484,8 @@ std::optional<actions::ActionId> PinnedToolbarActionToActionId(
       return kActionShowAiOverlayDialog;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar:
       return kActionTtcToolbar;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::kGlicSmartSelectionToolbar:
+      return kActionGlicSmartSelectionToolbar;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowHistory:
       return kActionSidePanelShowHistory;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kShowChromeLabs:

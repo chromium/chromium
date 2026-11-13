@@ -168,6 +168,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionTtcElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kPinnedToolbarActionGlicSmartSelectionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceInsightsChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingChipElementId);

@@ -774,6 +774,10 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
       action_id = kActionTtcToolbar;
       break;
     case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionGlicSmartSelection:
+      action_id = kActionGlicSmartSelectionToolbar;
+      break;
+    case toolbar_ui_api::mojom::ContextMenuType::
         kPinnedActionSidePanelShowHistory:
       action_id = kActionSidePanelShowHistory;
       break;

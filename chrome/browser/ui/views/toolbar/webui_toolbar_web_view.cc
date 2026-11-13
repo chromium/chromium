@@ -803,6 +803,8 @@ void WebUIToolbarWebView::HandleContextMenu(
         kPinnedActionShowAiOverlayDialog:
     case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTtcToolbar:
     case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionGlicSmartSelection:
+    case toolbar_ui_api::mojom::ContextMenuType::
         kPinnedActionSidePanelShowHistory:
     case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowChromeLabs:
     case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSidePanelShowGlic:

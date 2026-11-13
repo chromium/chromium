@@ -23,6 +23,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
@@ -1494,4 +1495,36 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsTtcBrowserTest,
               toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar);
   PinAction(kActionTtcToolbar,
             toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar);
+}
+
+class WebUIPinnedToolbarActionsSmartSelectionBrowserTest
+    : public WebUIPinnedToolbarActionsBrowserTest {
+ public:
+  WebUIPinnedToolbarActionsSmartSelectionBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicSmartSelectionToolbarButton,
+                                    features::kGlicSelectionOverlayPromptBox},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsSmartSelectionBrowserTest,
+                       AutoPinnedOnStartup) {
+  EXPECT_TRUE(model_->Contains(kActionGlicSmartSelectionToolbar));
+
+  EXPECT_TRUE(base::test::RunUntil([this]() {
+    return EvalJsOnPinnedAction(toolbar_ui_api::mojom::PinnedToolbarAction::
+                                    kGlicSmartSelectionToolbar,
+                                "return iconName || '';")
+               .ExtractString() == "webui-toolbar:crop_auto";
+  }));
+
+  UnpinAction(
+      kActionGlicSmartSelectionToolbar,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kGlicSmartSelectionToolbar);
+  PinAction(
+      kActionGlicSmartSelectionToolbar,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kGlicSmartSelectionToolbar);
 }

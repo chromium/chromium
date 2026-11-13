@@ -27,6 +27,8 @@ ui::ElementIdentifier GetElementIdentifierForAction(actions::ActionId id) {
       return kToolbarDownloadButtonElementId;
     case kActionTtcToolbar:
       return kPinnedToolbarActionTtcElementId;
+    case kActionGlicSmartSelectionToolbar:
+      return kPinnedToolbarActionGlicSmartSelectionElementId;
     default:
       return ui::ElementIdentifier();
   }

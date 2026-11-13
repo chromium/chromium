@@ -246,6 +246,8 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
         return ContextMenuType.kPinnedActionShowAiOverlayDialog;
       case PinnedToolbarAction.kTtcToolbar:
         return ContextMenuType.kPinnedActionTtcToolbar;
+      case PinnedToolbarAction.kGlicSmartSelectionToolbar:
+        return ContextMenuType.kPinnedActionGlicSmartSelection;
       case PinnedToolbarAction.kSidePanelShowHistory:
         return ContextMenuType.kPinnedActionSidePanelShowHistory;
       case PinnedToolbarAction.kShowChromeLabs:
