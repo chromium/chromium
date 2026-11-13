@@ -848,8 +848,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     }
 
     this.updateCursorPositionRequestId = requestAnimationFrame(() => {
-      this.$.cursorTooltip.style.transform =
-          `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      this.$.cursorTooltip.updatePosition(event.clientX, event.clientY);
       this.updateCursorPositionRequestId = undefined;
     });
   }
