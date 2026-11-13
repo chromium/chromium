@@ -109,7 +109,9 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      * @return the {@link WebPageStation} representing the search results page
      */
     public WebPageStation clickToolbarMicToSearchPage(String query) {
-        return optionalToolbarMicButtonElement.clickTo().arriveAt(createSearchPageStation(query));
+        return toolbar.optionalToolbarMicButtonElement
+                .clickTo()
+                .arriveAt(createSearchPageStation(query));
     }
 
     /** Returns a {@link WebPageStation} expecting a search results page for the given query. */
@@ -123,14 +125,14 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
-        return tabSwitcherButtonElement
+        return toolbar.tabSwitcherButtonElement
                 .longPressTo()
                 .enterFacility(new TabSwitcherActionMenuFacility());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<CtaPageStation> openGenericAppMenu() {
-        return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
+        return toolbar.menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
     }
 
     /**
@@ -141,7 +143,9 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         assert DeviceInfo.isDesktop() : "The account menu is only available on desktop";
         assert SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
                 : "The account menu requires SIGNIN_BUTTON_PROFILE_MENU";
-        return signinButtonElement.clickTo().enterFacility(new SignedOutAccountMenuFacility());
+        return toolbar.signinButtonElement
+                .clickTo()
+                .enterFacility(new SignedOutAccountMenuFacility());
     }
 
     /**
@@ -291,7 +295,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     /** Start a Trip to open the tab switcher by pressing the toolbar tab switcher button. */
     public TripBuilder openRegularTabSwitcherAnd() {
         assert !mIsIncognito;
-        return tabSwitcherButtonElement
+        return toolbar.tabSwitcherButtonElement
                 .clickTo()
                 .arriveAtAnd(RegularTabSwitcherStation.from(getTabModelSelector()));
     }
@@ -306,7 +310,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      */
     public TripBuilder openIncognitoTabSwitcherAnd() {
         assert mIsIncognito;
-        return tabSwitcherButtonElement
+        return toolbar.tabSwitcherButtonElement
                 .clickTo()
                 .arriveAtAnd(IncognitoTabSwitcherStation.from(getTabModelSelector()));
     }
@@ -445,12 +449,12 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     public TripBuilder swipeToolbarTo(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
+                new ToolbarSwipeCoordinates(toolbar.toolbarElement.value(), directionRight);
 
         return runTo(
                         () ->
                                 TouchCommon.performDrag(
-                                        toolbarElement.value(),
+                                        toolbar.toolbarElement.value(),
                                         coords.mFromX,
                                         coords.mToX,
                                         coords.mY,
@@ -467,7 +471,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     private SwipingToTabFacility swipeToolbarPartial(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
+                new ToolbarSwipeCoordinates(toolbar.toolbarElement.value(), directionRight);
         long downTime = SystemClock.uptimeMillis();
         Activity activity = getActivity();
 

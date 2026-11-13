@@ -97,13 +97,17 @@ public class WebPageStation extends CtaPageStation {
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIsIncognito;
-        return menuButtonElement.clickTo().enterFacility(new RegularWebPageAppMenuFacility());
+        return toolbar.menuButtonElement
+                .clickTo()
+                .enterFacility(new RegularWebPageAppMenuFacility());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIsIncognito;
-        return menuButtonElement.clickTo().enterFacility(new IncognitoWebPageAppMenuFacility());
+        return toolbar.menuButtonElement
+                .clickTo()
+                .enterFacility(new IncognitoWebPageAppMenuFacility());
     }
 
     /** Scrolls down the page using a drag gesture to dismiss browser controls. */

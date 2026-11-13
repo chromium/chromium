@@ -98,7 +98,9 @@ public class RegularNewTabPageStation extends CtaPageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
-        return menuButtonElement.clickTo().enterFacility(new RegularNewTabPageAppMenuFacility());
+        return toolbar.menuButtonElement
+                .clickTo()
+                .enterFacility(new RegularNewTabPageAppMenuFacility());
     }
 
     /**
