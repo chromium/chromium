@@ -1007,6 +1007,20 @@ void WebUILocationBar::HandleFocusRequestForFullPopup(
       static_cast<OmniboxPopupViewFullWebUI*>(omnibox_popup_view_.get())
           ->is_focused();
 
+  if (omnibox_popup_view_->IsPopupHandlerReady()) {
+    const bool is_search =
+        target == toolbar_ui_api::mojom::FocusRequestTarget::kSearch;
+    omnibox_popup_view_->OnFocus(
+        /*query_zps=*/is_user_initiated && !is_search,
+        /*select_all=*/is_user_initiated || !omnibox_already_focused,
+        /*show_full_url=*/target == toolbar_ui_api::mojom::FocusRequestTarget::
+                                        kLocationBarUserInitiated);
+    if (is_search) {
+      omnibox_popup_view_->FocusSearchWithDefaultSearchEngineKeywordMode();
+    }
+    return;
+  }
+
   if (is_user_initiated) {
     // TODO(crbug.com/546101626): this seems to fail sometimes because of
     // incorrectly set user_input_in_progress() bit.
@@ -1028,12 +1042,6 @@ void WebUILocationBar::HandleFocusRequestForFullPopup(
 
   omnibox_popup_view_->OnFocus(is_user_initiated, /*select_all=*/false,
                                /*show_full_url=*/false);
-
-  // TODO(crbug.com/546101626): This is a bit off; there is risk of races
-  // (but that's true overall), and sometimes this side doesn't know about
-  // unelide results.
-  omnibox_popup_view_->SyncNativeStateToWebUI(is_user_initiated,
-                                              /*show_full_url=*/false);
 }
 
 // static

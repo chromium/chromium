@@ -1053,12 +1053,15 @@ WebUIReadOnlyOmnibox::OnPointer(
     if (start_zero_suggest) {
       controller()->edit_model()->StartZeroSuggestRequest();
     }
+    const bool popup_was_open =
+        controller()->popup_state_manager()->popup_state() ==
+        OmniboxPopupState::kFull;
     update_propagator_->OpenOmniboxIfFullPopup(start_zero_suggest);
-    if (base::FeatureList::IsEnabled(
-            omnibox::kWebUIOmniboxFullPopupDoubleClick) &&
-        location_bar_) {
-      location_bar_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
-          start_zero_suggest, /*show_full_url=*/false);
+    if (popup_was_open && location_bar_ &&
+        base::FeatureList::IsEnabled(
+            omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
+      location_bar_->GetOmniboxPopupView()
+          ->SyncNativeStateToWebUIPreservingMatches();
     }
   }
   return base::ok(std::monostate());
