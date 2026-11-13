@@ -914,10 +914,18 @@ void StorageHandler::NotifyIndexedDBContentChanged(
 Response StorageHandler::FindStoragePartition(
     const std::optional<std::string>& browser_context_id,
     StoragePartition** storage_partition) {
-  if (browser_context_id.has_value() &&
-      host_->GetType() != DevToolsAgentHost::kTypeBrowser) {
-    return Response::InvalidParams(
-        "browserContextId is only allowed for Browser target");
+  if (host_->GetType() != DevToolsAgentHost::kTypeBrowser) {
+    if (browser_context_id.has_value()) {
+      return Response::InvalidParams(
+          "browserContextId is only allowed for Browser target");
+    }
+    // Non-browser targets must only access their own storage partition; never
+    // fall back to the default browser context.
+    *storage_partition = storage_partition_;
+    if (!*storage_partition) {
+      return Response::InternalError();
+    }
+    return Response::Success();
   }
 
   BrowserContext* browser_context = nullptr;

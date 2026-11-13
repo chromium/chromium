@@ -538,6 +538,9 @@ HEADLESS_MODE_PROTOCOL_TEST(GetBrowserContexts,
 HEADLESS_MODE_PROTOCOL_TEST(InteractionMediaFeatures,
                             "shared/interaction-media-features.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(StorageCookiesIsolatedByContext,
+                            "storage/storage-cookies-isolated-by-context.js")
+
 class HeadlessModeProtocolBrowserTestWithDownload
     : public HeadlessModeProtocolBrowserTest {
  public:

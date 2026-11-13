@@ -1,0 +1,15 @@
+Tests that Storage cookie commands on a page target only affect the browser context of that page.
+
+Initial state
+  Page target: []
+  Page context: []
+  Default context: [default_cookie=default_val]
+After Storage.setCookies on page target
+  Page target: [page_cookie=page_val]
+  Page context: [page_cookie=page_val]
+  Default context: [default_cookie=default_val]
+After Storage.clearCookies on page target
+  Page target: []
+  Page context: []
+  Default context: [default_cookie=default_val]
+Storage.getCookies with browserContextId on page target: browserContextId is only allowed for Browser target
