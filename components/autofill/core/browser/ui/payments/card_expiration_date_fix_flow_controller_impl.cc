@@ -18,6 +18,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/feature_list.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace autofill {
 
 CardExpirationDateFixFlowControllerImpl::
@@ -80,7 +85,10 @@ void CardExpirationDateFixFlowControllerImpl::OnDialogClosed() {
 
 int CardExpirationDateFixFlowControllerImpl::GetIconId() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return IDR_AUTOFILL_GOOGLE_PAY;
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableGradientGoogleLogos)
+             ? IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT
+             : IDR_AUTOFILL_GOOGLE_PAY;
 #else
   return 0;
 #endif
