@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-// EventWaiter is used to wait on specific events that may have occured
+// EventWaiter is used to wait on specific events that may have occurred
 // before the call to Wait(), or after, in which case a RunLoop is used.
 //
 // Usage:
