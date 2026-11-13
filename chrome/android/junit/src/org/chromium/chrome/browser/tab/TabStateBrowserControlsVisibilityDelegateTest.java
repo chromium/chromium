@@ -1016,7 +1016,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544014")
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_SlowLoadFallbackLocksBeforeCommit() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
@@ -1048,7 +1047,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544014")
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_SlowLoadFallbackCountsFromFirstOverlappingNavigation() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
@@ -1110,8 +1108,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544014")
-    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_TabHiddenMidNavigationLocksControls() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
         GURL destinationUrl = JUnitTestGURLs.BLUE_2;
@@ -1139,6 +1136,69 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
         finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
         assertPostLoadLockExpiresAfterDelay(delegate);
+    }
+
+    @Test
+    @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
+    public void testSameOriginMinimization_SlowLoadFallbackRestartsAfterReplacedNavigation() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL firstDestinationUrl = JUnitTestGURLs.BLUE_2;
+        GURL secondDestinationUrl = JUnitTestGURLs.BLUE_3;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        // Content usually finishes a replaced navigation before the new one starts. No navigation
+        // that skipped the load lock is in flight in between, so the fallback counts from the
+        // start of navigation 2.
+        NavigationHandle firstNav = startNavigation(firstDestinationUrl, /* navigationId= */ 1L);
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS - 100, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        finishNavigation(
+                firstNav,
+                firstDestinationUrl,
+                /* hasCommitted= */ false,
+                /* isSameOrigin= */ false,
+                /* isErrorPage= */ false);
+        startNavigation(secondDestinationUrl, /* navigationId= */ 2L);
+
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION + ":fallback_show_after_ms/0")
+    public void testSameOriginMinimization_ZeroFallbackLocksAtStart() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A delay of 0 or less shows the Omnibox at once, so the navigation takes the lock.
+        assertSameOriginNavigationLocksControls(delegate);
+    }
+
+    @Test
+    @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
+    public void testSameOriginMinimization_TabDestroyedCancelsSlowLoadFallback() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        // The navigation skips the load lock and starts the slow-load fallback.
+        startNavigation(destinationUrl);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // Destroying the tab cancels the fallback, so the controls never lock.
+        mTab.destroy();
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
     }
 
     @Test

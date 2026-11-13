@@ -53,6 +53,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         implements ImeEventObserver {
     private static final String TAG = "BrowserControls";
     protected static final int MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD = 1;
+    private static final int MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD = 2;
 
     /** The maximum amount of time to wait for a page to load before entering fullscreen. */
     private static final long MAX_FULLSCREEN_LOAD_DELAY_MS = 3000;
@@ -97,8 +98,25 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     // There shouldn't be very many outstanding navigations at once so an ArraySet should be fine.
     private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
-    // Outstanding navigations that skipped the load lock (ClankOmniboxMinimization).
+    // Outstanding navigations that skipped the load lock (ClankOmniboxMinimization). They take the
+    // lock if they do not finish within the slow-load fallback delay, or if the tab is hidden.
+    // Always a subset of mOutstandingNavigations.
     private final Set<Long> mKeepHiddenNavigationIds = new ArraySet<>();
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler =
+            new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg == null) return;
+                    if (msg.what == MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD) {
+                        if (!mIsFullscreenWaitingForLoad) return;
+                        updateWaitingForLoad(false);
+                    } else if (msg.what == MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD) {
+                        lockKeptHiddenNavigations();
+                    }
+                }
+            };
 
     /**
      * Basic constructor.
@@ -109,19 +127,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         mTab = (TabImpl) tab;
         mTab.addObserver(
                 new TabObserver() {
-                    @SuppressLint("HandlerLeak")
-                    private final Handler mHandler =
-                            new Handler() {
-                                @Override
-                                public void handleMessage(Message msg) {
-                                    if (msg == null) return;
-                                    if (msg.what == MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD) {
-                                        if (!mIsFullscreenWaitingForLoad) return;
-                                        updateWaitingForLoad(false);
-                                    }
-                                }
-                            };
-
                     @Override
                     public void onContentChanged(Tab tab) {
                         onWebContentsUpdated(tab.getWebContents());
@@ -138,10 +143,17 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
                         mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
 
-                        if (shouldKeepControlsHiddenOnStart(navigation)) {
+                        int fallbackShowAfterMs =
+                                BrowserControlsUtils.getSameOriginOmniboxFallbackShowAfterMs();
+                        if (shouldKeepControlsHiddenOnStart(navigation, fallbackShowAfterMs)) {
                             // Keep any existing lock: another navigation may commit cross-origin.
-                            // TODO(crbug.com/579544014): Schedule the slow-load reveal.
                             mKeepHiddenNavigationIds.add(navigation.getNavigationId());
+                            // Keep the deadline of the first kept-hidden navigation while any
+                            // kept-hidden navigation is in flight.
+                            if (!mHandler.hasMessages(MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD)) {
+                                mHandler.sendEmptyMessageDelayed(
+                                        MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD, fallbackShowAfterMs);
+                            }
                             return;
                         }
                         boolean safe = WebDistillerUrlUtils.isDistilledPage(navigation.getUrl());
@@ -177,8 +189,8 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         // locked when the tab is shown again, otherwise hiding and showing the tab
                         // lets a page scroll the real URL away before the navigation commits. The
                         // lock is released as usual once the outstanding navigations finish.
-                        // TODO(crbug.com/579544014): Lock navigations in mKeepHiddenNavigationIds,
-                        // and clear the set in onWebContentsUpdated() to drop stale IDs.
+                        // Navigations that skipped the lock take it now.
+                        lockKeptHiddenNavigations();
                         if (!mOutstandingNavigations.isEmpty()) return;
                         updateWaitingForLoad(false);
                     }
@@ -289,10 +301,16 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         return enableHidingBrowserControls;
     }
 
-    /** Returns whether a navigation can skip the load lock (ClankOmniboxMinimization Exp A). */
-    private boolean shouldKeepControlsHiddenOnStart(NavigationHandle navigation) {
+    /**
+     * Returns whether a navigation can skip the load lock (ClankOmniboxMinimization Exp A). A
+     * fallback delay of 0 ms or less shows the controls at once, so the navigation takes the lock.
+     *
+     * @param fallbackShowAfterMs The slow-load fallback delay, which is 0 if Exp A is off.
+     */
+    private boolean shouldKeepControlsHiddenOnStart(
+            NavigationHandle navigation, int fallbackShowAfterMs) {
         // TODO(crbug.com/579544759): Filter by navigation type.
-        return BrowserControlsUtils.isHideOmniboxOnSameOriginNavEnabled()
+        return fallbackShowAfterMs > 0
                 && canKeepOmniboxHiddenInTab()
                 && areBrowserControlsOffScreen()
                 && isSameOriginHttpOrHttpsNavigation(navigation);
@@ -331,8 +349,19 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
     private void onKeptHiddenNavigationFinished(NavigationHandle navigation) {
         if (!mKeepHiddenNavigationIds.remove(navigation.getNavigationId())) return;
+        if (mKeepHiddenNavigationIds.isEmpty()) {
+            mHandler.removeMessages(MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD);
+        }
         // TODO(crbug.com/579544758): Re-check the origin and error state at commit.
-        // TODO(crbug.com/579544014): Cancel the slow-load reveal.
+    }
+
+    /** Takes the load lock that the kept-hidden navigations skipped. */
+    private void lockKeptHiddenNavigations() {
+        if (mKeepHiddenNavigationIds.isEmpty()) return;
+        mHandler.removeMessages(MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD);
+        mKeepHiddenNavigationIds.clear();
+        // Released getLoadDelayMs() after the last outstanding navigation finishes.
+        updateWaitingForLoad(true);
     }
 
     /** Returns the constraints that determine the visibility of the browser controls. */
