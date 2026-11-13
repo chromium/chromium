@@ -85,9 +85,10 @@ include this architectural context:
 - If parent or child changes exist, describe how this change fits into that
   chain.
 
-Present all suggested code review comments clearly to the caller. State which
-goal or invariant each comment comes from. Clear context helps the author act on
-each comment. Finally, do one more check of potential alternatives.
+Present all suggested code review comments clearly to the caller. For
+readability, lead each comment with the request, finding, or thesis. Then follow
+with the reasoning, such as the goal or invariant that it comes from. Finally,
+do one more check of potential alternatives.
 
 ## 5. (Optional) Suggest Issue Updates
 
