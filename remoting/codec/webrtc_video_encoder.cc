@@ -4,9 +4,38 @@
 
 #include "remoting/codec/webrtc_video_encoder.h"
 
+#include <algorithm>
+
 #include "base/system/sys_info.h"
 
 namespace remoting {
+
+namespace {
+
+int GetEncoderThreadCountImpl(int frame_size, int num_processors) {
+  int thread_num;
+  if (frame_size >= 5120) {
+    thread_num = 32;
+  } else if (frame_size >= 3840) {
+    thread_num = 16;
+  } else if (frame_size >= 1920) {
+    thread_num = 8;
+  } else if (frame_size >= 1280) {
+    thread_num = 4;
+  } else if (frame_size >= 720) {
+    thread_num = 2;
+  } else {
+    thread_num = 1;
+  }
+
+  // Allow multiple cores on a system to be used for encoding to increase
+  // performance while at the same time ensuring we don't bog down the system by
+  // taking all of the available cores.
+  const int max_usable_threads = std::max(1, (num_processors + 1) / 2);
+  return std::min(thread_num, max_usable_threads);
+}
+
+}  // namespace
 
 WebrtcVideoEncoder::FrameStats::FrameStats() = default;
 WebrtcVideoEncoder::FrameStats::FrameStats(const FrameStats&) = default;
@@ -33,26 +62,15 @@ WebrtcVideoEncoder::EncodedFrame& WebrtcVideoEncoder::EncodedFrame::operator=(
     WebrtcVideoEncoder::EncodedFrame&&) = default;
 
 // static
-int WebrtcVideoEncoder::GetEncoderThreadCount(int frame_width) {
-  int thread_num;
-  if (frame_width >= 5120) {
-    thread_num = 32;
-  } else if (frame_width >= 3840) {
-    thread_num = 16;
-  } else if (frame_width >= 2560) {
-    thread_num = 8;
-  } else if (frame_width >= 1280) {
-    thread_num = 4;
-  } else if (frame_width >= 720) {
-    thread_num = 2;
-  } else {
-    thread_num = 1;
-  }
+int WebrtcVideoEncoder::GetEncoderThreadCount(int frame_size) {
+  return GetEncoderThreadCountImpl(frame_size,
+                                   base::SysInfo::NumberOfProcessors());
+}
 
-  // Allow multiple cores on a system to be used for encoding to increase
-  // performance while at the same time ensuring we don't bog down the system by
-  // taking all of the available cores.
-  return std::min(thread_num, ((base::SysInfo::NumberOfProcessors() + 1) / 2));
+// static
+int WebrtcVideoEncoder::GetEncoderThreadCountForTesting(int frame_size,
+                                                        int num_processors) {
+  return GetEncoderThreadCountImpl(frame_size, num_processors);
 }
 
 }  // namespace remoting

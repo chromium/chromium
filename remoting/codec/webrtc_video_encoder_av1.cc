@@ -122,19 +122,19 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
     error = aom_codec_control(codec.get(), AV1E_SET_ROW_MT, 1);
     DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ROW_MT";
 
-    // Use a smaller superblock size for 5k, 4k, and 2k displays.
+    // Force 64x64 superblocks when encoding with more than 4 threads (e.g.
+    // 1080p, 2K, 4K, and 5K displays on hosts with >= 10 logical CPUs).
     if (config_.g_threads > 4) {
-      // The default value for AV1E_SET_SUPERBLOCK_SIZE is
-      // AOM_SUPERBLOCK_SIZE_DYNAMIC which uses 64x64 blocks for resolutions of
-      // 720px or lower and 128x128 for resolutions above that. When testing
-      // with display resolutions higher than 3840x2160 (4K), we found that
-      // increasing the number of threads from 16 to 32 increased performance
-      // for VP9 but performance decreased with AV1. The codec team investigated
-      // and suggested adjusting the superblock size down to 64x64 to increase
-      // the amount of parallelism.  This solution increased performance for 5K
-      // displays and put it around the level of what we see for a 4K display.
-      // Additional testing with 4K and 2K displays showed that a smaller
-      // superblock size increased performance there as well.
+      // Note: In REALTIME + AOM_CONTENT_SCREEN mode (configured below),
+      // libaom's default AOM_SUPERBLOCK_SIZE_DYNAMIC heuristic
+      // (av1_select_sb_size) already selects 64x64 superblocks at 1080p with
+      // >= 4 threads, while defaulting to 128x128 at higher resolutions where
+      // (width * height) / (128 * 128 * num_tiles) >= 40. Explicitly setting
+      // AOM_SUPERBLOCK_SIZE_64X64 ensures fine-grained superblock row-MT
+      // parallelism across 1080p, 2K, 4K, and 5K displays. When testing > 4K
+      // displays, increasing threads from 16 to 32 degraded AV1 performance
+      // until superblocks were reduced to 64x64 (putting 5K performance on par
+      // with 4K and improving 4K and 2K as well).
       // See https://crbug.com/aomedia/3363 for more info.
       error = aom_codec_control(codec.get(), AV1E_SET_SUPERBLOCK_SIZE,
                                 AOM_SUPERBLOCK_SIZE_64X64);

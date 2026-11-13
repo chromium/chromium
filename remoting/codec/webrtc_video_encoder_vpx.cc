@@ -87,6 +87,13 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
   // and leave plenty of cores for the non-remoting workload.
   uint threshold = config->g_threads >= 16 ? 4U : 2U;
   config->g_threads = std::min(config->g_threads, threshold);
+#else
+  // Increasing thread count on VP8 does not necessarily lead to better
+  // performance and causes CBR overshoot and PSNR loss at 1080p, so keep
+  // sub-1440p widths capped at 4 threads.
+  if (config->g_w < 2560) {
+    config->g_threads = std::min(config->g_threads, 4U);
+  }
 #endif  // BUILDFLAG(IS_LINUX)
 
   // Value of 2 means using the real time profile. This is basically a
