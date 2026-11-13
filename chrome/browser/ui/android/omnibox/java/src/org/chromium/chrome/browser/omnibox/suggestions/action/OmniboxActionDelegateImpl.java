@@ -158,4 +158,10 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
                     .start(LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
         }
     }
+
+    @Override
+    public void issueContextualSearchQuery(GURL url) {
+        // Contextual fulfillment is not available; load the suggestion's search URL instead.
+        loadPageInCurrentTab(url.getSpec());
+    }
 }

@@ -57,6 +57,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxContextualSearchFulfillmentAction;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -861,5 +863,53 @@ public class BasicSuggestionProcessorUnitTest {
         assertEquals(
                 "google.com/search?q=test",
                 mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
+    }
+
+    @Test
+    public void takeoverAction_searchSuggestionKeepsServerIconAndDescriptionOnLine1() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "Summarize page")
+                        .setIsSearch(true)
+                        .setDescription("Wikipedia")
+                        .setIconType(SuggestTemplateInfo.IconType.SEARCH_LOOP_WITH_SPARKLE)
+                        .setTakeoverAction(
+                                new OmniboxContextualSearchFulfillmentAction(
+                                        0, "hint", "a11y", JUnitTestGURLs.SEARCH_URL))
+                        .build();
+
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        String separator =
+                mResourceProvider.getString(R.string.autocomplete_match_description_separator);
+        assertEquals(
+                "Summarize page" + separator + "Wikipedia",
+                mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
+        assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertEquals(R.drawable.search_spark_black_24dp, icon.resourceIdForTesting);
+        assertTrue(icon.allowTint);
+    }
+
+    @Test
+    public void takeoverAction_pedalStillInlinesDescription() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.PEDAL, "Ask Google")
+                        .setIsSearch(false)
+                        .setUrl(GURL.emptyGURL())
+                        .setDescription("Search with Google Lens")
+                        .setTakeoverAction(new OmniboxPedal(0, "hint", "a11y", 1))
+                        .build();
+
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        assertEquals(
+                "Ask Google - Search with Google Lens",
+                mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
     }
 }

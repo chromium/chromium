@@ -14,6 +14,7 @@ import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.search_engines.StarterPackId;
+import org.chromium.url.GURL;
 
 /** A factory creating the OmniboxAction instances. */
 @NullMarked
@@ -42,6 +43,16 @@ public class OmniboxActionFactory {
             @JniType("std::u16string") String hint,
             @JniType("std::u16string") String accessibilityHint) {
         return new OmniboxLensOverlayAction(nativeInstance, hint, accessibilityHint);
+    }
+
+    @CalledByNative
+    public static OmniboxAction buildOmniboxContextualSearchFulfillmentAction(
+            long nativeInstance,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint,
+            @JniType("GURL") GURL fulfillmentUrl) {
+        return new OmniboxContextualSearchFulfillmentAction(
+                nativeInstance, hint, accessibilityHint, fulfillmentUrl);
     }
 
     @CalledByNative
