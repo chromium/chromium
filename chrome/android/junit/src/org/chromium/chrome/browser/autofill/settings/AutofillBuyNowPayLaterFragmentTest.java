@@ -33,6 +33,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -41,12 +43,14 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.BnplIssuerForSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
 /** JUnit tests of the class {@link AutofillBuyNowPayLaterFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
 public class AutofillBuyNowPayLaterFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -208,7 +212,8 @@ public class AutofillBuyNowPayLaterFragmentTest {
     // Test to verify that the preference for a BNPL issuer is correctly displayed with the right
     // attributes.
     @Test
-    public void testBnplIssuerPreference_CorrectlyDisplays() {
+    @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+    public void testBnplIssuerPreference_CorrectlyDisplaysWithGPayLogo() {
         BnplIssuerForSettings issuer =
                 new BnplIssuerForSettings(
                         /* issuerId= */ AFFIRM_ISSUER_ID,
@@ -226,6 +231,41 @@ public class AutofillBuyNowPayLaterFragmentTest {
         assertTrue(mBnplIssuerPref.isSelectable());
         assertEquals(
                 R.layout.autofill_server_data_label, mBnplIssuerPref.getWidgetLayoutResource());
+        assertEquals(
+                AutofillBuyNowPayLaterFragment.PREF_KEY_BNPL_ISSUER_TERM, mBnplIssuerPref.getKey());
+
+        String termsUrl =
+                mBnplIssuerPref
+                        .getExtras()
+                        .getString(AutofillBuyNowPayLaterFragment.PREF_LIST_TERMS_URL);
+        assertNotNull(termsUrl);
+        assertEquals(
+                AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(INSTRUMENT_ID), termsUrl);
+    }
+
+    // Test to verify that the preference for a BNPL issuer is correctly displayed with the right
+    // attributes, including the gradient-style GPay logo.
+    @Test
+    @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+    public void testBnplIssuerPreference_CorrectlyDisplaysWithGradientGPayLogo() {
+        BnplIssuerForSettings issuer =
+                new BnplIssuerForSettings(
+                        /* issuerId= */ AFFIRM_ISSUER_ID,
+                        /* instrumentId= */ INSTRUMENT_ID,
+                        /* displayName= */ AFFIRM_DISPLAY_NAME);
+        when(mPersonalDataManager.getBnplIssuersForSettings())
+                .thenReturn(new BnplIssuerForSettings[] {issuer});
+        when(mPersonalDataManager.isBuyNowPayLaterEnabled()).thenReturn(true);
+
+        launchAutofillBuyNowPayLaterFragment();
+
+        assertNotNull(mBnplIssuerPref);
+        assertEquals(AFFIRM_DISPLAY_NAME, mBnplIssuerPref.getTitle().toString());
+        assertNotNull(mBnplIssuerPref.getIcon());
+        assertTrue(mBnplIssuerPref.isSelectable());
+        assertEquals(
+                R.layout.autofill_server_data_gradient_label,
+                mBnplIssuerPref.getWidgetLayoutResource());
         assertEquals(
                 AutofillBuyNowPayLaterFragment.PREF_KEY_BNPL_ISSUER_TERM, mBnplIssuerPref.getKey());
 

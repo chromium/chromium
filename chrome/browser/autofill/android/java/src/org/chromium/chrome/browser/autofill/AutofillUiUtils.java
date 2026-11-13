@@ -44,6 +44,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -60,6 +61,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
@@ -1020,5 +1022,16 @@ public class AutofillUiUtils {
             return MANAGE_SANDBOX_PAYMENT_METHODS_URL + "&id=" + instrumentId;
         }
         return MANAGE_PAYMENT_METHODS_URL + "&id=" + instrumentId;
+    }
+
+    /**
+     * Returns the widget layout resource ID for server-stored payment method.
+     *
+     * @return The layout resource ID for the Google Pay widget icon.
+     */
+    public static @LayoutRes int getServerDataWidgetLayout() {
+        return ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+                ? R.layout.autofill_server_data_gradient_label
+                : R.layout.autofill_server_data_label;
     }
 }

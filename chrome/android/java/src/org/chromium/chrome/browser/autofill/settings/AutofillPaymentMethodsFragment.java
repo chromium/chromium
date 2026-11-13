@@ -350,7 +350,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         this::showLocalCardEditPageAfterAuthenticationIfRequired);
             } else {
                 cardPref.setFragment(AutofillServerCardEditor.class.getName());
-                cardPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+                cardPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
             }
 
             Bundle args = cardPref.getExtras();
@@ -370,7 +370,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 Bundle args = ibanPref.getExtras();
                 args.putString(AutofillEditorBase.AUTOFILL_GUID, iban.getGuid());
             } else if (iban.getRecordType() == IbanRecordType.SERVER_IBAN) {
-                ibanPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+                ibanPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
                 ibanPref.setOnPreferenceClickListener(
                         preference -> {
                             mServerIbanManageLinkOpenerCallback.onResult(

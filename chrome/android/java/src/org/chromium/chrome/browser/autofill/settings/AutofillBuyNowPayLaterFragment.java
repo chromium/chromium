@@ -135,7 +135,7 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
             issuerPref.setIcon(AppCompatResources.getDrawable(getStyledContext(), issuerImageId));
 
             // Add GPay icon.
-            issuerPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+            issuerPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
 
             getPreferenceScreen().addPreference(issuerPref);
         }

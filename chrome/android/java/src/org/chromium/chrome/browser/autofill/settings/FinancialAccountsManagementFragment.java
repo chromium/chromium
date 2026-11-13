@@ -221,7 +221,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 R.string.settings_pix_bank_account_identifer,
                                 getBankAccountTypeString(bankAccount.getAccountType()),
                                 bankAccount.getAccountNumberSuffix()));
-        bankAccountPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+        bankAccountPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
         bankAccountPref.setIcon(
                 AutofillImageFetcherFactory.getForProfile(getProfile())
                         .getPixAccountIcon(getStyledContext(), bankAccount.getDisplayIconUrl()));
@@ -247,7 +247,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                         .getString(
                                 R.string.settings_ewallet_account_identifer,
                                 eWallet.getAccountDisplayName()));
-        eWalletPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+        eWalletPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
         eWalletPref.setIcon(
                 AutofillUiUtils.getCardIcon(
                         getStyledContext(),

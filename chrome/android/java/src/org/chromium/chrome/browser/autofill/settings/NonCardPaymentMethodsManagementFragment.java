@@ -167,7 +167,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
                         .getString(
                                 R.string.settings_ewallet_account_identifer,
                                 ewallet.getAccountDisplayName()));
-        ewalletPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+        ewalletPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
         ewalletPref.setIcon(
                 AutofillUiUtils.getCardIcon(
                         getStyledContext(),
