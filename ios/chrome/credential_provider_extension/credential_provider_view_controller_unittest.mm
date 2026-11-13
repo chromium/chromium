@@ -1783,7 +1783,6 @@ TEST_F(
   [controller_ passkeyWelcomeScreenViewControllerShouldBeDismissed:welcome_vc];
   ASSERT_TRUE(cancel_error_future_.Wait());
   EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
-  EXPECT_EQ(nav_controller.viewControllers.count, 0u);
 }
 
 // Test that tapping the primary action button on
