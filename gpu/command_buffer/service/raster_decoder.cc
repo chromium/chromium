@@ -22,11 +22,13 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -2840,6 +2842,13 @@ void RasterDecoderImpl::ReportProgress() {
     shared_context_state_->progress_reporter()->ReportProgress();
 }
 
+namespace {
+
+BASE_FEATURE(kExcludeOopRasterizationFromSafetyChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
                                          GLuint raster_shm_offset,
                                          GLuint raster_shm_size,
@@ -2912,6 +2921,8 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
                            new_locked_handles.end());
   }
 
+  const bool exclude_from_safety_checks =
+      base::FeatureList::IsEnabled(kExcludeOopRasterizationFromSafetyChecks);
   while (!paint_buffer.empty()) {
     size_t skip = 0;
     cc::PaintOp* deserialized_op =
@@ -2922,8 +2933,14 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
       return;
     }
 
-    deserialized_op->Raster(raster_canvas_, playback_params);
-    deserialized_op->DestroyThis();
+    {
+      std::optional<base::ScopedSafetyChecksExclusion> excluded;
+      if (exclude_from_safety_checks) {
+        excluded.emplace();
+      }
+      deserialized_op->Raster(raster_canvas_, playback_params);
+      deserialized_op->DestroyThis();
+    }
 
     paint_buffer = paint_buffer.subspan(skip);
   }
@@ -2940,6 +2957,11 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   raster_canvas_ = nullptr;
 
   {
+    std::optional<base::ScopedSafetyChecksExclusion> excluded;
+    if (base::FeatureList::IsEnabled(
+            kExcludeOopRasterizationFromSafetyChecks)) {
+      excluded.emplace();
+    }
     TRACE_EVENT0("gpu", "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush");
     // This is a slow operation since skia will execute the GPU work for the
     // complete tile. Make sure the progress reporter is notified to avoid
@@ -2967,10 +2989,10 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     } else {
       DCHECK(end_semaphores_.empty());
     }
-  }
 
-  shared_context_state_->UpdateSkiaOwnedMemorySize();
-  sk_surface_ = nullptr;
+    shared_context_state_->UpdateSkiaOwnedMemorySize();
+    sk_surface_ = nullptr;
+  }
   scoped_shared_image_write_.reset();
   shared_image_.reset();
   paint_op_shared_image_provider_.reset();
