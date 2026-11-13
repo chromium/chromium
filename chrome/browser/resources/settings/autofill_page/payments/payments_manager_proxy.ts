@@ -4,6 +4,9 @@
 
 import type {PersonalDataChangedListener} from '../autofill_manager_proxy.js';
 
+export type LoyaltyCardsChangedListener =
+    (loyaltyCards: chrome.autofillPrivate.LoyaltyCardEntry[]) => void;
+
 /**
  * Interface for all callbacks to the payments autofill API.
  */
@@ -73,6 +76,22 @@ export interface PaymentsManagerProxy {
    */
   getPayOverTimeIssuerList():
       Promise<chrome.autofillPrivate.PayOverTimeIssuerEntry[]>;
+
+  /**
+   * Request the list of Google Wallet loyalty cards.
+   */
+  getLoyaltyCardList(): Promise<chrome.autofillPrivate.LoyaltyCardEntry[]>;
+
+  /**
+   * Add an observer to the list of loyalty cards.
+   */
+  setLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener): void;
+
+  /**
+   * Remove an observer from the list of loyalty cards.
+   */
+  removeLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener):
+      void;
 
   /**
    * A null response means that there is no platform authenticator.
@@ -167,6 +186,18 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   getPayOverTimeIssuerList() {
     return chrome.autofillPrivate.getPayOverTimeIssuerList();
+  }
+
+  getLoyaltyCardList() {
+    return chrome.autofillPrivate.getLoyaltyCardList();
+  }
+
+  setLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener) {
+    chrome.autofillPrivate.onLoyaltyCardsChanged.addListener(listener);
+  }
+
+  removeLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener) {
+    chrome.autofillPrivate.onLoyaltyCardsChanged.removeListener(listener);
   }
 
   isUserVerifyingPlatformAuthenticatorAvailable() {

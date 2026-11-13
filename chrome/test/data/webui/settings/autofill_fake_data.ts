@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {AutofillManagerProxy, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
+import type {AutofillManagerProxy, LoyaltyCardsChangedListener, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -351,10 +351,13 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
+    loyaltyCards: chrome.autofillPrivate.LoyaltyCardEntry[],
   };
 
-  lastCallback:
-      {setPersonalDataManagerListener: PersonalDataChangedListener|null};
+  lastCallback: {
+    setPersonalDataManagerListener: PersonalDataChangedListener|null,
+    setLoyaltyCardsChangedListener: LoyaltyCardsChangedListener|null,
+  };
 
   constructor() {
     super([
@@ -368,7 +371,10 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'removeCreditCard',
       'removeIban',
       'getPayOverTimeIssuerList',
+      'getLoyaltyCardList',
+      'removeLoyaltyCardsChangedListener',
       'removePersonalDataManagerListener',
+      'setLoyaltyCardsChangedListener',
       'setPersonalDataManagerListener',
     ]);
 
@@ -377,11 +383,13 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       creditCards: [],
       ibans: [],
       payOverTimeIssuers: [],
+      loyaltyCards: [],
     };
 
     // Holds the last callbacks so they can be called when needed.
     this.lastCallback = {
       setPersonalDataManagerListener: null,
+      setLoyaltyCardsChangedListener: null,
     };
   }
 
@@ -438,6 +446,20 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   getPayOverTimeIssuerList() {
     this.methodCalled('getPayOverTimeIssuerList');
     return Promise.resolve(structuredClone(this.data.payOverTimeIssuers));
+  }
+
+  getLoyaltyCardList() {
+    this.methodCalled('getLoyaltyCardList');
+    return Promise.resolve(structuredClone(this.data.loyaltyCards));
+  }
+
+  setLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener) {
+    this.methodCalled('setLoyaltyCardsChangedListener');
+    this.lastCallback.setLoyaltyCardsChangedListener = listener;
+  }
+
+  removeLoyaltyCardsChangedListener(_listener: LoyaltyCardsChangedListener) {
+    this.methodCalled('removeLoyaltyCardsChangedListener');
   }
 
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {

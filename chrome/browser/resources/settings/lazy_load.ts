@@ -190,6 +190,7 @@ export type {CountryDetailManagerProxy} from './autofill_page/country_detail_man
 export {EntityDataManagerProxyImpl} from './autofill_page/entity_data_manager_proxy.js';
 export type {EntityDataManagerProxy, EntityInstancesChangedListener} from './autofill_page/entity_data_manager_proxy.js';
 export {SettingsIdentityDocsPageElement} from './autofill_page/identity_docs/identity_docs_page.js';
+export {SettingsLoyaltyCardsListElement} from './autofill_page/offers_and_loyalty_cards/loyalty_cards_list.js';
 export {SettingsOffersAndLoyaltyCardsPageElement} from './autofill_page/offers_and_loyalty_cards/offers_and_loyalty_cards_page.js';
 // <if expr="is_win or is_macosx">
 export {PasskeysBrowserProxyImpl} from './autofill_page/passwords/passkeys_browser_proxy.js';
@@ -203,7 +204,7 @@ export {SettingsIbanListEntryElement} from './autofill_page/payments/iban_list_e
 export {SettingsPayOverTimeIssuerListEntryElement} from './autofill_page/payments/pay_over_time_issuer_list_entry.js';
 export {SettingsPaymentsListElement} from './autofill_page/payments/payments_list.js';
 export {PaymentsManagerImpl} from './autofill_page/payments/payments_manager_proxy.js';
-export type {PaymentsManagerProxy} from './autofill_page/payments/payments_manager_proxy.js';
+export type {LoyaltyCardsChangedListener, PaymentsManagerProxy} from './autofill_page/payments/payments_manager_proxy.js';
 export {SettingsPaymentsPageElement} from './autofill_page/payments/payments_page.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/payments/virtual_card_unenroll_dialog.js';
 export {SettingsShoppingPageElement} from './autofill_page/shopping/shopping_page.js';

@@ -10,6 +10,10 @@ export function getHtml(this: SettingsOffersAndLoyaltyCardsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{offersAndLoyaltyCardsCardTitle}"
     class="multi-card" route-path="${this.routePath}">
+  <div class="card">
+    <settings-loyalty-cards-list id="loyaltyCardsList">
+    </settings-loyalty-cards-list>
+  </div>
 </settings-subpage>
 <!--_html_template_end_-->`;
 }
