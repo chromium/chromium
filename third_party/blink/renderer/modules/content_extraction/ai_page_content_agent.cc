@@ -361,24 +361,16 @@ gfx::Rect ComputeVisibleBoundingBox(
       LocalFrameView* root_view =
           frame ? frame->LocalFrameRoot().View() : nullptr;
       LocalFrameView* viewport_view = root_view ? root_view : view;
-      // LocalFrameView::ViewportWidth/Height are in CSS/layout pixels (only
-      // adjusted for absolute zoom), while `visual_viewport_relative_rect` is
-      // produced by MapToVisualRectInAncestorSpace() in
-      // visual-viewport-relative BlinkSpace/device pixels. Convert the
-      // viewport size into BlinkSpace to ensure we clamp in a consistent
-      // coordinate space.
-      float viewport_width_blink = viewport_view->ViewportWidth();
-      float viewport_height_blink = viewport_view->ViewportHeight();
-      if (frame) {
-        if (FrameWidget* widget = frame->GetWidgetForLocalRoot()) {
-          viewport_width_blink =
-              widget->DIPsToBlinkSpace(viewport_view->ViewportWidth());
-          viewport_height_blink =
-              widget->DIPsToBlinkSpace(viewport_view->ViewportHeight());
-        }
-      }
-      gfx::RectF local_root_viewport_rect_in_blink_space(
-          0, 0, viewport_width_blink, viewport_height_blink);
+      // `visual_viewport_relative_rect` is produced by
+      // MapToVisualRectInAncestorSpace() in visual-viewport-relative
+      // BlinkSpace: device pixels, which include the page zoom. Clamp against
+      // the viewport's size in that same space, which is
+      // LocalFrameView::GetLayoutSize(). ViewportWidth() and ViewportHeight()
+      // are that size in CSS pixels, and those are only DIPs, which
+      // FrameWidget::DIPsToBlinkSpace() could convert back, while the page is
+      // not zoomed.
+      const gfx::RectF local_root_viewport_rect_in_blink_space{
+          gfx::SizeF(viewport_view->GetLayoutSize())};
 
 #if DCHECK_IS_ON()
       gfx::RectF unclamped_rect = visual_viewport_relative_rect;

@@ -2,8 +2,9 @@
 name: blink/content_extraction/maintain-coordinate-space-invariants
 description: >-
   Keep extracted geometry in local-root Blink device pixels by mapping clipped
-  and unclipped rects through MapToVisualRectInAncestorSpace and converting CSS
-  or screen DIPs via FrameWidget::DIPsToBlinkSpace().
+  and unclipped rects through MapToVisualRectInAncestorSpace, taking the
+  viewport's size from LocalFrameView::GetLayoutSize() and converting screen
+  DIPs via FrameWidget::DIPsToBlinkSpace().
 rubric: correctness
 severity: blocking
 ---
@@ -21,13 +22,19 @@ popups:
    (`kVisualRectFlags | kSkipAncestorAndViewportClips`) through
    `MapToVisualRectInAncestorSpace` in local-root Blink device pixels rather
    than mixing `LocalToAbsoluteQuad` or `AbsoluteBoundingBoxRect`.
-2. **Convert screen DIPs and CSS viewport sizes into local-root Blink pixels**:
-   `MapToVisualRectInAncestorSpace` produces coordinates in local-root Blink
-   (device) pixels. When combining, offsetting, or clamping against
-   `LocalFrameView::ViewportWidth/Height()` (CSS/layout pixels) or
+2. **Take viewport sizes in local-root Blink pixels, and convert screen DIPs
+   into them**: `MapToVisualRectInAncestorSpace` produces coordinates in
+   local-root Blink (device) pixels, which include the page zoom. When clamping
+   against the viewport, use a size that is in those pixels:
+   `LocalFrameView::GetLayoutSize()` for the layout viewport, or
+   `VisualViewport::Size()` for the visual viewport, which differs from it on
+   mobile, e.g. while the URL bar is hidden (crbug.com/474330989). Do not use
+   `LocalFrameView::ViewportWidth/Height()`: they are in CSS pixels, which are
+   only DIPs while the page is not zoomed, so `FrameWidget::DIPsToBlinkSpace()`
+   does not convert them back. When combining with or offsetting by
    `WebPagePopup::ViewRect()` (screen/window DIPs), subtract the main frame's
-   screen origin in DIPs (`main_frame_view_rect_in_dips.OffsetFromOrigin()`) for
-   screen rects and convert via `FrameWidget::DIPsToBlinkSpace()` on
+   screen origin in DIPs (`main_frame_view_rect_in_dips.OffsetFromOrigin()`) and
+   convert via `FrameWidget::DIPsToBlinkSpace()` on
    `frame->GetWidgetForLocalRoot()`.
 
 **Why.** Mixing `LocalToAbsoluteQuad` / `AbsoluteBoundingBoxRect` with
@@ -35,7 +42,7 @@ popups:
 violates `outer_bounding_box.Contains(visible_bounding_box)` under page scale,
 scrollbars, or multicol fragmentation. Mixing screen DIPs or CSS pixels with
 Blink device pixels shifts or clips hit targets under non-unit device scale
-factors or moved browser windows.
+factors, page zoom or moved browser windows.
 
 ## Examples
 
@@ -49,7 +56,8 @@ gfx::QuadF outer_quad =
 geometry->outer_bounding_box = gfx::ToEnclosingRect(outer_quad.BoundingBox());
 
 // BUG 2: Clamps a Blink-space visual rect against ViewportWidth/Height (CSS
-// pixels) without converting via FrameWidget::DIPsToBlinkSpace()!
+// pixels)! Converting them via FrameWidget::DIPsToBlinkSpace() is only right
+// while the page is not zoomed: at 150% zoom the result is 2/3 of the viewport.
 gfx::RectF viewport_rect(0, 0, view->ViewportWidth(), view->ViewportHeight());
 visual_rect_in_blink_space.Intersect(viewport_rect);
 ```
@@ -66,13 +74,7 @@ object.MapToVisualRectInAncestorSpace(
                 {VisualRectFlag::kSkipAncestorAndViewportClips}));
 geometry->outer_bounding_box = gfx::ToEnclosingRect(unclipped_box);
 
-// 2. Convert viewport dimensions to Blink space via the local-root FrameWidget:
-float width_blink = viewport_view->ViewportWidth();
-float height_blink = viewport_view->ViewportHeight();
-if (FrameWidget* widget = frame->GetWidgetForLocalRoot()) {
-  width_blink = widget->DIPsToBlinkSpace(width_blink);
-  height_blink = widget->DIPsToBlinkSpace(height_blink);
-}
+// 2. Clamp against the local root's viewport size in Blink space:
 visual_rect_in_blink_space.Intersect(
-    gfx::RectF(0, 0, width_blink, height_blink));
+    gfx::RectF(gfx::SizeF(viewport_view->GetLayoutSize())));
 ```

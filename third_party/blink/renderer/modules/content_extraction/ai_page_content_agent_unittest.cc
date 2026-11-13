@@ -945,15 +945,61 @@ TEST_F(AIPageContentAgentTest,
 
   ASSERT_TRUE(saw_geometry);
 
-  // On HighDPI, the device-pixel viewport should be (layout viewport in CSS
-  // pixels) * DSF.
+  // On HighDPI, the extents should be those of the layout viewport in device
+  // pixels, which is LocalFrameView's layout size.
   //
   // Note: When browser controls are involved, the layout viewport height can be
   // reduced by an implementation-defined amount (it is *not* guaranteed to be
-  // exactly kVisualViewportOffsetDip). Use LocalFrameView's post-adjustment
-  // viewport size to compute the expected BlinkSpace/device-pixel extents.
-  EXPECT_EQ(max_right, view->ViewportWidth() * kDeviceScaleFactor);
-  EXPECT_EQ(max_bottom, view->ViewportHeight() * kDeviceScaleFactor);
+  // exactly kVisualViewportOffsetDip), so the expected extents come from
+  // LocalFrameView's post-adjustment size rather than the window's.
+  EXPECT_EQ(max_right, view->GetLayoutSize().width());
+  EXPECT_EQ(max_bottom, view->GetLayoutSize().height());
+  // So that the check does not only compare the code with itself: that size is
+  // the window's in device pixels, less the browser controls, and not in DIPs.
+  EXPECT_EQ(max_right, kDipViewportSize.width() * kDeviceScaleFactor);
+  EXPECT_GT(max_bottom, kDipViewportSize.height());
+}
+
+// The clamp of visible bounding boxes to the viewport must be in the space the
+// boxes are in: device pixels, which include the page zoom. If the viewport
+// is taken in CSS pixels instead, zooming the page in shrinks it, and nodes at
+// its right and bottom lose their geometry.
+TEST_F(AIPageContentAgentTest, VisibleBoundingBoxClampAccountsForPageZoom) {
+  ScopedAIPageContentVisualViewportClampForTest enable_viewport_clamp(true);
+
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body style='margin: 0'>"
+      "  <button id='corner' style='position: fixed; right: 0; bottom: 0;"
+      "      width: 40px; height: 20px; margin: 0; border: 0; padding: 0'>"
+      "  </button>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  LocalFrame* frame = helper_.LocalMainFrame()->GetFrame();
+  frame->SetLayoutZoomFactor(2.0f);
+  frame->View()->UpdateAllLifecyclePhasesForTest();
+
+  GetAIPageContentWithActionableElements();
+
+  // The viewport is still the whole window, of which the page now lays out
+  // half in each dimension.
+  const auto& root = *Content()->root_node;
+  ASSERT_TRUE(root.content_attributes->geometry);
+  EXPECT_EQ(root.content_attributes->geometry->visible_bounding_box,
+            gfx::Rect(kWindowSize));
+
+  // The button is twice its CSS size, at the window's bottom right.
+  const auto* corner = FindNodeBySelector("#corner");
+  ASSERT_TRUE(corner);
+  ASSERT_TRUE(corner->content_attributes->geometry);
+  EXPECT_EQ(
+      corner->content_attributes->geometry->visible_bounding_box,
+      gfx::Rect(kWindowSize.width() - 80, kWindowSize.height() - 40, 80, 40));
+  // It is hit-testable too: whether a node is hit-testable is found by
+  // hit-testing the clamped viewport.
+  ASSERT_TRUE(corner->content_attributes->node_interaction_info);
+  EXPECT_TRUE(corner->content_attributes->node_interaction_info
+                  ->document_scoped_z_order.has_value());
 }
 
 TEST_F(AIPageContentAgentTest, Image) {
