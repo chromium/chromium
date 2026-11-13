@@ -1964,6 +1964,9 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   field_renderer_id_to_submit_ = FieldRendererId();
   suggestion_banned_fields_.clear();
   times_received_fill_data_.clear();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  should_show_popup_without_passwords_ = false;
+#endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
