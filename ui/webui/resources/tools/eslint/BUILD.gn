@@ -13,6 +13,7 @@ ts_library("build_ts") {
     "lit_element_invalid_interface.ts",
     "lit_element_structure.ts",
     "lit_element_template_structure.ts",
+    "lit_member_visibility.ts",
     "lit_property_accessor.ts",
     "lit_reactive_properties.ts",
     "lit_use_dollar_sign.ts",

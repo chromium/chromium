@@ -7,6 +7,7 @@ import {litElementExpressions} from './lit_element_bindings.js';
 import {litElementInvalidInterface} from './lit_element_invalid_interface.js';
 import {litElementStructureRule} from './lit_element_structure.js';
 import {litElementTemplateStructure} from './lit_element_template_structure.js';
+import {litMemberVisibility} from './lit_member_visibility.js';
 import {litPropertyAccessorRule} from './lit_property_accessor.js';
 import {litReactiveProperties} from './lit_reactive_properties.js';
 import {litUseDollarSign} from './lit_use_dollar_sign.js';
@@ -25,6 +26,7 @@ const rules = {
   'lit-element-invalid-interface': litElementInvalidInterface,
   'lit-element-structure': litElementStructureRule,
   'lit-element-template-structure': litElementTemplateStructure,
+  'lit-member-visibility': litMemberVisibility,
   'lit-property-accessor': litPropertyAccessorRule,
   'lit-reactive-properties': litReactiveProperties,
   'lit-use-dollar-sign': litUseDollarSign,

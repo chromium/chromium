@@ -143,7 +143,9 @@ export class SettingsAutofillAiEntriesListElement extends
       */
       autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
 
+      // <if expr="_google_chrome">
       autofillEnableGradientGoogleLogos_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -164,8 +166,10 @@ export class SettingsAutofillAiEntriesListElement extends
   protected accessor entityInstances_: EntityInstanceWithLabels[] = [];
   private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
+  // <if expr="_google_chrome">
   protected accessor autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
   private accessor canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
   private activeEntityInstanceGuid_: string|null = null;
