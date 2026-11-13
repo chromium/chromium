@@ -13,6 +13,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
@@ -247,7 +248,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::CONTEXTUAL_TASK);
     }
 
-    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    if (skills::SkillsServiceFactory::GetForProfile(profile())) {
       datatypes.Put(syncer::SKILL);
     }
 
@@ -482,3 +483,53 @@ TEST_F(SyncServiceFactoryTestWithoutAppsAndAppSettings,
   EXPECT_TRUE(types.Has(syncer::WEB_APPS));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+
+class SyncServiceFactoryWithSkillsOnlyTest : public SyncServiceFactoryTest {
+ public:
+  SyncServiceFactoryWithSkillsOnlyTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSkillsEnabled},
+        /*disabled_features=*/{features::kSkillsWebViewV2Enabled});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SyncServiceFactoryWithSkillsOnlyTest,
+       SkillDataTypeRequiresWebViewV2OnAndroid) {
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
+  syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(skills::SkillsServiceFactory::GetForProfile(profile()));
+  EXPECT_FALSE(types.Has(syncer::SKILL));
+#else
+  EXPECT_TRUE(skills::SkillsServiceFactory::GetForProfile(profile()));
+  EXPECT_TRUE(types.Has(syncer::SKILL));
+#endif
+}
+
+class SyncServiceFactoryWithSkillsAndWebViewV2Test
+    : public SyncServiceFactoryTest {
+ public:
+  SyncServiceFactoryWithSkillsAndWebViewV2Test() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSkillsEnabled,
+                              features::kSkillsWebViewV2Enabled},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SyncServiceFactoryWithSkillsAndWebViewV2Test, RegistersSkillDataType) {
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
+  syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
+
+  EXPECT_TRUE(skills::SkillsServiceFactory::GetForProfile(profile()));
+  EXPECT_TRUE(types.Has(syncer::SKILL));
+}

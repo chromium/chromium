@@ -4769,7 +4769,9 @@ TEST_F(GlicEnablingGeicPolicyCountryCheckTest,
 
 // Gemini Enterprise doesn't support Chrome Skills.
 TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotSupportSkills) {
-  base::test::ScopedFeatureList feature_list(::features::kSkillsEnabled);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kSkillsEnabled, ::features::kSkillsWebViewV2Enabled}, {});
   ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_FALSE(
@@ -4778,7 +4780,9 @@ TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotSupportSkills) {
 
 // Consumer Gemini supports Chrome Skills.
 TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest, ConsumerSupportsSkills) {
-  base::test::ScopedFeatureList feature_list(::features::kSkillsEnabled);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kSkillsEnabled, ::features::kSkillsWebViewV2Enabled}, {});
   ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
   EXPECT_TRUE(
       GetGlicProviderSpec(profile()).SupportsFeature(GlicFeature::kSkills));

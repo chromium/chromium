@@ -155,8 +155,29 @@ TEST(GlicProviderSpecImplTest,
 }
 
 TEST(GlicProviderSpecImplTest, GeminiSkillsFollowsSkillsEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {::features::kSkillsEnabled, ::features::kSkillsWebViewV2Enabled}, {});
+    EXPECT_TRUE(GeminiSupportsFeature(GlicFeature::kSkills));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({::features::kSkillsEnabled},
+                                  {::features::kSkillsWebViewV2Enabled});
+    EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kSkills));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({::features::kSkillsWebViewV2Enabled},
+                                  {::features::kSkillsEnabled});
+    EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kSkills));
+  }
+#else
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kSkills,
                                  ::features::kSkillsEnabled);
+#endif
 }
 
 TEST(GlicProviderSpecImplTest, GeminiIndigoFollowsIndigoOpenGlic) {
@@ -179,6 +200,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,
       ::features::kSkillsEnabled,
+      ::features::kSkillsWebViewV2Enabled,
       features::kIndigoOpenGlic,
       features::kGlicMarketingAutoOpen,
 #if BUILDFLAG(ENABLE_PDF)

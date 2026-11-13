@@ -318,7 +318,7 @@ class CommonControllerBuilder {
       syncer::SyncService* sync_service);
   std::unique_ptr<syncer::DataTypeController>
   CreateAutofillEntitySuppressionDataTypeController();
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<syncer::DataTypeController> CreateSkillDataTypeController(
       syncer::SyncService* sync_service);
 #endif

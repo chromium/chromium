@@ -323,6 +323,7 @@ source_set("unit_tests") {
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/search_engines",
+    "//chrome/browser/skills",
     "//chrome/browser/spellchecker",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui:ui_features",

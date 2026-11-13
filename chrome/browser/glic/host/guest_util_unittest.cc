@@ -382,7 +382,9 @@ TEST_F(
     GuestUtilMultiInstanceTest,
     PopulateGlobalClientInitialState_SkillsEnabledWhenFeatureAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSkillsEnabled);
+  // Android additionally requires the WebView V2 UI.
+  feature_list.InitWithFeatures(
+      {features::kSkillsEnabled, features::kSkillsWebViewV2Enabled}, {});
 
   TestingProfile* profile = CreateTestingProfile();
   GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;

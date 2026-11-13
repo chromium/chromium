@@ -425,6 +425,9 @@ source_set("provider_spec_impl") {
     "//pdf:buildflags",
     "//url",
   ]
+  if (is_android) {
+    deps += [ "//components/guest_view/common" ]
+  }
 }
 
 # TODO(b/430371855): This is the better target for resources only needed

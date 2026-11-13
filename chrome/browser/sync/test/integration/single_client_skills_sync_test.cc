@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -204,7 +205,10 @@ class SingleClientSkillsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSkillsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSkillsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    feature_overrides_.InitWithFeatures(
+        {features::kSkillsEnabled, features::kSkillsWebViewV2Enabled}, {});
+  }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -285,7 +289,7 @@ class SingleClientSkillsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_overrides_{features::kSkillsEnabled};
+  base::test::ScopedFeatureList feature_overrides_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -298,6 +302,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldInitializeDataType) {
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SKILL));
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        PRE_ShouldLoadDataOnRestart) {
   ASSERT_TRUE(SetupSync());
@@ -318,6 +324,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldLoadDataOnRestart) {
                                         "prompt",
                                         /*description=*/""))));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldApplyRemoteUpdates) {
   ASSERT_TRUE(SetupSync());
@@ -438,6 +445,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
           .Wait());
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        PRE_ShouldPopulateNewlySupportedFieldsOnBrowserUpgrade) {
   const std::string kSkillId =
@@ -490,6 +499,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                       /*description=*/"")))
                   .Wait());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ChromeOS does not support signout.
 #if !BUILDFLAG(IS_CHROMEOS)
