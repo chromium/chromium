@@ -1072,8 +1072,6 @@ enum class PasskeyCreationEligibility {
 // Displays sheet with information that credential saving is disabled by the
 // enterprise policy.
 - (void)showSavingDisabledByEnterpriseAlert {
-  // TODO(crbug.com/362719658): Check whether it's possible to make the whole
-  // VC a half sheet.
   UIViewController* savingEnterpriseDisabledViewController =
       [self createPasskeyErrorAlertForErrorType:
                 ErrorType::kEnterpriseDisabledSavingCredentials];
