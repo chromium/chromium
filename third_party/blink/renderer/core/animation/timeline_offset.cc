@@ -296,6 +296,11 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
     return Length::Fixed();
   }
   ElementResolveContext element_resolve_context(*element);
+  // Constructing ElementResolveContext walks the flat tree and may trigger slot
+  // assignment recalc, which can detach `element`'s layout tree.
+  if (!element->GetComputedStyle()) {
+    return Length::Fixed();
+  }
   Document& document = element->GetDocument();
   CSSToLengthConversionData::Flags ignored_flags = 0;
 

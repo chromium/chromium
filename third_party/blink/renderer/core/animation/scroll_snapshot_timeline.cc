@@ -237,9 +237,10 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
     SetHasPendingCompositorUpdate(true);
   }
 
-  const HeapHashSet<WeakMember<Animation>>& animations = GetAnimations();
-
   auto should_skip_validation = [service_animations](Animation* animation) {
+    if (!animation->TimelineInternal()) {
+      return true;
+    }
     // For scroll-driven aimations, we should avoid setting a deferred start
     // time during the update snapshot phase. Instead wait for the validation
     // phase post layout. Skipping OnValidateSnapshot here is necessary for not
@@ -261,7 +262,7 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
     HeapVector<Member<TimelineTrigger>> triggers(GetTriggers());
     HeapVector<Member<Animation>> animations_to_validate;
     for (TimelineTrigger* trigger : triggers) {
-      if (trigger->Update()) {
+      if (!GetTriggers().Contains(trigger) || trigger->Update()) {
         continue;
       }
       snapshot_changed = true;
@@ -277,7 +278,7 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
         }
         // Avoid superfluous snapshot validation, by skipping the call if it
         // will be invoked in the loop below.
-        if (animations.Contains(animation) ||
+        if (GetAnimations().Contains(animation) ||
             should_skip_validation(animation)) {
           continue;
         }
@@ -287,7 +288,8 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
     for (Animation* animation : animations_to_validate) {
       // A later TimelineTrigger::Update or earlier OnValidateSnapshot call may
       // have cancelled `animation` and disassociated it from its trigger.
-      if (animation->GetTriggers().empty()) {
+      if (animation->GetTriggers().empty() ||
+          should_skip_validation(animation)) {
         continue;
       }
       animation->OnValidateSnapshot(true);
@@ -295,8 +297,13 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
     update_triggers_ = false;
   }
 
+  // Validating snapshots may update style-dependent range offsets and
+  // recalculate slot assignments, which can modify the timeline's animation
+  // set.
+  HeapVector<Member<Animation>> animations(GetAnimations());
   for (Animation* animation : animations) {
-    if (should_skip_validation(animation)) {
+    if (animation->TimelineInternal() != this ||
+        should_skip_validation(animation)) {
       continue;
     }
     // Compute deferred start times and update animation timing if required.
