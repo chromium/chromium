@@ -5,11 +5,13 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_IMAGE_STORE_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_IMAGE_STORE_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -84,8 +86,8 @@ class DeviceImageStore {
   // if |model_id| has no saved images or there was an error when persisting.
   bool PersistDeviceImages(const std::string& model_id);
 
-  // Evicts the DeviceImageInfo corresponding to |model_id| in
-  // model_id_to_images_ from local state prefs. Returns true if |model_id| is
+  // Evicts the DeviceImageInfo corresponding to |model_id| from
+  // |model_id_to_images_| and local state prefs. Returns true if |model_id| is
   // evicted from prefs, false otherwise.
   bool EvictDeviceImages(const std::string& model_id);
 
@@ -93,6 +95,8 @@ class DeviceImageStore {
   // found.
   std::optional<bluetooth_config::DeviceImageInfo> GetImagesForDeviceModel(
       const std::string& model_id);
+
+  size_t SizeForTesting() const { return model_id_to_images_.size(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, PersistDeviceImages);

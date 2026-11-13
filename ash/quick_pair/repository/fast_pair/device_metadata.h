@@ -15,8 +15,8 @@ namespace quick_pair {
 // Thin wrapper around decoded metadata for a Fast Pair device.
 class DeviceMetadata {
  public:
-  DeviceMetadata(const nearby::fastpair::GetObservedDeviceResponse device,
-                 const gfx::Image image);
+  DeviceMetadata(nearby::fastpair::GetObservedDeviceResponse device,
+                 gfx::Image image);
   DeviceMetadata(DeviceMetadata&&);
   DeviceMetadata(const DeviceMetadata&) = delete;
   DeviceMetadata& operator=(const DeviceMetadata&) = delete;

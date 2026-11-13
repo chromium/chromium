@@ -313,4 +313,27 @@ TEST_F(DeviceImageStoreTest, LoadPersistedImagesFromPrefs) {
   EXPECT_EQ(case_image, webui::GetBitmapDataUrl(test_image_.AsBitmap()));
 }
 
+TEST_F(DeviceImageStoreTest, LookupAndPersistMissDoNotInsertEmptyRecords) {
+  EXPECT_FALSE(device_image_store_->GetImagesForDeviceModel("UNKNOWN_1"));
+  EXPECT_FALSE(device_image_store_->PersistDeviceImages("UNKNOWN_2"));
+
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata empty_image_metadata(std::move(response), gfx::Image());
+  device_image_store_->FetchDeviceImages("UNKNOWN_3", &empty_image_metadata,
+                                         base::DoNothing());
+
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
+}
+
+TEST_F(DeviceImageStoreTest, EvictDeviceImagesRemovesInMemoryEntry) {
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         base::DoNothing());
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 1u);
+
+  EXPECT_TRUE(device_image_store_->EvictDeviceImages(kTestModelId));
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
+  EXPECT_FALSE(device_image_store_->GetImagesForDeviceModel(kTestModelId));
+}
+
 }  // namespace ash::quick_pair

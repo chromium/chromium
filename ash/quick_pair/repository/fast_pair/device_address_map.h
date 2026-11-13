@@ -5,8 +5,10 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_ADDRESS_MAP_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_ADDRESS_MAP_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/quick_pair/common/device.h"
 #include "base/containers/flat_map.h"
@@ -47,9 +49,10 @@ class DeviceAddressMap {
   // otherwise.
   bool PersistRecordsForDevice(scoped_refptr<Device> device);
 
-  // Evicts the |mac_address| -> model ID record in mac_address_to_model_id_
-  // from local state prefs. Returns true if the record was evicted, false if
-  // there was no |mac_address| record to evict.
+  // Evicts the |mac_address| -> model ID record from
+  // |mac_address_to_model_id_| and local state prefs. Returns true if the
+  // record was evicted from prefs, false if there was no |mac_address| record
+  // in prefs to evict.
   bool EvictMacAddressRecord(const std::string& mac_address);
 
   // Returns the model ID for |mac_address|, or std::nullopt if a matching
@@ -59,7 +62,9 @@ class DeviceAddressMap {
 
   // Returns true if there are mac address -> |model_id| records in
   // local state prefs, false otherwise.
-  bool HasPersistedRecordsForModelId(const std::string& model_id);
+  bool HasPersistedRecordsForModelId(std::string_view model_id);
+
+  size_t SizeForTesting() const { return mac_address_to_model_id_.size(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, PersistDeviceImages);

@@ -5,12 +5,16 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_IMPL_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_IMPL_H_
 
+#include <cstddef>
+#include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -50,6 +54,12 @@ class SavedDeviceRegistry;
 class FastPairRepositoryImpl : public FastPairRepository,
                                public NetworkStateHandlerObserver {
  public:
+  // Maximum number of device models in `metadata_cache_`. Covers the distinct
+  // models a user pairs in a session, with headroom for nearby devices seen
+  // in pairing mode. Each entry holds a decoded notification image (up to
+  // ~190 KB), and an evicted model only costs one refetch.
+  static constexpr size_t kMaxMetadataCacheSize = 20;
+
   // `local_state` must be non-null and outlive this instance.
   explicit FastPairRepositoryImpl(PrefService* local_state);
   FastPairRepositoryImpl(
@@ -101,6 +111,10 @@ class FastPairRepositoryImpl : public FastPairRepository,
 
   // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState* network) override;
+
+  size_t GetMetadataCacheSizeForTesting() const {
+    return metadata_cache_.size();
+  }
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -199,7 +213,8 @@ class FastPairRepositoryImpl : public FastPairRepository,
   std::unique_ptr<SavedDeviceRegistry> saved_device_registry_;
   std::unique_ptr<PendingWriteStore> pending_write_store_;
 
-  base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;
+  base::LRUCache<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_{
+      kMaxMetadataCacheSize};
   nearby::fastpair::UserReadDevicesResponse user_devices_cache_;
   base::Time footprints_last_updated_;
   base::Time retry_write_or_delete_last_attempted_;

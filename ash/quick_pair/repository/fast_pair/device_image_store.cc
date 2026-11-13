@@ -8,6 +8,8 @@
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "base/check_deref.h"
+#include "base/containers/map_util.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "components/cross_device/logging/logging.h"
@@ -42,7 +44,13 @@ void DeviceImageStore::FetchDeviceImages(
     DeviceMetadata* device_metadata,
     FetchDeviceImagesCallback on_images_saved_callback) {
   DCHECK(device_metadata);
-  DeviceImageInfo& images = model_id_to_images_[model_id];
+  // Uses empty images if none are cached for `model_id`, so that the lookup
+  // does not insert an empty entry.
+  static const base::NoDestructor<DeviceImageInfo> kNoImages;
+  const DeviceImageInfo* existing_images =
+      base::FindOrNull(model_id_to_images_, model_id);
+  const DeviceImageInfo& images =
+      existing_images ? *existing_images : *kNoImages;
 
   if (images.default_image().empty() && !device_metadata->image().IsEmpty()) {
     SaveImageAsBase64(model_id, DeviceImageType::kDefault,
@@ -83,9 +91,10 @@ void DeviceImageStore::FetchDeviceImages(
 }
 
 bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
-  DeviceImageInfo& images = model_id_to_images_[model_id];
+  const DeviceImageInfo* images =
+      base::FindOrNull(model_id_to_images_, model_id);
 
-  if (!DeviceImageInfoHasImages(images)) {
+  if (!images || !DeviceImageInfoHasImages(*images)) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Attempted to persist non-existent images for model ID: " +
@@ -96,7 +105,7 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
                                           kDeviceImageStorePref);
   // TODO(dclasson): Once we add TrueWireless support, need to modify this to
   // merge new & persisted images objects.
-  if (!device_image_store->Set(model_id, images.ToDictionaryValue())) {
+  if (!device_image_store->Set(model_id, images->ToDictionaryValue())) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Failed to persist images to prefs for model ID: " + model_id;
@@ -106,6 +115,8 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
 }
 
 bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
+  model_id_to_images_.erase(model_id);
+
   ScopedDictPrefUpdate device_image_store(&local_state_.get(),
                                           kDeviceImageStorePref);
   if (!device_image_store->Remove(model_id)) {
@@ -125,12 +136,13 @@ std::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
     LoadPersistedImagesFromPrefs();
   }
 
-  DeviceImageInfo& images = model_id_to_images_[model_id];
+  const DeviceImageInfo* images =
+      base::FindOrNull(model_id_to_images_, model_id);
 
-  if (!DeviceImageInfoHasImages(images)) {
+  if (!images || !DeviceImageInfoHasImages(*images)) {
     return std::nullopt;
   }
-  return images;
+  return *images;
 }
 
 void DeviceImageStore::LoadPersistedImagesFromPrefs() {

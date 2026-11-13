@@ -31,11 +31,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -1182,12 +1184,48 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
   fast_pair_repository_->EvictDeviceImages(kTestClassicAddress1);
   ASSERT_FALSE(
       device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 
   device_address_map_->RefreshCacheForTest();
   device_image_store_->RefreshCacheForTest();
   ASSERT_FALSE(
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       EvictDeviceImagesThenPairingDeviceOfSameModelRefetchesImages) {
+  // The first device is paired and its records and images are persisted.
+  auto device1 = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                              Protocol::kFastPairInitial);
+  device1->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->FetchDeviceImages(device1);
+  ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+  ASSERT_TRUE(fast_pair_repository_->PersistDeviceImages(device1));
+
+  // A second device of the same model is discovered and being paired: its
+  // images are fetched into memory but not yet persisted.
+  auto device2 = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                              Protocol::kFastPairInitial);
+  device2->set_classic_address(kTestClassicAddress2);
+  fast_pair_repository_->FetchDeviceImages(device2);
+  ASSERT_TRUE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress2));
+
+  // Forgetting the first device evicts the images, since no other paired
+  // device uses the model.
+  EXPECT_TRUE(fast_pair_repository_->EvictDeviceImages(kTestClassicAddress1));
+  EXPECT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  EXPECT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+
+  // When the second device finishes pairing, its images are fetched again and
+  // persisted, as Mediator::OnDevicePaired() does.
+  fast_pair_repository_->FetchDeviceImages(device2);
+  EXPECT_TRUE(fast_pair_repository_->PersistDeviceImages(device2));
+  EXPECT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 }
 
 // TODO(crbug.com/40264951): Re-enable this test
@@ -1770,6 +1808,68 @@ TEST_F(FastPairRepositoryImplTest,
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(GetAccountKey1()));
   ASSERT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(GetAccountKey1()));
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       EvictsLeastRecentlyUsedMetadataAndClearsEncodedImageBytes) {
+  auto model_id_for_index = [](size_t index) {
+    // Decimal IDs prefixed with 2748 return valid metadata with an image in
+    // FakeDeviceMetadataHttpFetcher.
+    return base::StringPrintf("%X", static_cast<int>(274800 + index));
+  };
+
+  for (size_t i = 0; i < FastPairRepositoryImpl::kMaxMetadataCacheSize; ++i) {
+    base::test::TestFuture<DeviceMetadata*, bool> future;
+    fast_pair_repository_->GetDeviceMetadata(model_id_for_index(i),
+                                             future.GetCallback());
+    auto [metadata, should_retry] = future.Take();
+    ASSERT_NE(metadata, nullptr);
+    EXPECT_FALSE(should_retry);
+    EXPECT_FALSE(metadata->image().IsEmpty());
+    EXPECT_TRUE(metadata->response().image().empty());
+  }
+  EXPECT_EQ(fast_pair_repository_->GetMetadataCacheSizeForTesting(),
+            FastPairRepositoryImpl::kMaxMetadataCacheSize);
+  const int gets_after_fill = metadata_http_fetcher_->num_gets();
+
+  // Touching entry 0 promotes it to most-recently-used without a network GET.
+  {
+    base::test::TestFuture<DeviceMetadata*, bool> future;
+    fast_pair_repository_->GetDeviceMetadata(model_id_for_index(0),
+                                             future.GetCallback());
+    ASSERT_NE(future.Get<0>(), nullptr);
+  }
+  EXPECT_EQ(metadata_http_fetcher_->num_gets(), gets_after_fill);
+
+  // Inserting one more entry should evict entry 1 (least-recently-used).
+  {
+    base::test::TestFuture<DeviceMetadata*, bool> future;
+    fast_pair_repository_->GetDeviceMetadata(
+        model_id_for_index(FastPairRepositoryImpl::kMaxMetadataCacheSize),
+        future.GetCallback());
+    ASSERT_NE(future.Get<0>(), nullptr);
+  }
+  EXPECT_EQ(fast_pair_repository_->GetMetadataCacheSizeForTesting(),
+            FastPairRepositoryImpl::kMaxMetadataCacheSize);
+  EXPECT_EQ(metadata_http_fetcher_->num_gets(), gets_after_fill + 1);
+
+  // Entry 0 should still hit the cache without a network GET.
+  {
+    base::test::TestFuture<DeviceMetadata*, bool> future;
+    fast_pair_repository_->GetDeviceMetadata(model_id_for_index(0),
+                                             future.GetCallback());
+    ASSERT_NE(future.Get<0>(), nullptr);
+  }
+  EXPECT_EQ(metadata_http_fetcher_->num_gets(), gets_after_fill + 1);
+
+  // Entry 1 was evicted, so requesting it again must issue a network GET.
+  {
+    base::test::TestFuture<DeviceMetadata*, bool> future;
+    fast_pair_repository_->GetDeviceMetadata(model_id_for_index(1),
+                                             future.GetCallback());
+    ASSERT_NE(future.Get<0>(), nullptr);
+  }
+  EXPECT_EQ(metadata_http_fetcher_->num_gets(), gets_after_fill + 2);
 }
 
 }  // namespace quick_pair

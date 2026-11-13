@@ -4,12 +4,14 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 
+#include <utility>
+
 namespace ash {
 namespace quick_pair {
 
 DeviceMetadata::DeviceMetadata(
-    const nearby::fastpair::GetObservedDeviceResponse response,
-    const gfx::Image image)
+    nearby::fastpair::GetObservedDeviceResponse response,
+    gfx::Image image)
     : response_(std::move(response)), image_(std::move(image)) {}
 
 DeviceMetadata::DeviceMetadata(DeviceMetadata&&) = default;

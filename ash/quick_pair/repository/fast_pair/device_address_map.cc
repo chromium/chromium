@@ -45,9 +45,8 @@ bool DeviceAddressMap::PersistRecordsForDevice(scoped_refptr<Device> device) {
 }
 
 bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
-  const std::string& model_id = mac_address_to_model_id_[mac_address];
-
-  if (model_id.empty()) {
+  auto it = mac_address_to_model_id_.find(mac_address);
+  if (it == mac_address_to_model_id_.end() || it->second.empty()) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": Can't persist null mac address -> model ID record "
@@ -55,6 +54,7 @@ bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
                mac_address;
     return false;
   }
+  const std::string& model_id = it->second;
 
   ScopedDictPrefUpdate device_address_map_dict(&local_state_.get(),
                                                kDeviceAddressMapPref);
@@ -70,6 +70,8 @@ bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
 }
 
 bool DeviceAddressMap::EvictMacAddressRecord(const std::string& mac_address) {
+  mac_address_to_model_id_.erase(mac_address);
+
   ScopedDictPrefUpdate device_address_map_dict(&local_state_.get(),
                                                kDeviceAddressMapPref);
   if (!device_address_map_dict->Remove(mac_address)) {
@@ -91,15 +93,15 @@ std::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
     LoadPersistedRecordsFromPrefs();
   }
 
-  std::string& saved_model_id = mac_address_to_model_id_[mac_address];
-  if (saved_model_id.empty()) {
+  auto it = mac_address_to_model_id_.find(mac_address);
+  if (it == mac_address_to_model_id_.end() || it->second.empty()) {
     return std::nullopt;
   }
-  return saved_model_id;
+  return it->second;
 }
 
 bool DeviceAddressMap::HasPersistedRecordsForModelId(
-    const std::string& model_id) {
+    std::string_view model_id) {
   CD_LOG(INFO, Feature::FP) << __func__;
   const base::DictValue& device_address_map_dict =
       local_state_->GetDict(kDeviceAddressMapPref);

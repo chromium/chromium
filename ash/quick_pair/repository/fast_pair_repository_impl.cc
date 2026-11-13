@@ -143,10 +143,11 @@ void FastPairRepositoryImpl::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
   std::string normalized_id = base::ToUpperASCII(hex_model_id);
-  if (metadata_cache_.contains(normalized_id)) {
+  auto it = metadata_cache_.Get(normalized_id);
+  if (it != metadata_cache_.end()) {
     CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Data already in cache.";
     RecordFastPairRepositoryCacheResult(/*success=*/true);
-    std::move(callback).Run(metadata_cache_[normalized_id].get(),
+    std::move(callback).Run(it->second.get(),
                             /*has_retryable_error=*/false);
     return;
   }
@@ -169,22 +170,26 @@ void FastPairRepositoryImpl::OnMetadataFetched(
     return;
   }
   if (response->image().empty()) {
-    metadata_cache_[normalized_model_id] =
-        std::make_unique<DeviceMetadata>(std::move(*response), gfx::Image());
-    std::move(callback).Run(metadata_cache_[normalized_model_id].get(),
+    auto it = metadata_cache_.Put(
+        normalized_model_id,
+        std::make_unique<DeviceMetadata>(std::move(*response), gfx::Image()));
+    std::move(callback).Run(it->second.get(),
                             /*has_retryable_error=*/false);
     return;
   }
 
   const std::string& string_data = response->image();
   std::vector<uint8_t> binary_data(string_data.begin(), string_data.end());
+  // Release the raw encoded image bytes from the proto once copied for
+  // decoding; callers read the decoded `DeviceMetadata::image()`.
+  response->clear_image();
 
   image_decoder_->DecodeImage(
       binary_data,
       /*resize_to_notification_size=*/true,
       base::BindOnce(&FastPairRepositoryImpl::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), normalized_model_id,
-                     std::move(callback), *response));
+                     std::move(callback), std::move(*response)));
 }
 
 void FastPairRepositoryImpl::OnImageDecoded(
@@ -192,9 +197,10 @@ void FastPairRepositoryImpl::OnImageDecoded(
     DeviceMetadataCallback callback,
     nearby::fastpair::GetObservedDeviceResponse response,
     gfx::Image image) {
-  metadata_cache_[normalized_model_id] =
-      std::make_unique<DeviceMetadata>(response, std::move(image));
-  std::move(callback).Run(metadata_cache_[normalized_model_id].get(),
+  auto it = metadata_cache_.Put(
+      normalized_model_id,
+      std::make_unique<DeviceMetadata>(std::move(response), std::move(image)));
+  std::move(callback).Run(it->second.get(),
                           /*has_retryable_error=*/false);
 }
 
