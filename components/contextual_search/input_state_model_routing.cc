@@ -19,6 +19,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
+#include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/url_param.pb.h"
 
 namespace contextual_search {
@@ -222,9 +223,11 @@ FulfillmentDecision ComputeFulfillment(const omnibox::InputState& state,
       std::ranges::contains(state.allowed_models, state.active_model)
           ? state.active_model
           : state.GetDefaultModel();
-  if (const omnibox::ModelConfig* model_config =
-          FindModelConfig(state, decision.model)) {
-    MergeParams(params, model_config->aim_url_params());
+  if (!tool_config || !tool_config->disable_active_model_selection()) {
+    if (const omnibox::ModelConfig* model_config =
+            FindModelConfig(state, decision.model)) {
+      MergeParams(params, model_config->aim_url_params());
+    }
   }
   // AIM needs `udm=50`, or `nem` instead of `udm`.
   if (params.contains(kNemKey)) {
