@@ -355,7 +355,6 @@ cr-composebox-tool-chip {
 
 :host([energy-effect-enabled]) {
   --composebox-cancel-button-inline-end: 14px;
-  --cr-composebox-padding-bottom: 8px;
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-height: 36px;
   --cr-composebox-submit-icon-offset: 0;
