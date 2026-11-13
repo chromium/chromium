@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -25,6 +27,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,6 +55,7 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
 
   void SetUp() override {
     auto* browser_process = TestingBrowserProcess::GetGlobal();
+    app_service_registry_.emplace();
     user_session_test_environment_ = std::make_unique<
         ash::test::UserSessionTestEnvironment>(
         browser_process->local_state(),
@@ -79,6 +83,7 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     profile_ = nullptr;
     browser_controller_.reset();
     user_session_test_environment_.reset();
+    app_service_registry_.reset();
   }
 
   ChromeSavedDeskDelegate* chrome_saved_desk_delegate() {
@@ -100,6 +105,7 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
+  std::optional<apps::AppServiceRegistry> app_service_registry_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
   std::optional<ash::BrowserControllerImpl> browser_controller_;

@@ -14,13 +14,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
@@ -38,12 +39,17 @@
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,31 +66,29 @@
 namespace {
 
 // Return true if `app_id` is available to launch from saved desk.
-bool IsAppAvailable(apps::AppServiceProxy& app_service_proxy,
+bool IsAppAvailable(const apps::AppRegistryCache& app_registry_cache,
+                    const extensions::ExtensionRegistry& extension_registry,
                     const std::string& app_id) {
   bool installed = false;
-  Profile* app_profile = ProfileManager::GetActiveUserProfile();
-  CHECK(app_profile, base::NotFatalUntil::M162);
 
-  app_service_proxy.AppRegistryCache().ForOneApp(
-      app_id, [&](const apps::AppUpdate& app) {
-        installed = apps_util::IsInstalled(app.Readiness());
-      });
+  app_registry_cache.ForOneApp(app_id, [&](const apps::AppUpdate& app) {
+    installed = apps_util::IsInstalled(app.Readiness());
+  });
   if (installed) {
     return true;
   }
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(app_profile)
-          ->GetInstalledExtension(app_id);
+      extension_registry.GetInstalledExtension(app_id);
   return app != nullptr;
 }
 
 // Updates `out_app_names` with titles of browser apps that aren't available
 // on this device.  This is confusingly determined by resolving the `app_name`
 // field to an app ID and running said ID through `IsAppAvailable`.  If the
-// app is unavailable we append the app_title to `out_app_names`.
+// app is unavailable we append the `app_title` to `out_app_names`.
 void GetUnavailableBrowserAppNames(
-    apps::AppServiceProxy& app_service_proxy,
+    const apps::AppRegistryCache& app_registry_cache,
+    const extensions::ExtensionRegistry& extension_registry,
     const app_restore::RestoreData::LaunchList& launch_list,
     std::vector<std::u16string>& out_app_names) {
   for (const auto& [id, restore_data] : launch_list) {
@@ -92,7 +96,7 @@ void GetUnavailableBrowserAppNames(
         restore_data->browser_extra_info.app_name.has_value()) {
       std::string app_id = app_restore::GetAppIdFromAppName(
           restore_data->browser_extra_info.app_name.value());
-      if (!IsAppAvailable(app_service_proxy, app_id)) {
+      if (!IsAppAvailable(app_registry_cache, extension_registry, app_id)) {
         out_app_names.push_back(
             restore_data->window_info.app_title.value_or(u""));
       }
@@ -101,15 +105,26 @@ void GetUnavailableBrowserAppNames(
 }
 
 // Returns a vector of human readable unavailable app names from
-// `desk_template`.
+// `saved_desk`.
 std::vector<std::u16string> GetUnavailableAppNames(
     const ash::DeskTemplate& saved_desk) {
   const auto& launch_lists =
       saved_desk.desk_restore_data()->app_id_to_launch_list();
   std::vector<std::u16string> app_names;
-  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile());
-  if (!app_service_proxy) {
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  const AccountId& account_id = active_session->account_id();
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
+  const extensions::ExtensionRegistry& extension_registry =
+      CHECK_DEREF(extensions::ExtensionRegistry::Get(browser_context));
+  apps::AppService* app_service =
+      apps::AppServiceRegistry::Get()->Find(account_id);
+  if (!app_service) {
     return app_names;
   }
 
@@ -122,10 +137,12 @@ std::vector<std::u16string> GetUnavailableAppNames(
     // If the app ID is a browser then we need to iterate through its windows
     // to catch uninstalled PWAs.
     if (app_id == app_constants::kChromeAppId) {
-      GetUnavailableBrowserAppNames(*app_service_proxy, launch_list, app_names);
+      GetUnavailableBrowserAppNames(app_service->AppRegistryCache(),
+                                    extension_registry, launch_list, app_names);
     }
 
-    if (!IsAppAvailable(*app_service_proxy, app_id)) {
+    if (!IsAppAvailable(app_service->AppRegistryCache(), extension_registry,
+                        app_id)) {
       // `launch_list` is a list of windows associated with `app_id`, so we only
       // need the title of the first window.
       auto it = launch_list.begin();
@@ -197,28 +214,24 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk");
   CHECK(callback, base::NotFatalUntil::M162);
 
-  // TODO(crbug.com/278643115): Take the account_id from the callers.
-  const session_manager::Session* active_session =
-      session_manager::SessionManager::Get()->GetActiveSession();
-  CHECK(active_session);
-  Profile* user_profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          active_session->account_id()));
-  if (!user_profile) {
-    std::move(callback).Run({});
-    return;
-  }
-
   if (!IsWindowSupportedForSavedDesk(window)) {
     std::move(callback).Run({});
     return;
   }
 
-  // Get `full_restore_data` from FullRestoreSaveHandler which contains all
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  const AccountId& account_id = active_session->account_id();
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+
+  // Get `full_restore_data` from `FullRestoreSaveHandler` which contains all
   // restoring information for all apps running on the device.
   const app_restore::RestoreData* full_restore_data =
       full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
-          user_profile->GetPath());
+          user.GetPath().value());
   if (!full_restore_data) {
     std::move(callback).Run({});
     return;
@@ -233,8 +246,8 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   }
 
   auto& app_registry_cache =
-      apps::AppServiceProxyFactory::GetForProfile(user_profile)
-          ->AppRegistryCache();
+      CHECK_DEREF(apps::AppServiceRegistry::Get()->Find(account_id))
+          .AppRegistryCache();
   const auto app_type = app_registry_cache.GetAppType(app_id);
 
   // Get the window id needed to fetch app launch info.
@@ -316,8 +329,12 @@ desks_storage::DeskModel* ChromeSavedDeskDelegate::GetDeskModel() {
 
 desks_storage::AdminTemplateService*
 ChromeSavedDeskDelegate::GetAdminTemplateService() {
-  return ash::AdminTemplateServiceFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  return ash::AdminTemplateServiceFactory::GetForBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
 }
 
 bool ChromeSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
@@ -357,8 +374,14 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
     int desired_icon_size,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetIconForAppId");
-  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile());
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              active_session->account_id())));
   if (!app_service_proxy) {
     std::move(callback).Run(gfx::ImageSkia());
     return;
@@ -371,14 +394,24 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
 }
 
 bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
-  Profile* app_profile = ProfileManager::GetActiveUserProfile();
-  CHECK(app_profile, base::NotFatalUntil::M162);
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  const AccountId& account_id = active_session->account_id();
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
+  const extensions::ExtensionRegistry& extension_registry =
+      CHECK_DEREF(extensions::ExtensionRegistry::Get(browser_context));
 
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(app_profile);
-  CHECK(app_service_proxy);
+  apps::AppService* app_service =
+      apps::AppServiceRegistry::Get()->Find(account_id);
+  CHECK(app_service);
 
-  return ::IsAppAvailable(*app_service_proxy, app_id);
+  return ::IsAppAvailable(app_service->AppRegistryCache(), extension_registry,
+                          app_id);
 }
 
 void ChromeSavedDeskDelegate::LaunchAppsFromSavedDesk(
@@ -417,16 +450,17 @@ std::string ChromeSavedDeskDelegate::GetAppShortName(
     const std::string& app_id) {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppShortName");
   std::string name;
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
-          ? apps::AppServiceProxyFactory::GetForProfile(profile)
-          : nullptr;
-  if (!app_service_proxy) {
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  apps::AppService* app_service =
+      apps::AppServiceRegistry::Get()->Find(active_session->account_id());
+  if (!app_service) {
     return name;
   }
 
-  app_service_proxy->AppRegistryCache().ForOneApp(
+  app_service->AppRegistryCache().ForOneApp(
       app_id,
       [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
   return name;

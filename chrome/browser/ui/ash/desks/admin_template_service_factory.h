@@ -5,14 +5,18 @@
 #ifndef CHROME_BROWSER_UI_ASH_DESKS_ADMIN_TEMPLATE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UI_ASH_DESKS_ADMIN_TEMPLATE_SERVICE_FACTORY_H_
 
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/desks_storage/core/admin_template_service.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
 template <typename T>
 class NoDestructor;
 }  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace desks_storage {
 class AdminTemplateService;
@@ -21,10 +25,11 @@ class AdminTemplateService;
 namespace ash {
 
 // Service factory that retrieves the AdminTemplateFactory for the appropriate
-// profile.
-class AdminTemplateServiceFactory : public ProfileKeyedServiceFactory {
+// BrowserContext.
+class AdminTemplateServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static desks_storage::AdminTemplateService* GetForProfile(Profile* profile);
+  static desks_storage::AdminTemplateService* GetForBrowserContext(
+      content::BrowserContext* context);
   static AdminTemplateServiceFactory* GetInstance();
 
  private:

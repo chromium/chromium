@@ -16,10 +16,12 @@ static_library("game_dashboard") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/growth:utils",
     "//chromeos/ash/experiences/arc",
     "//components/session_manager/core",
+    "//content/public/browser",
   ]
 }

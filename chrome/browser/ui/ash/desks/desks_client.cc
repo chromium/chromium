@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -40,9 +41,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/desks_storage/desk_sync_service_provider.h"
@@ -52,7 +53,10 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -106,12 +110,21 @@ void RecordTimeToLoadTemplateHistogram(const base::Time time_started) {
 
 // Retrieves desk event router
 extensions::WMDesksEventsRouter* GetDeskEventsRouter() {
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  if (profile) {
-    auto* wm_events_api = extensions::WMDesksPrivateEventsAPI::Get(profile);
-    if (wm_events_api && wm_events_api->desks_event_router()) {
-      return wm_events_api->desks_event_router();
-    }
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  // `DesksClient` observes desks before login, when there is no session.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return nullptr;
+  }
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  CHECK(browser_context);
+  auto* wm_events_api =
+      extensions::WMDesksPrivateEventsAPI::Get(browser_context);
+  if (wm_events_api && wm_events_api->desks_event_router()) {
+    return wm_events_api->desks_event_router();
   }
   return nullptr;
 }
@@ -261,8 +274,9 @@ DesksClient* DesksClient::Get() {
 }
 
 void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
-  Profile* profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
   if (profile == active_profile_ || !IsSupportedProfile(profile)) {
     return;
   }
@@ -286,8 +300,12 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
   // Ensure that admin templates are ready to go.  This will only query from the
   // primary profile but it happens early enough to ensure that the model is
   // loaded when the user logs in.
-  ash::AdminTemplateServiceFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  ash::AdminTemplateServiceFactory::GetForBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
 }
 
 // TODO(aprilzhou): Refactor DesksClient to remove unnecessary callback. It's
