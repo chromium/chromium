@@ -216,6 +216,10 @@ public class PasswordCsvDownloadFlowController {
     }
 
     private void endFlow() {
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
+            mReauthenticatorBridge = null;
+        }
         PwmDeprecationDialogsMetricsRecorder.recordLastStepOfDownloadCsvFlow(
                 mDialogType, mLastFlowStep);
         mEndOfFlowCallback.run();

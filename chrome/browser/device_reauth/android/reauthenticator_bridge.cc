@@ -13,18 +13,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
 
-static int64_t JNI_ReauthenticatorBridge_Create(
+static jni_zero::JniUniquePtr<ReauthenticatorBridge>
+JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_bridge,
     const base::android::JavaRef<jobject>& activity,
     Profile* profile,
     int32_t source) {
-  return reinterpret_cast<intptr_t>(
-      new ReauthenticatorBridge(java_bridge, activity, profile, source));
+  return jni_zero::MakeUnique<ReauthenticatorBridge>(java_bridge, activity,
+                                                     profile, source);
 }
 
 ReauthenticatorBridge::ReauthenticatorBridge(
@@ -69,10 +71,6 @@ void ReauthenticatorBridge::Reauthenticate(JNIEnv* env) {
 void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {
   Java_ReauthenticatorBridge_onReauthenticationCompleted(
       base::android::AttachCurrentThread(), java_bridge_, auth_succeeded);
-}
-
-void ReauthenticatorBridge::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 DEFINE_JNI(ReauthenticatorBridge)

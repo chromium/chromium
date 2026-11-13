@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -23,9 +28,12 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 @NullMarked
 public class ReauthenticatorBridge {
+    @JniType("::ReauthenticatorBridge")
+    interface NativeReauthenticatorBridge extends JniTypeToken {}
+
     private static @Nullable ReauthenticatorBridge sReauthenticatorBridgeForTesting;
 
-    private long mNativeReauthenticatorBridge;
+    private @Nullable JniUniquePtr<NativeReauthenticatorBridge> mNativeReauthenticatorBridge;
     private @Nullable Callback<Boolean> mAuthResultCallback;
 
     private ReauthenticatorBridge(
@@ -41,11 +49,11 @@ public class ReauthenticatorBridge {
      * <li>ONLY_LSKF_AVAILABLE - auth with pin or patter is available,
      * <li>UNAVAILABLE - no authentication method is available.
      *
-     * <p>Deprecated: Use `DeviceAuthAvailabilityChecker` instead. This refactor is currently
-     * guarded by the killswitch `password_manager::features::kDeviceReauthRefactor`.
+     *     <p>Deprecated: Use `DeviceAuthAvailabilityChecker` instead. This refactor is currently
+     *     guarded by the killswitch `password_manager::features::kDeviceReauthRefactor`.
      */
     public @BiometricStatus int getBiometricAvailabilityStatus() {
-        if (mNativeReauthenticatorBridge == 0) return BiometricStatus.UNAVAILABLE;
+        if (mNativeReauthenticatorBridge == null) return BiometricStatus.UNAVAILABLE;
 
         return ReauthenticatorBridgeJni.get()
                 .getBiometricAvailabilityStatus(mNativeReauthenticatorBridge);
@@ -61,14 +69,17 @@ public class ReauthenticatorBridge {
     public void reauthenticate(Callback<Boolean> callback) {
         if (mAuthResultCallback == null) {
             mAuthResultCallback = callback;
-            ReauthenticatorBridgeJni.get().reauthenticate(mNativeReauthenticatorBridge);
+            ReauthenticatorBridgeJni.get()
+                    .reauthenticate(assumeNonNull(mNativeReauthenticatorBridge));
         }
     }
 
     /** Deletes the C++ counterpart. */
     public void destroy() {
-        ReauthenticatorBridgeJni.get().destroy(mNativeReauthenticatorBridge);
-        mNativeReauthenticatorBridge = 0;
+        if (mNativeReauthenticatorBridge != null) {
+            mNativeReauthenticatorBridge.destroy();
+            mNativeReauthenticatorBridge = null;
+        }
     }
 
     /**
@@ -117,17 +128,15 @@ public class ReauthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        long create(
+        JniUniquePtr<NativeReauthenticatorBridge> create(
                 ReauthenticatorBridge reauthenticatorBridge,
                 Activity activity,
                 @JniType("Profile*") Profile profile,
                 int source);
 
         @BiometricStatus
-        int getBiometricAvailabilityStatus(long nativeReauthenticatorBridge);
+        int getBiometricAvailabilityStatus(JniPtr<NativeReauthenticatorBridge> self);
 
-        void reauthenticate(long nativeReauthenticatorBridge);
-
-        void destroy(long nativeReauthenticatorBridge);
+        void reauthenticate(JniPtr<NativeReauthenticatorBridge> self);
     }
 }
