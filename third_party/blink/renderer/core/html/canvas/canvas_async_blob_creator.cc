@@ -109,46 +109,18 @@ void RecordCompleteEncodingTimeHistogram(ImageEncodingMimeType mime_type,
   }
 }
 
-void RecordScaledDurationHistogram(ImageEncodingMimeType mime_type,
-                                   base::TimeDelta elapsed_time,
-                                   float width,
-                                   float height) {
-  float sqrt_pixels = std::sqrt(width) * std::sqrt(height);
-  float scaled_time_float =
-      elapsed_time.InMicrosecondsF() / (sqrt_pixels == 0 ? 1.0f : sqrt_pixels);
-
-  // If scaled_time_float overflows as integer, CheckedNumeric will store it
-  // as invalid, then ValueOrDefault will return the maximum int.
-  base::CheckedNumeric<int> checked_scaled_time = scaled_time_float;
-  int scaled_time_int =
-      checked_scaled_time.ValueOrDefault(std::numeric_limits<int>::max());
-
-  if (mime_type == kMimeTypePng) {
-    UMA_HISTOGRAM_COUNTS_100000("Blink.Canvas.ToBlob.ScaledDuration.PNG",
-                                scaled_time_int);
-  } else if (mime_type == kMimeTypeJpeg) {
-    UMA_HISTOGRAM_COUNTS_100000("Blink.Canvas.ToBlob.ScaledDuration.JPEG",
-                                scaled_time_int);
-  } else if (mime_type == kMimeTypeWebp) {
-    UMA_HISTOGRAM_COUNTS_100000("Blink.Canvas.ToBlob.ScaledDuration.WEBP",
-                                scaled_time_int);
-  }
-}
-
 }  // anonymous namespace
 
 CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     scoped_refptr<StaticBitmapImage> image,
     const ImageEncodeOptions* options,
     ToBlobFunctionType function_type,
-    base::TimeTicks start_time,
     ExecutionContext* context,
     ScriptPromiseResolver<Blob>* resolver)
     : CanvasAsyncBlobCreator(image,
                              options,
                              function_type,
                              nullptr,
-                             start_time,
                              context,
                              resolver) {}
 
@@ -157,14 +129,12 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     const ImageEncodeOptions* options,
     ToBlobFunctionType function_type,
     V8BlobCallback* callback,
-    base::TimeTicks start_time,
     ExecutionContext* context,
     ScriptPromiseResolver<Blob>* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
       context_(context),
       function_type_(function_type),
-      start_time_(start_time),
       static_bitmap_image_loaded_(false),
       callback_(callback),
       script_promise_resolver_(resolver) {
@@ -468,10 +438,6 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
                             WrapPersistent(script_promise_resolver_.Get()),
                             WrapPersistent(result_blob)));
   }
-
-  RecordScaledDurationHistogram(mime_type_,
-                                base::TimeTicks::Now() - start_time_,
-                                image_->width(), image_->height());
 
   Dispose();
 }

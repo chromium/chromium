@@ -530,31 +530,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.Canvas.ToBlob.ScaledDuration{BlinkCanvasToBlobType}"
-    units="microseconds/sqrt(pixels)" expires_after="2025-10-12">
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time in microseconds spent on the 2D canvas toBlob API call, divided by the
-    square root of the total number of pixels of the canvas.
-
-    In addition, metric values from OffscreenCanvas.convertToBlob API call are
-    also gathered into this histogram, because the logic flow is exactly the
-    same as canvas.toBlob. It's worth to note that the values can come from idle
-    tasks on either main or worker thread.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-    {BlinkCanvasToBlobType}
-  </summary>
-  <token key="BlinkCanvasToBlobType">
-    <variant name=".JPEG" summary=""/>
-    <variant name=".PNG" summary=""/>
-    <variant name=".WEBP" summary=""/>
-  </token>
-</histogram>
-
 <histogram name="Blink.Canvas.ToBlob.TotalEncodingDelay.{Type}"
     units="microseconds" expires_after="2026-06-21">
   <owner>aaronhk@chromium.org</owner>

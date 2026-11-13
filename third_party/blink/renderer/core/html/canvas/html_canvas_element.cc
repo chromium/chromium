@@ -1563,7 +1563,6 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
     return;
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   double quality = kUndefinedQualityValue;
   if (!quality_argument.IsEmpty()) {
     v8::Local<v8::Value> v8_value = quality_argument.V8Value();
@@ -1581,7 +1580,7 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
     options->setType(ImageEncoderUtils::MimeTypeName(encoding_mime_type));
     async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options,
-        CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
+        CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback,
         GetExecutionContext());
   }
 

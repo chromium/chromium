@@ -34,7 +34,6 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
             CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(mime_type),
             kHTMLCanvasToBlobCallback,
             nullptr,
-            base::TimeTicks(),
             document->GetExecutionContext(),
             nullptr) {
     if (fail_encoder_initialization)

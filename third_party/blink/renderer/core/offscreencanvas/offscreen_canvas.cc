@@ -598,7 +598,6 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     return EmptyPromise();
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   scoped_refptr<StaticBitmapImage> image_bitmap = context_->GetImage();
   if (image_bitmap) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
@@ -607,8 +606,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
         CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
     auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
-        image_bitmap, options, function_type, start_time, execution_context,
-        resolver);
+        image_bitmap, options, function_type, execution_context, resolver);
     async_creator->ScheduleAsyncBlobCreation(options->quality());
     return resolver->Promise();
   }
