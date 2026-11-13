@@ -40,6 +40,7 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -258,6 +259,68 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::PerformSearchToolRequest::kModelFacingName);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// `site_based_search` searches the current site using its registered search
+// template. The model doesn't send a document identifier, so TTC fills in the
+// tracked tab's current document.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SiteBasedSearchCurrentSite) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  // Register a site search template for example.com so the search navigates
+  // within the site.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(template_url_service);
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  TemplateURLData data;
+  data.SetShortName(u"example");
+  data.SetKeyword(TemplateURL::GenerateKeyword(start_url));
+  data.SetURL(embedded_https_test_server()
+                  .GetURL("example.com", "/title2.html?q={searchTerms}")
+                  .spec());
+  ASSERT_TRUE(template_url_service->Add(std::make_unique<TemplateURL>(data)));
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name =
+      std::string(actor::SiteBasedSearchToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::SiteBasedSearchToolRequest::kQueryParam,
+                             "kittens");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(),
+            embedded_https_test_server().GetURL("example.com",
+                                                "/title2.html?q=kittens"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SiteBasedSearchMissingQuery) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name =
+      std::string(actor::SiteBasedSearchToolRequest::kModelFacingName);
 
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
@@ -2815,6 +2878,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor::ToolId::kOpenKnownPage,
       actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
+      actor::ToolId::kSiteBasedSearch,
   };
   actor::ToolIdSet expected_tool_ids = kExpectedToolIds;
   if (window_tools_supported) {

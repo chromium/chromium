@@ -127,6 +127,8 @@ class ToolController {
                     ToolResponseCallback callback);
   void SetFullscreen(bool fullscreen, ToolResponseCallback callback);
   void SetText(const base::DictValue& arguments, ToolResponseCallback callback);
+  void SiteBasedSearch(const base::DictValue& arguments,
+                       ToolResponseCallback callback);
   void SwitchTab(const base::DictValue& arguments,
                  ToolResponseCallback callback);
   void TranslatePage(const base::DictValue& arguments,

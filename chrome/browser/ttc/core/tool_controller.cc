@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -57,10 +59,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -348,6 +352,9 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kOpenKnownPage:
         OpenKnownPage(tool_request.arguments, std::move(callback));
         return;
+      case actor::ToolId::kSiteBasedSearch:
+        SiteBasedSearch(tool_request.arguments, std::move(callback));
+        return;
       default:
         break;
     }
@@ -409,6 +416,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kCreateTab,        actor::ToolId::kSwitchTab,
       actor::ToolId::kOpenUrl,          actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,   actor::ToolId::kOpenKnownPage,
+      actor::ToolId::kSiteBasedSearch,
   };
 
   actor::ToolIdSet supported_tool_ids = kSupportedToolIds;
@@ -1121,6 +1129,38 @@ void ToolController::SetText(const base::DictValue& arguments,
         return std::make_unique<actor::TypeToolRequest>(
             actor_surface_handle, *page_target, *text,
             /*follow_by_enter=*/false, actor::TypeToolRequest::Mode::kReplace);
+      },
+      std::move(callback));
+}
+
+void ToolController::SiteBasedSearch(const base::DictValue& arguments,
+                                     ToolResponseCallback callback) {
+  const std::string* query =
+      arguments.FindString(actor::SiteBasedSearchToolRequest::kQueryParam);
+  if (!query || query->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty query argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&query](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        // TODO(b/583774779): TTC will eventually inject the ID of the document
+        // seen by the model on the server-side; that should be used on the
+        // tool request. Until then, the document currently committed in the
+        // active tab's main frame is the placeholder.
+        content::RenderFrameHost* main_frame =
+            CHECK_DEREF(actor_surface_handle.Get())
+                .GetWebContents()
+                ->GetPrimaryMainFrame();
+        std::string document_identifier =
+            optimization_guide::DocumentIdentifierUserData::
+                GetOrCreateForCurrentDocument(main_frame)
+                    ->serialized_token();
+        return std::make_unique<actor::SiteBasedSearchToolRequest>(
+            actor_surface_handle, *query, std::move(document_identifier));
       },
       std::move(callback));
 }
