@@ -490,6 +490,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebSpeechTtsSuccess,
           WebFeature::kWebSpeechTtsError,
           WebFeature::kViewportFitCover,
+          WebFeature::kViewportFitCoverAndSafeAreaInsetTop,
           WebFeature::kModelContextRegisterTool,
           WebFeature::kModelContextRegisterDeclarativeTool,
           WebFeature::kModelContextExecuteTool,

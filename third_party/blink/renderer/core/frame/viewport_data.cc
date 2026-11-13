@@ -128,6 +128,11 @@ void ViewportData::UpdateViewportDescription() {
           // features after data collected (end of '23)
           UseCounter::Count(document_,
                             WebFeature::kViewportFitCoverOrSafeAreaInsetBottom);
+          if (document_->IsUseCounted(
+                  WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop)) {
+            UseCounter::Count(document_,
+                              WebFeature::kViewportFitCoverAndSafeAreaInsetTop);
+          }
         }
       }
     }

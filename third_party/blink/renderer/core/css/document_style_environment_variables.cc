@@ -122,6 +122,11 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
   if (name == "safe-area-inset-top") {
     UseCounter::Count(document_,
                       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop);
+    if (document_->GetFrame()->IsOutermostMainFrame() &&
+        document_->IsUseCounted(WebFeature::kViewportFitCover)) {
+      UseCounter::Count(document_,
+                        WebFeature::kViewportFitCoverAndSafeAreaInsetTop);
+    }
   } else if (name == "safe-area-inset-left") {
     UseCounter::Count(document_,
                       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetLeft);

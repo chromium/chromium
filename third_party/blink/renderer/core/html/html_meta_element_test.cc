@@ -129,6 +129,8 @@ TEST_F(HTMLMetaElementTest, ViewportFit_Cover_IsUseCounted) {
   // after data collected (end of '23)
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverAndSafeAreaInsetTop));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
