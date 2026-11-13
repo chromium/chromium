@@ -246,9 +246,7 @@ bool BaseRenderingContext2D::IsSingleBuffered() const {
 }
 
 int BaseRenderingContext2D::NumInflightResourcesForTesting() const {
-  return shared_image_provider_
-             ? shared_image_provider_->NumInflightResourcesForTesting()
-             : 0;
+  return num_inflight_resources_;
 }
 
 bool BaseRenderingContext2D::HasUnusedResourcesForTesting() const {
@@ -288,9 +286,22 @@ void BaseRenderingContext2D::ResetSharedImageBacking() {
   if (!shared_image_provider_) {
     return;
   }
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                             max_inflight_resources_, 20);
+  resource_client_weak_ptr_factory_.InvalidateWeakPtrs();
   shared_image_provider_.reset();
   resource_.reset();
   is_accelerated_ = false;
+  num_inflight_resources_ = 0;
+  max_inflight_resources_ = 0;
+}
+
+void BaseRenderingContext2D::OnResourceRefReturned(
+    scoped_refptr<CanvasResourceSharedImage> resource) {
+  if (!resource->IsLost() && resource->HasOneRef() && shared_image_provider_ &&
+      shared_image_provider_->resource_recycling_enabled_) {
+    shared_image_provider_->image_pool_->ReleaseImage(std::move(resource));
+  }
 }
 
 scoped_refptr<CanvasResourceSharedImage>
@@ -308,19 +319,17 @@ BaseRenderingContext2D::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (shared_image_provider_->image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(shared_image_provider_->CreateWeakPtr(),
-                                   shared_image_interface_provider_,
-                                   color_params_.GetGfxHdrMetadata());
+      resource->InitializeSoftware(
+          resource_client_weak_ptr_factory_.GetWeakPtr(),
+          shared_image_interface_provider_, color_params_.GetGfxHdrMetadata());
     } else {
-      resource->Initialize(shared_image_provider_->CreateWeakPtr(),
+      resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr(),
                            context_provider_wrapper_,
                            color_params_.GetGfxHdrMetadata(), is_accelerated_);
     }
-    ++shared_image_provider_->num_inflight_resources_;
-    if (shared_image_provider_->num_inflight_resources_ >
-        shared_image_provider_->max_inflight_resources_) {
-      shared_image_provider_->max_inflight_resources_ =
-          shared_image_provider_->num_inflight_resources_;
+    ++num_inflight_resources_;
+    if (num_inflight_resources_ > max_inflight_resources_) {
+      max_inflight_resources_ = num_inflight_resources_;
     }
   }
   DCHECK(resource->HasOneRef());
@@ -388,7 +397,7 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   base::ByteSize result;
   if (resource_) {
     result += resource_->GetSharedImage()->EstimatedSizeInBytes() *
-              shared_image_provider_->num_inflight_resources_;
+              num_inflight_resources_;
   }
   if (surface_) {
     result += base::ByteSize(

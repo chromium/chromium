@@ -37,16 +37,13 @@ class CanvasResourceSharedImage;
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
-class PLATFORM_EXPORT Canvas2DResourceProvider
-    : public CanvasResourceSharedImage::Client {
+class PLATFORM_EXPORT Canvas2DResourceProvider {
  public:
   explicit Canvas2DResourceProvider(
       std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
           image_pool);
 
-  ~Canvas2DResourceProvider() override;
-
-  int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
+  ~Canvas2DResourceProvider();
 
   void SetResourceRecyclingEnabled(bool value);
 
@@ -55,21 +52,11 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void ClearUnusedResources();
 
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage> resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
-
-  base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
-
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
   bool resource_recycling_enabled_ = true;
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
-
-  base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

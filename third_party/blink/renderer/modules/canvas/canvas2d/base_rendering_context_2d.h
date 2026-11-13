@@ -94,6 +94,7 @@ enum class RasterMode;
 class MODULES_EXPORT BaseRenderingContext2D
     : public CanvasRenderingContext,
       public Canvas2DRecorderContext,
+      public CanvasResourceSharedImage::Client,
       public MemoryManagedPaintRecorder::Client,
       public FlushForImageObserver,
       public CanvasMemoryDumpClient,
@@ -436,6 +437,11 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   scoped_refptr<StaticBitmapImage> UnacceleratedSnapshot();
 
+  // CanvasResourceSharedImage::Client implementation.
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage> resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
@@ -475,6 +481,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   scoped_refptr<CanvasResourceSharedImage> resource_;
   bool is_accelerated_ = false;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // Initialized on GPU-composited `shared_image_provider_` creation and
@@ -524,6 +532,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   base::RepeatingClosure on_restore_failed_callback_for_testing_;
   Vector<scoped_refptr<const cc::AnimatedImageFrameIndexMap>>
       animated_image_frame_index_maps_;
+  base::WeakPtrFactory<CanvasResourceSharedImage::Client>
+      resource_client_weak_ptr_factory_{this};
 };
 
 }  // namespace blink

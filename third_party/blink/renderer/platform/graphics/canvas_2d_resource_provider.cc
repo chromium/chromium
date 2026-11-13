@@ -58,19 +58,6 @@
 
 namespace blink {
 
-base::WeakPtr<Canvas2DResourceProvider>
-Canvas2DResourceProvider::CreateWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void Canvas2DResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage> resource) {
-  if (!resource->IsLost() && resource->HasOneRef() &&
-      resource_recycling_enabled_ && image_pool_) {
-    image_pool_->ReleaseImage(std::move(resource));
-  }
-}
-
 void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   resource_recycling_enabled_ = value;
   if (!resource_recycling_enabled_) {
@@ -84,10 +71,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   CHECK(image_pool_);
 }
 
-Canvas2DResourceProvider::~Canvas2DResourceProvider() {
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
-}
+Canvas2DResourceProvider::~Canvas2DResourceProvider() = default;
 
 void Canvas2DResourceProvider::ClearUnusedResources() {
   if (image_pool_) {
