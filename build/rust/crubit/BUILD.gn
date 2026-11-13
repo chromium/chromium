@@ -165,11 +165,12 @@ if (enable_rust_api_from_cpp) {
     # Some standard library types (e.g. `std::unique_ptr`) are defined in
     # internal libc++ headers.
     #
-    # TODO(crbug.com/40226863): Cover all libc++ headers (e.g. `libcxx_headers`
+    # TODO(crbug.com/582820843): Cover all libc++ headers (e.g. `libcxx_headers`
     # from `//buildtools/third_party/libc++/libcxx_headers.gni`).  This requires
     # first covering all the public headers from Crubit's `headers.bzl`
     # (otherwise the generated C++ code may refer to types like
-    # `std::input_iterator_tag` without including their public header).
+    # `std::input_iterator_tag` without including their public header).  This
+    # also requires solving the IWYU problem described in crbug.com/582820843
     internal_headers = [
       "${libcxx_prefix}/include/__compare/ordering.h",
       "${libcxx_prefix}/include/__fwd/string_view.h",
