@@ -508,7 +508,12 @@ PasswordSaveUpdateView::GetErrorResolutionUiStrings() const {
   if (!IsErrorResolutionEnabled()) {
     return std::nullopt;
   }
-  switch (controller_.GetErrorBlockingSaving()) {
+  const std::optional<password_manager::ActionableError> error =
+      controller_.GetRecoverableErrorBlockingSaving();
+  if (!error.has_value()) {
+    return std::nullopt;
+  }
+  switch (*error) {
     case password_manager::ActionableError::kTrustedVaultKeyNeeded:
       return ErrorResolutionUiStrings{
           .subtitle_message_id =

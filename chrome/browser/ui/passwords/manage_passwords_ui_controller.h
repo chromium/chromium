@@ -226,7 +226,8 @@ class ManagePasswordsUIController
   void NavigateToPasswordChangeSettings() override;
   void OnMouseEntered() override;
   void OnMouseExited() override;
-  password_manager::ActionableError GetErrorBlockingSaving() const override;
+  std::optional<password_manager::ActionableError>
+  GetRecoverableErrorBlockingSaving() const override;
   void SavePasswordAfterErrorResolution(
       const std::u16string& username,
       const password_manager::PasswordString& password) override;

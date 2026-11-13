@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/common_saved_account_manager_bubble_controller.h"
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
@@ -62,9 +64,10 @@ class SaveUpdateBubbleController
   std::optional<std::u16string> GetDomainForSubhead() const;
 
   // Returns the recoverable password store error that currently blocks saving
-  // credentials, or `ActionableError::kNoError` if saving is not blocked by a
-  // recoverable error.
-  password_manager::ActionableError GetErrorBlockingSaving() const;
+  // credentials, or `std::nullopt` if saving is not blocked by a recoverable
+  // error.
+  std::optional<password_manager::ActionableError>
+  GetRecoverableErrorBlockingSaving() const;
 
   // Starts the UI flow for resolving the error blocking password saving and
   // schedules saving the credentials once the error is resolved.

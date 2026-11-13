@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,6 +40,7 @@
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -925,12 +927,20 @@ TEST_P(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
 
   EXPECT_EQ(IsSavingBlockedByTrustedVaultError(&client_, &form_manager),
             test_case.expected_result);
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&client_, &form_manager),
+            test_case.expected_result
+                ? std::optional(
+                      password_manager::ActionableError::kTrustedVaultKeyNeeded)
+                : std::nullopt);
 }
 
 const TrustedVaultErrorPreventsFromSavingTestCase
     kTrustedVaultErrorPreventsFromSavingTestCases[] = {
         {"NoError", PasswordForm::Store::kProfileStore,
          password_manager::ActionableError::kNoError,
+         password_manager::ActionableError::kNoError, false},
+        {"InactionableError", PasswordForm::Store::kProfileStore,
+         password_manager::ActionableError::kInactionable,
          password_manager::ActionableError::kNoError, false},
         {"ProfileStoreBlocked", PasswordForm::Store::kProfileStore,
          password_manager::ActionableError::kTrustedVaultKeyNeeded,
@@ -948,7 +958,7 @@ const TrustedVaultErrorPreventsFromSavingTestCase
              PasswordForm::Store::kAccountStore,
          password_manager::ActionableError::kTrustedVaultKeyNeeded,
          password_manager::ActionableError::kInactionable, false},
-    };
+};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -984,6 +994,8 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&client_, &form_manager));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&client_, &form_manager),
+            std::nullopt);
 }
 
 TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
@@ -996,6 +1008,17 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
       .WillRepeatedly(Return(false));
 
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&client_, &form_manager));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&client_, &form_manager),
+            std::nullopt);
+}
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
+       IsSavingBlockedByTrustedVaultError_NullFormManager) {
+  EXPECT_FALSE(
+      IsSavingBlockedByTrustedVaultError(&client_, /*form_manager=*/nullptr));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&client_,
+                                                      /*form_manager=*/nullptr),
+            std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -1169,6 +1192,8 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
           password_manager::features::
               kPasswordSaveInContextErrorResolutionMinGmsVersion.Get()));
   EXPECT_TRUE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            ActionableError::kTrustedVaultKeyNeeded);
 
   // Higher version should succeed.
   base::android::device_info::set_gms_version_code_for_test(
@@ -1177,6 +1202,8 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
               kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() +
           1000));
   EXPECT_TRUE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            ActionableError::kTrustedVaultKeyNeeded);
 
   // Lower version should fail.
   base::android::device_info::set_gms_version_code_for_test(
@@ -1185,10 +1212,14 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
               kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() -
           1));
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            std::nullopt);
 
   // Invalid / non-integer version should fail.
   base::android::device_info::set_gms_version_code_for_test("invalid");
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            std::nullopt);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1211,15 +1242,43 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
 }
 
 TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
+       GetRecoverableErrorBlockingPasswordSaving) {
+  EnableSyncForTestAccount();
+
+  auto account_store =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(account_store.get()));
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            ActionableError::kTrustedVaultKeyNeeded);
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kSignInNeeded));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            std::nullopt);
+
+  EXPECT_CALL(*account_store, GetError)
+      .WillOnce(Return(ActionableError::kInactionable));
+  EXPECT_EQ(GetRecoverableErrorBlockingPasswordSaving(&mock_client_, nullptr),
+            std::nullopt);
+}
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
        IsSavingBlockedByTrustedVaultErrorForLocalPasswordUpdate) {
   password_manager::MockPasswordFormManagerForUI form_manager;
-  EXPECT_CALL(form_manager, IsPasswordUpdate()).WillOnce(Return(true));
+  EXPECT_CALL(form_manager, IsPasswordUpdate()).WillRepeatedly(Return(true));
   EXPECT_CALL(form_manager,
               IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   EXPECT_FALSE(
       IsSavingBlockedByTrustedVaultError(&mock_client_, &form_manager));
+  EXPECT_EQ(
+      GetRecoverableErrorBlockingPasswordSaving(&mock_client_, &form_manager),
+      std::nullopt);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

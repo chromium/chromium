@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -40,6 +41,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -170,7 +172,9 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-bool IsBlockingOnMobile(const password_manager::PasswordManagerClient* client) {
+std::optional<password_manager::ActionableError>
+GetRecoverableErrorBlockingPasswordSavingOnMobile(
+    const password_manager::PasswordManagerClient* client) {
   const password_manager::PasswordStoreInterface* account_store =
       client->GetAccountPasswordStore();
   if (!account_store ||
@@ -178,26 +182,33 @@ bool IsBlockingOnMobile(const password_manager::PasswordManagerClient* client) {
           password_manager::ActionableError::kTrustedVaultKeyNeeded ||
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSaveInContextErrorResolution)) {
-    return false;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_ANDROID)
   int gms_version = 0;
-  return base::StringToInt(base::android::device_info::gms_version_code(),
-                           &gms_version) &&
-         gms_version >=
-             password_manager::features::
-                 kPasswordSaveInContextErrorResolutionMinGmsVersion.Get();
+  if (!base::StringToInt(base::android::device_info::gms_version_code(),
+                         &gms_version) ||
+      gms_version <
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get()) {
+    return std::nullopt;
+  }
+  return password_manager::ActionableError::kTrustedVaultKeyNeeded;
 #elif BUILDFLAG(IS_IOS)
-  return true;
+  return password_manager::ActionableError::kTrustedVaultKeyNeeded;
 #else
   NOTREACHED();
 #endif
 }
 #else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-bool IsBlockingOnDesktop(
+std::optional<password_manager::ActionableError>
+GetRecoverableErrorBlockingPasswordSavingOnDesktop(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager) {
+  if (!form_manager) {
+    return std::nullopt;
+  }
   bool has_trusted_vault_error = false;
   bool has_other_blocking_errors = false;
   // It might be that the credential is updated in both stores. In this case
@@ -226,36 +237,48 @@ bool IsBlockingOnDesktop(
       has_other_blocking_errors = true;
     }
   }
-  return has_trusted_vault_error && !has_other_blocking_errors &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordSaveInContextErrorResolution);
+  if (has_trusted_vault_error && !has_other_blocking_errors &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSaveInContextErrorResolution)) {
+    return password_manager::ActionableError::kTrustedVaultKeyNeeded;
+  }
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace
 
-bool IsSavingBlockedByTrustedVaultError(
+std::optional<password_manager::ActionableError>
+GetRecoverableErrorBlockingPasswordSaving(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager) {
   // If the user disabled password syncing the passwords will be saved locally,
-  // and saving should not be blocked by trusted vault errors in this case.
+  // and saving should not be blocked by password store errors in this case.
   if (!password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
-    return false;
+    return std::nullopt;
   }
 
   // The updates of the locally stored passwords should not be blocked by
-  // trusted vault errors.
+  // password store errors.
   if (form_manager && form_manager->IsPasswordUpdate() &&
       !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
-    return false;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return IsBlockingOnMobile(client);
+  return GetRecoverableErrorBlockingPasswordSavingOnMobile(client);
 #else
-  return IsBlockingOnDesktop(client, form_manager);
+  return GetRecoverableErrorBlockingPasswordSavingOnDesktop(client,
+                                                            form_manager);
 #endif
+}
+
+bool IsSavingBlockedByTrustedVaultError(
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordFormManagerForUI* form_manager) {
+  return GetRecoverableErrorBlockingPasswordSaving(client, form_manager) ==
+         password_manager::ActionableError::kTrustedVaultKeyNeeded;
 }
 
 bool IsSavingBlockedByRecoverableError(

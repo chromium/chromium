@@ -718,7 +718,7 @@ TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
 
 // If the blocking error was already resolved by the time the user clicks
 // "Continue", `SavePasswordAfterErrorResolution()` saves the password
-// immediately and `StartErrorResolutionFlow(kNoError)` is a no-op.
+// immediately.
 TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
        PasswordSavedImmediatelyWhenErrorAlreadyResolved) {
   std::vector<PasswordForm> best_matches;
@@ -1102,6 +1102,36 @@ TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
       password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
           kErrorResolutionAbandoned,
       1);
+}
+
+TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
+       GetRecoverableErrorBlockingSaving) {
+  // Returns `std::nullopt` when there is no form manager.
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(), std::nullopt);
+
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(/*best_matches=*/{}, &submitted_form());
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(),
+            password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  // Unrecoverable errors return `std::nullopt`.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kInactionable));
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(), std::nullopt);
+
+  // `kNoError` returns `std::nullopt`.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(), std::nullopt);
 }
 
 TEST_F(ManagePasswordsUIControllerErrorResolutionTest,

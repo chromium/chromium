@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -78,15 +80,26 @@ void UserTriggeredManualGenerationFromContextMenu(
 // Checks if password saving is possible at a storage level.
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client);
 
-// Returns true if the only blocking error is a trusted vault error.
+// Returns the recoverable password store error that currently blocks saving, or
+// `std::nullopt` if saving is not blocked by a recoverable error (including
+// when saving is blocked by an unrecoverable error). `client` must be non-null;
+// `form_manager` may be null (returns `std::nullopt` on desktop when null).
+std::optional<password_manager::ActionableError>
+GetRecoverableErrorBlockingPasswordSaving(
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordFormManagerForUI* form_manager);
+
+// Returns true if the only blocking error is a trusted vault error. See
+// `GetRecoverableErrorBlockingPasswordSaving()`.
 bool IsSavingBlockedByTrustedVaultError(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager);
 
 // Returns true if password saving is blocked by a recoverable error. Returns
 // false, if saving is blocked by an unrecoverable error or not blocked at all.
-// TODO(crbug.com/464228247): Merge with IsSavingBlockedByTrustedVaultError when
-// other platforms handle more errors.
+// TODO(crbug.com/464228247): Merge with
+// `GetRecoverableErrorBlockingPasswordSaving()` when other platforms handle
+// more errors.
 bool IsSavingBlockedByRecoverableError(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager);

@@ -610,7 +610,7 @@ TEST_F(PasswordDropdownExperimentTest, TrustedVaultErrorUiState) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()), "test@email.com",
       signin::ConsentLevel::kSignin);
-  ON_CALL(*model_delegate_mock(), GetErrorBlockingSaving)
+  ON_CALL(*model_delegate_mock(), GetRecoverableErrorBlockingSaving)
       .WillByDefault(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 
@@ -629,7 +629,7 @@ TEST_P(PasswordSaveUpdateViewTest, TrustedVaultErrorUiState) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::kPasswordSaveInContextErrorResolution};
   SimulateSignIn();
-  ON_CALL(*model_delegate_mock(), GetErrorBlockingSaving)
+  ON_CALL(*model_delegate_mock(), GetRecoverableErrorBlockingSaving)
       .WillByDefault(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -228,9 +229,10 @@ class PasswordsModelDelegate {
       password_manager::ActionableError error) = 0;
 
   // Returns the recoverable password store error that currently blocks saving
-  // the password, or `ActionableError::kNoError` if saving is not blocked by a
-  // recoverable error.
-  virtual password_manager::ActionableError GetErrorBlockingSaving() const = 0;
+  // the password, or `std::nullopt` if saving is not blocked by a recoverable
+  // error.
+  virtual std::optional<password_manager::ActionableError>
+  GetRecoverableErrorBlockingSaving() const = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;

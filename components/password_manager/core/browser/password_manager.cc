@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -55,6 +56,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -1678,10 +1680,11 @@ void PasswordManager::OnLoginSuccessful() {
 
   bool able_to_save_passwords =
       password_manager_util::IsAbleToSavePasswords(client_);
-  bool able_to_save_passwords_after_fixing_trusted_vault_error =
-      password_manager_util::IsSavingBlockedByTrustedVaultError(
+  std::optional<ActionableError> recoverable_error_blocking_saving =
+      password_manager_util::GetRecoverableErrorBlockingPasswordSaving(
           client_, submitted_manager);
   bool able_to_save_passwords_after_fixing_recoverable_error =
+      recoverable_error_blocking_saving.has_value() ||
       password_manager_util::IsSavingBlockedByRecoverableError(
           client_, submitted_manager);
   base::UmaHistogramBoolean(
@@ -1689,9 +1692,9 @@ void PasswordManager::OnLoginSuccessful() {
       able_to_save_passwords);
   base::UmaHistogramBoolean(
       "PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin",
-      able_to_save_passwords_after_fixing_trusted_vault_error);
+      recoverable_error_blocking_saving ==
+          ActionableError::kTrustedVaultKeyNeeded);
   if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords &&
-      !able_to_save_passwords_after_fixing_trusted_vault_error &&
       !able_to_save_passwords_after_fixing_recoverable_error) {
     return;
   }

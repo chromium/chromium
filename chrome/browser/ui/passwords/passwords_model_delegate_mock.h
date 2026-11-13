@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -143,8 +144,8 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               StartErrorResolutionFlow,
               (password_manager::ActionableError),
               (override));
-  MOCK_METHOD(password_manager::ActionableError,
-              GetErrorBlockingSaving,
+  MOCK_METHOD(std::optional<password_manager::ActionableError>,
+              GetRecoverableErrorBlockingSaving,
               (),
               (const, override));
 

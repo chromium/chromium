@@ -1633,8 +1633,8 @@ void ManagePasswordsUIController::StartErrorResolutionFlow(
     case password_manager::ActionableError::kSignInNeeded:
     case password_manager::ActionableError::kKeychainError:
     case password_manager::ActionableError::kNeedsPassphrase:
-      // Other errors either do not have an in-context resolution flow yet or
-      // the error already cleared (`kNoError`) before the click was handled.
+      // These error values do not have an in-context resolution flow; kept as
+      // a defensive no-op.
       break;
   }
 }
@@ -1644,7 +1644,7 @@ void ManagePasswordsUIController::SavePasswordAfterErrorResolution(
     const password_manager::PasswordString& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
-  if (GetErrorBlockingSaving() != password_manager::ActionableError::kNoError) {
+  if (GetRecoverableErrorBlockingSaving().has_value()) {
     // Defer saving the password until the password store error is fixed.
     const syncer::SyncService* sync_service =
         passwords_data_.client()->GetSyncService();
@@ -1690,16 +1690,14 @@ void ManagePasswordsUIController::CompleteSavePasswordAfterErrorResolution() {
   }
 }
 
-password_manager::ActionableError
-ManagePasswordsUIController::GetErrorBlockingSaving() const {
+std::optional<password_manager::ActionableError>
+ManagePasswordsUIController::GetRecoverableErrorBlockingSaving() const {
   if (password_manager::PasswordFormManagerForUI* form_manager =
           passwords_data_.form_manager()) {
-    if (password_manager_util::IsSavingBlockedByTrustedVaultError(
-            passwords_data_.client(), form_manager)) {
-      return password_manager::ActionableError::kTrustedVaultKeyNeeded;
-    }
+    return password_manager_util::GetRecoverableErrorBlockingPasswordSaving(
+        passwords_data_.client(), form_manager);
   }
-  return password_manager::ActionableError::kNoError;
+  return std::nullopt;
 }
 
 void ManagePasswordsUIController::OnErrorStateChanged(

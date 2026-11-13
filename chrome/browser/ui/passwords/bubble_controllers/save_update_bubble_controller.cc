@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -328,14 +329,9 @@ void SaveUpdateBubbleController::ReportInteractions() {
         profile && PasswordCounterFactory::GetForProfile(profile) &&
         PasswordCounterFactory::GetForProfile(profile)
                 ->autofillable_passwords() == 0;
-    std::optional<password_manager::ActionableError> saving_blocked_error;
-    const password_manager::ActionableError error = GetErrorBlockingSaving();
-    if (error != password_manager::ActionableError::kNoError) {
-      saving_blocked_error = error;
-    }
     metrics_util::LogSaveUIDismissalReason(GetDismissalReason(), user_state,
                                            log_adoption_metric,
-                                           saving_blocked_error);
+                                           GetRecoverableErrorBlockingSaving());
   }
 
   // Update the delegate so that it can send votes to the server.
@@ -352,10 +348,10 @@ void SaveUpdateBubbleController::ReportInteractions() {
   }
 }
 
-password_manager::ActionableError
-SaveUpdateBubbleController::GetErrorBlockingSaving() const {
-  return delegate_ ? delegate_->GetErrorBlockingSaving()
-                   : password_manager::ActionableError::kNoError;
+std::optional<password_manager::ActionableError>
+SaveUpdateBubbleController::GetRecoverableErrorBlockingSaving() const {
+  return delegate_ ? delegate_->GetRecoverableErrorBlockingSaving()
+                   : std::nullopt;
 }
 
 void SaveUpdateBubbleController::OnErrorResolutionClicked() {
@@ -363,13 +359,15 @@ void SaveUpdateBubbleController::OnErrorResolutionClicked() {
         GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   SetDismissalReason(metrics_util::CLICKED_RESOLVE_ERROR);
   if (delegate_) {
-    const password_manager::ActionableError error = GetErrorBlockingSaving();
     delegate_->SavePasswordAfterErrorResolution(
         GetPendingPassword().username_value,
         GetPendingPassword().password_value);
     // Saving can synchronously close the bubble and reset `delegate_`.
     if (delegate_) {
-      delegate_->StartErrorResolutionFlow(error);
+      if (const std::optional<password_manager::ActionableError> error =
+              GetRecoverableErrorBlockingSaving()) {
+        delegate_->StartErrorResolutionFlow(*error);
+      }
     }
   }
 }

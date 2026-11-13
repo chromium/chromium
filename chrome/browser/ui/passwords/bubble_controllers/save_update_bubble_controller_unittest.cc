@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -840,31 +841,31 @@ TEST_F(SaveUpdateBubbleControllerTest, ShowsUpdateEvenIfNoExistingCredential) {
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, GetErrorBlockingSaving) {
+TEST_F(SaveUpdateBubbleControllerTest, GetRecoverableErrorBlockingSaving) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
       .WillOnce(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
-  EXPECT_EQ(controller()->GetErrorBlockingSaving(),
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(),
             password_manager::ActionableError::kTrustedVaultKeyNeeded);
 
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
-      .WillOnce(Return(password_manager::ActionableError::kNoError));
-  EXPECT_EQ(controller()->GetErrorBlockingSaving(),
-            password_manager::ActionableError::kNoError);
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_EQ(controller()->GetRecoverableErrorBlockingSaving(), std::nullopt);
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, OnErrorResolutionClicked) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+  testing::InSequence sequence;
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
+                               pending_password().username_value,
+                               pending_password().password_value));
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
       .WillOnce(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
   EXPECT_CALL(*delegate(),
               StartErrorResolutionFlow(
                   password_manager::ActionableError::kTrustedVaultKeyNeeded));
-  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
-                               pending_password().username_value,
-                               pending_password().password_value));
   controller()->OnErrorResolutionClicked();
 }
 
@@ -875,27 +876,29 @@ TEST_F(SaveUpdateBubbleControllerTest, OnErrorResolutionClicked_Edited) {
       password_manager::PasswordString(u"new_password");
   controller()->OnCredentialEdited(kNewUsername, kNewPassword);
 
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+  testing::InSequence sequence;
+  EXPECT_CALL(*delegate(),
+              SavePasswordAfterErrorResolution(kNewUsername, kNewPassword));
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
       .WillOnce(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
   EXPECT_CALL(*delegate(),
               StartErrorResolutionFlow(
                   password_manager::ActionableError::kTrustedVaultKeyNeeded));
-  EXPECT_CALL(*delegate(),
-              SavePasswordAfterErrorResolution(kNewUsername, kNewPassword));
   controller()->OnErrorResolutionClicked();
 }
 
 TEST_F(SaveUpdateBubbleControllerTest,
        OnErrorResolutionClickedWhenErrorAlreadyResolved) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
-      .WillOnce(Return(password_manager::ActionableError::kNoError));
-  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(
-                               password_manager::ActionableError::kNoError));
+  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(_)).Times(0);
+
+  testing::InSequence sequence;
   EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
                                pending_password().username_value,
                                pending_password().password_value));
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
+      .WillOnce(Return(std::nullopt));
   controller()->OnErrorResolutionClicked();
 }
 
@@ -912,13 +915,20 @@ TEST_F(SaveUpdateBubbleControllerTest,
 TEST_F(SaveUpdateBubbleControllerTest,
        OnErrorResolutionClickedWhenSavingClosesBubble) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
-      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(_)).Times(0);
+
+  testing::InSequence sequence;
   EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
                                pending_password().username_value,
                                pending_password().password_value))
       .WillOnce([this] { controller()->OnBubbleClosing(); });
-  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(_)).Times(0);
+  // `OnBubbleClosing()` logs dismissal metrics via `ReportInteractions()`,
+  // which queries `GetRecoverableErrorBlockingSaving()` once before resetting
+  // `delegate_`. `OnErrorResolutionClicked()` must not query it before saving
+  // or after `delegate_` is reset.
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
+      .WillOnce(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
   controller()->OnErrorResolutionClicked();
 }
 
@@ -926,7 +936,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
        LogSaveUIDismissalReasonWhenBlockedByTrustedVaultError) {
   base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
       .WillRepeatedly(
           Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
   EXPECT_CALL(*mock_smart_bubble_stats_store(), AddSiteStats).Times(0);
