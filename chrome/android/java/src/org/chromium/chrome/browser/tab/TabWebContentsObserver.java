@@ -69,8 +69,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     public static TabWebContentsObserver from(Tab tab) {
         TabWebContentsObserver observer = get(tab);
         if (observer == null) {
-            observer = new TabWebContentsObserver(tab);
-            tab.getUserDataHost().setUserData(USER_DATA_KEY, observer);
+            observer = attachToTab(USER_DATA_KEY, new TabWebContentsObserver(tab));
         }
         return observer;
     }

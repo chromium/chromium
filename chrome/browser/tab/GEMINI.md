@@ -152,7 +152,7 @@ A `Tab` exists in one of the following mutually distinct runtime states:
   - Because `mAttachStateChangeListener` is registered **only** on `mContentView` and `mNativePage.getView()`, presenting a `mCustomView` detaches `mContentView` from its parent `ViewGroup` and causes `TabImpl#isUserInteractable()` to become `false`.
 - **Per-Tab Data Attachment Mechanisms**:
   - `UserDataHost` (`Tab.getUserDataHost()`): Java objects scoped to the `Tab` lifetime (survives unfreezing and discarding).
-  - `TabWebContentsUserData`: Java helpers bound to the `Tab`'s `WebContents` lifecycle (initialized in `TabHelpers.initWebContentsHelpers`).
+  - `TabWebContentsUserData`: Java helpers bound to the `Tab`'s `WebContents` lifecycle via `attachToTab(...)` (initialized in `TabHelpers.initWebContentsHelpers` or lazily on demand).
   - `tabs::TabFeatures` & `UnownedUserDataHost`: C++ cross-platform features scoped to `TabAndroid` / `TabInterface`.
   - `PersistedTabData`: Asynchronously persisted per-tab key-value data (`ShoppingPersistedTabData`, `ArchivePersistedTabData`).
   - `TabStateAttributesRegistry`: Tracks tab persistence dirtiness (`DirtinessState`) with **separate tracking per `StoreKey`** so legacy `TabPersistentStoreImpl` and modern `TabStateStore` can run in shadow/migration mode without clearing each other's dirty bits.

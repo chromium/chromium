@@ -26,7 +26,7 @@ public class HistoryTabHelper extends TabWebContentsUserData {
     public static HistoryTabHelper from(Tab tab) {
         HistoryTabHelper handler = get(tab);
         if (handler == null) {
-            handler = tab.getUserDataHost().setUserData(USER_DATA_KEY, new HistoryTabHelper(tab));
+            handler = attachToTab(USER_DATA_KEY, new HistoryTabHelper(tab));
         }
         return handler;
     }
@@ -61,20 +61,15 @@ public class HistoryTabHelper extends TabWebContentsUserData {
 
     @Override
     public void initWebContents(WebContents webContents) {
-        setAppId(webContents);
+        // Avoid a redundant null JNI call during from(tab) before setAppId() or
+        // setAppIdForViewIntent() runs; native HistoryTabHelper defaults app_id_ to nullopt.
+        if (mAppId != null) {
+            setAppId(webContents);
+        }
     }
 
     @Override
-    public void cleanupWebContents(@Nullable WebContents webContents) {}
-
-    /**
-     * Destroy the helper class for a given tab.
-     *
-     * @param tab {@link Tab} this helper class is associated with.
-     */
-    public static void destroy(Tab tab) {
-        tab.getUserDataHost().removeUserData(USER_DATA_KEY);
-    }
+    public void cleanupWebContents(WebContents webContents) {}
 
     @Nullable
     public static String getAppIdForTesting(WebContents webContents) {

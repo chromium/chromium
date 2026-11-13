@@ -143,10 +143,8 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         SwipeRefreshHandler handler = get(tab);
         if (handler == null) {
             handler =
-                    tab.getUserDataHost()
-                            .setUserData(
-                                    USER_DATA_KEY,
-                                    new SwipeRefreshHandler(tab, swipeRefreshLayoutCreator));
+                    attachToTab(
+                            USER_DATA_KEY, new SwipeRefreshHandler(tab, swipeRefreshLayoutCreator));
         }
         return handler;
     }

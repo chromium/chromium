@@ -42,9 +42,7 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     public static TabGestureStateListener from(Tab tab) {
         TabGestureStateListener listener = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (listener == null) {
-            listener =
-                    tab.getUserDataHost()
-                            .setUserData(USER_DATA_KEY, new TabGestureStateListener(tab));
+            listener = attachToTab(USER_DATA_KEY, new TabGestureStateListener(tab));
         }
         return listener;
     }
@@ -124,12 +122,10 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     }
 
     @Override
-    public void cleanupWebContents(@Nullable WebContents webContents) {
-        if (webContents != null) {
-            GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
-            if (manager != null && mGestureListener != null) {
-                manager.removeListener(mGestureListener);
-            }
+    public void cleanupWebContents(WebContents webContents) {
+        GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
+        if (manager != null && mGestureListener != null) {
+            manager.removeListener(mGestureListener);
         }
         mGestureListener = null;
     }

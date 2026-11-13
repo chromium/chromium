@@ -21,7 +21,7 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
     private final Map<Class<? extends TabStateAttributes.StoreKey>, TabStateAttributes>
             mAttributesMap = new ArrayMap<>(2);
 
-    public TabStateAttributesRegistry(Tab tab) {
+    private TabStateAttributesRegistry(Tab tab) {
         super(tab);
     }
 
@@ -45,7 +45,7 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
         TabStateAttributesRegistry registry = host.getUserData(TabStateAttributesRegistry.class);
         if (registry == null) {
             registry =
-                    host.setUserData(
+                    attachToTab(
                             TabStateAttributesRegistry.class, new TabStateAttributesRegistry(tab));
         }
         registry.put(key, new TabStateAttributes(tab, creationState));
@@ -62,7 +62,10 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
     }
 
     public static void clearForTesting(Tab tab) {
-        tab.getUserDataHost().removeUserData(TabStateAttributesRegistry.class);
+        UserDataHost host = tab.getUserDataHost();
+        if (host.getUserData(TabStateAttributesRegistry.class) != null) {
+            host.removeUserData(TabStateAttributesRegistry.class).destroy();
+        }
     }
 
     @Override
@@ -75,7 +78,7 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
     @Override
     public void cleanupWebContents(WebContents webContents) {
         for (TabStateAttributes attr : mAttributesMap.values()) {
-            attr.cleanupWebContents(webContents);
+            attr.cleanupWebContents();
         }
     }
 
@@ -89,7 +92,10 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
 
     private void put(
             Class<? extends TabStateAttributes.StoreKey> key, TabStateAttributes attributes) {
-        mAttributesMap.put(key, attributes);
+        TabStateAttributes previous = mAttributesMap.put(key, attributes);
+        if (previous != null && previous != attributes) {
+            previous.destroy();
+        }
         WebContents wc = getWebContents();
         if (wc != null) {
             attributes.beginTracking(wc);

@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Unit tests for TabStateAttributesRegistry. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,7 +37,9 @@ public class TabStateAttributesRegistryTest {
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
+    private WebContents mWebContents;
 
     private MockTab mTab;
 
@@ -85,5 +92,23 @@ public class TabStateAttributesRegistryTest {
         TabStateAttributesRegistry registry =
                 mTab.getUserDataHost().getUserData(TabStateAttributesRegistry.class);
         assertEquals(2, registry.getAllAttributes().size());
+    }
+
+    @Test
+    public void testClearForTesting_destroysAndUnregistersObserver() {
+        int baselineObserverCount = mTab.getObservers().size();
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, FakeKey1.class, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributesRegistry registry =
+                mTab.getUserDataHost().getUserData(TabStateAttributesRegistry.class);
+        assertSame(mWebContents, registry.getWebContents());
+        assertTrue(mTab.hasObserverForTesting(registry));
+        assertEquals(baselineObserverCount + 2, mTab.getObservers().size());
+
+        TabStateAttributesRegistry.clearForTesting(mTab);
+        assertNull(registry.getWebContents());
+        assertTrue(registry.getAllAttributes().isEmpty());
+        assertFalse(mTab.hasObserverForTesting(registry));
+        assertEquals(baselineObserverCount, mTab.getObservers().size());
     }
 }

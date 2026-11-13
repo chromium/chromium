@@ -33,7 +33,7 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
     public static TabAssociatedApp from(Tab tab) {
         TabAssociatedApp app = get(tab);
         if (app == null) {
-            app = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabAssociatedApp(tab));
+            app = attachToTab(USER_DATA_KEY, new TabAssociatedApp(tab));
         }
         return app;
     }
