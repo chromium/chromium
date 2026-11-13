@@ -13077,6 +13077,27 @@
             ]
         }
     ],
+    "MojoChannelAssociatedSendUsesRunOrPostTask": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoChannelAssociatedSendUsesRunOrPostTask"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoFixGeometricBufferGrowth2": [
         {
             "platforms": [
