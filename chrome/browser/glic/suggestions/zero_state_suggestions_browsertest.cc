@@ -2,25 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/sync/history_backend_for_sync.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
@@ -29,11 +48,16 @@
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -811,5 +835,350 @@ IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsBFCacheConfusionBrowserTest,
   attacker_zss_data->GetPageContext(proto_future.GetCallback());
   ASSERT_FALSE(proto_future.Get().has_value());
 }
+
+namespace {
+
+using ::testing::_;
+
+// Marks the visit at `visit_time` as known to sync, as Sync does once it has
+// uploaded a local visit.
+class MarkVisitAsKnownToSyncTask : public history::HistoryDBTask {
+ public:
+  explicit MarkVisitAsKnownToSyncTask(base::Time visit_time)
+      : visit_time_(visit_time) {}
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    history::VisitRow visit_row;
+    if (backend->GetLastVisitByTime(visit_time_, &visit_row)) {
+      static_cast<history::HistoryBackendForSync*>(backend)
+          ->MarkVisitAsKnownToSync(visit_row.visit_id);
+    }
+    return true;
+  }
+  void DoneRunOnMainThread() override {}
+
+ private:
+  const base::Time visit_time_;
+};
+
+class ZeroStateSuggestionsRecentPagesBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    InitializeFeatureList();
+    InProcessBrowserTest::SetUp();
+  }
+
+  virtual void InitializeFeatureList() {
+    scoped_feature_list_.InitWithFeatures(
+        {kGlicZeroStateSuggestions, kGlicBrowsingHistoryZeroStateSuggestions,
+         features::kGlicDefaultTabContextSetting},
+        {});
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  SyncServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+                        return std::make_unique<syncer::TestSyncService>();
+                      }));
+                  OptimizationGuideKeyedServiceFactory::GetInstance()
+                      ->SetTestingFactory(
+                          context,
+                          base::BindRepeating(
+                              [](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+                                return std::make_unique<testing::NiceMock<
+                                    MockOptimizationGuideKeyedService>>();
+                              }));
+                }));
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kGlicDefaultTabContextEnabled, true);
+    ui_test_utils::WaitForHistoryToLoad(history_service());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
+  }
+
+ protected:
+  history::HistoryService* history_service() {
+    return HistoryServiceFactory::GetForProfile(
+        browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+  }
+
+  MockOptimizationGuideKeyedService* mock_opt_guide() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->GetProfile()));
+  }
+
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+  }
+
+  void AddSyncedVisit(const std::string& url,
+                      const std::u16string& title,
+                      base::Time visit_time) {
+    history_service()->AddPageWithDetails(
+        GURL(url), title, /*visit_count=*/1, /*typed_count=*/0, visit_time,
+        /*hidden=*/false, history::SOURCE_BROWSED);
+    history_service()->ScheduleDBTask(
+        FROM_HERE, std::make_unique<MarkVisitAsKnownToSyncTask>(visit_time),
+        &task_tracker_);
+  }
+
+  void GetSuggestionsForActiveTab(GlicSuggestionsCallback callback) {
+    ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            browser()->GetTabStripModel()->GetActiveWebContents(),
+            /*is_fre=*/false, /*supported_tools=*/{}, std::move(callback));
+  }
+
+  // Declared first so that it is destroyed after `scoped_feature_list_`, which
+  // is initialized later.
+  GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::CancelableTaskTracker task_tracker_;
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       NewTabPageRequestPopulatesRecentPages) {
+  const base::Time now = base::Time::Now();
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 now - base::Minutes(2));
+  AddSyncedVisit("https://www.history2.com/doc", u"History 2",
+                 now - base::Minutes(1));
+
+  base::test::TestFuture<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      request_future;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions, _,
+          _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            request_future.SetValue(
+                static_cast<const optimization_guide::proto::
+                                ZeroStateSuggestionsRequest&>(
+                    request_metadata));
+          });
+
+  GetSuggestionsForActiveTab(base::DoNothing());
+  const optimization_guide::proto::ZeroStateSuggestionsRequest request =
+      request_future.Take();
+
+  // The New Tab Page has no page context of its own.
+  EXPECT_FALSE(request.has_page_context());
+  EXPECT_EQ(0, request.page_context_list().page_contexts_size());
+  ASSERT_EQ(2, request.recent_pages_size());
+  EXPECT_EQ("https://www.history2.com/doc", request.recent_pages(0).url());
+  EXPECT_EQ("History 2", request.recent_pages(0).title());
+  EXPECT_EQ("https://www.history1.com/article", request.recent_pages(1).url());
+}
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       PinnedNewTabPageRequestPopulatesRecentPages) {
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 base::Time::Now() - base::Minutes(1));
+
+  base::test::TestFuture<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      request_future;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions, _,
+          _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            request_future.SetValue(
+                static_cast<const optimization_guide::proto::
+                                ZeroStateSuggestionsRequest&>(
+                    request_metadata));
+          });
+
+  // Opening Glic pins the active tab, so this is the call made for a New Tab
+  // Page in production.
+  EXPECT_TRUE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {browser()->GetTabStripModel()->GetActiveWebContents()},
+              /*is_fre=*/false, /*supported_tools=*/{},
+              /*focused_tab=*/nullptr, base::DoNothing()));
+  const optimization_guide::proto::ZeroStateSuggestionsRequest request =
+      request_future.Take();
+
+  EXPECT_EQ(0, request.page_context_list().page_contexts_size());
+  ASSERT_EQ(1, request.recent_pages_size());
+  EXPECT_EQ("https://www.history1.com/article", request.recent_pages(0).url());
+}
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       PinnedNewTabPageWithWebPageUsesOnlyWebPage) {
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 base::Time::Now() - base::Minutes(1));
+  // The web page's context is only ready once its optimization hint is known.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::kDisableCheckingUserPermissionsForTestingSwitch);
+  ON_CALL(*mock_opt_guide(),
+          CanApplyOptimization(
+              _, _,
+              ::testing::An<
+                  optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillByDefault(
+          [](const GURL& url,
+             optimization_guide::proto::OptimizationType optimization_type,
+             optimization_guide::OptimizationGuideDecisionCallback callback) {
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideDecision::kUnknown, {});
+          });
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* new_tab_page =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* web_page =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  base::test::TestFuture<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      request_future;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions, _,
+          _, _))
+      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        request_future.SetValue(
+            static_cast<
+                const optimization_guide::proto::ZeroStateSuggestionsRequest&>(
+                request_metadata));
+        // Complete the request so that it does not outlive the tabs.
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr),
+            nullptr);
+      });
+
+  EXPECT_TRUE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {new_tab_page, web_page}, /*is_fre=*/false,
+              /*supported_tools=*/{}, /*focused_tab=*/nullptr,
+              base::DoNothing()));
+  const optimization_guide::proto::ZeroStateSuggestionsRequest request =
+      request_future.Take();
+
+  // Recent pages are only used when the New Tab Page is the only context.
+  EXPECT_EQ(1, request.page_context_list().page_contexts_size());
+  EXPECT_EQ(0, request.recent_pages_size());
+}
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       PinnedBackgroundNewTabPageReturnsEmpty) {
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 base::Time::Now() - base::Minutes(1));
+  content::WebContents* new_tab_page =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://version/"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* active_page =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_CALL(*mock_opt_guide(), ExecuteModel(_, _, _, _)).Times(0);
+
+  // Neither tab has page context, and the New Tab Page is not the active tab.
+  base::test::TestFuture<std::vector<std::string>> future;
+  EXPECT_FALSE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {new_tab_page, active_page}, /*is_fre=*/false,
+              /*supported_tools=*/{}, /*focused_tab=*/nullptr,
+              future.GetCallback()));
+  EXPECT_TRUE(future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       NoRecentPagesReturnsEmptyWithoutModelExecution) {
+  EXPECT_CALL(*mock_opt_guide(), ExecuteModel(_, _, _, _)).Times(0);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  GetSuggestionsForActiveTab(future.GetCallback());
+
+  EXPECT_TRUE(future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesBrowserTest,
+                       HistorySyncOffReturnsEmptyWithoutModelExecution) {
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 base::Time::Now() - base::Minutes(1));
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  EXPECT_CALL(*mock_opt_guide(), ExecuteModel(_, _, _, _)).Times(0);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  GetSuggestionsForActiveTab(future.GetCallback());
+
+  EXPECT_TRUE(future.Get().empty());
+}
+
+class ZeroStateSuggestionsRecentPagesDisabledBrowserTest
+    : public ZeroStateSuggestionsRecentPagesBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {kGlicZeroStateSuggestions, features::kGlicDefaultTabContextSetting},
+        {kGlicBrowsingHistoryZeroStateSuggestions});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsRecentPagesDisabledBrowserTest,
+                       NewTabPageReturnsEmptyWithoutModelExecution) {
+  AddSyncedVisit("https://www.history1.com/article", u"History 1",
+                 base::Time::Now() - base::Minutes(1));
+  EXPECT_CALL(*mock_opt_guide(), ExecuteModel(_, _, _, _)).Times(0);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  GetSuggestionsForActiveTab(future.GetCallback());
+
+  EXPECT_TRUE(future.Get().empty());
+}
+
+}  // namespace
 
 }  // namespace glic

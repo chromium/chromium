@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/glic/suggestions/recent_pages_collector.h"
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -26,7 +27,8 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     const optimization_guide::proto::ZeroStateSuggestionsRequest&
         pending_base_request,
     const std::vector<raw_ptr<content::WebContents>>& requested_tabs,
-    const content::WebContents* focused_tab)
+    const content::WebContents* focused_tab,
+    RecentPagesCollector* recent_pages_collector)
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
       requested_tabs_(requested_tabs),
@@ -35,6 +37,16 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
       "request for %llu tabs",
       requested_tabs.size()));
+
+  if (recent_pages_collector) {
+    CHECK(requested_tabs.empty());
+    recent_pages_collector->CollectRecentPages(
+        /*page_context_urls=*/{},
+        base::BindOnce(&ZeroStateSuggestionsRequest::OnRecentPagesCollected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   auto barrier_callback = base::BarrierCallback<
       base::expected<optimization_guide::proto::ZeroStatePageContext,
                      PageContextIneligibilityType>>(
@@ -154,11 +166,33 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
                                       filtered_page_contexts.end()};
   }
 
+  StartModelExecution();
+}
+
+void ZeroStateSuggestionsRequest::OnRecentPagesCollected(
+    std::vector<optimization_guide::proto::Tab> recent_pages) {
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "ZeroStateSuggestionsRequest: Collected %zu recent pages",
+      recent_pages.size()));
+  if (recent_pages.empty()) {
+    pending_callbacks_.Notify(std::vector<std::string>({}));
+    return;
+  }
+
+  *pending_base_request_.mutable_recent_pages() = {
+      std::make_move_iterator(recent_pages.begin()),
+      std::make_move_iterator(recent_pages.end())};
+  StartModelExecution();
+}
+
+void ZeroStateSuggestionsRequest::StartModelExecution() {
   // Initiate model execution fetch.
   MODEL_EXECUTION_LOG(base::StringPrintf(
       "ZeroStateSuggestionsRequest: Starting fetch for "
-      "suggestions. Is-mulitab request: %s",
-      pending_base_request_.has_page_context_list() ? "true" : "false"));
+      "suggestions. Is-multitab request: %s",
+      pending_base_request_.page_context_list().page_contexts_size() > 1
+          ? "true"
+          : "false"));
 
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
@@ -188,8 +222,8 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
   }
 
   MODEL_EXECUTION_LOG(
-      base::StringPrintf("ZeroStateSuggestionsRequest: Received valid "
-                         "suggestions after %ld ms.",
+      base::StringPrintf("ZeroStateSuggestionsRequest: Received response "
+                         "after %ld ms.",
                          suggestions_duration.InMilliseconds()));
 
   std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
@@ -204,6 +238,9 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
     return;
   }
 
+  MODEL_EXECUTION_LOG(
+      base::StringPrintf("ZeroStateSuggestionsRequest: Received %d suggestions",
+                         response->suggestions_size()));
   std::vector<std::string> suggestions;
   for (int i = 0; i < response->suggestions_size(); ++i) {
     suggestions.push_back(response->suggestions(i).label());

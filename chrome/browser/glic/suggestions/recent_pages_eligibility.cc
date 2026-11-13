@@ -59,4 +59,19 @@ RecentPagesIneligibilityReason GetRecentPagesEligibility(Profile* profile) {
   return RecentPagesIneligibilityReason::kNone;
 }
 
+const char* GetName(RecentPagesIneligibilityReason reason) {
+  switch (reason) {
+    case RecentPagesIneligibilityReason::kNone:
+      return "None";
+    case RecentPagesIneligibilityReason::kHistorySyncOff:
+      return "HistorySyncOff";
+    case RecentPagesIneligibilityReason::kFreNotAccepted:
+      return "FreNotAccepted";
+    case RecentPagesIneligibilityReason::kTabContextDisabled:
+      return "TabContextDisabled";
+    case RecentPagesIneligibilityReason::kAgeRestricted:
+      return "AgeRestricted";
+  }
+}
+
 }  // namespace glic

@@ -39,6 +39,7 @@ class LoadingPredictor;
 namespace glic {
 
 enum class GlicNudgeActivity;
+class RecentPagesCollector;
 class ZeroStateSuggestionsRequest;
 
 using GlicSuggestionsCallbackList =
@@ -135,7 +136,17 @@ class ContextualCueingService
       const std::vector<raw_ptr<content::WebContents>>& web_contents_list,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
-      const content::WebContents* focused_tab);
+      const content::WebContents* focused_tab,
+      RecentPagesCollector* recent_pages_collector);
+
+  // Requests zero state suggestions based only on recently visited pages,
+  // replacing the outstanding pinned tabs request if there is one.
+  // `web_contents` is used only to get the profile.
+  void GetZeroStateSuggestionsFromRecentPages(
+      content::WebContents& web_contents,
+      bool is_fre,
+      std::optional<std::vector<std::string>> supported_tools,
+      GlicSuggestionsCallback callback);
 
   // Callback invoked when pinned tabs suggestions are received.
   void OnPinnedTabsSuggestionsReceived(
@@ -167,7 +178,12 @@ class ContextualCueingService
   base::LRUCache<url::Origin, contextual_cueing::NudgeCapTracker>
       recent_visited_origins_;
 
-  // Holds the latest pinned tabs zero state suggestions request.
+  // Collects recently visited pages for zero state suggestions requests.
+  // Created on first use.
+  std::unique_ptr<RecentPagesCollector> recent_pages_collector_;
+
+  // Holds the latest pinned tabs or recent pages zero state suggestions
+  // request.
   std::unique_ptr<ZeroStateSuggestionsRequest>
       pinned_tabs_zero_state_suggestions_request_;
 

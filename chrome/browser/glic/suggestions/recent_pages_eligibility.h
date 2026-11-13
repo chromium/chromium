@@ -25,6 +25,9 @@ enum class RecentPagesIneligibilityReason {
 // and if not, the ineligibility reason.
 RecentPagesIneligibilityReason GetRecentPagesEligibility(Profile* profile);
 
+// Returns the name of `reason`, for logging.
+const char* GetName(RecentPagesIneligibilityReason reason);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_RECENT_PAGES_ELIGIBILITY_H_

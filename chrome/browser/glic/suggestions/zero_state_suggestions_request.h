@@ -29,17 +29,21 @@ struct OptimizationGuideModelExecutionResult;
 namespace glic {
 
 enum class PageContextIneligibilityType;
+class RecentPagesCollector;
 class ZeroStateSuggestionsPageData;
 
 // Encapsulates logic for a single zero-state suggestions request.
 class ZeroStateSuggestionsRequest {
  public:
+  // If `recent_pages_collector` is non-null, suggestions are based on the pages
+  // it collects instead of on `requested_tabs`, which must be empty.
   ZeroStateSuggestionsRequest(
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
       const optimization_guide::proto::ZeroStateSuggestionsRequest&
           pending_base_request,
       const std::vector<raw_ptr<content::WebContents>>& requested_tabs,
-      const content::WebContents* focused_tab);
+      const content::WebContents* focused_tab,
+      RecentPagesCollector* recent_pages_collector);
 
   ~ZeroStateSuggestionsRequest();
 
@@ -64,6 +68,13 @@ class ZeroStateSuggestionsRequest {
           base::expected<optimization_guide::proto::ZeroStatePageContext,
                          PageContextIneligibilityType>>&
           zero_state_page_contexts);
+
+  // Callback invoked when recently visited pages have been collected.
+  void OnRecentPagesCollected(
+      std::vector<optimization_guide::proto::Tab> recent_pages);
+
+  // Sends `pending_base_request_` for model execution.
+  void StartModelExecution();
 
   // Callback invoked when model execution has completed.
   void OnModelExecutionResponse(

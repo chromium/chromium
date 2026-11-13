@@ -4,12 +4,14 @@
 
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
+#include <algorithm>
 #include <cmath>
 #include <variant>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -19,19 +21,27 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
+#include "chrome/browser/glic/suggestions/recent_pages_collector.h"
+#include "chrome/browser/glic/suggestions/recent_pages_eligibility.h"
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_request.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -133,6 +143,44 @@ void PopulateSupportedToolsForRequest(
   }
   *out_request->mutable_supported_tools() = {req_supported_tools.begin(),
                                              req_supported_tools.end()};
+}
+
+// Returns true if `url` is a New Tab Page.
+bool IsNewTabPage(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIScheme) &&
+          url.host() == chrome::kChromeUINewTabHost) ||
+         search::IsNTPURL(url);
+}
+
+// Returns true if recently visited pages can be used for suggestions for the
+// profile of `web_contents`. Logs the result for `web_contents`'s URL.
+bool CanUseRecentPages(content::WebContents& web_contents,
+                       OptimizationGuideLogger* logger) {
+  if (!base::FeatureList::IsEnabled(kGlicBrowsingHistoryZeroStateSuggestions)) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+  const RecentPagesIneligibilityReason reason =
+      GetRecentPagesEligibility(profile);
+  if (reason != RecentPagesIneligibilityReason::kNone) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger,
+        base::StringPrintf("ContextualCueingService: %s ineligible for recent "
+                           "pages suggestions with reason: %s.",
+                           web_contents.GetLastCommittedURL().spec(),
+                           GetName(reason)));
+    return false;
+  }
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger,
+      base::StringPrintf(
+          "ContextualCueingService: %s eligible for recent pages suggestions.",
+          web_contents.GetLastCommittedURL().spec()));
+  return true;
 }
 
 }  // namespace
@@ -376,7 +424,8 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
     const std::vector<raw_ptr<content::WebContents>>& web_contents_list,
     bool is_fre,
     std::optional<std::vector<std::string>> supported_tools,
-    const content::WebContents* focused_tab) {
+    const content::WebContents* focused_tab,
+    RecentPagesCollector* recent_pages_collector) {
   // Construct base request proto.
   optimization_guide::proto::ZeroStateSuggestionsRequest request_proto;
   request_proto.set_is_fre(is_fre);
@@ -395,7 +444,26 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
 
   return std::make_unique<ZeroStateSuggestionsRequest>(
       optimization_guide_keyed_service_, request_proto, web_contents_list,
-      focused_tab);
+      focused_tab, recent_pages_collector);
+}
+
+void ContextualCueingService::GetZeroStateSuggestionsFromRecentPages(
+    content::WebContents& web_contents,
+    bool is_fre,
+    std::optional<std::vector<std::string>> supported_tools,
+    GlicSuggestionsCallback callback) {
+  if (!recent_pages_collector_) {
+    recent_pages_collector_ = std::make_unique<RecentPagesCollector>(
+        Profile::FromBrowserContext(web_contents.GetBrowserContext()));
+  }
+  pinned_tabs_zero_state_suggestions_request_ = MakeZeroStateSuggestionsRequest(
+      /*web_contents_list=*/{}, is_fre, supported_tools,
+      /*focused_tab=*/nullptr, recent_pages_collector_.get());
+  pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
+      &ContextualCueingService::OnPinnedTabsSuggestionsReceived,
+      weak_ptr_factory_.GetWeakPtr(), is_fre, base::TimeTicks::Now(),
+      pinned_tabs_zero_state_suggestions_request_->AsWeakPtr(),
+      std::move(callback)));
 }
 
 void ContextualCueingService::
@@ -413,6 +481,17 @@ void ContextualCueingService::
 
   if (!optimization_guide_keyed_service_) {
     std::move(callback).Run({});
+    return;
+  }
+
+  // The New Tab Page has no page context of its own, so base its suggestions
+  // on recently visited pages instead.
+  if (IsNewTabPage(web_contents->GetLastCommittedURL()) &&
+      CanUseRecentPages(
+          *web_contents,
+          optimization_guide_keyed_service_->GetOptimizationGuideLogger())) {
+    GetZeroStateSuggestionsFromRecentPages(
+        *web_contents, is_fre, supported_tools, std::move(callback));
     return;
   }
 
@@ -438,7 +517,8 @@ void ContextualCueingService::
   auto* zss_request_ptr = zss_data->focused_tab_request();
   if (!zss_request_ptr) {
     auto zss_request = MakeZeroStateSuggestionsRequest(
-        {web_contents}, is_fre, supported_tools, web_contents);
+        {web_contents}, is_fre, supported_tools, web_contents,
+        /*recent_pages_collector=*/nullptr);
     zss_request_ptr = zss_request.get();
     zss_data->set_focused_tab_request(std::move(zss_request));
   }
@@ -473,6 +553,20 @@ bool ContextualCueingService::
     return false;
   }
 
+  // Remember the active New Tab Page before it is removed below for having no
+  // page context, so that it can fall back to recently visited pages.
+  auto it = std::ranges::find_if(
+      pinned_web_contents, [](content::WebContents* web_contents) {
+        if (!IsNewTabPage(web_contents->GetLastCommittedURL())) {
+          return false;
+        }
+        tabs::TabInterface* tab =
+            tabs::TabInterface::MaybeGetFromContents(web_contents);
+        return tab && tab->IsActivated();
+      });
+  content::WebContents* new_tab_page =
+      it != pinned_web_contents.end() ? it->get() : nullptr;
+
   // Remove all ineligible pages from list.
   std::erase_if(pinned_web_contents, [&](content::WebContents* web_contents) {
     return !IsPageTypeEligibleForContextualSuggestions(
@@ -482,13 +576,22 @@ bool ContextualCueingService::
       "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions",
       !pinned_web_contents.empty());
   if (pinned_web_contents.empty()) {
+    if (new_tab_page &&
+        CanUseRecentPages(
+            *new_tab_page,
+            optimization_guide_keyed_service_->GetOptimizationGuideLogger())) {
+      GetZeroStateSuggestionsFromRecentPages(
+          *new_tab_page, is_fre, supported_tools, std::move(callback));
+      return true;
+    }
     std::move(callback).Run({});
     return false;
   }
 
   // Initiate request for suggestions for pinned tabs.
   pinned_tabs_zero_state_suggestions_request_ = MakeZeroStateSuggestionsRequest(
-      pinned_web_contents, is_fre, supported_tools, focused_tab);
+      pinned_web_contents, is_fre, supported_tools, focused_tab,
+      /*recent_pages_collector=*/nullptr);
   pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &ContextualCueingService::OnPinnedTabsSuggestionsReceived,
       weak_ptr_factory_.GetWeakPtr(), is_fre, base::TimeTicks::Now(),
