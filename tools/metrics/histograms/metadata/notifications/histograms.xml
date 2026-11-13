@@ -196,18 +196,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Notifications.Android.IntentStartToNativeInitializedDuration"
-    units="ms" expires_after="2025-04-13">
-  <owner>peter@chromium.org</owner>
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Records how long it takes from receiving a notification in the
-    TrampolineActivity to finish initializing the native library. A sample is
-    recorded the first time native library is initialized upon receiving a
-    notification intent. Measured on Android.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
     enum="Boolean" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
