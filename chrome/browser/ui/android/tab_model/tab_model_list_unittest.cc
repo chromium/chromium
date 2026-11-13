@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
@@ -107,8 +108,8 @@ struct RecordingObserver : public TabModelListObserver {
     }
   }
 
-  std::vector<TabModel*> added;
-  std::vector<TabModel*> removed;
+  std::vector<raw_ptr<TabModel>> added;
+  std::vector<raw_ptr<TabModel>> removed;
   base::RepeatingCallback<void(TabModel*)> on_added;
   base::RepeatingCallback<void(TabModel*)> on_removed;
 };
@@ -354,11 +355,12 @@ TEST_F(TabModelListTest, ProfileScopedAndGlobalObservers) {
     OwningTestTabModel otr_model(otr);
     OwningTestTabModel other_model(other.get());
 
-    EXPECT_EQ((std::vector<TabModel*>{&reg_model}), reg_obs.added);
-    EXPECT_EQ((std::vector<TabModel*>{&otr_model}), otr_obs.added);
-    EXPECT_EQ((std::vector<TabModel*>{&other_model}), other_obs.added);
-    EXPECT_EQ((std::vector<TabModel*>{&reg_model, &otr_model, &other_model}),
-              global_obs.added);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&reg_model}), reg_obs.added);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&otr_model}), otr_obs.added);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&other_model}), other_obs.added);
+    EXPECT_EQ(
+        (std::vector<raw_ptr<TabModel>>{&reg_model, &otr_model, &other_model}),
+        global_obs.added);
   }
 
   EXPECT_EQ(1u, reg_obs.removed.size());
@@ -388,8 +390,8 @@ TEST_F(TabModelListTest, ObserverReentrantMutation) {
   {
     OwningTestTabModel m1(profile());
     OwningTestTabModel m2(profile());
-    EXPECT_EQ((std::vector<TabModel*>{&m1}), self_removing_obs.added);
-    EXPECT_EQ((std::vector<TabModel*>{&m1, &m2}), sibling_obs.added);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&m1}), self_removing_obs.added);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&m1, &m2}), sibling_obs.added);
   }
   TabModelList::RemoveObserver(&sibling_obs, profile());
 
@@ -437,7 +439,7 @@ TEST_F(TabModelListTest, ObserverReentrantMutation) {
   TestTabModel removed_first_obs_model(profile());
   TabModelList::AddTabModel(&removed_first_obs_model);
   EXPECT_TRUE(first_profile_obs.added.empty());
-  EXPECT_EQ((std::vector<TabModel*>{&removed_first_obs_model}),
+  EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&removed_first_obs_model}),
             remaining_profile_obs.added);
 
   TabModelList::RemoveObserver(&remaining_profile_obs, profile());
@@ -445,7 +447,7 @@ TEST_F(TabModelListTest, ObserverReentrantMutation) {
   TabModelList::AddObserver(&remaining_profile_obs, profile());
   TabModelList::RemoveTabModel(&removed_first_obs_model);
   EXPECT_TRUE(first_profile_obs.removed.empty());
-  EXPECT_EQ((std::vector<TabModel*>{&removed_first_obs_model}),
+  EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&removed_first_obs_model}),
             remaining_profile_obs.removed);
 
   TabModelList::RemoveObserver(&remaining_profile_obs, profile());
@@ -529,7 +531,7 @@ TEST_F(TabModelListTest, ProfileShutdownLifecycle) {
 
     TabModelList::RemoveTabModel(&model);
     EXPECT_EQ(nullptr, transient_profile);
-    EXPECT_EQ((std::vector<TabModel*>{&model}), first_obs.removed);
+    EXPECT_EQ((std::vector<raw_ptr<TabModel>>{&model}), first_obs.removed);
     EXPECT_TRUE(second_obs.removed.empty());
   }
 }
@@ -603,7 +605,8 @@ TEST(TabModelListPreUiThreadTest, GlobalObserverLifecycleAroundUiThreadInit) {
   TabModelList::AddTabModel(model_ptr);
 
   EXPECT_TRUE(removed_before_init_observer.added.empty());
-  EXPECT_EQ((std::vector<TabModel*>{model_ptr}), persistent_observer.added);
+  EXPECT_EQ((std::vector<raw_ptr<TabModel>>{model_ptr}),
+            persistent_observer.added);
 
   // Tear down `profile` and `BrowserTaskEnvironment` before destroying `model`
   // and removing `persistent_observer`, exercising post-`BrowserThread::UI`
@@ -616,6 +619,7 @@ TEST(TabModelListPreUiThreadTest, GlobalObserverLifecycleAroundUiThreadInit) {
   model.reset();
   TabModelList::RemoveGlobalObserver(&persistent_observer);
 
-  EXPECT_EQ((std::vector<TabModel*>{model_ptr}), persistent_observer.removed);
+  EXPECT_EQ((std::vector<raw_ptr<TabModel>>{model_ptr}),
+            persistent_observer.removed);
   EXPECT_TRUE(CollectAllModels().empty());
 }
