@@ -202,6 +202,34 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionUserChoice) {
             ChromeSigninUserChoice::kNoChoice);
 }
 
+TEST_F(SigninPrefsTest, ChromeLastSigninTime) {
+  const GaiaId gaia_id("gaia_id");
+
+  ASSERT_FALSE(HasAccountPrefs(gaia_id));
+  EXPECT_FALSE(signin_prefs().GetChromeLastSigninTime(gaia_id).has_value());
+  signin_prefs().ClearAllChromeLastSigninTime();
+  EXPECT_FALSE(HasAccountPrefs(gaia_id));
+
+  const base::Time last_signin_time = base::Time::Now();
+  signin_prefs().SetChromeLastSigninTime(gaia_id, last_signin_time);
+
+  EXPECT_TRUE(HasAccountPrefs(gaia_id));
+  EXPECT_EQ(signin_prefs().GetChromeLastSigninTime(gaia_id), last_signin_time);
+
+  // Creating the main dict through setting a different pref should still return
+  // the default value - no time.
+  const GaiaId gaia_id2("gaia_id2");
+  signin_prefs().SetChromeSigninInterceptionUserChoice(
+      gaia_id2, ChromeSigninUserChoice::kSignin);
+  ASSERT_TRUE(HasAccountPrefs(gaia_id2));
+  EXPECT_FALSE(signin_prefs().GetChromeLastSigninTime(gaia_id2).has_value());
+
+  signin_prefs().SetChromeLastSigninTime(gaia_id2, last_signin_time);
+  signin_prefs().ClearAllChromeLastSigninTime();
+  EXPECT_FALSE(signin_prefs().GetChromeLastSigninTime(gaia_id).has_value());
+  EXPECT_FALSE(signin_prefs().GetChromeLastSigninTime(gaia_id2).has_value());
+}
+
 TEST_F(SigninPrefsTest, ChromeSigninInterceptionLastBubbleDeclineTime) {
   const GaiaId gaia_id("gaia_id");
 
@@ -1086,6 +1114,7 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
       gaia_id, ChromeSigninUserChoice::kSignin);
   signin_prefs().SetAccountMetricsId(gaia_id, 7);
   signin_prefs().SetAccountMetricsIdCapped(gaia_id);
+  signin_prefs().SetChromeLastSigninTime(gaia_id, now);
   signin_prefs().SetChromeLastSignoutTime(gaia_id, now);
   signin_prefs().SetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id, now);
   signin_prefs().IncrementChromeSigninBubbleRepromptCount(gaia_id);
@@ -1142,6 +1171,7 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
             ChromeSigninUserChoice::kSignin);
   EXPECT_EQ(signin_prefs().GetAccountMetricsId(gaia_id), 7);
   EXPECT_TRUE(signin_prefs().IsAccountMetricsIdCapped(gaia_id));
+  EXPECT_EQ(signin_prefs().GetChromeLastSigninTime(gaia_id), now);
   EXPECT_EQ(signin_prefs().GetChromeLastSignoutTime(gaia_id), now);
   EXPECT_EQ(
       signin_prefs().GetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id),
@@ -1380,6 +1410,34 @@ TEST_F(SigninPrefsTest, SigninPrefsAccessorDirectOperations) {
             0);
   EXPECT_TRUE(
       accessor.ClearPref(gaia_id, signin::internal::kCrossDevicePromoPrefs));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Test ClearPrefForAllAccounts removes the key across multiple accounts in a
+  // single ScopedDictPrefUpdate (notifying observers only once).
+  const GaiaId gaia_id2("accessor_test_gaia_2");
+  EXPECT_CALL(mock_observer, Run()).Times(2);
+  accessor.SetTimePref(gaia_id, signin::internal::kChromeLastSigninTime, now);
+  accessor.SetTimePref(gaia_id2, signin::internal::kChromeLastSigninTime, now);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  EXPECT_EQ(
+      accessor.ClearPrefForAllAccounts(signin::internal::kChromeLastSigninTime),
+      2u);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_FALSE(
+      accessor.GetTimePref(gaia_id, signin::internal::kChromeLastSigninTime)
+          .has_value());
+  EXPECT_FALSE(
+      accessor.GetTimePref(gaia_id2, signin::internal::kChromeLastSigninTime)
+          .has_value());
+
+  // Subsequent ClearPrefForAllAccounts when no account has the key is a no-op
+  // and does not notify observers.
+  EXPECT_CALL(mock_observer, Run()).Times(0);
+  EXPECT_EQ(
+      accessor.ClearPrefForAllAccounts(signin::internal::kChromeLastSigninTime),
+      0u);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 

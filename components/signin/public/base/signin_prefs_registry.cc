@@ -34,6 +34,9 @@ ToParentStorage(const std::array<std::string_view, N>& parents) {
 // Registry of all active per-account preferences managed by `SigninPrefs`.
 // LINT.IfChange(SigninPrefsKeys)
 constexpr PrefDescriptor kRegisteredSigninPrefs[] = {
+    {.key = signin::internal::kChromeLastSigninTime,
+     .type = base::Value::Type::STRING,
+     .is_timestamp = true},
     {.key = signin::internal::kChromeLastSignoutTime,
      .type = base::Value::Type::STRING,
      .is_timestamp = true},

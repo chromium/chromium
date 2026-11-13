@@ -97,6 +97,13 @@ class SigninPrefs {
   // Sets the next unassigned account metrics ID.
   void SetNextAccountMetricsUnassignedId(int id);
 
+  // Last primary account signin time.
+  void SetChromeLastSigninTime(const GaiaId& gaia_id,
+                               base::Time last_signin_time);
+  void ClearAllChromeLastSigninTime();
+  std::optional<base::Time> GetChromeLastSigninTime(
+      const GaiaId& gaia_id) const;
+
   // Last signout time.
   void SetChromeLastSignoutTime(const GaiaId& gaia_id,
                                 base::Time last_signout_time);

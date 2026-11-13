@@ -36,6 +36,11 @@ namespace signin::internal {
 
 // LINT.IfChange(SigninPrefsKeys)
 
+// Pref used to track the last time the user signed in to Chrome as primary
+// account.
+inline constexpr std::string_view kChromeLastSigninTime =
+    "ChromeLastSigninTime";
+
 // Pref used to track the last time the user signed out of Chrome.
 inline constexpr std::string_view kChromeLastSignoutTime =
     "kChromeLastSignoutTime";

@@ -111,6 +111,22 @@ void SigninPrefs::SetNextAccountMetricsUnassignedId(int id) {
   pref_service_->SetInteger(kAccountMetricsNextUnassignedId, id);
 }
 
+void SigninPrefs::SetChromeLastSigninTime(const GaiaId& gaia_id,
+                                          base::Time last_signin_time) {
+  accessor_.SetTimePref(gaia_id, signin::internal::kChromeLastSigninTime,
+                        last_signin_time);
+}
+
+void SigninPrefs::ClearAllChromeLastSigninTime() {
+  accessor_.ClearPrefForAllAccounts(signin::internal::kChromeLastSigninTime);
+}
+
+std::optional<base::Time> SigninPrefs::GetChromeLastSigninTime(
+    const GaiaId& gaia_id) const {
+  return accessor_.GetTimePref(gaia_id,
+                               signin::internal::kChromeLastSigninTime);
+}
+
 void SigninPrefs::SetChromeLastSignoutTime(const GaiaId& gaia_id,
                                            base::Time last_signout_time) {
   accessor_.SetTimePref(gaia_id, signin::internal::kChromeLastSignoutTime,
