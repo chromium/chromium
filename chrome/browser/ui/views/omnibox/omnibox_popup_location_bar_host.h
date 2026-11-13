@@ -74,6 +74,10 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  // Runs the Full popup's blur sequence (`OmniboxPopupViewFullWebUI::
+  // BlurOmnibox()`) when focus leaves the content, including when the window
+  // is deactivated.
+  void OnViewBlurred(views::View* observed_view) override;
 
  private:
   // Sizes the content to `LocationBarView`'s local bounds and keeps it above
@@ -81,6 +85,16 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
   void UpdateLayout();
   // Clears views focus and stored focus from the content.
   void ClearFocusFromContent();
+  // True while views focus is on LocationBarView (the Full WebUI focus proxy
+  // that `LocationBarView::FocusLocation()` moves through) or inside the
+  // content, and false once focus has moved elsewhere (including to another
+  // child of LocationBarView, such as the location icon after Shift+Tab, or to
+  // nothing when the window is deactivated).
+  bool IsViewsFocusInOmnibox() const;
+  // Replaces `content_` as the stored focus view with `LocationBarView` after
+  // a deactivation blurred the omnibox, so `FocusManager`'s restore on
+  // reactivation lands on `LocationBarView`.
+  void StoreLocationBarForReactivation();
   // Called once the compositor presents the first frame after `Show()`.
   void OnContentPresented(const gfx::PresentationFeedback& feedback);
 
@@ -92,10 +106,14 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
 
   base::ScopedObservation<views::View, views::ViewObserver>
       location_bar_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      content_observation_{this};
 
   // Invalidated on `Hide()` to drop a pending presentation callback.
   base::WeakPtrFactory<OmniboxPopupLocationBarHost> presentation_weak_factory_{
       this};
+
+  base::WeakPtrFactory<OmniboxPopupLocationBarHost> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_LOCATION_BAR_HOST_H_

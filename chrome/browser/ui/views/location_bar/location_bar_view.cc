@@ -1811,6 +1811,27 @@ void LocationBarView::OnFocus() {
     // traversal, focus restoration), forward to WebUI without triggering an
     // unexpected Zero-Prefix Suggestion (ZPS) query.
     if (!moving_focus_to_webui_) {
+      if (omnibox::ShouldHostUnboundedOmniboxInLocationBar() &&
+          GetFocusManager() &&
+          GetFocusManager()->focus_change_reason() ==
+              views::FocusManager::FocusChangeReason::kFocusRestore) {
+        // On activation by a click, `FocusManager` restores focus before the
+        // click is dispatched; let the click take focus first.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::WeakPtr<LocationBarView> self) {
+                  // `LocationBarView::HasFocus()` checks `edit_model()`, not
+                  // Views focus.
+                  if (self && self->views::View::HasFocus()) {
+                    self->ForwardFocusToWebUI(/*query_zps=*/false,
+                                              /*select_all=*/false,
+                                              /*show_full_url=*/false);
+                  }
+                },
+                weak_factory_.GetWeakPtr()));
+        return;
+      }
       ForwardFocusToWebUI(/*query_zps=*/false, /*select_all=*/false,
                           /*show_full_url=*/false);
     }

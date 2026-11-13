@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -28,10 +31,12 @@ OmniboxPopupLocationBarHost::OmniboxPopupLocationBarHost(
           OmniboxPopupContentConfig::ForFullInLocationBar(), &location_bar,
           &controller));
   content_->SetVisible(false);
+  content_observation_.Observe(content_);
   location_bar_observation_.Observe(&location_bar);
 }
 
 OmniboxPopupLocationBarHost::~OmniboxPopupLocationBarHost() {
+  content_observation_.Reset();
   location_bar_observation_.Reset();
   if (OmniboxFullPopupWebUIContent* content = content_) {
     content_ = nullptr;
@@ -142,17 +147,82 @@ void OmniboxPopupLocationBarHost::OnViewBoundsChanged(
   UpdateLayout();
 }
 
+void OmniboxPopupLocationBarHost::OnViewBlurred(views::View* observed_view) {
+  // Focus moving within the omnibox, e.g. to `LocationBarView` on
+  // `FocusLocation()`, isn't a blur. Deactivating the window is, as for
+  // `OmniboxViewViews`.
+  if (observed_view != content_ || IsViewsFocusInOmnibox()) {
+    return;
+  }
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller_, [] {});
+  if (views::Widget* widget = location_bar_view_->GetWidget();
+      widget && !widget->IsActive()) {
+    // `FocusManager::StoreFocusedView()` stores `content_` after `Blur()`
+    // returns. Replace it with `LocationBarView` (the Full WebUI focus proxy),
+    // whose `OnFocus()` refocuses the omnibox on reactivation, and which
+    // `RestoreFocusedView()` can focus even if `content_` was hidden.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &OmniboxPopupLocationBarHost::StoreLocationBarForReactivation,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
+bool OmniboxPopupLocationBarHost::IsViewsFocusInOmnibox() const {
+  views::FocusManager* focus_manager = location_bar_view_->GetFocusManager();
+  if (!focus_manager) {
+    return false;
+  }
+  views::View* focused = focus_manager->GetFocusedView();
+  return focused && (focused == &*location_bar_view_ ||
+                     (content_ && content_->Contains(focused)));
+}
+
+void OmniboxPopupLocationBarHost::StoreLocationBarForReactivation() {
+  views::Widget* widget = location_bar_view_->GetWidget();
+  views::FocusManager* focus_manager = location_bar_view_->GetFocusManager();
+  if (widget && !widget->IsActive() && focus_manager &&
+      focus_manager->GetStoredFocusView() == content_) {
+    focus_manager->SetStoredFocusView(&*location_bar_view_);
+#if BUILDFLAG(IS_MAC)
+    // While inactive, take native first responder away from the WebView, so
+    // reactivation doesn't focus the page (WebView::OnWebContentsFocused())
+    // before LocationBarView's posted refocus runs.
+    focus_manager->ClearNativeFocus();
+#endif
+  }
+}
+
 void OmniboxPopupLocationBarHost::ClearFocusFromContent() {
   views::FocusManager* focus_manager = location_bar_view_->GetFocusManager();
   if (!content_ || !focus_manager) {
     return;
   }
-  if (content_->Contains(focus_manager->GetStoredFocusView())) {
+  const bool stored_in_content =
+      content_->Contains(focus_manager->GetStoredFocusView());
+  const bool focused_in_content =
+      content_->Contains(focus_manager->GetFocusedView());
+  if (stored_in_content) {
     focus_manager->SetStoredFocusView(nullptr);
   }
-  if (content_->Contains(focus_manager->GetFocusedView())) {
+  if (focused_in_content) {
     focus_manager->ClearFocus();
   }
+#if BUILDFLAG(IS_MAC)
+  if (!focused_in_content && stored_in_content &&
+      !focus_manager->GetFocusedView()) {
+    // On deactivation this runs inside `FocusManager::SetFocusedView(nullptr)`
+    // (from `OnViewBlurred()`): views focus is already cleared, but `content_`
+    // is still the stored focus view, since `FocusManager` stores each view it
+    // focuses and resets that only after `Blur()` returns. AppKit walks the
+    // key-view loop for a new first responder when the first responder's view
+    // is hidden, which would move it to the page and re-activate the window
+    // (see `WebContentsNSViewBridge::SetVisible()`), so clear native focus
+    // first.
+    focus_manager->ClearNativeFocus();
+  }
+#endif
 }
 
 void OmniboxPopupLocationBarHost::UpdateLayout() {

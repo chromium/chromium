@@ -4,21 +4,28 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_location_bar_host.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -33,6 +40,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -40,12 +48,20 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -63,6 +79,82 @@ constexpr char kPrelude[] = R"(
 
 constexpr char kDropdownOpen[] = "sb.dropdownIsVisible";
 constexpr char kDropdownClosed[] = "!sb.dropdownIsVisible";
+// The native <input> is the focused element of a focused document.
+constexpr char kInputFocused[] =
+    "document.hasFocus() && sb.shadowRoot.activeElement === crInput && "
+    "crInput.shadowRoot.activeElement === input";
+
+// Whether `views::Widget::Deactivate()` can deactivate the browser window.
+// `NativeWidgetMac::Deactivate()` is not implemented, and Wayland doesn't let
+// a client deactivate its own window.
+bool CanDeactivateWidget() {
+#if BUILDFLAG(IS_MAC)
+  return false;
+#elif BUILDFLAG(IS_OZONE)
+  return !ui::OzonePlatform::RunningOnWaylandForTest();
+#else
+  return true;
+#endif
+}
+
+// Counts the autocomplete queries started while alive.
+class AutocompleteStartCounter : public AutocompleteController::Observer {
+ public:
+  explicit AutocompleteStartCounter(AutocompleteController* controller) {
+    observation_.Observe(controller);
+  }
+
+  int count() const { return count_; }
+
+  // AutocompleteController::Observer:
+  void OnStart(AutocompleteController* controller,
+               const AutocompleteInput& input) override {
+    ++count_;
+  }
+
+ private:
+  int count_ = 0;
+  base::ScopedObservation<AutocompleteController,
+                          AutocompleteController::Observer>
+      observation_{this};
+};
+
+// Records omnibox focus state and popup state changes while alive.
+class OmniboxStateRecorder : public OmniboxTabHelper::Observer {
+ public:
+  OmniboxStateRecorder(content::WebContents* tab,
+                       OmniboxPopupStateManager* popup_state_manager) {
+    observation_.Observe(OmniboxTabHelper::FromWebContents(tab));
+    subscription_ = popup_state_manager->AddPopupStateChangedCallback(
+        base::BindLambdaForTesting(
+            [this](OmniboxPopupState old_state, OmniboxPopupState new_state) {
+              popup_states_.push_back(new_state);
+            }));
+  }
+
+  const std::vector<OmniboxFocusState>& focus_states() const {
+    return focus_states_;
+  }
+  const std::vector<OmniboxPopupState>& popup_states() const {
+    return popup_states_;
+  }
+
+  // OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxInputInProgress(bool in_progress) override {}
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override {
+    focus_states_.push_back(state);
+  }
+  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
+
+ private:
+  std::vector<OmniboxFocusState> focus_states_;
+  std::vector<OmniboxPopupState> popup_states_;
+  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
+      observation_{this};
+  base::CallbackListSubscription subscription_;
+};
 
 }  // namespace
 
@@ -77,12 +169,23 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
          {omnibox::kOmniboxFullWebUIEvictOnHide, {}},
          {omnibox::kOmniboxFullWebUIDetachWebContentsOnHide, {}},
          {omnibox::kOmniboxWebUIPopupMarkAsHidden, {}}},
-        {omnibox::kOmniboxAimPopupRequireEligibility});
+        {
+            omnibox::kOmniboxAimPopupRequireEligibility,
+            // Avoid macOS menu bar NSStatusItem setup stalling
+            // PreRunTestOnMainThread.
+            omnibox::kOmniboxEverywhere,
+        });
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    // Widgets must close before the browser process tears down.
+    other_widget_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -145,6 +248,10 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
       return false;
     }
     return true;
+  }
+
+  [[nodiscard]] bool WaitForInputValue(const std::string& value) {
+    return WaitForJs(content::JsReplace("input.value === $1", value));
   }
 
   // Focuses the omnibox and waits until the embedded WebUI is bound, its input
@@ -265,6 +372,68 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
       }
     }
     return widget->IsActive();
+  }
+
+  // Takes activation from the browser window by showing and activating an
+  // in-process top-level widget at `bounds` (kept in `other_widget_`).
+  [[nodiscard]] bool DeactivateBrowserWindowWithWidget(
+      const gfx::Rect& bounds) {
+    views::Widget* widget = browser_view()->GetWidget();
+    other_widget_ = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
+    params.bounds = bounds;
+    other_widget_->Init(std::move(params));
+    other_widget_->Show();
+    other_widget_->Activate();
+    return base::test::RunUntil([&] { return !widget->IsActive(); });
+  }
+
+  // Takes activation from the browser window, with `Widget::Deactivate()` or,
+  // where that can't work, another top-level widget kept in `other_widget_`.
+  [[nodiscard]] bool DeactivateBrowserWindow() {
+    if (!CanDeactivateWidget()) {
+      return DeactivateBrowserWindowWithWidget(gfx::Rect(0, 0, 200, 200));
+    }
+    views::Widget* widget = browser_view()->GetWidget();
+    widget->Deactivate();
+    return base::test::RunUntil([&] { return !widget->IsActive(); });
+  }
+
+  // Lets the tasks the host posts on an activation change run.
+  void RunPostedActivationTasks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  std::unique_ptr<views::Widget> other_widget_;
+
+  // Waits until the omnibox is focused everywhere: the edit model, views focus
+  // (in the content), and the WebUI input in the DOM.
+  [[nodiscard]] bool WaitForOmniboxRefocused() {
+    views::FocusManager* focus_manager = browser_view()->GetFocusManager();
+    if (!base::test::RunUntil([&] {
+          return edit_model()->has_focus() &&
+                 web_view()->Contains(focus_manager->GetFocusedView());
+        })) {
+      ADD_FAILURE() << "Omnibox not refocused: has_focus="
+                    << edit_model()->has_focus() << ", focused view="
+                    << (focus_manager->GetFocusedView()
+                            ? focus_manager->GetFocusedView()->GetClassName()
+                            : "null");
+      return false;
+    }
+    return WaitForJs(kInputFocused);
+  }
+
+  // Moves focus to the active tab's contents, as clicking the page does.
+  void BlurToWebContents() {
+    ASSERT_TRUE(ActivateBrowserWindow());
+    browser_view()->GetActiveContentsWebView()->RequestFocus();
+    active_tab()->Focus();
   }
 
  private:
@@ -405,6 +574,226 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
 
   PressKey(ui::DomKey::ESCAPE, ui::DomCode::ESCAPE, ui::VKEY_ESCAPE);
   EXPECT_TRUE(WaitForJs(kDropdownClosed));
+}
+
+// Moving views focus to the page blurs the omnibox and hides the WebView.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       FocusingWebContentsClosesPopup) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  EXPECT_TRUE(edit_model()->has_focus());
+
+  BlurToWebContents();
+
+  ASSERT_TRUE(WaitForPopupClosed());
+  EXPECT_FALSE(web_view()->GetVisible());
+  EXPECT_EQ(OmniboxPopupState::kNone, popup_state());
+  EXPECT_FALSE(edit_model()->has_focus());
+  EXPECT_TRUE(omnibox_view()->GetVisible());
+}
+
+// Tab / Shift+Tab in the WebUI move focus out of LocationBarView (not trapped
+// in it) and close the popup.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       AdvanceFocusTabAndShiftTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
+  views::FocusManager* focus_manager = browser_view()->GetFocusManager();
+
+  for (bool reverse : {false, true}) {
+    SCOPED_TRACE(reverse ? "Shift+Tab" : "Tab");
+    FocusAndWaitForPopup();
+    // Restores the focus stored while the window was inactive.
+    ASSERT_TRUE(ActivateBrowserWindow());
+    EXPECT_EQ(web_view(), focus_manager->GetFocusedView());
+    // A forward Tab from the input stops on the AIM button when it is shown
+    // (`OmniboxPopupSearchboxElement.handleKeyNavigation()`); the next Tab, or
+    // a Shift+Tab from the input, asks the browser to advance focus. Neither
+    // step depends on the WebUI seeing a `blur`, which window deactivation
+    // also sends.
+    if (!reverse && Eval("return sb.aimButtonVisible_ === true;") == true) {
+      PressKey(ui::DomKey::TAB, ui::DomCode::TAB, ui::VKEY_TAB);
+      ASSERT_TRUE(
+          WaitForJs("sb.shadowRoot.activeElement === sb.$.composeButton"));
+    }
+    PressKey(ui::DomKey::TAB, ui::DomCode::TAB, ui::VKEY_TAB, reverse);
+    // `OmniboxPopupWebUIBaseContent::AdvanceFocus()` moves focus past
+    // LocationBarView and closes the popup in the same task.
+    ASSERT_TRUE(WaitForPopupClosed());
+    EXPECT_EQ(OmniboxPopupState::kNone, popup_state());
+    EXPECT_FALSE(edit_model()->has_focus());
+    ASSERT_TRUE(ActivateBrowserWindow());
+    ASSERT_TRUE(focus_manager->GetFocusedView());
+    EXPECT_FALSE(location_bar()->Contains(focus_manager->GetFocusedView()));
+  }
+}
+
+// Focus moving from the content to another child of LocationBarView, as
+// Shift+Tab onto the location icon does, is a blur: the omnibox loses focus,
+// the content closes and focus leaves it. Uses an accessibility-focusable test
+// view, since the location icon isn't focusable on macOS without Full Keyboard
+// Access.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       FocusingLocationBarChildClosesContent) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  ASSERT_TRUE(ActivateBrowserWindow());
+  views::FocusManager* focus_manager = browser_view()->GetFocusManager();
+  ASSERT_EQ(web_view(), focus_manager->GetFocusedView());
+
+  views::View* child =
+      location_bar()->AddChildView(std::make_unique<views::View>());
+  child->SetBounds(0, 0, 10, 10);
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  child->GetViewAccessibility().SetName(u"Test child");
+  child->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  ASSERT_TRUE(child->GetViewAccessibility().IsAccessibilityFocusable());
+  focus_manager->SetFocusedView(child);
+  ASSERT_TRUE(WaitForPopupClosed());
+  EXPECT_FALSE(edit_model()->has_focus());
+  EXPECT_FALSE(web_view()->GetVisible());
+  EXPECT_EQ(OmniboxPopupState::kNone, popup_state());
+  EXPECT_FALSE(web_view()->Contains(focus_manager->GetFocusedView()));
+  location_bar()->RemoveChildViewT(child);
+}
+
+// LocationBarView::FocusLocation() moves views focus from the content to
+// LocationBarView before forwarding it back to the WebUI. That hop stays
+// within the omnibox, so it doesn't blur it or close the popup.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       FocusLocationWhileFocusedDoesNotBlur) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  views::FocusManager* focus_manager = browser_view()->GetFocusManager();
+
+  for (const bool with_typed_text : {false, true}) {
+    SCOPED_TRACE(with_typed_text ? "with typed text" : "no typed text");
+    if (with_typed_text) {
+      TypeAndWaitForDropdown("abc");
+    }
+    ASSERT_TRUE(ActivateBrowserWindow());
+    ASSERT_EQ(web_view(), focus_manager->GetFocusedView());
+    const std::u16string expected_text = omnibox_view()->GetText();
+    const std::u16string expected_user_text = edit_model()->user_text();
+
+    OmniboxStateRecorder recorder(active_tab(),
+                                  controller()->popup_state_manager());
+    chrome::FocusLocationBar(browser());
+    RunPostedActivationTasks();
+    ASSERT_EQ(true, Eval("return true;"));
+
+    EXPECT_THAT(recorder.popup_states(), testing::IsEmpty());
+    EXPECT_THAT(recorder.focus_states(), testing::IsEmpty());
+    EXPECT_TRUE(edit_model()->has_focus());
+    EXPECT_EQ(OmniboxPopupState::kFull, popup_state());
+    EXPECT_EQ(expected_text, omnibox_view()->GetText());
+    EXPECT_EQ(expected_user_text, edit_model()->user_text());
+    EXPECT_TRUE(WaitForInputValue(base::UTF16ToUTF8(expected_text)));
+  }
+}
+
+// Deactivating the window blurs the omnibox, as for the Views omnibox: the
+// WebUI is told, and without a draft the content hides. Reactivating it
+// refocuses the omnibox without a zero-prefix query.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       WindowDeactivationBlursAndReactivationRefocuses) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  ASSERT_TRUE(ActivateBrowserWindow());
+
+  ASSERT_TRUE(DeactivateBrowserWindow()) << "The browser window stayed active.";
+  ASSERT_TRUE(base::test::RunUntil([&] { return !edit_model()->has_focus(); }));
+  EXPECT_FALSE(popup_view()->is_focused());
+  ASSERT_TRUE(WaitForPopupClosed());
+  EXPECT_FALSE(web_view()->GetVisible());
+
+  AutocompleteStartCounter starts(controller()->autocomplete_controller());
+  other_widget_.reset();
+  ASSERT_TRUE(ActivateBrowserWindow());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return edit_model()->has_focus() && web_view()->GetVisible() &&
+           browser_view()->GetFocusManager()->GetFocusedView() == web_view();
+  }));
+  EXPECT_TRUE(popup_view()->is_focused());
+  EXPECT_EQ(OmniboxPopupState::kFull, popup_state());
+  EXPECT_TRUE(WaitForJs("sb.shadowRoot.activeElement === crInput"));
+  EXPECT_EQ(0, starts.count());
+}
+
+#if !BUILDFLAG(IS_MAC)
+// Clicking the page to reactivate the window focuses the page and leaves the
+// omnibox unfocused, without showing the content in between.
+// On Mac, RenderWidgetHostViewCocoa does not accept first mouse, so clicking an
+// inactive window's page only activates the window and restores focus to the
+// omnibox (as for OmniboxViewViews); closing `other_widget_` also already
+// reactivates the browser window there.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       ClickingPageToReactivateDoesNotRefocus) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  ASSERT_TRUE(ActivateBrowserWindow());
+  views::View* contents_view = browser_view()->GetActiveContentsWebView();
+#if BUILDFLAG(IS_WIN)
+  // `Widget::Deactivate()` calls `::SetForegroundWindow(next_hwnd)`, which on
+  // CI bots can activate an unrelated window occluding `contents_view`.
+  // Deactivate via an in-process widget disjoint from the click point and
+  // leave it open until the click reactivates the browser.
+  const gfx::Point click_pt = contents_view->GetBoundsInScreen().CenterPoint();
+  const int other_x = click_pt.x() >= 200 ? 0 : click_pt.x() + 100;
+  ASSERT_TRUE(
+      DeactivateBrowserWindowWithWidget(gfx::Rect(other_x, 0, 100, 100)))
+      << "The browser window stayed active.";
+#else
+  ASSERT_TRUE(DeactivateBrowserWindow()) << "The browser window stayed active.";
+#endif
+  ASSERT_TRUE(WaitForPopupClosed());
+  RunPostedActivationTasks();
+
+  std::vector<OmniboxPopupState> states;
+  base::CallbackListSubscription subscription =
+      controller()->popup_state_manager()->AddPopupStateChangedCallback(
+          base::BindLambdaForTesting(
+              [&](OmniboxPopupState old_state, OmniboxPopupState new_state) {
+                states.push_back(new_state);
+              }));
+#if !BUILDFLAG(IS_WIN)
+  other_widget_.reset();
+#endif
+  ui_test_utils::ClickOnView(contents_view);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return browser_view()->GetWidget()->IsActive(); }));
+  RunPostedActivationTasks();
+
+  EXPECT_FALSE(edit_model()->has_focus());
+  EXPECT_FALSE(web_view()->GetVisible());
+  EXPECT_EQ(contents_view, browser_view()->GetFocusManager()->GetFocusedView());
+  EXPECT_TRUE(active_tab()->GetRenderWidgetHostView()->HasFocus());
+  EXPECT_THAT(states, testing::IsEmpty());
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+// Reactivating the window after a deactivation that kept a draft refocuses the
+// omnibox, keeping the draft, without a zero-prefix query.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       ReactivationRefocusesKeepingDraft) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  TypeAndWaitForDropdown("draft");
+  ASSERT_TRUE(ActivateBrowserWindow());
+
+  ASSERT_TRUE(DeactivateBrowserWindow()) << "The browser window stayed active.";
+  ASSERT_TRUE(base::test::RunUntil([&] { return !edit_model()->has_focus(); }));
+  ASSERT_TRUE(web_view()->GetVisible());
+  EXPECT_TRUE(WaitForJs(kDropdownClosed));
+
+  AutocompleteStartCounter starts(controller()->autocomplete_controller());
+  other_widget_.reset();
+  ASSERT_TRUE(ActivateBrowserWindow());
+  ASSERT_TRUE(WaitForOmniboxRefocused());
+  EXPECT_EQ(u"draft", edit_model()->user_text());
+  EXPECT_EQ(OmniboxPopupState::kFull, popup_state());
+  EXPECT_TRUE(WaitForInputValue("draft"));
+  EXPECT_EQ(0, starts.count());
 }
 
 // With kOmniboxFullWebUIShadow, the location bar's page still draws no shadow,
