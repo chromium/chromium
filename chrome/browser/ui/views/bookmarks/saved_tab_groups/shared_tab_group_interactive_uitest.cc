@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -268,6 +270,11 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 // Take a screenshot of the shared tab group in the TabStrip.
 IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
                        SharedTabGroupInTabStrip) {
+  if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    // TODO(crbug.com/585315854): Re-enable for TabStripUnification.
+    GTEST_SKIP() << "Skipping for kTabStripUnification";
+  }
+
   const char kTabGroupHeaderToScreenshot[] = "Tab group header to hover";
 
   TabGroupId group_id = CreateNewTabGroup();
