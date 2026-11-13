@@ -139,55 +139,6 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-// TODO(crbug.com/40261300): Remove when CredentialUIEntry operator== is fixed.
-template <typename T>
-bool AreNotesEqual(const T& lhs, const T& rhs) {
-  return std::ranges::equal(lhs, rhs, {},
-                            &password_manager::CredentialUIEntry::note,
-                            &password_manager::CredentialUIEntry::note);
-}
-
-bool AreNotesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
-                   const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return std::ranges::equal(
-      lhs, rhs,
-      AreNotesEqual<base::span<const password_manager::CredentialUIEntry>>,
-      &password_manager::AffiliatedGroup::GetCredentials,
-      &password_manager::AffiliatedGroup::GetCredentials);
-}
-
-template <typename T>
-bool AreStoresEqual(const T& lhs, const T& rhs) {
-  return std::ranges::equal(lhs, rhs, {},
-                            &password_manager::CredentialUIEntry::stored_in,
-                            &password_manager::CredentialUIEntry::stored_in);
-}
-
-bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
-                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return std::ranges::equal(
-      lhs, rhs,
-      AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
-      &password_manager::AffiliatedGroup::GetCredentials,
-      &password_manager::AffiliatedGroup::GetCredentials);
-}
-
-template <typename T>
-bool AreIssuesEqual(const T& lhs, const T& rhs) {
-  return std::ranges::equal(
-      lhs, rhs, {}, &password_manager::CredentialUIEntry::password_issues,
-      &password_manager::CredentialUIEntry::password_issues);
-}
-
-bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
-                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return std::ranges::equal(
-      lhs, rhs,
-      AreIssuesEqual<base::span<const password_manager::CredentialUIEntry>>,
-      &password_manager::AffiliatedGroup::GetCredentials,
-      &password_manager::AffiliatedGroup::GetCredentials);
-}
-
 }  // namespace
 
 @interface PasswordManagerViewController () <
@@ -970,15 +921,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     _affiliatedGroups = affiliatedGroups;
     [self hideLoadingSpinnerBackground];
   } else {
-    // The AffiliatedGroup equality operator ignores the password stores, but
-    // this UI cares, see password_manager::ShouldShowLocalOnlyIcon().
-    // The AffiliatedGroup equality operator ignores password notes, but the UI
-    // should be updated so that any changes to just notes are visible.
     if (_affiliatedGroups == affiliatedGroups &&
-        _blockedSites == blockedSites &&
-        AreStoresEqual(_affiliatedGroups, affiliatedGroups) &&
-        AreIssuesEqual(_affiliatedGroups, affiliatedGroups) &&
-        AreNotesEqual(_affiliatedGroups, affiliatedGroups)) {
+        _blockedSites == blockedSites) {
       return;
     }
 

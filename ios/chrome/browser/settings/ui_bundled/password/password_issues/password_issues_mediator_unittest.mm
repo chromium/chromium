@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -15,6 +16,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -501,4 +503,37 @@ TEST_F(PasswordIssuesMediatorTest, TestReusedPasswordsGrouping) {
   CheckIssue(/*group=*/1, /*index=*/1, /*expected_website=*/kExample2String,
              /*expected_username=*/GetUsername2());
   CheckIssue(/*group=*/1, /*index=*/2, /*expected_website=*/kExample3String);
+}
+
+// Tests that updating only a credential's note notifies the consumer with the
+// refreshed credential metadata.
+TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesUpdatedOnNoteChange) {
+  password_manager::StoredCredential cred;
+  cred.signon_realm = kExampleCom;
+  cred.username_value = u"alice";
+  cred.password_value = password_manager::PasswordString(
+      std::u16string(u"pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns"));
+  cred.url = GURL(std::string(kExampleCom) + "/login");
+  cred.action = GURL(std::string(kExampleCom) + "/action");
+  cred.username_element = u"email";
+  cred.password_issues = {
+      {InsecureType::kLeaked,
+       password_manager::InsecurityMetadata(
+           base::Time::FromTimeT(1), password_manager::IsMuted(false),
+           password_manager::TriggerBackendNotification(false))}};
+  cred.in_store = PasswordForm::Store::kProfileStore;
+
+  store()->AddLogin(password_manager::CloneStoredCredential(cred));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return consumer().passwordIssueGroups.count == 1u; }));
+
+  consumer().passwordIssuesListChangedWasCalled = NO;
+
+  cred.SetPasswordNote(u"updated note");
+  store()->UpdateLogin(std::move(cred));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return consumer().passwordIssuesListChangedWasCalled; }));
+
+  EXPECT_EQ(consumer().passwordIssueGroups[0].passwordIssues[0].credential.note,
+            u"updated note");
 }
