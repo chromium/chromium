@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PASSKEYS_H_
 
 #include "base/types/pass_key.h"
-#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 
 namespace tabs {
@@ -46,9 +45,6 @@ class GlicInternalsPageHandler;
 class SelectionOverlayController;
 class SelectionSuggestion;
 
-template <mojom::InvocationSource Source>
-class AndroidAutoSubmitPasskeyHelper;
-
 // Passkey for invoking glic with auto submit. Reach out to OWNERS before
 // adding new callers.
 class InvokeWithAutoSubmitPasskeyProvider {
@@ -85,8 +81,6 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::ttc::ToolController;
   friend class ::skills::SkillsUiTabController;
   friend class ::skills::SkillsInvocationInteractiveUiTest;
-  friend class AndroidAutoSubmitPasskeyHelper<
-      mojom::InvocationSource::kUniversalCart>;
 };
 
 using InvokeWithAutoSubmitPasskey =

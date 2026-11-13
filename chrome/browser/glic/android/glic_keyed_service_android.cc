@@ -18,7 +18,6 @@
 #include "chrome/browser/glic/public/glic_instance_id.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,14 +42,6 @@ namespace glic {
 namespace {
 const char kGlicKeyedServiceAndroidKey[] = "glic_keyed_service_android";
 }  // namespace
-
-template <mojom::InvocationSource Source>
-class AndroidAutoSubmitPasskeyHelper {
- public:
-  static InvokeWithAutoSubmitPasskey GetPassKey() {
-    return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
-  }
-};
 
 // static
 ScopedJavaLocalRef<jobject> GlicKeyedService::GetJavaObject(
@@ -109,31 +100,6 @@ void GlicKeyedServiceAndroid::ToggleUI(JNIEnv* env,
 
   service_->ToggleUI(browser_window, prevent_close,
                      static_cast<mojom::InvocationSource>(source));
-}
-
-bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
-                                                   TabAndroid* tab,
-                                                   std::string text,
-                                                   int32_t source) {
-  if (!tab) {
-    return false;
-  }
-
-  auto invocation_source = static_cast<mojom::InvocationSource>(source);
-  GlicInvokeOptions options(Target(*tab), invocation_source);
-  options.prompts.push_back(std::move(text));
-
-  switch (invocation_source) {
-    case mojom::InvocationSource::kUniversalCart:
-      service_->InvokeWithAutoSubmit(
-          AndroidAutoSubmitPasskeyHelper<
-              mojom::InvocationSource::kUniversalCart>::GetPassKey(),
-          std::move(options));
-      return true;
-    default:
-      // Handle unauthorized source
-      return false;
-  }
 }
 
 bool GlicKeyedServiceAndroid::InvokeWithPrompt(JNIEnv* env,

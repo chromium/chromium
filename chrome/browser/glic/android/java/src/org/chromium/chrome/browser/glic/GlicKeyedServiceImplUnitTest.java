@@ -204,9 +204,6 @@ public class GlicKeyedServiceImplUnitTest {
 
         mService.onNativeDestroyed();
 
-        assertFalse(
-                mService.invokeWithAutoSubmit(
-                        mTabMock, "prompt", GlicInvocationSource.UNSUPPORTED));
         assertFalse(mService.isPanelShowingForBrowser(mBrowserWindowMock));
         assertTrue(mService.getRecentlyActiveInstances(5).isEmpty());
         verify(mNativesMock, never()).getRecentlyActiveInstances(anyLong(), anyInt());

@@ -74,15 +74,6 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
-    public boolean invokeWithAutoSubmit(
-            Tab tab, String text, @GlicInvocationSource int invocationSource) {
-        if (mNativePtr == 0) return false;
-
-        return GlicKeyedServiceImplJni.get()
-                .invokeWithAutoSubmit(mNativePtr, tab, text, invocationSource);
-    }
-
-    @Override
     public boolean invokeWithPrompt(
             Tab tab,
             @Nullable RenderFrameHost frame,
@@ -303,12 +294,6 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 JniPtr<NativeBrowserWindowInterface> browserWindow,
                 boolean preventClose,
                 @JniType("Profile*") Profile profile,
-                @GlicInvocationSource int source);
-
-        boolean invokeWithAutoSubmit(
-                long nativeGlicKeyedServiceAndroid,
-                @JniType("TabAndroid*") Tab tab,
-                @JniType("std::string") String text,
                 @GlicInvocationSource int source);
 
         boolean invokeWithPrompt(

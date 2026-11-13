@@ -146,13 +146,16 @@ public class GlicAndroidMojoIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         getService()
-                                .invokeWithAutoSubmit(
-                                        mTab, "Hello from Java integration test!", 27));
+                                .invokeWithPrompt(
+                                        mTab,
+                                        mTab.getWebContents().getMainFrame(),
+                                        "Hello from Java integration test!",
+                                        GlicInvocationSource.UNSUPPORTED));
 
         // Wait until WebClient mojo connection has completed
         waitForWebClientConnected();
 
-        // Assert that the Mojo WebClient received the auto-submit prompt
+        // Assert that the Mojo WebClient received the prompt
         assertEquals("Hello from Java integration test!", getLastPrompt());
     }
 
@@ -161,7 +164,13 @@ public class GlicAndroidMojoIntegrationTest {
     public void testLatestChatInstanceRecovery() throws Throwable {
         // 1. Open Glic, type/invoke a prompt
         ThreadUtils.runOnUiThreadBlocking(
-                () -> getService().invokeWithAutoSubmit(mTab, "State preservation test", 27));
+                () ->
+                        getService()
+                                .invokeWithPrompt(
+                                        mTab,
+                                        mTab.getWebContents().getMainFrame(),
+                                        "State preservation test",
+                                        GlicInvocationSource.UNSUPPORTED));
         waitForWebClientConnected();
         assertEquals("State preservation test", getLastPrompt());
 

@@ -48,11 +48,6 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
                 Profile* profile,
                 int32_t source);
 
-  bool InvokeWithAutoSubmit(JNIEnv* env,
-                            TabAndroid* tab,
-                            std::string text,
-                            int32_t source);
-
   bool InvokeWithPrompt(JNIEnv* env,
                         TabAndroid* tab,
                         content::RenderFrameHost* frame,

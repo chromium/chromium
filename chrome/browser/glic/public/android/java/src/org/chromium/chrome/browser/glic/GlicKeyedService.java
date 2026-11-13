@@ -87,16 +87,6 @@ public interface GlicKeyedService {
     // takes an InvokeOptions param, so the public API scales as more options are added. The JNI
     // layer can keep multiple functions to avoid struct-conversion overhead.
     /**
-     * Invokes the Glic service with auto-submit prompt.
-     *
-     * @param tab The {@link Tab} to target.
-     * @param text The text prompt to submit.
-     * @param invocationSource How the UI was triggered.
-     * @return true if the service was successfully invoked.
-     */
-    boolean invokeWithAutoSubmit(Tab tab, String text, @GlicInvocationSource int invocationSource);
-
-    /**
      * Invokes the Glic service with a prompt prepopulated in the input box.
      *
      * @param tab The {@link Tab} to target.
