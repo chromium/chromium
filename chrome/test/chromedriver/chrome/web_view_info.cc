@@ -5,9 +5,10 @@
 #include "chrome/test/chromedriver/chrome/web_view_info.h"
 
 #include <memory>
-#include <unordered_map>
+#include <string_view>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -41,27 +42,28 @@ bool WebViewInfo::IsExtensionTarget() const {
 
 Status WebViewInfo::ParseType(const std::string& type_as_string,
                               WebViewInfo::Type& type) {
-  static const std::unordered_map<std::string, WebViewInfo::Type> mapping = {
-      {"app", WebViewInfo::kApp},
-      {"background_page", WebViewInfo::kBackgroundPage},
-      {"browser", WebViewInfo::kBrowser},
-      {"external", WebViewInfo::kExternal},
-      {"iframe", WebViewInfo::kIFrame},
-      {"page", WebViewInfo::kPage},
-      {"service_worker", WebViewInfo::kServiceWorker},
-      {"shared_worker", WebViewInfo::kSharedWorker},
-      {"webview", WebViewInfo::kWebView},
-      {"worker", WebViewInfo::kWorker},
-      {"tab", WebViewInfo::kTab},
-  };
+  static constexpr auto kMapping =
+      base::MakeFixedFlatMap<std::string_view, WebViewInfo::Type>({
+          {"app", WebViewInfo::kApp},
+          {"background_page", WebViewInfo::kBackgroundPage},
+          {"browser", WebViewInfo::kBrowser},
+          {"external", WebViewInfo::kExternal},
+          {"iframe", WebViewInfo::kIFrame},
+          {"page", WebViewInfo::kPage},
+          {"service_worker", WebViewInfo::kServiceWorker},
+          {"shared_worker", WebViewInfo::kSharedWorker},
+          {"webview", WebViewInfo::kWebView},
+          {"worker", WebViewInfo::kWorker},
+          {"tab", WebViewInfo::kTab},
+      });
 
   if (type_as_string.empty()) {
     return Status{kUnknownError,
                   "DevTools returned empty string as a target type"};
   }
 
-  auto it = mapping.find(type_as_string);
-  if (it == mapping.end()) {
+  auto it = kMapping.find(type_as_string);
+  if (it == kMapping.end()) {
     type = WebViewInfo::kOther;
   } else {
     type = it->second;

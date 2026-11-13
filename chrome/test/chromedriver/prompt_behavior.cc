@@ -8,25 +8,11 @@
 #include <array>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
+#include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-
-namespace prompt_behavior {
-extern const char kAccept[] = "accept";
-extern const char kAcceptAndNotify[] = "accept and notify";
-extern const char kDismiss[] = "dismiss";
-extern const char kDismissAndNotify[] = "dismiss and notify";
-extern const char kIgnore[] = "ignore";
-}  // namespace prompt_behavior
-
-namespace dialog_types {
-extern const char kAlert[] = "alert";
-extern const char kBeforeUnload[] = "beforeUnload";
-extern const char kConfirm[] = "confirm";
-extern const char kPrompt[] = "prompt";
-}  // namespace dialog_types
 
 namespace {
 constexpr char kDefaultPromptKey[] = "default";
@@ -61,8 +47,8 @@ namespace {
 Status ParsePromptHandlerConfiguration(const std::string& type_str,
                                        bool w3c_compliant,
                                        PromptHandlerConfiguration& type) {
-  static const std::unordered_map<std::string, PromptHandlerConfiguration>
-      prompt_behavior_to_configuration_map = {
+  static constexpr auto kPromptBehaviorToConfigurationMap =
+      base::MakeFixedFlatMap<std::string_view, PromptHandlerConfiguration>({
           {prompt_behavior::kDismiss, {PromptHandlerType::kDismiss, false}},
           {prompt_behavior::kDismissAndNotify,
            {PromptHandlerType::kDismiss, true}},
@@ -70,14 +56,15 @@ Status ParsePromptHandlerConfiguration(const std::string& type_str,
           {prompt_behavior::kAcceptAndNotify,
            {PromptHandlerType::kAccept, true}},
           {prompt_behavior::kIgnore, {PromptHandlerType::kIgnore, true}},
-      };
+      });
 
-  if (!prompt_behavior_to_configuration_map.contains(type_str)) {
+  auto it = kPromptBehaviorToConfigurationMap.find(type_str);
+  if (it == kPromptBehaviorToConfigurationMap.end()) {
     return Status(kInvalidArgument,
                   "Unexpected value " + type_str + " in capabilities");
   }
 
-  type = prompt_behavior_to_configuration_map.at(type_str);
+  type = it->second;
   if (!w3c_compliant) {
     // For backward compatibility, in legacy non-w3c compliant mode we always
     // notify.
@@ -98,7 +85,7 @@ Status ParsePromptHandlerConfiguration(const base::Value* type_value,
 }
 
 Status GetDefaultHandlerConfiguration(
-    const std::string& dialog_type,
+    std::string_view dialog_type,
     const base::DictValue& prompt_behavior_dict,
     bool w3c_compliant,
     PromptHandlerConfiguration& result) {
@@ -124,7 +111,7 @@ Status GetDefaultHandlerConfiguration(
   return Status{kOk};
 }
 
-Status FillInHandlerConfiguration(const std::string& dialog_type,
+Status FillInHandlerConfiguration(std::string_view dialog_type,
                                   const base::DictValue& prompt_behavior_dict,
                                   bool w3c_compliant,
                                   PromptHandlerConfiguration& result) {
@@ -177,7 +164,7 @@ Status PromptBehavior::Create(bool w3c_compliant,
 
   // Every key must be a known prompt handler key. Unknown keys are rejected so
   // that invalid handler configurations are not silently ignored.
-  static const std::array<std::string_view, 6> kValidPromptKeys = {
+  static constexpr std::array<std::string_view, 6> kValidPromptKeys = {
       dialog_types::kAlert,   dialog_types::kBeforeUnload,
       dialog_types::kConfirm, kDefaultPromptKey,
       kFilePromptKey,         dialog_types::kPrompt};
@@ -198,19 +185,18 @@ Status PromptBehavior::Create(bool w3c_compliant,
 
   // The BiDi mapper applies the file prompt handler. ChromeDriver only stores
   // configurations for JavaScript dialogs.
-  // Maps dialog type name to reference to the corresponding handler.
-  std::vector<std::tuple<std::string, PromptHandlerConfiguration&>>
-      prompt_types_to_fill = {
-          {dialog_types::kAlert, result.alert},
-          {dialog_types::kBeforeUnload, result.before_unload},
-          {dialog_types::kConfirm, result.confirm},
-          {dialog_types::kPrompt, result.prompt},
-      };
-  for (auto& to_fill : prompt_types_to_fill) {
-    auto [dialog_type, configuration_destination_reference] = to_fill;
+  // Maps dialog type name to the corresponding handler member.
+  static constexpr auto kPromptTypesToFill =
+      std::to_array<std::pair<std::string_view,
+                              PromptHandlerConfiguration PromptBehavior::*>>({
+          {dialog_types::kAlert, &PromptBehavior::alert},
+          {dialog_types::kBeforeUnload, &PromptBehavior::before_unload},
+          {dialog_types::kConfirm, &PromptBehavior::confirm},
+          {dialog_types::kPrompt, &PromptBehavior::prompt},
+      });
+  for (const auto& [dialog_type, handler] : kPromptTypesToFill) {
     Status status = FillInHandlerConfiguration(
-        dialog_type, prompt_behavior_dict, w3c_compliant,
-        configuration_destination_reference);
+        dialog_type, prompt_behavior_dict, w3c_compliant, result.*handler);
     if (status.IsError()) {
       return status;
     }
@@ -263,26 +249,27 @@ Status PromptBehavior::GetConfiguration(
 
 base::Value PromptBehavior::MapperOptionsView() {
   // Maps prompt behavior type to string.
-  static const std::unordered_map<PromptHandlerType, std::string>
-      prompt_handler_type_to_string = {
+  static constexpr auto kPromptHandlerTypeToString =
+      base::MakeFixedFlatMap<PromptHandlerType, std::string_view>({
           {PromptHandlerType::kAccept, prompt_behavior::kAccept},
           {PromptHandlerType::kDismiss, prompt_behavior::kDismiss},
           {PromptHandlerType::kIgnore, prompt_behavior::kIgnore},
-      };
+      });
 
   base::DictValue result_dict;
   // List of fields to be filled in the result dictionary.
-  std::vector<std::pair<std::string, PromptHandlerType>> dialog_to_handler = {
-      {dialog_types::kAlert, alert.type},
-      {dialog_types::kBeforeUnload, before_unload.type},
-      {dialog_types::kConfirm, confirm.type},
-      {dialog_types::kPrompt, prompt.type},
-  };
+  static constexpr auto kDialogToHandler =
+      std::to_array<std::pair<std::string_view,
+                              PromptHandlerConfiguration PromptBehavior::*>>({
+          {dialog_types::kAlert, &PromptBehavior::alert},
+          {dialog_types::kBeforeUnload, &PromptBehavior::before_unload},
+          {dialog_types::kConfirm, &PromptBehavior::confirm},
+          {dialog_types::kPrompt, &PromptBehavior::prompt},
+      });
 
-  for (std::pair<std::string, PromptHandlerType>& item : dialog_to_handler) {
-    auto [dialog_type, handler_type] = item;
+  for (const auto& [dialog_type, handler] : kDialogToHandler) {
     result_dict.Set(dialog_type,
-                    prompt_handler_type_to_string.at(handler_type));
+                    kPromptHandlerTypeToString.at((this->*handler).type));
   }
 
   return base::Value(std::move(result_dict));

@@ -19,18 +19,18 @@ struct PromptHandlerConfiguration {
 };
 
 namespace prompt_behavior {
-extern const char kAccept[];
-extern const char kAcceptAndNotify[];
-extern const char kDismiss[];
-extern const char kDismissAndNotify[];
-extern const char kIgnore[];
+inline constexpr char kAccept[] = "accept";
+inline constexpr char kAcceptAndNotify[] = "accept and notify";
+inline constexpr char kDismiss[] = "dismiss";
+inline constexpr char kDismissAndNotify[] = "dismiss and notify";
+inline constexpr char kIgnore[] = "ignore";
 }  // namespace prompt_behavior
 
 namespace dialog_types {
-extern const char kAlert[];
-extern const char kBeforeUnload[];
-extern const char kConfirm[];
-extern const char kPrompt[];
+inline constexpr char kAlert[] = "alert";
+inline constexpr char kBeforeUnload[] = "beforeUnload";
+inline constexpr char kConfirm[] = "confirm";
+inline constexpr char kPrompt[] = "prompt";
 }  // namespace dialog_types
 
 class PromptBehavior {
