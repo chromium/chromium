@@ -103,6 +103,7 @@ suite('NewTabPageActionChipsTest', () => {
     prefersReducedMotion: boolean;
     disablementContextMenuEnabled: boolean;
     ntpSmallActionChipsEnabled: boolean;
+    ntpSmallActionChipsUncappedWidthEnabled: boolean;
   }
 
   async function initializeChips(
@@ -114,6 +115,7 @@ suite('NewTabPageActionChipsTest', () => {
       prefersReducedMotion: false,
       disablementContextMenuEnabled: true,
       ntpSmallActionChipsEnabled: false,
+      ntpSmallActionChipsUncappedWidthEnabled: false,
     };
     const options = {...defaultOptions, ...providedOptions};
     const actionChips: ActionChip[] = options.actionChips.map(
@@ -142,6 +144,8 @@ suite('NewTabPageActionChipsTest', () => {
       ntpNextDisablementContextMenuEnabled:
           options.disablementContextMenuEnabled,
       ntpSmallActionChipsEnabled: options.ntpSmallActionChipsEnabled,
+      ntpSmallActionChipsUncappedWidthEnabled:
+          options.ntpSmallActionChipsUncappedWidthEnabled,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     if (options.prefersReducedMotion) {
@@ -1061,5 +1065,24 @@ suite('NewTabPageActionChipsTest', () => {
           const bodyElement = chip.querySelector('.chip-body');
           assertEquals(null, bodyElement);
         });
+
+    test('does not truncate a 45 character title', async () => {
+      await initializeChips({
+        ntpSmallActionChipsEnabled: true,
+        ntpSmallActionChipsUncappedWidthEnabled: true,
+        actionChips: [{
+          suggestTemplateInfo: {
+            typeIcon: IconType.kGlobeWithSearchLoop,
+            primaryText: 'Ask about the pages you have recently visited',
+            secondaryText: null,
+          },
+          suggestion: '',
+          tab: null,
+        }],
+      });
+      const title = chips.shadowRoot.querySelector<HTMLElement>('.chip-title');
+      assertTrue(!!title);
+      assertEquals(title.clientWidth, title.scrollWidth);
+    });
   });
 });

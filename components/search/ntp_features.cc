@@ -197,6 +197,10 @@ BASE_FEATURE(kNtpScaledActionChips, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, scaled merchandising action chips will be in a smaller format.
 BASE_FEATURE(kNtpScaledActionChipsSmall, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, small scaled merchandising action chips have no max width.
+BASE_FEATURE(kNtpScaledActionChipsUncappedWidth,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, sets a custom timeout for action chips suggestions requests.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpActionChipsSuggestTimeout, base::FEATURE_ENABLED_BY_DEFAULT);

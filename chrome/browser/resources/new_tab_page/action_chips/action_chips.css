@@ -111,6 +111,11 @@
   max-width: 150px;
 }
 
+:host([uncapped-width-enabled]) .action-chip,
+:host([uncapped-width-enabled]) .action-chip .chip-title {
+  max-width: unset;
+}
+
 .chip-button-wrapper {
   height: fit-content;
 }
@@ -308,7 +313,7 @@
 }
 
 /* Unset reserved min-height once small chips are rendered so the container
- * adapts naturally to 1, 2, or 3 rows without hardcoded geometry
+ * adapts naturally to the number of rows without hardcoded geometry
  * calculations. */
 :host([small-chips-enabled][has-chips]) {
   min-height: unset;
