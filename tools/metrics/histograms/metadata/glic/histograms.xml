@@ -2289,8 +2289,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.ExperimentalTriggering.UpdatesHandlerDestroyed"
-    enum="GlicExperimentalTriggeringHandlerDestroyReason"
-    expires_after="2027-08-01">
+    enum="GlicExperimentalTriggeringHandlerDestroyReason" expires_after="M162">
   <owner>praneethsn@google.com</owner>
   <owner>qinmin@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
