@@ -129,10 +129,17 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
   cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->SetPaintPreviewTracker(tracker.get());
 
-  if (!frame->CapturePaintPreview(bounds, canvas,
-                                  /*include_linked_destinations=*/false,
-                                  /*skip_accelerated_content=*/true,
-                                  /*allow_scrollbars=*/false)) {
+  // `CapturePaintPreview()` runs a Blink lifecycle update that can
+  // synchronously dispatch events/script and cancel visual feature extraction,
+  // destroying `this`.
+  base::WeakPtr<PhishingVisualFeatureExtractor> weak_this =
+      weak_factory_.GetWeakPtr();
+  const bool capture_succeeded = CapturePaintPreview(frame, bounds, canvas);
+  if (!weak_this) {
+    return;
+  }
+
+  if (!capture_succeeded) {
     RunCallback(nullptr);
     return;
   }
@@ -160,6 +167,16 @@ void PhishingVisualFeatureExtractor::RunCallback(
 
   DCHECK(!done_callback_.is_null());
   std::move(done_callback_).Run(std::move(bitmap));
+}
+
+bool PhishingVisualFeatureExtractor::CapturePaintPreview(
+    blink::WebLocalFrame* frame,
+    const gfx::Rect& bounds,
+    cc::PaintCanvas* canvas) {
+  return frame->CapturePaintPreview(bounds, canvas,
+                                    /*include_linked_destinations=*/false,
+                                    /*skip_accelerated_content=*/true,
+                                    /*allow_scrollbars=*/false);
 }
 
 }  // namespace safe_browsing

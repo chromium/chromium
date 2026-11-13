@@ -32,9 +32,16 @@ class PhishingVisualFeatureExtractor {
   PhishingVisualFeatureExtractor& operator=(
       const PhishingVisualFeatureExtractor&) = delete;
 
-  ~PhishingVisualFeatureExtractor();
+  virtual ~PhishingVisualFeatureExtractor();
 
   void ExtractFeatures(blink::WebLocalFrame* frame, DoneCallback done_callback);
+
+ protected:
+  // Virtual seam for tests to simulate re-entrant cancellation during Blink's
+  // paint-preview lifecycle update.
+  virtual bool CapturePaintPreview(blink::WebLocalFrame* frame,
+                                   const gfx::Rect& bounds,
+                                   cc::PaintCanvas* canvas);
 
  private:
   void CancelPendingExtraction();
