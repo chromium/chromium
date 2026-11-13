@@ -4,6 +4,7 @@
 
 #include "chrome/browser/selection/feedback_zip_builder.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +13,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -144,6 +147,17 @@ std::string BuildMetadataJson(const TabMetadata& tab_metadata,
   return base::WriteJsonWithOptions(dict,
                                     base::JSONWriter::OPTIONS_PRETTY_PRINT)
       .value_or("{}");
+}
+
+// Creates a new file and writes `data` to it.
+// Fails if the path, even as a symlink, already exists.
+bool WriteNewFile(const base::FilePath& path, base::span<const uint8_t> data) {
+  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  return file.IsValid() && file.WriteAtCurrentPosAndCheck(data);
+}
+
+bool WriteNewFile(const base::FilePath& path, std::string_view data) {
+  return WriteNewFile(path, base::as_byte_span(data));
 }
 
 }  // namespace
@@ -290,28 +304,28 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
   };
   const std::optional<EncodedImage> full_screenshot =
       EncodedImage::Create(state.screenshot);
-  if (!base::WriteFile(dir.AppendASCII("metadata.json"), metadata_json) ||
+  if (!WriteNewFile(dir.AppendASCII("metadata.json"), metadata_json) ||
       (full_screenshot.has_value() &&
-       !base::WriteFile(get_image_path("screenshot", *full_screenshot),
-                        full_screenshot->bytes)) ||
+       !WriteNewFile(get_image_path("screenshot", *full_screenshot),
+                     full_screenshot->bytes)) ||
       (state.mes_screenshot.has_value() &&
-       !base::WriteFile(get_image_path("mes_screenshot", *state.mes_screenshot),
-                        state.mes_screenshot->bytes)) ||
+       !WriteNewFile(get_image_path("mes_screenshot", *state.mes_screenshot),
+                     state.mes_screenshot->bytes)) ||
       (state.apc.has_value() &&
-       !base::WriteFile(dir.AppendASCII("apc.pb"),
-                        state.apc->SerializeAsString())) ||
+       !WriteNewFile(dir.AppendASCII("apc.pb"),
+                     state.apc->SerializeAsString())) ||
       (state.selected_text.has_value() &&
-       !base::WriteFile(dir.AppendASCII("selection.txt"),
-                        base::UTF16ToUTF8(*state.selected_text))) ||
+       !WriteNewFile(dir.AppendASCII("selection.txt"),
+                     base::UTF16ToUTF8(*state.selected_text))) ||
       (state.request.has_value() &&
-       !base::WriteFile(dir.AppendASCII("request.pb"),
-                        state.request->SerializeAsString())) ||
+       !WriteNewFile(dir.AppendASCII("request.pb"),
+                     state.request->SerializeAsString())) ||
       (state.response.has_value() &&
-       !base::WriteFile(dir.AppendASCII("response.pb"),
-                        state.response->SerializeAsString())) ||
+       !WriteNewFile(dir.AppendASCII("response.pb"),
+                     state.response->SerializeAsString())) ||
       (state.suggestions_json.has_value() &&
-       !base::WriteFile(dir.AppendASCII("suggestions.json"),
-                        *state.suggestions_json))) {
+       !WriteNewFile(dir.AppendASCII("suggestions.json"),
+                     *state.suggestions_json))) {
     return std::nullopt;
   }
 
