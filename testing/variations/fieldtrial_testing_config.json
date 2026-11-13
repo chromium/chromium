@@ -8514,6 +8514,21 @@
             ]
         }
     ],
+    "EventReportingCdpAttribution": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EventReportingCdpAttribution"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource": [
         {
             "platforms": [
