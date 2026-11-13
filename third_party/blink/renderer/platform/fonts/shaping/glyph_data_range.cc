@@ -46,7 +46,7 @@ TextRunLayoutUnit GlyphDataRange::CompactSourceAdvance() const {
   return run_->glyph_data_.CompactAdvance();
 }
 
-unsigned GlyphDataRange::CompactStartCharacterIndex() const {
+wtf_size_t GlyphDataRange::CompactStartCharacterIndex() const {
   CHECK(IsCompactSource());
   CHECK_LE(index_, run_->glyph_data_.size());
   CHECK_LE(size_, run_->glyph_data_.size() - index_);
@@ -75,8 +75,8 @@ void GlyphDataRange::ExpandInto(base::span<HarfBuzzRunGlyphData> dest) const {
 }
 
 GlyphDataRange GlyphDataRange::FindCompactGlyphDataRange(
-    unsigned start_character_index,
-    unsigned end_character_index) const {
+    wtf_size_t start_character_index,
+    wtf_size_t end_character_index) const {
   const wtf_size_t logical_begin = CompactStartCharacterIndex();
   const wtf_size_t logical_end = logical_begin + size_;
   const wtf_size_t start =

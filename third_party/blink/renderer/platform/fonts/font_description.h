@@ -177,7 +177,7 @@ class PLATFORM_EXPORT FontDescription {
     STACK_ALLOCATED();
 
    public:
-    Size(unsigned keyword, float value, bool is_absolute)
+    Size(wtf_size_t keyword, float value, bool is_absolute)
         : keyword(keyword), is_absolute(is_absolute), value(value) {}
 
     String ToString() const;

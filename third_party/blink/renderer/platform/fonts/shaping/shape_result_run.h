@@ -100,7 +100,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   bool IsHorizontal() const {
     return HB_DIRECTION_IS_HORIZONTAL(HbDirection());
   }
-  bool CanUseMonospaceGlyphCompaction(unsigned num_glyphs) const;
+  bool CanUseMonospaceGlyphCompaction(wtf_size_t num_glyphs) const;
   CanvasRotationInVertical CanvasRotation() const { return canvas_rotation_; }
   wtf_size_t NextSafeToBreakOffset(wtf_size_t) const;
   wtf_size_t PreviousSafeToBreakOffset(wtf_size_t) const;
@@ -370,7 +370,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return CompactData()->is_rtl;
     }
 
-    unsigned CompactCharacterIndex(unsigned glyph_index) const {
+    wtf_size_t CompactCharacterIndex(wtf_size_t glyph_index) const {
       CHECK(IsCompact());
       CHECK_LT(glyph_index, size());
       return IsCompactRtl() ? size() - glyph_index - 1 : glyph_index;
@@ -478,8 +478,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     void CopyFromRange(const GlyphDataRange& range,
-                       unsigned character_index_offset,
-                       unsigned num_characters) {
+                       wtf_size_t character_index_offset,
+                       wtf_size_t num_characters) {
       if (range.IsCompactSource() && !range.HasOffsets() &&
           range.size() >= kMinGlyphsToCompact &&
           range.size() == num_characters &&
@@ -487,7 +487,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         CopyFromCompactRange(range);
         return;
       }
-      const unsigned num_glyphs = range.size();
+      const wtf_size_t num_glyphs = range.size();
       ResetToNonCompact(num_glyphs);
       range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
       for (HarfBuzzRunGlyphData& glyph : data_) {
@@ -576,13 +576,13 @@ struct PLATFORM_EXPORT ShapeResultRun final
     struct CompactableGlyph {
       uint16_t glyph;
       TextRunLayoutUnit advance;
-      unsigned character_index;
+      wtf_size_t character_index;
       bool has_offset;
       bool is_safe_to_break_before;
     };
 
     template <typename GlyphAt>
-    bool TryMakeCompactFrom(unsigned num_glyphs,
+    bool TryMakeCompactFrom(wtf_size_t num_glyphs,
                             bool is_rtl,
                             const GlyphAt& at) {
       if (num_glyphs < kMinGlyphsToCompact ||
@@ -590,9 +590,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
         return false;
       }
       const TextRunLayoutUnit advance = at(0).advance;
-      for (unsigned i = 0; i < num_glyphs; ++i) {
+      for (wtf_size_t i = 0; i < num_glyphs; ++i) {
         const CompactableGlyph glyph = at(i);
-        const unsigned expected_character_index =
+        const wtf_size_t expected_character_index =
             is_rtl ? num_glyphs - i - 1 : i;
         if (glyph.character_index != expected_character_index ||
             glyph.advance != advance || glyph.has_offset ||
@@ -603,7 +603,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       auto* compact =
           MakeGarbageCollected<CompactGlyphData>(advance, num_glyphs, is_rtl);
       const base::span<uint16_t> ids = compact->glyphs;
-      for (unsigned i = 0; i < num_glyphs; ++i) {
+      for (wtf_size_t i = 0; i < num_glyphs; ++i) {
         ids[i] = at(i).glyph;
       }
       SetCompact(compact);
@@ -617,7 +617,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       if (HasNonZeroOffsets()) {
         return false;
       }
-      return TryMakeCompactFrom(data_.size(), is_rtl, [this](unsigned i) {
+      return TryMakeCompactFrom(data_.size(), is_rtl, [this](wtf_size_t i) {
         const HarfBuzzRunGlyphData& glyph = data_[i];
         return CompactableGlyph{
             .glyph = glyph.glyph,
@@ -636,8 +636,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
           first.compact_->is_rtl != second.compact_->is_rtl) {
         return false;
       }
-      const unsigned n1 = first.compact_->glyphs.size();
-      const unsigned n2 = second.compact_->glyphs.size();
+      const wtf_size_t n1 = first.compact_->glyphs.size();
+      const wtf_size_t n2 = second.compact_->glyphs.size();
       auto* compact = MakeGarbageCollected<CompactGlyphData>(
           first.compact_->advance, n1 + n2, first.compact_->is_rtl);
       auto [first_glyphs, second_glyphs] =
@@ -648,7 +648,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return true;
     }
 
-    void ExpandInto(unsigned start,
+    void ExpandInto(wtf_size_t start,
                     base::span<HarfBuzzRunGlyphData> dest) const {
       CHECK_LE(start, size());
       CHECK_LE(dest.size(), size() - start);
@@ -683,7 +683,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       ClearOffsets();
     }
 
-    void ResetToNonCompact(unsigned num_glyphs) {
+    void ResetToNonCompact(wtf_size_t num_glyphs) {
       ClearCompact();
       ClearOffsets();
       ResizeDataExactly(num_glyphs);
@@ -704,7 +704,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     NOINLINE void ExpandCompactInto(
-        unsigned start,
+        wtf_size_t start,
         base::span<HarfBuzzRunGlyphData> dest) const {
       CHECK(IsCompact());
       const CompactGlyphData& compact = *CompactData();
@@ -714,7 +714,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       const base::span<const uint16_t> glyphs =
           base::span<const uint16_t>(compact.glyphs)
               .subspan(start, dest.size());
-      for (unsigned i = 0; i < glyphs.size(); ++i) {
+      for (wtf_size_t i = 0; i < glyphs.size(); ++i) {
         dest[i] =
             HarfBuzzRunGlyphData(glyphs[i], CompactCharacterIndex(start + i),
                                  SafeToBreak::kSafe, advance);
@@ -723,7 +723,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
     NOINLINE void MaterializeSlow() {
       CHECK(IsCompact());
-      const unsigned num_glyphs = CompactData()->glyphs.size();
+      const wtf_size_t num_glyphs = CompactData()->glyphs.size();
       CHECK(data_.empty());
       ResizeDataExactly(num_glyphs);
       ExpandCompactInto(0, base::span<HarfBuzzRunGlyphData>(data_));
@@ -908,14 +908,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
 static_assert(std::is_trivially_destructible_v<ShapeResultRun>);
 
 inline HarfBuzzRunGlyphData GlyphDataRange::GlyphAtForTest(
-    unsigned index) const {
+    wtf_size_t index) const {
   CHECK_LT(index, size_);
   return run_->glyph_data_.GlyphAt(index_ + index);
 }
 
 inline void GlyphDataRange::Reader::Init(const ShapeResultRun& run,
-                                         unsigned index,
-                                         unsigned size) {
+                                         wtf_size_t index,
+                                         wtf_size_t size) {
   const ShapeResultRun::GlyphDataCollection& glyph_data = run.glyph_data_;
   if (glyph_data.IsCompact()) [[unlikely]] {
     compact_glyphs_ = glyph_data.CompactGlyphs(index, size);

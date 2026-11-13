@@ -62,7 +62,7 @@ namespace {
 #if !BUILDFLAG(IS_APPLE)
 void CopyGlyphIds(const ShapeResultRun::GlyphDataCollection& glyph_data,
                   base::span<Glyph> glyphs) {
-  const unsigned num_glyphs = glyph_data.size();
+  const wtf_size_t num_glyphs = glyph_data.size();
   CHECK_EQ(num_glyphs, glyphs.size());
   if (glyph_data.IsCompact()) [[unlikely]] {
     glyphs.copy_from(glyph_data.CompactGlyphs(0, num_glyphs));
@@ -125,7 +125,8 @@ struct SameSizeAsShapeResult {
 
 ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
 
-bool ShapeResultRun::CanUseMonospaceGlyphCompaction(unsigned num_glyphs) const {
+bool ShapeResultRun::CanUseMonospaceGlyphCompaction(
+    wtf_size_t num_glyphs) const {
   // Compact storage requires a fixed-pitch horizontal 1:1 run.
   if (num_glyphs != num_characters_) {
     return false;
@@ -422,20 +423,20 @@ float ShapeResultRun::XPositionForOffset(
 void ShapeResultRun::CharacterIndexForXPositionCompact(
     float target_x,
     GlyphIndexResult* result) const {
-  const unsigned num_glyphs = glyph_data_.size();
+  const wtf_size_t num_glyphs = glyph_data_.size();
   const TextRunLayoutUnit advance = glyph_data_.CompactAdvance();
   const float advance_float = advance.ToFloat();
   // Fixed-point products keep this path constant-time and match glyph
   // positions. The full-storage path instead sums floats, so materializing a
   // fractional-advance run can change hit-testing near boundaries, with larger
   // differences on long runs. We intentionally do not reproduce that drift.
-  const auto position_for_glyph = [advance](unsigned index) {
+  const auto position_for_glyph = [advance](wtf_size_t index) {
     return (advance.To<InlineLayoutUnit>() * index).ToFloat();
   };
   CHECK_GT(num_glyphs, 0u);
-  unsigned glyph_index = num_glyphs - 1;
+  wtf_size_t glyph_index = num_glyphs - 1;
   if (advance_float > 0) {
-    glyph_index = std::min(static_cast<unsigned>(target_x / advance_float),
+    glyph_index = std::min(static_cast<wtf_size_t>(target_x / advance_float),
                            num_glyphs - 1);
     // Correct the float estimate against exact fixed-point positions.
     if (glyph_index && position_for_glyph(glyph_index) > target_x) {
@@ -1540,17 +1541,17 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
     base::span<const hb_glyph_info_t> glyph_infos,
     base::span<const hb_glyph_position_t> glyph_positions) {
   if (!CanUseMonospaceGlyphCompaction(
-          base::checked_cast<unsigned>(glyph_infos.size()))) {
+          base::checked_cast<wtf_size_t>(glyph_infos.size()))) {
     return false;
   }
 
   const auto GetCompactableGlyph = [glyph_infos, glyph_positions,
                                     start_index =
-                                        start_index_](unsigned glyph_index) {
+                                        start_index_](wtf_size_t glyph_index) {
     const hb_glyph_info_t& glyph = glyph_infos[glyph_index];
     const hb_glyph_position_t& position = glyph_positions[glyph_index];
     CHECK_GE(glyph.cluster, start_index);
-    const unsigned character_index = glyph.cluster - start_index;
+    const wtf_size_t character_index = glyph.cluster - start_index;
     const bool has_offset = position.x_offset != 0 || position.y_offset != 0;
 
     // Forward or reverse identity clusters make every glyph a boundary; only
@@ -1566,7 +1567,7 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
         .is_safe_to_break_before = is_safe_to_break_before};
   };
   if (!glyph_data_.TryMakeCompactFrom(
-          base::checked_cast<unsigned>(glyph_infos.size()), IsRtl(),
+          base::checked_cast<wtf_size_t>(glyph_infos.size()), IsRtl(),
           GetCompactableGlyph)) {
     return false;
   }
@@ -2331,10 +2332,10 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
     if (run.glyph_data_.IsCompact()) [[unlikely]] {
       CHECK_EQ(run.glyph_data_.IsCompactRtl(), kIsRtl);
       CHECK_GE(run.start_index_, start_index_);
-      const unsigned first_logical_index = run.start_index_ - start_index_;
+      const wtf_size_t first_logical_index = run.start_index_ - start_index_;
       CHECK_LE(first_logical_index, num_characters_);
       CHECK_LE(run.glyph_data_.size(), num_characters_ - first_logical_index);
-      unsigned first_character_index = first_logical_index;
+      wtf_size_t first_character_index = first_logical_index;
       LayoutUnit gap_position = last_x_position;
       if constexpr (kIsRtl) {
         first_character_index =
@@ -2355,11 +2356,13 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
       }
 
       CHECK_GE(first_character_index, next_character_index);
-      for (unsigned i = next_character_index; i < first_character_index; ++i) {
+      for (wtf_size_t i = next_character_index; i < first_character_index;
+           ++i) {
         character_position_[i].SetCachedData(gap_position, false, false);
       }
 
-      for (unsigned glyph_i = 0; glyph_i < run.glyph_data_.size(); ++glyph_i) {
+      for (wtf_size_t glyph_i = 0; glyph_i < run.glyph_data_.size();
+           ++glyph_i) {
         last_x_position = total_advance.ToCeil<LayoutUnit>();
         character_position_[first_character_index + glyph_i].SetCachedData(
             last_x_position, true, true);
@@ -2472,7 +2475,7 @@ bool ShapeResult::TryComputePositionDataFromCompactRuns() const {
   CHECK_GT(num_characters_, 1u);
   CHECK(character_position_.empty());
 
-  unsigned num_glyphs = 0;
+  wtf_size_t num_glyphs = 0;
   TextRunLayoutUnit shared_advance;
   for (const auto& run : runs_) {
     if (!run) [[unlikely]] {

@@ -107,9 +107,9 @@ class PLATFORM_EXPORT GlyphDataRange {
       if (!compact_glyphs_.empty()) [[unlikely]] {
         const base::span<const uint16_t> compact_glyphs = compact_glyphs_;
         CHECK_LT(index, compact_glyphs.size());
-        const unsigned physical_index = compact_index_offset_ + index;
+        const wtf_size_t physical_index = compact_index_offset_ + index;
         CHECK_LT(physical_index, compact_num_glyphs_);
-        const unsigned character_index =
+        const wtf_size_t character_index =
             is_compact_rtl_ ? compact_num_glyphs_ - physical_index - 1
                             : physical_index;
         return HarfBuzzRunGlyphData(compact_glyphs[index], character_index,
@@ -119,25 +119,26 @@ class PLATFORM_EXPORT GlyphDataRange {
     }
 
    private:
-    void Init(const ShapeResultRun& run, unsigned index, unsigned size);
+    void Init(const ShapeResultRun& run, wtf_size_t index, wtf_size_t size);
 
     base::span<const HarfBuzzRunGlyphData> glyphs_;
     base::span<const uint16_t> compact_glyphs_;
     TextRunLayoutUnit compact_advance_;
-    unsigned compact_index_offset_ = 0;
-    unsigned compact_num_glyphs_ = 0;
+    wtf_size_t compact_index_offset_ = 0;
+    wtf_size_t compact_num_glyphs_ = 0;
     bool is_compact_rtl_ = false;
   };
 
-  HarfBuzzRunGlyphData GlyphAtForTest(unsigned index) const;
+  HarfBuzzRunGlyphData GlyphAtForTest(wtf_size_t index) const;
   bool IsCompactSource() const;
   TextRunLayoutUnit CompactSourceAdvance() const;
-  unsigned CompactStartCharacterIndex() const;
+  wtf_size_t CompactStartCharacterIndex() const;
   base::span<const uint16_t> CompactGlyphs() const;
 
  private:
-  GlyphDataRange FindCompactGlyphDataRange(unsigned start_character_index,
-                                           unsigned end_character_index) const;
+  GlyphDataRange FindCompactGlyphDataRange(
+      wtf_size_t start_character_index,
+      wtf_size_t end_character_index) const;
 
   GlyphDataRange(const ShapeResultRun* run, wtf_size_t index, wtf_size_t size)
       : run_(run), index_(index), size_(size) {}

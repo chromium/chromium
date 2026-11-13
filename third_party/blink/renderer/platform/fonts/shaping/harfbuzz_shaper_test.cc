@@ -1203,7 +1203,7 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetMonospaceCompaction) {
     EXPECT_FALSE(compact_result->ComputeInkBounds().IsEmpty());
     EXPECT_TRUE(run.GetGlyphDataRange().IsCompactSource());
 
-    for (unsigned offset = 0; offset <= string.length(); ++offset) {
+    for (wtf_size_t offset = 0; offset <= string.length(); ++offset) {
       SCOPED_TRACE(offset);
       EXPECT_EQ(
           full_result->PositionForOffset(offset, AdjustMidCluster::kToEnd),

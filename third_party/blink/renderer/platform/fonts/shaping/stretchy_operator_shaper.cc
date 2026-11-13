@@ -88,7 +88,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
 
   // Calculate the minimal number of repetitions needed to obtain an assembly
   // size of size at least target size (r_min in MathML Core). Use a saturated
-  // cast; if the value does not fit in unsigned, the kMaxGlyphs limit below
+  // cast; if the value does not fit in wtf_size_t, the kMaxGlyphs limit below
   // will take effect anyway.
   wtf_size_t repetition_count =
       base::saturated_cast<wtf_size_t>(std::max<float>(

@@ -319,7 +319,7 @@ TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
     Vector<float> out;
     out.push_back(created->Width());
     out.push_back(static_cast<float>(created->NumCharacters()));
-    for (unsigned offset = 0; offset <= created->NumCharacters(); ++offset) {
+    for (wtf_size_t offset = 0; offset <= created->NumCharacters(); ++offset) {
       out.push_back(created->PositionForOffset(offset));
     }
     return out;
@@ -350,8 +350,8 @@ TEST_F(ShapeResultViewTest, NestedCompactViewCopyAtThreshold) {
     ASSERT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
 
     const ShapeResultView* outer = ShapeResultView::Create(source, 8, 40);
-    constexpr unsigned kStart = 13;
-    for (unsigned num_glyphs : {7u, 8u, 9u}) {
+    constexpr wtf_size_t kStart = 13;
+    for (wtf_size_t num_glyphs : {7u, 8u, 9u}) {
       SCOPED_TRACE(num_glyphs);
       const ShapeResultView* inner =
           ShapeResultView::Create(outer, kStart, kStart + num_glyphs);
@@ -380,7 +380,7 @@ TEST_F(ShapeResultViewTest, NestedCompactViewCopyAtThreshold) {
       const GlyphDataRange::Reader expected_glyphs(expected_run);
       ASSERT_EQ(num_glyphs, actual_glyphs.size());
       ASSERT_EQ(num_glyphs, expected_glyphs.size());
-      for (unsigned i = 0; i < num_glyphs; ++i) {
+      for (wtf_size_t i = 0; i < num_glyphs; ++i) {
         const HarfBuzzRunGlyphData actual_glyph = actual_glyphs[i];
         const HarfBuzzRunGlyphData expected_glyph = expected_glyphs[i];
         EXPECT_EQ(expected_glyph.glyph, actual_glyph.glyph);
@@ -391,7 +391,7 @@ TEST_F(ShapeResultViewTest, NestedCompactViewCopyAtThreshold) {
         EXPECT_EQ(expected_glyph.IsSafeToBreakBefore(),
                   actual_glyph.IsSafeToBreakBefore());
       }
-      for (unsigned i = 0; i <= num_glyphs; ++i) {
+      for (wtf_size_t i = 0; i <= num_glyphs; ++i) {
         EXPECT_EQ(expected->PositionForOffset(i), actual->PositionForOffset(i));
         EXPECT_EQ(expected->NextSafeToBreakOffset(kStart + i),
                   actual->NextSafeToBreakOffset(kStart + i));
@@ -449,7 +449,7 @@ TEST_F(ShapeResultViewTest, ExistingViewSurvivesSourceMaterialization) {
     Vector<ShapeResultTestGlyphInfo> expected;
     expected_view->ForEachGlyph(0, AddGlyphInfo, &expected);
     ASSERT_EQ(expected.size(), after.size());
-    for (unsigned i = 0; i < expected.size(); ++i) {
+    for (wtf_size_t i = 0; i < expected.size(); ++i) {
       EXPECT_EQ(expected[i].character_index, after[i].character_index);
       EXPECT_EQ(expected[i].glyph, after[i].glyph);
       EXPECT_EQ(expected[i].advance, after[i].advance);
@@ -459,7 +459,7 @@ TEST_F(ShapeResultViewTest, ExistingViewSurvivesSourceMaterialization) {
     Vector<ShapeResultTestGlyphInfo> copied;
     copy->ForEachGlyph(0, AddGlyphInfo, &copied);
     ASSERT_EQ(after.size(), copied.size());
-    for (unsigned i = 0; i < after.size(); ++i) {
+    for (wtf_size_t i = 0; i < after.size(); ++i) {
       EXPECT_EQ(after[i].character_index, copied[i].character_index);
       EXPECT_EQ(after[i].glyph, copied[i].glyph);
       EXPECT_EQ(after[i].advance, copied[i].advance);

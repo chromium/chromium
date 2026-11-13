@@ -93,8 +93,8 @@ class ShapeResultTest : public FontTestBase {
   }
 
   static ShapeResultRun* InsertConstantAdvanceRun(ShapeResult* result,
-                                                  unsigned start_index,
-                                                  unsigned num_characters,
+                                                  wtf_size_t start_index,
+                                                  wtf_size_t num_characters,
                                                   TextRunLayoutUnit advance,
                                                   bool compact) {
     ShapeResultRun* run = result->InsertRunForTesting(
@@ -414,20 +414,20 @@ INSTANTIATE_TEST_SUITE_P(ShapeResultTest,
                                          TextDirection::kRtl));
 
 TEST_P(ShapeResultPositionCacheTest, PositionCompactionRespectsFeatureFlag) {
-  constexpr unsigned kStart = 13;
-  constexpr unsigned kGlyphsPerRun = 8;
-  constexpr unsigned kNumCharacters = 2 * kGlyphsPerRun;
+  constexpr wtf_size_t kStart = 13;
+  constexpr wtf_size_t kGlyphsPerRun = 8;
+  constexpr wtf_size_t kNumCharacters = 2 * kGlyphsPerRun;
   for (bool enabled : {false, true}) {
     SCOPED_TRACE(enabled);
     ScopedMonospaceGlyphCompactionForTest scoped_feature(enabled);
-    for (unsigned compact_runs : {0u, 1u, 2u}) {
+    for (wtf_size_t compact_runs : {0u, 1u, 2u}) {
       SCOPED_TRACE(compact_runs);
       ShapeResult* result =
           MakeGarbageCollected<ShapeResult>(kStart, kNumCharacters, GetParam());
       ShapeResult* reference =
           MakeGarbageCollected<ShapeResult>(kStart, kNumCharacters, GetParam());
-      for (unsigned i = 0; i < 2; ++i) {
-        const unsigned run_start = kStart + i * kGlyphsPerRun;
+      for (wtf_size_t i = 0; i < 2; ++i) {
+        const wtf_size_t run_start = kStart + i * kGlyphsPerRun;
         InsertConstantAdvanceRun(result, run_start, kGlyphsPerRun,
                                  TextRunLayoutUnit(10), i < compact_runs);
         InsertConstantAdvanceRun(reference, run_start, kGlyphsPerRun,
@@ -438,7 +438,7 @@ TEST_P(ShapeResultPositionCacheTest, PositionCompactionRespectsFeatureFlag) {
       EXPECT_EQ(enabled || IsLtr(GetParam()) ? 1u : kNumCharacters,
                 PositionDataSize(*result));
       EXPECT_EQ(reference->Width(), result->Width());
-      for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+      for (wtf_size_t offset = 0; offset <= kNumCharacters; ++offset) {
         EXPECT_EQ(reference->CachedPositionForOffset(offset),
                   result->CachedPositionForOffset(offset));
         if (offset < kNumCharacters) {
@@ -458,7 +458,7 @@ TEST_P(ShapeResultPositionCacheTest, PositionCompactionRespectsFeatureFlag) {
 
 TEST_P(ShapeResultPositionCacheTest,
        ExistingCompactPositionDataSurvivesFeatureDisable) {
-  constexpr unsigned kNumCharacters = 16;
+  constexpr wtf_size_t kNumCharacters = 16;
   for (bool compact_glyphs : {false, true}) {
     SCOPED_TRACE(compact_glyphs);
     ShapeResult* result =
@@ -471,7 +471,7 @@ TEST_P(ShapeResultPositionCacheTest,
     ScopedMonospaceGlyphCompactionForTest scoped_feature(false);
     result->EnsurePositionData();
     EXPECT_EQ(1u, PositionDataSize(*result));
-    for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+    for (wtf_size_t offset = 0; offset <= kNumCharacters; ++offset) {
       const LayoutUnit position(
           (IsLtr(GetParam()) ? offset : kNumCharacters - offset) * 10);
       EXPECT_EQ(position, result->CachedPositionForOffset(offset));
@@ -553,7 +553,7 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
   compact_result->EnsurePositionData();
   ASSERT_EQ(string.length(), PositionDataSize(*full_result));
   ASSERT_EQ(1u, PositionDataSize(*compact_result));
-  for (unsigned offset = 0; offset <= string.length(); ++offset) {
+  for (wtf_size_t offset = 0; offset <= string.length(); ++offset) {
     EXPECT_EQ(full_result->CachedPositionForOffset(offset),
               compact_result->CachedPositionForOffset(offset));
     EXPECT_EQ(full_result->CachedNextSafeToBreakOffset(offset),
@@ -561,7 +561,7 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
     EXPECT_EQ(full_result->CachedPreviousSafeToBreakOffset(offset),
               compact_result->CachedPreviousSafeToBreakOffset(offset));
   }
-  for (unsigned offset = 0; offset < string.length(); ++offset) {
+  for (wtf_size_t offset = 0; offset < string.length(); ++offset) {
     const LayoutUnit position = full_result->CachedPositionForOffset(offset);
     EXPECT_EQ(full_result->CachedOffsetForPosition(position),
               compact_result->CachedOffsetForPosition(position));
@@ -571,7 +571,7 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
                   .IsCompactSource());
 
   ShapeResultCursor cursor(compact_result);
-  for (unsigned offset = 0; offset < string.length(); ++offset) {
+  for (wtf_size_t offset = 0; offset < string.length(); ++offset) {
     cursor.MoveToCharacter(offset);
     EXPECT_EQ(offset, cursor.CharacterIndex());
   }
@@ -579,11 +579,11 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
 
 TEST_P(ShapeResultPositionCacheTest,
        CompactRunsBuildPositionDataWithoutFullTable) {
-  constexpr unsigned kStart = 13;
-  constexpr unsigned kGlyphsPerRun = 32768;
-  for (unsigned num_runs : {1u, 2u}) {
+  constexpr wtf_size_t kStart = 13;
+  constexpr wtf_size_t kGlyphsPerRun = 32768;
+  for (wtf_size_t num_runs : {1u, 2u}) {
     SCOPED_TRACE(num_runs);
-    const unsigned num_characters = num_runs * kGlyphsPerRun;
+    const wtf_size_t num_characters = num_runs * kGlyphsPerRun;
     for (int advance_raw : {0, 1, 1023, 65536, 629146, 6124123, 4402067,
                             TextRunLayoutUnit::Max().RawValue(), -629146}) {
       SCOPED_TRACE(advance_raw);
@@ -593,8 +593,8 @@ TEST_P(ShapeResultPositionCacheTest,
           MakeGarbageCollected<ShapeResult>(kStart, num_characters, GetParam());
       ShapeResult* reference =
           MakeGarbageCollected<ShapeResult>(kStart, num_characters, GetParam());
-      for (unsigned i = 0; i < num_runs; ++i) {
-        const unsigned run_start = kStart + i * kGlyphsPerRun;
+      for (wtf_size_t i = 0; i < num_runs; ++i) {
+        const wtf_size_t run_start = kStart + i * kGlyphsPerRun;
         InsertConstantAdvanceRun(result, run_start, kGlyphsPerRun, advance,
                                  /*compact=*/true);
         InsertConstantAdvanceRun(reference, run_start, kGlyphsPerRun, advance,
@@ -617,7 +617,7 @@ TEST_P(ShapeResultPositionCacheTest,
       EXPECT_EQ(reference->Width(), result->Width());
       EXPECT_TRUE(result->CharacterData(kStart).is_cluster_base);
       EXPECT_TRUE(result->CharacterData(kStart).safe_to_break_before);
-      for (unsigned offset :
+      for (wtf_size_t offset :
            {0u, 1u, 269u, kGlyphsPerRun - 1, kGlyphsPerRun, num_characters}) {
         SCOPED_TRACE(offset);
         const LayoutUnit position = reference->CachedPositionForOffset(offset);
@@ -641,7 +641,7 @@ TEST_P(ShapeResultPositionCacheTest,
 }
 
 TEST_P(ShapeResultPositionCacheTest, CompactPositionDataSaturatedOffsets) {
-  constexpr unsigned kNumCharacters = 32768;
+  constexpr wtf_size_t kNumCharacters = 32768;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
   ShapeResult* reference =
@@ -669,14 +669,14 @@ TEST_P(ShapeResultPositionCacheTest, CompactPositionDataSaturatedOffsets) {
 }
 
 TEST_P(ShapeResultPositionCacheTest, CompactPositionDataFastPathFallbacks) {
-  constexpr unsigned kStart = 13;
+  constexpr wtf_size_t kStart = 13;
   struct TestCase {
-    unsigned first_run_offset;
-    unsigned second_run_offset;
-    unsigned num_characters;
+    wtf_size_t first_run_offset;
+    wtf_size_t second_run_offset;
+    wtf_size_t num_characters;
     int second_advance;
     bool second_is_compact;
-    unsigned expected_cache_size;
+    wtf_size_t expected_cache_size;
   };
   const TestCase test_cases[] = {
       {0, 8, 16, 11, true, 16},   // Different advances.
@@ -709,7 +709,7 @@ TEST_P(ShapeResultPositionCacheTest, CompactPositionDataFastPathFallbacks) {
     result->EnsurePositionData();
     EXPECT_EQ(test_case.expected_cache_size, PositionDataSize(*result));
     EXPECT_EQ(reference->Width(), result->Width());
-    for (unsigned offset = 0; offset <= test_case.num_characters; ++offset) {
+    for (wtf_size_t offset = 0; offset <= test_case.num_characters; ++offset) {
       EXPECT_EQ(reference->CachedPositionForOffset(offset),
                 result->CachedPositionForOffset(offset));
       if (offset < test_case.num_characters) {
@@ -727,7 +727,7 @@ TEST_P(ShapeResultPositionCacheTest, CompactPositionDataFastPathFallbacks) {
 }
 
 TEST_P(ShapeResultPositionCacheTest, CompactRunsForceFullPositionData) {
-  constexpr unsigned kNumCharacters = 16;
+  constexpr wtf_size_t kNumCharacters = 16;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
   ShapeResultRun* run = InsertConstantAdvanceRun(
@@ -735,7 +735,7 @@ TEST_P(ShapeResultPositionCacheTest, CompactRunsForceFullPositionData) {
   result->EnsurePositionData(/*allow_compaction=*/false);
   ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
   EXPECT_TRUE(run->GetGlyphDataRange().IsCompactSource());
-  for (unsigned offset = 0; offset < kNumCharacters; ++offset) {
+  for (wtf_size_t offset = 0; offset < kNumCharacters; ++offset) {
     const ShapeResultCharacterData& data = result->CharacterData(offset);
     EXPECT_EQ(LayoutUnit(offset * 10), data.x_position);
     EXPECT_TRUE(data.is_cluster_base);
@@ -746,8 +746,8 @@ TEST_P(ShapeResultPositionCacheTest, CompactRunsForceFullPositionData) {
 }
 
 TEST_F(ShapeResultTest, CompactPositionDataWithGapsMatchesFullStorage) {
-  constexpr unsigned kStartIndex = 5;
-  constexpr unsigned kNumCharacters = 24;
+  constexpr wtf_size_t kStartIndex = 5;
+  constexpr wtf_size_t kNumCharacters = 24;
   for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
     SCOPED_TRACE(direction);
     ShapeResult* full_result = MakeGarbageCollected<ShapeResult>(
@@ -765,7 +765,7 @@ TEST_F(ShapeResultTest, CompactPositionDataWithGapsMatchesFullStorage) {
       ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
     }
 
-    for (unsigned offset = kStartIndex; offset < kStartIndex + kNumCharacters;
+    for (wtf_size_t offset = kStartIndex; offset < kStartIndex + kNumCharacters;
          ++offset) {
       SCOPED_TRACE(offset);
       const ShapeResultCharacterData& expected =
@@ -782,7 +782,7 @@ TEST_F(ShapeResultTest, CompactPositionDataWithGapsMatchesFullStorage) {
 
 TEST_P(ShapeResultPositionCacheTest,
        DirectCompactPositionDataPreservesAutoSpacing) {
-  constexpr unsigned kNumCharacters = 16;
+  constexpr wtf_size_t kNumCharacters = 16;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
   ShapeResult* reference =
@@ -795,7 +795,7 @@ TEST_P(ShapeResultPositionCacheTest,
   ASSERT_EQ(1u, PositionDataSize(*result));
   EXPECT_EQ(1u, PositionDataCapacity(*result));
   reference->EnsurePositionData(/*allow_compaction=*/false);
-  for (unsigned spacing_offset : {4u, 6u}) {
+  for (wtf_size_t spacing_offset : {4u, 6u}) {
     for (ShapeResult* target : {result, reference}) {
       target->ApplyTextAutoSpacing({{spacing_offset, 2}});
     }
@@ -804,7 +804,7 @@ TEST_P(ShapeResultPositionCacheTest,
     EXPECT_EQ(reference->Width(), result->Width());
     EXPECT_TRUE(result->HasAutoSpacingAfter(3));
     EXPECT_TRUE(result->HasAutoSpacingBefore(spacing_offset));
-    for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+    for (wtf_size_t offset = 0; offset <= kNumCharacters; ++offset) {
       EXPECT_EQ(reference->CachedPositionForOffset(offset),
                 result->CachedPositionForOffset(offset));
       EXPECT_EQ(reference->HasAutoSpacingAfter(offset),

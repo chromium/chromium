@@ -43,7 +43,7 @@ wtf_size_t ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
     return NumCharacters();
   }
   if (range_.IsCompactSource()) [[unlikely]] {
-    const unsigned num_glyphs = NumGlyphs();
+    const wtf_size_t num_glyphs = NumGlyphs();
     if (offset < num_glyphs) {
       return offset;
     }
