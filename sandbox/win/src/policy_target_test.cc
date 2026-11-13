@@ -65,15 +65,29 @@ SBOX_TEST_COMMAND(SharedMemoryCommand) {
   return SBOX_TEST_SUCCEEDED;
 }
 
-// Tests that environment is filtered correctly.
+// Checks that the environment matches what the test asked for. `args[0]` is
+// "filter" if the test requested a filtered environment.
 SBOX_TEST_COMMAND(FilterEnvironmentCommand) {
+  if (args.size() != 1) {
+    return SBOX_TEST_INVALID_PARAMETER;
+  }
+#if defined(ADDRESS_SANITIZER) || defined(UNDEFINED_SANITIZER)
+  // The environment is never filtered in sanitizer builds, so the sandboxed
+  // process inherits every variable from the test, including ASAN_OPTIONS.
+  const bool expect_filtered = false;
+#else
+  const bool expect_filtered = args[0] == L"filter";
+#endif
   auto env = base::Environment::Create();
   // "TMP" should never be filtered. See `CreateFilteredEnvironment`.
   if (!env->HasVar("TMP")) {
     return SBOX_TEST_FIRST_ERROR;
   }
-  if (env->HasVar("SBOX_TEST_ENV")) {
+  if (env->HasVar("SBOX_TEST_ENV") == expect_filtered) {
     return SBOX_TEST_SECOND_ERROR;
+  }
+  if (env->HasVar("ASAN_OPTIONS") == expect_filtered) {
+    return SBOX_TEST_THIRD_ERROR;
   }
   return SBOX_TEST_SUCCEEDED;
 }
@@ -493,15 +507,17 @@ TEST(SharedTargetConfig, BrokerConfigManagement) {
 // Test that environment for a sandboxed process is filtered correctly.
 TEST(PolicyTargetTest, FilterEnvironment) {
   base::ScopedEnvironmentVariableOverride scoped_env("SBOX_TEST_ENV", "FOO");
+  base::ScopedEnvironmentVariableOverride scoped_asan_options("ASAN_OPTIONS",
+                                                              "symbolize=0");
   {
     FilterEnvironmentCommandTestRunner runner;
     runner.GetConfig()->SetFilterEnvironment(/*filter=*/true);
-    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest("filter"));
   }
   {
     FilterEnvironmentCommandTestRunner runner;
     runner.GetConfig()->SetFilterEnvironment(/*filter=*/false);
-    EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest());
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest("no-filter"));
   }
 }
 

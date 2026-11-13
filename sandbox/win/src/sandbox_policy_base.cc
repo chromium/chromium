@@ -468,7 +468,12 @@ void ConfigBase::SetDesktop(Desktop desktop) {
 }
 
 void ConfigBase::SetFilterEnvironment(bool filter) {
+// Sanitizer runtimes are configured through environment variables (e.g.
+// ASAN_OPTIONS, UBSAN_OPTIONS), so the environment is never filtered in
+// sanitizer builds.
+#if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
   filter_environment_ = filter;
+#endif  // !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 }
 
 bool ConfigBase::GetEnvironmentFiltered() {

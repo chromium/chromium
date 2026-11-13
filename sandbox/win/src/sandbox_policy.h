@@ -247,6 +247,9 @@ class [[clang::lto_visibility_public]] TargetConfig {
   //    operation and tests.
   //  * "LOCALAPPDATA": Needed for App Container processes.
   //  * "CHROME_CRASHPAD_PIPE_NAME": Needed for crashpad.
+  // This has no effect in ASan and UBSan builds: the environment is never
+  // filtered there, so the target inherits the broker's full environment,
+  // including sanitizer options such as ASAN_OPTIONS.
   virtual void SetFilterEnvironment(bool filter) = 0;
 
   // Obtains whether or not the environment for this target should be filtered.
