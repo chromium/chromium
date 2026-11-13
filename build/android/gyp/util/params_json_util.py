@@ -446,7 +446,9 @@ class ParamsJson(dict):
     def needs_transitive_rtxt(self):
         """Returns True if the target populates "dependency_rtxt_files"."""
         return self.type == 'dist_aar' or (
-            self.is_library() and not self.is_prebuilt()
+            self.is_library()
+            and not self.is_prebuilt()
+            and 'package_name' in self
         )
 
     def is_prebuilt(self):

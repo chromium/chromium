@@ -238,8 +238,8 @@ template("write_build_config") {
   }
 
   # ParamsJson.needs_transitive_rtxt()
-  if (_type == "dist_aar" ||
-      (_type == "java_library" && !invoker.is_prebuilt)) {
+  if (_type == "dist_aar" || (_type == "java_library" && !invoker.is_prebuilt &&
+                              defined(invoker.custom_package))) {
     _outputs += [ string_replace(invoker.build_config,
                                  ".build_config.json",
                                  ".rtxt.build_config.json") ]
