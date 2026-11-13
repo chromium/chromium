@@ -17,7 +17,7 @@ export function getHtml(this: ReadonlyOmniboxElement) {
 
        textInput is out of normal flow (absolutely positioned) and sized to
        100% of allocated width; #textContainer is in normal flow and sized
-       based on contents.
+       based on contents (up to available space).
 
        #textContainer contains richtext version of the input thus far;
        #textInput contains plaintext version of the input plus optionally an

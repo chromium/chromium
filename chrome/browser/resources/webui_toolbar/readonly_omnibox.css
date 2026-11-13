@@ -58,13 +58,14 @@
    * the switchover painless. #textContainer always being present lets
    * #inlineAutocomplete use it to position itself in the right spot.
    */
-  flex: 0 1 min-content;
+  flex: 0 0 min-content;
   height: var(--omnibox-height);
+  max-width: 100%;
   opacity: 1;
-  outline: none;
   overflow: hidden;
-  pointer-events: none;
+  outline: none;
   text-overflow: ellipsis;
+  pointer-events: none;
   white-space: pre;
 }
 
@@ -145,9 +146,12 @@
 
 #inlineAutocomplete {
   color: var(--color-omnibox-text);
+  flex: 0 1 min-content;
   background-color: var(--color-location-bar-background);
   height: var(--omnibox-height);
   line-height: var(--omnibox-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
   /* If [composing] isn't set, this is used only for positioning the additional
    * text. */
   visibility: hidden;
@@ -161,8 +165,11 @@
 #additionalText {
   color: var(--color-omnibox-results-url);
   /* fonts are the same as for the omnibox proper */
+  flex: 0 1 min-content;
   height: var(--omnibox-height);
   line-height: var(--omnibox-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
   position: relative;
   white-space: pre;
