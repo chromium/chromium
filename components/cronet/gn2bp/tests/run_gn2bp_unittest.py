@@ -227,15 +227,6 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         )
         gn.all_targets[rust_lib.name] = rust_lib
 
-        build_script = gn_utils.GnParser.Target(
-            "//third_party/rust/serde/v1:build_script", "action"
-        )
-        build_script.build_file_path = "third_party/rust/serde/v1"
-        build_script.rust_source_dir = (
-            "third_party/rust/chromium_crates_io/vendor/serde-v1"
-        )
-        gn.all_targets[build_script.name] = build_script
-
         cxx_action = gn_utils.GnParser.Target(
             "//components/prefs:rust_bridge", "action"
         )
@@ -248,39 +239,94 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         )
         cxx_action.common.sources.add("//base/third_party/nspr/prtime.cc")
         cxx_action.common.inputs.add("//third_party/jdk/bin/java")
+        cxx_action.common.inputs.add("//out/tmp/gen/generated.h")
+        cxx_action.common.inputs.add("//components/prefs/prefs.gni")
+        cxx_action.common.include_dirs.add("//third_party/empty_inc/include")
         gn.all_targets[cxx_action.name] = cxx_action
 
-        components_paths, third_party_paths = (
-            gen_android_bp.extract_copybara_paths(gn)
+        top_bp = gen_android_bp.soong_ast.Blueprint()
+        ctx = gen_android_bp.translation_context.TranslationContext("tot")
+        mod = gen_android_bp.soong_ast.create_module(
+            "cc_genrule", "tot_cronet_prefs_gen", "//components/prefs:gen", ctx
         )
-        self.assertEqual(
-            components_paths,
-            [
-                "components/prefs/**",
-            ],
-        )
-        self.assertEqual(
-            third_party_paths,
-            [
-                "base/third_party/nspr/**",
-                "third_party/lss/**",
-                "third_party/rust/chromium_crates_io/vendor/cxx-v1/**",
-                "third_party/rust/chromium_crates_io/vendor/serde-v1/**",
-                "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",
-                "third_party/rust/cxx/**",
-                "third_party/rust/serde/**",
-                "third_party/rust/small_ctor/**",
-            ],
-        )
+        mod.srcs = {":tot_cronet_other_mod", "components/prefs/pref_service.cc"}
+        mod.tool_files = {"tools/metrics/histograms/enums.xml"}
+        top_bp.add_module(mod)
+
+        final_bps = {
+            "": top_bp,
+            "components/prefs": gen_android_bp.soong_ast.Blueprint(
+                "components/prefs"
+            ),
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as tmp_dir,
+            unittest.mock.patch.object(
+                gen_android_bp, "REPOSITORY_ROOT", tmp_dir
+            ),
+        ):
+            readme_file = (
+                pathlib.Path(tmp_dir)
+                / "third_party/rust/small_ctor/v0_1/README.chromium"
+            )
+            readme_file.parent.mkdir(parents=True, exist_ok=True)
+            readme_file.write_text(
+                "Name: small_ctor\n"
+                "URL: https://crates.io/crates/small_ctor\n"
+                "Version: 0.1.2\n"
+                "License: Apache-2.0\n"
+                "License File: //third_party/rust/chromium_crates_io/vendor/"
+                "small_ctor-v0_1/LICENSE\n"
+            )
+            pref_cc = pathlib.Path(tmp_dir) / "components/prefs/pref_service.cc"
+            pref_cc.parent.mkdir(parents=True, exist_ok=True)
+            pref_cc.write_text('#include "components/prefs/pref_service.h"\n')
+            pref_h = pathlib.Path(tmp_dir) / "components/prefs/pref_service.h"
+            pref_h.write_text('#include "unlisted_internal.h"\n')
+            unlisted_h = (
+                pathlib.Path(tmp_dir) / "components/prefs/unlisted_internal.h"
+            )
+            unlisted_h.write_text("// internal header\n")
+            empty_inc_dir = (
+                pathlib.Path(tmp_dir) / "third_party/empty_inc/include"
+            )
+            empty_inc_dir.mkdir(parents=True, exist_ok=True)
+            generated_paths = set(
+                gen_android_bp.extract_copybara_paths(gn, top_bp, final_bps)
+            )
+        expected_subset = {
+            "base/third_party/nspr/prtime.cc",
+            "chrome/VERSION",
+            "components/prefs/Android.bp",
+            "components/prefs/pref_service.cc",
+            "components/prefs/pref_service.h",
+            "components/prefs/unlisted_internal.h",
+            "third_party/empty_inc/include/**",
+            "third_party/lss/linux_syscall_support.h",
+            "third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h",
+            "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/LICENSE",
+            "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/METADATA",
+            "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/MODULE_LICENSE_APACHE_2_0",
+            "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/src/lib.rs",
+            "third_party/rust/cxx/chromium_integration/run_cxxbridge.py",
+            "third_party/rust/small_ctor/v0_1/README.chromium",
+            "tools/metrics/histograms/enums.xml",
+        }
+        self.assertTrue(expected_subset.issubset(generated_paths))
+        self.assertNotIn("third_party/jdk/bin/java", generated_paths)
+        self.assertNotIn("out/tmp/gen/generated.h", generated_paths)
+        self.assertNotIn("components/prefs/prefs.gni", generated_paths)
+        self.assertNotIn(":tot_cronet_other_mod", generated_paths)
 
     def test_write_copybara_paths_file(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             gen_android_bp.write_copybara_paths_file(
                 tmp_dir,
-                ["components/cronet/**", "components/prefs/**"],
                 [
-                    "third_party/abseil-cpp/**",
-                    "third_party/rust/small_ctor/**",
+                    "components/prefs/pref_service.cc",
+                    "net/data/**",
+                    "third_party/rust/small_ctor/v0_1/README.chromium",
                 ],
             )
             sky_path = (
@@ -289,13 +335,12 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             self.assertTrue(sky_path.exists())
             content = sky_path.read_text()
             self.assertIn(
-                'COMPONENTS_PATHS = [\n'
-                '    "components/cronet/**",\n'
-                '    "components/prefs/**",\n'
+                'GENERATED_ORIGIN_FILES = [\n'
+                '    "components/prefs/pref_service.cc",\n'
+                '    "third_party/rust/small_ctor/v0_1/README.chromium",\n'
                 ']\n\n'
-                'THIRD_PARTY_PATHS = [\n'
-                '    "third_party/abseil-cpp/**",\n'
-                '    "third_party/rust/small_ctor/**",\n'
+                'GENERATED_ORIGIN_GLOBS = [\n'
+                '    "net/data/**",\n'
                 ']\n',
                 content,
             )
