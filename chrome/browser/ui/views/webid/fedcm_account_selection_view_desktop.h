@@ -209,8 +209,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // the modal dialog's request permission sheet, which also shows the identity
   // provider's links, instead of asking for permission in the bubble. If so,
   // the bubble doesn't show disclosure text for `account`. True only with
-  // `kFedCmIdpLinks`, a single identity provider and an account that needs
-  // permission to share its `fields`.
+  // `kFedCmIdpLinks`, and if `account` needs permission to share its `fields`.
+  // With multiple identity providers, it also requires
+  // `kFedCmActiveModeMultipleIdentityProviders` to be enabled.
   bool ShouldSwitchToModalForPermission(
       const content::IdentityRequestAccount& account) const;
 
@@ -524,6 +525,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This should be called exactly once when the dialog is dismissed.
   using DismissReason = content::IdentityRequestDialogController::DismissReason;
   void LogDialogDismissal(DismissReason dismiss_reason);
+
+  // Closes the existing dialog widget and resets `account_selection_view_`
+  // without notifying `delegate_` when `CreateOrUpdateViewAndWidget()` cannot
+  // reuse them, e.g. for a multi-IDP bubble or a dialog without modal support.
+  void MaybeResetViewAndWidget(bool has_modal_support);
 
   // Creates account_selection_view_ (different subclasses for
   // bubble/modal) and dialog_widget_ if it hasn't been created yet.

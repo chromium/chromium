@@ -2811,9 +2811,10 @@ inline constexpr char kFedCmIdpLinksDescription[] =
     "When FedCM asks for permission to share data with a site, shows links to "
     "the identity provider's account management page, privacy policy and "
     "terms of service, from the account_management_url, privacy_policy_url and "
-    "terms_of_service_url keys of its well-known file. In passive mode with a "
-    "single identity provider, FedCM then asks for this permission in a modal "
-    "dialog instead of the bubble, so that the links are shown.";
+    "terms_of_service_url keys of its well-known file. In passive mode, FedCM "
+    "then asks for this permission in a modal dialog instead of the bubble, so "
+    "that the links are shown. With multiple identity providers, this also "
+    "requires #fedcm-active-mode-multiple-identity-providers.";
 
 inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";

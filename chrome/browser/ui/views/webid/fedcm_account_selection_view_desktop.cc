@@ -345,14 +345,7 @@ bool FedCmAccountSelectionView::Show(
                 base::UTF8ToUTF16(idp_list_[0]->idp_for_display))
           : std::nullopt;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead. We also reset for widget multi IDP to recalculate the title
-  // and other parts of the header.
-  if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
-      (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
-  }
+  MaybeResetViewAndWidget(has_modal_support);
 
   CreateOrUpdateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
                               has_modal_support);
@@ -488,6 +481,8 @@ bool FedCmAccountSelectionView::Show(
     // account row, cancel button or use other account button. If we do not
     // receive any of these actions by time the dialog is closed, it means our
     // placeholder assumption is true i.e. the user has closed the tab.
+    // TODO(crbug.com/581372729): Record the modal dialog metrics for passive
+    // mode flows separately from the active mode flow.
     modal_account_chooser_state_ = webid::AccountChooserResult::kTabClosed;
   }
 
@@ -522,17 +517,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   // modal is not yet implemented.
   bool has_modal_support = false;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead.  We also reset for widget multi IDP to recalculate the
-  // title and other parts of the header. Check the dialog type rather than the
-  // mode, since the modal dialog is also used in passive mode after the user
-  // accepts the ambient bubble, or selects an account in the bubble when
-  // `ShouldSwitchToModalForPermission()` is true.
-  if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
-      (dialog_type_ == DialogType::MODAL && !has_modal_support)) {
-    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
-  }
+  MaybeResetViewAndWidget(has_modal_support);
 
   CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
                               rp_context, rp_mode, has_modal_support);
@@ -566,14 +551,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   bool has_modal_support = true;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead. We also reset for widget multi IDP to recalculate the title
-  // and other parts of the header.
-  if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
-      (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
-  }
+  MaybeResetViewAndWidget(has_modal_support);
 
   CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
                               rp_context, rp_mode, has_modal_support);
@@ -771,6 +749,21 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
   input_protector_ = std::move(input_protector);
 }
 
+void FedCmAccountSelectionView::MaybeResetViewAndWidget(
+    bool has_modal_support) {
+  // If a modal dialog was created previously but there is no modal support for
+  // this type of dialog, reset `account_selection_view_` to create a bubble
+  // dialog instead. We also reset a multi-IDP bubble to recalculate the title
+  // and other parts of the header. Check the dialog type rather than the mode,
+  // since the modal dialog is also used in passive mode after the user accepts
+  // the ambient bubble, or selects an account in the bubble when
+  // `ShouldSwitchToModalForPermission()` is true.
+  if ((dialog_type_ == DialogType::BUBBLE && idp_list_.size() > 1) ||
+      (dialog_type_ == DialogType::MODAL && !has_modal_support)) {
+    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
+  }
+}
+
 void FedCmAccountSelectionView::CreateOrUpdateViewAndWidget(
     const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
@@ -883,11 +876,15 @@ bool FedCmAccountSelectionView::OnAccountSelected(
 
 bool FedCmAccountSelectionView::ShouldSwitchToModalForPermission(
     const content::IdentityRequestAccount& account) const {
-  // `ShowRequestPermissionModal()` only supports a single identity provider, so
-  // with several, the bubble asks for permission itself.
+  // With multiple identity providers, also require
+  // `kFedCmActiveModeMultipleIdentityProviders`, since Back on the modal dialog
+  // then shows its account chooser for multiple identity providers, which is
+  // otherwise only shown in active mode with that flag.
   return base::FeatureList::IsEnabled(features::kFedCmIdpLinks) &&
-         dialog_type_ == DialogType::BUBBLE && idp_list_.size() == 1u &&
-         !account.fields.empty();
+         dialog_type_ == DialogType::BUBBLE && !account.fields.empty() &&
+         (idp_list_.size() == 1u ||
+          base::FeatureList::IsEnabled(
+              features::kFedCmActiveModeMultipleIdentityProviders));
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -2063,7 +2060,6 @@ void FedCmAccountSelectionView::HandleAmbientBubbleDecision(
 void FedCmAccountSelectionView::ShowRequestPermissionModal(
     const IdentityRequestAccountPtr& account) {
   CHECK(rp_data_);
-  CHECK_EQ(idp_list_.size(), 1u);
   CHECK(!GetDialogWidget());
   if (!tab_) {
     // `this` may be deleted after this call.
@@ -2081,10 +2077,12 @@ void FedCmAccountSelectionView::ShowRequestPermissionModal(
   }
 
   // Pass kActive so that the modal dialog is used even though the request is
-  // in passive mode.
+  // in passive mode. Title the dialog with the identity provider of `account`,
+  // since the request may have several.
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   CreateOrUpdateViewAndWidget(
-      *rp_data_, base::UTF8ToUTF16(idp_list_[0]->idp_for_display),
-      idp_list_[0]->rp_context, blink::mojom::RpMode::kActive,
+      *rp_data_, base::UTF8ToUTF16(idp_data.idp_for_display),
+      idp_data.rp_context, blink::mojom::RpMode::kActive,
       /*has_modal_support=*/true);
   CHECK(dialog_type_ == DialogType::MODAL);
 
@@ -2093,7 +2091,7 @@ void FedCmAccountSelectionView::ShowRequestPermissionModal(
   // This is a placeholder assuming the tab containing the disclosure dialog
   // will be closed. This will be updated upon clicking the continue, back or
   // cancel button.
-  // TODO(crbug.com/567563304): Record the modal dialog metrics for passive mode
+  // TODO(crbug.com/581372729): Record the modal dialog metrics for passive mode
   // flows separately from the active mode flow.
   modal_disclosure_dialog_state_ = webid::DisclosureDialogResult::kDestroy;
   UpdateDialogVisibilityAndPosition();

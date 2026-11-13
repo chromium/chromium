@@ -4295,10 +4295,162 @@ TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
             controller->GetTestView()->sheet_type_);
 }
 
-// Tests that with multiple identity providers, selecting a new account on the
-// bubble keeps the existing flow: the bubble asks for permission itself.
+// Tests that with multiple identity providers and
+// `kFedCmActiveModeMultipleIdentityProviders`, selecting a new account on the
+// bubble shows the modal request permission dialog for that account, titled
+// with its identity provider, and that clicking back shows the modal account
+// chooser with the accounts of all identity providers.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       MultipleIdpsSignUpShowsModal) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+  std::vector<IdentityProviderDataPtr> idp_list = {
+      CreateIdentityProviderData(), CreateIdentityProviderData()};
+  // Use a different context than the first identity provider's, to check that
+  // the modal is titled with the identity provider of the selected account.
+  idp_list[1]->rp_context = blink::mojom::RpContext::kSignUp;
+  std::vector<IdentityRequestAccountPtr> accounts = {
+      CreateAccount(idp_list[0]),
+      CreateAccount(idp_list[1],
+                    /*idp_claimed_login_state=*/LoginState::kSignUp,
+                    /*browser_trusted_login_state=*/LoginState::kSignUp,
+                    kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, accounts, blink::mojom::RpMode::kPassive);
+  ASSERT_EQ(FedCmAccountSelectionView::DialogType::BUBBLE,
+            controller->created_dialog_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts[1], CreateMouseEvent()));
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+  EXPECT_EQ(blink::mojom::RpContext::kSignUp, controller->GetRpContext());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+
+  controller->OnBackButtonClicked();
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+}
+
+// Tests that after switching to the modal with multiple identity providers,
+// showing an error dialog after continuing reuses the modal instead of
+// recreating a bubble.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       MultipleIdpsErrorAfterModalStaysInModal) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+  std::vector<IdentityProviderDataPtr> idp_list = {
+      CreateIdentityProviderData(), CreateIdentityProviderData()};
+  std::vector<IdentityRequestAccountPtr> accounts = {
+      CreateAccount(idp_list[0]),
+      CreateAccount(idp_list[1],
+                    /*idp_claimed_login_state=*/LoginState::kSignUp,
+                    /*browser_trusted_login_state=*/LoginState::kSignUp,
+                    kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, accounts, blink::mojom::RpMode::kPassive);
+  EXPECT_TRUE(controller->OnAccountSelected(accounts[1], CreateMouseEvent()));
+  ASSERT_EQ(2u, controller->num_dialogs_);
+  ASSERT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+
+  FastForwardPastInputProtection();
+  EXPECT_TRUE(controller->OnAccountSelected(
+      accounts[1], CreateMouseEvent(base::TimeTicks::Now())));
+  ASSERT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+
+  controller->ShowErrorDialog(
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata(),
+      /*error=*/std::nullopt);
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kError,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+}
+
+// Tests that after switching to the modal with multiple identity providers,
+// logging in to an identity provider from the modal's IDP picker shows the new
+// account's request permission sheet in the same modal, rather than recreating
+// a bubble.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       MultipleIdpsLoginThroughIdpPickerStaysInModal) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+  std::vector<IdentityProviderDataPtr> idp_list = {
+      CreateIdentityProviderData(), CreateIdentityProviderData()};
+  std::vector<IdentityRequestAccountPtr> accounts = {
+      CreateAccount(idp_list[0])};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, accounts, blink::mojom::RpMode::kPassive);
+  EXPECT_TRUE(controller->OnAccountSelected(accounts[0], CreateMouseEvent()));
+  ASSERT_EQ(2u, controller->num_dialogs_);
+  ASSERT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+
+  controller->OnBackButtonClicked();
+  ASSERT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+
+  FastForwardPastInputProtection();
+  controller->OnShowIdpPickerClicked(CreateMouseEvent(base::TimeTicks::Now()));
+  ASSERT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+
+  FastForwardPastInputProtection();
+  controller->OnIdpPickerRowClicked(GURL(kConfigUrl2), GURL(kLoginUrl),
+                                    CreateMouseEvent(base::TimeTicks::Now()));
+  EXPECT_EQ(delegate_->GetLoginToIdpCount(), 1);
+  CreateAndShowPopupWindow(*controller);
+  controller->CloseModalDialog();
+
+  std::vector<IdentityRequestAccountPtr> new_accounts = {CreateAccount(
+      idp_list[1],
+      /*idp_claimed_login_state=*/LoginState::kSignUp,
+      /*browser_trusted_login_state=*/LoginState::kSignUp, kAccountId2)};
+  std::vector<IdentityRequestAccountPtr> all_accounts = {new_accounts[0],
+                                                         accounts[0]};
+  controller->Show(GetRpData(), idp_list, all_accounts,
+                   blink::mojom::RpMode::kPassive, new_accounts);
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+
+  FastForwardPastInputProtection();
+  EXPECT_TRUE(controller->OnAccountSelected(
+      new_accounts[0], CreateMouseEvent(base::TimeTicks::Now())));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId2);
+}
+
+// Tests that without `kFedCmActiveModeMultipleIdentityProviders`, selecting a
+// new account on the bubble with multiple identity providers keeps the existing
+// flow: the bubble asks for permission itself.
 TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
        MultipleIdpsSignUpStaysInBubble) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
   std::vector<IdentityProviderDataPtr> idp_list = {
       CreateIdentityProviderData(), CreateIdentityProviderData()};
   std::vector<IdentityRequestAccountPtr> accounts = {
