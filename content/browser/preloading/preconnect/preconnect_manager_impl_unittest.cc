@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
@@ -840,45 +839,6 @@ TEST_F(PreconnectManagerImplTest, TestUnqueuedPreresolvesCanceled) {
   preconnect_manager_->Stop(main_frame_url);
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   for (size_t i = 0; i < count; ++i) {
-    mock_network_context_->CompleteHostLookup(
-        requests[i].origin.host(), network_anonymization_key, net::OK);
-  }
-}
-
-TEST_F(PreconnectManagerImplTest, TestQueueingMetricsRecorded) {
-  base::HistogramTester histogram_tester;
-
-  GURL main_frame_url("http://google.com");
-  net::NetworkAnonymizationKey network_anonymization_key =
-      CreateNetworkAnonymizationKey(main_frame_url);
-  size_t num_preresolves = PreconnectManagerImpl::kMaxInflightPreresolves;
-  std::vector<PreconnectRequest> requests;
-  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
-  for (size_t i = 0; i < num_preresolves; ++i) {
-    // Exactly PreconnectManagerImpl::kMaxInflightPreresolves should be
-    // preresolved.
-    std::string url = base::StringPrintf("http://cdn%" PRIuS ".google.com", i);
-    requests.emplace_back(url::Origin::Create(GURL(url)), 1,
-                          network_anonymization_key);
-    EXPECT_CALL(*mock_delegate_,
-                PreconnectInitiated(main_frame_url, GURL(url)));
-    EXPECT_CALL(*mock_network_context_,
-                ResolveHostProxy(requests.back().origin.host()));
-  }
-  // This url shouldn't be preresolved.
-  requests.emplace_back(url::Origin::Create(GURL("http://no.preresolve.com")),
-                        1, network_anonymization_key);
-  preconnect_manager_->Start(main_frame_url, requests,
-                             TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  // Each job that was actually executed should have had its queueing time
-  // recorded.
-  histogram_tester.ExpectTotalCount(
-      "Navigation.Preconnect.PreresolveJobQueueingTime", num_preresolves);
-
-  preconnect_manager_->Stop(main_frame_url);
-  EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
-  for (size_t i = 0; i < num_preresolves; ++i) {
     mock_network_context_->CompleteHostLookup(
         requests[i].origin.host(), network_anonymization_key, net::OK);
   }

@@ -9,8 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
@@ -80,7 +80,6 @@ PreresolveJob::PreresolveJob(
       connection_change_observer_client(
           std::move(connection_change_observer_client)),
       info(info),
-      creation_time(base::TimeTicks::Now()),
       network_restrictions_id(network_restrictions_id) {
   CHECK_GE(num_sockets, 0);
 
@@ -351,11 +350,6 @@ void PreconnectManagerImpl::TryToLaunchPreresolveJobs() {
     queued_jobs_.pop_front();
     PreresolveJob* job = preresolve_jobs_.Lookup(job_id);
     CHECK(job, base::NotFatalUntil::M159);
-
-    // Note: PreresolveJobs are put into |queued_jobs_| immediately on creation,
-    // so their creation time is also the time at which they started queueing.
-    UMA_HISTOGRAM_TIMES("Navigation.Preconnect.PreresolveJobQueueingTime",
-                        base::TimeTicks::Now() - job->creation_time);
 
     PreresolveInfo* info = job->info;
 

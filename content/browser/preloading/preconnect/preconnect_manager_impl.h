@@ -15,7 +15,6 @@
 #include "base/feature.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
@@ -100,7 +99,6 @@ struct CONTENT_EXPORT PreresolveJob {
   // May be equal to nullptr in case of detached job.
   raw_ptr<PreresolveInfo, DanglingUntriaged> info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
-  base::TimeTicks creation_time;
   base::UnguessableToken network_restrictions_id;
 };
 
