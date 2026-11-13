@@ -41,6 +41,15 @@ void InitializeMac() {
     // https://crbug.com/553163770, and https://crbug.com/553163820 for the
     // rationale.
     @"NSAllowMultipleDrags" : @NO,
+
+    // Prevent the `_NS3PKitMouseEmulator` (introduced in macOS 27 as a
+    // compatibility shim to translate touch screen interactions to mouse
+    // gestures) from synthesizing NSEventTypeMouse[Entered|Moved|Exited] events
+    // from touch screen interactions. This is required to prevent hover states
+    // while scrolling using the touch screen (https://crbug.com/583866144) or
+    // when opening UI that responds to a hover state into an area containing
+    // the mouse cursor (https://crbug.com/583861726).
+    @"NSMouseEmulationPostsMouseMoved" : @NO,
   }];
 
   // Disable NSAutoFillHeuristicController on macOS 26.0 and 26.1. On those OS
