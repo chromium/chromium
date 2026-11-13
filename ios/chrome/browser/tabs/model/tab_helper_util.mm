@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
@@ -105,6 +106,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_web_state_observer.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
@@ -303,6 +305,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<SafeBrowsingTabHelper>(client);
   attacher.Create<SafeBrowsingUrlAllowList>();
   attacher.Create<SafeBrowsingUnsafeResourceContainer>();
+  // Must be attached after `SafeBrowsingQueryManager` and
+  // `SafeBrowsingTabHelper` so its `SafeBrowsingQueryManager::Observer`
+  // callbacks run after `SafeBrowsingTabHelper` updates pending check state.
+  attacher.CreateWhen<SuspiciousSiteTabHelper>(
+      !attacher.IsOffTheRecord(),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile));
 
   attacher.Create<TailoredSecurityTabHelper>(
       TailoredSecurityServiceFactory::GetForProfile(profile));

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -170,6 +171,15 @@ SafeBrowsingClientImpl::CreateClientSideDetectionHost(
 
 void SafeBrowsingClientImpl::OnSuspiciousSiteWarningTriggered(
     const security_interstitials::UnsafeResource& resource) {
-  // TODO(crbug.com/583869103): Wired to `SuspiciousSiteTabHelper` in a
-  // follow-up CL.
+  web::WebState* web_state = resource.weak_web_state.get();
+  if (!web_state) {
+    // The `WebState` may have been destroyed before the UI-thread task ran.
+    return;
+  }
+  // `SuspiciousSiteTabHelper` is not attached to Off-The-Record `WebState`s or
+  // minimal `WebState` instances in unit tests.
+  if (SuspiciousSiteTabHelper* tab_helper =
+          SuspiciousSiteTabHelper::FromWebState(web_state)) {
+    tab_helper->OnSuspiciousSiteWarningTriggered(resource);
+  }
 }

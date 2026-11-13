@@ -13,20 +13,38 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper_delegate.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/page_transition_types.h"
+
+@interface TestClientSuspiciousSiteDelegate
+    : NSObject <SuspiciousSiteTabHelperDelegate>
+@property(nonatomic, assign) BOOL warningShown;
+@end
+
+@implementation TestClientSuspiciousSiteDelegate
+- (void)showSuspiciousSiteWarning {
+  self.warningShown = YES;
+}
+- (void)dismissSuspiciousSiteWarning {
+  self.warningShown = NO;
+}
+@end
 
 class SafeBrowsingClientImplTest : public PlatformTest,
                                    public PrerenderTabHelperDelegate {
@@ -197,4 +215,39 @@ TEST_F(SafeBrowsingClientImplTest,
       safe_browsing::kClientSideDetectionEnabledIos);
   SnapshotTabHelper::CreateForWebState(web_state());
   EXPECT_NE(client()->CreateClientSideDetectionHost(web_state()), nullptr);
+}
+
+// Tests that `OnSuspiciousSiteWarningTriggered` forwards the resource to
+// `SuspiciousSiteTabHelper` when `weak_web_state` is valid and safely ignores
+// resources with a null `weak_web_state`.
+TEST_F(SafeBrowsingClientImplTest,
+       OnSuspiciousSiteWarningTriggeredForwardsToTabHelper) {
+  SuspiciousSiteTabHelper::CreateForWebState(
+      web_state(),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile()));
+  TestClientSuspiciousSiteDelegate* delegate =
+      [[TestClientSuspiciousSiteDelegate alloc] init];
+  SuspiciousSiteTabHelper::FromWebState(web_state())->SetDelegate(delegate);
+  web_state()->WasShown();
+
+  // A resource without a valid `weak_web_state` should be safely ignored.
+  security_interstitials::UnsafeResource null_web_state_resource;
+  null_web_state_resource.url = GURL("https://suspicious.chromium.test/");
+  client()->OnSuspiciousSiteWarningTriggered(null_web_state_resource);
+  EXPECT_FALSE(delegate.warningShown);
+
+  // A resource targeting `web_state()` should forward to
+  // `SuspiciousSiteTabHelper` and present once the navigation commits.
+  const GURL url("https://suspicious.chromium.test/");
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.weak_web_state = web_state()->GetWeakPtr();
+  client()->OnSuspiciousSiteWarningTriggered(resource);
+
+  web_state()->SetCurrentURL(url);
+  web::FakeNavigationContext context;
+  context.SetUrl(url);
+  context.SetHasCommitted(true);
+  web_state()->OnNavigationFinished(&context);
+  EXPECT_TRUE(delegate.warningShown);
 }
