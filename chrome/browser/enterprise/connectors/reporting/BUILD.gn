@@ -215,5 +215,10 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//content/test:test_support",
     ]
+
+    if (enterprise_cloud_content_analysis && enable_extensions_core) {
+      sources += [ "extension_actor_tracker_browsertest.cc" ]
+      deps += [ "//components/enterprise/connectors/core:test_support" ]
+    }
   }
 }
