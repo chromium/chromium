@@ -75,8 +75,6 @@ constexpr AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_S, ui::EF_PLATFORM_ACCELERATOR, IDC_SAVE_PAGE},
     {ui::VKEY_9, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_LAST_TAB},
     {ui::VKEY_NUMPAD9, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_LAST_TAB},
-    {ui::VKEY_E, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
-     IDC_SELECT_LAST_ACTIVE_TAB},
     // Control modifier is rarely used on Mac, so we allow it only in several
     // specific cases.
     {ui::VKEY_TAB, ui::EF_CONTROL_DOWN, IDC_CYCLE_TO_NEXT_TAB},

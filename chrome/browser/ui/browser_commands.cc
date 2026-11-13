@@ -1627,13 +1627,6 @@ void SelectLastTab(BrowserWindowInterface* browser,
   }
 }
 
-void SelectLastActiveTab(BrowserWindowInterface* browser,
-                         TabStripUserGestureDetails gesture_detail) {
-  if (tabs::TabInterface* mru_tab = GetMruTab(browser)) {
-    ActivateTab(mru_tab, gesture_detail);
-  }
-}
-
 void DuplicateTab(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("Duplicate"));
   DuplicateTabAt(browser, browser->GetTabStripModel()->active_index());
