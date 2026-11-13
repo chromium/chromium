@@ -79,6 +79,17 @@ enum OmniboxEscapeAction {
   kBlur = 5,
 };
 
+// Which default search engine placeholder the WebUI omnibox shows.
+enum PlaceholderType {
+  // There is no default search engine, so no placeholder.
+  kNone,
+  // "Search <search engine> or type a URL".
+  kSearchOrTypeUrl,
+  // "Ask <search engine> or type a URL", used when the AIM popup is enabled
+  // and Google is the default search engine.
+  kAskOrTypeUrl,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Opens context menu.
@@ -162,8 +173,13 @@ interface Page {
   // necessary cleanup and complete the callback.
   ClearPopup() => ();
 
-  // Updates the default search provider's icon path.
-  SetDefaultSearchProvider(string default_icon_path);
+  // Updates the default search provider's icon path and placeholder. The
+  // placeholder is shown in the empty input while the AIM button has focus,
+  // like the Views omnibox does. The WebUI localizes it from
+  // `placeholder_type`, substituting `search_engine_name`.
+  SetDefaultSearchProvider(string default_icon_path,
+                           PlaceholderType placeholder_type,
+                           string search_engine_name);
 
   // Focuses the searchbox and enters keyword mode for the default search
   // provider (e.g. via Ctrl+K / Ctrl+E / Cmd+Option+F).

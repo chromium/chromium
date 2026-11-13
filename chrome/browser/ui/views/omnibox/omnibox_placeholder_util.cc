@@ -21,6 +21,8 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/search/search.h"
 #include "components/search_engines/ai_mode_button_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -46,6 +48,13 @@ std::u16string AimPlaceholderText(const AiModeButtonUiConfig& config) {
 }
 
 }  // namespace
+
+bool ShouldUseAskPlaceholderText(
+    Profile* profile,
+    const TemplateURLService* template_url_service) {
+  return template_url_service && omnibox::IsAimPopupEnabled(profile) &&
+         search::DefaultSearchProviderIsGoogle(template_url_service);
+}
 
 void ComputePlaceholderText(
     LocationBar* location_bar,
@@ -78,18 +87,14 @@ void ComputePlaceholderText(
   } else if (const auto* default_provider = controller->client()
                                                 ->GetTemplateURLService()
                                                 ->GetDefaultSearchProvider()) {
-    const bool aim_popup_enabled =
-        omnibox::IsAimPopupEnabled(location_bar->GetProfile());
-    if (aim_popup_enabled &&
-        search::DefaultSearchProviderIsGoogle(
-            controller->client()->GetTemplateURLService())) {
-      out_placeholder_text = l10n_util::GetStringFUTF16(
-          IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name());
-    } else {
-      // Otherwise, if a DSE is set, use the DSE placeholder text.
-      out_placeholder_text = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name());
-    }
+    // Otherwise, if a DSE is set, use the DSE placeholder text.
+    out_placeholder_text = l10n_util::GetStringFUTF16(
+        ShouldUseAskPlaceholderText(
+            location_bar->GetProfile(),
+            controller->client()->GetTemplateURLService())
+            ? IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT
+            : IDS_OMNIBOX_PLACEHOLDER_TEXT,
+        default_provider->short_name());
   }
 }
 

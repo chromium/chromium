@@ -1186,6 +1186,47 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, TabAIButton) {
   EXPECT_THAT(url.GetQuery(), testing::HasSubstr("aep="));
 }
 
+// Test that tabbing from the empty omnibox to the AIM button, with no
+// suggestions showing, shows the default search engine placeholder in the full
+// popup's input, like the Views omnibox does when the AIM button takes focus
+// away from it.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       TabAIButtonShowsPlaceholder) {
+  if (mode() != Mode::kFull) {
+    GTEST_SKIP() << "Only the full popup hosts the input and the AIM button.";
+  }
+  const WebContentsInteractionTestUtil::DeepQuery kSearchbox = {
+      "omnibox-full-app", "omnibox-popup-searchbox"};
+  const char kPlaceholderVisibility[] =
+      "(el) => getComputedStyle(el, '::placeholder').visibility";
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewFocus(),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // Delete everything.
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_DELETE)),
+      WaitTillOmniboxViewText(""),
+      // No placeholder while the input has focus.
+      WaitTillOmniboxViewPlaceholder(u""),
+      // With no suggestions, Tab moves focus to the AIM button itself.
+      WaitForJsResultAt(InputWebContents(), kSearchbox,
+                        "(el) => el.dropdownIsVisible", false),
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_TAB)),
+      WaitForJsResultAt(InputWebContents(), AIMButtonOuter(),
+                        "(el) => el.matches(':focus-within')"),
+      // Now the blurred input shows the DSE placeholder.
+      WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL"),
+      WaitForJsResultAt(InputWebContents(), kFullPopupInputDeepQuery,
+                        kPlaceholderVisibility, "visible"),
+      // Shift+Tab back to the input clears it again.
+      InAnyContext(
+          SendKeyPress(InputWebContents(), ui::VKEY_TAB, ui::EF_SHIFT_DOWN)),
+      WaitTillOmniboxViewFocus(), WaitTillOmniboxViewPlaceholder(u""));
+}
+
 // Test that the popup shrinks when the browser window does.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarEagerPopupInteractiveUiTest, Resize) {
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());

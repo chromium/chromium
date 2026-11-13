@@ -152,6 +152,13 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     source->AddLocalizedStrings(GetProfileLoadTimeData(profile_));
   }
 
+  // Default search engine placeholders, see
+  // `omnibox_popup::mojom::PlaceholderType`. `$1` is the search engine name.
+  source->AddLocalizedString("omniboxSearchOrTypeUrlPlaceholder",
+                             IDS_OMNIBOX_PLACEHOLDER_TEXT);
+  source->AddLocalizedString("omniboxAskOrTypeUrlPlaceholder",
+                             IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT);
+
   source->AddBoolean("isTopChromeSearchbox", true);
   FullWebUIOmniboxLayoutHelper::PopulateLoadTimeData(source);
   source->AddBoolean("omniboxAimPopupEnabled",

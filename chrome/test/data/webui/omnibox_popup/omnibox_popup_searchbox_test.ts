@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isMac} from '//resources/js/platform.js';
-import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -160,6 +160,8 @@ suite('OmniboxPopupSearchboxTest', function() {
       addContext: 'Add tabs and more',
       contextButtonShapeIsOblong: false,
       contextualMenuUsePecApi: false,
+      omniboxSearchOrTypeUrlPlaceholder: 'Search $1 or type a URL',
+      omniboxAskOrTypeUrlPlaceholder: 'Ask $1 or type a URL',
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -2622,13 +2624,18 @@ suite('OmniboxPopupSearchboxTest', function() {
   });
 
  test('ComputePlaceholderText_OnTabSwitchAndStateReset', async () => {
+   callbackRouter.setDefaultSearchProvider(
+       '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+       PlaceholderType.kAskOrTypeUrl, 'Google');
+
    // Initial NTP tab state (empty input, empty `permanentDisplayText`,
    // unfocused).
    callbackRouter.setInputState(createDefaultOmniboxInputState());
    await microtasksFinished();
    await searchbox.$.input.updateComplete;
 
-   // Placeholder must always be empty.
+   // Placeholder must be empty while the AIM button doesn't have focus, even
+   // with a DSE placeholder, to avoid flickering on tab switch.
    assertEquals('', searchbox.$.input.inputElement.placeholder);
 
    // Switch to regular URL tab (permanentDisplayText set, focused).
@@ -2643,8 +2650,117 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
    await searchbox.$.input.updateComplete;
 
-   // Placeholder must always be empty.
+   // Placeholder must be empty while the AIM button doesn't have focus.
    assertEquals('', searchbox.$.input.inputElement.placeholder);
+ });
+
+ // Tabbing from the empty input to the AIM button shows the DSE placeholder in
+ // the blurred input, like the Views omnibox does when the AIM button takes
+ // focus. Shift+Tab back to the input clears it again.
+ test('TabKeyToAimButtonShowsDsePlaceholder', async () => {
+   const dsePlaceholder = 'Ask Google or type a URL';
+   callbackRouter.setDefaultSearchProvider(
+       '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+       PlaceholderType.kAskOrTypeUrl, 'Google');
+   searchbox.dropdownIsVisible = false;
+   searchbox.focusInput();
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+
+   const input = searchbox.$.input.inputElement;
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals('', input.placeholder);
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+   assertEquals(dsePlaceholder, input.placeholder);
+   assertTrue(input.matches(':placeholder-shown'));
+   assertEquals('visible', getComputedStyle(input, '::placeholder').visibility);
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals('', input.placeholder);
+ });
+
+ // A tab switch moves focus away from the AIM button, which must clear the
+ // placeholder so it doesn't show on the new tab.
+ test('AimButtonBlurClearsDsePlaceholder', async () => {
+   const dsePlaceholder = 'Ask Google or type a URL';
+   callbackRouter.setDefaultSearchProvider(
+       '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+       PlaceholderType.kAskOrTypeUrl, 'Google');
+   searchbox.dropdownIsVisible = false;
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   searchbox.$.composeButton.focus();
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(dsePlaceholder, searchbox.$.input.inputElement.placeholder);
+
+   searchbox.$.composeButton.blur();
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 2,
+     tabId: 2,
+     isTabSwitch: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('', searchbox.$.input.inputElement.placeholder);
+ });
+
+ // The placeholder must also clear when the popup loses focus, is hidden, or
+ // hides the AIM button while the AIM button has focus.
+ [{
+   name: 'SetFocusFalse',
+   action: () => callbackRouter.setFocus(
+       /*isFocused=*/ false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false),
+ },
+  {
+    name: 'ClearPopup',
+    action: () => callbackRouter.clearPopup(),
+  },
+  {
+    name: 'SetAimButtonVisibleFalse',
+    action: () => testProxy.page.setAimButtonVisible(false),
+  },
+ ].forEach(({name, action}) => {
+   test(`DsePlaceholderClearsOn${name}`, async () => {
+     const dsePlaceholder = 'Ask Google or type a URL';
+     callbackRouter.setDefaultSearchProvider(
+         '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+         PlaceholderType.kAskOrTypeUrl, 'Google');
+     searchbox.dropdownIsVisible = false;
+     testProxy.page.setAimButtonVisible(true);
+     await microtasksFinished();
+
+     searchbox.$.composeButton.focus();
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     assertEquals(dsePlaceholder, searchbox.$.input.inputElement.placeholder);
+
+     action();
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     assertEquals('', searchbox.$.input.inputElement.placeholder);
+   });
  });
 
  test('TabSwitchInputStateIsolationAndReset', async () => {
@@ -5144,9 +5260,34 @@ suite('OmniboxPopupSearchboxTest', function() {
    test('HandlesSetDefaultSearchProvider', async () => {
      const customIcon =
          'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com%2Ffavicon.ico';
-     callbackRouter.setDefaultSearchProvider(customIcon);
+     callbackRouter.setDefaultSearchProvider(
+         customIcon, PlaceholderType.kSearchOrTypeUrl, 'Example');
      await microtasksFinished();
+     await searchbox.$.input.updateComplete;
      assertEquals(customIcon, searchbox.$.input.searchboxIcon);
+     // The DSE placeholder is only used while the AIM button has focus.
+     assertEquals('', searchbox.$.input.placeholderText);
+     testProxy.page.setAimButtonVisible(true);
+     await microtasksFinished();
+     searchbox.$.composeButton.focus();
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     // The WebUI localizes the placeholder from its type.
+     assertEquals(
+         'Search Example or type a URL', searchbox.$.input.placeholderText);
+
+     callbackRouter.setDefaultSearchProvider(
+         customIcon, PlaceholderType.kAskOrTypeUrl, 'Google');
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     assertEquals(
+         'Ask Google or type a URL', searchbox.$.input.placeholderText);
+
+     callbackRouter.setDefaultSearchProvider(
+         customIcon, PlaceholderType.kNone, '');
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     assertEquals('', searchbox.$.input.placeholderText);
    });
  });
 

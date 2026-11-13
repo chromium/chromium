@@ -177,6 +177,14 @@ cr-searchbox-input::part(mirror) {
   padding-top: 0;
 }
 
+/* Like the Views omnibox, the default search engine placeholder (shown while
+ * the AIM button has focus) uses the regular text color to draw attention to
+ * the omnibox, while the keyword placeholder stays dim to differentiate it
+ * from user input. */
+cr-searchbox-input:not([in-keyword-mode]) {
+  --color-searchbox-placeholder: var(--color-omnibox-text);
+}
+
 /* Pad the input and #mirror alike, rather than adding a margin outside the
  * input, so that the gap is part of the input's hit area: like in the Views
  * omnibox, a click in it places the caret. Uses physical sides keyed off the

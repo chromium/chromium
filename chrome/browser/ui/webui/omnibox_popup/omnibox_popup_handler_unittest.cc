@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
@@ -162,17 +163,58 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
 }
 
 TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProvider) {
-  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  EXPECT_CALL(page_,
+              SetDefaultSearchProvider(testing::_, testing::_, testing::_));
   handler_->OnTemplateURLServiceChanged();
   page_.FlushForTesting();
 
-  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  EXPECT_CALL(page_,
+              SetDefaultSearchProvider(testing::_, testing::_, testing::_));
   handler_->RequestInputState();
   page_.FlushForTesting();
 
-  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  EXPECT_CALL(page_,
+              SetDefaultSearchProvider(testing::_, testing::_, testing::_));
   handler_->NotifyDefaultSearchProviderChanged();
   page_.FlushForTesting();
+}
+
+// The handler is constructed without an `OmniboxController` in this fixture,
+// so it observes no `TemplateURLService` and there is no DSE placeholder.
+TEST_F(OmniboxPopupHandlerTest,
+       SyncsNoPlaceholderWithoutDefaultSearchProvider) {
+  EXPECT_CALL(
+      page_, SetDefaultSearchProvider(
+                 testing::_, omnibox_popup::mojom::PlaceholderType::kNone, ""));
+  handler_->NotifyDefaultSearchProviderChanged();
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProviderPlaceholder) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  const TemplateURL* default_provider = omnibox_controller->client()
+                                            ->GetTemplateURLService()
+                                            ->GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+
+  // The handler syncs the DSE placeholder type and search engine name on
+  // construction. The AIM popup isn't enabled for the test profile, so it's
+  // the "Search <search engine> or type a URL" placeholder.
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  EXPECT_CALL(
+      local_page,
+      SetDefaultSearchProvider(
+          testing::_, omnibox_popup::mojom::PlaceholderType::kSearchOrTypeUrl,
+          base::UTF16ToUTF8(default_provider->short_name())));
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+  local_page.FlushForTesting();
+
+  // Reset the handler to avoid dangling raw_ptr to the local
+  // omnibox_controller.
+  handler_.reset();
 }
 
 TEST_F(OmniboxPopupHandlerTest, GetDefaultSearchProviderIcon) {
