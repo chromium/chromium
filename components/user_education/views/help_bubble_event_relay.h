@@ -29,6 +29,9 @@ class HelpBubbleEventRelay {
   // should call the base class implementation first.
   virtual void Init(HelpBubbleView* help_bubble);
 
+  // Returns whether F6 (or equivalent) should focus the help bubble.
+  virtual bool AllowFocusViaAccelerator() const;
+
   // Returns whether the help bubble should process events normally (as opposed
   // to only via this object).
   virtual bool ShouldHelpBubbleProcessEvents() const = 0;
@@ -77,6 +80,7 @@ class MenuHelpBubbleEventProcessor : public HelpBubbleEventRelay {
   ~MenuHelpBubbleEventProcessor() override;
 
   // HelpBubbleEventProcessor:
+  bool AllowFocusViaAccelerator() const override;
   bool ShouldHelpBubbleProcessEvents() const override;
   bool ShouldUnHoverOnMouseExit() const override;
 

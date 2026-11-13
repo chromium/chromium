@@ -4,17 +4,22 @@
 
 #include "components/user_education/views/help_bubble_factory_views.h"
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -43,6 +48,14 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
                               ->help_bubble_factory_registry();
                       help_bubble_ =
                           registry.CreateHelpBubble(anchor, std::move(params));
+                      closing_subscription_ =
+                          help_bubble_->AddOnClosingCallback(
+                              base::BindLambdaForTesting(
+                                  [this](
+                                      const user_education::HelpBubble*,
+                                      user_education::HelpBubble::CloseReason) {
+                                    help_bubble_widget_ = nullptr;
+                                  }));
                     }),
         WaitForShow(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -73,6 +86,9 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
   raw_ptr<views::Widget> browser_widget_ = nullptr;
   raw_ptr<views::Widget> help_bubble_widget_ = nullptr;
+
+ private:
+  base::CallbackListSubscription closing_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
@@ -129,5 +145,27 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
           next_pane),
       WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
+      CloseHelpBubble());
+}
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
+                       NoToggleFocusViaAcceleratorWhenAnchoredToMenu) {
+  ui::Accelerator next_pane;
+  views::Widget* browser_widget = nullptr;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      WithView(kBrowserViewElementId,
+               [&](BrowserView* view) { browser_widget = view->GetWidget(); }),
+      CheckResult([&]() { return browser_widget; }, testing::Ne(nullptr)),
+      CheckState(views::test::kCurrentWidgetFocus, std::ref(browser_widget)),
+      PressButton(kToolbarAppMenuButtonElementId),
+      CreateHelpBubble(AppMenuModel::kDownloadsMenuItem,
+                       GetDefaultHelpBubbleParams()),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      CheckState(views::test::kCurrentWidgetFocus,
+                 testing::Ne(std::ref(help_bubble_widget_))),
       CloseHelpBubble());
 }

@@ -109,8 +109,14 @@ views::BubbleBorder::Arrow HelpBubbleViews::TranslateArrow(
 }
 
 bool HelpBubbleViews::ToggleFocusForAccessibility() {
-  // // If the bubble isn't present or can't be meaningfully focused, stop.
+  // If the bubble isn't present, stop.
   if (!help_bubble_view_) {
+    return false;
+  }
+
+  // If the bubble can't (or shouldn't) be meaningfully focused, stop.
+  if (auto* help_bubble = views::AsViewClass<HelpBubbleView>(help_bubble_view_);
+      help_bubble && !help_bubble->CanActivateViaAccelerator()) {
     return false;
   }
 

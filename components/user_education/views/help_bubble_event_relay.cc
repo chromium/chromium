@@ -35,6 +35,10 @@ void HelpBubbleEventRelay::Init(HelpBubbleView* help_bubble) {
   help_bubble_ = help_bubble;
 }
 
+bool HelpBubbleEventRelay::AllowFocusViaAccelerator() const {
+  return ShouldHelpBubbleProcessEvents();
+}
+
 views::Button* HelpBubbleEventRelay::GetButtonAt(
     const gfx::Point& screen_coords) const {
   if (!help_bubble_) {
@@ -200,6 +204,10 @@ MenuHelpBubbleEventProcessor::~MenuHelpBubbleEventProcessor() = default;
 
 bool MenuHelpBubbleEventProcessor::OnEvent(const ui::LocatedEvent& event) {
   return HelpBubbleEventRelay::OnEvent(event, event.root_location());
+}
+
+bool MenuHelpBubbleEventProcessor::AllowFocusViaAccelerator() const {
+  return false;
 }
 
 bool MenuHelpBubbleEventProcessor::ShouldHelpBubbleProcessEvents() const {

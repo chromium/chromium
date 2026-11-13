@@ -80,6 +80,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   HelpBubbleView& operator=(const HelpBubbleView&) = delete;
   ~HelpBubbleView() override;
 
+  bool CanActivateViaAccelerator() const;
+
   // Creates a help bubble view.
   static HelpBubbleViewInfo Create(
       const HelpBubbleDelegate* delegate,

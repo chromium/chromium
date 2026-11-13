@@ -845,6 +845,10 @@ gfx::Rect HelpBubbleView::GetAnchorRect() const {
   return result;
 }
 
+bool HelpBubbleView::CanActivateViaAccelerator() const {
+  return !event_relay_ || event_relay_->AllowFocusViaAccelerator();
+}
+
 void HelpBubbleView::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                               views::Widget* widget) const {
   BubbleDialogDelegateView::OnBeforeBubbleWidgetInit(params, widget);
