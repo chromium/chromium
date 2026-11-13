@@ -7296,29 +7296,6 @@ shown properly on the user-facing crash UI.
   <int value="3" label="ColdPreBrowserObjects"/>
 </enum>
 
-<enum name="LensClassifyResultState">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success: shoppy image"/>
-  <int value="2" label="Success: unknown intent type"/>
-  <int value="3" label="Success: empty Lens result"/>
-  <int value="4" label="Success: empty intent type"/>
-  <int value="5" label="Error: invalid callback"/>
-  <int value="6" label="Error: invalid package signature"/>
-  <int value="7" label="Error: invalid image uri"/>
-  <int value="8" label="Error: early terminated"/>
-  <int value="9" label="Disabled"/>
-  <int value="10" label="Error: additional web context malformed (nonfatal)"/>
-  <int value="11" label="Success: Image is translatable"/>
-  <int value="12" label="Error: user context changed"/>
-  <int value="13" label="Disabled: user context changed"/>
-  <int value="14" label="Error: unexpected state"/>
-  <int value="15" label="Disabled: AGSA out of date"/>
-  <int value="16" label="Disabled: OS out of date"/>
-  <int value="17" label="Disabled: user not signed in"/>
-  <int value="18" label="Disabled: UMA reporting is disabled"/>
-  <int value="19" label="Disabled: user is in Incognito mode"/>
-</enum>
-
 <enum name="LensSupportStatus">
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>
