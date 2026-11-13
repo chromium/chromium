@@ -223,7 +223,7 @@ public class AutofillProviderTest {
         setContainerScreenGeometry(new Rect(0, 0, 2000, 2000), LOCATION_X, LOCATION_Y);
 
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
-        when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
+        when(mRenderCoordinates.getContentOffsetTopPixInt()).thenReturn(0);
         when(mRenderCoordinates.getContentOffsetBottomPixInt()).thenReturn(0);
 
         AutofillProviderJni.setInstanceForTesting(mNativeMock);
@@ -284,7 +284,7 @@ public class AutofillProviderTest {
     public void testTransformToWindowBounds() {
         RectF source = new RectF(10, 20, 300, 400);
         final int offsetY = 10;
-        when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(offsetY);
+        when(mRenderCoordinates.getContentOffsetTopPixInt()).thenReturn(offsetY);
         Rect result = mAutofillProvider.transformToWindowBounds(source);
         assertEquals(10 * EXPECTED_DIP_SCALE + LOCATION_X, result.left, 0);
         assertEquals(20 * EXPECTED_DIP_SCALE + LOCATION_Y + offsetY, result.top, 0);
@@ -642,7 +642,7 @@ public class AutofillProviderTest {
         setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
 
         // Set offset Y to 40. Effective visible bounds top should be 40.
-        when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(40);
+        when(mRenderCoordinates.getContentOffsetTopPixInt()).thenReturn(40);
 
         // Reset mFocusVirtualId and mFocusBounds.
         mFocusVirtualId = 0;
@@ -830,7 +830,7 @@ public class AutofillProviderTest {
         setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
         // Combined top (60) and bottom (50) browser controls exceed container height (100),
         // producing an inverted [0, 60, 100, 50] rect before normalization to [0, 0, 0, 0].
-        when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(60);
+        when(mRenderCoordinates.getContentOffsetTopPixInt()).thenReturn(60);
         when(mRenderCoordinates.getContentOffsetBottomPixInt()).thenReturn(50);
 
         mFocusVirtualId = 0;

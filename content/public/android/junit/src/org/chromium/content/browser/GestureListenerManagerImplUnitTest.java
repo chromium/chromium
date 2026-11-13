@@ -158,7 +158,7 @@ public class GestureListenerManagerImplUnitTest {
                 /* bottomBarShownPix= */ 95.8f,
                 /* controlsChanged= */ true);
 
-        Assert.assertEquals(56, mRenderCoordinates.getContentOffsetYPixInt());
+        Assert.assertEquals(56, mRenderCoordinates.getContentOffsetTopPixInt());
         Assert.assertEquals(95, mRenderCoordinates.getContentOffsetBottomPixInt());
     }
 

@@ -387,9 +387,9 @@ public class StylusGestureEndToEndTest {
         int[] screenLocation = new int[2];
         webContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(screenLocation);
         left = rc.fromLocalCssToPix(left) + screenLocation[0];
-        top = rc.fromLocalCssToPix(top) + rc.getContentOffsetYPix() + screenLocation[1];
+        top = rc.fromLocalCssToPix(top) + rc.getContentOffsetTopPix() + screenLocation[1];
         right = rc.fromLocalCssToPix(right) + screenLocation[0];
-        bottom = rc.fromLocalCssToPix(bottom) + rc.getContentOffsetYPixInt() + screenLocation[1];
+        bottom = rc.fromLocalCssToPix(bottom) + rc.getContentOffsetTopPixInt() + screenLocation[1];
 
         return new RectF(left, top, right, bottom);
     }

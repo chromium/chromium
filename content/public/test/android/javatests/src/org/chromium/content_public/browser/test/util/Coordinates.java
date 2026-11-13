@@ -56,6 +56,6 @@ public class Coordinates {
     }
 
     public float getContentOffsetYPix() {
-        return mRenderCoordinates.getContentOffsetYPix();
+        return mRenderCoordinates.getContentOffsetTopPix();
     }
 }

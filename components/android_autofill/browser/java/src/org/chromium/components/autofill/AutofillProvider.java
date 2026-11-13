@@ -863,7 +863,7 @@ public class AutofillProvider {
 
     private int getToolbarOffset() {
         return mWebContents != null
-                ? RenderCoordinates.fromWebContents(mWebContents).getContentOffsetYPixInt()
+                ? RenderCoordinates.fromWebContents(mWebContents).getContentOffsetTopPixInt()
                 : 0;
     }
 

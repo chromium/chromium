@@ -254,8 +254,8 @@ public class OnscreenContentProvider {
     }
 
     @CalledByNative
-    private int getOffsetY(WebContents webContents) {
-        return RenderCoordinates.fromWebContents(webContents).getContentOffsetYPixInt();
+    private int getContentOffsetTop(WebContents webContents) {
+        return RenderCoordinates.fromWebContents(webContents).getContentOffsetTopPixInt();
     }
 
     @CalledByNative

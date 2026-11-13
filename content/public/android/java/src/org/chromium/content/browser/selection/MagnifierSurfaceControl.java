@@ -90,7 +90,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             x = Math.min(x, localVisibleRect.right - mWidthPx);
             y = Math.min(y, localVisibleRect.bottom - mHeightPx);
 
-            readbackY = readbackY - mWebContents.getRenderCoordinates().getContentOffsetYPix();
+            readbackY = readbackY - mWebContents.getRenderCoordinates().getContentOffsetTopPix();
             MagnifierSurfaceControlJni.get()
                     .setReadbackOrigin(mNativeMagnifierSurfaceControl, x, readbackY);
 

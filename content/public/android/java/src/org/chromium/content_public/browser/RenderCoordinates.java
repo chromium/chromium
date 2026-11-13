@@ -39,10 +39,11 @@ public interface RenderCoordinates {
     /** Returns the maximum possible horizontal scroll in physical pixels (approx, integer). */
     int getMaxHorizontalScrollPixInt();
 
-    /** Returns the physical on-screen Y offset amount below the browser controls. */
-    // TODO(crbug.com/582350727): Rename to getContentOffsetTopPixInt() for symmetry with
-    // getContentOffsetBottomPixInt().
-    int getContentOffsetYPixInt();
+    /**
+     * Returns the physical on-screen Y offset amount below the top browser controls (approx,
+     * integer).
+     */
+    int getContentOffsetTopPixInt();
 
     /**
      * Returns the physical on-screen height of the bottom browser controls currently shown (approx,

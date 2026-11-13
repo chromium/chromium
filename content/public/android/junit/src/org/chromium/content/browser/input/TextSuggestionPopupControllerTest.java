@@ -79,7 +79,7 @@ public class TextSuggestionPopupControllerTest {
     @Test
     public void testCalculateYOffset() {
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
-        when(mRenderCoordinates.getContentOffsetYPix()).thenReturn(50.0f);
+        when(mRenderCoordinates.getContentOffsetTopPix()).thenReturn(50.0f);
         mContainerView.layout(0, 0, 100, 1000);
 
         assertEquals(200.0, mController.calculateYOffset(150.0), 0.001);

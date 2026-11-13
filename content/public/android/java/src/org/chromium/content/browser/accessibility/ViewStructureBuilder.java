@@ -98,7 +98,7 @@ public class ViewStructureBuilder {
                         parentRelativeTop + height);
         if (isRootNode) {
             // Offset of the web content relative to the View.
-            boundsInParent.offset(0, (int) mRenderCoordinates.getContentOffsetYPix());
+            boundsInParent.offset(0, (int) mRenderCoordinates.getContentOffsetTopPix());
         }
 
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);

@@ -68,7 +68,7 @@ public class WebContentsAccessibilityDelegate implements AccessibilityDelegate {
 
         @Override
         public float getContentOffsetYPix() {
-            return getRenderCoordinates().getContentOffsetYPix();
+            return getRenderCoordinates().getContentOffsetTopPix();
         }
 
         @Override

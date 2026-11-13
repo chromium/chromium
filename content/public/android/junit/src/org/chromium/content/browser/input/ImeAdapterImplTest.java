@@ -1418,7 +1418,7 @@ public class ImeAdapterImplTest {
     private void doUpdateCursorAnchorInfoTest(boolean shouldExpectRequestRectangleOnScreen) {
         when(mWebContentsImpl.getRenderCoordinates()).thenReturn(mRenderCoordinatesImpl);
         when(mRenderCoordinatesImpl.getDeviceScaleFactor()).thenReturn(1.0f);
-        when(mRenderCoordinatesImpl.getContentOffsetYPixInt()).thenReturn(0);
+        when(mRenderCoordinatesImpl.getContentOffsetTopPixInt()).thenReturn(0);
 
         mContainerView.layout(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
 

@@ -156,7 +156,7 @@ public class TextSuggestionPopupController implements WindowEventObserver, Hidea
 
     @VisibleForTesting
     double calculateYOffset(double caretYPx) {
-        float contentOffsetYPix = mWebContents.getRenderCoordinates().getContentOffsetYPix();
+        float contentOffsetYPix = mWebContents.getRenderCoordinates().getContentOffsetTopPix();
         if (Double.isNaN(caretYPx)) return contentOffsetYPix;
 
         int containerHeight = assumeNonNull(mViewDelegate.getContainerView()).getHeight();

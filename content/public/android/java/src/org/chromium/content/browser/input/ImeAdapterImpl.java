@@ -1719,7 +1719,7 @@ public class ImeAdapterImpl
                             isEditable,
                             containerView,
                             coords.getDeviceScaleFactor(),
-                            coords.getContentOffsetYPixInt());
+                            coords.getContentOffsetTopPixInt());
         }
 
         // Request view system keeps focused element on screen.
@@ -1774,7 +1774,7 @@ public class ImeAdapterImpl
 
         int[] screenLocation = new int[2];
         getContainerView().getLocationOnScreen(screenLocation);
-        int contentOffsetY = mWebContents.getRenderCoordinates().getContentOffsetYPixInt();
+        int contentOffsetY = mWebContents.getRenderCoordinates().getContentOffsetTopPixInt();
         cursorPosition.offset(screenLocation[0], screenLocation[1] + contentOffsetY);
 
         Rect roundedBounds = new Rect();
@@ -1898,7 +1898,7 @@ public class ImeAdapterImpl
                                     (int)
                                             mWebContents
                                                     .getRenderCoordinates()
-                                                    .getContentOffsetYPix();
+                                                    .getContentOffsetTopPix();
                             gestureData.startRect.y -= contentOffsetY;
                             if (gestureData.endRect != null) {
                                 gestureData.endRect.y -= contentOffsetY;
@@ -1943,7 +1943,7 @@ public class ImeAdapterImpl
 
         // Scale bounds to device pixels in Android view coordinates.
         RenderCoordinatesImpl coords = mWebContents.getRenderCoordinates();
-        final int topOffset = coords.getContentOffsetYPixInt(); // Offset for Chrome address bar.
+        final int topOffset = coords.getContentOffsetTopPixInt(); // Offset for Chrome address bar.
         final float scale = coords.getDeviceScaleFactor();
         Rect bounds =
                 new Rect(

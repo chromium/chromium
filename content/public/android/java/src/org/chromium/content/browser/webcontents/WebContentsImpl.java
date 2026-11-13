@@ -173,7 +173,7 @@ public class WebContentsImpl
 
         public void onSmartClipDataExtracted(String text, String html, Rect clipRect) {
             RenderCoordinatesImpl coordinateSpace = getRenderCoordinates();
-            clipRect.offset(0, (int) coordinateSpace.getContentOffsetYPix());
+            clipRect.offset(0, (int) coordinateSpace.getContentOffsetTopPix());
             Bundle bundle = new Bundle();
             bundle.putString("url", getVisibleUrl().getSpec());
             bundle.putString("title", getTitle());
@@ -846,7 +846,7 @@ public class WebContentsImpl
         if (mSmartClipCallback == null) return;
         checkNotDestroyed();
         RenderCoordinatesImpl coordinateSpace = getRenderCoordinates();
-        y = y - (int) coordinateSpace.getContentOffsetYPix();
+        y = y - (int) coordinateSpace.getContentOffsetTopPix();
         WebContentsImplJni.get()
                 .requestSmartClipExtract(
                         mNativeWebContentsAndroid, mSmartClipCallback, x, y, width, height);

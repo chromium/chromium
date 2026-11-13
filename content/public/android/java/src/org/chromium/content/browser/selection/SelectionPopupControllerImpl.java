@@ -824,7 +824,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         final int y =
                 ((int)
                         ((mYDip * deviceScaleFactor)
-                                + mWebContents.getRenderCoordinates().getContentOffsetYPix()));
+                                + mWebContents.getRenderCoordinates().getContentOffsetTopPix()));
 
         MVCListAdapter.ModelList items = getDropdownItems();
         if (mMenuModelBridge != null) {
@@ -1447,7 +1447,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         // The selection coordinates are relative to the content viewport, but we need
         // coordinates relative to the containing View.
         viewSelectionRect.offset(
-                0, (int) mWebContents.getRenderCoordinates().getContentOffsetYPix());
+                0, (int) mWebContents.getRenderCoordinates().getContentOffsetTopPix());
         return viewSelectionRect;
     }
 
@@ -1847,9 +1847,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         float deviceScale = mWebContents.getRenderCoordinates().getDeviceScaleFactor();
 
         Rect startHandleRect = getScaledRect(start, deviceScale);
-        startHandleRect.offset(0, (int) mWebContents.getRenderCoordinates().getContentOffsetYPix());
+        startHandleRect.offset(
+                0, (int) mWebContents.getRenderCoordinates().getContentOffsetTopPix());
         Rect endHandleRect = getScaledRect(end, deviceScale);
-        endHandleRect.offset(0, (int) mWebContents.getRenderCoordinates().getContentOffsetYPix());
+        endHandleRect.offset(0, (int) mWebContents.getRenderCoordinates().getContentOffsetTopPix());
 
         List<Rect> rects = new ArrayList<>();
         rects.add(startHandleRect);
@@ -1890,8 +1891,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             final float deviceScale = getDeviceScaleFactor();
             x *= deviceScale;
             // The selection coordinates are relative to the content viewport, but we need
-            // coordinates relative to the containing View, so adding getContentOffsetYPix().
-            y = y * deviceScale + mWebContents.getRenderCoordinates().getContentOffsetYPix();
+            // coordinates relative to the containing View, so adding getContentOffsetTopPix().
+            y = y * deviceScale + mWebContents.getRenderCoordinates().getContentOffsetTopPix();
             getMagnifierAnimator(/* createIfNull= */ true).handleDragStartedOrMoved(x, y);
         }
     }

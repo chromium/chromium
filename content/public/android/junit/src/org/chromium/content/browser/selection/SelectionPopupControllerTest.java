@@ -1256,7 +1256,7 @@ public class SelectionPopupControllerTest {
                                 mWebContents, mPopupController));
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getDeviceScaleFactor()).thenReturn(1.0f);
-        when(mRenderCoordinates.getContentOffsetYPix()).thenReturn(0.0f);
+        when(mRenderCoordinates.getContentOffsetTopPix()).thenReturn(0.0f);
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 29);
         Object[] handleRects = new Rect[2];
         handleRects[0] = new Rect(0, 0, 10, 10);
