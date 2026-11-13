@@ -12,8 +12,7 @@
 #include "components/affiliations/core/browser/affiliation_source.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace affiliations {
 
@@ -22,6 +21,24 @@ namespace affiliations {
 // See affiliation_utils.h for details of what this means.
 class AffiliationService : public KeyedService {
  public:
+  // Encapsulates the change password URL and the facets affiliated with the
+  // requested URL's facet, returned by `FetchChangePasswordURL()`.
+  struct ChangePasswordUrlMatch {
+    explicit ChangePasswordUrlMatch(GURL change_password_url,
+                                    std::vector<FacetURI> affiliations = {});
+    ChangePasswordUrlMatch(const ChangePasswordUrlMatch&);
+    ChangePasswordUrlMatch(ChangePasswordUrlMatch&&);
+    ChangePasswordUrlMatch& operator=(const ChangePasswordUrlMatch&);
+    ChangePasswordUrlMatch& operator=(ChangePasswordUrlMatch&&);
+    ~ChangePasswordUrlMatch();
+
+    friend bool operator==(const ChangePasswordUrlMatch&,
+                           const ChangePasswordUrlMatch&) = default;
+
+    GURL change_password_url;
+    std::vector<FacetURI> affiliations;
+  };
+
   using ResultCallback =
       base::OnceCallback<void(const AffiliatedFacets& /* results */,
                               bool /* success */)>;

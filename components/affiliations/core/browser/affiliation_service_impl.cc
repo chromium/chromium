@@ -5,6 +5,7 @@
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -106,6 +107,32 @@ struct AffiliationServiceImpl::FetchInfo {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), GURL()));
     }
+  }
+
+  std::optional<ChangePasswordUrlMatch> GetResult(
+      const AffiliationFetcherInterface::ParsedFetchResponse& result) const {
+    GURL change_password_url = GetChangePasswordURL(result);
+    if (change_password_url.is_empty()) {
+      return std::nullopt;
+    }
+    return ChangePasswordUrlMatch(std::move(change_password_url),
+                                  GetAffiliations(result));
+  }
+
+  std::vector<FacetURI> GetAffiliations(
+      const AffiliationFetcherInterface::ParsedFetchResponse& result) const {
+    for (const AffiliatedFacets& affiliated_facets : result.affiliations) {
+      if (std::ranges::contains(affiliated_facets, requested_facet,
+                                &Facet::uri)) {
+        std::vector<FacetURI> uris;
+        uris.reserve(affiliated_facets.size());
+        for (const Facet& facet : affiliated_facets) {
+          uris.push_back(facet.uri);
+        }
+        return base::flat_set<FacetURI>(std::move(uris)).extract();
+      }
+    }
+    return {};
   }
 
   GURL GetChangePasswordURL(
@@ -218,14 +245,14 @@ void AffiliationServiceImpl::FetchChangePasswordURL(
 void AffiliationServiceImpl::OnFetchFinished(
     FetchInfo fetch_info,
     AffiliationFetcherInterface::FetchResult fetch_result) {
-  GURL change_password_url;
+  std::optional<ChangePasswordUrlMatch> result;
   if (fetch_result.IsSuccessful()) {
-    change_password_url =
-        fetch_info.GetChangePasswordURL(fetch_result.data.value());
+    result = fetch_info.GetResult(fetch_result.data.value());
   }
 
   if (fetch_info.callback) {
-    std::move(fetch_info.callback).Run(change_password_url);
+    std::move(fetch_info.callback)
+        .Run(result ? std::move(result->change_password_url) : GURL());
   }
 }
 

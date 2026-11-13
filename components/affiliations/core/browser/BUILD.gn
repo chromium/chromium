@@ -41,6 +41,7 @@ source_set("affiliations") {
     "affiliation_fetcher_manager.h",
     "affiliation_prefetcher.cc",
     "affiliation_prefetcher.h",
+    "affiliation_service.cc",
     "affiliation_service.h",
     "affiliation_service_impl.cc",
     "affiliation_service_impl.h",
