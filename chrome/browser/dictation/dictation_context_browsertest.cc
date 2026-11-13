@@ -19,6 +19,7 @@
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -401,6 +402,54 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
   histogram_tester.ExpectUniqueSample(
       kPageContextEligibilityHistogramName,
       DictationPageContextEligibility::kHintIneligible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
+                       NewTabPageContextAndSelectedTextCaptured) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUINewTabPageURL)));
+
+  const std::string script = R"JS(
+    (() => {
+      const input = document.createElement('input');
+      input.id = 'test_input';
+      input.value = 'This is a test';
+      document.body.appendChild(input);
+      input.focus();
+      input.setSelectionRange(5, 9);
+      return input.value.substring(input.selectionStart, input.selectionEnd);
+    })();
+  )JS";
+  ASSERT_EQ(content::EvalJs(web_contents(), script), "is a");
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  std::optional<int> node_id = content::GetDOMNodeId(*rfh, "#test_input");
+  ASSERT_TRUE(node_id.has_value());
+  StartSession(
+      TargetDetails(content::GlobalDOMNodeId(rfh->GetWeakDocumentPtr(),
+                                             blink::DOMNodeIdType(*node_id)),
+                    /*richly_editable=*/false));
+
+  ASSERT_NE(session_controller(), nullptr);
+
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      session_controller()->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+
+  ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
+  std::optional<DictationContext> context = ExtensionGetStartStreamDetails(
+      profile(), provider->stream_id_for_testing());
+  ASSERT_TRUE(context.has_value());
+
+  ASSERT_TRUE(context->annotated_page_content.has_value());
+  EXPECT_TRUE(context->annotated_page_content->has_root_node());
+  ASSERT_TRUE(context->inner_text.has_value());
+  ASSERT_TRUE(context->editable_content.has_value());
+  EXPECT_EQ(*context->editable_content, "is a");
+  histogram_tester.ExpectUniqueSample(
+      kPageContextEligibilityHistogramName,
+      DictationPageContextEligibility::kEligible, 1);
 }
 
 // Tests for editors that keep their text and selection in an EditContext

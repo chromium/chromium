@@ -19,6 +19,7 @@
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
@@ -30,6 +31,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -147,14 +149,15 @@ void DictationContextFetcher::Fetch(Target& target,
     return;
   }
 
+  const GURL& url = rfh->GetLastCommittedURL();
   if (glic::IsGlicGuest(web_contents) ||
-      content::HasWebUIScheme(rfh->GetLastCommittedURL())) {
+      (content::HasWebUIScheme(url) && !search::IsWebUINewTabPageOrigin(url))) {
     // TODO(b/535731618): Straightforward context fetch on Glic guests and
-    // general WebUI surfaces appears to never return and needs more
-    // investigation. For now, just eliding context is better than breaking the
-    // feature. (Also, for Glic, we probably want to include the web page
-    // content _in addition to_ the side panel content since that's likely
-    // relevant for speech biasing)
+    // general WebUI surfaces (other than the New Tab Page) appears to never
+    // return and needs more investigation. For now, just eliding context is
+    // better than breaking the feature. (Also, for Glic, we probably want to
+    // include the web page content _in addition to_ the side panel content
+    // since that's likely relevant for speech biasing)
     // TODO(b/580953907): Eliding context here also drops the selected text sent
     // as `editable_content`, so the model can't see or edit it.
     DictationContext context;

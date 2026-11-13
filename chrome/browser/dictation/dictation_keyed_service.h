@@ -135,7 +135,8 @@ class DictationKeyedService : public KeyedService,
   // the page eligible, `kUnknown` if the hint is not yet in the cache (e.g. a
   // navigation fetch is still in flight), or `kNotEligible` if the Optimization
   // Guide is unavailable, the hint is absent, or the metadata is missing or
-  // marks the page ineligible.
+  // marks the page ineligible. WebUI URLs are always treated as `kEligible`
+  // since Optimization Guide does not fetch hints for them.
   optimization_guide::PageContextEligibilityStatus CheckOptimizationGuideHint(
       const GURL& url) const;
 

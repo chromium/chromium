@@ -149,6 +149,24 @@ TEST_F(DictationPageEligibilityTest, NoHintStatus) {
             PageContextEligibilityStatus::kNotEligible);
 }
 
+// Page context for WebUIs may still be skipped for other reasons, but a safety
+// evaluation from Optimization Guide is not relevant for a WebUI.
+TEST_F(DictationPageEligibilityTest, WebUIUrlAllowsPageContext) {
+  MockDictationKeyedService service(&profile_);
+  EXPECT_CALL(
+      *optimization_guide_,
+      CanApplyOptimization(testing::_, testing::_, An<OptimizationMetadata*>()))
+      .Times(0);
+
+  EXPECT_EQ(service.CheckOptimizationGuideHint(GURL("chrome://new-tab-page/")),
+            PageContextEligibilityStatus::kEligible);
+  EXPECT_EQ(service.CheckOptimizationGuideHint(GURL("chrome://settings/")),
+            PageContextEligibilityStatus::kEligible);
+  EXPECT_EQ(service.CheckOptimizationGuideHint(
+                GURL("chrome-untrusted://new-tab-page/")),
+            PageContextEligibilityStatus::kEligible);
+}
+
 TEST_F(DictationPageEligibilityTest,
        MissingOptimizationGuideBlocksPageContext) {
   // Reset the pointer before the mock it points to is destroyed.

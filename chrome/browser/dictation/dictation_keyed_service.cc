@@ -486,6 +486,11 @@ bool DictationKeyedService::IsEnabledAndReady() const {
 
 optimization_guide::PageContextEligibilityStatus
 DictationKeyedService::CheckOptimizationGuideHint(const GURL& url) const {
+  // Optimization Guide does not fetch hints for non-HTTP(S) URLs, so WebUI
+  // pages will never have a cached DICTATION_ELIGIBLE hint.
+  if (content::HasWebUIScheme(url)) {
+    return optimization_guide::PageContextEligibilityStatus::kEligible;
+  }
   if (!optimization_guide_decider_) {
     return optimization_guide::PageContextEligibilityStatus::kNotEligible;
   }
