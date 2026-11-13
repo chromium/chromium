@@ -12933,6 +12933,28 @@
             ]
         }
     ],
+    "MetricsLogTrimmingAndFeatureAccessWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "RaisedLimitsWithFeatureAccess_20261112",
+                    "params": {
+                        "histogram_denylist": "\"\"",
+                        "log_bytes_trim_threshold": "3145728",
+                        "max_ongoing_log_size_bytes": "1048576"
+                    },
+                    "enable_features": [
+                        "AwMetricsLogTrimming",
+                        "HistogramDenylist",
+                        "MetricsLogTrimming"
+                    ]
+                }
+            ]
+        }
+    ],
     "MetricsLogTrimmingLimitsMobile": [
         {
             "platforms": [
@@ -12948,26 +12970,6 @@
                         "max_ongoing_log_size_bytes": "1048576"
                     },
                     "enable_features": [
-                        "MetricsLogTrimming"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MetricsLogTrimmingLimitsWebView": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260901",
-                    "params": {
-                        "log_bytes_trim_threshold": "3145728",
-                        "max_ongoing_log_size_bytes": "1048576"
-                    },
-                    "enable_features": [
-                        "AwMetricsLogTrimming",
                         "MetricsLogTrimming"
                     ]
                 }
@@ -20589,7 +20591,6 @@
             "platforms": [
                 "android",
                 "android_desktop",
-                "android_webview",
                 "chromeos",
                 "ios",
                 "linux",
