@@ -5141,20 +5141,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.CorsPreflightMethodAllowed"
-    enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="2023-06-18">
-  <owner>hiroshige@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <summary>
-    Whether method or normalized method are allowed in CORS preflight request in
-    PreflightResult::EnsureAllowedCrossOriginMethod(), to measure the impact of
-    https://crbug.com/1228178.
-
-    Logged for preflight requests that have method checked (i.e. those without
-    errors before EnsureAllowedCrossOriginMethod).
-  </summary>
-</histogram>
-
 <histogram
     name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration"
     units="microseconds" expires_after="2027-03-28">

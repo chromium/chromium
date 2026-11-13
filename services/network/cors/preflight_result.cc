@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -158,22 +157,6 @@ std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
   // method again here.
   const bool method_allowed =
       methods_.find(method) != methods_.end() || IsCorsSafelistedMethod(method);
-
-  // This should be consistent with `NetworkServiceCorsPreflightMethodAllowed`
-  // in `tools/metrics/histograms/enums.xml`.
-  enum CorsPreflightMethodAllowed : uint8_t {
-    kBothDisallowed = 0,
-    kNormalizedMethodAllowed = 1,
-    kMethodAllowed = 2,
-    kBothAllowed = 3,
-    kMaxValue = kBothAllowed
-  };
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "NetworkService.CorsPreflightMethodAllowed",
-      normalized_method_allowed
-          ? (method_allowed ? kBothAllowed : kNormalizedMethodAllowed)
-          : (method_allowed ? kMethodAllowed : kBothDisallowed));
 
   const bool allowed = acam_preflight_spec_conformant
                            ? method_allowed
