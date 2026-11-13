@@ -264,7 +264,10 @@ std::optional<StarboardAudioSampleInfo> ToStarboardAudioSampleInfo(
       break;
     case ::media::AudioCodec::kPCM:
     case ::media::AudioCodec::kPCM_S16BE:
-    case ::media::AudioCodec::kPCM_S24BE:
+      if (in_config.is_encrypted()) {
+        LOG(ERROR) << "Encrypted PCM audio is not supported.";
+        return std::nullopt;
+      }
       out_config.codec = StarboardAudioCodec::kStarboardAudioCodecPcm;
       break;
     case ::media::AudioCodec::kOpus:

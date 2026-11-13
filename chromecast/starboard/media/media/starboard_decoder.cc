@@ -177,7 +177,12 @@ BufferStatus StarboardDecoder::PushBufferInternal(
     DrmInfoWrapper drm_info,
     base::HeapArray<uint8_t> buffer_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!buffer_data.empty());
+  if (buffer_data.empty() ||
+      !base::IsValueInRangeForNumericType<int>(buffer_data.size()) ||
+      !drm_info.VerifySubsamplesMatchSize(buffer_data.size())) {
+    LOG(ERROR) << "Invalid buffer size or DRM subsample mismatch.";
+    return BufferStatus::kBufferFailed;
+  }
 
   if (!player_) {
     if (pending_first_push_) {

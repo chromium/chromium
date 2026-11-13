@@ -71,6 +71,35 @@ TEST(StarboardConversionsTest, ReturnsNulloptForInvalidAudioConfig) {
           /*samples_per_second=*/48000,
           /*extra_data=*/{}, EncryptionScheme::kCenc)),
       std::nullopt);
+
+  // Big-endian 24-bit PCM is not supported by the Starboard resampler.
+  EXPECT_EQ(ToStarboardAudioSampleInfo(AudioDecoderConfig(
+                AudioCodec::kPCM_S24BE, SampleFormat::kSampleFormatS24,
+                ChannelLayoutConfig::Stereo(),
+                /*samples_per_second=*/48000,
+                /*extra_data=*/{}, EncryptionScheme::kUnencrypted)),
+            std::nullopt);
+}
+
+TEST(StarboardConversionsTest, RejectsEncryptedPcmAudioConfig) {
+  for (AudioCodec codec : {AudioCodec::kPCM, AudioCodec::kPCM_S16BE}) {
+    for (EncryptionScheme scheme :
+         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs}) {
+      EXPECT_EQ(ToStarboardAudioSampleInfo(
+                    AudioDecoderConfig(codec, SampleFormat::kSampleFormatS16,
+                                       ChannelLayoutConfig::Stereo(),
+                                       /*samples_per_second=*/48000,
+                                       /*extra_data=*/{}, scheme)),
+                std::nullopt);
+    }
+
+    EXPECT_NE(ToStarboardAudioSampleInfo(AudioDecoderConfig(
+                  codec, SampleFormat::kSampleFormatS16,
+                  ChannelLayoutConfig::Stereo(),
+                  /*samples_per_second=*/48000,
+                  /*extra_data=*/{}, EncryptionScheme::kUnencrypted)),
+              std::nullopt);
+  }
 }
 
 TEST(StarboardConversionsTest, ConvertsValidVideoConfigToStarboardConfig) {

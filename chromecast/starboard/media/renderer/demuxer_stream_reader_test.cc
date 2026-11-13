@@ -136,7 +136,9 @@ class DemuxerStreamReaderTest : public ::testing::Test {
     StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
   }
 
-  ~DemuxerStreamReaderTest() override = default;
+  ~DemuxerStreamReaderTest() override {
+    StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+  }
 
   // This should be destructed last.
   SingleThreadTaskEnvironment task_environment_;
@@ -660,6 +662,161 @@ TEST_F(DemuxerStreamReaderTest,
 
   ASSERT_FALSE(read_cb_2.is_null());
   std::move(read_cb_2).Run(DemuxerStream::Status::kOk, {buffer_2});
+  RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest, RejectsEmptyNonEosVideoBuffer) {
+  constexpr int kSeekTicket = 7;
+  auto empty_buffer = base::MakeRefCounted<DecoderBuffer>(0);
+  StarboardVideoSampleInfo video_sample_info =
+      CreateVideoSample(kBufferData).video_sample_info;
+
+  EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+  EXPECT_CALL(handle_buffer_cb_, Call).Times(0);
+  EXPECT_CALL(renderer_client_, OnVideoNaturalSizeChange).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb;
+  EXPECT_CALL(video_stream_, OnRead).WillOnce(SaveArgByMove<0>(&read_cb));
+
+  DemuxerStreamReader stream_reader(
+      /*audio_stream=*/nullptr, &video_stream_,
+      /*audio_sample_info=*/std::nullopt, video_sample_info,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeVideo);
+
+  ASSERT_FALSE(read_cb.is_null());
+  std::move(read_cb).Run(DemuxerStream::Status::kOk, {empty_buffer});
+  RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest, RejectsEncryptedPcmAudioBuffer) {
+  constexpr int kSeekTicket = 7;
+  StarboardDrmKeyTracker::GetInstance().AddKey(std::string(kIdentifier),
+                                               "some_session");
+
+  constexpr auto kPcmBytes = std::to_array<uint8_t>({1, 2, 3, 4, 5, 6, 7, 8});
+  scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(kPcmBytes);
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      std::string(kIdentifier), std::string(kIv),
+      {::media::SubsampleEntry(0, kPcmBytes.size())}));
+
+  StarboardAudioSampleInfo audio_sample_info =
+      CreateAudioSample(kPcmBytes).audio_sample_info;
+  audio_sample_info.codec = StarboardAudioCodec::kStarboardAudioCodecPcm;
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kPCM, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 48000, {},
+      ::media::EncryptionScheme::kUnencrypted));
+
+  EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+  EXPECT_CALL(handle_buffer_cb_, Call).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb;
+  EXPECT_CALL(audio_stream_, OnRead).WillOnce(SaveArgByMove<0>(&read_cb));
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr, audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+
+  ASSERT_FALSE(read_cb.is_null());
+  std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+  RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest, RejectsUnalignedPcmAudioBuffer) {
+  constexpr int kSeekTicket = 7;
+  StarboardAudioSampleInfo audio_sample_info =
+      CreateAudioSample(kBufferData).audio_sample_info;
+  audio_sample_info.codec = StarboardAudioCodec::kStarboardAudioCodecPcm;
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kPCM, ::media::SampleFormat::kSampleFormatS32,
+      ::media::ChannelLayoutConfig::Mono(), 44100, {},
+      ::media::EncryptionScheme::kUnencrypted));
+
+  for (size_t bad_size : {size_t{1}, size_t{5}}) {
+    const std::vector<uint8_t> raw_bytes(bad_size, 0x7F);
+    scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(raw_bytes);
+
+    EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+    EXPECT_CALL(handle_buffer_cb_, Call).Times(0);
+    EXPECT_CALL(renderer_client_,
+                OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)))
+        .Times(1);
+    base::OnceCallback<void(
+        DemuxerStream::Status status,
+        std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+        read_cb;
+    EXPECT_CALL(audio_stream_, OnRead).WillOnce(SaveArgByMove<0>(&read_cb));
+
+    DemuxerStreamReader stream_reader(
+        &audio_stream_, /*video_stream=*/nullptr, audio_sample_info,
+        /*video_sample_info=*/std::nullopt,
+        base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+        base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+        &renderer_client_, &metrics_helper_);
+    stream_reader.ReadBuffer(kSeekTicket,
+                             StarboardMediaType::kStarboardMediaTypeAudio);
+
+    ASSERT_FALSE(read_cb.is_null());
+    std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+    RunPendingTasks();
+  }
+}
+
+TEST_F(DemuxerStreamReaderTest, RejectsVideoBufferWithMismatchedDrmSubsamples) {
+  constexpr int kSeekTicket = 7;
+  scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(kBufferData);
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      std::string(kIdentifier), std::string(kIv),
+      {::media::SubsampleEntry(0, kBufferData.size() + 4)}));
+
+  StarboardVideoSampleInfo video_sample_info =
+      CreateVideoSample(kBufferData).video_sample_info;
+
+  EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+  EXPECT_CALL(handle_buffer_cb_, Call).Times(0);
+  EXPECT_CALL(renderer_client_, OnVideoNaturalSizeChange).Times(0);
+  EXPECT_CALL(renderer_client_, OnWaiting).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb;
+  EXPECT_CALL(video_stream_, OnRead).WillOnce(SaveArgByMove<0>(&read_cb));
+
+  DemuxerStreamReader stream_reader(
+      /*audio_stream=*/nullptr, &video_stream_,
+      /*audio_sample_info=*/std::nullopt, video_sample_info,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeVideo);
+
+  ASSERT_FALSE(read_cb.is_null());
+  std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
   RunPendingTasks();
 }
 

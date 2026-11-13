@@ -56,8 +56,7 @@ bool IsResamplingNecessary(const ::media::AudioDecoderConfig& audio_config) {
   return (audio_config.codec() == ::media::AudioCodec::kPCM &&
           audio_config.sample_format() !=
               ::media::SampleFormat::kSampleFormatS16) ||
-         audio_config.codec() == ::media::AudioCodec::kPCM_S16BE ||
-         audio_config.codec() == ::media::AudioCodec::kPCM_S24BE;
+         audio_config.codec() == ::media::AudioCodec::kPCM_S16BE;
 }
 
 // Updates the VideoResolution metric. If `client` is not null, it will be
@@ -250,15 +249,48 @@ void DemuxerStreamReader::OnReadBuffer(
     return;
   }
 
+  if (buffer->empty() || !DrmInfoWrapper::VerifySubsamplesMatchSize(*buffer)) {
+    LOG(ERROR) << "Invalid DecoderBuffer size or DRM subsample mapping.";
+    client_->OnError(::media::PIPELINE_ERROR_DECODE);
+    return;
+  }
+
   if (type == StarboardMediaType::kStarboardMediaTypeAudio) {
+    if (audio_sample_info_ &&
+        audio_sample_info_->codec ==
+            StarboardAudioCodec::kStarboardAudioCodecPcm) {
+      if (buffer->decrypt_config() != nullptr) {
+        LOG(ERROR) << "Encrypted PCM audio buffers are not supported.";
+        client_->OnError(::media::PIPELINE_ERROR_DECODE);
+        return;
+      }
+      if (!IsValidPcmBufferSize(
+              StarboardPcmSampleFormat::kStarboardPcmSampleFormatS16,
+              chromium_audio_config_.sample_format(),
+              chromium_audio_config_.channels(), buffer->size())) {
+        LOG(ERROR) << "Invalid PCM audio buffer size: " << buffer->size();
+        client_->OnError(::media::PIPELINE_ERROR_DECODE);
+        return;
+      }
+    }
     buffer = convert_audio_fn_.Run(std::move(buffer));
   }
 
   // StarboardSampleInfo::buffer_size is an int, so reject anything that does
   // not fit rather than silently truncating the value.
-  if (!base::IsValueInRangeForNumericType<int>(buffer->size())) {
+  if (buffer->empty() ||
+      !base::IsValueInRangeForNumericType<int>(buffer->size())) {
     LOG(ERROR) << "DecoderBuffer size (" << buffer->size()
-               << ") exceeds the maximum supported sample size.";
+               << ") is invalid for Starboard sample info.";
+    client_->OnError(::media::PIPELINE_ERROR_DECODE);
+    return;
+  }
+
+  // drm_info must not be deleted until after sample_info is passed to
+  // starboard.
+  DrmInfoWrapper drm_info = DrmInfoWrapper::Create(*buffer);
+  if (!drm_info.VerifySubsamplesMatchSize(buffer->size())) {
+    LOG(ERROR) << "DRM subsample sizes do not match buffer size.";
     client_->OnError(::media::PIPELINE_ERROR_DECODE);
     return;
   }
@@ -269,6 +301,7 @@ void DemuxerStreamReader::OnReadBuffer(
   sample_info.buffer_size = static_cast<int>(buffer->size());
   sample_info.timestamp = buffer->timestamp().InMicroseconds();
   sample_info.side_data = base::span<const StarboardSampleSideData>();
+  sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
   if (type == StarboardMediaType::kStarboardMediaTypeAudio) {
     DCHECK(audio_sample_info_);
@@ -286,11 +319,6 @@ void DemuxerStreamReader::OnReadBuffer(
                     sample_info.video_sample_info.frame_height));
     }
   }
-
-  // drm_info must not be deleted until after sample_info is passed to
-  // starboard.
-  DrmInfoWrapper drm_info = DrmInfoWrapper::Create(*buffer);
-  sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
   // For encrypted buffers, we should not push data to starboard util the
   // buffer's DRM key is available to the CDM. To accomplish this, we check with

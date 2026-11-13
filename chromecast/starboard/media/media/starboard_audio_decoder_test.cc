@@ -4,12 +4,14 @@
 
 #include "chromecast/starboard/media/media/starboard_audio_decoder.h"
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <memory>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -184,7 +186,9 @@ class StarboardAudioDecoderTest : public ::testing::Test {
     StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
   }
 
-  ~StarboardAudioDecoderTest() override = default;
+  ~StarboardAudioDecoderTest() override {
+    StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+  }
 
   // This should be destructed last.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -742,6 +746,184 @@ TEST_F(StarboardAudioDecoderTest, ConvertsPcmToS16ForPushBeforeInitialization) {
   decoder.SetDelegate(&delegate);
 
   // At this point, the pending buffer should be pushed.
+  decoder.Initialize(&fake_player_);
+}
+
+struct PcmFormatCase {
+  AudioCodec codec;
+  SampleFormat sample_format;
+  int bytes_per_channel;
+};
+
+constexpr auto kPcmFormatCases = std::to_array<PcmFormatCase>({
+    {.codec = AudioCodec::kCodecPCM,
+     .sample_format = SampleFormat::kSampleFormatS32,
+     .bytes_per_channel = 4},
+    {.codec = AudioCodec::kCodecPCM,
+     .sample_format = SampleFormat::kSampleFormatS24,
+     .bytes_per_channel = 3},
+    {.codec = AudioCodec::kCodecPCM,
+     .sample_format = SampleFormat::kSampleFormatPlanarS16,
+     .bytes_per_channel = 2},
+    {.codec = AudioCodec::kCodecPCM,
+     .sample_format = SampleFormat::kSampleFormatS16,
+     .bytes_per_channel = 2},
+    {.codec = AudioCodec::kCodecPCM_S16BE,
+     .sample_format = SampleFormat::kSampleFormatS16,
+     .bytes_per_channel = 2},
+});
+
+AudioConfig CreatePcmConfig(
+    const PcmFormatCase& format_case,
+    EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted) {
+  AudioConfig config;
+  config.codec = format_case.codec;
+  config.channel_layout = ChannelLayout::STEREO;
+  config.sample_format = format_case.sample_format;
+  config.bytes_per_channel = format_case.bytes_per_channel;
+  config.channel_number = 2;
+  config.samples_per_second = 48000;
+  config.encryption_scheme = encryption_scheme;
+  return config;
+}
+
+TEST_F(StarboardAudioDecoderTest, RejectsEncryptedPcmConfig) {
+  for (const PcmFormatCase& format_case : kPcmFormatCases) {
+    for (EncryptionScheme scheme :
+         {EncryptionScheme::kAesCtr, EncryptionScheme::kAesCbc}) {
+      AudioConfig config = CreatePcmConfig(format_case, scheme);
+
+      StarboardAudioDecoder decoder(starboard_.get());
+      EXPECT_FALSE(decoder.SetConfig(config));
+      EXPECT_EQ(decoder.GetAudioSampleInfo(), std::nullopt);
+
+      config.encryption_scheme = EncryptionScheme::kUnencrypted;
+      EXPECT_TRUE(decoder.SetConfig(config));
+    }
+  }
+}
+
+TEST_F(StarboardAudioDecoderTest,
+       RejectsEncryptedPcmBufferAfterUnencryptedConfig) {
+  constexpr char kKeyId[] = "key_id";
+  constexpr char kIv[] = "abcdefghijklmnop";
+  StarboardDrmKeyTracker::GetInstance().AddKey(kKeyId, "session_id");
+
+  const std::vector<uint8_t> buffer_data(24, 0xAB);
+  std::unique_ptr<::media::DecryptConfig> decrypt_config =
+      ::media::DecryptConfig::CreateCencConfig(
+          kKeyId, kIv, {::media::SubsampleEntry(0, buffer_data.size())});
+  ASSERT_NE(decrypt_config, nullptr);
+  scoped_refptr<::media::DecoderBuffer> decoder_buffer =
+      ::media::DecoderBuffer::CopyFrom(buffer_data);
+  decoder_buffer->set_decrypt_config(std::move(decrypt_config));
+  auto encrypted_buffer =
+      base::MakeRefCounted<DecoderBufferAdapter>(decoder_buffer);
+
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+
+  for (const PcmFormatCase& format_case : kPcmFormatCases) {
+    const AudioConfig config = CreatePcmConfig(format_case);
+
+    StarboardAudioDecoder decoder(starboard_.get());
+    MockDelegate delegate;
+    base::MockOnceClosure first_push_cb;
+    EXPECT_CALL(first_push_cb, Run()).Times(0);
+
+    decoder.Initialize(&fake_player_);
+    ASSERT_TRUE(decoder.SetConfig(config));
+    decoder.SetDelegate(&delegate);
+    decoder.SetOnFirstPushCallback(first_push_cb.Get());
+
+    EXPECT_EQ(decoder.PushBuffer(encrypted_buffer.get()),
+              MediaPipelineBackend::BufferStatus::kBufferFailed);
+
+    MediaPipelineBackend::AudioDecoder::Statistics stats = {};
+    decoder.GetStatistics(&stats);
+    EXPECT_EQ(stats.decoded_bytes, 0u);
+  }
+}
+
+TEST_F(StarboardAudioDecoderTest, RejectsUnalignedOrSubSamplePcmBuffer) {
+  struct UnalignedPcmCase {
+    PcmFormatCase format;
+    size_t buffer_size;
+  };
+  constexpr auto kUnalignedCases = std::to_array<UnalignedPcmCase>({
+      // Sub-sample 1-byte S32 buffer.
+      {.format = {.codec = AudioCodec::kCodecPCM,
+                  .sample_format = SampleFormat::kSampleFormatS32,
+                  .bytes_per_channel = 4},
+       .buffer_size = 1},
+      // Sample-unaligned 5-byte S32 buffer.
+      {.format = {.codec = AudioCodec::kCodecPCM,
+                  .sample_format = SampleFormat::kSampleFormatS32,
+                  .bytes_per_channel = 4},
+       .buffer_size = 5},
+      // Frame-unaligned 4-byte stereo S32 buffer (one channel missing).
+      {.format = {.codec = AudioCodec::kCodecPCM,
+                  .sample_format = SampleFormat::kSampleFormatS32,
+                  .bytes_per_channel = 4},
+       .buffer_size = 4},
+      // Sample-unaligned 5-byte stereo S24 buffer.
+      {.format = {.codec = AudioCodec::kCodecPCM,
+                  .sample_format = SampleFormat::kSampleFormatS24,
+                  .bytes_per_channel = 3},
+       .buffer_size = 5},
+      // Plane-unaligned 2-byte stereo PlanarS16 buffer.
+      {.format = {.codec = AudioCodec::kCodecPCM,
+                  .sample_format = SampleFormat::kSampleFormatPlanarS16,
+                  .bytes_per_channel = 2},
+       .buffer_size = 2},
+  });
+
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+
+  for (const UnalignedPcmCase& test_case : kUnalignedCases) {
+    const AudioConfig config = CreatePcmConfig(test_case.format);
+    const std::vector<uint8_t> buffer_data(test_case.buffer_size, 0x7F);
+    auto buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+        ::media::DecoderBuffer::CopyFrom(buffer_data));
+
+    StarboardAudioDecoder decoder(starboard_.get());
+    MockDelegate delegate;
+    base::MockOnceClosure first_push_cb;
+    EXPECT_CALL(first_push_cb, Run()).Times(0);
+
+    decoder.Initialize(&fake_player_);
+    ASSERT_TRUE(decoder.SetConfig(config));
+    decoder.SetDelegate(&delegate);
+    decoder.SetOnFirstPushCallback(first_push_cb.Get());
+
+    EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+              MediaPipelineBackend::BufferStatus::kBufferFailed);
+
+    MediaPipelineBackend::AudioDecoder::Statistics stats = {};
+    decoder.GetStatistics(&stats);
+    EXPECT_EQ(stats.decoded_bytes, 0u);
+  }
+}
+
+TEST_F(StarboardAudioDecoderTest,
+       RejectsEmptyNonEosBufferBeforeInitialization) {
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+
+  auto empty_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      base::MakeRefCounted<::media::DecoderBuffer>(0));
+
+  StarboardAudioDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+  base::MockOnceClosure first_push_cb;
+  EXPECT_CALL(first_push_cb, Run()).Times(0);
+
+  ASSERT_TRUE(decoder.SetConfig(GetBasicConfig()));
+  decoder.SetDelegate(&delegate);
+  decoder.SetOnFirstPushCallback(first_push_cb.Get());
+
+  EXPECT_EQ(decoder.PushBuffer(empty_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferFailed);
+
+  // Initializing after a rejected buffer must not replay a failed push.
   decoder.Initialize(&fake_player_);
 }
 
