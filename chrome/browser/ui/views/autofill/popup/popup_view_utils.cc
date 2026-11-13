@@ -56,16 +56,16 @@ bool IsVerticalArrowSide(views::BubbleArrowSide side) {
 // to be at least 3x wider than the arrow for esthetic reasons.
 // This must only be called for vertical arrows (pointing up or down).
 bool IsElementSufficientlyVisibleForAVerticalArrow(
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side) {
   CHECK(IsVerticalArrowSide(side));
 
   int visible_width =
-      std::clamp(element_bounds.right(), visible_content_area_bounds.x(),
-                 visible_content_area_bounds.right()) -
-      std::clamp(element_bounds.x(), visible_content_area_bounds.x(),
-                 visible_content_area_bounds.right());
+      std::clamp(element_bounds.right(), max_bounds_for_popup.x(),
+                 max_bounds_for_popup.right()) -
+      std::clamp(element_bounds.x(), max_bounds_for_popup.x(),
+                 max_bounds_for_popup.right());
 
   return visible_width > 3 * BubbleBorder::kVisibleArrowRadius;
 }
@@ -94,17 +94,17 @@ BubbleBorder::Arrow GetBubbleArrowForBubbleArrowSide(
 
 // Returns the size of popup placed on the |side| of the |element_bounds| once
 // the popup is expanded to its |popup_preferred_size| or the maximum size
-// available on the |visible_content_area_bounds|.
-gfx::Size GetExpandedPopupSize(const gfx::Rect& visible_content_area_bounds,
+// available on the |max_bounds_for_popup|.
+gfx::Size GetExpandedPopupSize(const gfx::Rect& max_bounds_for_popup,
                                const gfx::Rect& element_bounds,
                                const gfx::Size& popup_preferred_size,
                                int scrollbar_width,
                                views::BubbleArrowSide side) {
   // Get the maximum available space for the popup
   int available_height = GetAvailableVerticalSpaceOnSideOfElement(
-      visible_content_area_bounds, element_bounds, side);
+      max_bounds_for_popup, element_bounds, side);
   int available_width = GetAvailableHorizontalSpaceOnSideOfElement(
-      visible_content_area_bounds, element_bounds, side);
+      max_bounds_for_popup, element_bounds, side);
 
   int height = std::min(available_height, popup_preferred_size.height());
   int width = std::min(
@@ -161,19 +161,17 @@ bool BoundsOverlapWithHtmlFormPopup(const gfx::Rect& popup_bounds,
 }
 
 void CalculatePopupYAndHeight(int popup_preferred_height,
-                              const gfx::Rect& visible_content_area_bounds,
+                              const gfx::Rect& max_bounds_for_popup,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds) {
-  int top_growth_end =
-      std::clamp(element_bounds.y(), visible_content_area_bounds.y(),
-                 visible_content_area_bounds.bottom());
+  int top_growth_end = std::clamp(element_bounds.y(), max_bounds_for_popup.y(),
+                                  max_bounds_for_popup.bottom());
   int bottom_growth_start =
-      std::clamp(element_bounds.bottom(), visible_content_area_bounds.y(),
-                 visible_content_area_bounds.bottom());
+      std::clamp(element_bounds.bottom(), max_bounds_for_popup.y(),
+                 max_bounds_for_popup.bottom());
 
-  int top_available = top_growth_end - visible_content_area_bounds.y();
-  int bottom_available =
-      visible_content_area_bounds.bottom() - bottom_growth_start;
+  int top_available = top_growth_end - max_bounds_for_popup.y();
+  int bottom_available = max_bounds_for_popup.bottom() - bottom_growth_start;
 
   popup_bounds->set_height(popup_preferred_height);
   popup_bounds->set_y(top_growth_end);
@@ -181,14 +179,14 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
   int y_adjustment = (bottom_available >= popup_preferred_height ||
                       bottom_available >= top_available)
                          ? element_bounds.bottom()
-                         : visible_content_area_bounds.y();
+                         : max_bounds_for_popup.y();
   popup_bounds->AdjustToFit(gfx::Rect(popup_bounds->x(), y_adjustment,
                                       popup_bounds->width(),
-                                      visible_content_area_bounds.height()));
+                                      max_bounds_for_popup.height()));
 }
 
 bool CanShowDropdownHere(int item_height,
-                         const gfx::Rect& visible_content_area_bounds,
+                         const gfx::Rect& max_bounds_for_popup,
                          const gfx::Rect& element_bounds) {
   // Ensure that at least one row of the popup can be displayed within the
   // bounds of the content area so that the user notices the presence of the
@@ -201,17 +199,16 @@ bool CanShowDropdownHere(int item_height,
   // location provides enough space for at least one item in the content area
   // above the element.
   bool enough_space_for_one_item_in_content_area_above_element =
-      element_bounds.y() - visible_content_area_bounds.y() >= item_height;
+      element_bounds.y() - max_bounds_for_popup.y() >= item_height;
   bool element_top_is_within_content_area_bounds =
-      element_bounds.y() >= visible_content_area_bounds.y() &&
-      element_bounds.y() < visible_content_area_bounds.bottom();
+      element_bounds.y() >= max_bounds_for_popup.y() &&
+      element_bounds.y() < max_bounds_for_popup.bottom();
 
   bool enough_space_for_one_item_in_content_area_below_element =
-      visible_content_area_bounds.bottom() - element_bounds.bottom() >=
-      item_height;
+      max_bounds_for_popup.bottom() - element_bounds.bottom() >= item_height;
   bool element_bottom_is_within_content_area_bounds =
-      element_bounds.bottom() > visible_content_area_bounds.y() &&
-      element_bounds.bottom() <= visible_content_area_bounds.bottom();
+      element_bounds.bottom() > max_bounds_for_popup.y() &&
+      element_bounds.bottom() <= max_bounds_for_popup.bottom();
 
   bool enough_space_vertically =
       (enough_space_for_one_item_in_content_area_above_element &&
@@ -222,9 +219,9 @@ bool CanShowDropdownHere(int item_height,
   // Ensure that the element is visible horizontally by
   // at least kMinHorizontalOverlapForPopup (100px).
   bool enough_space_horizontally =
-      (element_bounds.right() - visible_content_area_bounds.x() >=
+      (element_bounds.right() - max_bounds_for_popup.x() >=
        kMinHorizontalOverlapForPopup) &&
-      (visible_content_area_bounds.right() - element_bounds.x() >=
+      (max_bounds_for_popup.right() - element_bounds.x() >=
        kMinHorizontalOverlapForPopup);
 
   // Or, alternatively, the element fully fits horizontally into the screen.
@@ -232,8 +229,8 @@ bool CanShowDropdownHere(int item_height,
   // kMinHorizontalOverlapForPopup. In that case, we would also want to show the
   // popup, since the whole element is visible.
   bool element_fully_fits_horizontally =
-      visible_content_area_bounds.x() <= element_bounds.x() &&
-      element_bounds.right() <= visible_content_area_bounds.right();
+      max_bounds_for_popup.x() <= element_bounds.x() &&
+      element_bounds.right() <= max_bounds_for_popup.right();
 
   enough_space_horizontally |= element_fully_fits_horizontally;
 
@@ -321,7 +318,7 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {
 }
 
 int GetAvailableVerticalSpaceOnSideOfElement(
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side) {
   // Note that the side of the arrow is opposite to the side of the element the
@@ -331,60 +328,59 @@ int GetAvailableVerticalSpaceOnSideOfElement(
     case views::BubbleArrowSide::kRight:
       // For a bubble that is either on the left of the right side of the
       // element, the height of the content area is the total available space.
-      return visible_content_area_bounds.height();
+      return max_bounds_for_popup.height();
 
     case views::BubbleArrowSide::kBottom:
       // If the bubble sits above the element, return the space between the
       // upper edge of the element and the content area.
-      return element_bounds.y() - visible_content_area_bounds.y();
+      return element_bounds.y() - max_bounds_for_popup.y();
 
     case views::BubbleArrowSide::kTop:
       // If the bubble sits below the element, return the space between the
       // lower edge of the element and the content area.
-      return visible_content_area_bounds.bottom() - element_bounds.bottom();
+      return max_bounds_for_popup.bottom() - element_bounds.bottom();
   }
 }
 
 int GetAvailableHorizontalSpaceOnSideOfElement(
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side) {
   // Note that the side of the arrow is opposite to the side of the element the
   // popup is located on.
   switch (side) {
     case views::BubbleArrowSide::kRight:
-      return element_bounds.x() - visible_content_area_bounds.x() -
+      return element_bounds.x() - max_bounds_for_popup.x() -
              kMinimalPopupDistanceToContentAreaEdge;
 
     case views::BubbleArrowSide::kLeft:
-      return visible_content_area_bounds.right() - element_bounds.right() -
+      return max_bounds_for_popup.right() - element_bounds.right() -
              kMinimalPopupDistanceToContentAreaEdge;
 
     case views::BubbleArrowSide::kTop:
     case views::BubbleArrowSide::kBottom:
-      return visible_content_area_bounds.width() -
+      return max_bounds_for_popup.width() -
              2 * kMinimalPopupDistanceToContentAreaEdge;
   }
 }
 
-bool IsPopupPlaceableOnSideOfElement(
-    const gfx::Rect& visible_content_area_bounds,
-    const gfx::Rect& element_bounds,
-    const gfx::Size& popup_preferred_size,
-    int additional_spacing,
-    views::BubbleArrowSide side) {
+bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& max_bounds_for_popup,
+                                     const gfx::Rect& element_bounds,
+                                     const gfx::Size& popup_preferred_size,
+                                     int additional_spacing,
+                                     views::BubbleArrowSide side) {
   switch (side) {
     case views::BubbleArrowSide::kLeft:
     case views::BubbleArrowSide::kRight:
       return popup_preferred_size.width() + additional_spacing <=
-             GetAvailableHorizontalSpaceOnSideOfElement(
-                 visible_content_area_bounds, element_bounds, side);
+             GetAvailableHorizontalSpaceOnSideOfElement(max_bounds_for_popup,
+                                                        element_bounds, side);
 
     case views::BubbleArrowSide::kTop:
     case views::BubbleArrowSide::kBottom:
       return popup_preferred_size.height() + additional_spacing <=
-             GetAvailableVerticalSpaceOnSideOfElement(
-                 visible_content_area_bounds, element_bounds, side);
+             GetAvailableVerticalSpaceOnSideOfElement(max_bounds_for_popup,
+                                                      element_bounds, side);
   }
 }
 
@@ -441,7 +437,7 @@ std::optional<gfx::Rect> GetDisplayBounds(content::WebContents* web_contents,
 // back to the top of bottom of the element, depending on where more space is
 // available.
 views::BubbleArrowSide GetOptimalArrowSide(
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
     base::span<const views::BubbleArrowSide> popup_preferred_sides,
@@ -461,9 +457,9 @@ views::BubbleArrowSide GetOptimalArrowSide(
         !IsVerticalArrowSide(possible_side) ||
         skip_element_bounds_sufficiently_visible_for_vertical_arrow_check ||
         IsElementSufficientlyVisibleForAVerticalArrow(
-            visible_content_area_bounds, element_bounds, possible_side);
+            max_bounds_for_popup, element_bounds, possible_side);
     if (IsPopupPlaceableOnSideOfElement(
-            visible_content_area_bounds, element_bounds, popup_preferred_size,
+            max_bounds_for_popup, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
         vertical_size_requirements_sufficient) {
       return possible_side;
@@ -472,8 +468,8 @@ views::BubbleArrowSide GetOptimalArrowSide(
 
   // As a fallback, render the popup on top of the element if there is more
   // space than below the element.
-  if (element_bounds.y() - visible_content_area_bounds.y() >
-      visible_content_area_bounds.bottom() - element_bounds.bottom()) {
+  if (element_bounds.y() - max_bounds_for_popup.y() >
+      max_bounds_for_popup.bottom() - element_bounds.bottom()) {
     return views::BubbleArrowSide::kBottom;
   }
 
@@ -481,7 +477,7 @@ views::BubbleArrowSide GetOptimalArrowSide(
 }
 
 BubbleBorder::Arrow GetOptimalPopupPlacement(
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
     bool right_to_left,
@@ -496,14 +492,14 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   // the `popup_preferred_size`. Otherwise, the popup is rendered on top or
   // below the element, depending on where more space is available.
   views::BubbleArrowSide side = GetOptimalArrowSide(
-      visible_content_area_bounds, element_bounds, popup_preferred_size,
+      max_bounds_for_popup, element_bounds, popup_preferred_size,
       popup_preferred_sides, anchor_type);
   BubbleBorder::Arrow arrow =
       GetBubbleArrowForBubbleArrowSide(side, right_to_left);
 
   // Set the actual size of the popup.
   popup_bounds.set_size(
-      GetExpandedPopupSize(visible_content_area_bounds, element_bounds,
+      GetExpandedPopupSize(max_bounds_for_popup, element_bounds,
                            popup_preferred_size, scrollbar_width, side));
 
   // Move the origin of the popup to the anchor position on the element
@@ -527,10 +523,9 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     // The popup top can never go above the content area since the popup size
     // computed to fit in the screen by GetExpandedPopupSize.
     popup_bounds.Offset(
-        0,
-        std::max(visible_content_area_bounds.y() - popup_bounds.y(),
-                 -1 * std::max(0, popup_bounds.bottom() -
-                                      visible_content_area_bounds.bottom())));
+        0, std::max(max_bounds_for_popup.y() - popup_bounds.y(),
+                    -1 * std::max(0, popup_bounds.bottom() -
+                                         max_bounds_for_popup.bottom())));
     return arrow;
   }
 
@@ -574,16 +569,15 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   //                                   |
   //                          content_area.right()
   popup_bounds.Offset(
-      std::min(0, visible_content_area_bounds.right() - popup_bounds.right() -
+      std::min(0, max_bounds_for_popup.right() - popup_bounds.right() -
                       kMinimalPopupDistanceToContentAreaEdge),
       0);
 
   // Analogously, make move the popup to the right if it exceeds the left edge
   // of the content area.
-  popup_bounds.Offset(
-      std::max(0, visible_content_area_bounds.x() - popup_bounds.x() +
-                      kMinimalPopupDistanceToContentAreaEdge),
-      0);
+  popup_bounds.Offset(std::max(0, max_bounds_for_popup.x() - popup_bounds.x() +
+                                      kMinimalPopupDistanceToContentAreaEdge),
+                      0);
 
   return arrow;
 }

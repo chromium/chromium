@@ -563,7 +563,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
 
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
-      /*visible_content_area_bounds=*/max_bounds_for_popup,
+      /*max_bounds_for_popup=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*popup_preferred_size=*/preferred_size,
       /*right_to_left=*/delegate_->GetElementTextDirection() ==
