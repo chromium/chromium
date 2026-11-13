@@ -1406,17 +1406,6 @@ void TabStripModel::UpdateWebContentsState(content::WebContents* contents,
   }
 }
 
-void TabStripModel::SetTabNeedsAttention(content::WebContents* contents,
-                                         bool attention) {
-  tabs::TabInterface* const tab = GetTabForWebContents(contents);
-  CHECK(tab);
-  TabUIHelper::From(tab)->SetNeedsAttention(attention);
-
-  for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, TabChangeType::kAttentionOnly);
-  }
-}
-
 void TabStripModel::CloseAllTabs() {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 

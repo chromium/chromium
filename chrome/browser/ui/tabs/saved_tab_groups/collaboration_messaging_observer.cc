@@ -10,6 +10,7 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -101,14 +102,10 @@ void CollaborationMessagingObserver::HandleDirtyTab(
     return;
   }
 
-  if (BrowserWindowInterface* browser =
-          SavedTabGroupUtils::GetBrowserWithTabGroupId(
-              tab_info->local_tab_group_id)) {
-    if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
-            tab_info->local_tab_group_id, tab_info->local_tab_id)) {
-      browser->GetTabStripModel()->SetTabNeedsAttention(
-          tab->GetContents(), display == MessageDisplayStatus::kDisplay);
-    }
+  if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
+          tab_info->local_tab_group_id, tab_info->local_tab_id)) {
+    TabUIHelper::From(tab)->SetNeedsAttention(display ==
+                                              MessageDisplayStatus::kDisplay);
   }
 }
 

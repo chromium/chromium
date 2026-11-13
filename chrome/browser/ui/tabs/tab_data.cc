@@ -152,12 +152,8 @@ void TabDataObserver::NotifyTabDataChanged(TabChangeType change_type) {
 void TabDataObserver::OnTabUIChange() {
   TabData updated_tab_data = TabData::FromTabInterface(tab_interface_);
   if (tab_data_ != updated_tab_data) {
-    const TabChangeType change_type =
-        tab_data_.needs_attention != updated_tab_data.needs_attention
-            ? TabChangeType::kAttentionOnly
-            : TabChangeType::kAll;
     tab_data_ = updated_tab_data;
-    NotifyTabDataChanged(change_type);
+    NotifyTabDataChanged(TabChangeType::kAll);
   }
 }
 

@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/url_constants.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -158,6 +159,12 @@ class TopControlsSlideTabObserver
     if (permission_manager) {
       permission_manager->AddObserver(this);
     }
+    TabUIHelper* const tab_ui_helper =
+        TabUIHelper::From(tabs::TabInterface::GetFromContents(web_contents));
+    needs_attention_ = tab_ui_helper->needs_attention();
+    tab_ui_change_subscription_ = tab_ui_helper->AddTabUIChangeCallback(
+        base::BindRepeating(&TopControlsSlideTabObserver::OnTabUIChange,
+                            base::Unretained(this)));
   }
 
   TopControlsSlideTabObserver(const TopControlsSlideTabObserver&) = delete;
@@ -247,6 +254,26 @@ class TopControlsSlideTabObserver
   }
 
  private:
+  void OnTabUIChange() {
+    // `tab` can be null when `web_contents()` is being discarded/replaced:
+    // `TabModel::DiscardContents` dissociates the old `WebContents` from the
+    // `TabInterface` before `TopControlsSlideControllerChromeOS` receives
+    // `OnTabStripModelChanged` (`TabStripModelChange::kReplaced`) to destroy
+    // this observer, and `TabUIHelper` (which is tab-scoped) may notify UI
+    // change callbacks for the new `WebContents` in the meantime.
+    tabs::TabInterface* const tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    if (!tab) {
+      return;
+    }
+    const bool needs_attention = TabUIHelper::From(tab)->needs_attention();
+    if (needs_attention_ != needs_attention) {
+      needs_attention_ = needs_attention;
+      owner_->UpdateBrowserControlsStateShown(/*web_contents=*/nullptr,
+                                              /*animate=*/true);
+    }
+  }
+
   void UpdateBrowserControlsStateShown(bool animate) {
     owner_->UpdateBrowserControlsStateShown(web_contents(), animate);
   }
@@ -281,6 +308,9 @@ class TopControlsSlideTabObserver
   // right before the final layout of the BrowserView.
   // https://crbug.com/41414489.
   bool shrink_renderer_size_ = true;
+
+  bool needs_attention_ = false;
+  base::CallbackListSubscription tab_ui_change_subscription_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -511,14 +541,6 @@ void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
   SetShownRatio(new_active_contents,
                 observed_tabs_[new_active_contents]->shown_ratio());
   UpdateBrowserControlsStateShown(new_active_contents, /*animate=*/true);
-}
-
-void TopControlsSlideControllerChromeOS::OnTabChangedAt(
-    tabs::TabInterface* tab,
-    TabChangeType change_type) {
-  if (change_type == TabChangeType::kAttentionOnly) {
-    UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
-  }
 }
 
 void TopControlsSlideControllerChromeOS::OnDisplayMetricsChanged(

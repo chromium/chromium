@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -359,11 +360,11 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, IconDataChanged) {
 
   // After setting the tab as needing attention, expect the attention indicator
   // to be showing.
-  tab_strip_model()->SetTabNeedsAttention(web_contents, true);
+  tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(0);
+  TabUIHelper::From(tab)->SetNeedsAttention(true);
   EXPECT_TRUE(icon->GetShowingAttentionIndicator());
 
   // After discarding the tab, the icon should show the discard indicator.
-  tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(0);
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
       ->DiscardPageForTesting(tab->GetContents());
   EXPECT_TRUE(base::test::RunUntil(
