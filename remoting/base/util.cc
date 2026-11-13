@@ -57,8 +57,8 @@ webrtc::DesktopRect AlignRect(const webrtc::DesktopRect& rect) {
 
 webrtc::DesktopRect GetRowAlignedRect(const webrtc::DesktopRect rect,
                                       int max_right) {
-  static const int align = GetSimdMemoryAlignment();
-  static const int align_mask = ~(align - 1);
+  const int align = GetSimdMemoryAlignment();
+  const int align_mask = ~(align - 1);
   int new_left = (rect.left() & align_mask);
   int new_right = std::min((rect.right() + align - 1) & align_mask, max_right);
   return webrtc::DesktopRect::MakeLTRB(new_left, rect.top(), new_right,

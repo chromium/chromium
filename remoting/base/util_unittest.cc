@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "remoting/base/cpu_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -154,6 +155,55 @@ TEST(ScaleSizeToFitTest, ExtremeAspectRatioAndLargeValues) {
   EXPECT_TRUE(
       ScaleSizeToFit(webrtc::DesktopSize(kMaxInt, kMaxInt), k4kLandscape)
           .equals(webrtc::DesktopSize(2160, 2160)));
+}
+
+TEST(CpuUtilsTest, GetSimdMemoryAlignment) {
+  const int host_align = GetSimdMemoryAlignment();
+  EXPECT_TRUE(host_align == 16 || host_align == 32 || host_align == 64)
+      << "Unexpected SIMD alignment: " << host_align;
+
+  {
+    ScopedSimdMemoryAlignmentForTesting align_64(64);
+    EXPECT_EQ(GetSimdMemoryAlignment(), 64);
+    {
+      ScopedSimdMemoryAlignmentForTesting align_16(16);
+      EXPECT_EQ(GetSimdMemoryAlignment(), 16);
+    }
+    EXPECT_EQ(GetSimdMemoryAlignment(), 64);
+  }
+  EXPECT_EQ(GetSimdMemoryAlignment(), host_align);
+}
+
+TEST(GetRowAlignedRectTest, AlignsAndClipsAcrossSimdWidths) {
+  for (const int align : {16, 32, 64}) {
+    SCOPED_TRACE(align);
+    ScopedSimdMemoryAlignmentForTesting scoped_align(align);
+
+    // Interior rect widens X-bounds to [0, align) while preserving top/bottom.
+    EXPECT_TRUE(
+        GetRowAlignedRect(webrtc::DesktopRect::MakeLTRB(5, 3, 15, 11), 1920)
+            .equals(webrtc::DesktopRect::MakeLTRB(0, 3, align, 11)));
+
+    // Rect straddling `align` widens across two SIMD blocks [0, align * 2).
+    EXPECT_TRUE(
+        GetRowAlignedRect(
+            webrtc::DesktopRect::MakeLTRB(align - 1, 0, align + 1, 8), 1920)
+            .equals(webrtc::DesktopRect::MakeLTRB(0, 0, align * 2, 8)));
+
+    // Already-aligned rect is unchanged.
+    EXPECT_TRUE(
+        GetRowAlignedRect(
+            webrtc::DesktopRect::MakeLTRB(align, 2, align * 3, 10), 1920)
+            .equals(webrtc::DesktopRect::MakeLTRB(align, 2, align * 3, 10)));
+
+    // Right edge clips to `max_right` when frame width is not a multiple of
+    // `align` (e.g., portrait 1080 width where 1080 % 64 == 56).
+    const int expected_left = 1070 & ~(align - 1);
+    EXPECT_TRUE(
+        GetRowAlignedRect(webrtc::DesktopRect::MakeLTRB(1070, 4, 1078, 12),
+                          1080)
+            .equals(webrtc::DesktopRect::MakeLTRB(expected_left, 4, 1080, 12)));
+  }
 }
 
 }  // namespace remoting
