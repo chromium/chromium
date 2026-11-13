@@ -5,14 +5,17 @@
 #ifndef CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_ROUTING_H_
 #define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_ROUTING_H_
 
+#include "content/common/content_export.h"
+
 namespace content {
 
 class BrowserContext;
 class PlatformNotificationService;
 
 // Returns the notification service that notifications of `browser_context`
-// should be routed to. May return null.
-PlatformNotificationService* GetPlatformNotificationServiceFor(
+// should be routed to: the virtual one while it exists, otherwise the one
+// provided by the embedder. May return null.
+CONTENT_EXPORT PlatformNotificationService* GetPlatformNotificationServiceFor(
     BrowserContext* browser_context);
 
 }  // namespace content

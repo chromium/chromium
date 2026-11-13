@@ -2775,6 +2775,7 @@ test("content_unittests") {
     "../browser/notifications/notification_storage_unittest.cc",
     "../browser/notifications/platform_notification_context_trigger_unittest.cc",
     "../browser/notifications/platform_notification_context_unittest.cc",
+    "../browser/notifications/virtual_platform_notification_service_unittest.cc",
     "../browser/origin_trials/critical_origin_trials_throttle_unittest.cc",
     "../browser/payments/payment_app_content_unittest_base.cc",
     "../browser/payments/payment_app_content_unittest_base.h",

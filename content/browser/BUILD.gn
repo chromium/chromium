@@ -1391,6 +1391,8 @@ source_set("browser") {
     "notifications/platform_notification_service_proxy.h",
     "notifications/platform_notification_service_routing.cc",
     "notifications/platform_notification_service_routing.h",
+    "notifications/virtual_platform_notification_service.cc",
+    "notifications/virtual_platform_notification_service.h",
     "origin_agent_cluster_isolation_state.cc",
     "origin_agent_cluster_isolation_state.h",
     "origin_agent_cluster_isolation_state_bridge.cc",
