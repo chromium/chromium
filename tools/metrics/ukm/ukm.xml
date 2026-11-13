@@ -13343,13 +13343,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether hardware secure codecs are required for the current CDM.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -13585,25 +13578,11 @@ be describing additional metrics about the same event.
     <summary>
       Whether the frame is Cross-Origin to the main frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IsTopFrame" enum="Boolean">
     <summary>
       Whether the frame is the main frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
@@ -13686,25 +13665,11 @@ be describing additional metrics about the same event.
     <summary>
       Whether the frame is an ad frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IsCrossOrigin" enum="Boolean">
     <summary>
       Whether the frame is Cross-Origin to the main frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IsFromMediaCapabilities" enum="Boolean">
     <summary>
@@ -13715,13 +13680,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether the frame is the main frame.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
@@ -13750,13 +13708,6 @@ be describing additional metrics about the same event.
       Whether there are any &quot;videoCapabilities&quot; with robustness being
       &quot;HW_SECURE_ALL&quot;.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
