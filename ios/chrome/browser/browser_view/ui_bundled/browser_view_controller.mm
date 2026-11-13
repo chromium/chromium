@@ -3277,8 +3277,9 @@ bool IsFullscreenNextIAEnabled() {
 
 - (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay {
   if (IsRegularXRegularSizeClass(self)) {
-    return NSDirectionalEdgeInsetsMake([self expandedTopToolbarHeight], 0, 0,
-                                       0);
+    // Subtract one unit to have the overlay cover the divider of the toolbar.
+    return NSDirectionalEdgeInsetsMake([self expandedTopToolbarHeight] - 1, 0,
+                                       0, 0);
   }
   return NSDirectionalEdgeInsetsZero;
 }
