@@ -32,7 +32,8 @@ PaymentsChurnedUsersBubbleController::PaymentsChurnedUsersBubbleController(
     : AutofillBubbleControllerBase(
           tab_interface,
           PageActionConfig{.action_id = kActionShowPaymentsChurnedUsersBubble,
-                           .should_manage_visibility = true}),
+                           .should_manage_visibility = true,
+                           .should_sync_bubble_showing_state = true}),
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
           *this) {}

@@ -366,7 +366,8 @@ FilledCardInformationBubbleControllerImpl::
     : AutofillBubbleControllerBase(
           web_contents,
           PageActionConfig{.action_id = kActionFilledCardInformation,
-                           .should_manage_visibility = true}),
+                           .should_manage_visibility = true,
+                           .should_sync_bubble_showing_state = true}),
       content::WebContentsUserData<FilledCardInformationBubbleControllerImpl>(
           *web_contents) {}
 

@@ -69,7 +69,8 @@ GmailOtpOptInBubbleController::GmailOtpOptInBubbleController(
     : AutofillBubbleControllerBase(
           tab,
           PageActionConfig{.action_id = kActionGmailOtpOptIn,
-                           .should_manage_visibility = true}),
+                           .should_manage_visibility = true,
+                           .should_sync_bubble_showing_state = true}),
       scoped_unowned_user_data_(CHECK_DEREF(tab).GetUnownedUserDataHost(),
                                 *this),
       bubble_view_factory_(

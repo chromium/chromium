@@ -39,6 +39,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -426,6 +427,41 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
            DialogViewId::
                SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS;
   }));
+}
+
+// Tests that showing and closing the bubble syncs
+// ActionItem::GetIsShowingBubble() across prompt and confirmation views.
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       SyncsActionItemIsShowingBubble) {
+  actions::ActionItem* const action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionShowPaymentsChurnedUsersBubble,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action_item);
+  EXPECT_FALSE(action_item->GetIsShowingBubble());
+
+  ShowBubble();
+  EXPECT_TRUE(action_item->GetIsShowingBubble());
+
+  PaymentsChurnedUsersBubbleView* const bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  bubble_view->AcceptDialog();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    AutofillBubbleBase* const current_bubble = GetAutofillBubbleView();
+    return current_bubble && current_bubble != bubble_view;
+  }));
+  EXPECT_TRUE(action_item->GetIsShowingBubble());
+
+  auto* const confirmation_bubble =
+      static_cast<AutofillLocationBarBubble*>(GetAutofillBubbleView());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      confirmation_bubble->GetWidget());
+  confirmation_bubble->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter.Wait();
+
+  EXPECT_FALSE(action_item->GetIsShowingBubble());
 }
 
 }  // namespace autofill

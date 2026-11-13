@@ -36,7 +36,8 @@ VirtualCardEnrollBubbleControllerImpl::VirtualCardEnrollBubbleControllerImpl(
     : AutofillBubbleControllerBase(
           web_contents,
           PageActionConfig{.action_id = kActionVirtualCardEnroll,
-                           .should_manage_visibility = true}),
+                           .should_manage_visibility = true,
+                           .should_sync_bubble_showing_state = true}),
       content::WebContentsUserData<VirtualCardEnrollBubbleControllerImpl>(
           *web_contents) {}
 
