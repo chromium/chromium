@@ -268,7 +268,9 @@ TEST_F(ArtemisLogSourceTest, CheckByteCapLimitsDataOutput) {
   logfile.CloseStream();
 }
 
-TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
+// TODO(crbug.com/585313364): Failing after libc++ filebuf::seekoff roll.
+// Re-enable this test.
+TEST_F(ArtemisLogSourceTest, DISABLED_VerifyNewLinesAppearAfterRefresh) {
   LogFile logfile(test_file_.value());
   logfile.OpenAtOffset(0);
 
