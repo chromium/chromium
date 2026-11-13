@@ -71,6 +71,7 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
       const HeapVector<Member<ImageRecord>>&,
       const HeapVector<Member<TextRecord>>&) override;
   void OnImageRemoved(const LayoutObject&, const MediaTiming*) override;
+  void OnInputOrScroll() override;
   void Trace(Visitor*) const override;
 
   // Called by `PaintTimingDetector` when an image is painted.

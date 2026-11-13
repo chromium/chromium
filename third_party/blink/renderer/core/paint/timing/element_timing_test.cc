@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::AllOf;
@@ -408,6 +409,21 @@ TEST_P(ElementTimingTest, ElementAndContainerTimingDecoupled) {
   SimulateRenderingAndPresentationTime();
 
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+// Container timing stops recording after input, but element timing does not.
+TEST_P(ElementTimingTest, ContinuesAfterInputUnderContainerTiming) {
+  ScopedContainerTimingForTest container_timing(true);
+  SetMainFrameBodyContent(R"HTML(
+    <div containertiming="root">
+      <img id="target" elementtiming="et" style="width: 100px; height: 100px;"/>
+    </div>
+  )HTML");
+  SimulateKeyDown();
+  SetImageContent("target", 100, 100);
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 }
 
 TEST_P(ElementTimingTest,

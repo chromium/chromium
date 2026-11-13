@@ -40,8 +40,12 @@ class CORE_EXPORT ContainerTiming final
   static ContainerTiming& From(LocalDOMWindow&);
 
   // The container-timing decision is made via the paint attribution tracker,
-  // populated during the pre-paint walk.
+  // populated during the pre-paint walk. Returns false once recording stopped.
   static bool ContributesToContainerTiming(Element* element);
+
+  // Stops recording paints. Paints committed before this keep their
+  // presentation callbacks, so they are still reported.
+  void OnInputOrScroll() { has_seen_input_or_scroll_ = true; }
 
   void MaybeUpdateContainerRootIdentifier(HTMLElement* element,
                                           const AtomicString& new_value);
@@ -123,6 +127,10 @@ class CORE_EXPORT ContainerTiming final
   // is enabled, and never reassigned.
   const Member<ContainerTimingPaintAttributionTracker>
       paint_attribution_tracker_;
+  // Recording stops after the first input or scroll, while element timing
+  // keeps reporting. See
+  // https://w3c.github.io/container-timing/#handle-element-painted.
+  bool has_seen_input_or_scroll_ = false;
 };
 
 }  // namespace blink

@@ -238,6 +238,49 @@ void RunInvalidationCycleBenchmark(const std::string& story_base,
   reporter.AddResult(kMetricRunsPerSecond, timer.LapsPerSecond());
 }
 
+// Paint-time check: how fast ContributesToContainerTiming() decides whether a
+// paint of the innermost content is queued. `stopped` paints every root and
+// then simulates an input, so no root in the chain is recording.
+void RunPaintTimeCheckBenchmark(const std::string& story_base,
+                                size_t container_timing_depth,
+                                bool stopped) {
+  constexpr int kChecksPerLap = 1000;
+  ScopedContainerTimingForTest scoped_feature(true);
+  auto page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Document& document = page->GetDocument();
+  document.body()->SetInnerHTMLWithoutTrustedTypes(
+      GenerateNestedHTML(container_timing_depth, 1));
+  page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+
+  ContainerTiming& container_timing =
+      ContainerTiming::From(*document.domWindow());
+  Element* content = document.getElementById(
+      AtomicString(Format("content_{}_1", container_timing_depth)));
+  ASSERT_TRUE(content);
+  SimulateContainerTimingPaint(container_timing, content,
+                               gfx::RectF(0, 0, 10, 10));
+  ASSERT_TRUE(ContainerTiming::ContributesToContainerTiming(content));
+  if (stopped) {
+    container_timing.OnInputOrScroll();
+    ASSERT_FALSE(ContainerTiming::ContributesToContainerTiming(content));
+  }
+
+  int contributing = 0;
+  base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
+  for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
+    for (int j = 0; j < kChecksPerLap; ++j) {
+      contributing += ContainerTiming::ContributesToContainerTiming(content);
+    }
+    timer.NextLap();
+  }
+  EXPECT_EQ(stopped ? 0 : (kLaps + kWarmupLaps) * kChecksPerLap, contributing);
+
+  auto reporter = SetUpReporter(Format("paint_time_check_{}_{}", story_base,
+                                       stopped ? "stopped" : "recording")
+                                    .Utf8());
+  reporter.AddResult(kMetricRunsPerSecond, timer.LapsPerSecond());
+}
+
 }  // namespace
 
 class ContainerTimingPerfTest : public ::testing::Test {};
@@ -288,6 +331,30 @@ TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_5) {
 
 TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_1) {
   RunInvalidationCycleBenchmark("depth10_100_1", 10, 100, 1);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth1_Recording) {
+  RunPaintTimeCheckBenchmark("depth_1", 1, /*stopped=*/false);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth1_Stopped) {
+  RunPaintTimeCheckBenchmark("depth_1", 1, /*stopped=*/true);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth10_Recording) {
+  RunPaintTimeCheckBenchmark("depth_10", 10, /*stopped=*/false);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth10_Stopped) {
+  RunPaintTimeCheckBenchmark("depth_10", 10, /*stopped=*/true);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth50_Recording) {
+  RunPaintTimeCheckBenchmark("depth_50", 50, /*stopped=*/false);
+}
+
+TEST_F(ContainerTimingPerfTest, PaintTimeCheck_Depth50_Stopped) {
+  RunPaintTimeCheckBenchmark("depth_50", 50, /*stopped=*/true);
 }
 
 TEST_F(ContainerTimingPerfTest, ImageAttribution_100) {

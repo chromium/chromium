@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -1091,6 +1092,32 @@ TEST_F(ContainerTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
   EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
 }
 
+// A paint committed before the input is still reported, even if the frame is
+// presented after it.
+TEST_F(ContainerTimingTest, Input_ReportsPaintPresentedAfterInput) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="a">x</div>
+      <div id="b">x</div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  OptionalPaintTimingCallback callback =
+      GetContainerTiming().TakePaintTimingCallback();
+  ASSERT_TRUE(callback);
+  GetContainerTiming().OnInputOrScroll();
+  auto* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  std::move(*callback).Run(base::TimeTicks::Now(), DOMPaintTimingInfo(),
+                           performance->NavigationId().web_exposed_id);
+  EXPECT_EQ(2u, GetContainerEntryCount());
+}
+
 class ContainerTimingIframeIsolationTest : public PageTestBase {
  protected:
   void SetUp() override {
@@ -1150,6 +1177,110 @@ TEST_F(ContainerTimingIframeIsolationTest, IframeIsolation) {
   EXPECT_EQ(
       1u, child_performance->getBufferedEntriesByType(AtomicString("container"))
               .size());
+}
+
+// Drives real paints, input and presentation through `PaintTiming`, unlike
+// `ContainerTimingTest`, which injects paints into `ContainerTiming` directly.
+// Intersection rects are empty without a `LocalFrameClientImpl`, so these tests
+// observe whether paints would be recorded and which roots have a record, not
+// the entries.
+class ContainerTimingInputTest : public PaintTimingTestBase {
+ protected:
+  void SetUp() override {
+    PaintTimingTestBase::SetUp();
+    SetMainFrameBodyContent(R"HTML(
+      <div id="first_root" containertiming="first">
+        <img id="first" style="width: 100px; height: 100px;">
+      </div>
+      <div id="second_root" containertiming="second">
+        <img id="second" style="width: 100px; height: 100px;">
+      </div>
+    )HTML");
+    SetImageContent("first", 100, 100);
+    SimulateRenderingAndPresentationTime();
+    ASSERT_TRUE(HasRecord("first_root"));
+    ASSERT_FALSE(HasRecord("second_root"));
+  }
+
+  // Paints `second`, which was empty when the test started.
+  void PaintSecondImage() {
+    SetImageContent("second", 100, 100);
+    SimulateRenderingAndPresentationTime();
+  }
+
+  // Whether a paint of `id`, under the painted `first_root`, would be recorded.
+  bool WouldRecord(const char* id) {
+    return ContainerTiming::ContributesToContainerTiming(GetElementById(id));
+  }
+
+  bool HasRecord(const char* container_root_id) {
+    return ContainerTiming::From(*GetDocument().domWindow())
+        .HasRecordForTesting(
+            To<HTMLElement>(GetElementById(container_root_id)));
+  }
+
+ private:
+  ScopedContainerTimingForTest scoped_feature_{true};
+};
+
+TEST_F(ContainerTimingInputTest, ContinuesWithoutInput) {
+  EXPECT_TRUE(WouldRecord("first"));
+}
+
+TEST_F(ContainerTimingInputTest, StopsAfterKeyDown) {
+  SimulateKeyDown();
+  EXPECT_FALSE(WouldRecord("first"));
+}
+
+TEST_F(ContainerTimingInputTest, StopsAfterUserScroll) {
+  SimulateScroll(mojom::blink::ScrollType::kUser);
+  EXPECT_FALSE(WouldRecord("first"));
+}
+
+TEST_F(ContainerTimingInputTest, StopsAfterCompositorScroll) {
+  SimulateScroll(mojom::blink::ScrollType::kCompositor);
+  EXPECT_FALSE(WouldRecord("first"));
+}
+
+TEST_F(ContainerTimingInputTest, ContinuesAfterProgrammaticScroll) {
+  SimulateScroll(mojom::blink::ScrollType::kProgrammatic);
+  EXPECT_TRUE(WouldRecord("first"));
+}
+
+TEST_F(ContainerTimingInputTest, ContinuesAfterKeyUp) {
+  SimulateKeyUp();
+  EXPECT_TRUE(WouldRecord("first"));
+}
+
+// Recording stops for the whole window, including roots that had not painted
+// before the input.
+TEST_F(ContainerTimingInputTest, StopsForRootFirstPaintedAfterInput) {
+  SimulateKeyDown();
+  PaintSecondImage();
+  EXPECT_FALSE(HasRecord("second_root"));
+}
+
+// Element timing keeps reporting the image, but container timing must not
+// record it.
+TEST_F(ContainerTimingInputTest, StopsForElementTimingImageAfterInput) {
+  GetElementById("second")->setAttribute(html_names::kElementtimingAttr,
+                                         AtomicString("et"));
+  SimulateKeyDown();
+  PaintSecondImage();
+  EXPECT_FALSE(HasRecord("second_root"));
+}
+
+TEST_F(ContainerTimingInputTest, StopsForTextOfRootFirstPaintedAfterInput) {
+  SimulateKeyDown();
+  GetElementById("second_root")->setTextContent("Text");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(HasRecord("second_root"));
+}
+
+TEST_F(ContainerTimingInputTest, ContinuesForTextWithoutInput) {
+  GetElementById("second_root")->setTextContent("Text");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_TRUE(HasRecord("second_root"));
 }
 
 }  // namespace blink

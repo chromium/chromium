@@ -62,9 +62,12 @@ bool ContainerTiming::ContributesToContainerTiming(Element* element) {
   // The paint attribution tracker, populated during the pre-paint walk (which
   // runs before paint), keys images by their generating node and text by its
   // aggregation node, which is exactly `element` either way.
-  ContainerTimingPaintAttributionTracker* tracker =
-      From(*window).PaintAttributionTracker();
-  return tracker->GetContainerRootFor(element) != nullptr;
+  ContainerTiming& container_timing = From(*window);
+  if (container_timing.has_seen_input_or_scroll_) {
+    return false;
+  }
+  return container_timing.PaintAttributionTracker()->GetContainerRootFor(
+             element) != nullptr;
 }
 
 ContainerTiming::Record::Record(HTMLElement* container_root,
@@ -163,6 +166,13 @@ void ContainerTiming::OnContainerRootDisconnected(HTMLElement* element) {
 
 void ContainerTiming::OnElementPainted(Element& element,
                                        const gfx::RectF& intersection_rect) {
+  // ElementTiming also calls this for elements registered for element timing,
+  // which ContributesToContainerTiming() did not filter.
+  // TODO(crbug.com/559075199): Make this a CHECK once ContainerTiming and
+  // ElementTiming are decoupled.
+  if (has_seen_input_or_scroll_) {
+    return;
+  }
   // The tracker only maps elements that are actually attributed to a container
   // root. A null result means this paint (e.g. a text record that only exists
   // for element timing) is not under any container root and must be ignored.

@@ -353,6 +353,13 @@ void ElementTiming::OnImageRemoved(const LayoutObject& layout_object,
       MediaRecordId::GenerateHash(&layout_object, media_timing));
 }
 
+void ElementTiming::OnInputOrScroll() {
+  // TODO(crbug.com/559075199): Make ContainerTiming a PaintTimingClient.
+  if (EnsureContainerTiming()) {
+    container_timing_->OnInputOrScroll();
+  }
+}
+
 bool ElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
     return true;
