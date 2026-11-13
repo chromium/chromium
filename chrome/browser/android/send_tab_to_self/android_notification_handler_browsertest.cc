@@ -30,6 +30,7 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
@@ -115,10 +116,10 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
-  EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
-                                   ->GetTab(initial_tab_count)
-                                   ->GetContents()
-                                   ->GetVisibleURL());
+  content::WebContents* opened_contents =
+      GetTabListInterface()->GetTab(initial_tab_count)->GetContents();
+  EXPECT_EQ(GURL(kExampleUrl), opened_contents->GetVisibleURL());
+  EXPECT_EQ(content::Visibility::HIDDEN, opened_contents->GetVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
@@ -145,10 +146,10 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
-  EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
-                                   ->GetTab(initial_tab_count)
-                                   ->GetContents()
-                                   ->GetVisibleURL());
+  content::WebContents* opened_contents =
+      GetTabListInterface()->GetTab(initial_tab_count)->GetContents();
+  EXPECT_EQ(GURL(kExampleUrl), opened_contents->GetVisibleURL());
+  EXPECT_EQ(content::Visibility::HIDDEN, opened_contents->GetVisibility());
 }
 
 class AndroidNotificationHandlerModelNotReadyBrowserTest

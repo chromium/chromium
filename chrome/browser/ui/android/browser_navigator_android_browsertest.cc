@@ -37,6 +37,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -263,6 +264,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(4, tab_list_->GetTabCount());
   tabs::TabInterface* new_tab1 = tab_list_->GetTab(2);
   EXPECT_EQ(url2, new_tab1->GetContents()->GetLastCommittedURL());
+  EXPECT_EQ(content::Visibility::HIDDEN,
+            new_tab1->GetContents()->GetVisibility());
   EXPECT_EQ(source_tab, tab_list_->GetActiveTab());
 
   // 2. Prepare and execute second NEW_BACKGROUND_TAB navigation from SAME
@@ -287,6 +290,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   tabs::TabInterface* new_tab2 = tab_list_->GetTab(3);
   ASSERT_TRUE(new_tab2);
   EXPECT_EQ(url3, new_tab2->GetContents()->GetLastCommittedURL());
+  EXPECT_EQ(content::Visibility::HIDDEN,
+            new_tab2->GetContents()->GetVisibility());
 
   // Verify original Tab2 pushed to Index 4
   EXPECT_EQ(GURL("about:blank"),
@@ -294,6 +299,51 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   // Verify Active Tab is still Source Tab
   EXPECT_EQ(1, tab_list_->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Disposition_NewBackgroundTab_InitiallyHidden) {
+  StartAtURL("/title1.html");
+  tabs::TabInterface* initial_tab = tab_list_->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  const GURL background_url = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, background_url,
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
+  params.source_contents = initial_tab->GetContents();
+  params.tabstrip_index = 1;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  content::WebContents* bg_contents = handle->GetWebContents();
+  ASSERT_TRUE(bg_contents);
+  content::TestNavigationObserver observer(bg_contents);
+  observer.Wait();
+
+  ASSERT_EQ(2, tab_list_->GetTabCount());
+  EXPECT_EQ(0, tab_list_->GetActiveIndex());
+
+  TabAndroid* bg_tab_android = TabAndroid::FromWebContents(bg_contents);
+  ASSERT_TRUE(bg_tab_android);
+  EXPECT_TRUE(bg_tab_android->IsHidden());
+  EXPECT_EQ(content::Visibility::HIDDEN, bg_contents->GetVisibility());
+  EXPECT_EQ("hidden", content::EvalJs(bg_contents, "document.visibilityState"));
+
+  // Activating the background tab transitions WebContents to VISIBLE.
+  tabs::TabInterface* bg_tab = tab_list_->GetTab(1);
+  ASSERT_TRUE(bg_tab);
+  tab_list_->ActivateTab(bg_tab->GetHandle());
+  EXPECT_FALSE(bg_tab_android->IsHidden());
+  EXPECT_EQ(content::Visibility::VISIBLE, bg_contents->GetVisibility());
+  EXPECT_EQ("visible",
+            content::EvalJs(bg_contents, "document.visibilityState"));
+
+  // Switching back transitions WebContents back to HIDDEN.
+  tab_list_->ActivateTab(initial_tab->GetHandle());
+  EXPECT_TRUE(bg_tab_android->IsHidden());
+  EXPECT_EQ(content::Visibility::HIDDEN, bg_contents->GetVisibility());
+  EXPECT_EQ("hidden", content::EvalJs(bg_contents, "document.visibilityState"));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,

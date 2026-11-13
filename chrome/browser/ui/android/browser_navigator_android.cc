@@ -459,6 +459,10 @@ tabs::TabInterface* CreateNewTab(NavigateParams* params) {
   } else {
     content::WebContents::CreateParams create_params(
         params->initiating_profile);
+    if (params->disposition ==
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
+      create_params.initially_hidden = true;
+    }
     web_contents = content::WebContents::Create(create_params);
   }
 
