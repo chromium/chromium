@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for AppLaunchDrawBlocker behavior. */
@@ -391,6 +393,66 @@ public class AppLaunchDrawBlockerUnitTest {
         // Tab is now available for recreation.
         mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
         assertTrue("Draw should no longer be blocked.", listener.onPreDraw());
+        verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
+    }
+
+    @Test
+    public void testBlockDrawOnRecreation_FallbackTimeout() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+        verify(mViewTreeObserver, times(1))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+        assertFalse("Draw should be blocked during recreation.", listener.onPreDraw());
+
+        // Advance main looper past the fallback timeout without calling
+        // onActiveTabAvailableForRecreation().
+        ShadowLooper.idleMainLooper(
+                AppLaunchDrawBlocker.RECREATION_DRAW_BLOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(
+                "Draw should be unblocked after recreation fallback timeout.",
+                listener.onPreDraw());
+        verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
+    }
+
+    @Test
+    public void testDestroyClearsRecreationBlock() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+        verify(mViewTreeObserver, times(1))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+        assertFalse("Draw should be blocked during recreation.", listener.onPreDraw());
+
+        mAppLaunchDrawBlocker.destroy();
+        assertTrue("Draw should be unblocked after destroy().", listener.onPreDraw());
+    }
+
+    @Test
+    public void testDestroyRemovesPreDrawListener() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+        verify(mViewTreeObserver, times(1))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+
+        // destroy() removes the listener itself, without waiting for another pre-draw pass.
+        verify(mViewTreeObserver, never()).removeOnPreDrawListener(listener);
+        mAppLaunchDrawBlocker.destroy();
         verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
     }
 
