@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel="help" href="https://url.spec.whatwg.org/#concept-url-origin">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_equals(new URL('file:///home/abarth').origin, 'file://');
+}, 'origin of a file: URL');
+
+test(() => {
+  function assert_type_error(func, expected) {
+    try {
+      func();
+    } catch (ex) {
+      assert_true(ex instanceof TypeError);
+      assert_equals(String(ex), expected);
+      return;
+    }
+    assert_unreached('Expected a TypeError exception with string: ' + expected);
+  }
+
+  assert_type_error(
+      () => { new URL(); },
+      'TypeError: Failed to construct \'URL\': 1 argument required, but only 0 present.');
+  assert_type_error(
+      () => { new URL(''); },
+      'TypeError: Failed to construct \'URL\': Invalid URL');
+  assert_type_error(
+      () => { new URL('', 'about:blank'); },
+      'TypeError: Failed to construct \'URL\': Invalid URL');
+  assert_type_error(
+      () => { new URL('abc'); },
+      'TypeError: Failed to construct \'URL\': Invalid URL');
+  assert_type_error(
+      () => { new URL('//abc'); },
+      'TypeError: Failed to construct \'URL\': Invalid URL');
+  assert_type_error(
+      () => { new URL('http:///www.domain.com/', 'abc'); },
+      'TypeError: Failed to construct \'URL\': Invalid base URL');
+  assert_type_error(
+      () => { new URL('http:///www.domain.com/', null); },
+      'TypeError: Failed to construct \'URL\': Invalid base URL');
+  assert_type_error(
+      () => { new URL('//abc', null); },
+      'TypeError: Failed to construct \'URL\': Invalid base URL');
+}, 'URL constructor exception messages');
+</script>

@@ -493,7 +493,6 @@ fast/dom/shadow/remove-stylesheet-from-shadow-crash.html
 fast/dom/shadow/shadow-root-text-child.html
 fast/dom/StyleSheet/detached-style-pi.xhtml
 fast/dom/TreeWalker/previousNodeLastChildReject.html
-fast/domurl/url-pathname.html
 fast/dom/Window/alert-undefined.html
 fast/dom/Window/window-remove-event-listener.html
 fast/dom/viewport/viewport-scale-inert.html
