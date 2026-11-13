@@ -13,6 +13,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -25,12 +26,12 @@ constexpr char16_t kMuteLabel[] = u"Mute";
 constexpr char16_t kUnmuteLabel[] = u"Unmute";
 
 testing::AssertionResult ShowsIcon(const MuteButton& button,
-                                   const gfx::VectorIcon& icon) {
+                                   const gfx::VectorIcon& icon,
+                                   ui::ColorId color) {
   const int size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_TOAST_BUBBLE_ICON_SIZE);
   if (button.GetImageModel(views::Button::STATE_NORMAL) !=
-      ui::ImageModel::FromVectorIcon(icon, ui::kColorButtonForegroundProminent,
-                                     size)) {
+      ui::ImageModel::FromVectorIcon(icon, color, size)) {
     return testing::AssertionFailure() << "wrong normal icon";
   }
   if (button.GetImageModel(views::Button::STATE_DISABLED) !=
@@ -84,13 +85,26 @@ TEST_F(MuteButtonTest, IconFollowsMuted) {
       rounded ? vector_icons::kMicOffIcon
               : vector_icons::kMicOffChromeRefreshOldIcon;
   MuteButton* const button = CreateMuteButton();
-  EXPECT_TRUE(ShowsIcon(*button, mic_icon));
+  EXPECT_TRUE(
+      ShowsIcon(*button, mic_icon, ui::kColorButtonForegroundProminent));
 
   button->SetMuted(true);
-  EXPECT_TRUE(ShowsIcon(*button, mic_off_icon));
+  EXPECT_TRUE(ShowsIcon(*button, mic_off_icon, ui::kColorSysOnError));
 
   button->SetMuted(false);
-  EXPECT_TRUE(ShowsIcon(*button, mic_icon));
+  EXPECT_TRUE(
+      ShowsIcon(*button, mic_icon, ui::kColorButtonForegroundProminent));
+}
+
+TEST_F(MuteButtonTest, TurnsRedWhileMuted) {
+  MuteButton* const button = CreateMuteButton();
+  EXPECT_FALSE(button->GetBgColorOverride().has_value());
+
+  button->SetMuted(true);
+  EXPECT_EQ(button->GetBgColorOverride(), ui::ColorVariant(ui::kColorSysError));
+
+  button->SetMuted(false);
+  EXPECT_FALSE(button->GetBgColorOverride().has_value());
 }
 
 }  // namespace

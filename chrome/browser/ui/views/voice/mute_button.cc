@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/voice/mute_button.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/layout_provider.h"
@@ -69,9 +71,13 @@ void MuteButton::Update() {
   const gfx::VectorIcon& icon = GetIcon(muted_);
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_TOAST_BUBBLE_ICON_SIZE);
+  SetBgColorOverride(muted_
+                         ? std::optional<ui::ColorVariant>(ui::kColorSysError)
+                         : std::nullopt);
+  const ui::ColorId icon_color =
+      muted_ ? ui::kColorSysOnError : ui::kColorButtonForegroundProminent;
   SetImageModel(STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(
-                    icon, ui::kColorButtonForegroundProminent, icon_size));
+                ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size));
   SetImageModel(STATE_DISABLED,
                 ui::ImageModel::FromVectorIcon(
                     icon, ui::kColorButtonForegroundDisabled, icon_size));

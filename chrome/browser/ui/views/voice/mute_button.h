@@ -14,7 +14,7 @@ namespace voice {
 
 // A button for muting the user's microphone. It runs its callback when
 // pressed, and shows the state passed to SetMuted(). It shows a microphone
-// while unmuted, a crossed-out one while muted.
+// while unmuted, and turns red with a crossed-out one while muted.
 class MuteButton : public views::MdTextButton {
   METADATA_HEADER(MuteButton, views::MdTextButton)
 
