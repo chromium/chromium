@@ -88,6 +88,7 @@ found in the LICENSE file.
     <!-- Context Menu Ids -->
     <!-- Page Group -->
     <!-- go/keep-sorted start -->
+    <item type="id" name="contextmenu_ask_google_about_page" />
     <item type="id" name="contextmenu_back" />
     <item type="id" name="contextmenu_create_qr_code" />
     <item type="id" name="contextmenu_forward" />
