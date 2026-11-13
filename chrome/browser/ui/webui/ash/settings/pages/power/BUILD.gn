@@ -22,7 +22,6 @@ static_library("power") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/experiences/settings_ui/resources:strings",

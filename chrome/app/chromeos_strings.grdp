@@ -451,9 +451,6 @@
   <message name="IDS_OPTIONS_SETTINGS_TIMEZONE_DISPLAY_NAME_UTC" desc="This is the display name of UTC/GMT timezone for timezone option in user settings.">
     Coordinated Universal Time (UTC/GMT)
   </message>
-  <message name="IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE" desc="A label for text-to-speech voices which do not have a language specified. For example, some voices may speak in US English, or Spain-Spanish. This labels voices with no language.">
-    No language
-  </message>
 
   <!-- Slow UI -->
   <message name="IDS_SLOW_DISABLE" desc="The text of the button that disables performance collection for feedback reports">
@@ -901,14 +898,6 @@
     <ph name="PRINTER_MAKE_OR_MODEL">$1<ex>OfficeJet 8710</ex></ph> (USB)
   </message>
 
-  <message name="IDS_MOBILE_NETWORK_SCANNING_MESSAGE" desc="Label for spinner whose purpose is to indicate to the user that the device is currently scanning for mobile data networks.">
-    Scanning for mobile data networks...
-  </message>
-
-  <message name="IDS_NETWORK_SCANNING_MESSAGE" desc="Label for spinner whose purpose is to indicate to the user that the device is currently scanning for nearby networks (e.g. Wi-Fi).">
-    Searching for networks...
-  </message>
-
   <!-- HaTS Strings -->
   <message name="IDS_HATS_NOTIFICATION_TITLE" desc="The title of the notification for Happiness Tracking Survey.">
     Help us improve Chromebooks
@@ -946,40 +935,6 @@
   <!-- Mojo service names (displayed in task manager) -->
   <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
     PDF Service
-  </message>
-
-  <message name="IDS_POWER_SOURCE_PORT_LEFT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the left side of this device.">
-    USB-C device (left port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_RIGHT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the right side of this device.">
-    USB-C device (right port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_BACK" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the back of this device.">
-    USB-C device (rear port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_FRONT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the front of this device.">
-    USB-C device (front port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_LEFT_FRONT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the left side of this device. In this case there are two ports on that side, so this text should refer to the front one on that side.">
-    USB-C device (left side front port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_LEFT_BACK" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the left side of this device. In this case there are two ports on that side, so this text should refer to the back one on that side.">
-    USB-C device (left side back port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_RIGHT_FRONT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the right side of this device. In this case there are two ports on that side, so this text should refer to the front one on that side.">
-    USB-C device (right side front port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_RIGHT_BACK" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the right side of this device. In this case there are two ports on that side, so this text should refer to the back one on that side.">
-    USB-C device (right side back port)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_BACK_LEFT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the back of this device. In this case there are two ports on the back, so this text should refer to the one on the left.">
-    USB-C device (left port in the back)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_BACK_RIGHT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the back of this device. In this case there are two ports on the back, so this text should refer to the one on the right.">
-    USB-C device (right port in the back)
-  </message>
-  <message name="IDS_POWER_SOURCE_PORT_UNKNOWN" desc="The text referring to the device to charge from, when its port location cannot be determined.">
-    USB-C device
   </message>
 
   <message name="IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION" desc="The text displayed in the files app Add New Services menu for the option that allows users to mount a new SMB file share.">

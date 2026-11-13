@@ -4,11 +4,6 @@
      Everything in this file is wrapped in <if expr="is_chromeos">. -->
 <grit-part>
 
-  <!-- Settings -->
-  <message name="IDS_OS_SETTINGS_PEOPLE_V2" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
-    Accounts
-  </message>
-
   <!-- RequestPin dialog messages -->
   <message name="IDS_REQUEST_PIN_DIALOG_HEADER" desc="The text displayed in the certificate provider PIN request dialog.">
     "<ph name="EXTENSION_NAME">$1<ex>My Extension</ex></ph>" is requesting your <ph name="CODE_TYPE">$2<ex>PIN</ex></ph>

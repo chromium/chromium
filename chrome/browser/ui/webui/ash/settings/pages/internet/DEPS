@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/extension_control_handler.h",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {

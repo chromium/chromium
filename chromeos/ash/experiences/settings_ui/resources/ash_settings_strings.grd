@@ -7496,6 +7496,72 @@ Press an assigned switch or key to remove assignment.
         Invalid password
       </message>
 
+      <!-- Power source port, network scanning, and TTS strings -->
+      <message name="IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE" desc="A label for text-to-speech voices which do not have a language specified. For example, some voices may speak in US English, or Spain-Spanish. This labels voices with no language.">
+        No language
+      </message>
+      <message name="IDS_MOBILE_NETWORK_SCANNING_MESSAGE" desc="Label for spinner whose purpose is to indicate to the user that the device is currently scanning for mobile data networks.">
+        Scanning for mobile data networks...
+      </message>
+      <message name="IDS_NETWORK_SCANNING_MESSAGE" desc="Label for spinner whose purpose is to indicate to the user that the device is currently scanning for nearby networks (e.g. Wi-Fi).">
+        Searching for networks...
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_LEFT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the left side of this device.">
+        USB-C device (left port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_RIGHT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the right side of this device.">
+        USB-C device (right port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_BACK" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the back of this device.">
+        USB-C device (rear port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_FRONT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the front of this device.">
+        USB-C device (front port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_LEFT_FRONT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the left side of this device. In this case there are two ports on that side, so this text should refer to the front one on that side.">
+        USB-C device (left side front port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_LEFT_BACK" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the left side of this device. In this case there are two ports on that side, so this text should refer to the back one on that side.">
+        USB-C device (left side back port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_RIGHT_FRONT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the right side of this device. In this case there are two ports on that side, so this text should refer to the front one on that side.">
+        USB-C device (right side front port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_RIGHT_BACK" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the right side of this device. In this case there are two ports on that side, so this text should refer to the back one on that side.">
+        USB-C device (right side back port)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_BACK_LEFT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the back of this device. In this case there are two ports on the back, so this text should refer to the one on the left.">
+        USB-C device (left port in the back)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_BACK_RIGHT" desc="The text identifying an external device, when that device is connected to a USB Type-C port on the back of this device. In this case there are two ports on the back, so this text should refer to the one on the right.">
+        USB-C device (right port in the back)
+      </message>
+      <message name="IDS_POWER_SOURCE_PORT_UNKNOWN" desc="The text referring to the device to charge from, when its port location cannot be determined.">
+        USB-C device
+      </message>
+
+      <message name="IDS_OS_SETTINGS_PEOPLE_V2" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
+        Accounts
+      </message>
+
+      <if expr="_google_chrome">
+        <message name="IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK" desc="Text of the button which allows the user to send feedback with Chrome.">
+          Send feedback
+        </message>
+      </if>
+      <message name="IDS_SETTINGS_END_TIME" desc="The label of the end time bubble of settings-scheduler-slider">
+        End time <ph name="TIME">$1<ex>5:00 AM</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_START_TIME" desc="The label of the start time bubble of settings-scheduler-slider">
+        Start time <ph name="TIME">$1<ex>9:06 PM</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
+        Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing for non-managed profiles.">
+        Changes to your bookmarks, history, passwords, and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>Google Dashboard<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

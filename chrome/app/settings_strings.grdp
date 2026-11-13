@@ -71,10 +71,6 @@
       <message name="IDS_SETTINGS_ABOUT_PAGE_PRIVACY_POLICY" desc="Text of the button which allows the user to open the privacy policy.">
         Privacy policy
       </message>
-
-      <message name="IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK" desc="Text of the button which allows the user to send feedback with Chrome.">
-        Send feedback
-      </message>
     </if>
     <if expr="is_chromeos">
       <message name="IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST" desc="Message used when End of Life is past current date in END OF LIFE section on the About Page.">
@@ -487,9 +483,6 @@
     <message name="IDS_SETTINGS_EDIT" desc="Label used on a menu item or button, used in different contexts to edit an item.">
       Edit
     </message>
-    <message name="IDS_SETTINGS_END_TIME" desc="The label of the end time bubble of settings-scheduler-slider">
-      End time <ph name="TIME">$1<ex>5:00 AM</ex></ph>
-    </message>
     <message name="IDS_SETTINGS_NOT_VALID" desc="Text indicating that an input is not valid.">
       Not valid
     </message>
@@ -507,9 +500,6 @@
     </message>
     <message name="IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION" desc="A label to be read aloud by screen readers when a user focuses on a slider. A settings slider generally has a minimum value, a maximum value, and a fixed range of values in between. This label gives the user context for what the minimum and maximum values represent for that particular slider.">
       Slider: <ph name="MIN_LABEL">$1<ex>Slowest</ex></ph> to <ph name="MAX_LABEL">$2<ex>Fastest</ex></ph>
-    </message>
-    <message name="IDS_SETTINGS_START_TIME" desc="The label of the start time bubble of settings-scheduler-slider">
-      Start time <ph name="TIME">$1<ex>9:06 PM</ex></ph>
     </message>
 
     <!-- Autofill Page -->
@@ -1900,11 +1890,6 @@
     <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
       Use secure DNS
     </message>
-    <if expr="is_chromeos">
-      <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-        Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
-      </message>
-    </if>
     <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
       OS default (when available)
     </message>
@@ -3613,9 +3598,6 @@
       Google services
     </message>
 
-    <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing for non-managed profiles.">
-      Changes to your bookmarks, history, passwords, and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>Google Dashboard<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-    </message>
     <message name="IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing and sign-out for non-managed profiles.">
       This will sign you out of your Google Accounts. Your bookmarks, history, passwords, and more will no longer be synced.
     </message>

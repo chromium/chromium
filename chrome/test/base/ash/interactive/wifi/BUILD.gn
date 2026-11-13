@@ -17,7 +17,6 @@ source_set("interactive_ui_tests") {
 
   deps = [
     "//ash",
-    "//chrome/app:generated_resources_grit",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/interactive:test_support",
     "//chrome/test/base/ash/interactive/network:test_support",
