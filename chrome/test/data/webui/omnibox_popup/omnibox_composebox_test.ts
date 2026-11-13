@@ -2619,6 +2619,55 @@ suite('OmniboxComposeboxTest', () => {
     });
   });
 
+  test('Entrypoint keeps its height when tab favicons are shown', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInOmniboxEnabled: true,
+      tabFaviconChipsToCoinsEnabled: true,
+    });
+    omniboxComposebox.remove();
+    omniboxComposebox = document.createElement('cr-omnibox-composebox');
+    omniboxComposebox.contextMenuEnabled = true;
+    omniboxComposebox.contextManagementInComposeboxEnabled = true;
+    document.body.appendChild(omniboxComposebox);
+    await microtasksFinished();
+
+    const entrypointButton = omniboxComposebox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button');
+    assertTrue(!!entrypointButton);
+    const iconButton =
+        entrypointButton.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assertTrue(!!iconButton);
+    assertFalse(iconButton.classList.contains('pill-button'));
+    assertEquals(32, iconButton.getBoundingClientRect().height);
+
+    testProxy.handler.setPromiseResolveFor(
+        'addTabContext', 'mock-tab-token-height');
+    const context = {
+      input: '',
+      attachments: [{
+        tabAttachment: {
+          tabId: 42,
+          title: 'Google Search',
+          url: 'about:blank',  // Mojo converts obj to str.
+          source: TabAttachmentSource.kContextMenu,
+        },
+      }],
+      toolMode: ToolMode.kUnspecified,
+      modelMode: ModelMode.kUnspecified,
+    };
+    omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+    await testProxy.handler.whenCalled('addTabContext');
+    await microtasksFinished();
+    await omniboxComposebox.updateComplete;
+    await entrypointButton.updateComplete;
+
+    const pill =
+        entrypointButton.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assertTrue(!!pill);
+    assertTrue(pill.classList.contains('pill-button'));
+    assertEquals(32, pill.getBoundingClientRect().height);
+  });
+
   suite('voice search', () => {
     setup(async () => {
       const windowProxy = TestMock.fromClass(WindowProxy);
