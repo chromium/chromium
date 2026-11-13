@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forArchived;
 import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forTabModel;
 
 import android.content.Context;
@@ -340,9 +340,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_QuirkDeleteUmaWithClosedText() {
+    public void testArchived_QuirkDeleteUmaWithClosedText() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "Group 1",
@@ -388,9 +388,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_EmptyTitle_UsesPlaceholder() {
+    public void testArchived_EmptyTitle_UsesPlaceholder() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "",
@@ -406,9 +406,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_GroupNotFound_ShowsGenericGroupCount() {
+    public void testArchived_GroupNotFound_ShowsGenericGroupCount() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ null,
@@ -426,9 +426,9 @@ public class UndoBarContentFactoryTest {
 
     /** Guards that a missing group title with closed tabs keeps the generic text. */
     @Test
-    public void testSavedGroups_GroupNotFoundWithTab_ShowsGenericText() {
+    public void testArchived_GroupNotFoundWithTab_ShowsGenericText() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         List.of(createClosedTab(1, "Tab 1", /* groupId= */ null)),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ null,
@@ -452,9 +452,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_MultipleGroups() {
+    public void testArchived_MultipleGroups() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1", "sync-id-2"),
                         /* savedGroupTitle= */ null,
@@ -471,9 +471,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_GroupAndTab() {
+    public void testArchived_GroupAndTab() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         List.of(createClosedTab(1, "Tab 1", /* groupId= */ null)),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "Group 1",
@@ -497,9 +497,9 @@ public class UndoBarContentFactoryTest {
     }
 
     @Test
-    public void testSavedGroups_MultipleGroupsAndTabs() {
+    public void testArchived_MultipleGroupsAndTabs() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         List.of(
                                 createClosedTab(1, "Tab 1", /* groupId= */ null),
                                 createClosedTab(2, "Tab 2", /* groupId= */ null)),

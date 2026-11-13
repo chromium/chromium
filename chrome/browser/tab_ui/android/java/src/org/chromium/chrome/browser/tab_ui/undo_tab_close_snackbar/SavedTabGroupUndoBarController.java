@@ -79,7 +79,7 @@ public class SavedTabGroupUndoBarController extends UndoBarController
         }
 
         UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureSavedGroups(
+                UndoClosureSnapshotFactory.captureArchived(
                         tabs, savedTabGroupSyncIds, mTabGroupSyncService);
 
         mLeases.add(mLeaseSupplier.get());

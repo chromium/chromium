@@ -26,14 +26,20 @@ import java.util.Map;
 @NullMarked
 public final class UndoClosureSnapshot {
     /** The kind of closure event a snapshot was captured from. */
-    @IntDef({ClosureKind.TAB_MODEL, ClosureKind.SAVED_GROUPS})
+    @IntDef({ClosureKind.TAB_MODEL, ClosureKind.ARCHIVED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ClosureKind {
-        /** Tabs and tab groups closed in a tab model. */
+        /**
+         * Tabs and tab groups (including hidden synced tab groups) closed from a regular or
+         * incognito {@code TabModel}.
+         */
         int TAB_MODEL = 0;
 
-        /** Tabs and saved tab groups closed via an explicit trigger. */
-        int SAVED_GROUPS = 1;
+        /**
+         * Archived tabs and archived tab groups closed from the Archived Tabs dialog ({@code
+         * SavedTabGroupUndoBarController}).
+         */
+        int ARCHIVED = 1;
     }
 
     /** Represents a closed tab captured at close time. */
@@ -177,8 +183,9 @@ public final class UndoClosureSnapshot {
 
     /**
      * The saved group's title (empty if it has none), or null if the sync service is unavailable or
-     * the group was not found. Only set for SAVED_GROUPS snapshots capturing a single saved group.
-     * When null, the snackbar shows the generic group count instead of the group's name.
+     * the group was not found. Only set for {@link ClosureKind#ARCHIVED} snapshots capturing a
+     * single saved group. When null, the snackbar shows the generic group count instead of the
+     * group's name.
      */
     public final @Nullable String savedGroupTitle;
 
@@ -242,8 +249,9 @@ public final class UndoClosureSnapshot {
     }
 
     /**
-     * Creates a {@link ClosureKind#TAB_MODEL} snapshot. The saved-group-only fields are left empty,
-     * null or 0.
+     * Creates a {@link ClosureKind#TAB_MODEL} snapshot for tabs and tab groups (including hidden
+     * synced tab groups) closed from a regular or incognito {@code TabModel}. The archived-only
+     * fields are left empty, null or 0.
      *
      * @param tabs The list of closed tabs.
      * @param groups The mapping from group identifiers to their state.
@@ -277,22 +285,23 @@ public final class UndoClosureSnapshot {
     }
 
     /**
-     * Creates a {@link ClosureKind#SAVED_GROUPS} snapshot. The tab-model-only fields are left empty
-     * or false.
+     * Creates a {@link ClosureKind#ARCHIVED} snapshot for archived tabs and archived tab groups
+     * closed from the Archived Tabs dialog ({@code SavedTabGroupUndoBarController}). The
+     * tab-model-only fields are left empty or false.
      *
-     * @param tabs The list of closed tabs.
-     * @param savedTabGroupSyncIds The list of closed saved tab group sync identifiers.
-     * @param savedGroupTitle The title of the saved group, if applicable.
-     * @param savedGroupTabCount The tab count of the saved group, if applicable.
+     * @param tabs The list of closed archived tabs.
+     * @param savedTabGroupSyncIds The list of closed archived saved tab group sync identifiers.
+     * @param savedGroupTitle The title of the archived saved group, if applicable.
+     * @param savedGroupTabCount The tab count of the archived saved group, if applicable.
      * @return The immutable snapshot.
      */
-    public static UndoClosureSnapshot forSavedGroups(
+    public static UndoClosureSnapshot forArchived(
             List<ClosedTab> tabs,
             List<String> savedTabGroupSyncIds,
             @Nullable String savedGroupTitle,
             int savedGroupTabCount) {
         return new UndoClosureSnapshot(
-                ClosureKind.SAVED_GROUPS,
+                ClosureKind.ARCHIVED,
                 tabs,
                 /* groups= */ Collections.emptyMap(),
                 /* isTabGroupSyncEnabled= */ false,

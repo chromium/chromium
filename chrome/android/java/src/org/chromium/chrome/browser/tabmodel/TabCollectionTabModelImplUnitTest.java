@@ -1183,8 +1183,8 @@ public class TabCollectionTabModelImplUnitTest {
 
     @Test
     public void testRestoreClosedTabsForUndo_unrestorableStateNotRestored() {
-        UndoClosureSnapshot savedGroupsSnapshot =
-                UndoClosureSnapshot.forSavedGroups(
+        UndoClosureSnapshot archivedSnapshot =
+                UndoClosureSnapshot.forArchived(
                         List.of(createClosedTab(/* id= */ 5, /* wasSelected= */ false)),
                         List.of("sync_id"),
                         /* savedGroupTitle= */ null,
@@ -1192,7 +1192,7 @@ public class TabCollectionTabModelImplUnitTest {
         assertArrayEquals(
                 new int[] {Tab.INVALID_TAB_ID},
                 mTabModel.restoreClosedTabsForUndo(
-                        savedGroupsSnapshot,
+                        archivedSnapshot,
                         /* reselect= */ true,
                         /* tabGroupUiActionHandler= */ null));
 

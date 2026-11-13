@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel.undo;
 
-import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forArchived;
 import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forTabModel;
 
 import org.chromium.base.Token;
@@ -129,14 +129,16 @@ public final class UndoClosureSnapshotFactory {
     }
 
     /**
-     * Captures a snapshot for saved tab groups at close time.
+     * Captures a {@link UndoClosureSnapshot.ClosureKind#ARCHIVED} snapshot for archived tabs and
+     * archived tab groups closed from the Archived Tabs dialog ({@code
+     * SavedTabGroupUndoBarController}).
      *
-     * @param tabs The tabs being closed.
-     * @param syncIds The sync identifiers of the saved tab groups being closed.
+     * @param tabs The archived tabs being closed.
+     * @param syncIds The sync identifiers of the archived saved tab groups being closed.
      * @param tabGroupSyncService The service used to look up saved tab group details.
      * @return The immutable snapshot representing the closure state.
      */
-    public static UndoClosureSnapshot captureSavedGroups(
+    public static UndoClosureSnapshot captureArchived(
             List<Tab> tabs,
             List<String> syncIds,
             @Nullable TabGroupSyncService tabGroupSyncService) {
@@ -163,6 +165,6 @@ public final class UndoClosureSnapshotFactory {
             }
         }
 
-        return forSavedGroups(closedTabs, syncIds, savedGroupTitle, savedGroupTabCount);
+        return forArchived(closedTabs, syncIds, savedGroupTitle, savedGroupTabCount);
     }
 }

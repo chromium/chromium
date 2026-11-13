@@ -96,8 +96,8 @@ final class UndoBarContentFactory {
         switch (snapshot.kind) {
             case ClosureKind.TAB_MODEL:
                 return getTabModelContent(context, snapshot, remainingTabIds, restoredGroupIds);
-            case ClosureKind.SAVED_GROUPS:
-                return getSavedGroupsContent(context, snapshot, remainingTabIds);
+            case ClosureKind.ARCHIVED:
+                return getArchivedContent(context, snapshot, remainingTabIds);
             default:
                 throw new IllegalStateException("Unknown closure kind: " + snapshot.kind);
         }
@@ -184,7 +184,7 @@ final class UndoBarContentFactory {
                 umaType);
     }
 
-    private static UndoBarContent getSavedGroupsContent(
+    private static UndoBarContent getArchivedContent(
             Context context, UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
         int totalTabsCount = remainingTabIds.size();
         // Closing any saved group records the delete UMA, even though the text says "closed".

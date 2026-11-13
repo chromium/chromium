@@ -599,8 +599,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * Reopens whole hiding synced tab groups via {@link UndoGroupRestorer#reopenHiddenGroups} and
      * restores the Recent Tabs entry referenced by {@code snapshot.entryId} (if valid); the entry
      * is consumed even if some of its tabs could not be restored. Handling a partial undo is the
-     * caller's responsibility. Snapshots of {@link ClosureKind#SAVED_GROUPS}, or lacking both a
-     * valid {@code entryId} and reopenable hidden groups, are not restored.
+     * caller's responsibility. Snapshots of {@link ClosureKind#ARCHIVED}, or lacking both a valid
+     * {@code entryId} and reopenable hidden groups, are not restored.
      *
      * <p>{@code snapshot}'s tabs must not be pending closure. Tabs in the entry that cannot be
      * matched to an element of {@code snapshot.tabs} are still restored (appended) but are not
@@ -619,7 +619,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         int tabCount = snapshot.tabs.size();
         // Snapshots of saved tab groups or without a valid entry id are not restored.
         if (mNativeTabCollectionTabModelImplPtr == null
-                || snapshot.kind == ClosureKind.SAVED_GROUPS
+                || snapshot.kind == ClosureKind.ARCHIVED
                 || (snapshot.entryId == TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID
                         && !snapshot.hasReopenableHiddenGroups())) {
             return createInvalidTabIds(tabCount);

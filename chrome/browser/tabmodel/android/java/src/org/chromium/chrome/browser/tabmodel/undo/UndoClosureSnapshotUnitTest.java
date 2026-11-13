@@ -12,7 +12,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forArchived;
 import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forTabModel;
 
 import org.junit.Test;
@@ -94,9 +94,9 @@ public class UndoClosureSnapshotUnitTest {
     }
 
     @Test
-    public void testForSavedGroups() {
+    public void testForArchived() {
         UndoClosureSnapshot snapshot =
-                forSavedGroups(
+                forArchived(
                         List.of(
                                 new ClosedTab(
                                         /* id= */ 1,
@@ -110,7 +110,7 @@ public class UndoClosureSnapshotUnitTest {
                         /* savedGroupTitle= */ "Saved 1",
                         /* savedGroupTabCount= */ 3);
 
-        assertEquals(ClosureKind.SAVED_GROUPS, snapshot.kind);
+        assertEquals(ClosureKind.ARCHIVED, snapshot.kind);
         assertTrue(snapshot.groups.isEmpty());
         assertFalse(snapshot.isTabGroupSyncEnabled);
         assertFalse(snapshot.isAllTabs);

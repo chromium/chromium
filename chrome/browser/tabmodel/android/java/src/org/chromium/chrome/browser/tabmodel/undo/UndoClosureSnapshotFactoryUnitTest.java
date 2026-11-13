@@ -101,10 +101,10 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tab.getTitle()).thenReturn("Tab 1");
 
         UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureSavedGroups(
+                UndoClosureSnapshotFactory.captureArchived(
                         List.of(tab), List.of("sync-id-1"), /* tabGroupSyncService= */ null);
 
-        assertEquals(ClosureKind.SAVED_GROUPS, snapshot.kind);
+        assertEquals(ClosureKind.ARCHIVED, snapshot.kind);
         assertEquals(1, snapshot.savedTabGroupSyncIds.size());
         assertNull(snapshot.savedGroupTitle);
         assertEquals(0, snapshot.savedGroupTabCount);
@@ -117,7 +117,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(service.getGroup("sync-id-1")).thenReturn(null);
 
         UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureSavedGroups(
+                UndoClosureSnapshotFactory.captureArchived(
                         Collections.emptyList(), List.of("sync-id-1"), service);
 
         assertNull(snapshot.savedGroupTitle);
@@ -134,7 +134,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(service.getGroup("sync-id-1")).thenReturn(group);
 
         UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureSavedGroups(
+                UndoClosureSnapshotFactory.captureArchived(
                         Collections.emptyList(), List.of("sync-id-1"), service);
 
         assertEquals("", snapshot.savedGroupTitle);
@@ -262,11 +262,11 @@ public class UndoClosureSnapshotFactoryUnitTest {
         TabGroupSyncService service = mock(TabGroupSyncService.class);
 
         UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureSavedGroups(
+                UndoClosureSnapshotFactory.captureArchived(
                         Collections.emptyList(), List.of("sync-id-1", "sync-id-2"), service);
 
         verify(service, never()).getGroup(anyString());
-        assertEquals(ClosureKind.SAVED_GROUPS, snapshot.kind);
+        assertEquals(ClosureKind.ARCHIVED, snapshot.kind);
         assertEquals(List.of("sync-id-1", "sync-id-2"), snapshot.savedTabGroupSyncIds);
         assertNull(snapshot.savedGroupTitle);
         assertEquals(0, snapshot.savedGroupTabCount);
