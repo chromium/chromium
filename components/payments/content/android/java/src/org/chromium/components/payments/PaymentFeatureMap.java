@@ -23,7 +23,7 @@ public class PaymentFeatureMap extends FeatureMap {
         super();
     }
 
-    /** @return the singleton PaymentFeatureMap. */
+    /** Returns the singleton PaymentFeatureMap. */
     public static PaymentFeatureMap getInstance() {
         return sInstance;
     }

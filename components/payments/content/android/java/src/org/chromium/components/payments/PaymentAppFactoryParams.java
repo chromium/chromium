@@ -13,19 +13,19 @@ import org.chromium.url.Origin;
 /** Interface for providing information to a payment app factory. */
 @NullMarked
 public interface PaymentAppFactoryParams extends PaymentRequestParams {
-    /** @return The web contents where the payment is being requested. */
+    /** Returns the {@link WebContents} where the payment is being requested. */
     WebContents getWebContents();
 
-    /** @return The RenderFrameHost for the frame that initiates the payment request. */
+    /** Returns the {@link RenderFrameHost} for the frame that initiates the payment request. */
     RenderFrameHost getRenderFrameHost();
 
-    /** @return The PaymentRequest object identifier. */
+    /** Returns the PaymentRequest object identifier. */
     default @Nullable String getId() {
         return null;
     }
 
     /**
-     * @return The scheme, host, and port of the last committed URL of the top-level context as
+     * Returns the scheme, host, and port of the last committed URL of the top-level context as
      * formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
     default String getTopLevelOrigin() {
@@ -33,7 +33,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     }
 
     /**
-     * @return The scheme, host, and port of the last committed URL of the iframe that invoked the
+     * Returns the scheme, host, and port of the last committed URL of the iframe that invoked the
      * PaymentRequest API as formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
     default String getPaymentRequestOrigin() {
@@ -41,7 +41,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     }
 
     /**
-     * @return The origin of the iframe that invoked the PaymentRequest API. Can be opaque. Used by
+     * Returns the origin of the iframe that invoked the PaymentRequest API. Can be opaque. Used by
      * security features like 'Sec-Fetch-Site' and 'Cross-Origin-Resource-Policy'. Should not be
      * null.
      */
@@ -50,7 +50,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     }
 
     /**
-     * @return The certificate chain of the top-level context as returned by
+     * Returns the certificate chain of the top-level context as returned by
      * CertificateChainHelper.getCertificateChain(). Can be null when
      * ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local file,
      * which are secure contexts without SSL. Each byte array cannot be null.
@@ -59,27 +59,27 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
         return null;
     }
 
-    /** @return Whether crawling the web for just-in-time installable payment handlers is enabled. */
+    /**
+     * Returns whether crawling the web for just-in-time installable payment handlers is enabled.
+     */
     default boolean getMayCrawl() {
         return false;
     }
 
     /**
-     * @return The listener for payment method, shipping address, and shipping option change events.
+     * Returns the listener for payment method, shipping address, and shipping option change events.
      */
     default @Nullable PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
         return null;
     }
 
-    /**
-     * @return The Payment Request information received from the merchant.
-     */
+    /** Returns the Payment Request information received from the merchant. */
     default PaymentRequestSpec getSpec() {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * @return The Android package name of the Trusted Web Activity that invoked Chrome, if running
+     * Returns the Android package name of the Trusted Web Activity that invoked Chrome, if running
      * in TWA mode. Otherwise null or empty string.
      */
     default @Nullable String getTwaPackageName() {
@@ -87,31 +87,23 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     }
 
     /**
-     * @return Whether the merchant WebContents's profile is in off-the-record mode. Return true if
-     *     the tab profile is not accessible from the WebContents.
+     * Returns whether the merchant {@link WebContents}'s profile is in off-the-record mode. Returns
+     * true if the tab profile is not accessible from the {@link WebContents}.
      */
     boolean isOffTheRecord();
 
-    /**
-     * @return Whether the "can make payment" preference is enabled.
-     */
+    /** Returns whether the "can make payment" preference is enabled. */
     boolean prefsCanMakePayment();
 
-    /**
-     * @return The Content-Security-Policy (CSP) checker.
-     */
+    /** Returns the Content-Security-Policy (CSP) checker. */
     CSPChecker getCSPChecker();
 
-    /**
-     * @return An instance of a dialog for displaying informational or warning messages.
-     */
+    /** Returns an instance of a dialog for displaying informational or warning messages. */
     default @Nullable DialogController getDialogController() {
         return null;
     }
 
-    /**
-     * @return The launcher for Android intent-based payment app.
-     */
+    /** Returns the launcher for Android intent-based payment app. */
     default @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
         return null;
     }

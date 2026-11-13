@@ -19,29 +19,30 @@ import java.util.Map;
 @NullMarked
 public interface PaymentRequestParams {
     /**
-     * @return Whether or not the payment request is being aborted. Other methods should not get
-     *         called when the payment request is being aborted.
+     * Returns whether the payment request has closed. Other methods should not get called when the
+     * payment request has closed.
      */
     boolean hasClosed();
 
-    /** @return The PaymentOptions set by the merchant.  */
+    /** Returns the PaymentOptions set by the merchant. */
     PaymentOptions getPaymentOptions();
 
     /**
-     * @return The unmodifiable mapping of method names to modifiers, which include modified totals
-     * and additional line items. Used to display modified totals for each payment app, modified
-     * total in order summary, and additional line items in order summary. Should not be null.
+     * Returns the unmodifiable mapping of method names to modifiers, which include modified totals
+     * and additional line items. Used to display modified totals for each payment app, the modified
+     * total in the order summary, and additional line items in the order summary. Should not be
+     * null.
      */
     Map<String, PaymentDetailsModifier> getUnmodifiableModifiers();
 
     /**
-     * @return The unmodifiable mapping of payment method identifier to the method-specific data in
+     * Returns the unmodifiable mapping of payment method identifier to the method-specific data in
      * the payment request.
      */
     Map<String, PaymentMethodData> getMethodData();
 
     /**
-     * @return The raw total amount being charged - the total property of the PaymentDetails of
+     * Returns the raw total amount being charged - the total property of the PaymentDetails of the
      * payment request.
      */
     @Nullable PaymentItem getRawTotal();

@@ -60,9 +60,11 @@ import java.util.function.Supplier;
         int getMaliciousContentStatus();
 
         /**
-         * Get the security icon resource for a given security level.
+         * Get the security icon resource for a given security level and malicious content status.
          *
          * @param securityLevel The security level.
+         * @param maliciousContentStatus Supplier of the malicious content status of the {@link
+         *     WebContents}.
          */
         @DrawableRes
         int getSecurityIconResource(

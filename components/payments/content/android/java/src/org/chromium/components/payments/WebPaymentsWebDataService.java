@@ -93,10 +93,10 @@ public class WebPaymentsWebDataService {
     }
 
     /**
-     * Adds the supported Android apps' package names of the method.
+     * Adds the supported app package names and origins of the method.
      *
      * @param methodName The method name.
-     * @param appPackageNames The supported app package names and origins. Also possibly "*" if
+     * @param appIdentifiers The supported app package names and origins. Also possibly "*" if
      *     applicable.
      */
     public void addPaymentMethodManifest(String methodName, String[] appIdentifiers) {

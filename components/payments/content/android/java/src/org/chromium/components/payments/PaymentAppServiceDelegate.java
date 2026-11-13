@@ -11,9 +11,7 @@ import java.util.List;
 /** Interface for clients of PaymentAppService. */
 @NullMarked
 public interface PaymentAppServiceDelegate {
-    /**
-     * @return The information that a factory needs to create payment apps.
-     */
+    /** Returns the information that a factory needs to create payment apps. */
     PaymentAppFactoryParams getParams();
 
     /**

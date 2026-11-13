@@ -509,8 +509,8 @@ public class PaymentManifestVerifier
     }
 
     /**
-     * @return The set of package names of payment apps that match the manifest. Could be empty,
-     * but never null.
+     * Returns the set of package names of payment apps that match the manifest. Could be empty, but
+     * never null.
      */
     private Set<String> verifyAppWithWebAppManifest(WebAppManifestSection[] manifest) {
         assert manifest.length > 0;

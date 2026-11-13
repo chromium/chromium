@@ -48,7 +48,7 @@ public class CSPCheckerBridge {
         }
     }
 
-    /** @return The native C++ pointer to a CSP checker object. Owned by the Java object. */
+    /** Returns the native C++ pointer to a CSP checker object. Owned by the Java object. */
     public long getNativeCSPChecker() {
         return mNativeBridge;
     }
