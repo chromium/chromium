@@ -27,7 +27,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/embedded_fake_server_adapter.h"
 #include "components/sync/test/fake_server.h"
-#include "components/sync/test/fake_sync_invalidation_sender.h"
+#include "components/sync/test/fake_server_sync_invalidation_sender.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -452,8 +452,8 @@ class SyncTest : public PlatformBrowserTest,
       scoped_use_fake_instance_id_android_;
 #endif
 
-  std::unique_ptr<fake_server::FakeSyncInvalidationSender>
-      fake_sync_invalidation_sender_;
+  std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
+      fake_server_sync_invalidation_sender_;
 
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   content::NetworkConnectionChangeSimulator connection_change_simulator_;

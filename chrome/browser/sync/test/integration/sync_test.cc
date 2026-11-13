@@ -26,6 +26,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -33,6 +36,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -43,6 +48,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
+#include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
@@ -56,6 +62,12 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
+#include "components/gcm_driver/fake_gcm_profile_service.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -67,6 +79,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
+#include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -114,15 +127,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/gcm/gcm_profile_service_factory.h"  // nogncheck
-#include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
-#include "components/gcm_driver/fake_gcm_profile_service.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/test/fake_gcm_driver_sync_invalidation_sender.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -131,7 +136,6 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/sync/test/fake_gcm_server_sync_invalidation_sender.h"
 #include "components/trusted_vault/command_line_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -169,12 +173,9 @@ int GetNumClients(SyncTest::TestType test_type) {
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // Creates a fake GCMProfileService to simulate sync invalidations.
-// TODO(crbug.com/582626795): Exercise the production GCMDriverAndroid / Java
-// GCMDriver layer on Android.
 std::unique_ptr<KeyedService> CreateGCMProfileService(
-    base::WeakPtr<fake_server::FakeGCMDriverSyncInvalidationSender>
+    base::WeakPtr<fake_server::FakeServerSyncInvalidationSender>
         invalidation_sender,
     content::BrowserContext* context) {
   // Use `USER_VISIBLE` so `GCMKeyStore` initialization is not blocked by
@@ -192,17 +193,16 @@ std::unique_ptr<KeyedService> CreateGCMProfileService(
   CHECK(invalidation_sender);
   invalidation_sender->AddFakeGCMDriver(fake_gcm_driver.get());
   // `FakeSyncGCMDriver` may outlive `invalidation_sender`, as `SyncTest`
-  // destroys `fake_sync_invalidation_sender_` in
+  // destroys `fake_server_sync_invalidation_sender_` in
   // `TearDownOnMainThread()` before `ProfileManager` destroys profiles and
   // their `KeyedService`s.
   fake_gcm_driver->SetOnDestroyedCallback(base::BindOnce(
-      &fake_server::FakeGCMDriverSyncInvalidationSender::RemoveFakeGCMDriver,
+      &fake_server::FakeServerSyncInvalidationSender::RemoveFakeGCMDriver,
       invalidation_sender, fake_gcm_driver.get()));
 
   return std::make_unique<gcm::FakeGCMProfileService>(
       std::move(fake_gcm_driver));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr auto kAccountId1 =
@@ -281,15 +281,8 @@ void SyncTest::SetUp() {
     case IN_PROCESS_FAKE_SERVER: {
       ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 #if BUILDFLAG(IS_ANDROID)
-      fake_sync_invalidation_sender_ =
-          std::make_unique<fake_server::FakeGCMDriverSyncInvalidationSender>();
       sync_test_utils_android::SetUpFakeAuthForTesting();
-#else
-      fake_sync_invalidation_sender_ =
-          std::make_unique<fake_server::FakeGCMServerSyncInvalidationSender>();
 #endif
-      fake_sync_invalidation_sender_->InitializeAndListen(
-          *embedded_test_server());
       break;
     }
   }
@@ -382,8 +375,6 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
           embedded_test_server()
               ->GetURL(fake_server::EmbeddedFakeServerAdapter::kPath)
               .spec());
-      fake_sync_invalidation_sender_->AppendCommandLineSwitches(
-          cl, *embedded_test_server());
       break;
     }
   }
@@ -465,8 +456,9 @@ void SyncTest::PostCreateThreads() {
       embedded_fake_server_adapter_ =
           std::make_unique<fake_server::EmbeddedFakeServerAdapter>(
               fake_server_->AsWeakPtr());
-      fake_sync_invalidation_sender_->Start(fake_server_.get(),
-                                            fake_server_dir);
+      fake_server_sync_invalidation_sender_ =
+          std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+              fake_server_.get(), fake_server_dir);
 
       SetupMockGaiaResponses();
 
@@ -953,7 +945,7 @@ void SyncTest::TearDownOnMainThread() {
   }
 
   if (fake_server_.get()) {
-    fake_sync_invalidation_sender_.reset();
+    fake_server_sync_invalidation_sender_.reset();
     embedded_fake_server_adapter_.reset();
     fake_server_.reset();
   }
@@ -1100,17 +1092,12 @@ void SyncTest::OnProfileCreationStarted(Profile* profile) {
   }
 
   CHECK(GetFakeServer());
-  CHECK(fake_sync_invalidation_sender_);
+  CHECK(fake_server_sync_invalidation_sender_);
 
-#if BUILDFLAG(IS_ANDROID)
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       profile,
-      base::BindRepeating(
-          &CreateGCMProfileService,
-          static_cast<fake_server::FakeGCMDriverSyncInvalidationSender*>(
-              fake_sync_invalidation_sender_.get())
-              ->GetWeakPtr()));
-#endif  // BUILDFLAG(IS_ANDROID)
+      base::BindRepeating(&CreateGCMProfileService,
+                          fake_server_sync_invalidation_sender_->GetWeakPtr()));
   ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                    &test_url_loader_factory_));
@@ -1225,8 +1212,8 @@ void SyncTest::DisableNetwork() {
   connection_change_simulator_.SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
-  if (fake_sync_invalidation_sender_) {
-    fake_sync_invalidation_sender_->SetOfflineAllClients(true);
+  if (fake_server_sync_invalidation_sender_) {
+    fake_server_sync_invalidation_sender_->SetOfflineAllClients(true);
   }
 }
 
@@ -1234,8 +1221,8 @@ void SyncTest::EnableNetwork() {
   url_loader_interceptor_.reset();
   connection_change_simulator_.SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
-  if (fake_sync_invalidation_sender_) {
-    fake_sync_invalidation_sender_->SetOfflineAllClients(false);
+  if (fake_server_sync_invalidation_sender_) {
+    fake_server_sync_invalidation_sender_->SetOfflineAllClients(false);
   }
 }
 

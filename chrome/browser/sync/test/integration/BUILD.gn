@@ -434,6 +434,8 @@ source_set("sync_integration_test_support") {
     "exponential_backoff_helper.h",
     "fake_server_match_status_checker.cc",
     "fake_server_match_status_checker.h",
+    "fake_sync_gcm_driver_for_instance_id.cc",
+    "fake_sync_gcm_driver_for_instance_id.h",
     "history_helper.cc",
     "history_helper.h",
     "invalidations/invalidations_status_checker.cc",
@@ -502,6 +504,7 @@ source_set("sync_integration_test_support") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/gcm",
     "//chrome/browser/history",
     "//chrome/browser/net",
     "//chrome/browser/password_manager/factories",
@@ -543,8 +546,6 @@ source_set("sync_integration_test_support") {
 
   if (is_android) {
     sources += [
-      "fake_sync_gcm_driver_for_instance_id.cc",
-      "fake_sync_gcm_driver_for_instance_id.h",
       "fake_sync_signin_delegate_android.cc",
       "fake_sync_signin_delegate_android.h",
       "live_sync_signin_delegate_android.cc",
@@ -556,7 +557,6 @@ source_set("sync_integration_test_support") {
     deps += [
       "//chrome/browser/android",
       "//chrome/browser/android:tabs_public",
-      "//chrome/browser/gcm",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/test:sync_integration_test_support_jni_headers",
