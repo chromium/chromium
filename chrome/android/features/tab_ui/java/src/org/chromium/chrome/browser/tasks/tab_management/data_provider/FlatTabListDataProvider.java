@@ -38,11 +38,6 @@ public class FlatTabListDataProvider extends TabListDataProvider {
             NullableObservableSupplier<TabModel> tabModelSupplier,
             @Nullable Predicate<Tab> filter) {
         super(tabModelSupplier);
-        // TODO(crbug.com/562590772): Wire flat surface coordinators to pass this provider to
-        // TabListCoordinator with their surface filter (e.g.
-        // `tab -> groupId.equals(tab.getTabGroupId())` for TabGridDialog/TabGroupUi,
-        // `Tab::getIsPinned` for pinned tabs, or `tab -> tabIds.contains(tab.getId())` for
-        // TabListEditor).
         mFilter = filter;
 
         TabModelObserver tabModelObserver =

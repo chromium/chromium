@@ -43,9 +43,6 @@ public abstract class TabListDataProvider {
      * @param tabModelSupplier Supplier of the current {@link TabModel}.
      */
     protected TabListDataProvider(NullableObservableSupplier<TabModel> tabModelSupplier) {
-        // TODO(crbug.com/562590772): Surface coordinators (e.g. TabGridDialogCoordinator,
-        // TabSwitcherPaneCoordinator) will construct a provider and pass it to TabListCoordinator,
-        // which forwards it via TabListConfig to TabListMediator.
         mTabModelSupplier = tabModelSupplier;
     }
 

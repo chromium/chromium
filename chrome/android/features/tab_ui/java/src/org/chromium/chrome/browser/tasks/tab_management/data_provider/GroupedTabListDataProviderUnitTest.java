@@ -593,6 +593,29 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     }
 
     @Test
+    public void testTabClosureUndone_NestedMode_CollapsedWhilePending_UpdatesHeaderOnly() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+        closeTab(mTab2);
+        // The group is collapsed while the closure of TAB2 is pending.
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ true);
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+        clearInvocations(mObserver);
+
+        undoCloseTab(mTab2, /* modelIndex= */ 1);
+
+        // The collapsed group hides TAB2, so only the header is refreshed.
+        verify(mObserver, never()).onItemsInserted(any(), any());
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.GROUP_MEMBERSHIP);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
     public void testTabClosureCommitted_ForwardsWithoutItemChanges() {
         setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
         closeTab(mTab2);
@@ -1415,6 +1438,26 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
 
         verifyNoMoreInteractions(mObserver);
         assertItems(item(TAB1_ID), item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidChangePinState_LastTabInGroup_DissolvesGroupAndInsertsPinnedTab() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab2, mTab1);
+        assertItems(
+                item(TAB2_ID),
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+
+        // Pinning the only grouped tab moves it to the pinned region and clears its group, then
+        // removes the group and fires didChangePinState. TAB1 isn't listed when didMoveTab fires.
+        mTab1.setTabGroupId(null);
+        mTab1.setIsPinned(true);
+        moveTab(mTab1, /* newIndex= */ 0);
+        mTabGroupObserver.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.PIN);
+        mTabModelObserver.didChangePinState(mTab1);
+
+        assertItems(pinned(TAB1_ID), item(TAB2_ID));
     }
 
     // ============================================================================================
