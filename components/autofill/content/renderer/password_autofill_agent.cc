@@ -61,7 +61,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_util.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -1713,10 +1712,7 @@ void PasswordAutofillAgent::AnnotateFieldsWithParsingResult(
 void PasswordAutofillAgent::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
   autofilled_elements_cache_.clear();
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   should_show_popup_without_passwords_ = should_show_popup_without_passwords;
-#endif
 
   // Clear the actual field values.
   std::vector<WebFormControlElement> elements;
@@ -1964,9 +1960,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   field_renderer_id_to_submit_ = FieldRendererId();
   suggestion_banned_fields_.clear();
   times_received_fill_data_.clear();
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   should_show_popup_without_passwords_ = false;
-#endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
@@ -2187,12 +2181,8 @@ void PasswordAutofillAgent::HidePopup() {
 
 bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
     const WebInputElement& password_element) const {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   return password_element && IsElementEditable(password_element) &&
          should_show_popup_without_passwords_;
-#else
-  return false;
-#endif
 }
 
 mojom::PasswordManagerDriver* PasswordAutofillAgent::unsafe_driver() {

@@ -28,7 +28,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -624,12 +623,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Set of fields that are reliably identified as non-credential fields.
   base::flat_set<FieldRendererId> suggestion_banned_fields_;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // The Password Manager normally shows passwords if there are passwords to
   // fill, there are cases, when PWM might show other suggestions (e.g. promos)
   // on password fields.
   bool should_show_popup_without_passwords_ = false;
-#endif
 
   PasswordValueGatekeeper gatekeeper_;
 

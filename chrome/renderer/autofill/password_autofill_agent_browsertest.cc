@@ -2628,9 +2628,8 @@ TEST_F(PasswordAutofillAgentTest,
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Users in pending state are shown a suggestion to "verify it's you" even when
-// there are no passwords.
+// Users in signin pending state or with a locked Trusted Vault are shown a
+// promo suggestion even when there are no saved passwords.
 TEST_F(
     PasswordAutofillAgentTest,
     NoPopupOnPasswordFieldWithoutSuggestionsByDefaultWhenNotEligibleForPromo) {
@@ -2674,7 +2673,6 @@ TEST_F(PasswordAutofillAgentTest,
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
   base::RunLoop().RunUntilIdle();
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests the autosuggestions that are given when the element is clicked.
 // Specifically, tests when the user clicks on the username element after page
