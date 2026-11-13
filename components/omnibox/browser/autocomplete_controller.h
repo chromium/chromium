@@ -371,6 +371,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            ContextualSearchActionAttachedInZeroSuggest);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            AttachContextualSearchOpenLensActionToMatches);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           AttachContextualSearchFulfillmentActionWithoutLens);
   FRIEND_TEST_ALL_PREFIXES(
       AutocompleteControllerTest,
       ContextualSearchOpenLensActionAttachedPageKeywordMode);

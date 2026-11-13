@@ -385,11 +385,14 @@ bool ContextualSearchProvider::HasSidePanelDescription(
 bool ContextualSearchProvider::LensEntrypointEligible(
     const AutocompleteInput& input,
     const AutocompleteProviderClient* client) {
+  // The action is fulfilled by Lens, unless the client can open the CoBrowse
+  // side panel without Lens (e.g. on desktop Android).
   return (omnibox::IsOtherWebPage(input.current_page_classification()) ||
           omnibox::IsSearchResultsPage(input.current_page_classification())) &&
          (input.current_url().SchemeIsHTTPOrHTTPS() ||
           input.current_url().SchemeIs(url::kFileScheme)) &&
-         client->IsLensEnabled() && client->AreLensEntrypointsVisible();
+         ((client->IsLensEnabled() && client->AreLensEntrypointsVisible()) ||
+          client->CanOpenCoBrowsePanelWithoutLens());
 }
 
 ContextualSearchProvider::ContextualSearchProvider(

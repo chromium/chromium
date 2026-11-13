@@ -1634,9 +1634,14 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   MlRerank(old_result);
 
   // If the entrypoints aren't visible, then Lens is active and contextual
-  // suggestions shouldn't be shown.
+  // suggestions shouldn't be shown. This doesn't apply if the client can open
+  // the co-browse panel or fulfill contextual suggestions without Lens (e.g.
+  // on desktop Android), where the Lens entrypoints don't exist at all.
   const bool is_lens_active =
-      !autocomplete_provider_client()->AreLensEntrypointsVisible();
+      !autocomplete_provider_client()->AreLensEntrypointsVisible() &&
+      !autocomplete_provider_client()->CanOpenCoBrowsePanelWithoutLens() &&
+      !autocomplete_provider_client()
+           ->CanFulfillContextualSuggestionsWithoutLens();
   const bool can_show_contextual_suggestions = CanShowContextualSuggestions(
       autocomplete_provider_client()->IsPagePaywalled());
   const bool mia_enabled =
@@ -1872,12 +1877,23 @@ void AutocompleteController::AttachActions() {
   if (omnibox_feature_configs::ContextualSearch::Get()
           .contextual_zero_suggest_lens_fulfillment &&
       input_.IsZeroSuggest()) {
-    internal_result_.AttachContextualSearchFulfillmentActionToMatches();
+    if (provider_client_->CanFulfillContextualSuggestionsWithoutLens()) {
+      // Lens isn't used for fulfillment (e.g. desktop Android); every
+      // contextual suggestion issues a contextual AI Mode query instead.
+      internal_result_.AttachContextualSearchFulfillmentActionToMatches(
+          /*include_lens_search_matches=*/true);
+    } else {
+#if !BUILDFLAG(IS_ANDROID)
+      // Lens-fulfilled ContextualSearchFulfillmentAction is Desktop-only;
+      // Android only has the Lens Overlay entry point.
+      internal_result_.AttachContextualSearchFulfillmentActionToMatches();
+#endif
 
-    // This should intentionally override the fulfillment action if present.
-    if (omnibox_feature_configs::ContextualSearch::Get()
-            .suggestions_fulfilled_by_lens_supported) {
-      internal_result_.AttachContextualSearchOpenLensActionToMatches();
+      // This should intentionally override the fulfillment action if present.
+      if (omnibox_feature_configs::ContextualSearch::Get()
+              .suggestions_fulfilled_by_lens_supported) {
+        internal_result_.AttachContextualSearchOpenLensActionToMatches();
+      }
     }
 
   } else if (input_.in_keyword_mode()) {

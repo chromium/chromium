@@ -376,8 +376,10 @@ void MaybeAddContextualSuggestParams(
     TemplateURLRef::SearchTermsArgs& search_terms_args) {
   // Do not add the contextual suggest params if Lens is not enabled to fulfill
   // the suggestion, unless the input contains context data, in which case lens
-  // will not be used to fulfill the suggestion.
-  if (!client->IsLensEnabled() && input.context_tab_title().empty()) {
+  // will not be used to fulfill the suggestion, or the client can fulfill
+  // contextual suggestions without Lens (e.g. on desktop Android).
+  if (!client->IsLensEnabled() && input.context_tab_title().empty() &&
+      !client->CanFulfillContextualSuggestionsWithoutLens()) {
     return;
   }
 

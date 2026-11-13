@@ -172,6 +172,11 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsAuthenticated, bool());
   MOCK_CONST_METHOD0(IsLensEnabled, bool());
   MOCK_CONST_METHOD0(AreLensEntrypointsVisible, bool());
+  MOCK_METHOD(bool, CanOpenCoBrowsePanelWithoutLens, (), (const, override));
+  MOCK_METHOD(bool,
+              CanFulfillContextualSuggestionsWithoutLens,
+              (),
+              (const, override));
   MOCK_CONST_METHOD0(IsPagePaywalled, std::optional<bool>());
   MOCK_METHOD(bool, ShouldSendContextualUrlSuggestParam, (), (const));
   MOCK_METHOD(bool, ShouldSendPageTitleSuggestParam, (), (const));

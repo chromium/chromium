@@ -2326,6 +2326,41 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ContextualSuggestionsAndLens) {
                                          provider_matches, zps_input);
     check_results(/*expect_contextual=*/true, /*expect_lens=*/true);
   }
+
+  // Lens entrypoints are unavailable, but the co-browse panel can be opened
+  // without Lens: the action is kept.
+  {
+    SCOPED_TRACE("Co-browse panel without Lens");
+    EXPECT_CALL(*provider_client(), AreLensEntrypointsVisible())
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(*provider_client(), CanOpenCoBrowsePanelWithoutLens())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*provider_client(), IsPagePaywalled())
+        .WillRepeatedly(testing::Return(false));
+
+    controller_.SimulateAutocompletePass(/*sync=*/true, /*done=*/true,
+                                         provider_matches, zps_input);
+    check_results(/*expect_contextual=*/true, /*expect_lens=*/true);
+    EXPECT_CALL(*provider_client(), CanOpenCoBrowsePanelWithoutLens())
+        .WillRepeatedly(testing::Return(false));
+  }
+
+  // Lens entrypoints are unavailable, but contextual suggestions can be
+  // fulfilled without Lens: contextual suggestions are kept.
+  {
+    SCOPED_TRACE("Contextual suggestions without Lens");
+    EXPECT_CALL(*provider_client(), AreLensEntrypointsVisible())
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(*provider_client(),
+                CanFulfillContextualSuggestionsWithoutLens())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*provider_client(), IsPagePaywalled())
+        .WillRepeatedly(testing::Return(false));
+
+    controller_.SimulateAutocompletePass(/*sync=*/true, /*done=*/true,
+                                         provider_matches, zps_input);
+    check_results(/*expect_contextual=*/true, /*expect_lens=*/true);
+  }
 }
 
 TEST_F(AutocompleteControllerTest,
@@ -3589,6 +3624,66 @@ TEST_F(AutocompleteControllerTest, SmartComposeClearedWithNewResults) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// The contextual search fulfillment flow is not wired on iOS.
+#if !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest,
+       AttachContextualSearchFulfillmentActionWithoutLens) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config;
+  contextual_search_config.Get().contextual_zero_suggest_lens_fulfillment =
+      true;
+  contextual_search_config.Get().suggestions_fulfilled_by_lens_supported = true;
+
+  EXPECT_CALL(*provider_client(), CanFulfillContextualSuggestionsWithoutLens())
+      .WillRepeatedly(testing::Return(true));
+
+  controller_.input_ = AutocompleteInput(u"", metrics::OmniboxEventProto::OTHER,
+                                         TestSchemeClassifier());
+  controller_.input_.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  struct TestCase {
+    const char* name;
+    bool is_contextual;
+    bool has_lens_action;
+    bool expects_fulfillment_action;
+  };
+  const TestCase kCases[] = {
+      // Contextual matches keep `CONTEXTUAL_SEARCH_FULFILLMENT` rather than
+      // being overridden by `CONTEXTUAL_SEARCH_OPEN_LENS`.
+      {"contextual with Lens action", true, true, true},
+      {"contextual without Lens action", true, false, true},
+      {"non-contextual with Lens action", false, true, false},
+      {"non-contextual without Lens action", false, false, false},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    AutocompleteMatch match;
+    if (test_case.is_contextual) {
+      match.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+    }
+    if (test_case.has_lens_action) {
+      match.suggest_template = omnibox::SuggestTemplateInfo();
+      match.suggest_template->add_action_suggestions()->set_action_type(
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+    }
+    SetAutocompleteMatches({match});
+    controller_.AttachActions();
+
+    ASSERT_EQ(1u, controller_.internal_result_.size());
+    const auto& takeover_action =
+        controller_.internal_result_.match_at(0)->takeover_action;
+    if (test_case.expects_fulfillment_action) {
+      ASSERT_TRUE(takeover_action);
+      EXPECT_EQ(takeover_action->ActionId(),
+                OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT);
+    } else {
+      EXPECT_FALSE(takeover_action);
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AutocompleteControllerTest, IncludesSmartComposeStatsInAdditionalStats) {
   omnibox::metrics::SmartComposeStats stats;
