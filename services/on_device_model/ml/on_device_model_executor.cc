@@ -866,6 +866,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
   }
   // TODO(crbug.com/461547475): Determine whether weight caches should be used
   // for GPU or just CPU only (right now GPU weight cache is behind a flag).
+  const bool enable_speculative_decoding = base::FeatureList::IsEnabled(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
   bool enable_cache_file =
       params->backend_type == ml::ModelBackendType::kCpuBackend ||
       base::FeatureList::IsEnabled(
@@ -873,6 +875,10 @@ LoadModelResult OnDeviceModelExecutor::Init(
   data.cache_file = enable_cache_file && assets.cache.IsValid()
                         ? assets.cache.TakePlatformFile()
                         : base::kInvalidPlatformFile;
+  if (enable_speculative_decoding && enable_cache_file &&
+      assets.mtp_drafter_cache.IsValid()) {
+    data.mtp_drafter_cache_file = assets.mtp_drafter_cache.TakePlatformFile();
+  }
   if (assets.encoder_cache.IsValid()) {
     data.encoder_cache_file = assets.encoder_cache.TakePlatformFile();
   }
@@ -881,11 +887,17 @@ LoadModelResult OnDeviceModelExecutor::Init(
   }
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
   // once feature flag is no longer needed.
-  if (base::FeatureList::IsEnabled(
+  const bool enable_program_cache =
+      base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelGpuProgramCache) &&
-      params->backend_type == ml::ModelBackendType::kGpuBackend &&
-      assets.program_cache.IsValid()) {
+      params->backend_type == ml::ModelBackendType::kGpuBackend;
+  if (enable_program_cache && assets.program_cache.IsValid()) {
     data.program_cache_file = assets.program_cache.TakePlatformFile();
+  }
+  if (enable_speculative_decoding && enable_program_cache &&
+      assets.mtp_drafter_program_cache.IsValid()) {
+    data.mtp_drafter_program_cache_file =
+        assets.mtp_drafter_program_cache.TakePlatformFile();
   }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,

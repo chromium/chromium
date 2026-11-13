@@ -174,6 +174,8 @@ struct FakeModelInstance {
   ml::ModelBackendType backend_type;
   ml::ModelPerformanceHint performance_hint;
   std::string model_data;
+  std::string mtp_drafter_cache_data;
+  std::string mtp_drafter_program_cache_data;
 };
 
 struct FakeSessionInstance {
@@ -201,6 +203,8 @@ ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
                                  uintptr_t context,
                                  ChromeMLScheduleFn schedule) {
   std::string model_data;
+  std::string mtp_drafter_cache_data;
+  std::string mtp_drafter_program_cache_data;
   if (descriptor->model_data) {
     if (descriptor->model_data->weights_file != base::kInvalidPlatformFile) {
       model_data = ReadFile(descriptor->model_data->weights_file);
@@ -210,11 +214,24 @@ ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
           base::FilePath::FromUTF8Unsafe(descriptor->model_data->model_path),
           &model_data);
     }
+    if (descriptor->model_data->mtp_drafter_cache_file !=
+        base::kInvalidPlatformFile) {
+      mtp_drafter_cache_data =
+          ReadFile(descriptor->model_data->mtp_drafter_cache_file);
+    }
+    if (descriptor->model_data->mtp_drafter_program_cache_file !=
+        base::kInvalidPlatformFile) {
+      mtp_drafter_program_cache_data =
+          ReadFile(descriptor->model_data->mtp_drafter_program_cache_file);
+    }
   }
   return reinterpret_cast<ChromeMLModel>(new FakeModelInstance{
       .backend_type = descriptor->backend_type,
       .performance_hint = descriptor->performance_hint,
       .model_data = std::move(model_data),
+      .mtp_drafter_cache_data = std::move(mtp_drafter_cache_data),
+      .mtp_drafter_program_cache_data =
+          std::move(mtp_drafter_program_cache_data),
   });
 }
 
@@ -371,6 +388,14 @@ bool SessionGenerate(ChromeMLSession session,
 
   if (instance->allow_speculative_decoding) {
     OutputChunk("SpeculativeDecodingAllowed");
+  }
+  if (!instance->model_instance->mtp_drafter_cache_data.empty()) {
+    OutputChunk("MTP drafter cache: " +
+                instance->model_instance->mtp_drafter_cache_data);
+  }
+  if (!instance->model_instance->mtp_drafter_program_cache_data.empty()) {
+    OutputChunk("MTP drafter program cache: " +
+                instance->model_instance->mtp_drafter_program_cache_data);
   }
 
   if (options->enable_thinking) {

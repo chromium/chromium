@@ -74,7 +74,12 @@ void FakeBaseModelAsset::Write(Content&& content) {
     CHECK(base::WriteFile(temp_dir_.GetPath().Append(kAdapterCacheFile),
                           base::NumberToString(content.adapter_cache_weight)));
   }
-  if (content.shader_cache_data) {
+  if (content.mtp_drafter_cache_weight) {
+    CHECK(base::WriteFile(
+        temp_dir_.GetPath().Append(kMtpDrafterCacheFile),
+        base::NumberToString(content.mtp_drafter_cache_weight)));
+  }
+  if (content.shader_cache_data && content.shader_cache_data[0] != '\0') {
     base::FilePath program_cache_path =
         temp_dir_.GetPath().Append(kProgramCacheFile);
     CHECK(base::WriteFile(program_cache_path,
@@ -83,6 +88,18 @@ void FakeBaseModelAsset::Write(Content&& content) {
         reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
     CHECK(base::WriteFile(
         program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
+        current_version));
+  }
+  if (content.mtp_drafter_shader_cache_data &&
+      content.mtp_drafter_shader_cache_data[0] != '\0') {
+    base::FilePath mtp_program_cache_path =
+        temp_dir_.GetPath().Append(kMtpDrafterProgramCacheFile);
+    CHECK(base::WriteFile(mtp_program_cache_path,
+                          std::string(content.mtp_drafter_shader_cache_data)));
+    std::string current_version(
+        reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
+    CHECK(base::WriteFile(
+        mtp_program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
         current_version));
   }
   CHECK(base::WriteFile(

@@ -47,8 +47,10 @@ namespace {
 
 bool CheckCachesExistOnWorkerThread(
     const on_device_model::ModelAssetPaths& paths) {
-  for (const auto& path : {paths.cache, paths.program_cache,
-                           paths.encoder_cache, paths.adapter_cache}) {
+  for (const auto& path :
+       {paths.cache, paths.program_cache, paths.encoder_cache,
+        paths.adapter_cache, paths.mtp_drafter_cache,
+        paths.mtp_drafter_program_cache}) {
     if (!path.empty() && base::GetFileSize(path).value_or(0) > 0) {
       return true;
     }
@@ -436,10 +438,16 @@ on_device_model::ModelAssetPaths ManifestSolutionFactory::GetModelAssetPaths(
   on_device_model::ModelAssetPaths paths;
   // We should not get here unless the asset is available.
   paths.weights = *ResolveFile(recipe.weights_file());
+  const bool enable_speculative_decoding = base::FeatureList::IsEnabled(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
   if (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU ||
       base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelGpuWeightCache)) {
     paths.cache = paths.weights.DirName().Append(kWeightCacheFile);
+    if (enable_speculative_decoding) {
+      paths.mtp_drafter_cache =
+          paths.weights.DirName().Append(kMtpDrafterCacheFile);
+    }
   }
   paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
   paths.adapter_cache = paths.weights.DirName().Append(kAdapterCacheFile);
@@ -447,6 +455,10 @@ on_device_model::ModelAssetPaths ManifestSolutionFactory::GetModelAssetPaths(
           on_device_model::features::kOnDeviceModelGpuProgramCache) &&
       recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_GPU) {
     paths.program_cache = paths.weights.DirName().Append(kProgramCacheFile);
+    if (enable_speculative_decoding) {
+      paths.mtp_drafter_program_cache =
+          paths.weights.DirName().Append(kMtpDrafterProgramCacheFile);
+    }
   }
   return paths;
 }

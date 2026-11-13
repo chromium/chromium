@@ -325,6 +325,18 @@ void FakeOnDeviceSession::GenerateImpl(
     chunk->text = "Shader cache data: " + model_->data().shader_cache_data;
     remote->OnResponse(std::move(chunk));
   }
+  if (!model_->data().mtp_drafter_cache_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text =
+        "MTP drafter cache weight: " + model_->data().mtp_drafter_cache_weight;
+    remote->OnResponse(std::move(chunk));
+  }
+  if (!model_->data().mtp_drafter_shader_cache_data.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "MTP drafter shader cache data: " +
+                  model_->data().mtp_drafter_shader_cache_data;
+    remote->OnResponse(std::move(chunk));
+  }
 
   if (priority_ == on_device_model::mojom::Priority::kBackground) {
     auto chunk = mojom::ResponseChunk::New();
@@ -709,6 +721,13 @@ void FakeOnDeviceModelService::LoadModel(
   }
   if (params->assets.program_cache.IsValid()) {
     data.shader_cache_data = ReadFile(params->assets.program_cache);
+  }
+  if (params->assets.mtp_drafter_cache.IsValid()) {
+    data.mtp_drafter_cache_weight = ReadFile(params->assets.mtp_drafter_cache);
+  }
+  if (params->assets.mtp_drafter_program_cache.IsValid()) {
+    data.mtp_drafter_shader_cache_data =
+        ReadFile(params->assets.mtp_drafter_program_cache);
   }
   data.adaptation_ranks = params->adaptation_ranks;
   auto test_model = std::make_unique<FakeOnDeviceModel>(

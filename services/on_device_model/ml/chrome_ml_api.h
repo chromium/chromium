@@ -78,6 +78,8 @@ struct ChromeMLModelData {
   PlatformFile encoder_cache_file = kInvalidPlatformFile;
   PlatformFile adapter_cache_file = kInvalidPlatformFile;
   PlatformFile program_cache_file = kInvalidPlatformFile;
+  PlatformFile mtp_drafter_cache_file = kInvalidPlatformFile;
+  PlatformFile mtp_drafter_program_cache_file = kInvalidPlatformFile;
 
   // Null-terminated model path pointing to the model to use. Only kApuBackend
   // provides this field. Other backends provide model through the

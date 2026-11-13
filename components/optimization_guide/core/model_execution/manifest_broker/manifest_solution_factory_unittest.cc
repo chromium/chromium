@@ -157,10 +157,13 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuCacheFeature) {
               proto::BaseModelRecipe::PERFORMANCE_HINT_FASTEST_INFERENCE,
               /* supported_ranks= */ {},
               /* max_tokens= */ 100),
-          FakeBaseModelAsset::Content{.cache_weight = 1015,
-                                      .encoder_cache_weight = 1016,
-                                      .adapter_cache_weight = 1017,
-                                      .shader_cache_data = "0xcafebabe"},
+          FakeBaseModelAsset::Content{
+              .cache_weight = 1015,
+              .encoder_cache_weight = 1016,
+              .adapter_cache_weight = 1017,
+              .mtp_drafter_cache_weight = 1018,
+              .shader_cache_data = "0xcafebabe",
+              .mtp_drafter_shader_cache_data = "0xdeadbeef"},
           "1.0.0.1")
       .AddUnsafeSolution("test", "gpu_model_A")
       .Finish();
@@ -187,6 +190,63 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuCacheFeature) {
        "Encoder cache weight: 1016"
        "Adapter cache weight: 1017"
        "Shader cache data: 0xcafebabe"
+       "hello max:1024"
+       "TopK: 64, Temp: 1");
+  EXPECT_EQ(*response.value(), expected_response);
+}
+
+// Test that MTP drafter weight and program caches are plumbed when speculative
+// decoding is enabled.
+TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuMtpDrafterCacheFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {on_device_model::features::kOnDeviceModelGpuProgramCache,
+       on_device_model::features::kOnDeviceModelGpuWeightCache,
+       on_device_model::features::kOnDeviceModelSpeculativeDecoding},
+      {});
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "gpu_model_A",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_FASTEST_INFERENCE,
+              /* supported_ranks= */ {},
+              /* max_tokens= */ 100),
+          FakeBaseModelAsset::Content{
+              .cache_weight = 1015,
+              .encoder_cache_weight = 1016,
+              .adapter_cache_weight = 1017,
+              .mtp_drafter_cache_weight = 1018,
+              .shader_cache_data = "0xcafebabe",
+              .mtp_drafter_shader_cache_data = "0xdeadbeef"},
+          "1.0.0.1")
+      .AddUnsafeSolution("test", "gpu_model_A")
+      .Finish();
+  fake_.Startup();
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("hello");
+
+  ResponseHolder response;
+  session->ExecuteModel(request, response.GetStreamingCallback());
+
+  EXPECT_TRUE(response.GetFinalStatus());
+
+  std::string expected_response =
+      ("Fastest inference"
+       "Cache weight: 1015"
+       "Encoder cache weight: 1016"
+       "Adapter cache weight: 1017"
+       "Shader cache data: 0xcafebabe"
+       "MTP drafter cache weight: 1018"
+       "MTP drafter shader cache data: 0xdeadbeef"
        "hello max:1024"
        "TopK: 64, Temp: 1");
   EXPECT_EQ(*response.value(), expected_response);

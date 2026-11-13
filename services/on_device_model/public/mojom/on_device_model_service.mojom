@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module on_device_model.mojom;
 
@@ -43,6 +43,8 @@ struct ModelAssets {
   [MinVersion=2] mojo_base.mojom.File? program_cache;
   [MinVersion=3] mojo_base.mojom.File? encoder_program_cache;
   [MinVersion=3] mojo_base.mojom.File? adapter_program_cache;
+  [MinVersion=5] mojo_base.mojom.File? mtp_drafter_cache;
+  [MinVersion=5] mojo_base.mojom.File? mtp_drafter_program_cache;
 };
 
 // Type of the backend to run the model.

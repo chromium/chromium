@@ -86,6 +86,10 @@ inline constexpr base::FilePath::CharType kAdapterCacheFile[] =
     FILE_PATH_LITERAL("adapter_cache.bin");
 inline constexpr base::FilePath::CharType kProgramCacheFile[] =
     FILE_PATH_LITERAL("program_cache.bin");
+inline constexpr base::FilePath::CharType kMtpDrafterCacheFile[] =
+    FILE_PATH_LITERAL("mtp_drafter_cache.bin");
+inline constexpr base::FilePath::CharType kMtpDrafterProgramCacheFile[] =
+    FILE_PATH_LITERAL("mtp_drafter_program_cache.bin");
 inline constexpr base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
     FILE_PATH_LITERAL("on_device_model_execution_config.pb");
 inline constexpr base::FilePath::CharType

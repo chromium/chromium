@@ -55,6 +55,15 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
     return std::move(assets.adapter_program_cache);
   }
 
+  static base::File mtp_drafter_cache(on_device_model::ModelAssets& assets) {
+    return std::move(assets.mtp_drafter_cache);
+  }
+
+  static base::File mtp_drafter_program_cache(
+      on_device_model::ModelAssets& assets) {
+    return std::move(assets.mtp_drafter_program_cache);
+  }
+
   static bool Read(on_device_model::mojom::ModelAssetsDataView data,
                    on_device_model::ModelAssets* assets);
 };

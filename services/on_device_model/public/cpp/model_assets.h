@@ -31,6 +31,8 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssetPaths {
   base::FilePath program_cache;
   base::FilePath encoder_program_cache;
   base::FilePath adapter_program_cache;
+  base::FilePath mtp_drafter_cache;
+  base::FilePath mtp_drafter_program_cache;
 };
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelFile {
@@ -82,6 +84,8 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssets {
   base::File program_cache;
   base::File encoder_program_cache;
   base::File adapter_program_cache;
+  base::File mtp_drafter_cache;
+  base::File mtp_drafter_program_cache;
 };
 
 // Helper to open files for ModelAssets given their containing paths.

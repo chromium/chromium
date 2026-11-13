@@ -28,9 +28,11 @@ class FakeBaseModelAsset {
     uint32_t cache_weight = 0;
     uint32_t encoder_cache_weight = 0;
     uint32_t adapter_cache_weight = 0;
+    uint32_t mtp_drafter_cache_weight = 0;
     // Using C string to avoid manual ctor of non-trivial types for test-only
     // purposes, otherwise non-aggregate initializer for struct is disallowed.
     const char* shader_cache_data = "";
+    const char* mtp_drafter_shader_cache_data = "";
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content content);

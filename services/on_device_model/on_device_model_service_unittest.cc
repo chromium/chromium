@@ -722,6 +722,65 @@ TEST_F(OnDeviceModelServiceTest, SpeculativeDecodingEnabled) {
   EXPECT_THAT(response.responses(), ElementsAre("SpeculativeDecodingAllowed"));
 }
 
+TEST_F(OnDeviceModelServiceTest, SpeculativeDecodingMtpDrafterCaches) {
+  FakeFile weights("base_weights");
+  FakeFile mtp_cache("drafter_weights");
+  FakeFile mtp_program_cache("drafter_shaders");
+
+  {
+    // When speculative decoding is disabled, MTP drafter caches are ignored.
+    mojo::Remote<mojom::OnDeviceModel> model;
+    auto params = mojom::LoadModelParams::New();
+    params->backend_type = ml::ModelBackendType::kGpuBackend;
+    params->max_tokens = 8000;
+    params->assets = ModelAssets::FromFile(weights.Open());
+    params->assets.mtp_drafter_cache = mtp_cache.Open();
+    params->assets.mtp_drafter_program_cache = mtp_program_cache.Open();
+    base::test::TestFuture<mojom::LoadModelResult> future;
+    service()->LoadModel(std::move(params), model.BindNewPipeAndPassReceiver(),
+                         future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::LoadModelResult::kSuccess);
+
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(), ElementsAre());
+  }
+
+  {
+    // When speculative decoding is enabled, MTP drafter caches are forwarded.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kOnDeviceModelSpeculativeDecoding,
+                                   features::kOnDeviceModelGpuWeightCache,
+                                   features::kOnDeviceModelGpuProgramCache},
+                                  {});
+
+    mojo::Remote<mojom::OnDeviceModel> model;
+    auto params = mojom::LoadModelParams::New();
+    params->backend_type = ml::ModelBackendType::kGpuBackend;
+    params->max_tokens = 8000;
+    params->assets = ModelAssets::FromFile(weights.Open());
+    params->assets.mtp_drafter_cache = mtp_cache.Open();
+    params->assets.mtp_drafter_program_cache = mtp_program_cache.Open();
+    base::test::TestFuture<mojom::LoadModelResult> future;
+    service()->LoadModel(std::move(params), model.BindNewPipeAndPassReceiver(),
+                         future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::LoadModelResult::kSuccess);
+
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+    response.WaitForCompletion();
+    EXPECT_THAT(response.responses(),
+                ElementsAre("SpeculativeDecodingAllowed",
+                            "MTP drafter cache: drafter_weights",
+                            "MTP drafter program cache: drafter_shaders"));
+  }
+}
+
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
   auto model = LoadModel();
 
