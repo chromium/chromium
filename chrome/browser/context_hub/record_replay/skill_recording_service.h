@@ -12,6 +12,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
@@ -33,6 +35,7 @@ class WebContents;
 
 namespace context_hub {
 
+class SkillAudioCapturer;
 class TabActiveObserver;
 
 // Per-profile service that manages in-memory recording sessions for capturing
@@ -42,11 +45,27 @@ class SkillRecordingService : public KeyedService,
                               public BrowserTabStripTrackerDelegate,
                               public BrowserCollectionObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a voice transcript segment is received during an active
+    // recording session. `timestamp` is relative to the start of the recording
+    // session, and `is_final` indicates whether the segment is finalized or an
+    // interim hypothesis.
+    virtual void OnTranscriptUpdate(const std::string& text,
+                                    base::TimeDelta timestamp,
+                                    bool is_final) = 0;
+  };
+
   // `profile` must be non-null and must outlive this `SkillRecordingService`.
   explicit SkillRecordingService(Profile* profile);
   SkillRecordingService(const SkillRecordingService&) = delete;
   SkillRecordingService& operator=(const SkillRecordingService&) = delete;
   ~SkillRecordingService() override;
+
+  // `obs` must be non-null and must outlive this `SkillRecordingService` or
+  // unregister itself via `RemoveObserver()` before destruction.
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   // Starts a new recording session if one is not already active, clearing any
   // artifacts from a previous session.
@@ -67,6 +86,12 @@ class SkillRecordingService : public KeyedService,
   // screenshot.
   void CaptureAction(browser::context_hub::mojom::SkillRecordingActionType type,
                      std::string description);
+
+  // Forwards a transcript update to `OnTranscriptUpdate()` for testing
+  // observer notifications and transcript handling.
+  void OnTranscriptUpdateForTesting(const std::string& text,
+                                    base::TimeDelta timestamp,
+                                    bool is_final);
 
   // Returns a screenshot completion callback bound to `weak_ptr_factory_` for
   // testing screenshot handling and callback invalidation across sessions.
@@ -90,6 +115,10 @@ class SkillRecordingService : public KeyedService,
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
+  void OnTranscriptUpdate(const std::string& text,
+                          base::TimeDelta timestamp,
+                          bool is_final);
+
   page_content_annotations::FetchPageContextResultCallback
   BindScreenshotCapturedCallback(size_t action_index);
 
@@ -103,11 +132,14 @@ class SkillRecordingService : public KeyedService,
   const raw_ref<Profile> profile_;
   std::optional<base::TimeTicks> start_time_;
   RecordingArtifacts artifacts_;
+  base::ObserverList<Observer> observers_;
 
   std::unique_ptr<TabActiveObserver> tab_observer_;
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  std::unique_ptr<SkillAudioCapturer> audio_capturer_;
+
   base::WeakPtrFactory<SkillRecordingService> weak_ptr_factory_{this};
 };
 

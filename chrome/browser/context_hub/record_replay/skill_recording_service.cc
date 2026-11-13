@@ -17,6 +17,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
+#include "chrome/browser/context_hub/record_replay/skill_audio_capturer.h"
 #include "chrome/browser/context_hub/record_replay/tab_active_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -48,6 +49,14 @@ SkillRecordingService::~SkillRecordingService() {
   StopRecording();
 }
 
+void SkillRecordingService::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void SkillRecordingService::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 void SkillRecordingService::StartRecording() {
   if (is_recording()) {
     return;
@@ -65,11 +74,22 @@ void SkillRecordingService::StartRecording() {
   browser_tab_strip_tracker_->Init();
 
   ObserveActiveTabInBrowser(GetLastActiveBrowser(*profile_));
+
+  if (!audio_capturer_) {
+    audio_capturer_ = std::make_unique<SkillAudioCapturer>(
+        &profile_.get(),
+        base::BindRepeating(&SkillRecordingService::OnTranscriptUpdate,
+                            base::Unretained(this)));
+  }
+  audio_capturer_->Start();
 }
 
 void SkillRecordingService::StopRecording() {
   if (!is_recording()) {
     return;
+  }
+  if (audio_capturer_) {
+    audio_capturer_->Stop();
   }
   start_time_.reset();
   browser_collection_observation_.Reset();
@@ -113,6 +133,13 @@ void SkillRecordingService::CaptureAction(
       BindScreenshotCapturedCallback(action_index));
 }
 
+void SkillRecordingService::OnTranscriptUpdateForTesting(
+    const std::string& text,
+    base::TimeDelta timestamp,
+    bool is_final) {
+  OnTranscriptUpdate(text, timestamp, is_final);
+}
+
 page_content_annotations::FetchPageContextResultCallback
 SkillRecordingService::BindScreenshotCapturedCallbackForTesting(
     size_t action_index) {
@@ -122,6 +149,7 @@ SkillRecordingService::BindScreenshotCapturedCallbackForTesting(
 void SkillRecordingService::Shutdown() {
   StopRecording();
   artifacts_.actions.clear();
+  audio_capturer_.reset();
 }
 
 void SkillRecordingService::OnTabStripModelChanged(
@@ -181,6 +209,17 @@ void SkillRecordingService::OnBrowserClosed(BrowserWindowInterface* browser) {
   }
   BrowserWindowInterface* last_active = GetLastActiveBrowser(*profile_);
   ObserveActiveTabInBrowser(last_active != browser ? last_active : nullptr);
+}
+
+void SkillRecordingService::OnTranscriptUpdate(const std::string& text,
+                                               base::TimeDelta timestamp,
+                                               bool is_final) {
+  if (!is_recording()) {
+    return;
+  }
+  for (Observer& obs : observers_) {
+    obs.OnTranscriptUpdate(text, timestamp, is_final);
+  }
 }
 
 page_content_annotations::FetchPageContextResultCallback

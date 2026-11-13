@@ -1,10 +1,12 @@
 include_rules = [
+  "+ash/constants",
   "+chrome/browser/tab_list",
   "+chrome/browser/ui/accelerator_utils.h",
   "+chrome/browser/ui/browser_tab_strip_tracker.h",
   "+chrome/browser/ui/browser_tab_strip_tracker_delegate.h",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/tabs",
+  "+components/capture_mode",
   "+components/database_utils",
   "+components/optimization_guide/core",
   "+components/page_content_annotations/content",
@@ -12,6 +14,7 @@ include_rules = [
   "+components/passage_embeddings/core",
   "+components/personal_context/proto",
   "+components/saved_tab_groups/test_support",
+  "+components/soda",
   "+components/sync_tab_context",
   "+components/tabs",
 ]

@@ -8,6 +8,8 @@ source_set("record_replay") {
   sources = [
     "recording_artifacts.cc",
     "recording_artifacts.h",
+    "skill_audio_capturer.cc",
+    "skill_audio_capturer.h",
     "skill_recording_service.cc",
     "skill_recording_service.h",
     "skill_recording_service_factory.cc",
@@ -30,17 +32,31 @@ source_set("record_replay") {
 
   deps = [
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/speech",
     "//chrome/browser/ui:browser_manager_service",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//components/capture_mode",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//components/soda",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "recording_artifacts_unittest.cc",
+    "skill_audio_capturer_unittest.cc",
     "skill_recording_service_factory_unittest.cc",
     "skill_recording_service_unittest.cc",
     "tab_active_observer_unittest.cc",
@@ -51,6 +67,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/speech",
+    "//chrome/browser/speech:test_support",
     "//chrome/browser/ui:browser_manager_service",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
@@ -62,10 +80,21 @@ source_set("unit_tests") {
     "//components/page_content_annotations/content",
     "//content/public/browser",
     "//content/test:test_support",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base:test_support",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//components/soda:test_support",
+    ]
+  }
 }

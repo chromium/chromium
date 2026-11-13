@@ -17,8 +17,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -46,6 +48,12 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "ui/base/test/mock_base_window.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#else
+#include "chrome/browser/speech/speech_recognition_service_factory.h"
+#endif
 
 namespace context_hub {
 namespace {
@@ -120,9 +128,53 @@ class TestBrowserInstance {
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> close_callbacks_;
 };
 
+class TestSkillRecordingServiceObserver
+    : public SkillRecordingService::Observer {
+ public:
+  TestSkillRecordingServiceObserver() = default;
+  TestSkillRecordingServiceObserver(const TestSkillRecordingServiceObserver&) =
+      delete;
+  TestSkillRecordingServiceObserver& operator=(
+      const TestSkillRecordingServiceObserver&) = delete;
+  ~TestSkillRecordingServiceObserver() override = default;
+
+  // SkillRecordingService::Observer:
+  void OnTranscriptUpdate(const std::string& text,
+                          base::TimeDelta timestamp,
+                          bool is_final) override {
+    last_text_ = text;
+    last_timestamp_ = timestamp;
+    last_is_final_ = is_final;
+    update_count_++;
+  }
+
+  const std::string& last_text() const { return last_text_; }
+  base::TimeDelta last_timestamp() const { return last_timestamp_; }
+  bool last_is_final() const { return last_is_final_; }
+  int update_count() const { return update_count_; }
+
+ private:
+  std::string last_text_;
+  base::TimeDelta last_timestamp_;
+  bool last_is_final_ = false;
+  int update_count_ = 0;
+};
+
 class SkillRecordingServiceTest : public testing::Test {
  public:
-  SkillRecordingServiceTest() = default;
+  SkillRecordingServiceTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+        ->SetTestingFactory(&profile_,
+                            ProfileKeyedServiceFactory::TestingFactory());
+#else
+    SpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
+        &profile_, ProfileKeyedServiceFactory::TestingFactory());
+#endif
+  }
+  SkillRecordingServiceTest(const SkillRecordingServiceTest&) = delete;
+  SkillRecordingServiceTest& operator=(const SkillRecordingServiceTest&) =
+      delete;
   ~SkillRecordingServiceTest() override = default;
 
  protected:
@@ -505,6 +557,33 @@ TEST_F(SkillRecordingServiceTest,
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
   EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:50, Y:60");
+}
+
+TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
+  TestSkillRecordingServiceObserver observer;
+  service_.AddObserver(&observer);
+
+  // Transcript updates while not recording are ignored.
+  service_.OnTranscriptUpdateForTesting("ignored before start",
+                                        base::Milliseconds(100),
+                                        /*is_final=*/true);
+  EXPECT_EQ(observer.update_count(), 0);
+
+  service_.StartRecording();
+  service_.OnTranscriptUpdateForTesting("hello world", base::Milliseconds(250),
+                                        /*is_final=*/true);
+  EXPECT_EQ(observer.update_count(), 1);
+  EXPECT_EQ(observer.last_text(), "hello world");
+  EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(250));
+  EXPECT_TRUE(observer.last_is_final());
+
+  service_.RemoveObserver(&observer);
+  service_.OnTranscriptUpdateForTesting("ignored after remove",
+                                        base::Milliseconds(500),
+                                        /*is_final=*/false);
+  EXPECT_EQ(observer.update_count(), 1);
+
+  service_.StopRecording();
 }
 
 }  // namespace

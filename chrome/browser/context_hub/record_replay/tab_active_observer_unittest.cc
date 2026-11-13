@@ -8,8 +8,10 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +29,12 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#else
+#include "chrome/browser/speech/speech_recognition_service_factory.h"
+#endif
+
 namespace context_hub {
 namespace {
 
@@ -38,6 +46,14 @@ class TabActiveObserverTest : public testing::Test {
   ~TabActiveObserverTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+        ->SetTestingFactory(&profile_,
+                            ProfileKeyedServiceFactory::TestingFactory());
+#else
+    SpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
+        &profile_, ProfileKeyedServiceFactory::TestingFactory());
+#endif
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &profile_, content::SiteInstance::Create(&profile_));
     service_.StartRecording();
