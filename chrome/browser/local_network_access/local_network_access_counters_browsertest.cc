@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
            1},
           {WebFeature::kPrivateNetworkAccessFetchedTopFrame, 1},
       }));
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
            1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
            1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
