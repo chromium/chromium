@@ -119,6 +119,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/contextual_tasks/public/features.h"
@@ -224,6 +225,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kContactInfoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIdentityDocsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTravelMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kOffersAndLoyaltyCardsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kAskGoogleAboutThisPageItem);
@@ -782,6 +785,16 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
                                         : vector_icons::kTripOldIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
                          AppMenuModel::kTravelMenuItem);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)) {
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_OFFERS_AND_LOYALTY_CARDS,
+        IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
+        vector_icons::kLoyaltyProgramsIcon);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_SHOW_OFFERS_AND_LOYALTY_CARDS).value(),
+        AppMenuModel::kOffersAndLoyaltyCardsMenuItem);
+  }
 }
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
@@ -1955,6 +1968,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                       delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_TRAVEL);
+      break;
+    case IDC_SHOW_OFFERS_AND_LOYALTY_CARDS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowOffersAndLoyaltyCards", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_OFFERS_AND_LOYALTY_CARDS);
       break;
     case IDC_PERFORMANCE:
       if (!uma_action_recorded_) {

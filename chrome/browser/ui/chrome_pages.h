@@ -149,6 +149,7 @@ void ShowPaymentMethods(BrowserWindowInterface* bwi);
 void ShowContactInfo(BrowserWindowInterface* bwi);
 void ShowIdentityDocs(BrowserWindowInterface* bwi);
 void ShowTravel(BrowserWindowInterface* bwi);
+void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi);
 
 // Shows all recent shared tab group activities.
 void ShowSharedTabGroupActivity(Profile* profile);

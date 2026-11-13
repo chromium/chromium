@@ -29260,6 +29260,12 @@ should be able to be added at any place in this file.
   <description>Settings: Keyboard settings</description>
 </action>
 
+<action name="Options_ShowOffersAndLoyaltyCards">
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>Settings: Show offers and loyalty cards page</description>
+</action>
+
 <action name="Options_ShowPasswordCheck">
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>

@@ -4183,6 +4183,24 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           /*is_pinnable=*/false)
           .Build());
 
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::ShowOffersAndLoyaltyCards(bwi);
+                },
+                bwi),
+            kActionShowOffersAndLoyaltyCards,
+            IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
+            IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
+            vector_icons::kLoyaltyProgramsIcon,
+            /*is_pinnable=*/false)
+            .Build());
+  }
+
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(

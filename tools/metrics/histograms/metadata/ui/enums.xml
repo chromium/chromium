@@ -1401,6 +1401,7 @@ chromium-metrics-reviews@google.com.
   <int value="125" label="Show skills and extensions"/>
   <int value="126" label="Scheduled restart dialog"/>
   <int value="127" label="Other device tab"/>
+  <int value="128" label="Offers and loyalty cards"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

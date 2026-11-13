@@ -440,6 +440,10 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionShowTravel:
       RecordAction(MENU_ACTION_SHOW_TRAVEL, "ShowTravel");
       break;
+    case kActionShowOffersAndLoyaltyCards:
+      RecordAction(MENU_ACTION_SHOW_OFFERS_AND_LOYALTY_CARDS,
+                   "ShowOffersAndLoyaltyCards");
+      break;
 
     case kActionPerformance:
       RecordAction(MENU_ACTION_SHOW_PERFORMANCE_SETTINGS,

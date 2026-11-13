@@ -671,6 +671,11 @@ void ShowTravel(BrowserWindowInterface* bwi) {
   ShowSettingsSubPage(bwi, kTravelSubPage);
 }
 
+void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi) {
+  base::RecordAction(UserMetricsAction("Options_ShowOffersAndLoyaltyCards"));
+  ShowSettingsSubPage(bwi, kOffersAndLoyaltyCardsSubPage);
+}
+
 void ShowEnterpriseManagementPageInTabbedBrowser(
     BrowserWindowInterface* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the

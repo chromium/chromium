@@ -370,6 +370,9 @@
     <message name="IDS_TRAVEL_SUBMENU_OPTION" desc="Text label of the Travel item in the Your saved info 3-dot submenu">
       Travel
     </message>
+    <message name="IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION" desc="Text label of the Offers and loyalty cards item in the Your saved info 3-dot submenu">
+      Offers and loyalty cards
+    </message>
     <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SETTING_INPUT_AREA_LABEL" desc="Label of the input area of enhanced autofill shortcut setting.">
       Enhanced autofill shortcut
     </message>

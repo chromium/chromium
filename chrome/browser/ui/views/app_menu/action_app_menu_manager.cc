@@ -95,6 +95,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -772,6 +773,14 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
                         {.element_id = AppMenuModel::kIdentityDocsMenuItem})
                     .AddAction(kActionShowTravel,
                                {.element_id = AppMenuModel::kTravelMenuItem});
+                if (base::FeatureList::IsEnabled(
+                        autofill::features::
+                            kAutofillEnableOffersAndLoyaltyCardsSettings)) {
+                  sub.AddAction(
+                      kActionShowOffersAndLoyaltyCards,
+                      {.element_id =
+                           AppMenuModel::kOffersAndLoyaltyCardsMenuItem});
+                }
               },
               {.element_id = AppMenuModel::kPasswordAndAutofillMenuItem});
         }

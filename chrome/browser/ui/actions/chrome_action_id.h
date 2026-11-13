@@ -205,6 +205,7 @@
   E(kActionShowContactInfo, IDC_SHOW_CONTACT_INFO) \
   E(kActionShowIdentityDocs, IDC_SHOW_IDENTITY_DOCS) \
   E(kActionShowTravel, IDC_SHOW_TRAVEL) \
+  E(kActionShowOffersAndLoyaltyCards, IDC_SHOW_OFFERS_AND_LOYALTY_CARDS) \
   E(kActionCaretBrowsingToggle, IDC_CARET_BROWSING_TOGGLE) \
   E(kActionChromeTips, IDC_CHROME_TIPS) \
   E(kActionChromeWhatsNew, IDC_CHROME_WHATS_NEW) \

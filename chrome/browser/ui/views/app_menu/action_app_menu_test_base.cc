@@ -134,6 +134,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowContactInfo, u"Addresses and more");
   add_action(kActionShowIdentityDocs, u"Identity docs");
   add_action(kActionShowTravel, u"Travel");
+  add_action(kActionShowOffersAndLoyaltyCards, u"Offers and loyalty cards");
   add_action(kActionShowHistory, u"History");
   add_action(kActionRecentTabsSubmenu, u"Recent Tabs");
   add_action(kActionOtherDeviceTabsSubmenu, u"Other device tabs");

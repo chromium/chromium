@@ -48,6 +48,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -801,6 +802,31 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, TravelNavigation) {
   histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ShowTravel", 1);
   histograms.ExpectBucketCount("WrenchMenu.MenuAction", MENU_ACTION_SHOW_TRAVEL,
                                1);
+}
+
+class AppMenuModelOffersAndLoyaltyCardsInteractiveTest
+    : public AppMenuModelInteractiveTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings};
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelOffersAndLoyaltyCardsInteractiveTest,
+                       OffersAndLoyaltyCardsNavigation) {
+  base::HistogramTester histograms;
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kPasswordAndAutofillMenuItem),
+      SelectMenuItem(AppMenuModel::kOffersAndLoyaltyCardsMenuItem),
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          GURL(chrome::GetSettingsUrl(chrome::kOffersAndLoyaltyCardsSubPage))));
+
+  histograms.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowOffersAndLoyaltyCards", 1);
+  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
+                               MENU_ACTION_SHOW_OFFERS_AND_LOYALTY_CARDS, 1);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

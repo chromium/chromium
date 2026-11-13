@@ -35,6 +35,7 @@
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -53,6 +54,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
@@ -898,6 +900,7 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_CONTACT_INFO,
                     IDC_SHOW_IDENTITY_DOCS,
                     IDC_SHOW_TRAVEL,
+                    IDC_SHOW_OFFERS_AND_LOYALTY_CARDS,
                     AppMenuModel::kMinOtherProfileCommandId));
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
@@ -919,6 +922,47 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
   EXPECT_TRUE(
       your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
 }
+
+class AppMenuModelOffersAndLoyaltyCardsTest
+    : public base::test::WithFeatureOverride,
+      public AppMenuModelTest {
+ public:
+  AppMenuModelOffersAndLoyaltyCardsTest()
+      : WithFeatureOverride(
+            autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings) {}
+};
+
+// Tests that the Offers and loyalty cards item is shown right after Travel in
+// the Your saved info submenu if the feature is enabled, and hidden otherwise.
+IN_PROC_BROWSER_TEST_P(AppMenuModelOffersAndLoyaltyCardsTest,
+                       OffersAndLoyaltyCardsSubmenuItem) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t your_saved_info_menu_index =
+      model
+          .GetIndexOfCommandId(
+              AppMenuModel::kPasswordsAndAutofillMenuPlaceholder)
+          .value();
+  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(your_saved_info_menu_index));
+
+  const std::optional<size_t> index = your_saved_info_menu->GetIndexOfCommandId(
+      IDC_SHOW_OFFERS_AND_LOYALTY_CARDS);
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(index.has_value());
+    EXPECT_TRUE(
+        chrome::IsCommandEnabled(browser(), IDC_SHOW_OFFERS_AND_LOYALTY_CARDS));
+    EXPECT_TRUE(your_saved_info_menu->IsEnabledAt(*index));
+    EXPECT_EQ(
+        *index,
+        your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).value() + 1);
+  } else {
+    EXPECT_FALSE(index.has_value());
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuModelOffersAndLoyaltyCardsTest);
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =

@@ -1738,6 +1738,7 @@ features through Chrome Labs. -->
     <variant name=".ShowKaleidoscope"/>
     <variant name=".ShowLensOverlay"/>
     <variant name=".ShowManagementPage"/>
+    <variant name=".ShowOffersAndLoyaltyCards"/>
     <variant name=".ShowPasswordManager"/>
     <variant name=".ShowPaymentMethods"/>
     <variant name=".ShowPerformanceSettings"/>
