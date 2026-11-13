@@ -275,10 +275,9 @@ class GlicInvokeSelectedTabsPreparationTest : public GlicInvokePreparationTest {
             browser_window_.GetUnownedUserDataHost(), tab_list_);
   }
 
-  void ConfigureTab(tabs::MockTabInterface& tab, bool selected) {
+  void ConfigureTab(tabs::MockTabInterface& tab) {
     ON_CALL(tab, GetBrowserWindowInterface())
         .WillByDefault(testing::Return(&browser_window_));
-    ON_CALL(tab, IsSelected()).WillByDefault(testing::Return(selected));
   }
 
   ui::UnownedUserDataHost user_data_host_;
@@ -294,39 +293,34 @@ TEST_F(GlicInvokeSelectedTabsPreparationTest,
   tabs::MockTabInterface tab0;
   tabs::MockTabInterface tab1;
   tabs::MockTabInterface tab2;
-  tabs::MockTabInterface tab3;
-  ConfigureTab(tab0, /*selected=*/true);
-  ConfigureTab(tab1, /*selected=*/false);
-  ConfigureTab(tab2, /*selected=*/true);
-  ConfigureTab(tab3, /*selected=*/true);
+  ConfigureTab(tab0);
+  ConfigureTab(tab1);
+  ConfigureTab(tab2);
 
-  ON_CALL(tab_list_, GetAllTabs())
+  ON_CALL(tab_list_, GetHighlightedTabs())
       .WillByDefault(testing::Return(
-          std::vector<tabs::TabInterface*>{&tab0, &tab1, &tab2, &tab3}));
-  ON_CALL(tab_list_, GetActiveTab()).WillByDefault(testing::Return(&tab2));
+          std::vector<tabs::TabInterface*>{&tab0, &tab1, &tab2}));
+  ON_CALL(tab_list_, GetActiveTab()).WillByDefault(testing::Return(&tab1));
 
   GlicInvokeOptions options(mojom::InvocationSource::kTopChromeButton);
   MaybePopulateSelectedTabsToPin(
       &profile_, sharing_manager_,
-      GlicInvokeHandler::TabSurface{&tab2, /*is_new=*/false},
+      GlicInvokeHandler::TabSurface{&tab1, /*is_new=*/false},
       /*has_auto_submit_passkey=*/false, options);
 
   EXPECT_THAT(options.tab_sharing.tabs_to_pin,
-              testing::ElementsAre(tab0.GetHandle(), tab2.GetHandle(),
-                                   tab3.GetHandle()));
+              testing::ElementsAre(tab0.GetHandle(), tab1.GetHandle(),
+                                   tab2.GetHandle()));
   EXPECT_EQ(options.tab_sharing.pin_trigger, GlicPinTrigger::kInstanceCreation);
 }
 
 TEST_F(GlicInvokeSelectedTabsPreparationTest,
        SingleSelectedActiveTabLeavesTabsToPinEmpty) {
   tabs::MockTabInterface tab0;
-  tabs::MockTabInterface tab1;
-  ConfigureTab(tab0, /*selected=*/true);
-  ConfigureTab(tab1, /*selected=*/false);
+  ConfigureTab(tab0);
 
-  ON_CALL(tab_list_, GetAllTabs())
-      .WillByDefault(
-          testing::Return(std::vector<tabs::TabInterface*>{&tab0, &tab1}));
+  ON_CALL(tab_list_, GetHighlightedTabs())
+      .WillByDefault(testing::Return(std::vector<tabs::TabInterface*>{&tab0}));
   ON_CALL(tab_list_, GetActiveTab()).WillByDefault(testing::Return(&tab0));
 
   GlicInvokeOptions options(mojom::InvocationSource::kTopChromeButton);
@@ -344,15 +338,15 @@ TEST_F(GlicInvokeSelectedTabsPreparationTest,
   tabs::MockTabInterface split_tab0;
   tabs::MockTabInterface split_tab1;
   tabs::MockTabInterface other_tab;
-  ConfigureTab(split_tab0, /*selected=*/true);
-  ConfigureTab(split_tab1, /*selected=*/true);
-  ConfigureTab(other_tab, /*selected=*/false);
+  ConfigureTab(split_tab0);
+  ConfigureTab(split_tab1);
+  ConfigureTab(other_tab);
   ON_CALL(split_tab0, GetSplit()).WillByDefault(testing::Return(split_id));
   ON_CALL(split_tab1, GetSplit()).WillByDefault(testing::Return(split_id));
 
-  ON_CALL(tab_list_, GetAllTabs())
-      .WillByDefault(testing::Return(std::vector<tabs::TabInterface*>{
-          &split_tab0, &split_tab1, &other_tab}));
+  ON_CALL(tab_list_, GetHighlightedTabs())
+      .WillByDefault(testing::Return(
+          std::vector<tabs::TabInterface*>{&split_tab0, &split_tab1}));
   ON_CALL(tab_list_, GetActiveTab())
       .WillByDefault(testing::Return(&split_tab0));
 
@@ -366,7 +360,9 @@ TEST_F(GlicInvokeSelectedTabsPreparationTest,
 
   // Multi-selecting an additional tab outside the split populates all selected
   // tabs.
-  ON_CALL(other_tab, IsSelected()).WillByDefault(testing::Return(true));
+  ON_CALL(tab_list_, GetHighlightedTabs())
+      .WillByDefault(testing::Return(std::vector<tabs::TabInterface*>{
+          &split_tab0, &split_tab1, &other_tab}));
   MaybePopulateSelectedTabsToPin(
       &profile_, sharing_manager_,
       GlicInvokeHandler::TabSurface{&split_tab0, /*is_new=*/false},
@@ -384,15 +380,15 @@ TEST_F(GlicInvokeSelectedTabsPreparationTest,
   tabs::MockTabInterface tab1;
   tabs::MockTabInterface tab2;
   tabs::MockTabInterface tab3;
-  ConfigureTab(tab0, /*selected=*/true);
-  ConfigureTab(tab1, /*selected=*/true);
-  ConfigureTab(tab2, /*selected=*/true);
-  ConfigureTab(tab3, /*selected=*/true);
+  ConfigureTab(tab0);
+  ConfigureTab(tab1);
+  ConfigureTab(tab2);
+  ConfigureTab(tab3);
 
   sharing_manager_.set_max_pinned_tabs(3);
   sharing_manager_.AddPinnedTab(tab0.GetHandle());
 
-  ON_CALL(tab_list_, GetAllTabs())
+  ON_CALL(tab_list_, GetHighlightedTabs())
       .WillByDefault(testing::Return(
           std::vector<tabs::TabInterface*>{&tab0, &tab1, &tab2, &tab3}));
   ON_CALL(tab_list_, GetActiveTab()).WillByDefault(testing::Return(&tab3));
@@ -415,9 +411,9 @@ TEST_F(GlicInvokeSelectedTabsPreparationTest,
        SkipsClientInvokeNewTabOrOptOutConfigurations) {
   tabs::MockTabInterface tab0;
   tabs::MockTabInterface tab1;
-  ConfigureTab(tab0, /*selected=*/true);
-  ConfigureTab(tab1, /*selected=*/true);
-  ON_CALL(tab_list_, GetAllTabs())
+  ConfigureTab(tab0);
+  ConfigureTab(tab1);
+  ON_CALL(tab_list_, GetHighlightedTabs())
       .WillByDefault(
           testing::Return(std::vector<tabs::TabInterface*>{&tab0, &tab1}));
   ON_CALL(tab_list_, GetActiveTab()).WillByDefault(testing::Return(&tab0));

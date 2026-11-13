@@ -64,18 +64,6 @@ bool IsInlineTrustFirstFreExperimentEnabled() {
          base::FeatureList::IsEnabled(features::kGlicActionFirstFRE);
 }
 
-// TODO(crbug.com/584742644): Replace with a selected-tabs getter on
-// `TabListInterface` (e.g. `GetOrderedMultiSelectedTabs()`) once exposed.
-std::vector<tabs::TabInterface*> GetSelectedTabs(TabListInterface& tab_list) {
-  std::vector<tabs::TabInterface*> selected_tabs;
-  for (tabs::TabInterface* tab : tab_list.GetAllTabs()) {
-    if (tab && tab->IsSelected()) {
-      selected_tabs.push_back(tab);
-    }
-  }
-  return selected_tabs;
-}
-
 // Moves `target_handle` into the last available pin slot if it sits past the
 // `sharing_manager` pin limit, preserving the relative order of all other tabs.
 void EnsureTargetTabWithinPinLimit(
@@ -216,7 +204,10 @@ void MaybePopulateSelectedTabsToPin(
   bool saw_target_tab = false;
   bool has_other_selected_tab = false;
 
-  for (tabs::TabInterface* candidate : GetSelectedTabs(*tab_list)) {
+  for (tabs::TabInterface* candidate : tab_list->GetHighlightedTabs()) {
+    if (!candidate) {
+      continue;
+    }
     if (candidate == target_tab) {
       saw_target_tab = true;
     } else if (!target_split.has_value() ||
