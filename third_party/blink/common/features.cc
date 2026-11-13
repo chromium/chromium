@@ -2121,7 +2121,7 @@ BASE_FEATURE(kServiceWorkerSyntheticResponse,
 // next available ID metadata as database corruption if registrations exist on
 // disk, triggering database doom and clean recovery.
 BASE_FEATURE(kServiceWorkerDatabaseDoomOnMissingNextId,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Define the allowed websites to enable SyntheticResponse. Allowed urls are
 // expected to be passed as a comma separated string.

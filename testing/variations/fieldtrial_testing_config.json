@@ -18013,26 +18013,6 @@
             ]
         }
     ],
-    "ServiceWorkerDatabaseDoomOnMissingNextId": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260901",
-                    "enable_features": [
-                        "ServiceWorkerDatabaseDoomOnMissingNextId"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerDumpWithoutCrashingOnStorageKeyMismatch": [
         {
             "platforms": [
