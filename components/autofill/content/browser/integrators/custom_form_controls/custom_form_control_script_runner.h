@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace autofill {
 
@@ -32,10 +31,10 @@ class CustomFormControlScriptIndex;
 // the script that detects and fills the document's custom form controls (e.g.
 // select-like widgets that aren't <select> elements). For now, when forms are
 // first seen in the main frame's document, it looks up the script for its URL
-// in the `CustomFormControlScriptIndex`, loads it into the renderer through
-// `mojom::CustomFormControlAgent`, and detects the document's custom form
-// controls with it. When a form of the document is then filled with an
-// address profile, it fills the detected custom selects with the profile too.
+// in the `CustomFormControlScriptIndex` and loads it into the renderer through
+// `mojom::CustomFormControlAgent`. When a form of the document is then filled
+// with an address profile, it detects the document's custom form controls with
+// the script and fills the detected custom selects with the profile too.
 // Other frames (e.g. iframes) aren't supported.
 //
 // One instance per tab, owned by `ChromeAutofillClient`, which creates it if
@@ -102,12 +101,9 @@ class CustomFormControlScriptRunner : public AutofillManager::Observer {
   // progress, and drops the pending replies for them.
   void Reset();
 
-  // Detects the custom form controls in `manager`'s frame if its script loaded.
-  // `Reset()` cancels the detection, e.g. if a navigation replaces the document
-  // `document_token`.
-  void OnScriptLoaded(base::WeakPtr<AutofillManager> manager,
-                      blink::DocumentToken document_token,
-                      bool success);
+  // Detects and stores the custom form controls in `manager`'s frame (see
+  // `OnCustomFormControlsDetected()`), then runs `callback`.
+  void DetectControls(AutofillManager& manager, base::OnceClosure callback);
 
   // Replaces the stored controls with the fillable `controls`, or with none and
   // reports a bad message if they violate the
@@ -151,7 +147,7 @@ class CustomFormControlScriptRunner : public AutofillManager::Observer {
   std::optional<LocalFrameToken> frame_token_;
 
   // The custom form controls that the script of `frame_token_`'s document
-  // detected.
+  // detected when the last fill started.
   std::vector<DetectedCustomControl> detected_controls_;
 
   // Set while `detected_controls_` are being filled. The controls are filled

@@ -15,6 +15,8 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -93,9 +95,8 @@ void CustomFormControlScriptRunner::OnAfterFormsSeen(
       static_cast<ContentAutofillDriver&>(manager.driver());
   content::RenderFrameHost* rfh = driver.render_frame_host();
   // Only the primary main frame's document gets a script, not e.g. iframes,
-  // prerendered pages or pages in the BFCache. Its script is loaded, and its
-  // custom form controls are detected, only once: the first time the renderer
-  // reports its forms.
+  // prerendered pages or pages in the BFCache. Its script is loaded only once:
+  // the first time the renderer reports its forms.
   if (!rfh->IsInPrimaryMainFrame() || frame_token_ == driver.GetFrameToken()) {
     return;
   }
@@ -113,11 +114,8 @@ void CustomFormControlScriptRunner::OnAfterFormsSeen(
   if (script_found_callback_for_testing_) {
     script_found_callback_for_testing_.Run(*script);
   }
-  driver.GetCustomFormControlAgent()->LoadUnsafeScript(
-      document_token, *script,
-      base::BindOnce(&CustomFormControlScriptRunner::OnScriptLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
-                     document_token));
+  driver.GetCustomFormControlAgent()->LoadUnsafeScript(document_token, *script,
+                                                       base::DoNothing());
 }
 
 void CustomFormControlScriptRunner::Reset() {
@@ -127,20 +125,15 @@ void CustomFormControlScriptRunner::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void CustomFormControlScriptRunner::OnScriptLoaded(
-    base::WeakPtr<AutofillManager> manager,
-    blink::DocumentToken document_token,
-    bool success) {
-  if (!success || !manager) {
-    return;
-  }
-  static_cast<ContentAutofillDriver&>(manager->driver())
-      .GetCustomFormControlAgent()
-      ->DetectCustomFormControls(
-          document_token,
-          base::BindOnce(
-              &CustomFormControlScriptRunner::OnCustomFormControlsDetected,
-              weak_ptr_factory_.GetWeakPtr()));
+void CustomFormControlScriptRunner::DetectControls(AutofillManager& manager,
+                                                   base::OnceClosure callback) {
+  ContentAutofillDriver& driver = GetDriver(manager);
+  driver.GetCustomFormControlAgent()->DetectCustomFormControls(
+      driver.render_frame_host()->GetDocumentToken(),
+      base::BindOnce(
+          &CustomFormControlScriptRunner::OnCustomFormControlsDetected,
+          weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(callback)));
 }
 
 void CustomFormControlScriptRunner::OnCustomFormControlsDetected(
@@ -190,8 +183,7 @@ void CustomFormControlScriptRunner::OnFillOrPreviewForm(
   // Only fills (not previews) of forms of `frame_token_`'s document with an
   // address profile fill the custom selects. The runner observes the managers
   // of all frames, so the `frame_token_` check ignores fills in other frames
-  // (e.g. iframes), and in a new main frame whose controls weren't detected
-  // yet.
+  // (e.g. iframes), and in a new main frame whose script wasn't injected yet.
   const AutofillProfile* const* profile =
       std::get_if<const AutofillProfile*>(&filling_payload);
   if (action_persistence != mojom::ActionPersistence::kFill || !profile ||
@@ -200,7 +192,10 @@ void CustomFormControlScriptRunner::OnFillOrPreviewForm(
     return;
   }
   filling_state_.emplace(**profile);
-  FillNextControl(manager.GetWeakPtr());
+  DetectControls(
+      manager,
+      base::BindOnce(&CustomFormControlScriptRunner::FillNextControl,
+                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr()));
 }
 
 void CustomFormControlScriptRunner::FillNextControl(

@@ -98,8 +98,9 @@ class CustomFormControlScriptRunnerTest
         base::BindLambdaForTesting([this](const std::string& script) {
           found_scripts_.push_back(script);
         }));
-    // By default, scripts load and no controls are detected. Without these
-    // replies, the mojo responders would be dropped without running.
+    // By default, scripts load, no controls are detected and no options are
+    // extracted. Without these replies, the mojo responders are dropped without
+    // running.
     ON_CALL(agent_, LoadUnsafeScript)
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(true));
     ON_CALL(agent_, DetectCustomFormControls)
@@ -107,6 +108,12 @@ class CustomFormControlScriptRunnerTest
             [](const blink::DocumentToken&,
                MockCustomFormControlAgent::DetectCustomFormControlsCallback
                    callback) { std::move(callback).Run({}); });
+    ON_CALL(agent_, ExtractOptions)
+        .WillByDefault(
+            [](const blink::DocumentToken&, FieldRendererId,
+               MockCustomFormControlAgent::ExtractOptionsCallback callback) {
+              std::move(callback).Run(nullptr);
+            });
   }
 
   void TearDown() override {
@@ -144,40 +151,58 @@ class CustomFormControlScriptRunnerTest
     runner().OnAfterFormsSeen(manager(), {test::MakeFormGlobalId()}, {});
   }
 
-  // Like `SeeForms()`, but the main frame's agent detects `controls` in the
-  // main frame's document. Waits until some of them are stored. Returns false
-  // if that fails.
+  // Like `SeeForms()`, but then fills a form of the main frame with a profile,
+  // and the main frame's agent detects `controls` in the main frame's document
+  // (only) when the fill starts. Waits until the fill is done. Returns false if
+  // that fails.
   [[nodiscard]] bool DetectControls(
       std::vector<mojom::DetectedCustomFormControlPtr> controls) {
     EXPECT_CALL(BindAgent(),
                 DetectCustomFormControls(main_rfh()->GetDocumentToken(), _))
         .WillOnce(RunOnceCallback<1>(std::move(controls)));
     SeeForms();
-    return base::test::RunUntil(
-        [&] { return !test_api(runner()).detected_controls().empty(); });
+    const AutofillProfile profile = test::GetFullProfile();
+    return FillForm(manager(), &profile);
   }
 
-  // Like `SeeForms()`, but the main frame's agent detects `controls`, which
-  // violate the requirements of `mojom::DetectedCustomFormControl`. Returns
-  // the bad message that the runner reports.
+  // Like `DetectControls()`, but `controls` violate the requirements of
+  // `mojom::DetectedCustomFormControl`. Returns the bad message that the runner
+  // reports.
   std::string DetectAndWaitForBadMessage(
       std::vector<mojom::DetectedCustomFormControlPtr> controls) {
     mojo::test::BadMessageObserver bad_message_observer;
     EXPECT_CALL(BindAgent(), DetectCustomFormControls)
         .WillOnce(RunOnceCallback<1>(std::move(controls)));
     SeeForms();
+    const AutofillProfile profile = test::GetFullProfile();
+    StartFill(manager(), &profile);
     return bad_message_observer.WaitForBadMessage();
   }
 
-  // Loads a script for example.com, navigates there and makes the main frame's
-  // agent detect `controls`. Returns false if that fails.
+  // Loads a script for example.com into the main frame's document after
+  // navigating there. Returns false if that fails.
+  [[nodiscard]] bool LoadScript() {
+    if (!InitializeIndex("example.com", "example script")) {
+      return false;
+    }
+    NavigateAndCommit(GURL("https://example.com/checkout"));
+    BindAgent();
+    SeeForms();
+    return true;
+  }
+
+  // Like `LoadScript()`, but also makes the main frame's agent detect
+  // `controls` when a fill starts. Returns false if that fails.
   [[nodiscard]] bool LoadScriptAndDetect(
       std::vector<mojom::DetectedCustomFormControlPtr> controls) {
     if (!InitializeIndex("example.com", "example script")) {
       return false;
     }
     NavigateAndCommit(GURL("https://example.com/checkout"));
-    return DetectControls(std::move(controls));
+    EXPECT_CALL(BindAgent(), DetectCustomFormControls)
+        .WillOnce(RunOnceCallback<1>(std::move(controls)));
+    SeeForms();
+    return true;
   }
 
   // Notifies the runner that a form in `manager`'s frame was filled (or
@@ -292,9 +317,9 @@ TEST_F(CustomFormControlScriptRunnerTest, LoadsScriptIntoRenderer) {
   run_loop.Run();
 }
 
-// Tests that the controls that the script detects are stored after the script
-// loaded.
-TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsAfterLoadingScript) {
+// Tests that the controls are detected when a fill starts, not when the script
+// is loaded, and that the controls that the script detects are stored.
+TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsWhenFillStarts) {
   ASSERT_TRUE(InitializeIndex("example.com", "example script"));
   NavigateAndCommit(GURL("https://example.com/checkout"));
   std::vector<mojom::DetectedCustomFormControlPtr> controls;
@@ -304,20 +329,6 @@ TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsAfterLoadingScript) {
   EXPECT_THAT(test_api(runner()).detected_controls(),
               ElementsAre(FieldsAre(FieldRendererId(1), ADDRESS_HOME_STATE),
                           FieldsAre(FieldRendererId(2), ADDRESS_HOME_COUNTRY)));
-}
-
-// Tests that controls aren't detected if the script fails to load.
-TEST_F(CustomFormControlScriptRunnerTest, DoesNotDetectIfScriptFailsToLoad) {
-  ASSERT_TRUE(InitializeIndex("example.com", "example script"));
-  NavigateAndCommit(GURL("https://example.com/checkout"));
-  MockCustomFormControlAgent& agent = BindAgent();
-  base::OnceCallback<void(bool)> load_reply;
-  EXPECT_CALL(agent, LoadUnsafeScript).WillOnce(MoveArg<2>(&load_reply));
-  EXPECT_CALL(agent, DetectCustomFormControls).Times(0);
-  SeeForms();
-  ASSERT_TRUE(base::test::RunUntil([&] { return !load_reply.is_null(); }));
-  std::move(load_reply).Run(false);
-  agent.Flush();
 }
 
 // Tests that detected controls are skipped if their type is unknown or
@@ -374,34 +385,17 @@ TEST_F(CustomFormControlScriptRunnerTest, ReportsTooManyControls) {
   EXPECT_THAT(test_api(runner()).detected_controls(), IsEmpty());
 }
 
-// Tests that a reply to `LoadUnsafeScript()` that arrives after the frame's
-// manager was reset for a new document doesn't trigger detection.
-TEST_F(CustomFormControlScriptRunnerTest, IgnoresLoadReplyAfterReset) {
-  ASSERT_TRUE(InitializeIndex("example.com", "example script"));
-  NavigateAndCommit(GURL("https://example.com/checkout"));
-  MockCustomFormControlAgent& agent = BindAgent();
-  base::OnceCallback<void(bool)> load_reply;
-  EXPECT_CALL(agent, LoadUnsafeScript).WillOnce(MoveArg<2>(&load_reply));
-  EXPECT_CALL(agent, DetectCustomFormControls).Times(0);
-  SeeForms();
-  ASSERT_TRUE(base::test::RunUntil([&] { return !load_reply.is_null(); }));
-  runner().OnAutofillManagerStateChanged(
-      manager(), AutofillManager::LifecycleState::kActive,
-      AutofillManager::LifecycleState::kPendingReset);
-  std::move(load_reply).Run(true);
-  agent.Flush();
-}
-
 // Tests that a reply to `DetectCustomFormControls()` that arrives after the
 // frame's manager was reset for a new document isn't stored.
 TEST_F(CustomFormControlScriptRunnerTest, IgnoresDetectReplyAfterReset) {
   ASSERT_TRUE(InitializeIndex("example.com", "example script"));
   NavigateAndCommit(GURL("https://example.com/checkout"));
-  MockCustomFormControlAgent& agent = BindAgent();
   mojom::CustomFormControlAgent::DetectCustomFormControlsCallback detect_reply;
-  EXPECT_CALL(agent, DetectCustomFormControls)
+  EXPECT_CALL(BindAgent(), DetectCustomFormControls)
       .WillOnce(MoveArg<1>(&detect_reply));
   SeeForms();
+  const AutofillProfile profile = test::GetFullProfile();
+  StartFill(manager(), &profile);
   ASSERT_TRUE(base::test::RunUntil([&] { return !detect_reply.is_null(); }));
   runner().OnAutofillManagerStateChanged(
       manager(), AutofillManager::LifecycleState::kActive,
@@ -409,7 +403,7 @@ TEST_F(CustomFormControlScriptRunnerTest, IgnoresDetectReplyAfterReset) {
   std::vector<mojom::DetectedCustomFormControlPtr> controls;
   controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
   std::move(detect_reply).Run(std::move(controls));
-  agent.Flush();
+  agent().Flush();
   EXPECT_THAT(test_api(runner()).detected_controls(), IsEmpty());
 }
 
@@ -592,16 +586,16 @@ TEST_F(CustomFormControlScriptRunnerTest, SkipsUnsupportedTypes) {
   controls.push_back(MakeControl(2, "ADDRESS_HOME_ZIP"));
   controls.push_back(MakeControl(3, "ADDRESS_HOME_STATE"));
   ASSERT_TRUE(LoadScriptAndDetect(std::move(controls)));
+  const AutofillProfile profile = test::GetFullProfile();
+  ASSERT_TRUE(FillForm(manager(), &profile));
   EXPECT_THAT(test_api(runner()).detected_controls(),
               ElementsAre(FieldsAre(FieldRendererId(3), ADDRESS_HOME_STATE)));
 }
 
 // Tests that previews don't fill custom selects.
 TEST_F(CustomFormControlScriptRunnerTest, IgnoresPreviews) {
-  std::vector<mojom::DetectedCustomFormControlPtr> controls;
-  controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
-  ASSERT_TRUE(LoadScriptAndDetect(std::move(controls)));
-  EXPECT_CALL(agent(), ExtractOptions).Times(0);
+  ASSERT_TRUE(LoadScript());
+  EXPECT_CALL(agent(), DetectCustomFormControls).Times(0);
   const AutofillProfile profile = test::GetFullProfile();
   ASSERT_TRUE(
       FillForm(manager(), &profile, mojom::ActionPersistence::kPreview));
@@ -610,10 +604,8 @@ TEST_F(CustomFormControlScriptRunnerTest, IgnoresPreviews) {
 // Tests that fills with other data than address profiles (e.g. credit cards)
 // don't fill custom selects.
 TEST_F(CustomFormControlScriptRunnerTest, IgnoresOtherPayloads) {
-  std::vector<mojom::DetectedCustomFormControlPtr> controls;
-  controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
-  ASSERT_TRUE(LoadScriptAndDetect(std::move(controls)));
-  EXPECT_CALL(agent(), ExtractOptions).Times(0);
+  ASSERT_TRUE(LoadScript());
+  EXPECT_CALL(agent(), DetectCustomFormControls).Times(0);
   const CreditCard card = test::GetCreditCard();
   ASSERT_TRUE(FillForm(manager(), &card));
 }
@@ -621,10 +613,8 @@ TEST_F(CustomFormControlScriptRunnerTest, IgnoresOtherPayloads) {
 // Tests that fills of forms in other frames than the main frame don't fill the
 // main frame's custom selects.
 TEST_F(CustomFormControlScriptRunnerTest, IgnoresFillsInSubframes) {
-  std::vector<mojom::DetectedCustomFormControlPtr> controls;
-  controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
-  ASSERT_TRUE(LoadScriptAndDetect(std::move(controls)));
-  EXPECT_CALL(agent(), ExtractOptions).Times(0);
+  ASSERT_TRUE(LoadScript());
+  EXPECT_CALL(agent(), DetectCustomFormControls).Times(0);
   content::RenderFrameHost* child =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
   child = content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -654,6 +644,26 @@ TEST_F(CustomFormControlScriptRunnerTest, IgnoresFillsWhileFilling) {
   ASSERT_TRUE(
       base::test::RunUntil([&] { return !test_api(runner()).is_filling(); }));
   agent().Flush();
+}
+
+// Tests that each fill detects the controls again, so that custom selects that
+// the site renders later (e.g. after a previous fill) are filled.
+TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsForEachFill) {
+  ASSERT_TRUE(LoadScript());
+  std::vector<mojom::DetectedCustomFormControlPtr> first_controls;
+  first_controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
+  std::vector<mojom::DetectedCustomFormControlPtr> second_controls;
+  second_controls.push_back(MakeControl(2, "ADDRESS_HOME_COUNTRY"));
+  EXPECT_CALL(agent(), DetectCustomFormControls)
+      .WillOnce(RunOnceCallback<1>(std::move(first_controls)))
+      .WillOnce(RunOnceCallback<1>(std::move(second_controls)));
+  const AutofillProfile profile = test::GetFullProfile();
+  ASSERT_TRUE(FillForm(manager(), &profile));
+  EXPECT_THAT(test_api(runner()).detected_controls(),
+              ElementsAre(FieldsAre(FieldRendererId(1), ADDRESS_HOME_STATE)));
+  ASSERT_TRUE(FillForm(manager(), &profile));
+  EXPECT_THAT(test_api(runner()).detected_controls(),
+              ElementsAre(FieldsAre(FieldRendererId(2), ADDRESS_HOME_COUNTRY)));
 }
 
 // Tests that the fill ends when the main frame's manager is reset, and that the
