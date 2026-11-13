@@ -5,16 +5,23 @@
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/digital_credentials/digital_credentials_keyed_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +29,13 @@
 #include "url/origin.h"
 
 namespace digital_credentials {
+namespace {
+
+std::unique_ptr<KeyedService> BuildMockOptimizationGuideKeyedService(
+    content::BrowserContext* context) {
+  return std::make_unique<
+      testing::NiceMock<MockOptimizationGuideKeyedService>>();
+}
 
 url::Origin CreateOrigin(const std::string& spec) {
   return url::Origin::Create(GURL(spec));
@@ -30,13 +44,6 @@ url::Origin CreateOrigin(const std::string& spec) {
 class DigitalIdentityLowRiskOriginsTest
     : public ChromeRenderViewHostTestHarness {
  protected:
-  DigitalIdentityLowRiskOriginsTest() {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                RegisterMockOptimizationGuideKeyedServiceFactory));
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     mock_optimization_guide_keyed_service_ =
@@ -49,20 +56,14 @@ class DigitalIdentityLowRiskOriginsTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  static void RegisterMockOptimizationGuideKeyedServiceFactory(
-      content::BrowserContext* context) {
-    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<MockOptimizationGuideKeyedService>>();
-        }));
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        OptimizationGuideKeyedServiceFactory::GetInstance(),
+        base::BindOnce(&BuildMockOptimizationGuideKeyedService)}};
   }
 
- protected:
   raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_;
-  base::CallbackListSubscription subscription_;
 };
 
 // Test IsLastCommittedOriginLowRisk when the kKnownLowRiskOrigins list is empty
@@ -108,9 +109,12 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
 
 TEST_F(DigitalIdentityLowRiskOriginsTest,
        IsLowRiskOrigin_OTRProfile_LowFrictionUrlIsTrue) {
-  Profile* otr_profile = profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(),
-      /*create_if_needed=*/true);
+  TestingProfile::Builder otr_builder;
+  otr_builder.AddTestingFactory(
+      OptimizationGuideKeyedServiceFactory::GetInstance(),
+      base::BindOnce(&BuildMockOptimizationGuideKeyedService));
+  TestingProfile* otr_profile = otr_builder.BuildOffTheRecord(
+      profile(), Profile::OTRProfileID::CreateUniqueForTesting());
   ASSERT_TRUE(otr_profile);
   ASSERT_TRUE(otr_profile->IsOffTheRecord());
 
@@ -153,17 +157,10 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
 class DigitalIdentityLowRiskOriginsServiceNotAvailableTest
     : public ChromeRenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    // Configure the factory to return nullptr, simulating service
-    // unavailability.
-    // Note: We use profile() from ChromeRenderViewHostTestHarness here,
-    // as TestingProfileManager is not set up for this specific fixture.
-    DigitalCredentialsKeyedServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return nullptr;
-        }));
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        DigitalCredentialsKeyedServiceFactory::GetInstance(),
+        BrowserContextKeyedServiceFactory::TestingFactory()}};
   }
 };
 
@@ -256,4 +253,5 @@ TEST(IsLowRiskOriginMatcherTest, MultipleEntriesInList_NoMatch) {
       CreateOrigin("https://example.com"), test_origins));
 }
 
+}  // namespace
 }  // namespace digital_credentials
