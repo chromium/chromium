@@ -957,8 +957,6 @@ component("platform") {
     "graphics/box_reflection.h",
     "graphics/canvas_2d_color_params.cc",
     "graphics/canvas_2d_color_params.h",
-    "graphics/canvas_2d_resource_provider.cc",
-    "graphics/canvas_2d_resource_provider.h",
     "graphics/canvas_drawable_paint_record.h",
     "graphics/canvas_drawable_paint_state.cc",
     "graphics/canvas_drawable_paint_state.h",
