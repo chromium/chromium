@@ -251,14 +251,18 @@ TEST_F(ForeignSessionHandlerTest, DeleteForeignSession) {
 
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  ASSERT_TRUE(delegate->GetAllForeignSessions(&sessions));
+  ASSERT_TRUE(delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   ASSERT_THAT(sessions, UnorderedElementsAre(HasSessionTag("session_to_delete"),
                                              HasSessionTag("session_to_keep")));
 
   handler()->DeleteForeignSession("session_to_delete");
 
   sessions.clear();
-  delegate->GetAllForeignSessions(&sessions);
+  delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
   EXPECT_THAT(sessions, ElementsAre(HasSessionTag("session_to_keep")));
 }
 

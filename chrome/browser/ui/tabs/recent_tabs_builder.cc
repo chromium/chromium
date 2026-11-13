@@ -508,7 +508,9 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
 
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
+  if (!open_tabs || !open_tabs->GetAllForeignSessions(
+                        &sessions, sync_sessions::OpenTabsUIDelegate::
+                                       ForeignSessionFilter::kPresentable)) {
     if (open_tabs) {
       RecentTabItem no_tabs(
           RecentTabItem::Type::kCommand,

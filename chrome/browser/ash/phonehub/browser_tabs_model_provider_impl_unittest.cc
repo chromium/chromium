@@ -87,7 +87,9 @@ class BrowserTabsModelProviderImplTest
         .WillByDefault(Invoke(
             this, &BrowserTabsModelProviderImplTest::open_tabs_ui_delegate));
 
-    ON_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(_))
+    ON_CALL(open_tabs_ui_delegate_,
+            GetAllForeignSessions(_, sync_sessions::OpenTabsUIDelegate::
+                                         ForeignSessionFilter::kPresentable))
         .WillByDefault(Invoke(
             this,
             &BrowserTabsModelProviderImplTest::MockGetAllForeignSessions));
@@ -119,7 +121,8 @@ class BrowserTabsModelProviderImplTest
 
   bool MockGetAllForeignSessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                          VectorExperimental>>* sessions) {
+                          VectorExperimental>>* sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter /*filter*/) {
     if (sessions_) {
       *sessions = *sessions_;
       return !sessions->empty();

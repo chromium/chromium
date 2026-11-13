@@ -5,6 +5,7 @@
 #include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -42,9 +43,13 @@ OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
 OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
+    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+    ForeignSessionFilter filter) {
   return GetForeignSessionsWithLookup(
-      *session_tracker_, SyncedSessionTracker::PRESENTABLE, sessions);
+      *session_tracker_,
+      filter == ForeignSessionFilter::kAll ? SyncedSessionTracker::RAW
+                                           : SyncedSessionTracker::PRESENTABLE,
+      sessions);
 }
 
 bool OpenTabsUIDelegateImpl::GetAllRawForeignSessions(

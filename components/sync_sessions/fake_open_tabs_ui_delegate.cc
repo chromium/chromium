@@ -32,7 +32,11 @@ FakeOpenTabsUIDelegate::FakeOpenTabsUIDelegate()
 FakeOpenTabsUIDelegate::~FakeOpenTabsUIDelegate() = default;
 
 bool FakeOpenTabsUIDelegate::GetAllForeignSessions(
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
+    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+    ForeignSessionFilter /*filter*/) {
+  // `filter` is intentionally ignored here because several unit tests populate
+  // stub sessions via `AddForeignSession()` without adding tabs while testing
+  // `ForeignSessionFilter::kPresentable` callers.
   for (const auto& session : foreign_sessions_) {
     sessions->push_back(session.get());
   }
@@ -44,7 +48,7 @@ bool FakeOpenTabsUIDelegate::GetAllForeignSessions(
 
 bool FakeOpenTabsUIDelegate::GetAllRawForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  return GetAllForeignSessions(sessions);
+  return GetAllForeignSessions(sessions, ForeignSessionFilter::kAll);
 }
 
 base::flat_map<std::string, base::Time>

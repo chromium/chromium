@@ -92,7 +92,9 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
 
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       remote_sessions;
-  if (!open_tabs->GetAllForeignSessions(&remote_sessions)) {
+  if (!open_tabs->GetAllForeignSessions(
+          &remote_sessions, sync_sessions::OpenTabsUIDelegate::
+                                ForeignSessionFilter::kPresentable)) {
     Shell::Get()->birch_model()->SetRecentTabItems({});
     return;
   }

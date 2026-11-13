@@ -334,7 +334,9 @@ int GetNumForeignSessions(int profile_index) {
   if (!SessionSyncServiceFactory::GetInstance()
            ->GetForProfile(GetProfileOrDie(profile_index))
            ->GetOpenTabsUIDelegate()
-           ->GetAllForeignSessions(&sessions)) {
+           ->GetAllForeignSessions(&sessions,
+                                   sync_sessions::OpenTabsUIDelegate::
+                                       ForeignSessionFilter::kPresentable)) {
     return 0;
   }
   return sessions.size();
@@ -344,7 +346,9 @@ bool GetSessionData(int profile_index, SyncedSessionVector* sessions) {
   if (!SessionSyncServiceFactory::GetInstance()
            ->GetForProfile(GetProfileOrDie(profile_index))
            ->GetOpenTabsUIDelegate()
-           ->GetAllForeignSessions(sessions)) {
+           ->GetAllForeignSessions(sessions,
+                                   sync_sessions::OpenTabsUIDelegate::
+                                       ForeignSessionFilter::kPresentable)) {
     return false;
   }
   SortSyncedSessions(sessions);

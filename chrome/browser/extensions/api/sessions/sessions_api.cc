@@ -663,7 +663,9 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
   // If the user has disabled tab sync, GetOpenTabsUIDelegate() returns null.
-  if (!(open_tabs && open_tabs->GetAllForeignSessions(&sessions))) {
+  if (!(open_tabs && open_tabs->GetAllForeignSessions(
+                         &sessions, sync_sessions::OpenTabsUIDelegate::
+                                        ForeignSessionFilter::kPresentable))) {
     return RespondNow(ArgumentList(
         GetDevices::Results::Create(std::vector<api::sessions::Device>())));
   }

@@ -182,7 +182,8 @@ TEST_F(TabSessionSourceTest, ProcessForeign) {
       foreign_sessions;
   ASSERT_TRUE(
       session_sync_service_.GetOpenTabsUIDelegate()->GetAllForeignSessions(
-          &foreign_sessions));
+          &foreign_sessions, sync_sessions::OpenTabsUIDelegate::
+                                 ForeignSessionFilter::kPresentable));
   const auto* picked_session = foreign_sessions[0].get();
   auto& picked_tab =
       picked_session->windows.begin()->second->wrapped_window.tabs[0];

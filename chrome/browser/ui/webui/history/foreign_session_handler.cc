@@ -37,6 +37,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/navigation_entry.h"
@@ -319,7 +320,9 @@ void ForeignSessionHandler::OpenForeignSessionTab(
     size_t tab_recency_index = 0;
     std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
         sessions;
-    if (open_tabs->GetAllForeignSessions(&sessions)) {
+    if (open_tabs->GetAllForeignSessions(
+            &sessions, sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::
+                           kPresentable)) {
       auto it = std::ranges::find(sessions, session_tag,
                                   &sync_sessions::SyncedSession::GetSessionTag);
       // Note: In practice, the session should always be found, since
@@ -420,7 +423,9 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
       sessions;
 
   std::vector<history::mojom::ForeignSessionPtr> session_list;
-  if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {
+  if (open_tabs && open_tabs->GetAllForeignSessions(
+                       &sessions, sync_sessions::OpenTabsUIDelegate::
+                                      ForeignSessionFilter::kPresentable)) {
     // Use a pref to keep track of sessions that were collapsed by the user.
     // To prevent the pref from accumulating stale sessions, clear it each time
     // and only add back sessions that are still current.

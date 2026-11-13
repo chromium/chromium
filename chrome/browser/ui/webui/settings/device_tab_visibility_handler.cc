@@ -119,10 +119,9 @@ base::ListValue DeviceTabVisibilityHandler::GetDeviceTabVisibilityList() const {
     return {};
   }
 
-  // TODO(crbug.com/572717502): Also include synced devices that have no open
-  // tabs (`GetAllForeignSessions()` only returns sessions with open tabs).
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  if (!open_tabs->GetAllForeignSessions(&sessions)) {
+  if (!open_tabs->GetAllForeignSessions(
+          &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll)) {
     return {};
   }
 

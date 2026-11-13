@@ -243,7 +243,9 @@ void RecentTabsBuilderTestHelper::VerifyExport(
   // Make sure data is populated correctly in SessionModelAssociator.
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  ASSERT_TRUE(delegate->GetAllForeignSessions(&sessions));
+  ASSERT_TRUE(delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   ASSERT_EQ(GetSessionCount(), static_cast<int>(sessions.size()));
   for (int s = 0; s < GetSessionCount(); ++s) {
     std::vector<const sessions::SessionWindow*> windows =

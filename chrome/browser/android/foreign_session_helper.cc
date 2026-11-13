@@ -243,7 +243,8 @@ bool ForeignSessionHelper::GetForeignSessions(JNIEnv* env,
   }
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  if (!open_tabs->GetAllForeignSessions(&sessions)) {
+  if (!open_tabs->GetAllForeignSessions(
+          &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable)) {
     return false;
   }
 
@@ -294,7 +295,8 @@ bool ForeignSessionHelper::GetMobileAndTabletForeignSessions(
   }
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  if (!open_tabs->GetAllForeignSessions(&sessions)) {
+  if (!open_tabs->GetAllForeignSessions(
+          &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable)) {
     return false;
   }
 

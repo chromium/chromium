@@ -88,7 +88,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
       ->SetModifiedTime(kTime0 - base::Seconds(2));
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
   EXPECT_EQ(sessions[1]->GetSessionTag(), kSessionTag3);
   EXPECT_EQ(sessions[2]->GetSessionTag(), kSessionTag1);
@@ -143,7 +144,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonPresentable) {
                                   CreateNavigationForTest());
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
@@ -211,7 +213,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
       ->navigations.push_back(syncable_entry);
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-  EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
@@ -258,7 +261,9 @@ TEST_F(OpenTabsUIDelegateImplTest,
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
       presentable_sessions;
-  EXPECT_TRUE(delegate_.GetAllForeignSessions(&presentable_sessions));
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &presentable_sessions,
+      OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   ASSERT_EQ(presentable_sessions.size(), 1u);
   EXPECT_EQ(presentable_sessions[0]->GetSessionTag(), kSessionTag3);
 
@@ -290,7 +295,9 @@ TEST_F(OpenTabsUIDelegateImplTest,
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
       presentable_sessions;
-  EXPECT_FALSE(delegate_.GetAllForeignSessions(&presentable_sessions));
+  EXPECT_FALSE(delegate_.GetAllForeignSessions(
+      &presentable_sessions,
+      OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_TRUE(presentable_sessions.empty());
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
@@ -317,6 +324,36 @@ TEST_F(OpenTabsUIDelegateImplTest,
   EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
   ASSERT_EQ(raw_sessions.size(), 1u);
   EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag2);
+}
+
+// Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
+// returns all tracked foreign sessions ordered by recency, including zero-tab
+// (non-presentable) sessions.
+TEST_F(OpenTabsUIDelegateImplTest,
+       GetAllForeignSessionsWithFilterAllIncludesZeroTabSessions) {
+  const base::Time kTime0 = base::Time::Now();
+
+  // `kSessionTag1`: header-only foreign session with zero windows/tabs.
+  session_tracker_.GetSession(kSessionTag1)
+      ->SetModifiedTime(kTime0 - base::Seconds(2));
+
+  // `kSessionTag2`: presentable foreign session with one tab.
+  session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
+  session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
+  session_tracker_.GetTab(kSessionTag2, kTabId2)
+      ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
+                                  CreateNavigationForTest());
+  session_tracker_.GetSession(kSessionTag2)
+      ->SetModifiedTime(kTime0 - base::Seconds(1));
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(
+      sessions,
+      ElementsAre(
+          Pointee(Property(&SyncedSession::GetSessionTag, kSessionTag2)),
+          Pointee(Property(&SyncedSession::GetSessionTag, kSessionTag1))));
 }
 
 }  // namespace

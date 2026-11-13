@@ -118,7 +118,9 @@ void SessionURLVisitDataFetcher::FetchURLVisitData(
   open_tabs_ui_delegate->GetLocalSession(&local_session);
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  open_tabs_ui_delegate->GetAllForeignSessions(&sessions);
+  open_tabs_ui_delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
   if (local_session) {
     sessions.push_back(local_session);
   }

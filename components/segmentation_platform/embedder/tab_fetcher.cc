@@ -52,7 +52,9 @@ bool TabFetcher::FillAllRemoteTabs(std::vector<TabEntry>& tabs) {
   }
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  open_ui_delegate->GetAllForeignSessions(&sessions);
+  open_ui_delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
   FillTabsFromSessionsAfterTime(sessions, tabs, base::Time());
   return true;
 }
@@ -66,7 +68,9 @@ bool TabFetcher::FillAllRemoteTabsAfterTime(
   }
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  open_ui_delegate->GetAllForeignSessions(&sessions);
+  open_ui_delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
   FillTabsFromSessionsAfterTime(sessions, tabs, tabs_loaded_after_timestamp);
   return true;
 }
@@ -127,7 +131,9 @@ std::optional<base::Time> TabFetcher::GetLatestRemoteSessionModifiedTime() {
   }
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  open_ui_delegate->GetAllForeignSessions(&sessions);
+  open_ui_delegate->GetAllForeignSessions(
+      &sessions,
+      sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
   if (sessions.empty()) {
     return std::nullopt;
   }

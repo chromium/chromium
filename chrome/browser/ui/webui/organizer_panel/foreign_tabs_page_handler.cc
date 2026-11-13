@@ -138,7 +138,9 @@ void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
       session_sync_service->GetOpenTabsUIDelegate();
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
+  if (!open_tabs || !open_tabs->GetAllForeignSessions(
+                        &sessions, sync_sessions::OpenTabsUIDelegate::
+                                       ForeignSessionFilter::kPresentable)) {
     std::move(callback).Run(std::move(result),
                             CanShowCrossDeviceSignInPromo(/*has_tabs=*/false));
     return;

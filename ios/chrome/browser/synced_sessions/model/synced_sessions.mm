@@ -40,7 +40,9 @@ SyncedSessions::SyncedSessions(
     // display to the user.
     std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
         sessions;
-    open_tabs->GetAllForeignSessions(&sessions);
+    open_tabs->GetAllForeignSessions(
+        &sessions,
+        sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kPresentable);
     for (const sync_sessions::SyncedSession* session : sessions) {
       auto distant_session = std::make_unique<DistantSession>();
       distant_session->InitWithSyncedSession(session, open_tabs);

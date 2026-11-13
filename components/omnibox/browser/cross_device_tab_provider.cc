@@ -147,7 +147,10 @@ CrossDeviceTabProvider::QueryResult CrossDeviceTabProvider::GetMostRecentTab() {
 
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  if (!delegate->GetAllForeignSessions(&sessions) || sessions.empty()) {
+  if (!delegate->GetAllForeignSessions(
+          &sessions, sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::
+                         kPresentable) ||
+      sessions.empty()) {
     return base::unexpected(Eligibility::kNoForeignSessions);
   }
 
