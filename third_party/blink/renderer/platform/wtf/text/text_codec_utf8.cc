@@ -25,27 +25,63 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
 
+#include <array>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <variant>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/to_address.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
+#include "third_party/simdutf/simdutf.h"
 
 namespace blink {
 
 namespace {
+
+// Minimum chunk size to use TryDecodeWithSimdutf(); smaller inputs stay on the
+// inline-buffered scalar path (InlinedStringBuffer uses a 128-byte stack
+// buffer) to avoid fast-path setup overhead on tiny chunks.
+constexpr size_t kSimdutfMinInputBytes = 256;
+
+// Returns true if `bytes` contains any byte >= 0xC4.
+// In valid UTF-8, ASCII bytes are 0x00..0x7F, continuation bytes are
+// 0x80..0xBF, and Latin-1 (U+0080..U+00FF) lead bytes are 0xC2 or 0xC3. Any
+// code point >= U+0100 begins with a lead byte in 0xC4..0xF4, so valid UTF-8
+// decodes to Latin-1 iff it contains no byte >= 0xC4.
+bool ContainsByteAboveLatin1Lead(base::span<const uint8_t> bytes) {
+  while (bytes.size() >= 64) {
+    auto block = bytes.first<64>();
+    uint8_t any_above = 0;
+    for (uint8_t b : block) {
+      any_above |= (b >= 0xC4);
+    }
+    if (any_above) {
+      return true;
+    }
+    bytes = bytes.subspan(64u);
+  }
+  for (uint8_t b : bytes) {
+    if (b >= 0xC4) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // We'll use kNonCharacter* constants to signal invalid utf-8.
 // The number in the name signals how many input bytes were invalid.
@@ -357,11 +393,195 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
   return false;
 }
 
+bool TextCodecUtf8::IsSimdutfEnabled() {
+  if (!simdutf_enabled_.has_value()) {
+    simdutf_enabled_ =
+        base::FeatureList::IsEnabled(features::kSimdutfTextCodecUtf8Decode);
+  }
+  return *simdutf_enabled_;
+}
+
+std::optional<String> TextCodecUtf8::TryDecodeWithSimdutf(
+    base::span<const uint8_t> bytes,
+    bool do_flush) {
+  DCHECK_GE(bytes.size(), kSimdutfMinInputBytes);
+
+  size_t max_output_len = 0;
+  if (!base::CheckAdd(partial_sequence_size_, bytes.size())
+           .AssignIfValid(&max_output_len) ||
+      !base::IsValueInRangeForNumericType<wtf_size_t>(max_output_len)) {
+    return std::nullopt;
+  }
+
+  base::span<const uint8_t> remaining_bytes = bytes;
+  std::optional<int> leading_char;
+
+  // If the previous streaming chunk left 1..3 incomplete bytes in
+  // `partial_sequence_`, complete that code point from the start of `bytes`
+  // without mutating `partial_sequence_` until the entire chunk succeeds.
+  if (partial_sequence_size_ > 0) {
+    const size_t lead_seq_len = kNonAsciiSequenceLength[partial_sequence_[0]];
+    if (lead_seq_len <= partial_sequence_size_) {
+      return std::nullopt;
+    }
+    const size_t needed = lead_seq_len - partial_sequence_size_;
+    std::array<uint8_t, U8_MAX_LENGTH> combined = {};
+    base::span(combined)
+        .first(partial_sequence_size_)
+        .copy_from(base::span(partial_sequence_).first(partial_sequence_size_));
+    base::span(combined)
+        .subspan(partial_sequence_size_, needed)
+        .copy_from(remaining_bytes.first(needed));
+    const int ch =
+        DecodeNonAsciiSequence(base::span(combined).first(lead_seq_len));
+    if (IsNonCharacter(ch)) {
+      return std::nullopt;
+    }
+    leading_char = ch;
+    remaining_bytes = remaining_bytes.subspan(needed);
+  }
+
+  DCHECK_GE(remaining_bytes.size(), 4u);
+  base::span<const uint8_t> complete_bytes = remaining_bytes;
+  base::span<const uint8_t> trailing_partial;
+
+  // When streaming (!do_flush), split off any valid incomplete 1..3 byte UTF-8
+  // prefix at the end of the chunk using the same zero-padded check as
+  // FillPartialSequenceBytes() + NeedMoreData(). Invalid prefixes (such as
+  // 0xE0 0x80 or 0xED 0xA0) have LengthOfNonCharacter(ch) < avail and are kept
+  // in `complete_bytes` so fallback emits U+FFFD immediately.
+  // `partial_sequence_` is only updated after `complete_bytes` decodes without
+  // error.
+  if (!do_flush && remaining_bytes.back() >= 0x80) {
+    for (size_t avail = 1; avail <= 3; ++avail) {
+      base::span<const uint8_t> tail = remaining_bytes.last(avail);
+      const size_t seq_len = kNonAsciiSequenceLength[tail[0]];
+      if (seq_len > avail) {
+        std::array<uint8_t, U8_MAX_LENGTH> padded = {};
+        base::span(padded).first(avail).copy_from(tail);
+        const int ch =
+            DecodeNonAsciiSequence(base::span(padded).first(seq_len));
+        if (IsNonCharacter(ch) && LengthOfNonCharacter(ch) == avail) {
+          complete_bytes =
+              remaining_bytes.first(remaining_bytes.size() - avail);
+          trailing_partial = tail;
+          break;
+        }
+      }
+    }
+  }
+
+  auto commit_partial_state = [&]() {
+    partial_sequence_size_ = 0;
+    if (!trailing_partial.empty()) {
+      SavePartialSequenceBytes(trailing_partial);
+    }
+  };
+
+  // Scan the ASCII prefix with FindFirstNonASCII() before invoking simdutf so
+  // pure-ASCII chunks (such as streamed scripts) avoid simdutf dispatch and
+  // remainder-buffer overhead.
+  const size_t first_non_ascii = base::FindFirstNonASCII(
+      base::as_string_view(base::as_chars(complete_bytes)));
+  if (first_non_ascii == complete_bytes.size()) {
+    if (!leading_char.has_value()) {
+      commit_partial_state();
+      return String(complete_bytes);
+    }
+    if (*leading_char <= 0xFF) {
+      StringBuffer<LChar> buf8(
+          base::checked_cast<wtf_size_t>(1 + complete_bytes.size()));
+      base::span<LChar> dst8 = buf8.Span();
+      dst8[0] = static_cast<LChar>(*leading_char);
+      dst8.subspan(1u).copy_from(complete_bytes);
+      commit_partial_state();
+      return String::Adopt(buf8);
+    }
+    const size_t lead_u16_len = U_IS_BMP(*leading_char) ? 1u : 2u;
+    StringBuffer<UChar> buf16(
+        base::checked_cast<wtf_size_t>(lead_u16_len + complete_bytes.size()));
+    base::span<UChar> dst16 = AppendCharacter(buf16.Span(), *leading_char);
+    StringImpl::CopyChars(dst16, complete_bytes);
+    commit_partial_state();
+    return String::Adopt(buf16);
+  }
+
+  const uint8_t first_lead = complete_bytes[first_non_ascii];
+  if (kNonAsciiSequenceLength[first_lead] == 0) {
+    return std::nullopt;
+  }
+
+  const base::span<const uint8_t> suffix =
+      complete_bytes.subspan(first_non_ascii);
+
+  // Validate the non-ASCII suffix once via simdutf; any malformed UTF-8 falls
+  // back to the scalar state machine with codec state untouched. Upfront
+  // validation is also required for memory safety before calling
+  // latin1_length_from_utf8() or utf16_length_from_utf8() below, which assume
+  // well-formed UTF-8 to size the output buffer for simdutf's unchecked span
+  // conversion wrappers.
+  if (!simdutf::validate_utf8(suffix)) {
+    return std::nullopt;
+  }
+
+  // Preserve an 8-bit String when all decoded code points fit in Latin-1
+  // (<= U+00FF). Checking !ContainsByteAboveLatin1Lead(suffix) before
+  // allocating avoids discarding an 8-bit buffer when Latin-1 characters (such
+  // as U+00A0 or U+00B7) precede code points > U+00FF, and sizing via
+  // latin1_length_from_utf8() avoids a second Shrink() allocation.
+  if (leading_char.value_or(0) <= 0xFF &&
+      !ContainsByteAboveLatin1Lead(suffix)) {
+    const size_t lead_lchar_len = leading_char.has_value() ? 1u : 0u;
+    const size_t suffix_latin1_len = simdutf::latin1_length_from_utf8(suffix);
+    const size_t latin1_len =
+        lead_lchar_len + first_non_ascii + suffix_latin1_len;
+    StringBuffer<LChar> buf8(base::checked_cast<wtf_size_t>(latin1_len));
+    base::span<LChar> dst8 = buf8.Span();
+    if (leading_char.has_value()) {
+      dst8.take_first<1u>()[0] = static_cast<LChar>(*leading_char);
+    }
+    if (first_non_ascii > 0) {
+      dst8.take_first(first_non_ascii)
+          .copy_from(complete_bytes.first(first_non_ascii));
+    }
+    const size_t written = simdutf::convert_utf8_to_latin1(suffix, dst8);
+    CHECK_EQ(written, suffix_latin1_len);
+    commit_partial_state();
+    return String::Adopt(buf8);
+  }
+
+  // Allocate a single exact-sized StringBuffer<UChar> and transcode via
+  // simdutf instead of allocating and discarding an 8-bit buffer.
+  const size_t lead_u16_len =
+      leading_char.has_value() ? (U_IS_BMP(*leading_char) ? 1u : 2u) : 0u;
+  const size_t suffix_utf16_len = simdutf::utf16_length_from_utf8(suffix);
+  const size_t utf16_len = lead_u16_len + first_non_ascii + suffix_utf16_len;
+  StringBuffer<UChar> buf16(base::checked_cast<wtf_size_t>(utf16_len));
+  base::span<UChar> dst16 = buf16.Span();
+  if (leading_char.has_value()) {
+    dst16 = AppendCharacter(dst16, *leading_char);
+  }
+  if (first_non_ascii > 0) {
+    StringImpl::CopyChars(dst16.take_first(first_non_ascii),
+                          complete_bytes.first(first_non_ascii));
+  }
+  const size_t written = simdutf::convert_utf8_to_utf16(suffix, dst16);
+  CHECK_EQ(written, suffix_utf16_len);
+
+  commit_partial_state();
+  return String::Adopt(buf16);
+}
+
 String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              FlushBehavior flush,
                              bool stop_on_error,
                              bool& saw_error) {
   const bool do_flush = flush != FlushBehavior::kDoNotFlush;
+  if (bytes.size() >= kSimdutfMinInputBytes && IsSimdutfEnabled()) {
+    if (std::optional<String> decoded = TryDecodeWithSimdutf(bytes, do_flush)) {
+      return *std::move(decoded);
+    }
+  }
   const bool fast_ascii_range_copy =
       base::FeatureList::IsEnabled(base::features::kUtfConversionAsciiFastPath);
 

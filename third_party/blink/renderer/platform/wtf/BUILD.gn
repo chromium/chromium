@@ -311,7 +311,9 @@ test("wtf_unittests") {
   deps = [ ":wtf_unittests_sources" ]
   fuzztests = [
     "TextCodecUtf8FuzzTest.DecodeFastPathMatchesLegacy",
+    "TextCodecUtf8FuzzTest.DecodeSimdutfFastPathMatchesLegacy",
     "TextCodecUtf8FuzzTest.DecodeStreamingFastPathMatchesLegacy",
+    "TextCodecUtf8FuzzTest.DecodeStreamingSimdutfFastPathMatchesLegacy",
   ]
 }
 
@@ -333,6 +335,7 @@ test("wtf_perf_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common",
   ]
 }
 
@@ -428,6 +431,7 @@ source_set("wtf_unittests_sources") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//third_party/fuzztest",
   ]
 

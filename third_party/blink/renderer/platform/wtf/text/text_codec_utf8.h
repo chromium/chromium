@@ -27,7 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_UTF8_H_
 
 #include <unicode/utf8.h>
+
+#include <array>
 #include <memory>
+#include <optional>
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
@@ -70,6 +73,13 @@ class TextCodecUtf8 : public TextCodec {
   EncodeIntoResult EncodeIntoCommon(base::span<const CharType> characters,
                                     base::span<uint8_t> destination);
 
+  // Decodes valid UTF-8 chunks in a single destination String allocation via
+  // simdutf. Returns std::nullopt on malformed UTF-8 so Decode() can fall back
+  // to the scalar state machine without mutating codec state.
+  std::optional<String> TryDecodeWithSimdutf(base::span<const uint8_t> bytes,
+                                             bool do_flush);
+  bool IsSimdutfEnabled();
+
   bool HandlePartialSequence(base::span<LChar>& destination,
                              base::span<const uint8_t>& source,
                              bool flush);
@@ -86,6 +96,7 @@ class TextCodecUtf8 : public TextCodec {
 
   std::array<uint8_t, U8_MAX_LENGTH> partial_sequence_;
   size_t partial_sequence_size_ = 0;
+  std::optional<bool> simdutf_enabled_;
 };
 
 }  // namespace blink
