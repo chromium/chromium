@@ -705,7 +705,7 @@ TEST_P(WebSocketStreamCreateTest, HandshakeInfo) {
   EXPECT_EQ(HeaderKeyValuePair("hoge", "piyo"), response_headers[5]);
 }
 
-// Confirms that request headers are overriden/added after handshake
+// Confirms that request headers are overridden/added after handshake
 TEST_P(WebSocketStreamCreateTest, HandshakeOverrideHeaders) {
   WebSocketExtraHeaders additional_headers(
       {{"User-Agent", "OveRrIde"}, {"rAnDomHeader", "foobar"}});
