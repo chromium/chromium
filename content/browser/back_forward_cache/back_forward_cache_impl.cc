@@ -992,7 +992,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
       rfh->IsInBackForwardCache() && !rfh->GetParentOrOuterDocumentOrEmbedder();
   DCHECK(rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache);
 
-  // If the the delegate doesn't support back forward cache, disable it.
+  // If the delegate doesn't support back forward cache, disable it.
   if (!rfh->delegate()->IsBackForwardCacheSupported()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kBackForwardCacheDisabledForDelegate);
