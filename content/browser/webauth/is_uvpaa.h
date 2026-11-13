@@ -5,33 +5,23 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_IS_UVPAA_H_
 #define CONTENT_BROWSER_WEBAUTH_IS_UVPAA_H_
 
-#include "base/functional/callback.h"
-#include "build/build_config.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-
-#if BUILDFLAG(IS_MAC)
-class BrowserContext;
-#endif
 
 namespace content {
 
-// This file contains platform-specific implementations of the
-// IsUserVerifyingPlatformAuthenticatorAvailable interface.
+class BrowserContext;
 
 using IsUVPlatformAuthenticatorAvailableCallback =
     base::OnceCallback<void(bool is_available)>;
 
-#if BUILDFLAG(IS_MAC)
+// Checks whether a user-verifying platform authenticator is available and
+// invokes `callback` with the result. `browser_context` is used on macOS to
+// look up the Touch ID authenticator configuration. Invokes `callback` with
+// false on unsupported platforms.
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
-    IsUVPlatformAuthenticatorAvailableCallback);
-#elif BUILDFLAG(IS_WIN)
-CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
-    IsUVPlatformAuthenticatorAvailableCallback);
-#elif BUILDFLAG(IS_CHROMEOS)
-CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
-    IsUVPlatformAuthenticatorAvailableCallback);
-#endif
+    IsUVPlatformAuthenticatorAvailableCallback callback);
 
 }  // namespace content
 

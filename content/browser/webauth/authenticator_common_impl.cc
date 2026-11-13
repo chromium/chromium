@@ -54,6 +54,7 @@
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/is_uvpaa.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -119,10 +120,6 @@
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
-#endif
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#include "content/browser/webauth/is_uvpaa.h"
 #endif
 
 namespace content {
@@ -2347,14 +2344,8 @@ void AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck(
               return available;
             }).Then(std::move(callback));
 
-#if BUILDFLAG(IS_MAC)
   IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),
                                      std::move(uma_decorated_callback));
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
-#else
-  std::move(uma_decorated_callback).Run(false);
-#endif
 }
 
 void AuthenticatorCommonImpl::IsConditionalMediationAvailable(

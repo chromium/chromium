@@ -3777,6 +3777,7 @@ test("content_unittests") {
       "../browser/webauth/authenticator_impl_unittest_test_base.cc",
       "../browser/webauth/authenticator_impl_unittest_test_base.h",
       "../browser/webauth/authenticator_mojom_traits_unittest.cc",
+      "../browser/webauth/is_uvpaa_unittest.cc",
       "../browser/webauth/webauth_request_security_checker_impl_unittest.cc",
     ]
     deps += [
