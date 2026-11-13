@@ -6,15 +6,41 @@
 
 #import <algorithm>
 #import <string>
+#import <string_view>
 #import <utility>
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper_delegate.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+constexpr std::string_view kWarningOutcomeHistogram =
+    "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome";
+constexpr std::string_view kUserInteractionHistogram =
+    "SafeBrowsing.SuspiciousSiteWarning.UserInteraction";
+
+// Records `interaction` to
+// `SafeBrowsing.SuspiciousSiteWarning.UserInteraction`.
+void RecordUserInteraction(
+    safe_browsing::SuspiciousSiteWarningUserInteraction interaction) {
+  base::UmaHistogramEnumeration(kUserInteractionHistogram, interaction);
+}
+
+// Records `outcome` to `SafeBrowsing.SuspiciousSiteWarning.WarningOutcome`.
+void RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome outcome) {
+  base::UmaHistogramEnumeration(kWarningOutcomeHistogram, outcome);
+}
+
+}  // namespace
 
 SuspiciousSiteTabHelper::SuspiciousSiteTabHelper(
     web::WebState* web_state,
@@ -48,6 +74,9 @@ void SuspiciousSiteTabHelper::OnSuspiciousSiteWarningTriggered(
   }
 
   if (has_shown_warning_) {
+    RecordUserInteraction(
+        safe_browsing::SuspiciousSiteWarningUserInteraction::kManualNavigation);
+    RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kAdhered);
     if (is_warning_visible_) {
       [delegate_ dismissSuspiciousSiteWarning];
     }
@@ -56,6 +85,70 @@ void SuspiciousSiteTabHelper::OnSuspiciousSiteWarningTriggered(
 
   pending_suspicious_url_ = resource.url;
   MaybeShowWarning();
+}
+
+void SuspiciousSiteTabHelper::OnBackToSafetyClicked() {
+  if (!has_shown_warning_) {
+    // Ignore duplicate or late callbacks after the warning has already been
+    // resolved.
+    return;
+  }
+
+  RecordUserInteraction(
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kBackToSafetyButton);
+  RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kAdhered);
+  ResetWarningState();
+
+  web::NavigationManager* navigation_manager =
+      web_state_->GetNavigationManager();
+  if (!navigation_manager) {
+    // `WebState` may not have a `NavigationManager` in minimal test setups.
+    return;
+  }
+
+  const std::string suspicious_host(web_state_->GetLastCommittedURL().host());
+  const int last_committed_index =
+      navigation_manager->GetLastCommittedItemIndex();
+  for (int i = last_committed_index - 1; i >= 0; --i) {
+    web::NavigationItem* item = navigation_manager->GetItemAtIndex(i);
+    if (item && item->GetURL().host() != suspicious_host) {
+      navigation_manager->GoToIndex(i);
+      return;
+    }
+  }
+
+  navigation_manager->LoadURLWithParams(
+      web::NavigationManager::WebLoadParams(GURL(kChromeUINewTabURL)));
+}
+
+void SuspiciousSiteTabHelper::OnMarkAsSafeClicked() {
+  if (!has_shown_warning_) {
+    // Ignore duplicate or late callbacks after the warning has already been
+    // resolved.
+    return;
+  }
+
+  const GURL& committed_url = web_state_->GetLastCommittedURL();
+  if (committed_url.is_valid() && committed_url.has_host()) {
+    allowlist_.AllowSiteForHost(std::string(committed_url.host()));
+  }
+
+  RecordUserInteraction(
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kMarkAsSafe);
+  RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kBypassed);
+  ResetWarningState();
+}
+
+void SuspiciousSiteTabHelper::OnWarningDismissedBySystem() {
+  if (!has_shown_warning_ || !is_warning_visible_) {
+    // Ignore dismissal callbacks triggered by programmatic suspension (e.g.
+    // tab switch in `WasHidden`) or after the warning was already resolved.
+    return;
+  }
+
+  RecordWarningOutcome(
+      safe_browsing::SuspiciousSiteWarningOutcome::kDismissedBySystem);
+  ResetWarningState();
 }
 
 #pragma mark - web::WebStateObserver
@@ -98,6 +191,9 @@ void SuspiciousSiteTabHelper::DidFinishNavigation(
   }
 
   if (has_shown_warning_) {
+    RecordUserInteraction(
+        safe_browsing::SuspiciousSiteWarningUserInteraction::kManualNavigation);
+    RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kAdhered);
     if (is_warning_visible_) {
       [delegate_ dismissSuspiciousSiteWarning];
     }
@@ -116,6 +212,9 @@ void SuspiciousSiteTabHelper::DidFinishNavigation(
 
 void SuspiciousSiteTabHelper::WebStateDestroyed(web::WebState* web_state) {
   if (has_shown_warning_) {
+    RecordUserInteraction(
+        safe_browsing::SuspiciousSiteWarningUserInteraction::kCloseTab);
+    RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kAdhered);
     ResetWarningState();
   }
   web_state_observation_.Reset();
@@ -193,7 +292,11 @@ void SuspiciousSiteTabHelper::MaybeShowWarning() {
   }
 
   is_warning_visible_ = true;
-  has_shown_warning_ = true;
+  if (!has_shown_warning_) {
+    has_shown_warning_ = true;
+    RecordUserInteraction(
+        safe_browsing::SuspiciousSiteWarningUserInteraction::kShown);
+  }
   [delegate_ showSuspiciousSiteWarning];
 }
 

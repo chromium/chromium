@@ -21,8 +21,8 @@ namespace security_interstitials {
 struct UnsafeResource;
 }  // namespace security_interstitials
 
-// Tab helper that manages the lifecycle, deferral, and local allowlist checks
-// for post-commit Suspicious Site Warnings on a `web::WebState`.
+// Tab helper that manages the lifecycle, deferral, local allowlist checks, and
+// metrics for post-commit Suspicious Site Warnings on a `web::WebState`.
 class SuspiciousSiteTabHelper
     : public web::WebStateObserver,
       public SafeBrowsingQueryManager::Observer,
@@ -42,6 +42,20 @@ class SuspiciousSiteTabHelper
   // `SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE` for `resource`.
   void OnSuspiciousSiteWarningTriggered(
       const security_interstitials::UnsafeResource& resource);
+
+  // Called when the user selects the primary "Back to safety" action on the
+  // warning alert. Navigates back to the most recent safe item whose host
+  // differs from the committed suspicious host, or loads the New Tab Page if no
+  // safe back item exists.
+  void OnBackToSafetyClicked();
+
+  // Called when the user selects the secondary "Mark as safe" action on the
+  // warning alert. Adds the committed host to the 30-day local allowlist.
+  void OnMarkAsSafeClicked();
+
+  // Called when the warning alert is dismissed externally by the system without
+  // the user selecting either action button.
+  void OnWarningDismissedBySystem();
 
  private:
   friend class web::WebStateUserData<SuspiciousSiteTabHelper>;

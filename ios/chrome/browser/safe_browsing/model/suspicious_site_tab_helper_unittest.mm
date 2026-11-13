@@ -11,6 +11,7 @@
 #import <string_view>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/test_future.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -20,11 +21,13 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -39,9 +42,23 @@ namespace {
 
 constexpr std::string_view kSuspiciousUrl =
     "https://suspicious.chromium.test/page";
+constexpr std::string_view kSameHostSuspiciousUrl2 =
+    "https://suspicious.chromium.test/other";
 constexpr std::string_view kSuspiciousHost = "suspicious.chromium.test";
+constexpr std::string_view kSafeUrl = "https://safe.chromium.test/home";
 constexpr std::string_view kOtherSafeUrl =
     "https://another-safe.chromium.test/";
+constexpr std::string_view kWarningOutcomeHistogram =
+    "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome";
+constexpr std::string_view kUserInteractionHistogram =
+    "SafeBrowsing.SuspiciousSiteWarning.UserInteraction";
+
+// Subclass of `web::FakeNavigationManager` that records `GoToIndex` calls by
+// updating the last committed item index instead of hitting `NOTREACHED()`.
+class TestNavigationManager : public web::FakeNavigationManager {
+ public:
+  void GoToIndex(int index) override { SetLastCommittedItemIndex(index); }
+};
 
 }  // namespace
 
@@ -75,7 +92,7 @@ class SuspiciousSiteTabHelperTest : public PlatformTest {
         client_(profile_->GetPrefs()),
         web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeSuspiciousSiteTabHelperDelegate alloc] init]) {
-    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    auto navigation_manager = std::make_unique<TestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_->SetNavigationManager(std::move(navigation_manager));
     web_state_->SetBrowserState(profile_.get());
@@ -173,7 +190,7 @@ class SuspiciousSiteTabHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   FakeSafeBrowsingClient client_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
+  raw_ptr<TestNavigationManager> navigation_manager_ = nullptr;
   FakeSuspiciousSiteTabHelperDelegate* delegate_ = nil;
 };
 
@@ -181,6 +198,7 @@ class SuspiciousSiteTabHelperTest : public PlatformTest {
 // committed and all pending main-frame Safe Browsing checks have finished.
 TEST_F(SuspiciousSiteTabHelperTest,
        ShowsWarningWhenTriggeredAfterCommitAndChecksComplete) {
+  base::HistogramTester histogram_tester;
   const GURL url(kSuspiciousUrl);
 
   StartMainFrameNavigation(url);
@@ -191,6 +209,10 @@ TEST_F(SuspiciousSiteTabHelperTest,
 
   EXPECT_EQ(delegate_.showCount, 1u);
   EXPECT_TRUE(delegate_.warningVisible);
+  histogram_tester.ExpectUniqueSample(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kShown, 1);
+  histogram_tester.ExpectTotalCount(kWarningOutcomeHistogram, 0);
 }
 
 // Tests that the warning is deferred until `DidFinishNavigation` commits the
@@ -235,6 +257,7 @@ TEST_F(SuspiciousSiteTabHelperTest, DefersWarningUntilAsyncCheckCompletes) {
 // interstitial.
 TEST_F(SuspiciousSiteTabHelperTest,
        SuppressesWarningWhenBlockingInterstitialCancelsNavigation) {
+  base::HistogramTester histogram_tester;
   const GURL url("https://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
                  "/phishing");
 
@@ -255,11 +278,14 @@ TEST_F(SuspiciousSiteTabHelperTest,
 
   EXPECT_EQ(delegate_.showCount, 0u);
   EXPECT_FALSE(delegate_.warningVisible);
+  histogram_tester.ExpectTotalCount(kUserInteractionHistogram, 0);
+  histogram_tester.ExpectTotalCount(kWarningOutcomeHistogram, 0);
 }
 
 // Tests that no warning is shown if the committed host is already on the
 // 30-day suspicious site allowlist.
 TEST_F(SuspiciousSiteTabHelperTest, SuppressesWarningWhenHostIsAllowlisted) {
+  base::HistogramTester histogram_tester;
   safe_browsing::SuspiciousSiteWarningAllowlist allowlist(
       host_content_settings_map());
   allowlist.AllowSiteForHost(std::string(kSuspiciousHost));
@@ -273,6 +299,7 @@ TEST_F(SuspiciousSiteTabHelperTest, SuppressesWarningWhenHostIsAllowlisted) {
 
   EXPECT_EQ(delegate_.showCount, 0u);
   EXPECT_FALSE(delegate_.warningVisible);
+  histogram_tester.ExpectTotalCount(kUserInteractionHistogram, 0);
 }
 
 // Tests that a warning triggered in a hidden tab is deferred until `WasShown`
@@ -295,10 +322,12 @@ TEST_F(SuspiciousSiteTabHelperTest,
   EXPECT_TRUE(delegate_.warningVisible);
 }
 
-// Tests that hiding a tab dismisses the visible warning and showing the tab
-// again re-presents the warning.
+// Tests that hiding a tab dismisses the visible warning without logging a
+// system dismissal, and showing the tab again re-presents the warning without
+// double-logging `kShown`.
 TEST_F(SuspiciousSiteTabHelperTest,
-       SuspendsAndRePresentsAcrossVisibilityChanges) {
+       SuspendsAndRePresentsAcrossVisibilityChangesWithoutDoubleLoggingShown) {
+  base::HistogramTester histogram_tester;
   const GURL url(kSuspiciousUrl);
 
   StartMainFrameNavigation(url);
@@ -314,15 +343,141 @@ TEST_F(SuspiciousSiteTabHelperTest,
   EXPECT_EQ(delegate_.dismissCount, 1u);
   EXPECT_FALSE(delegate_.warningVisible);
 
+  // If the coordinator notifies `OnWarningDismissedBySystem` during a
+  // programmatic hide, it must be ignored.
+  tab_helper()->OnWarningDismissedBySystem();
+  histogram_tester.ExpectTotalCount(kWarningOutcomeHistogram, 0);
+
   web_state_->WasShown();
   EXPECT_EQ(delegate_.showCount, 2u);
   EXPECT_TRUE(delegate_.warningVisible);
+  histogram_tester.ExpectUniqueSample(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kShown, 1);
+}
+
+// Tests that clicking "Back to safety" skips contiguous back items sharing the
+// suspicious host and navigates to the most recent item with a different host.
+TEST_F(SuspiciousSiteTabHelperTest, BackToSafetyNavigatesToMostRecentSafeHost) {
+  base::HistogramTester histogram_tester;
+  CompleteSafeNavigation(GURL(kSafeUrl));
+  CompleteSafeNavigation(GURL(kSuspiciousUrl));
+
+  const GURL second_suspicious_url(kSameHostSuspiciousUrl2);
+  StartMainFrameNavigation(second_suspicious_url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(
+      MakeSuspiciousResource(second_suspicious_url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(second_suspicious_url);
+
+  ASSERT_EQ(navigation_manager_->GetLastCommittedItemIndex(), 2);
+  ASSERT_EQ(delegate_.showCount, 1u);
+
+  tab_helper()->OnBackToSafetyClicked();
+
+  // Index 1 shares `kSuspiciousHost`, so `OnBackToSafetyClicked` must jump back
+  // to index 0 (`kSafeUrl`).
+  EXPECT_EQ(navigation_manager_->GetLastCommittedItemIndex(), 0);
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kBackToSafetyButton,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kAdhered, 1);
+}
+
+// Tests that clicking "Back to safety" loads `kChromeUINewTabURL` when no prior
+// back item with a different host exists.
+TEST_F(SuspiciousSiteTabHelperTest,
+       BackToSafetyLoadsNewTabPageWhenNoSafeBackItemExists) {
+  base::HistogramTester histogram_tester;
+  const GURL url(kSuspiciousUrl);
+
+  StartMainFrameNavigation(url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(url);
+
+  ASSERT_EQ(delegate_.showCount, 1u);
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  tab_helper()->OnBackToSafetyClicked();
+
+  EXPECT_TRUE(navigation_manager_->LoadURLWithParamsWasCalled());
+  ASSERT_TRUE(navigation_manager_->GetLastLoadURLWithParams().has_value());
+  EXPECT_EQ(navigation_manager_->GetLastLoadURLWithParams()->url,
+            GURL(kChromeUINewTabURL));
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kBackToSafetyButton,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kAdhered, 1);
+}
+
+// Tests that clicking "Mark as safe" adds the committed host to the 30-day
+// allowlist and records `kMarkAsSafe` and `kBypassed`.
+TEST_F(SuspiciousSiteTabHelperTest, MarkAsSafeAllowlistsHostAndLogsBypassed) {
+  base::HistogramTester histogram_tester;
+  const GURL url(kSuspiciousUrl);
+
+  StartMainFrameNavigation(url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(url);
+
+  ASSERT_EQ(delegate_.showCount, 1u);
+
+  tab_helper()->OnMarkAsSafeClicked();
+
+  safe_browsing::SuspiciousSiteWarningAllowlist allowlist(
+      host_content_settings_map());
+  EXPECT_TRUE(allowlist.IsSiteAllowedForHost(std::string(kSuspiciousHost)));
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kMarkAsSafe, 1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kBypassed, 1);
+}
+
+// Tests that an external system dismissal of the visible warning records
+// `kDismissedBySystem`.
+TEST_F(SuspiciousSiteTabHelperTest,
+       WarningDismissedBySystemLogsDismissedBySystem) {
+  base::HistogramTester histogram_tester;
+  const GURL url(kSuspiciousUrl);
+
+  StartMainFrameNavigation(url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(url);
+
+  ASSERT_EQ(delegate_.showCount, 1u);
+
+  tab_helper()->OnWarningDismissedBySystem();
+
+  histogram_tester.ExpectUniqueSample(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kDismissedBySystem, 1);
 }
 
 // Tests that manually navigating to another page while the warning is shown
-// dismisses the warning.
-TEST_F(SuspiciousSiteTabHelperTest,
-       ManualNavigationAwayAfterShownDismissesWarning) {
+// dismisses the warning and records `kManualNavigation` and `kAdhered`.
+TEST_F(SuspiciousSiteTabHelperTest, ManualNavigationAwayAfterShownLogsAdhered) {
+  base::HistogramTester histogram_tester;
   const GURL url(kSuspiciousUrl);
 
   StartMainFrameNavigation(url);
@@ -337,5 +492,37 @@ TEST_F(SuspiciousSiteTabHelperTest,
   CompleteSafeNavigation(GURL(kOtherSafeUrl));
 
   EXPECT_EQ(delegate_.dismissCount, 1u);
-  EXPECT_FALSE(delegate_.warningVisible);
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kManualNavigation,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kAdhered, 1);
+}
+
+// Tests that closing the tab while a warning is active records `kCloseTab` and
+// `kAdhered`.
+TEST_F(SuspiciousSiteTabHelperTest,
+       WebStateDestroyedAfterShownLogsCloseTabAndAdhered) {
+  base::HistogramTester histogram_tester;
+  const GURL url(kSuspiciousUrl);
+
+  StartMainFrameNavigation(url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(url);
+
+  ASSERT_EQ(delegate_.showCount, 1u);
+
+  navigation_manager_ = nullptr;
+  web_state_.reset();
+
+  histogram_tester.ExpectBucketCount(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kCloseTab, 1);
+  histogram_tester.ExpectUniqueSample(
+      kWarningOutcomeHistogram,
+      safe_browsing::SuspiciousSiteWarningOutcome::kAdhered, 1);
 }
