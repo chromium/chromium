@@ -4,6 +4,8 @@
 
 package org.chromium.ui.permissions;
 
+import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.UiAndroidFeatureList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +29,9 @@ import java.util.Map;
  */
 @NullMarked
 public abstract class AndroidPermissionDelegateWithRequester implements AndroidPermissionDelegate {
+    private static final String ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK =
+            "android.permission.ACCESS_LOCAL_NETWORK";
+
     private final Handler mHandler;
     private final SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
     private int mNextRequestCode;
@@ -41,13 +47,33 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
 
     @Override
     public final boolean hasPermission(String permission) {
+        Context context = ContextUtils.getApplicationContext();
         boolean isGranted =
                 ApiCompatibilityUtils.checkPermission(
-                                ContextUtils.getApplicationContext(),
-                                permission,
-                                Process.myPid(),
-                                Process.myUid())
+                                context, permission, Process.myPid(), Process.myUid())
                         == PackageManager.PERMISSION_GRANTED;
+        if (isGranted
+                && Build.VERSION.SDK_INT >= 37
+                && ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK.equals(permission)
+                && context.getApplicationInfo().targetSdkVersion < 37
+                && UiAndroidFeatureList.sCheckLocalNetworkPermissionRevokedCompat.isEnabled()) {
+            // TODO(https://crbug.com/583513077): Remove once targetSdkVersion 37 reaches Stable.
+            // For apps targeting SDK < 37 on Android 17+, revoking Local Network permission in
+            // Settings (or downgrading from targetSdk 37 while ungranted) sets REVOKED_COMPAT:
+            // PackageManager still reports PERMISSION_GRANTED, while blocking access via AppOps
+            // (MODE_IGNORED).
+            AppOpsManager appOpsManager =
+                    (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+            if (appOpsManager != null) {
+                String op = AppOpsManager.permissionToOp(permission);
+                if (op != null) {
+                    isGranted =
+                            appOpsManager.unsafeCheckOpNoThrow(
+                                            op, Process.myUid(), context.getPackageName())
+                                    == AppOpsManager.MODE_ALLOWED;
+                }
+            }
+        }
         if (isGranted) {
             PermissionPrefs.clearPermissionWasDenied(permission);
         }
@@ -60,6 +86,17 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
             // There is no need to call clearPermissionWasDenied - hasPermission already cleared
             // the shared pref if needed.
             return true;
+        }
+
+        if (Build.VERSION.SDK_INT >= 37
+                && ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK.equals(permission)
+                && ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion < 37
+                && UiAndroidFeatureList.sCheckLocalNetworkPermissionRevokedCompat.isEnabled()) {
+            // TODO(https://crbug.com/583513077): Remove once targetSdkVersion 37 reaches Stable.
+            // When targeting SDK < 37, ACCESS_LOCAL_NETWORK is an implicit split permission not
+            // declared in AndroidManifest.xml and cannot be requested via the OS runtime dialog;
+            // the user must re-enable it in Android Settings.
+            return false;
         }
 
         if (isPermissionRevokedByPolicy(permission)) {

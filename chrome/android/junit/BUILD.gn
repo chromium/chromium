@@ -1125,6 +1125,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//components/permissions/android:java",
+      "//ui/android:ui_android_features_java",
     ]
   }
 
