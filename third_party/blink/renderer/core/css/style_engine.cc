@@ -567,7 +567,8 @@ void StyleEngine::DocumentRulesSelectorsChanged() {
 
   const unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
-                              changed_rule_flags, kInvalidateAllScopes);
+                              changed_rule_flags,
+                              InvalidationScope::kAllScopes);
 
   // The global rule set must be updated immediately, so that any DOM mutations
   // that happen after this (but before the next style update) can use the
@@ -2678,11 +2679,11 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
   // (it descends into all shadows), but such rules are fairly rare anyway.
   //
   // We do a similar thing for :part(), descending into all shadows.
-  if (invalidation_scope != kInvalidateAllScopes) {
+  if (invalidation_scope != InvalidationScope::kAllScopes) {
     for (const auto& rule_set : rule_sets) {
       if (rule_set->HasUAShadowPseudoElementRules() ||
           rule_set->HasPartPseudoRules()) {
-        invalidation_scope = kInvalidateAllScopes;
+        invalidation_scope = InvalidationScope::kAllScopes;
         break;
       }
     }
@@ -2740,13 +2741,14 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
                                   style_change_reason::kStyleRuleChange));
   }
 
-  if (invalidation_scope == kInvalidateAllScopes) {
+  if (invalidation_scope == InvalidationScope::kAllScopes) {
     if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
       SelectorFilter::Mark mark = selector_filter.SetMark();
       selector_filter.PushParent(element);
       ApplyRuleSetInvalidationForTreeScope(tree_scope, shadow_root->RootNode(),
                                            selector_filter, style_scope_frame,
-                                           rule_sets, kInvalidateAllScopes);
+                                           rule_sets, changed_rule_flags,
+                                           InvalidationScope::kAllScopes);
       selector_filter.PopTo(mark);
     }
   }
@@ -3206,7 +3208,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
   }
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
-                              changed_rule_flags, kInvalidateAllScopes);
+                              changed_rule_flags,
+                              InvalidationScope::kAllScopes);
 
   // Swap out the old sheets only after processing all user rules.
   if (font_rebuild_resolver) {
@@ -3276,7 +3279,7 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   InvalidateForRuleSetChanges(tree_scope, changed_rule_sets, changed_rule_flags,
-                              kInvalidateCurrentScope);
+                              InvalidationScope::kCurrentScope);
 
   // With rules added or removed, we need to re-aggregate rule meta data.
   global_rule_set_->MarkDirty();

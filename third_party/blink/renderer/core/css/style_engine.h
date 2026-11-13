@@ -124,7 +124,7 @@ class OrderedScopeTree;
 using StyleContainmentScopeTree = OrderedScopeTree<LayoutQuote>;
 using ScrollTargetGroupScopeTree = OrderedScopeTree<HTMLAnchorElement>;
 
-enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
+enum class InvalidationScope { kCurrentScope, kAllScopes };
 
 using StyleSheetKey = AtomicString;
 using UnorderedTreeScopeSet = HeapHashSet<Member<TreeScope>>;
@@ -556,14 +556,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               Element& removed_element,
                                               Element& after_element);
   void ScheduleNthPseudoInvalidations(ContainerNode&);
-  void ApplyRuleSetInvalidationForTreeScope(
-      TreeScope&,
-      ContainerNode&,
-      SelectorFilter&,
-      StyleScopeFrame&,
-      const HeapHashSet<Member<RuleSet>>&,
-      unsigned changed_rule_flags,
-      InvalidationScope = kInvalidateCurrentScope);
+  void ApplyRuleSetInvalidationForTreeScope(TreeScope&,
+                                            ContainerNode&,
+                                            SelectorFilter&,
+                                            StyleScopeFrame&,
+                                            const HeapHashSet<Member<RuleSet>>&,
+                                            unsigned changed_rule_flags,
+                                            InvalidationScope);
   void ApplyRuleSetInvalidationForSubtree(
       TreeScope&,
       Element&,

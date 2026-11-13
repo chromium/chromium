@@ -209,7 +209,7 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
           : *tree_scope.GetDocument().documentElement());
   GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
       tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
-      rule_sets, /*changed_rule_flags=*/0);
+      rule_sets, /*changed_rule_flags=*/0, InvalidationScope::kCurrentScope);
 }
 
 TEST_F(StyleEngineTest, ClearWebDXFeatureCounter) {
@@ -4167,6 +4167,118 @@ TEST_F(StyleEngineTest, CustomFunctionInUserOrigin) {
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
   EXPECT_EQ("10px", ComputedValue(GetDocument().body(), "width")->CssText());
+}
+
+TEST_F(StyleEngineTest, UserFunctionInvalidationAcrossShadowRoots) {
+  // Function-only sheets isolate invalidation from selector matching.
+  InjectSheet("user1", WebCssOrigin::kUser, R"CSS(
+    @function --f() { result: 10px; }
+  )CSS");
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>#target { width: --f(); }</style>
+    <div id="target"></div>
+    <div id="unrelated"></div>
+    <div id="host">
+      <template shadowrootmode="open">
+        <style>#target { width: --f(); }</style>
+        <div id="target"></div>
+        <div id="unrelated"></div>
+        <div id="nested-host">
+          <template shadowrootmode="open">
+            <style>#target { width: --f(); }</style>
+            <div id="target"></div>
+            <div id="unrelated"></div>
+          </template>
+        </div>
+      </template>
+    </div>
+    <div id="override-host">
+      <template shadowrootmode="open">
+        <style>
+          @function --f() { result: 20px; }
+          #target { width: --f(); }
+        </style>
+        <div id="target"></div>
+      </template>
+    </div>
+  )HTML");
+
+  ShadowRoot* shadow = GetElementById("host")->GetShadowRoot();
+  ASSERT_TRUE(shadow);
+  ShadowRoot* nested =
+      shadow->getElementById(AtomicString("nested-host"))->GetShadowRoot();
+  ASSERT_TRUE(nested);
+  ShadowRoot* author_override =
+      GetElementById("override-host")->GetShadowRoot();
+  ASSERT_TRUE(author_override);
+  Element* override_target =
+      author_override->getElementById(AtomicString("target"));
+  ASSERT_TRUE(override_target);
+
+  struct TreeScopeTarget {
+    STACK_ALLOCATED();
+
+   public:
+    std::string_view scope_name;
+    Element* element;
+  };
+  const auto targets = std::to_array<TreeScopeTarget>({
+      {"document", GetElementById("target")},
+      {"shadow", shadow->getElementById(AtomicString("target"))},
+      {"nested shadow", nested->getElementById(AtomicString("target"))},
+  });
+  auto expect_widths = [&](const char* user_width) {
+    for (const auto& [scope_name, target] : targets) {
+      SCOPED_TRACE(scope_name);
+      ASSERT_TRUE(target);
+      ASSERT_TRUE(target->GetComputedStyle());
+      EXPECT_EQ(user_width, ComputedValue(target, "width")->CssText());
+    }
+    ASSERT_TRUE(override_target->GetComputedStyle());
+    EXPECT_EQ("20px", ComputedValue(override_target, "width")->CssText());
+  };
+
+  auto expect_invalidation = [&] {
+    for (const auto& [scope_name, target] : targets) {
+      SCOPED_TRACE(scope_name);
+      ASSERT_TRUE(target);
+      ASSERT_TRUE(target->GetComputedStyle());
+      EXPECT_TRUE(target->ComputedStyleRef().AffectedByCSSFunction());
+      EXPECT_EQ(kLocalStyleChange, target->GetStyleChangeType());
+
+      Element* unrelated =
+          target->GetTreeScope().getElementById(AtomicString("unrelated"));
+      ASSERT_TRUE(unrelated);
+      ASSERT_TRUE(unrelated->GetComputedStyle());
+      EXPECT_FALSE(unrelated->ComputedStyleRef().AffectedByCSSFunction());
+      EXPECT_FALSE(unrelated->NeedsStyleRecalc());
+    }
+    EXPECT_FALSE(GetDocument().documentElement()->NeedsStyleRecalc());
+    EXPECT_FALSE(GetDocument().body()->NeedsStyleRecalc());
+    EXPECT_FALSE(shadow->host().NeedsStyleRecalc());
+    EXPECT_FALSE(nested->host().NeedsStyleRecalc());
+    EXPECT_FALSE(author_override->host().NeedsStyleRecalc());
+  };
+
+  UpdateAllLifecyclePhases();
+  expect_widths("10px");
+  ASSERT_FALSE(GetStyleRecalcRoot());
+
+  InjectSheet("user2", WebCssOrigin::kUser, R"CSS(
+    @function --f() { result: 30px; }
+  )CSS");
+  GetStyleEngine().UpdateActiveStyle();
+  expect_invalidation();
+  UpdateAllLifecyclePhases();
+  expect_widths("30px");
+  ASSERT_FALSE(GetStyleRecalcRoot());
+
+  GetStyleEngine().RemoveInjectedSheet(StyleSheetKey("user2"),
+                                       WebCssOrigin::kUser);
+  GetStyleEngine().UpdateActiveStyle();
+  expect_invalidation();
+  UpdateAllLifecyclePhases();
+  expect_widths("10px");
 }
 
 TEST_F(StyleEngineTest, RevertUseCount) {
