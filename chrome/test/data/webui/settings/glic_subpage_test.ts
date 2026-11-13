@@ -1486,7 +1486,7 @@ suite('GlicSubpage', function() {
       assertFalse(!!$<CrButtonElement>('devicePolicyButton'));
     });
 
-    test('DevicePolicyButtonEnablesGeicAndRelaunches', async () => {
+    test('DevicePolicyButtonEnablesGeicAndRestarts', async () => {
       loadTimeData.overrideValues({
         showGeicDevicePolicyToggle: true,
       });
@@ -1509,7 +1509,8 @@ suite('GlicSubpage', function() {
       // <if expr="not is_chromeos">
       await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
       // </if>
-      await lifetimeBrowserProxy.whenCalled('relaunch');
+      await lifetimeBrowserProxy.whenCalled('restart');
+      assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
       assertEquals(
           GlicAssistantSelection.ENTERPRISE,
           prefService.getPref<number>('glic.assistant_selection').value);
@@ -1518,5 +1519,28 @@ suite('GlicSubpage', function() {
       await microtasksFinished();
       assertFalse(button.disabled);
     });
+
+    // <if expr="not is_chromeos">
+    test('DevicePolicyButtonConfirmDialogRestarts', async () => {
+      loadTimeData.overrideValues({
+        showGeicDevicePolicyToggle: true,
+      });
+      lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
+      await createGlicPage(/*initialShortcut=*/ '⌃A');
+
+      const button = $<CrButtonElement>('devicePolicyButton');
+      assertTrue(!!button);
+      button.click();
+      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
+      await microtasksFinished();
+
+      const dialog =
+          page.shadowRoot.querySelector('relaunch-confirmation-dialog');
+      assertTrue(!!dialog);
+      dialog.$.confirm.click();
+      await lifetimeBrowserProxy.whenCalled('restart');
+      assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
+    });
+    // </if>
   });
 });

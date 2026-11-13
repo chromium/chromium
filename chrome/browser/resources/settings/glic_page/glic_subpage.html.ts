@@ -619,7 +619,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
   ` : ''}
 <if expr="not is_chromeos">
   ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
+    <relaunch-confirmation-dialog .restartType="${RestartType.RESTART}"
         @close="${this.onRelaunchDialogClose}">
     </relaunch-confirmation-dialog>
   ` : ''}

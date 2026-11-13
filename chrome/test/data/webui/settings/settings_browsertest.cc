@@ -545,6 +545,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageHotkeyLocalScopeDisabled) {
           "runMochaSuite('GlicSubpage HotkeyLocalScopeDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageDevicePolicyToggle) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage DevicePolicyToggle')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicLoginPermissionsPage) {
   RunTest("settings/glic_login_permissions_page_test.js", "mocha.run()");
 }

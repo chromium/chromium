@@ -68,7 +68,7 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
     this.devicePolicyButtonDisabled_ = true;
     await PrefService.getInstance().setPrefValue(
         'glic.assistant_selection', GlicAssistantSelection.CONSUMER);
-    this.performRestart(RestartType.RELAUNCH);
+    this.performRestart(RestartType.RESTART);
   }
 
   protected onDefaultTabAccessExpandClick_() {

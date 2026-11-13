@@ -712,7 +712,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.devicePolicyButtonDisabled_ = true;
     await PrefService.getInstance().setPrefValue(
         'glic.assistant_selection', GlicAssistantSelection.ENTERPRISE);
-    this.performRestart(RestartType.RELAUNCH);
+    this.performRestart(RestartType.RESTART);
   }
 
   protected onMediaUnderstandingToggleSubLabelLinkClicked_() {
