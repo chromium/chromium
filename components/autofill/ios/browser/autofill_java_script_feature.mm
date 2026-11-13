@@ -8,9 +8,11 @@
 
 #import "base/command_line.h"
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -70,10 +72,21 @@ void AutofillJavaScriptFeature::FetchForms(
   DCHECK(!callback.is_null());
 
   bool restrict_unowned_fields_to_formless_checkout = false;
-  CallJavaScriptFunction(
-      frame, "autofill.extractForms",
-      base::ListValue().Append(restrict_unowned_fields_to_formless_checkout),
-      CreateStringCallback(std::move(callback)), kJavaScriptExecutionTimeout);
+  auto [js_callback, no_result_callback] =
+      base::SplitOnceCallback(CreateStringCallback(std::move(callback)));
+  if (!CallJavaScriptFunction(frame, "autofill.extractForms",
+                              base::ListValue().Append(
+                                  restrict_unowned_fields_to_formless_checkout),
+                              std::move(js_callback),
+                              kJavaScriptExecutionTimeout)) {
+    // Some ports like iOS Blink have no ContentJavascriptFeatureManager yet, so
+    // the call never goes through and CallJavaScriptFunction() drops the
+    // callback. Post the missing result rather than leaving the caller waiting
+    // forever.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(no_result_callback),
+                                  /*res=*/nullptr));
+  }
 }
 
 void AutofillJavaScriptFeature::FillActiveFormField(
