@@ -979,6 +979,11 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Whether the tab is in the process of being destroyed.
   virtual bool IsBeingDestroyed() = 0;
 
+  // Returns true if an unresponsive renderer should be ignored for this
+  // WebContents (e.g. while a debugger is attached or while awaiting a
+  // blocking browser-side policy check such as clipboard paste confirmation).
+  virtual bool ShouldIgnoreUnresponsiveRenderer() = 0;
+
   // Returns true if this WebContents was created with PrivilegedParams, i.e. it
   // is a privileged-contents host (see PrivilegedParams). Immutable for the
   // lifetime of the WebContents. Unlike RenderProcessHost::IsPrivileged(), this

@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -105,8 +104,7 @@ void GlicWebClientResponsivenessMonitor::OnCheckResponsiveTimeout() {
     if (rfh) {
       content::WebContents* web_contents =
           content::WebContents::FromRenderFrameHost(rfh);
-      if (web_contents &&
-          content::DevToolsAgentHost::IsDebuggerAttached(web_contents)) {
+      if (web_contents && web_contents->ShouldIgnoreUnresponsiveRenderer()) {
         if (!has_shown_debugger_attached_warning_) {
           LOG(WARNING)
               << "GlicWebClientResponsivenessMonitor: ignoring unresponsive "

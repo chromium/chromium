@@ -16,6 +16,8 @@
 
 namespace glic {
 
+class GlicWebClientResponsivenessMonitor;
+
 // Access to the glic web client, from outside of the WebUI handler.
 class GlicWebClientAccess {
  public:
@@ -68,6 +70,9 @@ class GlicWebClientAccess {
   virtual void OnUserInputSubmittedForTesting(
       mojom::WebClientMode mode,
       mojom::PromptType prompt_type) = 0;
+
+  virtual GlicWebClientResponsivenessMonitor*
+  responsiveness_monitor_for_testing() = 0;
 };
 
 }  // namespace glic

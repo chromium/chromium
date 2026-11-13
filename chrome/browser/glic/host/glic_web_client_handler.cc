@@ -1885,6 +1885,12 @@ class GlicWebClientHandler
     OnUserInputSubmitted(mode, prompt_type);
   }
 
+  GlicWebClientResponsivenessMonitor*
+  responsiveness_monitor_for_testing()  // IN-TEST
+      override {
+    return responsiveness_monitor_.get();
+  }
+
  private:
   bool ComputeCanAttach() const { return floating_panel_can_attach_; }
 

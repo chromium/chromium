@@ -73,6 +73,8 @@ class GlicWebClientResponsivenessMonitor {
   }
   mojom::WebClientState current_state() const { return current_state_; }
 
+  void OnCheckResponsiveTimeoutForTesting() { OnCheckResponsiveTimeout(); }
+
  private:
   void OnTimerTick();
   void OnCheckResponsiveResponse();

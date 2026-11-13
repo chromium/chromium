@@ -27,7 +27,12 @@
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
+#include "chrome/browser/glic/host/glic_web_client_responsiveness_monitor.h"
+#include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
@@ -1740,6 +1745,92 @@ IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
   warn_dialog.WaitForDialogToClose();
   EXPECT_EQ(future.Get(), std::nullopt);
   EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
+                       WarnPasteDialogSuppressesUnresponsiveCheck) {
+  data_controls::SetDataControls(GetProfile()->GetPrefs(), {R"({
+        "name": "warn_eligible_tab_to_glic",
+        "rule_id": "456",
+        "sources": {
+          "urls": ["eligible.example.com"]
+        },
+        "destinations": {
+          "gemini_in_chrome": true
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "WARN"}
+        ]
+      })"});
+
+  const GURL url =
+      embedded_test_server()->GetURL("eligible.example.com", "/title1.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  content::WebContents* source_contents = active_tab->GetContents();
+  content::WebContents* glic_guest = GetReadyGuest();
+  ASSERT_TRUE(glic_guest);
+
+  ASSERT_TRUE(content::ExecJs(source_contents, R"js(
+    const el = document.createElement('textarea');
+    el.value = 'warned secret';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+  )js"));
+  source_contents->Copy();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return ReadCurrentClipboardText() == u"warned secret"; }));
+
+  if (content::WebContents* outer_contents =
+          glic_guest->GetOuterWebContents()) {
+    outer_contents->Focus();
+    ASSERT_TRUE(content::ExecJs(outer_contents, R"js(
+      const webview = document.getElementById('guestFrame');
+      if (webview) {
+        webview.focus();
+        webview.shadowRoot?.querySelector('iframe')?.focus();
+      }
+    )js"));
+  } else {
+    glic_guest->Focus();
+  }
+  ASSERT_TRUE(content::ExecJs(glic_guest, R"js(
+    const target = document.createElement('textarea');
+    target.id = 'glic-paste-target';
+    document.body.appendChild(target);
+    target.focus();
+  )js"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return glic_guest->GetFocusedFrame() == glic_guest->GetPrimaryMainFrame();
+  }));
+
+  data_controls::DesktopDataControlsDialogTestHelper warn_dialog(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+  glic_guest->Paste();
+  warn_dialog.WaitForDialogToInitialize();
+
+  Host& host = GetOnlyGlicInstance()->host();
+  GlicWebClientResponsivenessMonitor* monitor =
+      host.GetWebClientManagerForTesting()
+          ->web_client_access()
+          ->responsiveness_monitor_for_testing();
+  ASSERT_TRUE(monitor);
+  monitor->OnCheckResponsiveTimeoutForTesting();
+  EXPECT_TRUE(monitor->is_responsive());
+  ASSERT_EQ(host.web_client_state(), mojom::WebClientState::kResponsive);
+
+  warn_dialog.BypassWarning();
+  warn_dialog.WaitForDialogToClose();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(glic_guest,
+                           "document.getElementById('glic-paste-target').value")
+               .ExtractString() == "warned secret";
+  }));
+  EXPECT_EQ(host.web_client_state(), mojom::WebClientState::kResponsive);
 }
 
 }  // namespace
