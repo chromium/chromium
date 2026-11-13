@@ -360,6 +360,10 @@ Element* FindEventTargetFrom(LocalFrame&, const VisibleSelection&);
 // Editor::CanCopy()
 HTMLImageElement* ImageElementFromImageDocument(const Document*);
 
+// Returns the standalone SVG root hit outside editable content, within its
+// border box. Requires clean layout, as provided by a hit test.
+CORE_EXPORT Element* StandaloneSVGRootForImageActions(const HitTestResult&);
+
 // Boolean functions on Element
 
 CORE_EXPORT bool ElementCannotHaveEndTag(const Node&);

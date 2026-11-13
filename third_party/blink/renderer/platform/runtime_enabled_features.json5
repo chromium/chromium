@@ -6582,6 +6582,12 @@
       status: "stable",
     },
     {
+      // Kill switch for image context menu actions and copying rendered images
+      // from standalone SVG documents.
+      name: "StandaloneSVGImageActions",
+      status: "stable",
+    },
+    {
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",
       status: "stable",

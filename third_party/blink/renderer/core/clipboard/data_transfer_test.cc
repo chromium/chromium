@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -69,6 +70,86 @@ TEST_P(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
       DataTransfer::NodeImage(GetFrame(), *sample);
   EXPECT_EQ(gfx::Size(200, 200), image->Size())
       << ":-webkit-drag should affect dragged image.";
+}
+
+TEST_P(DataTransferTest, NodeImageForClipboardIgnoresDragStyle) {
+  ASSERT_TRUE(GetFrame().IsAttached());
+  ASSERT_TRUE(GetFrame().IsLocalRoot());
+  ASSERT_FALSE(GetFrame().View()->IsAttached());
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #sample { width: 100px; height: 100px; }
+      #sample:-webkit-drag { width: 200px; height: 200px; }
+    </style>
+    <div id=sample></div>
+  )HTML");
+  Element* sample = GetElementById("sample");
+  const std::unique_ptr<DragImage> image =
+      DataTransfer::NodeImageForClipboard(GetFrame(), *sample);
+  ASSERT_TRUE(image);
+  EXPECT_EQ(gfx::Size(100, 100), image->Size());
+}
+
+TEST_P(DataTransferTest, NodeImageForClipboardDoesNotCropLargeImage) {
+  SetBodyInnerHTML("<div id=sample style='width:9000px;height:1px'></div>");
+  Element* sample = GetElementById("sample");
+  const std::unique_ptr<DragImage> image =
+      DataTransfer::NodeImageForClipboard(GetFrame(), *sample);
+  ASSERT_TRUE(image);
+  EXPECT_EQ(gfx::Size(9000, 1), image->Size());
+}
+
+TEST_P(DataTransferTest, NodeImageForClipboardRejectsExcessiveSize) {
+  SetBodyInnerHTML("<div id=sample style='width:9000px;height:4000px'></div>");
+  Element* sample = GetElementById("sample");
+  EXPECT_FALSE(
+      DataTransfer::CanCreateNodeImageForClipboard(GetFrame(), *sample));
+}
+
+TEST_P(DataTransferTest, NodeImageForClipboardIgnoresViewportScale) {
+  SetBodyInnerHTML("<div id=sample style='width:100px;height:80px'></div>");
+  GetPage().GetVisualViewport().SetScale(2);
+  Element* sample = GetElementById("sample");
+  const std::unique_ptr<DragImage> image =
+      DataTransfer::NodeImageForClipboard(GetFrame(), *sample);
+  ASSERT_TRUE(image);
+  EXPECT_EQ(gfx::Size(100, 80), image->Size());
+}
+
+TEST_P(DataTransferTest, ClipboardRejectsEmptyBounds) {
+  SetBodyInnerHTML("<div id=sample style='width:0;height:80px'></div>");
+  Element* sample = GetElementById("sample");
+  EXPECT_FALSE(
+      DataTransfer::CanCreateNodeImageForClipboard(GetFrame(), *sample));
+  EXPECT_FALSE(DataTransfer::NodeImageForClipboard(GetFrame(), *sample));
+}
+
+TEST_P(DataTransferTest, ClipboardRejectsPostponedLifecycle) {
+  SetBodyInnerHTML("<div id=sample style='width:100px;height:80px'></div>");
+  DocumentLifecycle::PostponeTransitionScope postpone(
+      GetDocument().Lifecycle());
+  EXPECT_FALSE(DataTransfer::NodeImageForClipboard(GetFrame(),
+                                                   *GetElementById("sample")));
+}
+
+TEST_P(DataTransferTest, ClipboardRejectsForbiddenLifecycleTransition) {
+  SetBodyInnerHTML("<div id=sample style='width:100px;height:80px'></div>");
+  DocumentLifecycle::DisallowTransitionScope no_transition(
+      GetDocument().Lifecycle());
+  EXPECT_FALSE(DataTransfer::NodeImageForClipboard(GetFrame(),
+                                                   *GetElementById("sample")));
+}
+
+TEST_P(DataTransferTest, ClipboardIgnoresLayoutZoom) {
+  SetBodyInnerHTML("<div id=sample style='width:100px;height:80px'></div>");
+  for (float zoom : {0.5f, 1.25f, 2.0f}) {
+    SCOPED_TRACE(zoom);
+    GetFrame().SetLayoutZoomFactor(zoom);
+    auto image = DataTransfer::NodeImageForClipboard(GetFrame(),
+                                                     *GetElementById("sample"));
+    ASSERT_TRUE(image);
+    EXPECT_EQ(image->Size(), gfx::Size(100, 80));
+  }
 }
 
 TEST_P(DataTransferTest, NodeImageWithoutDraggedLayoutObject) {

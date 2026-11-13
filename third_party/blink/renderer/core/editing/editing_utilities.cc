@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -2009,6 +2010,31 @@ HTMLImageElement* ImageElementFromImageDocument(const Document* document) {
     return nullptr;
 
   return DynamicTo<HTMLImageElement>(body->firstChild());
+}
+
+Element* StandaloneSVGRootForImageActions(const HitTestResult& result) {
+  if (!RuntimeEnabledFeatures::StandaloneSVGImageActionsEnabled()) {
+    return nullptr;
+  }
+  LocalFrame* frame = result.InnerNodeFrame();
+  if (!frame) {
+    return nullptr;
+  }
+  if (!frame->GetDocument()->IsSVGDocument() || result.IsContentEditable()) {
+    return nullptr;
+  }
+  Element* root = frame->GetDocument()->documentElement();
+  if (!root) {
+    return nullptr;
+  }
+  const LayoutObject* layout = root->GetLayoutObject();
+  if (!layout) {
+    return nullptr;
+  }
+  DCHECK(!frame->GetDocument()->NeedsLayoutTreeUpdate());
+  const gfx::Point point =
+      frame->View()->FrameToDocument(result.RoundedPointInInnerNodeFrame());
+  return layout->AbsoluteBoundingBoxRect().Contains(point) ? root : nullptr;
 }
 
 }  // namespace blink

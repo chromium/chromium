@@ -25,10 +25,13 @@
 
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 
+#include <cmath>
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
@@ -53,6 +56,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -74,71 +78,69 @@ namespace blink {
 
 namespace {
 
-class DraggedNodeImageBuilder {
+enum class NodeImagePurpose { kDrag, kClipboard };
+
+class NodeImageBuilder {
   STACK_ALLOCATED();
 
  public:
-  DraggedNodeImageBuilder(LocalFrame& local_frame, Node& node)
+  NodeImageBuilder(LocalFrame& local_frame,
+                   Node& node,
+                   NodeImagePurpose purpose)
       : local_frame_(&local_frame),
-        node_(&node)
+        node_(&node),
+        purpose_(purpose)
 #if DCHECK_IS_ON()
         ,
         dom_tree_version_(node.GetDocument().DomTreeVersion())
 #endif
   {
-    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*node_))
-      descendant.SetDragged(true);
+    if (purpose_ == NodeImagePurpose::kDrag) {
+      for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*node_)) {
+        descendant.SetDragged(true);
+      }
+    }
   }
 
-  ~DraggedNodeImageBuilder() {
+  ~NodeImageBuilder() {
 #if DCHECK_IS_ON()
     DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
 #endif
-    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*node_))
-      descendant.SetDragged(false);
+    if (purpose_ == NodeImagePurpose::kDrag) {
+      for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*node_)) {
+        descendant.SetDragged(false);
+      }
+    }
   }
+
+  bool CanCreateImage() { return PrepareImage().has_value(); }
 
   std::unique_ptr<DragImage> CreateImage() {
-#if DCHECK_IS_ON()
-    DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
-#endif
-    // Construct layout object for |node_| with pseudo-class "-webkit-drag"
-    local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kDragImage);
-    LayoutObject* const dragged_layout_object = node_->GetLayoutObject();
-    if (!dragged_layout_object)
+    std::optional<gfx::RectF> bounding_box = PrepareImage();
+    if (!bounding_box) {
       return nullptr;
-    // Paint starting at the nearest stacking context, clipped to the object
-    // itself. This will also paint the contents behind the object if the
-    // object contains transparency and there are other elements in the same
-    // stacking context which stacked below.
+    }
+    LayoutObject* const dragged_layout_object = node_->GetLayoutObject();
     PaintLayer* layer = dragged_layout_object->EnclosingLayer();
-    if (!layer->GetLayoutObject().IsStackingContext())
+    if (!layer->GetLayoutObject().IsStackingContext()) {
       layer = layer->AncestorStackingContext();
-    gfx::Rect absolute_bounding_box =
-        dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
-
-    // Maximum reasonable dimension for a drag image which won't crash during
-    // memory allocation and DnD operation.
-    const int kMaxDimension = 64 * 128;
-    if (absolute_bounding_box.width() > kMaxDimension) {
-      absolute_bounding_box.set_width(kMaxDimension);
     }
-    if (absolute_bounding_box.height() > kMaxDimension) {
-      absolute_bounding_box.set_height(kMaxDimension);
-    }
-
-    gfx::RectF bounding_box =
-        layer->GetLayoutObject()
-            .AbsoluteToLocalQuad(gfx::QuadF(gfx::RectF(absolute_bounding_box)))
-            .BoundingBox();
-    gfx::RectF cull_rect = bounding_box;
+    gfx::RectF cull_rect = *bounding_box;
     cull_rect.Offset(
         gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset()));
     OverriddenCullRectScope cull_rect_scope(
         *layer, CullRect(gfx::ToEnclosingRect(cull_rect)),
         /*disable_expansion*/ true);
     PaintRecordBuilder builder;
+
+    // Ignore paint timing for this offscreen capture, as it can change LCP and
+    // cause spurious element timings (see crbug.com/40838402 and
+    // crbug.com/547997751).
+    IgnorePaintTimingScope ignore_paint_timing;
+    if (base::FeatureList::IsEnabled(
+            features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
+      IgnorePaintTimingScope::IncrementIgnoreDepth();
+    }
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
@@ -147,7 +149,7 @@ class DraggedNodeImageBuilder {
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
 
-    gfx::Vector2dF paint_offset = bounding_box.OffsetFromOrigin();
+    gfx::Vector2dF paint_offset = bounding_box->OffsetFromOrigin();
     PropertyTreeState border_box_properties = layer->GetLayoutObject()
                                                   .FirstFragment()
                                                   .LocalBorderBoxProperties()
@@ -158,13 +160,100 @@ class DraggedNodeImageBuilder {
         gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f, bounding_box.size(), paint_offset, builder,
-        border_box_properties);
+        *local_frame_, 1.0f, bounding_box->size(), paint_offset, builder,
+        border_box_properties,
+        purpose_ == NodeImagePurpose::kClipboard
+            ? std::make_optional(ClipboardSize(*bounding_box))
+            : std::nullopt);
   }
 
  private:
+  // Layout coordinates include page zoom and, on some platforms, device scale.
+  // Clipboard pixels should not change when the user changes either one.
+  gfx::SizeF ClipboardSize(const gfx::RectF& bounds) const {
+    return gfx::ScaleSize(bounds.size(),
+                          1.0f / local_frame_->LayoutZoomFactor());
+  }
+
+  std::optional<gfx::RectF> PrepareImage() {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
+#endif
+    // Preparing a bitmap requires clean paint properties as well as layout.
+    // Detached documents and postponed/reentrant lifecycle updates cannot
+    // provide a snapshot.
+    if (purpose_ == NodeImagePurpose::kDrag) {
+      local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kDragImage);
+    } else {
+      LocalFrameView* view = local_frame_->View();
+      LocalFrameView* root_view = local_frame_->LocalFrameRoot().View();
+      // Local roots have no parent layout to attach their view to.
+      if (!view || !local_frame_->IsAttached() ||
+          (!local_frame_->IsLocalRoot() && !view->IsAttached()) || !root_view ||
+          root_view->IsUpdatingLifecycle() ||
+          node_->GetDocument().Lifecycle().StateTransitionDisallowed() ||
+          !view->UpdateAllLifecyclePhasesExceptPaint(
+              DocumentUpdateReason::kContextMenu)) {
+        return std::nullopt;
+      }
+    }
+    LayoutObject* const dragged_layout_object = node_->GetLayoutObject();
+    if (!dragged_layout_object) {
+      return std::nullopt;
+    }
+    // Paint starting at the nearest stacking context, clipped to the object
+    // itself. This will also paint the contents behind the object if the
+    // object contains transparency and there are other elements in the same
+    // stacking context which stacked below.
+    PaintLayer* layer = dragged_layout_object->EnclosingLayer();
+    if (!layer->GetLayoutObject().IsStackingContext()) {
+      layer = layer->AncestorStackingContext();
+    }
+    gfx::RectF absolute_bounding_box =
+        purpose_ == NodeImagePurpose::kDrag
+            ? gfx::RectF(dragged_layout_object
+                             ->AbsoluteBoundingBoxRectIncludingDescendants())
+            : dragged_layout_object->AbsoluteBoundingBoxRectF();
+
+    if (purpose_ == NodeImagePurpose::kDrag) {
+      // Limit drag images to avoid excessive allocation during DnD.
+      const int kMaxDimension = 64 * 128;
+      if (absolute_bounding_box.width() > kMaxDimension) {
+        absolute_bounding_box.set_width(kMaxDimension);
+      }
+      if (absolute_bounding_box.height() > kMaxDimension) {
+        absolute_bounding_box.set_height(kMaxDimension);
+      }
+    }
+
+    gfx::RectF bounding_box =
+        layer->GetLayoutObject()
+            .AbsoluteToLocalQuad(gfx::QuadF(gfx::RectF(absolute_bounding_box)))
+            .BoundingBox();
+    if (purpose_ == NodeImagePurpose::kClipboard) {
+      // Limit the final bitmap, rather than zoomed layout bounds. 32M pixels
+      // require up to 128 MiB of RGBA storage before PNG encoding. Keep a
+      // separate dimension limit for very long, narrow images. These limits
+      // bound synchronous clipboard work without cropping the copied image.
+      constexpr double kMaxClipboardPixels = 32 * 1024 * 1024;
+      constexpr double kMaxClipboardDimension = 32768;
+      const gfx::SizeF size = ClipboardSize(bounding_box);
+      const double width = std::round(size.width());
+      const double height = std::round(size.height());
+      if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 ||
+          height <= 0 || width > kMaxClipboardDimension ||
+          height > kMaxClipboardDimension ||
+          width * height > kMaxClipboardPixels) {
+        // A clipboard image must not be silently cropped like a drag image.
+        return std::nullopt;
+      }
+    }
+    return bounding_box;
+  }
   LocalFrame* const local_frame_;
   Node* const node_;
+  const NodeImagePurpose purpose_;
 #if DCHECK_IS_ON()
   const uint64_t dom_tree_version_;
 #endif
@@ -458,15 +547,26 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     const gfx::SizeF& layout_size,
     const gfx::Vector2dF& paint_offset,
     PaintRecordBuilder& builder,
-    const PropertyTreeState& property_tree_state) {
-  float layout_to_device_scale = frame.GetPage()->GetVisualViewport().Scale();
-
-  gfx::SizeF device_size = gfx::ScaleSize(layout_size, layout_to_device_scale);
+    const PropertyTreeState& property_tree_state,
+    std::optional<gfx::SizeF> clipboard_size) {
+  const float viewport_scale = frame.GetPage()->GetVisualViewport().Scale();
+  gfx::SizeF device_size =
+      clipboard_size.value_or(gfx::ScaleSize(layout_size, viewport_scale));
+  if (clipboard_size) {
+    device_size = gfx::SizeF(std::round(device_size.width()),
+                             std::round(device_size.height()));
+  }
+  const float scale_x = clipboard_size
+                            ? device_size.width() / layout_size.width()
+                            : viewport_scale;
+  const float scale_y = clipboard_size
+                            ? device_size.height() / layout_size.height()
+                            : viewport_scale;
   AffineTransform transform;
   gfx::Vector2dF device_paint_offset =
-      gfx::ScaleVector2d(paint_offset, layout_to_device_scale);
+      gfx::ScaleVector2d(paint_offset, scale_x, scale_y);
   transform.Translate(-device_paint_offset.x(), -device_paint_offset.y());
-  transform.Scale(layout_to_device_scale);
+  transform.Scale(scale_x, scale_y);
 
   // Rasterize upfront, since DragImage::create() is going to do it anyway
   // (SkImage::asLegacyBitmap).
@@ -494,7 +594,22 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
 // static
 std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
                                                    Node& node) {
-  DraggedNodeImageBuilder image_node(frame, node);
+  NodeImageBuilder image_node(frame, node, NodeImagePurpose::kDrag);
+  return image_node.CreateImage();
+}
+
+// static
+bool DataTransfer::CanCreateNodeImageForClipboard(LocalFrame& frame,
+                                                  Node& node) {
+  NodeImageBuilder image_node(frame, node, NodeImagePurpose::kClipboard);
+  return image_node.CanCreateImage();
+}
+
+// static
+std::unique_ptr<DragImage> DataTransfer::NodeImageForClipboard(
+    LocalFrame& frame,
+    Node& node) {
+  NodeImageBuilder image_node(frame, node, NodeImagePurpose::kClipboard);
   return image_node.CreateImage();
 }
 

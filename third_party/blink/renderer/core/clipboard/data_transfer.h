@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_TRANSFER_H_
 
 #include <memory>
+#include <optional>
 
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -147,15 +149,19 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
 
   // |layout_size| is the size of the image in layout pixels.
   // |paint_offset| is the offset from the origin of the dragged object of the
-  // PaintRecordBuilder.
+  // PaintRecordBuilder. A clipboard size overrides visual viewport scaling
+  // and specifies the output bitmap size in pixels.
   static std::unique_ptr<DragImage> CreateDragImageForFrame(
       LocalFrame&,
       float,
       const gfx::SizeF& layout_size,
       const gfx::Vector2dF& paint_offset,
       PaintRecordBuilder&,
-      const PropertyTreeState&);
+      const PropertyTreeState&,
+      std::optional<gfx::SizeF> clipboard_size = std::nullopt);
   static std::unique_ptr<DragImage> NodeImage(LocalFrame&, Node&);
+  static bool CanCreateNodeImageForClipboard(LocalFrame&, Node&);
+  static std::unique_ptr<DragImage> NodeImageForClipboard(LocalFrame&, Node&);
 
   void Trace(Visitor*) const override;
 

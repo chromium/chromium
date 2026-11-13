@@ -11,9 +11,11 @@
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
+#include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
@@ -564,6 +566,32 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
   EXPECT_EQ(LcpDetailsForReporting().merged_unclamped_paint_time,
             initial_presentation_time);
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, ClipboardPaintIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPaintTimingIngnoreOutOfLifecyclePaints);
+  auto* client = MakeGarbageCollected<PaintTimingRecordObserverClient>();
+  GetPaintTiming().AddClient(client);
+  SetMainFrameBodyContent(R"HTML(
+    <div id='capture'><img id='image' width=100 height=300 /></div>
+  )HTML");
+  SetImageContent("image", 100, 300, 800);
+
+  // Capturing the node before its first screen paint must not record it as
+  // painted content.
+  auto image = DataTransfer::NodeImageForClipboard(GetFrame(),
+                                                   *GetElementById("capture"));
+  ASSERT_TRUE(image);
+  EXPECT_EQ(client->ImageFirstPaintCount(), 0u);
+  EXPECT_EQ(client->PaintedImageRecordCount(), 0u);
+
+  // The capture must not prevent the subsequent normal paint from being timed.
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(client->ImageFirstPaintCount(), 1u);
+  EXPECT_EQ(client->PaintedImageRecordCount(), 1u);
   trace_analyzer::Stop();
 }
 

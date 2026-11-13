@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
@@ -80,6 +81,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -565,6 +567,19 @@ std::vector<gfx::Rect> WebElement::ClientRectsInWidget() {
 SkBitmap WebElement::ImageContents() {
   Element* element = Unwrap<Element>();
   if (!element) {
+    return {};
+  }
+
+  if (RuntimeEnabledFeatures::StandaloneSVGImageActionsEnabled() &&
+      element->GetDocument().IsSVGDocument() &&
+      element == element->GetDocument().documentElement()) {
+    LocalFrame* frame = element->GetDocument().GetFrame();
+    if (frame) {
+      if (std::unique_ptr<DragImage> image =
+              DataTransfer::NodeImageForClipboard(*frame, *element)) {
+        return image->Bitmap();
+      }
+    }
     return {};
   }
 
