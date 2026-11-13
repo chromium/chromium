@@ -35,11 +35,10 @@ self.addEventListener('paymentrequest', (evt) => {
   paymentRequestEvent = evt;
   methodName = evt.methodData[0].supportedMethods;
   url = evt.methodData[0].data.url;
-  const openWindowOptions = evt.methodData[0].data.openWindowOptions;
   evt.respondWith(new Promise((responder) => {
     paymentRequestResponder = responder;
     const errorString = 'open_window_failed';
-    evt.openWindow(url, openWindowOptions)
+    evt.openWindow(url)
         .then((windowClient) => {
           if (!windowClient) {
             paymentRequestEvent.changePaymentMethod(methodName, {

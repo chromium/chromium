@@ -77,7 +77,6 @@ public class PaymentHandlerCoordinatorUnitTest {
                         mPaymentRequestWebContents,
                         new GURL("https://example.com"),
                         JUnitTestOrigins.createTuple("https", "example.com", 443),
-                        /* preferredHeightCssPx= */ null,
                         mUiObserver);
 
         assertNull(result);

@@ -9,12 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
-
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
@@ -75,7 +70,6 @@ import java.util.function.Supplier;
  * class need to close them with {@link PaymentRequestService#close()}, after which no usage is
  * allowed.
  */
-@JNINamespace("payments::android")
 @NullMarked
 public class PaymentRequestService
         implements PaymentAppServiceDelegate,
@@ -87,16 +81,6 @@ public class PaymentRequestService
                 PaymentResponseHelperInterface.PaymentResponseResultCallback,
                 CSPChecker {
     private static final String TAG = "PaymentRequestServ";
-
-    /**
-     * The payment handler's web content height in CSS pixels when PaymentHandlerStaticCustomSize is
-     * enabled and the payment app does not request one via PaymentRequestEvent.openWindow(url,
-     * {preferredSize}). Matches desktop's default dialog height
-     * (kPreferredPaymentHandlerDialogHeight, 600) minus its header (48) and progress bar (2), which
-     * are outside the web content.
-     */
-    @VisibleForTesting
-    /* package */ static final int DEFAULT_PAYMENT_HANDLER_CONTENT_HEIGHT_CSS_PX = 550;
 
     private static @Nullable PaymentRequestServiceObserverForTest sObserverForTest;
     private static @Nullable NativeObserverForTest sNativeObserverForTest;
@@ -715,8 +699,7 @@ public class PaymentRequestService
     }
 
     /**
-     * Called to open a new PaymentHandler UI on the showing PaymentRequest through the legacy
-     * ServiceTabLauncher path, which does not support custom sizing.
+     * Called to open a new PaymentHandler UI on the showing PaymentRequest.
      *
      * <p>TODO(crbug.com/411013540): Change call-sites to retrieve the currently showing payment
      * flow from BrowserGlobalPaymentFlowManager.
@@ -726,41 +709,6 @@ public class PaymentRequestService
      *     successful; null if failed.
      */
     public static @Nullable WebContents openPaymentHandlerWindow(GURL url) {
-        return openPaymentHandlerWindowInternal(url, /* preferredHeightCssPx= */ null);
-    }
-
-    /**
-     * Called by native to open a new PaymentHandler UI on the showing PaymentRequest when
-     * PaymentHandlerStaticCustomSize is enabled.
-     *
-     * @param url The url of the payment app to be displayed in the UI.
-     * @param preferredHeightCssPx The height of the payment app's web content in CSS pixels
-     *     requested via PaymentRequestEvent.openWindow(url, {preferredSize}), or null if none was
-     *     requested, in which case {@link #DEFAULT_PAYMENT_HANDLER_CONTENT_HEIGHT_CSS_PX} is used.
-     * @return The WebContents of the payment handler that's just opened when the opening is
-     *     successful; null if failed.
-     */
-    @CalledByNative
-    public static @Nullable @JniType("content::WebContents*") WebContents
-            openPaymentHandlerWindowWithPreferredHeight(
-                    @JniType("GURL") GURL url,
-                    @JniType("std::optional<int>") @Nullable Integer preferredHeightCssPx) {
-        return openPaymentHandlerWindowInternal(
-                url,
-                preferredHeightCssPx != null
-                        ? preferredHeightCssPx
-                        : DEFAULT_PAYMENT_HANDLER_CONTENT_HEIGHT_CSS_PX);
-    }
-
-    /**
-     * @param url The url of the payment app to be displayed in the UI.
-     * @param preferredHeightCssPx The height of the payment app's web content in CSS pixels, or
-     *     null for the legacy ServiceTabLauncher path (no custom sizing).
-     * @return The WebContents of the payment handler that's just opened when the opening is
-     *     successful; null if failed.
-     */
-    private static @Nullable WebContents openPaymentHandlerWindowInternal(
-            GURL url, @Nullable Integer preferredHeightCssPx) {
         PaymentRequestService showingPaymentRequest =
                 BrowserGlobalPaymentFlowManager.getShowingPaymentFlow();
         if (showingPaymentRequest == null) {
@@ -784,7 +732,7 @@ public class PaymentRequestService
 
         assumeNonNull(showingPaymentRequest.mBrowserPaymentRequest);
         return showingPaymentRequest.mBrowserPaymentRequest.openPaymentHandlerWindow(
-                url, invokedPaymentApp.getUkmSourceId(), preferredHeightCssPx);
+                url, invokedPaymentApp.getUkmSourceId());
     }
 
     /**

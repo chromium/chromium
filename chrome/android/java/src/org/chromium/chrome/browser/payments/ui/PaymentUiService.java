@@ -903,13 +903,10 @@ public class PaymentUiService
      *
      * @param url The URL of the payment app.
      * @param initiatorOrigin The security origin of the frame that invoked PaymentRequest.
-     * @param preferredHeightCssPx The preferred height of the payment app's web content in CSS
-     *     pixels, or null for the legacy ServiceTabLauncher path (no custom sizing).
      * @return The WebContents of the payment handler that's just opened when the opening is
      *     successful; null if failed.
      */
-    public @Nullable WebContents showPaymentHandlerUi(
-            GURL url, Origin initiatorOrigin, @Nullable Integer preferredHeightCssPx) {
+    public @Nullable WebContents showPaymentHandlerUi(GURL url, Origin initiatorOrigin) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
         mPaymentHandlerUi = paymentHandlerUi;
@@ -918,7 +915,6 @@ public class PaymentUiService
                         /* paymentRequestWebContents= */ mWebContents,
                         url,
                         initiatorOrigin,
-                        preferredHeightCssPx,
                         /* uiObserver= */ this);
         if (paymentHandlerWebContents == null) {
             paymentHandlerUi.hide();
