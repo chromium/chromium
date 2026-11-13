@@ -24,8 +24,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.BrowserStartupController;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /** Tests for {@link LocalStatePrefs}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(
@@ -49,39 +47,6 @@ public class LocalStatePrefsTest {
 
     @Test
     @SmallTest
-    public void testObserver() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        Runnable observer = () -> called.set(true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocalStatePrefs.setNativePrefsLoadedForTesting(false);
-                    LocalStatePrefs.addObserver(observer);
-                });
-
-        assertWithMessage("Observer should not be called yet").that(called.get()).isFalse();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocalStatePrefs.setNativePrefsLoadedForTesting(true);
-                });
-
-        assertWithMessage("Observer should be called").that(called.get()).isTrue();
-
-        called.set(false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocalStatePrefs.removeObserver(observer);
-                    LocalStatePrefs.setNativePrefsLoadedForTesting(false);
-                    LocalStatePrefs.setNativePrefsLoadedForTesting(true);
-                });
-        assertWithMessage("Observer should not be called after removal")
-                .that(called.get())
-                .isFalse();
-    }
-
-    @Test
-    @SmallTest
     // Equivalent to VariationsSwitches.VARIATIONS_SERVER_URL.
     @CommandLineFlags.Add("variations-server-url=http://127.0.0.1:4/seed")
     public void testEarlyLocalStateOnly() {
@@ -96,9 +61,6 @@ public class LocalStatePrefsTest {
                             .that(BrowserStartupController.getInstance().isFullBrowserStarted())
                             .isFalse();
                     Assert.assertEquals(expectEarlyFeatureList, FeatureList.isNativeInitialized());
-                    assertWithMessage("Expected areNativePrefsLoaded() to return true")
-                            .that(LocalStatePrefs.areNativePrefsLoaded())
-                            .isTrue();
                 });
 
         try {
