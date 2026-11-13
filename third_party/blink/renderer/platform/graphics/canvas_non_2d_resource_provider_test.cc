@@ -6,6 +6,9 @@
 
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -22,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace blink {
@@ -262,6 +266,82 @@ TEST_F(CanvasNon2DResourceProviderTest,
   // The provider should not be created if the texture size is greater than
   // the maximum value.
   EXPECT_FALSE(provider);
+}
+
+// Tests that consecutive software snapshots reuse `PaintImage::ContentId` and
+// retain the non-zero `SkImage::uniqueID()` when unmodified.
+TEST_F(CanvasNon2DResourceProviderTest,
+       SoftwareSnapshotReusesContentIdWhenUnmodified) {
+  platform_->SetGpuCompositingDisabled(true);
+
+  const gfx::Size kSize(10, 10);
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider =
+          TestWebGraphicsSharedImageInterfaceProvider::Create();
+
+  auto provider = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      kSize, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+      test_web_shared_image_interface_provider.get());
+  ASSERT_TRUE(provider && provider->IsValid());
+  EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = provider->Snapshot();
+  ASSERT_TRUE(snapshot1);
+  sk_sp<SkImage> sk_image1 =
+      snapshot1->PaintImageForCurrentFrame().GetSwSkImage();
+  ASSERT_TRUE(sk_image1);
+  EXPECT_NE(sk_image1->uniqueID(), 0u);
+  EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), sk_image1->uniqueID());
+
+  scoped_refptr<StaticBitmapImage> snapshot2 = provider->Snapshot();
+  ASSERT_TRUE(snapshot2);
+  EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), sk_image1->uniqueID());
+  EXPECT_EQ(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
+            snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
+}
+
+// Tests that flushing a PaintRecord to the software surface resets the
+// remembered `SkImage::uniqueID()` to `0u` and mints a new
+// `PaintImage::ContentId` on the next snapshot.
+TEST_F(CanvasNon2DResourceProviderTest,
+       SoftwareSnapshotResetsSkImageIdOnFlush) {
+  platform_->SetGpuCompositingDisabled(true);
+
+  const gfx::Size kSize(10, 10);
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider =
+          TestWebGraphicsSharedImageInterfaceProvider::Create();
+
+  auto provider = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      kSize, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+      test_web_shared_image_interface_provider.get());
+  ASSERT_TRUE(provider && provider->IsValid());
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = provider->Snapshot();
+  ASSERT_TRUE(snapshot1);
+  ASSERT_NE(provider->GetSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<ExportedCanvasResource> resource =
+      provider->DoExternalOverdrawAndProduceResource(
+          [](cc::PaintCanvas& canvas) {
+            cc::PaintFlags flags;
+            flags.setColor(SkColors::kGreen);
+            canvas.drawRect(SkRect::MakeWH(1, 1), flags);
+          });
+  ASSERT_TRUE(resource);
+  EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<StaticBitmapImage> snapshot2 = provider->Snapshot();
+  ASSERT_TRUE(snapshot2);
+  sk_sp<SkImage> sk_image2 =
+      snapshot2->PaintImageForCurrentFrame().GetSwSkImage();
+  ASSERT_TRUE(sk_image2);
+  EXPECT_NE(sk_image2->uniqueID(), 0u);
+  EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), sk_image2->uniqueID());
+  EXPECT_NE(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
+            snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
 }
 
 }  // namespace blink

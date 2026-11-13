@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_BASE_RENDERING_CONTEXT_2D_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -327,6 +328,11 @@ class MODULES_EXPORT BaseRenderingContext2D
     on_restore_failed_callback_for_testing_ = std::move(callback);
   }
   SkSurface* GetSoftwareSurfaceForTesting() const { return surface_.get(); }
+  // Returns the remembered `SkImage::uniqueID()` for the latest software
+  // snapshot, or `0u` if invalidated.
+  uint64_t GetSwSnapshotSkImageIdForTesting() const {
+    return sw_snapshot_sk_image_id_;
+  }
   int NumInflightResourcesForTesting() const;
   bool HasUnusedResourcesForTesting() const;
   bool UnusedResourcesReclaimTimerIsRunningForTesting() const;

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_NON_2D_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_NON_2D_RESOURCE_PROVIDER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/byte_size.h"
@@ -97,6 +98,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
     return color_space_;
   }
   SkAlphaType GetAlphaTypeForTesting() const { return alpha_type_; }
+  // Returns the remembered `SkImage::uniqueID()` for the latest software
+  // snapshot, or `0u` if invalidated.
+  uint64_t GetSnapshotSkImageIdForTesting() const {
+    return snapshot_sk_image_id_;
+  }
 
   base::ByteSize EstimatedSizeInBytes() const;
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -75,6 +76,8 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTileMode.h"
@@ -140,6 +143,7 @@ class TestRenderingContext2D final
   using BaseRenderingContext2D::CreateSoftwareSurface;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
+  using BaseRenderingContext2D::WritePixelsToBacking;
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
 
@@ -940,6 +944,97 @@ TEST_F(BaseRenderingContext2DSharedImageTest,
   test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
       GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
   EXPECT_EQ(context->Snapshot(), nullptr);
+}
+
+// Tests that consecutive software snapshots reuse `PaintImage::ContentId` and
+// retain the non-zero `SkImage::uniqueID()` when unmodified.
+TEST(BaseRenderingContext2DTest,
+     SoftwareSnapshotReusesContentIdWhenUnmodified) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr gfx::Size kSize(10, 10);
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+      scope, CanvasContextCreationAttributesCore(), kSize);
+  context->CreateSoftwareSurface();
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = context->Snapshot();
+  ASSERT_TRUE(snapshot1);
+  sk_sp<SkImage> sk_image1 =
+      snapshot1->PaintImageForCurrentFrame().GetSwSkImage();
+  ASSERT_TRUE(sk_image1);
+  EXPECT_NE(sk_image1->uniqueID(), 0u);
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), sk_image1->uniqueID());
+
+  scoped_refptr<StaticBitmapImage> snapshot2 = context->Snapshot();
+  ASSERT_TRUE(snapshot2);
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), sk_image1->uniqueID());
+  EXPECT_EQ(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
+            snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
+}
+
+// Tests that rasterizing a PaintRecord to the software surface resets the
+// remembered `SkImage::uniqueID()` to `0u` and mints a new
+// `PaintImage::ContentId` on the next snapshot.
+TEST(BaseRenderingContext2DTest, SoftwareSnapshotResetsSkImageIdOnRaster) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr gfx::Size kSize(10, 10);
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+      scope, CanvasContextCreationAttributesCore(), kSize);
+  context->CreateSoftwareSurface();
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = context->Snapshot();
+  ASSERT_TRUE(snapshot1);
+  ASSERT_NE(context->GetSwSnapshotSkImageIdForTesting(), 0u);
+
+  context->fillRect(0, 0, 1, 1);
+  context->FlushCanvasForTesting();
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<StaticBitmapImage> snapshot2 = context->Snapshot();
+  ASSERT_TRUE(snapshot2);
+  sk_sp<SkImage> sk_image2 =
+      snapshot2->PaintImageForCurrentFrame().GetSwSkImage();
+  ASSERT_TRUE(sk_image2);
+  EXPECT_NE(sk_image2->uniqueID(), 0u);
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), sk_image2->uniqueID());
+  EXPECT_NE(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
+            snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
+}
+
+// Tests that writing pixels directly to the software surface resets the
+// remembered `SkImage::uniqueID()` to `0u` and mints a new
+// `PaintImage::ContentId` on the next snapshot.
+TEST(BaseRenderingContext2DTest, SoftwareSnapshotResetsSkImageIdOnWritePixels) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr gfx::Size kSize(10, 10);
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+      scope, CanvasContextCreationAttributesCore(), kSize);
+  context->CreateSoftwareSurface();
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = context->Snapshot();
+  ASSERT_TRUE(snapshot1);
+  ASSERT_NE(context->GetSwSnapshotSkImageIdForTesting(), 0u);
+
+  constexpr uint32_t kPixel = 0xFF00FF00u;
+  ASSERT_TRUE(context->WritePixelsToBacking(SkImageInfo::MakeN32Premul(1, 1),
+                                            &kPixel, sizeof(kPixel), 0, 0));
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), 0u);
+
+  scoped_refptr<StaticBitmapImage> snapshot2 = context->Snapshot();
+  ASSERT_TRUE(snapshot2);
+  sk_sp<SkImage> sk_image2 =
+      snapshot2->PaintImageForCurrentFrame().GetSwSkImage();
+  ASSERT_TRUE(sk_image2);
+  EXPECT_NE(sk_image2->uniqueID(), 0u);
+  EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), sk_image2->uniqueID());
+  EXPECT_NE(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
+            snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
 }
 
 }  // namespace

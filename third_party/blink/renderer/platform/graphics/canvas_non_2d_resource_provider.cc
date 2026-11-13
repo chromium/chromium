@@ -709,6 +709,9 @@ void CanvasNon2DResourceProvider::FlushRecording(
     if (!last_recording.has_discardable_images()) {
       excluded.emplace();
     }
+    // Invalidate the remembered SkImage ID so a 32-bit SkNextID::ImageID()
+    // wraparound cannot match an old snapshot ID after modifying `surface_`.
+    snapshot_sk_image_id_ = 0u;
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
     EnsureResourceReadyForDraw();

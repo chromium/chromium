@@ -973,6 +973,9 @@ void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
   if (image_pool_ && !image_pool_->GetImageInfo().is_software) {
     EnsureWriteAccess();
   }
+  // Invalidate the remembered SkImage ID so a 32-bit SkNextID::ImageID()
+  // wraparound cannot match an old snapshot ID after modifying `surface_`.
+  sw_snapshot_sk_image_id_ = 0u;
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
                                   GetOrCreateCanvasImageProvider());
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
@@ -1141,6 +1144,9 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     if (image_pool_ && !image_pool_->GetImageInfo().is_software) {
       EnsureWriteAccess();
     }
+    // Invalidate the remembered SkImage ID so a 32-bit SkNextID::ImageID()
+    // wraparound cannot match an old snapshot ID after modifying `surface_`.
+    sw_snapshot_sk_image_id_ = 0u;
     return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x,
                                               y);
   }
