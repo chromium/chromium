@@ -312,6 +312,17 @@ Chromium:
   subvert browser-process file operations. Browser-process accesses to
   `DIR_USER_DATA` are not a security boundary against processes that can write
   to `DIR_USER_DATA`.
+* Attacks that rely on a compromised WebNN model compilation process on macOS
+  (whose sandbox, `sandbox/policy/mac/webnn_model_compilation.sb`, permits broad
+  access to the user temporary directory, `DARWIN_USER_TEMP_DIR`, as required by
+  CoreML model compilation; see
+  [crbug.com/562017300](https://crbug.com/562017300) and Apple Feedback
+  FB24789855) to modify files, plant symlinks or FIFOs, or subvert file
+  operations in `DARWIN_USER_TEMP_DIR`. File operations in
+  `DARWIN_USER_TEMP_DIR` are not a security boundary against the WebNN compiler
+  process. The single-purpose WebNN compilation process was created
+  specifically to move CoreML model compilation into a minimal attack surface
+  and remove this broad temporary directory access from the GPU process.
 
 These are not security bugs, regardless of how easy they are to trigger. Under
 no circumstances is something matching an entry in this list a security bug.

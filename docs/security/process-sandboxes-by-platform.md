@@ -70,3 +70,13 @@ not a security boundary for files inside `DIR_USER_DATA`.
 * kLibassistant (Ash only)
 * kNearby (Ash only)
 * kMirroring (MacOS only)
+* kWebNNModelCompilation (Windows, macOS)
+
+Note: On macOS, the `kWebNNModelCompilation` sandbox
+(`sandbox/policy/mac/webnn_model_compilation.sb`) permits broad access to the
+user temporary directory (`DARWIN_USER_TEMP_DIR`) as required by CoreML model
+compilation ([crbug.com/562017300](https://crbug.com/562017300), FB24789855),
+and is not a security boundary for files inside `DARWIN_USER_TEMP_DIR`. This
+single-purpose compilation process exists to isolate CoreML model compilation
+into a minimal attack surface and remove that directory access from the GPU
+process.
