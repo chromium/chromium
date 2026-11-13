@@ -878,6 +878,47 @@ TEST_F(OtpCoordinatorTest, RecordsProactiveTriggerShownOnlyOnceWhenPopupShown) {
       OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
 }
 
+// Verifies that user-typed input in a non-OTP field on the same form does not
+// suppress proactive triggers when the user focuses the empty OTP field.
+TEST_F(OtpCoordinatorTest,
+       AllowsProactiveTriggerOnFocusedEmptyOtpFieldAfterTypingInNonOtpField) {
+  FormDescription form_description = {
+      .fields = {{.server_type = USERNAME,
+                  .host_frame = autofill_driver().GetFrameToken(),
+                  .value = u"user@example.test",
+                  .origin = url::Origin::Create(GURL(kTestUrl))},
+                 {.server_type = ONE_TIME_CODE,
+                  .host_frame = autofill_driver().GetFrameToken(),
+                  .value = u"",
+                  .origin = url::Origin::Create(GURL(kTestUrl))}},
+      .host_frame = autofill_driver().GetFrameToken(),
+      .main_frame_origin = url::Origin::Create(GURL(kTestUrl)),
+  };
+  FormData form = test::GetFormData(form_description);
+  FormGlobalId form_id = form.global_id();
+  auto form_structure = std::make_unique<FormStructure>(form);
+  test_api(*form_structure).SetFieldTypes(GetServerTypes(form_description));
+  test_api(*form_structure).AssignSections();
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kUser);
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+
+  const FormStructure* cached_form =
+      autofill_manager().FindCachedFormById(form_id);
+  const OtpTarget otp_target =
+      BuildOtpTarget(autofill_manager(), *cached_form, *cached_form->field(1));
+  coordinator_->StartListeningForOtp(otp_target);
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               otp_target.form, otp_target.field);
+
+  SendGmailOtp("901234", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(otp_target),
+      HasValue("901234"));
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(otp_target.field));
+}
+
 // Verifies that proactive triggers are suppressed when the focused OTP field
 // itself contains non-empty user-typed input, and allowed once cleared.
 TEST_F(OtpCoordinatorTest,
