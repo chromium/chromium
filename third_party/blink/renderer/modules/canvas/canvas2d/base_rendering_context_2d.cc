@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -892,9 +893,8 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
   // Since the resource will be updated, the cached snapshot is no longer
   // valid. Note that it is important to release this reference here to not
   // trigger copy-on-write below from the resource ref in the snapshot.
-  // Note that this is valid for single buffered mode also, since while the
-  // resource/mailbox remains the same, the snapshot needs an updated sync
-  // token for these writes.
+  // In single-buffered mode, resetting `cached_snapshot_` ensures subsequent
+  // Snapshot() calls create a fresh copy reflecting the updated resource.
   cached_snapshot_.reset();
 
   if (ShouldReplaceTargetBuffer()) {
@@ -1091,17 +1091,28 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
               resource_->owning_thread_task_runner_,
               std::move(release_callback));
 
-      // We'll record its content_id to be used by the FlushForImageListener.
-      // This will be needed in EnsureResourceReadyForDraw(), but we are doing
-      // it now, as we don't know if later on we will be in the same thread the
-      // cached_snapshot_ was created and we wouldn't be able to
-      // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
-      // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
-      // other contexts know to flush to avoid unnecessary copy-on-writes.
-      if (cached_snapshot_) {
+      if (cached_snapshot_ && IsSingleBuffered()) {
+        // Single-buffered resources are mutated in place
+        // (`ShouldReplaceTargetBuffer()` returns false), so `Snapshot()` must
+        // clone into a dedicated image to preserve snapshot immutability and
+        // origin-clean isolation.
+        cached_snapshot_ = StaticBitmapImageTransform::Clone(cached_snapshot_);
+      } else if (cached_snapshot_) {
+        // We'll record its content_id to be used by the FlushForImageListener.
+        // This will be needed in EnsureResourceReadyForDraw(), but we are doing
+        // it now, as we don't know if later on we will be in the same thread
+        // the cached_snapshot_ was created and we wouldn't be able to
+        // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to
+        // check the content_id. ShouldReplaceTargetBuffer needs this ID in
+        // order to let other contexts know to flush to avoid unnecessary
+        // copy-on-writes.
         cached_content_id_ =
             cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
                 0u);
+      }
+
+      if (!cached_snapshot_) {
+        return nullptr;
       }
     }
 

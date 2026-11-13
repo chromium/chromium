@@ -1728,6 +1728,7 @@
     "bases": [
       "fast/canvas",
       "wpt_internal/html/canvas/context-lost",
+      "external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/desynchronized-crossorigin-snapshot-isolation.html",
       "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
       "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm"
     ],

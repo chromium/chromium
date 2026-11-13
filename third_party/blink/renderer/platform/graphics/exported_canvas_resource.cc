@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -147,6 +150,11 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
         base::WrapRefCounted(this));
 
     scoped_refptr<StaticBitmapImage> image;
+    // Single-buffered resources are mutated in place and must never be wrapped
+    // directly into a StaticBitmapImage without copying.
+    CHECK(!shared_image_->usage().Has(
+              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE),
+          base::NotFatalUntil::M162);
 
     // If its cross thread, then the sync token was already verified.
     image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(

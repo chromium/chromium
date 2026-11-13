@@ -30,6 +30,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "cc/base/features.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/paint/display_item_list.h"
@@ -3780,6 +3781,49 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource->GetSharedImageForTesting(),
             frame2_resource->GetSharedImageForTesting());
+}
+
+TEST_P(CanvasRenderingContext2DTestLowLatency, TaintedCanvasSnapshot) {
+  NonThrowableExceptionState exception_state;
+  CreateContext(CanvasRenderingContext2DTestBase::kLowLatency);
+  Context2D()->InitializeBacking();
+  Context2D()->fillRect(0, 0, 10, 10);
+
+  scoped_refptr<ExportedCanvasResource> pre_taint_resource =
+      Context2D()->PaintRenderingResultsToResource(kBackBuffer,
+                                                   FlushReason::kOther);
+  ASSERT_TRUE(pre_taint_resource);
+
+  // Snapshot returns a copy of the resource.
+  scoped_refptr<StaticBitmapImage> pre_taint_snapshot =
+      CanvasElement().Snapshot(kBackBuffer);
+  ASSERT_TRUE(pre_taint_snapshot);
+  EXPECT_NE(pre_taint_snapshot->GetSharedImage(),
+            pre_taint_resource->GetSharedImageForTesting());
+
+  // Taint the single-buffered canvas by drawing a cross-origin image.
+  FakeImageSource cross_origin_source(
+      {.size = gfx::Size(10, 10), .would_taint_origin = true});
+  Context2D()->drawImage(&cross_origin_source, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
+
+  // The single-buffered resource is the same as before, but it's now tainted.
+  scoped_refptr<ExportedCanvasResource> post_taint_resource =
+      Context2D()->PaintRenderingResultsToResource(kBackBuffer,
+                                                   FlushReason::kOther);
+  ASSERT_TRUE(post_taint_resource);
+  ASSERT_EQ(post_taint_resource->GetSharedImageForTesting(),
+            pre_taint_resource->GetSharedImageForTesting());
+  ASSERT_FALSE(CanvasElement().OriginClean());
+
+  // A new snapshot must be tainted.
+  scoped_refptr<StaticBitmapImage> post_taint_snapshot =
+      CanvasElement().Snapshot(kBackBuffer);
+  ASSERT_TRUE(post_taint_snapshot);
+  EXPECT_FALSE(post_taint_snapshot->OriginClean());
+
+  // The snapshot acquired before tainting must remain origin-clean.
+  EXPECT_TRUE(pre_taint_snapshot->OriginClean());
 }
 
 #if BUILDFLAG(IS_WIN)
