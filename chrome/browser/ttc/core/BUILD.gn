@@ -112,6 +112,8 @@ source_set("impl") {
     "page_context.cc",
     "page_context_util.cc",
     "page_context_util.h",
+    "pointer_context_capturer.cc",
+    "pointer_context_capturer.h",
     "pointer_crop_geometry.cc",
     "pointer_crop_geometry.h",
     "pointer_image_annotator.cc",
@@ -375,6 +377,7 @@ source_set("browser_tests") {
   data = [ "//chrome/test/data/ttc/" ]
   sources = [
     "page_context_monitor_browsertest.cc",
+    "pointer_context_capturer_browsertest.cc",
     "pointer_input_observer_browsertest.cc",
     "session_controller_impl_browsertest.cc",
     "session_journal_impl_browsertest.cc",

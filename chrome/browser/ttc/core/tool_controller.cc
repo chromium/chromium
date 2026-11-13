@@ -777,25 +777,9 @@ void ToolController::OnGetScreenshotFetched(
   screenshot_fetcher_.reset();
 
   if (!result.has_value()) {
-    auto error = actor::mojom::ActionResultCode::kScreenshotCaptureFailed;
-    switch (result.error().error_code) {
-      case page_content_annotations::FetchPageContextError::
-          kWebContentsWentAway:
-        error = actor::mojom::ActionResultCode::kTabWentAway;
-        break;
-      case page_content_annotations::FetchPageContextError::kWebContentsChanged:
-        error = actor::mojom::ActionResultCode::kScreenshotCapturePageChanged;
-        break;
-      case page_content_annotations::FetchPageContextError::
-          kPageContextNotEligible:
-        error =
-            actor::mojom::ActionResultCode::kScreenshotCapturePageNotEligible;
-        break;
-      default:
-        break;
-    }
-
-    std::move(callback).Run(ToolResponse::Error(error, result.error().message));
+    std::move(callback).Run(
+        ToolResponse::Error(ToScreenshotErrorCode(result.error().error_code),
+                            result.error().message));
     return;
   }
 

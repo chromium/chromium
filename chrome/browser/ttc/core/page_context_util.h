@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_UTIL_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
 class GURL;
 
 namespace actor {
 class EnterprisePolicyChecker;
+}
+
+namespace page_content_annotations {
+enum class FetchPageContextError;
 }
 
 namespace ttc {
@@ -29,6 +34,11 @@ void IsUrlSupportedForPageContext(
     const GURL& url,
     const actor::EnterprisePolicyChecker* enterprise_policy_checker,
     base::OnceCallback<void(bool)> callback);
+
+// Returns the tool error for a screenshot whose page context fetch failed
+// with `error`.
+actor::mojom::ActionResultCode ToScreenshotErrorCode(
+    page_content_annotations::FetchPageContextError error);
 
 }  // namespace ttc
 
