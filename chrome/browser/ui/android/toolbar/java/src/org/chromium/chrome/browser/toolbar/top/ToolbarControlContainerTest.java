@@ -106,7 +106,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -120,7 +119,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link ToolbarControlContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
 public class ToolbarControlContainerTest {
     private static final String BLOCK_NAME = "Android.TopToolbar.BlockCaptureReason";
     private static final String ALLOW_NAME = "Android.TopToolbar.AllowCaptureReason";
@@ -1867,9 +1865,8 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testUpdateOptionalButton_OnNtp_UpdatesToolbarButton() {
+    public void testUpdateOptionalButton_OnNtp_HidesBothButtons() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
         toolbarPhone.setThemeColorProvider(mThemeColorProvider);
@@ -1880,17 +1877,17 @@ public class ToolbarControlContainerTest {
         toolbarPhone.mVisualState = ToolbarPhone.VisualState.NEW_TAB_NORMAL;
 
         ButtonData buttonData = mock(ButtonData.class);
-        doReturn(true).when(buttonData).isIdentityDisc();
         toolbarPhone.updateOptionalButton(buttonData);
 
         verify(mLocationBarCoordinator, never()).updateOptionalButton(any());
         verify(mLocationBarCoordinator).hideOptionalButton();
-        verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
+        verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
+        verify(mOptionalButtonCoordinator).hideButton();
 
         toolbarPhone.hideOptionalButton();
 
         verify(mLocationBarCoordinator, times(2)).hideOptionalButton();
-        verify(mOptionalButtonCoordinator).hideButton();
+        verify(mOptionalButtonCoordinator, times(2)).hideButton();
     }
 
     @Test

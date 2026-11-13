@@ -228,10 +228,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.GLIC,
     SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING
 })
-@DisableFeatures({
-    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-    SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
-})
+@DisableFeatures({SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS})
 public class ToolbarManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -315,12 +312,10 @@ public class ToolbarManagerUnitTest {
     @Mock private TabModel mIncognitoTabModel;
     @Mock private Profile mIncognitoProfile;
     @Mock private SubscriptionEligibilityService mSubscriptionEligibilityService;
-    @Mock private ButtonDataProvider mIdentityDiscProvider;
     @Mock private ButtonDataProvider mAdaptiveButtonProvider;
     @Mock private HubManager mHubManager;
     @Mock private TabCreator mTabCreator;
 
-    @Captor private ArgumentCaptor<ButtonDataObserver> mIdentityDiscObserverCaptor;
     @Captor private ArgumentCaptor<ButtonDataObserver> mAdaptiveButtonObserverCaptor;
 
     private List<ButtonDataProvider> mButtonDataProviders;
@@ -442,11 +437,10 @@ public class ToolbarManagerUnitTest {
         mActivityTabProvider = new ActivityTabProvider();
         mActivityTabProvider.setForTesting(mTab);
 
-        mButtonDataProviders = List.of(mIdentityDiscProvider, mAdaptiveButtonProvider);
+        mButtonDataProviders = List.of(mAdaptiveButtonProvider);
 
         mToolbarManager = createToolbarManager(LazyOneshotSupplier.fromValue(mFindToolbarManager));
 
-        verify(mIdentityDiscProvider).addObserver(mIdentityDiscObserverCaptor.capture());
         verify(mAdaptiveButtonProvider).addObserver(mAdaptiveButtonObserverCaptor.capture());
 
         RobolectricUtil.runAllBackgroundAndUi();
@@ -875,26 +869,23 @@ public class ToolbarManagerUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
-    public void testNtpOptionalButtonHidden_whenSignInLevelUpEnabled() {
-        Tab ntpTab = mockTab(/* isNtp= */ true);
-        mActivityTabProvider.setForTesting(ntpTab);
+    public void testToolbarOptionalButton_shownOnWebPage_hiddenOnNtp_whenBottomBarDisabled() {
+        Tab webTab = mockTab(/* isNtp= */ false);
+        mActivityTabProvider.setForTesting(webTab);
 
-        ButtonDataImpl identityDiskData =
+        ButtonDataImpl shareButtonData =
                 new ButtonDataImpl(
                         /* canShow= */ true,
                         /* isEnabled= */ true,
                         new ButtonSpec.Builder(
                                         /* drawable= */ null,
-                                        /* contentDescription= */ "Identity Disk",
+                                        /* contentDescription= */ "Share",
                                         /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIdentityDiscConfig(
-                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
+                                .setButtonVariant(AdaptiveToolbarButtonVariant.SHARE)
                                 .build());
-        when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
+        when(mAdaptiveButtonProvider.get(webTab)).thenReturn(shareButtonData);
 
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
+        mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         AppCompatActivity activity = mActivityController.get();
@@ -902,43 +893,25 @@ public class ToolbarManagerUnitTest {
         View toolbarButton =
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
+        assertNotNull(toolbarButton);
+        assertEquals(View.VISIBLE, toolbarButton.getVisibility());
+
+        Tab ntpTab = mockTab(/* isNtp= */ true);
+        when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(shareButtonData);
+
+        mActivityTabProvider.setForTesting(ntpTab);
+        mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        toolbarButton =
+                toolbar.findViewById(R.id.toolbar_buttons)
+                        .findViewById(R.id.optional_toolbar_button_container);
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
-    public void testLocationBarOptionalButtonHidden_whenIdentityDisk() {
-        Tab webTab = mockTab(/* isNtp= */ false);
-        mActivityTabProvider.setForTesting(webTab);
-
-        ButtonDataImpl identityDiskData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* isEnabled= */ true,
-                        new ButtonSpec.Builder(
-                                        /* drawable= */ null,
-                                        /* contentDescription= */ "Identity Disk",
-                                        /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIdentityDiscConfig(
-                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
-                                .build());
-        when(mIdentityDiscProvider.get(webTab)).thenReturn(identityDiskData);
-
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        AppCompatActivity activity = mActivityController.get();
-        View locationBar = activity.findViewById(R.id.location_bar);
-        View locationBarButton = locationBar.findViewById(R.id.optional_button);
-        assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
-    public void testToolbarOptionalButtonHidden_whenBottomBarEnabled_andNotIdentityDisk() {
+    public void testToolbarOptionalButtonHidden_onNtp_whenBottomBarEnabled() {
         Tab ntpTab = mockTab(/* isNtp= */ true);
         mActivityTabProvider.setForTesting(ntpTab);
 
@@ -966,39 +939,7 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
-    public void testToolbarOptionalButtonHidden_whenBottomBarEnabled_andSignInLevelUpEnabled() {
-        Tab ntpTab = mockTab(/* isNtp= */ true);
-        mActivityTabProvider.setForTesting(ntpTab);
-
-        ButtonDataImpl identityDiskData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* isEnabled= */ true,
-                        new ButtonSpec.Builder(
-                                        /* drawable= */ null,
-                                        /* contentDescription= */ "Identity Disk",
-                                        /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIdentityDiscConfig(
-                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
-                                .build());
-        when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
-
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        AppCompatActivity activity = mActivityController.get();
-        View toolbar = activity.findViewById(R.id.toolbar);
-        View toolbarButton =
-                toolbar.findViewById(R.id.toolbar_buttons)
-                        .findViewById(R.id.optional_toolbar_button_container);
-        assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testMutualExclusion_bothOptionalButtonsNeverVisibleSimultaneously() {
         Tab webTab = mockTab(/* isNtp= */ false);
         mActivityTabProvider.setForTesting(webTab);
@@ -1033,7 +974,6 @@ public class ToolbarManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testTransition_WebPageToNtp_optionalButtonsUpdate() {
         Tab webTab = mockTab(/* isNtp= */ false);
         mActivityTabProvider.setForTesting(webTab);
@@ -1065,23 +1005,9 @@ public class ToolbarManagerUnitTest {
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
 
         Tab ntpTab = mockTab(/* isNtp= */ true);
-        ButtonDataImpl identityDiskData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* isEnabled= */ true,
-                        new ButtonSpec.Builder(
-                                        /* drawable= */ null,
-                                        /* contentDescription= */ "Identity Disk",
-                                        /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIdentityDiscConfig(
-                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
-                                .build());
-        when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
-        when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(null);
+        when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(shareButtonData);
 
         mActivityTabProvider.setForTesting(ntpTab);
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
         mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -1091,32 +1017,28 @@ public class ToolbarManagerUnitTest {
                         .findViewById(R.id.optional_toolbar_button_container);
 
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
-        assertNotNull(toolbarButton);
-        assertEquals(View.VISIBLE, toolbarButton.getVisibility());
+        assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testTransition_NtpToWebPage_optionalButtonsUpdate() {
         Tab ntpTab = mockTab(/* isNtp= */ true);
         mActivityTabProvider.setForTesting(ntpTab);
 
-        ButtonDataImpl identityDiskData =
+        ButtonDataImpl shareButtonData =
                 new ButtonDataImpl(
                         /* canShow= */ true,
                         /* isEnabled= */ true,
                         new ButtonSpec.Builder(
                                         /* drawable= */ null,
-                                        /* contentDescription= */ "Identity Disk",
+                                        /* contentDescription= */ "Share",
                                         /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIdentityDiscConfig(
-                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
+                                .setButtonVariant(AdaptiveToolbarButtonVariant.SHARE)
                                 .build());
-        when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
+        when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(shareButtonData);
 
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
+        mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         AppCompatActivity activity = mActivityController.get();
@@ -1126,15 +1048,14 @@ public class ToolbarManagerUnitTest {
         View toolbarButton =
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
-        assertNotNull(toolbarButton);
-        assertEquals(View.VISIBLE, toolbarButton.getVisibility());
+        assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
 
         Tab webTab = mockTab(/* isNtp= */ false);
-        when(mIdentityDiscProvider.get(webTab)).thenReturn(identityDiskData);
+        when(mAdaptiveButtonProvider.get(webTab)).thenReturn(shareButtonData);
 
         mActivityTabProvider.setForTesting(webTab);
-        mIdentityDiscObserverCaptor.getValue().buttonDataChanged(true);
+        mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         locationBarButton = locationBar.findViewById(R.id.optional_button);
@@ -1142,8 +1063,9 @@ public class ToolbarManagerUnitTest {
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
 
+        assertNotNull(locationBarButton);
+        assertEquals(View.VISIBLE, locationBarButton.getVisibility());
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-        assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
     }
 
     @Test

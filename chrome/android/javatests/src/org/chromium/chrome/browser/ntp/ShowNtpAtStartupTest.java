@@ -572,10 +572,7 @@ public class ShowNtpAtStartupTest {
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, NEW_TAB_PAGE_CUSTOMIZATION_V2})
     // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
-    @DisableFeatures({
-        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
-        SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
     public void testToolbar_defaultBackground() throws IOException {
         mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

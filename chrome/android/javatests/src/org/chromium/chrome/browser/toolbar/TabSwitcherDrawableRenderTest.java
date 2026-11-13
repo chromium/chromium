@@ -37,7 +37,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Render tests for the {@link TabSwitcherDrawable} with notification feature. */
@@ -131,8 +130,6 @@ public class TabSwitcherDrawableRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
-    @DisableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON})
     public void testTabSwitcherDrawable_newTabPage() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 

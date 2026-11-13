@@ -104,7 +104,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
@@ -736,40 +735,6 @@ public class ToolbarPhoneTest {
         // Focus the Omnibox.
         mOmnibox.requestFocus();
         assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({
-        OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT,
-        ChromeFeatureList.ANDROID_BOTTOM_BAR,
-        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
-    })
-    public void testFocusAnimation_optionalButtonRestored() {
-        mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
-        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
-        Tab tab = mActivityTestRule.getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNtp());
-
-        ButtonData buttonData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* isEnabled= */ true,
-                        new ButtonSpec.Builder(
-                                        AppCompatResources.getDrawable(
-                                                mActivityTestRule.getActivity(),
-                                                R.drawable.ic_toolbar_share_offset_24dp),
-                                        mActivityTestRule.getActivity().getString(R.string.share),
-                                        /* supportsTinting= */ false)
-                                .build());
-        ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
-        verify(mOptionalButtonCoordinator).updateButton(buttonData, false);
-
-        mOmnibox.requestFocus();
-        verify(mOptionalButtonCoordinator).updateButton(null, false);
-        mOmnibox.clearFocus();
-        verify(mOptionalButtonCoordinator, times(2)).updateButton(buttonData, false);
     }
 
     @Test
