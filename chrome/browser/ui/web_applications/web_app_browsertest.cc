@@ -2862,9 +2862,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestShortcut) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithUseCounterFields) {
-  constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
-
-  base::HistogramTester histogram_tester;
+  WebFeatureHistogramTester web_feature_histogram_tester;
   GURL test_url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_with_use_counter_fields.json");
@@ -2872,44 +2870,21 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithUseCounterFields) {
 
   test::InstallPwaForCurrentUrl(browser());
 
-  content::FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestStartUrl,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestIdField,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestDisplay,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestIcons, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kWebAppManifestScreenshots, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestScope, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestLockScreen,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestNoteTaking,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kWebAppManifestPrefer_Related_Applications, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestThemeColor,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kWebAppManifestBackgroundColor, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestVersion,
-      1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kWebAppManifestRelated_Applications, 1);
+  web_feature_histogram_tester.ExpectCounts({
+      {blink::mojom::WebFeature::kWebAppManifestStartUrl, 1},
+      {blink::mojom::WebFeature::kWebAppManifestIdField, 1},
+      {blink::mojom::WebFeature::kWebAppManifestDisplay, 1},
+      {blink::mojom::WebFeature::kWebAppManifestIcons, 1},
+      {blink::mojom::WebFeature::kWebAppManifestScreenshots, 1},
+      {blink::mojom::WebFeature::kWebAppManifestScope, 1},
+      {blink::mojom::WebFeature::kWebAppManifestLockScreen, 1},
+      {blink::mojom::WebFeature::kWebAppManifestNoteTaking, 1},
+      {blink::mojom::WebFeature::kWebAppManifestPrefer_Related_Applications, 1},
+      {blink::mojom::WebFeature::kWebAppManifestThemeColor, 1},
+      {blink::mojom::WebFeature::kWebAppManifestBackgroundColor, 1},
+      {blink::mojom::WebFeature::kWebAppManifestVersion, 1},
+      {blink::mojom::WebFeature::kWebAppManifestRelated_Applications, 1},
+  });
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithNoUseCounterFields) {
@@ -2943,12 +2918,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayBrowser) {
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
   test::InstallPwaForCurrentUrl(browser());
-  content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplay));
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplayBrowser));
+  web_feature_histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kWebAppManifestDisplay, 1},
+       {blink::mojom::WebFeature::kWebAppManifestDisplayBrowser, 1}});
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayMinimalUI) {
@@ -2960,12 +2933,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayMinimalUI) {
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
   test::InstallPwaForCurrentUrl(browser());
-  content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplay));
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplayMinimalUI));
+  web_feature_histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kWebAppManifestDisplay, 1},
+       {blink::mojom::WebFeature::kWebAppManifestDisplayMinimalUI, 1}});
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayFullscreen) {
@@ -2977,12 +2948,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayFullscreen) {
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
   test::InstallPwaForCurrentUrl(browser());
-  content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplay));
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplayFullscreen));
+  web_feature_histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kWebAppManifestDisplay, 1},
+       {blink::mojom::WebFeature::kWebAppManifestDisplayFullscreen, 1}});
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayStandalone) {
@@ -2993,12 +2962,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithDisplayStandalone) {
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
   test::InstallPwaForCurrentUrl(browser());
-  content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplay));
-  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
-                   blink::mojom::WebFeature::kWebAppManifestDisplayStandalone));
+  web_feature_histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kWebAppManifestDisplay, 1},
+       {blink::mojom::WebFeature::kWebAppManifestDisplayStandalone, 1}});
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_Unframed, Unframed) {
