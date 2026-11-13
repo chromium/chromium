@@ -24,8 +24,8 @@ import type {FocusConfig} from './focus_config.js';
 import type {CredentialsChangedListener, PasswordCheckStatusChangedListener} from './password_manager_proxy.js';
 import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {CheckupSubpage, Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
-import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {CheckupSubpage, Page, RouteObserverMixin, Router, UrlParam} from './router.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -44,7 +44,7 @@ export interface CheckupSectionElement {
 }
 
 const CheckupSectionElementBase =
-    UserUtilMixinLit(RouteObserverMixinLit(I18nMixinLit(CrLitElement)));
+    UserUtilMixin(RouteObserverMixin(I18nMixinLit(CrLitElement)));
 
 export class CheckupSectionElement extends CheckupSectionElementBase {
   static get is() {

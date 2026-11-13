@@ -11,7 +11,7 @@ import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_s
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss as getSharedStyleCss} from '../shared_style_lit.css.js';
+import {getCss as getSharedStyleCss} from '../shared_style.css.js';
 
 import {getHtml} from './remove_actor_login_permission_dialog.html.js';
 

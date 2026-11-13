@@ -20,10 +20,10 @@ import {getCss} from './checkup_list_item.css.js';
 import {getHtml} from './checkup_list_item.html.js';
 import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import type {ShowPasswordMixinLitInterface} from './show_password_mixin_lit.js';
-import {ShowPasswordMixinLit} from './show_password_mixin_lit.js';
+import type {ShowPasswordMixinInterface} from './show_password_mixin.js';
+import {ShowPasswordMixin} from './show_password_mixin.js';
 
-export interface CheckupListItemElement extends ShowPasswordMixinLitInterface {
+export interface CheckupListItemElement extends ShowPasswordMixinInterface {
   $: {
     shownUrl: HTMLElement,
     username: HTMLElement,
@@ -33,7 +33,7 @@ export interface CheckupListItemElement extends ShowPasswordMixinLitInterface {
 }
 
 const CheckupListItemElementBase =
-    ShowPasswordMixinLit(I18nMixinLit(CrLitElement));
+    ShowPasswordMixin(I18nMixinLit(CrLitElement));
 
 export class CheckupListItemElement extends CheckupListItemElementBase {
   static get is() {

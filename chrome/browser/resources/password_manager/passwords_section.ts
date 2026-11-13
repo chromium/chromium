@@ -29,8 +29,8 @@ import {getCss} from './passwords_section.css.js';
 import {getHtml} from './passwords_section.html.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
-import {TrustedVaultUnlockDialogSource, UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
+import {TrustedVaultUnlockDialogSource, UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsSectionElement {
   $: {
@@ -44,7 +44,7 @@ export interface PasswordsSectionElement {
 }
 
 const PasswordsSectionElementBase = PrefServiceObserverMixinLit(
-    UserUtilMixinLit(RouteObserverMixinLit(I18nMixinLit(CrLitElement))));
+    UserUtilMixin(RouteObserverMixin(I18nMixinLit(CrLitElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {

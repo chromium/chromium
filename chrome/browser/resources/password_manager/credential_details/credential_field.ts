@@ -15,9 +15,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordViewPageInteractions} from '../password_manager_proxy.js';
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
-import {getCss as getSharedStyleCss} from '../shared_style_lit.css.js';
+import {getCss as getSharedStyleCss} from '../shared_style.css.js';
 
-import {getCss as getCredentialDetailsCardCss} from './credential_details_card_lit.css.js';
+import {getCss as getCredentialDetailsCardCss} from './credential_details_card.css.js';
 import {getHtml} from './credential_field.html.js';
 
 export interface CredentialFieldElement {

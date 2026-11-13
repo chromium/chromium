@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
                locked"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/password_manager/user_utils_mixin_lit.ts:TrustedVaultUnlockDialogSource) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/password_manager/user_utils_mixin.ts:TrustedVaultUnlockDialogSource) -->
 
 <variants name="UserSyncingType">
   <variant name="" summary="all users."/>

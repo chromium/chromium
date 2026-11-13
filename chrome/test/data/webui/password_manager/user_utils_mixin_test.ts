@@ -4,8 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerActionableError, PasswordManagerImpl, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource, UserUtilMixinLit} from 'chrome://password-manager/password_manager.js';
-import type {UserUtilMixinLitInterface} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerActionableError, PasswordManagerImpl, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource, UserUtilMixin} from 'chrome://password-manager/password_manager.js';
+import type {UserUtilMixinInterface} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,9 +14,9 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-const TestDummyElementBase = UserUtilMixinLit(CrLitElement);
+const TestDummyElementBase = UserUtilMixin(CrLitElement);
 
-interface TestDummyElement extends UserUtilMixinLitInterface {}
+interface TestDummyElement extends UserUtilMixinInterface {}
 
 class TestDummyElement extends TestDummyElementBase {
   static get is() {

@@ -24,7 +24,7 @@ import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {CheckupSubpage, Page, RouteObserverMixinLit, Router} from './router.js';
+import {CheckupSubpage, Page, RouteObserverMixin, Router} from './router.js';
 
 export class ReusedPasswordInfo {
   constructor(credentials: chrome.passwordsPrivate.PasswordUiEntry[]) {
@@ -52,8 +52,8 @@ export interface CheckupDetailsSectionElement {
   };
 }
 
-const CheckupDetailsSectionElementBase = PrefServiceObserverMixinLit(
-    I18nMixinLit(RouteObserverMixinLit(CrLitElement)));
+const CheckupDetailsSectionElementBase =
+    PrefServiceObserverMixinLit(I18nMixinLit(RouteObserverMixin(CrLitElement)));
 
 export class CheckupDetailsSectionElement extends
     CheckupDetailsSectionElementBase {

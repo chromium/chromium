@@ -21,7 +21,7 @@ import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
-import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getCss} from './multi_store_delete_password_dialog.css.js';
 import {getHtml} from './multi_store_delete_password_dialog.html.js';
@@ -36,7 +36,7 @@ export interface MultiStoreDeletePasswordDialogElement {
 }
 
 const MultiStoreDeletePasswordDialogElementBase =
-    UserUtilMixinLit(I18nMixinLit(CrLitElement));
+    UserUtilMixin(I18nMixinLit(CrLitElement));
 
 export class MultiStoreDeletePasswordDialogElement extends
     MultiStoreDeletePasswordDialogElementBase {

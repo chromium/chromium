@@ -106,9 +106,9 @@ build_webui("build") {
     "router.ts",
     "searchable_label.ts",
     "sharing/metrics_utils.ts",
-    "show_password_mixin_lit.ts",
+    "show_password_mixin.ts",
     "sync_browser_proxy.ts",
-    "user_utils_mixin_lit.ts",
+    "user_utils_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
@@ -117,7 +117,7 @@ build_webui("build") {
     "checkup_list_item.css",
     "checkup_section.css",
     "credential_details/backup_password_details_card.css",
-    "credential_details/credential_details_card_lit.css",
+    "credential_details/credential_details_card.css",
     "credential_details/credential_note.css",
     "credential_details/passkey_details_card.css",
     "credential_details/password_details_card.css",
@@ -141,7 +141,7 @@ build_webui("build") {
     "passwords_section.css",
     "prefs/pref_toggle_button.css",
     "settings_section.css",
-    "shared_style_lit.css",
+    "shared_style.css",
     "shared_vars.css",
     "sharing/share_password_confirmation_dialog.css",
     "sharing/share_password_dialog_header.css",

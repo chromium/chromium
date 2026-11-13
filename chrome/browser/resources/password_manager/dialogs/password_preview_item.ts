@@ -15,7 +15,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getCss} from './password_preview_item.css.js';
 import {getHtml} from './password_preview_item.html.js';
@@ -30,7 +30,7 @@ export interface PasswordPreviewItemElement {
 }
 
 const PasswordPreviewItemElementBase =
-    I18nMixinLit(ShowPasswordMixinLit(CrLitElement));
+    I18nMixinLit(ShowPasswordMixin(CrLitElement));
 
 export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
   static get is() {

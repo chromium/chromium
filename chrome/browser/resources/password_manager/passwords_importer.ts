@@ -65,7 +65,7 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getCss} from './passwords_importer.css.js';
 import {getHtml} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
-import {TrustedVaultUnlockDialogSource, UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {TrustedVaultUnlockDialogSource, UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsImporterElement {
   $: {
@@ -116,8 +116,7 @@ export enum DialogState {
   CONFLICTS,
 }
 
-const PasswordsImporterElementBase =
-    UserUtilMixinLit(I18nMixinLit(CrLitElement));
+const PasswordsImporterElementBase = UserUtilMixin(I18nMixinLit(CrLitElement));
 
 export class PasswordsImporterElement extends PasswordsImporterElementBase {
   static get is() {

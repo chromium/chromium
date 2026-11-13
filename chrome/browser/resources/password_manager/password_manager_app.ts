@@ -42,12 +42,12 @@ import {getHtml} from './password_manager_app.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PasswordsSectionElement} from './passwords_section.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router} from './router.js';
+import {Page, RouteObserverMixin, Router} from './router.js';
 import type {SettingsSectionElement} from './settings_section.js';
 import type {PasswordManagerSideBarElement} from './side_bar.js';
 import type {PasswordManagerToolbarElement} from './toolbar.js';
-import type {ShowTrustedVaultErrorDialogEvent} from './user_utils_mixin_lit.js';
-import {TrustedVaultUnlockDialogSource, UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import type {ShowTrustedVaultErrorDialogEvent} from './user_utils_mixin.js';
+import {TrustedVaultUnlockDialogSource, UserUtilMixin} from './user_utils_mixin.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -82,8 +82,8 @@ export interface PasswordManagerAppElement {
   };
 }
 
-const PasswordManagerAppElementBase = UserUtilMixinLit(
-    FindShortcutMixinLit(I18nMixinLit(RouteObserverMixinLit(CrLitElement))));
+const PasswordManagerAppElementBase = UserUtilMixin(
+    FindShortcutMixinLit(I18nMixinLit(RouteObserverMixin(CrLitElement))));
 
 export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   static get is() {

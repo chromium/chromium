@@ -16,7 +16,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getCss} from './side_bar.css.js';
 import {getHtml} from './side_bar.html.js';
 
@@ -51,7 +51,7 @@ export interface PasswordManagerSideBarElement {
   };
 }
 
-const PasswordManagerSideBarElementBase = RouteObserverMixinLit(CrLitElement);
+const PasswordManagerSideBarElementBase = RouteObserverMixin(CrLitElement);
 
 export class PasswordManagerSideBarElement extends
     PasswordManagerSideBarElementBase {

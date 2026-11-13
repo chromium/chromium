@@ -210,10 +210,10 @@ let routerInstance: Router|null = null;
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const RouteObserverMixinLit = dedupingMixin(
+export const RouteObserverMixin = dedupingMixin(
     <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
-      class RouteObserverMixinLit extends superClass {
+      class RouteObserverMixin extends superClass {
         override connectedCallback() {
           super.connectedCallback();
 
@@ -235,7 +235,7 @@ export const RouteObserverMixinLit = dedupingMixin(
         }
       }
 
-      return RouteObserverMixinLit;
+      return RouteObserverMixin;
     });
 
 export interface RouteObserverMixinInterface {

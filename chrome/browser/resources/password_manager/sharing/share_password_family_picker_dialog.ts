@@ -12,7 +12,7 @@ import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
 import {getCss} from './share_password_family_picker_dialog.css.js';
@@ -31,7 +31,7 @@ export interface SharePasswordFamilyPickerDialogElement {
 }
 
 const SharePasswordFamilyPickerDialogElementBase =
-    UserUtilMixinLit(I18nMixinLit(CrLitElement));
+    UserUtilMixin(I18nMixinLit(CrLitElement));
 
 export class SharePasswordFamilyPickerDialogElement extends
     SharePasswordFamilyPickerDialogElementBase {

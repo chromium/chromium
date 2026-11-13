@@ -17,7 +17,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {MoveToAccountStoreTrigger, recordMoveToAccountStoreAccepted, recordMoveToAccountStoreOffered} from '../sharing/metrics_utils.js';
-import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getCss} from './move_passwords_dialog.css.js';
 import {getHtml} from './move_passwords_dialog.html.js';
@@ -32,7 +32,7 @@ export interface MovePasswordsDialogElement {
 }
 
 const MovePasswordsDialogElementBase =
-    WebUiListenerMixinLit(UserUtilMixinLit(I18nMixinLit(CrLitElement)));
+    WebUiListenerMixinLit(UserUtilMixin(I18nMixinLit(CrLitElement)));
 
 export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
   static get is() {

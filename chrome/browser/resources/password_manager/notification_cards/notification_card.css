@@ -7,8 +7,8 @@
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=../shared_style_lit.css.js
- * #include=shared-style-lit cr-shared-style-lit cr-icons-lit
+ * #import=../shared_style.css.js
+ * #include=shared-style cr-shared-style-lit cr-icons-lit
  * #css_wrapper_metadata_end */
 
 :host {

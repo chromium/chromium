@@ -11,11 +11,11 @@ type Constructor<T> = new (...args: any[]) => T;
 /**
  * This mixin bundles functionality required to show a password to the user.
  */
-export const ShowPasswordMixinLit = dedupingMixin(
+export const ShowPasswordMixin = dedupingMixin(
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<ShowPasswordMixinLitInterface> => {
-      class ShowPasswordMixinLit extends superClass implements
-          ShowPasswordMixinLitInterface {
+    Constructor<ShowPasswordMixinInterface> => {
+      class ShowPasswordMixin extends superClass implements
+          ShowPasswordMixinInterface {
         static get properties() {
           return {
             isPasswordVisible: {type: Boolean},
@@ -47,11 +47,11 @@ export const ShowPasswordMixinLit = dedupingMixin(
         }
       }
 
-      return ShowPasswordMixinLit;
+      return ShowPasswordMixin;
     });
 
 
-export interface ShowPasswordMixinLitInterface {
+export interface ShowPasswordMixinInterface {
   isPasswordVisible: boolean;
 
   /**

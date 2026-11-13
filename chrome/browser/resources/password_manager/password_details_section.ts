@@ -15,8 +15,8 @@ import {getCss} from './password_details_section.css.js';
 import {getHtml} from './password_details_section.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router} from './router.js';
-import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {Page, RouteObserverMixin, Router} from './router.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordDetailsSectionElement {
   $: {
@@ -26,7 +26,7 @@ export interface PasswordDetailsSectionElement {
 }
 
 const PasswordDetailsSectionElementBase =
-    UserUtilMixinLit(RouteObserverMixinLit(CrLitElement));
+    UserUtilMixin(RouteObserverMixin(CrLitElement));
 
 export class PasswordDetailsSectionElement extends
     PasswordDetailsSectionElementBase {

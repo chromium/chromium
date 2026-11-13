@@ -9,7 +9,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
-import {TrustedVaultUnlockDialogSource} from '../user_utils_mixin_lit.js';
+import {TrustedVaultUnlockDialogSource} from '../user_utils_mixin.js';
 
 import {getCss} from './trusted_vault_error_dialog.css.js';
 import {getHtml} from './trusted_vault_error_dialog.html.js';

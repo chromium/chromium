@@ -13,7 +13,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getCss} from './toolbar.css.js';
 import {getHtml} from './toolbar.html.js';
 
@@ -24,7 +24,7 @@ export interface PasswordManagerToolbarElement {
 }
 
 const PasswordManagerToolbarElementBase =
-    I18nMixinLit(RouteObserverMixinLit(CrLitElement));
+    I18nMixinLit(RouteObserverMixin(CrLitElement));
 
 export class PasswordManagerToolbarElement extends
     PasswordManagerToolbarElementBase {

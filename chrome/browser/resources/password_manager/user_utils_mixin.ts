@@ -49,11 +49,11 @@ const WebUiListenerMixinLitBase =
  * This mixin bundles functionality related to syncing, sign in status and
  * account storage.
  */
-export const UserUtilMixinLit = dedupingMixin(
+export const UserUtilMixin = dedupingMixin(
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<UserUtilMixinLitInterface> => {
-      class UserUtilMixinLit extends WebUiListenerMixinLitBase
-      (superClass) implements UserUtilMixinLitInterface {
+    Constructor<UserUtilMixinInterface> => {
+      class UserUtilMixin extends WebUiListenerMixinLitBase
+      (superClass) implements UserUtilMixinInterface {
         static get properties() {
           return {
             /**
@@ -193,11 +193,11 @@ export const UserUtilMixinLit = dedupingMixin(
         }
       }
 
-      return UserUtilMixinLit;
+      return UserUtilMixin;
     });
 
 
-export interface UserUtilMixinLitInterface {
+export interface UserUtilMixinInterface {
   isAccountStoreUser: boolean;
   isSyncingPasswords: boolean;
   actionableError: PasswordManagerActionableError|null;

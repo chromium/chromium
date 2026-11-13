@@ -37,11 +37,11 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getCss} from './settings_section.css.js';
 import {getHtml} from './settings_section.html.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
-import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
@@ -59,8 +59,8 @@ const PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID =
     'PasswordManagerUI::kAddShortcutCustomEventId';
 
 const SettingsSectionElementBase =
-    HelpBubbleMixinLit(RouteObserverMixinLit(PrefServiceObserverMixinLit(
-        UserUtilMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))))));
+    HelpBubbleMixinLit(RouteObserverMixin(PrefServiceObserverMixinLit(
+        UserUtilMixin(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {

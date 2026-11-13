@@ -20,8 +20,8 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {DomainInfo} from '../password_manager.mojom-webui.js';
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
-import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
-import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getCss} from './add_password_dialog.css.js';
 import {getHtml} from './add_password_dialog.html.js';
@@ -107,7 +107,7 @@ export const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
 export const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
 
 const AddPasswordDialogElementBase =
-    UserUtilMixinLit(ShowPasswordMixinLit(I18nMixinLit(CrLitElement)));
+    UserUtilMixin(ShowPasswordMixin(I18nMixinLit(CrLitElement)));
 
 function getUsernamesByOrigin(
     passwords: chrome.passwordsPrivate.PasswordUiEntry[]):

@@ -31,8 +31,8 @@ import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_ap
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {MoveToAccountStoreTrigger, PasswordSharingActions, recordMoveToAccountStoreAccepted, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
-import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
-import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import type {CredentialFieldElement} from './credential_field.js';
 import type {CredentialNoteElement} from './credential_note.js';
@@ -70,7 +70,7 @@ export interface PasswordDetailsCardElement {
 
 const PasswordDetailsCardElementBase =
     PrefServiceObserverMixinLit(HelpBubbleMixinLit(
-        UserUtilMixinLit(ShowPasswordMixinLit(I18nMixinLit(CrLitElement)))));
+        UserUtilMixin(ShowPasswordMixin(I18nMixinLit(CrLitElement)))));
 
 export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get is() {

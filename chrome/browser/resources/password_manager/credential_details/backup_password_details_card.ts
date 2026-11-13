@@ -18,7 +18,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ValueCopiedEvent} from '../password_manager_app.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
-import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getCss} from './backup_password_details_card.css.js';
 import {getHtml} from './backup_password_details_card.html.js';
@@ -47,7 +47,7 @@ export interface BackupPasswordDetailsCardElement {
 }
 
 const BackupPasswordDetailsCardElementBase =
-    ShowPasswordMixinLit(I18nMixinLit(CrLitElement));
+    ShowPasswordMixin(I18nMixinLit(CrLitElement));
 
 export class BackupPasswordDetailsCardElement extends
     BackupPasswordDetailsCardElementBase {

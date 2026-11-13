@@ -14,7 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './password_change_details.css.js';
 import {getHtml} from './password_change_details.html.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixinLit, Router} from './router.js';
+import {Page, RouteObserverMixin, Router} from './router.js';
 
 export interface PasswordChangeDetailsElement {
   $: {
@@ -23,7 +23,7 @@ export interface PasswordChangeDetailsElement {
 }
 
 const PasswordChangeDetailsElementBase =
-    I18nMixinLit(RouteObserverMixinLit(CrLitElement));
+    I18nMixinLit(RouteObserverMixin(CrLitElement));
 
 export class PasswordChangeDetailsElement extends
     PasswordChangeDetailsElementBase {

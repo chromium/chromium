@@ -5,12 +5,12 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {Route} from 'chrome://password-manager/password_manager.js';
-import {CheckupSubpage, Page, RouteObserverMixinLit, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, RouteObserverMixin, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-const TestDummyElementBase = RouteObserverMixinLit(CrLitElement);
+const TestDummyElementBase = RouteObserverMixin(CrLitElement);
 class TestDummyElement extends TestDummyElementBase {
   static get is() {
     return 'test-dummy';
