@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -78,6 +79,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -311,7 +313,8 @@ std::vector<searchbox::mojom::TabInfoPtr>
 ContextualSearchboxHandler::GetRecentTabInfos(
     BrowserWindowInterface* browser_window_interface,
     std::optional<int> max_tab_suggestions,
-    const base::flat_set<SessionID>& always_include_tab_ids) {
+    const base::flat_set<SessionID>& always_include_tab_ids,
+    bool exclude_page_context_ineligible_tabs) {
   if (!browser_window_interface) {
     return {};
   }
@@ -335,20 +338,34 @@ ContextualSearchboxHandler::GetRecentTabInfos(
         IsAimZeroStateURL(url)) {
       continue;
     }
-    bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
-                            url.SchemeIs(content::kChromeUIUntrustedScheme) ||
-                            url.SchemeIs("chrome-extension");
     const bool is_always_included =
         !always_include_tab_ids.empty() && tab->GetContents() &&
         always_include_tab_ids.contains(
             sessions::SessionTabHelper::IdForTab(tab->GetContents()));
-
-    if (!is_internal_page || is_always_included) {
-      tab_times.push_back({
-          .tab = tab,
-          .time = GetTabLastActiveTimeTicks(tab),
-      });
+    if (!is_always_included) {
+      const bool is_internal_page =
+          url.SchemeIs(content::kChromeUIScheme) ||
+          url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+          url.SchemeIs("chrome-extension");
+      if (is_internal_page) {
+        continue;
+      }
+      if (exclude_page_context_ineligible_tabs) {
+        auto* eligibility_helper =
+            tabs::PageContextEligibilityHelper::From(tab);
+        if (eligibility_helper &&
+            eligibility_helper->IsPageContextEligible() ==
+                optimization_guide::PageContextEligibilityStatus::
+                    kNotEligible) {
+          continue;
+        }
+      }
     }
+
+    tab_times.push_back({
+        .tab = tab,
+        .time = GetTabLastActiveTimeTicks(tab),
+    });
   }
 
   // Sort the tabs by last active time, prioritizing the active tab.

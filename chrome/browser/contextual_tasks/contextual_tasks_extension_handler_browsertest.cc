@@ -28,6 +28,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -55,6 +57,10 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/permissions/request_type.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -70,6 +76,8 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -8411,6 +8419,412 @@ IN_PROC_BROWSER_TEST_F(
   handler_->ResetSmartTabSharing(reset_future.GetCallback());
   EXPECT_FALSE(reset_future.Get());
   reset_run_loop.Run();
+}
+
+namespace {
+
+bool IsMetaTagRestricted(
+    const std::vector<optimization_guide::FrameMetadata>& metadata) {
+  for (const auto& frame : metadata) {
+    for (const auto& tag : frame.meta_tags) {
+      if (tag.name == "sensitivity" && tag.content == "restricted") {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool TestIsPageContextEligible(
+    const std::string& /*host*/,
+    const std::string& path,
+    const std::vector<optimization_guide::FrameMetadata>& metadata) {
+  if (path.starts_with("/ineligible")) {
+    return false;
+  }
+  if (path.starts_with("/conditional")) {
+    return !IsMetaTagRestricted(metadata);
+  }
+  return true;
+}
+
+bool TestIsPageContextEligibleWithAccount(
+    const std::string& host,
+    const std::string& path,
+    const std::string& /*account*/,
+    const std::vector<optimization_guide::FrameMetadata>& metadata) {
+  return TestIsPageContextEligible(host, path, metadata);
+}
+
+bool TestShouldReextractPageContext(
+    const std::string& /*host*/,
+    const std::string& /*path*/,
+    const std::vector<std::string>& /*updated_meta_tags*/) {
+  return false;
+}
+
+optimization_guide::PageEligibilityResult TestCheckPageEligibility(
+    const std::vector<optimization_guide::FrameUrl>& frames) {
+  for (const auto& frame : frames) {
+    if (frame.path.starts_with("/ineligible")) {
+      return optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kIneligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
+    }
+  }
+  for (const auto& frame : frames) {
+    if (frame.path.starts_with("/conditional")) {
+      static constexpr std::string_view kConditionalMetaTagNames[] = {
+          "sensitivity"};
+      return optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kConditionalOnMetaTags,
+          .meta_tag_names_affecting_eligibility = {
+              .data = kConditionalMetaTagNames,
+              .size = std::size(kConditionalMetaTagNames)}};
+    }
+  }
+  return optimization_guide::PageEligibilityResult{
+      .status = optimization_guide::PageEligibility::kEligible,
+      .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
+}
+
+constexpr optimization_guide::PageContextEligibilityAPI kTestEligibilityApi = {
+    .IsPageContextEligible = &TestIsPageContextEligible,
+    .IsPageContextEligibleWithAccount = &TestIsPageContextEligibleWithAccount,
+    .ShouldReextractPageContext = &TestShouldReextractPageContext,
+    .GetMetaTagNamesAffectingEligibility = nullptr,
+    .CheckPageEligibility = &TestCheckPageEligibility,
+};
+
+}  // namespace
+
+class ContextualTasksExtensionHandlerPageEligibilityBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ContextualTasksExtensionHandlerBrowserTest::
+        SetUpInProcessBrowserTestFixture();
+    optimization_guide::PageContextEligibility::SetForTesting(
+        &test_eligibility_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
+    ContextualTasksExtensionHandlerBrowserTest::
+        TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ContextualTasksExtensionHandlerPageEligibilityBrowserTest::
+            HandleTestRequest,
+        base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ContextualTasksExtensionHandlerBrowserTest::SetUpOnMainThread();
+  }
+
+  std::vector<searchbox::mojom::TabInfoPtr> FetchRecentTabs() {
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+        future.GetCallback());
+    return future.Take();
+  }
+
+  void WaitForTabEligibility(
+      tabs::TabInterface* tab,
+      optimization_guide::PageContextEligibilityStatus expected) {
+    auto* helper = tabs::PageContextEligibilityHelper::From(tab);
+    ASSERT_NE(helper, nullptr);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return helper->IsPageContextEligible() == expected; }));
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleTestRequest(
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    if (request.relative_url.starts_with("/ineligible")) {
+      response->set_content(
+          "<html><head><title>Ineligible</title></head>"
+          "<body>Ineligible page</body></html>");
+      return response;
+    }
+    if (request.relative_url == "/conditional-restricted") {
+      response->set_content(
+          "<html><head><title>Restricted</title>"
+          "<meta name=\"sensitivity\" content=\"restricted\"></head>"
+          "<body>Restricted page</body></html>");
+      return response;
+    }
+    if (request.relative_url == "/conditional-public") {
+      response->set_content(
+          "<html><head><title>Public</title>"
+          "<meta name=\"sensitivity\" content=\"public\"></head>"
+          "<body>Public page</body></html>");
+      return response;
+    }
+    if (request.relative_url.starts_with("/eligible")) {
+      response->set_content(
+          "<html><head><title>Eligible</title></head>"
+          "<body>Eligible page</body></html>");
+      return response;
+    }
+    return nullptr;
+  }
+
+  optimization_guide::PageContextEligibility test_eligibility_{
+      &kTestEligibilityApi};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
+    GetRecentTabs_ExcludesUrlIneligibleActiveAndBackgroundTabs) {
+  const GURL background_ineligible_url =
+      embedded_test_server()->GetURL("/ineligible-bg");
+  const GURL eligible_url_1 = embedded_test_server()->GetURL("/eligible-1");
+  const GURL eligible_url_2 = embedded_test_server()->GetURL("/eligible-2");
+  const GURL active_ineligible_url =
+      embedded_test_server()->GetURL("/ineligible-active");
+
+  // Open an ineligible tab in the background, two eligible tabs, and a final
+  // ineligible foreground tab so both active and background ineligible tabs are
+  // present simultaneously.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), background_ineligible_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), eligible_url_1,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), eligible_url_2,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), active_ineligible_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* tab_list = TabListInterface::From(browser());
+  ASSERT_EQ(tab_list->GetTabCount(), 5);
+  tabs::TabInterface* bg_ineligible_tab = tab_list->GetTab(1);
+  tabs::TabInterface* eligible_tab_1 = tab_list->GetTab(2);
+  tabs::TabInterface* eligible_tab_2 = tab_list->GetTab(3);
+  tabs::TabInterface* fg_ineligible_tab = tab_list->GetTab(4);
+
+  WaitForTabEligibility(
+      bg_ineligible_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  WaitForTabEligibility(
+      eligible_tab_1,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  WaitForTabEligibility(
+      eligible_tab_2,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  WaitForTabEligibility(
+      fg_ineligible_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs = FetchRecentTabs();
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->url, eligible_url_2);
+  EXPECT_TRUE(tabs[0]->recent_tab);
+  EXPECT_EQ(tabs[1]->url, eligible_url_1);
+  EXPECT_FALSE(tabs[1]->recent_tab);
+
+  // Verify eligibility and `FetchRecentTabs()` did not pull
+  // AnnotatedPageContent.
+  auto* extraction_service =
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(browser()->GetProfile());
+  ASSERT_NE(extraction_service, nullptr);
+  EXPECT_FALSE(extraction_service
+                   ->GetServerUploadEligibilityForPage(
+                       bg_ineligible_tab->GetContents()->GetPrimaryPage())
+                   .has_value());
+  EXPECT_FALSE(extraction_service
+                   ->GetServerUploadEligibilityForPage(
+                       fg_ineligible_tab->GetContents()->GetPrimaryPage())
+                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
+    GetRecentTabs_ExcludesMetaTagIneligibleTabs) {
+  const GURL restricted_url =
+      embedded_test_server()->GetURL("/conditional-restricted");
+  const GURL public_url = embedded_test_server()->GetURL("/conditional-public");
+
+  // Open a `<meta>`-tag-restricted page directly in a background tab to verify
+  // background load resolves initial `<meta>` eligibility without pulling APC.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), restricted_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  auto* tab_list = TabListInterface::From(browser());
+  tabs::TabInterface* restricted_tab = tab_list->GetTab(1);
+  WaitForTabEligibility(
+      restricted_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  EXPECT_TRUE(FetchRecentTabs().empty());
+
+  // Verify `<meta>` tag eligibility and `FetchRecentTabs()` did not trigger
+  // AnnotatedPageContent extraction.
+  auto* extraction_service =
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(browser()->GetProfile());
+  ASSERT_NE(extraction_service, nullptr);
+  EXPECT_FALSE(extraction_service
+                   ->GetServerUploadEligibilityForPage(
+                       restricted_tab->GetContents()->GetPrimaryPage())
+                   .has_value());
+
+  // Open a conditionally-eligible foreground tab whose `<meta>` tag permits
+  // sharing.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), public_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* conditional_tab = tab_list->GetActiveTab();
+  WaitForTabEligibility(
+      conditional_tab,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs = FetchRecentTabs();
+  ASSERT_EQ(tabs.size(), 1u);
+  EXPECT_EQ(tabs[0]->url, public_url);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
+    GetRecentTabs_IncludesAttachedIneligibleTabUntilDeselected) {
+  const GURL ineligible_url = embedded_test_server()->GetURL("/ineligible-doc");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), ineligible_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  tabs::TabInterface* ineligible_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(ineligible_tab, nullptr);
+  WaitForTabEligibility(
+      ineligible_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  const int32_t tab_handle_id = ineligible_tab->GetHandle().raw_value();
+  const SessionID tab_session_id =
+      sessions::SessionTabHelper::IdForTab(ineligible_tab->GetContents());
+  ASSERT_TRUE(tab_session_id.is_valid());
+
+  // 1. Before attachment, the ineligible tab is excluded.
+  EXPECT_TRUE(FetchRecentTabs().empty());
+
+  // 2. When already attached to the session, `GetRecentTabs()` keeps the tab in
+  // the list so the user can unselect it.
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(9999);
+  mock_session_handle_->SetSubmittedContextTokens({token});
+  {
+    base::RunLoop notify_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _, _))
+        .WillOnce(
+            [&notify_loop](std::vector<searchbox::mojom::TabInfoPtr> /*tabs*/,
+                           const std::vector<int32_t>& /*submitted_tab_ids*/,
+                           mojom::SmartTabSharingStatePtr /*sts*/) {
+              notify_loop.Quit();
+            });
+    mock_session_handle_->SetPersistedTabs({{tab_session_id, {token, req_id}}});
+    notify_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  {
+    std::vector<searchbox::mojom::TabInfoPtr> tabs = FetchRecentTabs();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, tab_handle_id);
+  }
+
+  // 3. Unselecting the tab removes it from the session and excludes it from
+  // `GetRecentTabs()` again.
+  {
+    base::RunLoop deselect_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _, _))
+        .WillOnce(
+            [&deselect_loop](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                             const std::vector<int32_t>& submitted_tab_ids,
+                             mojom::SmartTabSharingStatePtr /*sts*/) {
+              EXPECT_TRUE(tabs.empty());
+              EXPECT_TRUE(submitted_tab_ids.empty());
+              deselect_loop.Quit();
+            });
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->DeleteTabContext(
+        tab_handle_id);
+    deselect_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  EXPECT_TRUE(FetchRecentTabs().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
+    GetRecentTabs_IncludesUnknownTabsAndRespectsExcludeFlag) {
+  const GURL ineligible_url = embedded_test_server()->GetURL("/ineligible-doc");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), ineligible_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* tab_list = TabListInterface::From(browser());
+  tabs::TabInterface* ineligible_tab = tab_list->GetActiveTab();
+  ASSERT_NE(ineligible_tab, nullptr);
+  WaitForTabEligibility(
+      ineligible_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  // 1. When `exclude_page_context_ineligible_tabs` is `false`, `kNotEligible`
+  // tabs remain included.
+  EXPECT_TRUE(FetchRecentTabs().empty());
+  std::vector<searchbox::mojom::TabInfoPtr> unfiltered_tabs =
+      ContextualSearchboxHandler::GetRecentTabInfos(
+          browser(), /*max_tab_suggestions=*/std::nullopt,
+          /*always_include_tab_ids=*/{},
+          /*exclude_page_context_ineligible_tabs=*/false);
+  ASSERT_EQ(unfiltered_tabs.size(), 1u);
+  EXPECT_EQ(unfiltered_tabs[0]->url, ineligible_url);
+
+  // 2. When `exclude_page_context_ineligible_tabs` is `true`, a tab whose
+  // eligibility is still `kUnknown` remains included.
+  const GURL unknown_url = embedded_test_server()->GetURL("/eligible-unknown");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), unknown_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_EQ(tab_list->GetTabCount(), 3);
+  tabs::TabInterface* unknown_tab = tab_list->GetTab(2);
+  ASSERT_NE(unknown_tab, nullptr);
+  WaitForTabEligibility(
+      unknown_tab, optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  auto* unknown_helper = tabs::PageContextEligibilityHelper::From(unknown_tab);
+  ASSERT_NE(unknown_helper, nullptr);
+  // Simulate a new primary page commit on the background tab so the helper
+  // resets its cached status to `kUnknown` while async eligibility loading is
+  // still pending on the task runner.
+  static_cast<content::WebContentsObserver*>(unknown_helper)
+      ->PrimaryPageChanged(unknown_tab->GetContents()->GetPrimaryPage());
+  EXPECT_EQ(unknown_helper->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs = FetchRecentTabs();
+  ASSERT_EQ(tabs.size(), 1u);
+  EXPECT_EQ(tabs[0]->url, unknown_url);
 }
 
 }  // namespace contextual_tasks

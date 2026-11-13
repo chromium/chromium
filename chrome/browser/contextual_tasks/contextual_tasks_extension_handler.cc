@@ -486,7 +486,8 @@ void ContextualTasksExtensionHandler::GetRecentTabs(
   }
   std::move(callback).Run(ContextualSearchboxHandler::GetRecentTabInfos(
       GetBrowserWindowInterface(), /*max_tab_suggestions=*/std::nullopt,
-      always_include_tab_ids));
+      always_include_tab_ids,
+      /*exclude_page_context_ineligible_tabs=*/true));
 }
 void ContextualTasksExtensionHandler::GetTabPreview(
     int32_t tab_id,

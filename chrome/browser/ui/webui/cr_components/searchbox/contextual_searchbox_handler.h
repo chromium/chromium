@@ -193,13 +193,17 @@ class ContextualSearchboxHandler
 
   // Returns recent tabs from the tab list associated with
   // `browser_window_interface` sorted by recency. If `max_tab_suggestions` is
-  // set, the result is capped to that number of tabs. Tabs whose `SessionID` is
-  // in `always_include_tab_ids` are included even if they are internal pages
-  // (e.g. an NTP tab attached via Lens Overlay).
+  // set, the result is capped to that number of tabs. If
+  // `exclude_page_context_ineligible_tabs` is true, tabs known to be
+  // page-context-ineligible (`kNotEligible`) are excluded. Tabs whose
+  // `SessionID` is in `always_include_tab_ids` are included even if they are
+  // internal or page-context-ineligible pages (e.g. an NTP tab attached via
+  // Lens Overlay).
   static std::vector<searchbox::mojom::TabInfoPtr> GetRecentTabInfos(
       BrowserWindowInterface* browser_window_interface,
       std::optional<int> max_tab_suggestions = std::nullopt,
-      const base::flat_set<SessionID>& always_include_tab_ids = {});
+      const base::flat_set<SessionID>& always_include_tab_ids = {},
+      bool exclude_page_context_ineligible_tabs = false);
 
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
