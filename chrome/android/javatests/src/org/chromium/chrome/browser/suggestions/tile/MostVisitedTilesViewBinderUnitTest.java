@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.CONTAINER_WRAPS_TILES;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 
@@ -49,6 +51,7 @@ public final class MostVisitedTilesViewBinderUnitTest {
     private TileView mThirdChildView;
 
     private PropertyModel mModel;
+    private ViewHolder mViewHolder;
 
     @BeforeClass
     public static void setupSuite() {
@@ -71,13 +74,18 @@ public final class MostVisitedTilesViewBinderUnitTest {
 
                     mMvTilesContainerLayout = new LinearLayout(activity);
                     mMvTilesContainerLayout.addView(mMvTilesLayout);
-                    activity.setContentView(mMvTilesContainerLayout);
+                    // Mirror the beside-MVT row, where the container fills the leftover width.
+                    LinearLayout row = new LinearLayout(activity);
+                    row.addView(
+                            mMvTilesContainerLayout,
+                            new LinearLayout.LayoutParams(
+                                    /* width= */ 0, LayoutParams.WRAP_CONTENT, /* weight= */ 1f));
+                    activity.setContentView(row);
 
                     mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
+                    mViewHolder = new ViewHolder(mMvTilesContainerLayout, mMvTilesLayout);
                     PropertyModelChangeProcessor.create(
-                            mModel,
-                            new ViewHolder(mMvTilesContainerLayout, mMvTilesLayout),
-                            MostVisitedTilesViewBinder::bind);
+                            mModel, mViewHolder, MostVisitedTilesViewBinder::bind);
                 });
     }
 
@@ -112,5 +120,42 @@ public final class MostVisitedTilesViewBinderUnitTest {
         Assert.assertEquals(11, params.leftMargin);
         params = (MarginLayoutParams) mThirdChildView.getLayoutParams();
         Assert.assertEquals(11, params.rightMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testContainerWrapsTiles_True() {
+        mModel.set(CONTAINER_WRAPS_TILES, true);
+
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        Assert.assertEquals(LayoutParams.WRAP_CONTENT, params.width);
+        Assert.assertEquals(0f, params.weight, 0f);
+
+        // The tiles keep the fixed tablet edge padding even with plenty of room to spare.
+        mMvTilesLayout.updateEdgeMarginLff(/* totalWidth= */ 10000);
+        int edgePaddingTablet =
+                sActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
+        MarginLayoutParams firstChildParams =
+                (MarginLayoutParams) mFirstChildView.getLayoutParams();
+        Assert.assertEquals(edgePaddingTablet, firstChildParams.getMarginStart());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testContainerWrapsTiles_False() {
+        // Bind directly, since setting the default false value doesn't notify the binder.
+        mModel.set(CONTAINER_WRAPS_TILES, false);
+        MostVisitedTilesViewBinder.bind(mModel, mViewHolder, CONTAINER_WRAPS_TILES);
+
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        Assert.assertEquals(0, params.width);
+        Assert.assertEquals(1f, params.weight, 0f);
     }
 }
