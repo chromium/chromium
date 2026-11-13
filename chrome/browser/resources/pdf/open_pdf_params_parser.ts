@@ -12,6 +12,8 @@ export interface OpenPdfParams {
   boundingBox?: Rect;
   pageIndex?: number;
   position?: Point;
+  searchTerms?: string[];
+  textFragments?: string[];
   url?: string;
   view?: FittingType;
   viewPosition?: number;
@@ -246,23 +248,80 @@ export class OpenPdfParamsParser {
     return this.parseViewParam_(paramValue, pageNumber);
   }
 
+  /** Parse search and phrase open PDF parameters into search terms. */
+  private parseSearchParam_(
+      searchValue: string, phraseValue: string|null): string[] {
+    const stripped = searchValue.replaceAll('"', '').trim();
+    if (!stripped) {
+      return [];
+    }
+    const terms = stripped.split(/\s+/);
+    return phraseValue?.toLowerCase() === 'true' ? [terms.join(' ')] : terms;
+  }
+
   /** Parse the parameters encoded in the fragment of a URL. */
   private parseUrlParams_(url: string): URLSearchParams {
     const hash = new URL(url).hash;
-    const params = new URLSearchParams(hash.substring(1));
+    const rawParams = hash.substring(1).split(FRAGMENT_DIRECTIVE_DELIMITER)[0];
+    assert(rawParams !== undefined);
+    const params = new URLSearchParams(rawParams);
 
     // Handle the case of http://foo.com/bar#NAMEDDEST. This is not
     // explicitly mentioned except by example in the Adobe
     // "PDF Open Parameters" document.
     if (Array.from(params).length === 1) {
       const key = Array.from(params.keys())[0]!;
-      if (params.get(key) === '') {
+      // URLSearchParams maps both #NAMEDDEST and #search= to '', so check '='
+      // to avoid rewriting empty key=value params like #search= into nameddest.
+      if (!rawParams.includes('=')) {
         params.append('nameddest', key);
         params.delete(key);
       }
     }
 
     return params;
+  }
+
+  /**
+   * Fetch text fragment directives that appear in the PDF URL if any.
+   *
+   * @param url that needs to be parsed.
+   * @return The text fragment directives or an empty array if they do not
+   *     exist.
+   */
+  private parseTextFragments_(url: string): string[] {
+    // The hash of the URL object decodes the escaped characters in our
+    // fragment. So in order to keep characters such as `,` or `-` which could
+    // be part of the prefix or suffix, the fragment of the URL needs to be
+    // fetched directly from the `url` string instead of using the URL
+    // interface.
+    const hashSplit = url.split('#');
+    if (hashSplit.length !== 2) {
+      return [];
+    }
+    const hash = hashSplit[1];
+    assert(hash !== undefined);
+
+    // Handle the case of text directives included in the URL.
+    const fragmentDirectiveSplit = hash.split(FRAGMENT_DIRECTIVE_DELIMITER);
+    if (fragmentDirectiveSplit.length !== 2) {
+      return [];
+    }
+    const fragmentDirective = fragmentDirectiveSplit[1];
+    assert(fragmentDirective !== undefined);
+
+    // Loop through the directive split at character `&` in case of multiple
+    // text directives. This cannot be done with URLSearchParams since the `get`
+    // and `getAll` functions decode the parameter values which can result in a
+    // broken text fragment parse.
+    const textFragmentDirectives: string[] = [];
+    for (const param of fragmentDirective.split('&')) {
+      const [key, value] = param.split('=');
+      if (key === 'text' && value) {
+        textFragmentDirectives.push(value);
+      }
+    }
+    return textFragmentDirectives;
   }
 
   /** Store the number of pages. */
@@ -309,48 +368,6 @@ export class OpenPdfParamsParser {
   }
 
   /**
-   * Fetch text fragment directives that appear in the PDF URL if any.
-   *
-   * @param url that needs to be parsed.
-   * @return The text fragment directives or an empty array if they do not
-   *     exist.
-   */
-  getTextFragments(url: string): string[] {
-    // The hash of the URL object decodes the escaped characters in our
-    // fragment. So in order to keep characters such as `,` or `-` which could
-    // be part of the prefix or suffix, the fragment of the URL needs to be
-    // fetched directly from the `url` string instead of using the URL
-    // interface.
-    const hashSplit = url.split('#');
-    if (hashSplit.length !== 2) {
-      return [];
-    }
-    const hash = hashSplit[1];
-    assert(hash !== undefined);
-
-    // Handle the case of text directives included in the URL.
-    const fragmentDirectiveSplit = hash.split(FRAGMENT_DIRECTIVE_DELIMITER);
-    if (fragmentDirectiveSplit.length !== 2) {
-      return [];
-    }
-    const fragmentDirective = fragmentDirectiveSplit[1];
-    assert(fragmentDirective !== undefined);
-
-    // Loop through the directive split at character `&` in case of multiple
-    // text directives. This cannot be done with URLSearchParams since the `get`
-    // and `getAll` functions decode the parameter values which can result in a
-    // broken text fragment parse.
-    const textFragmentDirectives: string[] = [];
-    for (const param of fragmentDirective.split('&')) {
-      const [key, value] = param.split('=');
-      if (key === 'text' && value) {
-        textFragmentDirectives.push(value);
-      }
-    }
-    return textFragmentDirectives;
-  }
-
-  /**
    * Parse PDF url parameters. These parameters are mentioned in the url
    * and specify actions to be performed when opening pdf files.
    * See http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/
@@ -386,6 +403,20 @@ export class OpenPdfParamsParser {
 
     if (urlParams.has('zoom')) {
       Object.assign(params, this.parseZoomParam_(urlParams.get('zoom')!));
+    }
+
+    const textFragments = this.parseTextFragments_(url);
+    if (textFragments.length > 0) {
+      params.textFragments = textFragments;
+    } else {
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        const searchTerms =
+            this.parseSearchParam_(searchParam, urlParams.get('phrase'));
+        if (searchTerms.length > 0) {
+          params.searchTerms = searchTerms;
+        }
+      }
     }
 
     if (params.pageIndex === undefined && urlParams.has('nameddest')) {
