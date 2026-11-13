@@ -513,6 +513,72 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, NoPageActivation) {
 }
 
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
+       NoSpeculativeActivationForNonHttpOrHttpsNavigationWithAdTagging) {
+  base::test::ScopedFeatureList scoped_feature(kAdTagging);
+  CreateSafeBrowsingDatabaseManager();
+
+  // Exercise WebUI (including embedder schemes like `chrome-search://`),
+  // extension, and file URLs via browser-initiated navigations (renderer
+  // navigations to privileged schemes are rewritten by `FilterURL()`).
+  const GURL non_http_or_https_urls[] = {
+      GURL("chrome://test"),
+      GURL("chrome-untrusted://test"),
+      GURL("devtools://devtools"),
+      GURL("chrome-search://local-ntp"),
+      GURL("chrome-extension://abcdefghijklmnopabcdefghijklmnop/ntp.html"),
+      GURL("file:///var/www/index.html"),
+  };
+  for (const GURL& url : non_http_or_https_urls) {
+    SCOPED_TRACE(url);
+    base::HistogramTester histogram_tester;
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        url, RenderViewHostTestHarness::web_contents());
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              SimulateStartAndGetResult(simulator.get()));
+    EXPECT_TRUE(created_safe_browsing_throttle_for_current_navigation());
+    // Verify no speculative ruleset handle was created at navigation start
+    // (before commit-time `DestroyRulesetHandleIfNoLongerUsed()` runs).
+    EXPECT_FALSE(ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+                     *simulator->GetNavigationHandle())
+                     ->ruleset_handle_for_testing());
+
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              SimulateCommitAndGetResult(simulator.get()));
+    ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/false);
+    EXPECT_FALSE(ManagerHasRulesetHandle());
+    histogram_tester.ExpectUniqueSample(
+        "SubresourceFilter.PageLoad.ActivationState.DisabledReason",
+        mojom::SubresourceFilterDisabledReason::kNoMatchingConfiguration, 1);
+  }
+
+  // A disallowed subframe under the non-activated page stays unfiltered.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(0);
+#endif
+  CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_FALSE(ads_blocked_in_content_settings());
+  EXPECT_FALSE(ManagerHasRulesetHandle());
+#if BUILDFLAG(IS_ANDROID)
+  ::testing::Mock::VerifyAndClearExpectations(&message_dispatcher_bridge_);
+#endif
+
+  // Navigating the same WebContents to an HTTPS URL still speculatively
+  // initializes the ruleset handle at navigation start when `kAdTagging` is on.
+  auto https_simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.test/"), RenderViewHostTestHarness::web_contents());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(https_simulator.get()));
+  EXPECT_TRUE(ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+                  *https_simulator->GetNavigationHandle())
+                  ->ruleset_handle_for_testing());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(https_simulator.get()));
+}
+
+TEST_P(ContentSubresourceFilterThrottleManagerTest,
        ActivateMainFrameAndDoNotFilterDryRun) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));

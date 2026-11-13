@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "url/gurl.h"
 
 namespace subresource_filter {
 
@@ -675,7 +676,14 @@ ContentSubresourceFilterThrottleManager::
   if (IsInSubresourceFilterRoot(&navigation_handle)) {
     auto throttle = ActivationStateComputingNavigationThrottle::CreateForRoot(
         registry, kSafeBrowsingRulesetConfig.uma_tag);
-    if (base::FeatureList::IsEnabled(kAdTagging)) {
+    // `SafeBrowsingPageActivationThrottle` and `ProfileInteractionManager` only
+    // activate subresource filtering on HTTP/HTTPS URLs (disabling non-HTTP/S
+    // root navigations at `WillProcessResponse()`). Skip pre-notifying
+    // `ActivationLevel::kDryRun` for non-HTTP/HTTPS URLs (such as WebUI,
+    // extension, and file pages) so they do not initialize a ruleset handle or
+    // defer `WillProcessResponse()` waiting on the background ruleset runner.
+    if (base::FeatureList::IsEnabled(kAdTagging) &&
+        navigation_handle.GetURL().SchemeIsHTTPOrHTTPS()) {
       mojom::ActivationState ad_tagging_state;
       ad_tagging_state.activation_level = mojom::ActivationLevel::kDryRun;
       throttle->NotifyPageActivationWithRuleset(EnsureRulesetHandle(),
