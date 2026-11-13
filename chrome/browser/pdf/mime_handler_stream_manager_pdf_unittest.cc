@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
@@ -20,7 +19,6 @@
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
-#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -51,12 +49,6 @@ TEST(PdfHandlerStreamDelegateTest, DoesNotFilterResponseHeaders) {
 
 class MimeHandlerStreamManagerPdfTest : public ChromeRenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
   void TearDown() override {
     ChromeRenderViewHostTestHarness::web_contents()->RemoveUserData(
         MimeHandlerStreamManager::UserDataKey());
@@ -91,9 +83,6 @@ class MimeHandlerStreamManagerPdfTest : public ChromeRenderViewHostTestHarness {
     parent_host_tester->InitializeRenderFrameIfNeeded();
     return parent_host_tester->AppendChild(frame_name);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Starting the navigation for the content host should set the content host

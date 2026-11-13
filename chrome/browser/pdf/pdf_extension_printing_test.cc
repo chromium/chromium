@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <tuple>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -34,7 +33,6 @@
 #include "content/public/test/context_menu_interceptor.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "pdf/pdf_features.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
@@ -63,10 +61,8 @@
 namespace {
 
 struct PDFExtensionPrintingTestPassToString {
-  std::string operator()(
-      const ::testing::TestParamInfo<std::tuple<bool, bool>>& i) const {
-    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
-           std::string(std::get<0>(i.param) ? "SERVICE" : "BROWSER");
+  std::string operator()(const ::testing::TestParamInfo<bool>& i) const {
+    return i.param ? "SERVICE" : "BROWSER";
   }
 };
 
@@ -96,10 +92,9 @@ using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-class PDFExtensionPrintingTest
-    : public PDFExtensionTestBase,
-      public printing::PrintJob::Observer,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class PDFExtensionPrintingTest : public PDFExtensionTestBase,
+                                 public printing::PrintJob::Observer,
+                                 public testing::WithParamInterface<bool> {
  public:
   PDFExtensionPrintingTest() = default;
   ~PDFExtensionPrintingTest() override = default;
@@ -160,7 +155,6 @@ class PDFExtensionPrintingTest
     printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
-  bool UseOopif() const override { return std::get<1>(GetParam()); }
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     std::vector<base::test::FeatureRefAndParams> enabled =
@@ -223,7 +217,7 @@ class PDFExtensionPrintingTest
   }
 
  private:
-  bool UseService() const { return std::get<0>(GetParam()); }
+  bool UseService() const { return GetParam(); }
 
   void OnCreatedPrintJob(printing::PrintJob* print_job) {
     EXPECT_FALSE(observing_print_job_);
@@ -398,13 +392,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionPrintingTest,
-                         testing::Combine(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-                             testing::Bool(),
+                         testing::Bool(),
 #else
-                             testing::Values(false),
+                         testing::Values(false),
 #endif
-                             testing::Bool()),
                          PDFExtensionPrintingTestPassToString());
 
 class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
@@ -457,5 +449,5 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionBasicPrintingTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         testing::Bool(),
                          PDFExtensionPrintingTestPassToString());

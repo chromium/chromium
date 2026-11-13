@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/test/run_until.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -125,11 +124,9 @@ std::string GetLargePDFContent() {
 
 // TODO(crbug.com/394111292): Remove this test when `PdfGetSaveDataInBlocks`
 // launches.
-class PDFExtensionDownloadTest : public base::test::WithFeatureOverride,
-                                 public PDFExtensionTestBase {
+class PDFExtensionDownloadTest : public PDFExtensionTestBase {
  public:
-  PDFExtensionDownloadTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  PDFExtensionDownloadTest() = default;
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
     std::vector<base::test::FeatureRef> disabled =
@@ -169,8 +166,6 @@ class PDFExtensionDownloadTest : public base::test::WithFeatureOverride,
 
     PDFExtensionTestBase::TearDownOnMainThread();
   }
-
-  bool UseOopif() const override { return GetParam(); }
 
   void SavePdfFromExtensionFrameContextMenu(
       content::RenderFrameHost* extension_host,
@@ -214,7 +209,7 @@ class PDFExtensionDownloadTest : public base::test::WithFeatureOverride,
   std::unique_ptr<DownloadTestFileActivityObserver> file_activity_observer_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionDownloadTest, BasicUsingContextMenu) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionDownloadTest, BasicUsingContextMenu) {
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
   ASSERT_TRUE(extension_host);
@@ -222,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionDownloadTest, BasicUsingContextMenu) {
   CheckDownloadedFile(FILE_PATH_LITERAL("test.pdf"));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionDownloadTest, BasicUsingDownloadButton) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionDownloadTest, BasicUsingDownloadButton) {
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
   ASSERT_TRUE(extension_host);
@@ -230,21 +225,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionDownloadTest, BasicUsingDownloadButton) {
   CheckDownloadedFile(FILE_PATH_LITERAL("test.pdf"));
 }
 
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionDownloadTest);
-
-// Params: kPdfOopif, kPdfUseShowSaveFilePicker
-class PDFExtensionSaveInBlocksTest
-    : public PDFExtensionTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// Param: kPdfUseShowSaveFilePicker
+class PDFExtensionSaveInBlocksTest : public PDFExtensionTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
   PDFExtensionSaveInBlocksTest() = default;
 
-  // PDFExtensionTestBase:
-  bool UseOopif() const override { return get<0>(GetParam()); }
-
-  bool IsPdfUseShowSaveFilePickerEnabled() const { return get<1>(GetParam()); }
+  bool IsPdfUseShowSaveFilePickerEnabled() const { return GetParam(); }
 
   // PDFExtensionTestBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -381,9 +368,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
   EXPECT_TRUE(base::ContentsEqual(test_file_path, save_path));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PDFExtensionSaveInBlocksTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionSaveInBlocksTest, testing::Bool());
 
 // Tests with an in memory generated PDF larger than `kMaxSaveBufferSize` bytes.
 class PDFExtensionSaveInBlocksLargeFileTest
@@ -429,4 +414,4 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksLargeFileTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionSaveInBlocksLargeFileTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());

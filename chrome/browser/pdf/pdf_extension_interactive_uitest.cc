@@ -4,7 +4,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -31,7 +30,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -59,11 +57,9 @@ namespace {
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
-                                      public PDFExtensionTestBase {
+class PDFExtensionInteractiveUITest : public PDFExtensionTestBase {
  public:
-  PDFExtensionInteractiveUITest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  PDFExtensionInteractiveUITest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionTestBase::SetUpCommandLine(command_line);
@@ -84,8 +80,6 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
     }
     return focus_observer.Wait();
   }
-
-  bool UseOopif() const override { return GetParam(); }
 };
 
 class TabChangedWaiter : public TabStripModelObserver {
@@ -116,7 +110,7 @@ class TabChangedWaiter : public TabStripModelObserver {
 
 // TODO(crbug.com/333802743): re-enable the test
 // For crbug.com/40113375
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        DISABLED_CtrlPageUpDownSwitchesTabs) {
   content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -153,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
   EXPECT_EQ(1, tab_strip_model->active_index());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
   ASSERT_TRUE(extension_host);
@@ -170,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
   content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
   ASSERT_TRUE(extension_host);
@@ -188,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
 }
 
 // Regression test for https://crbug.com/326275041
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, SpaceKeyInForm) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, SpaceKeyInForm) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/text_form.pdf"));
   ASSERT_TRUE(extension_host);
@@ -295,7 +289,7 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
 // icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   content::RenderFrameHost* extension_host =
@@ -349,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
 #else
 #define MAYBE_TouchSelectionBounds TouchSelectionBounds
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        MAYBE_TouchSelectionBounds) {
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
@@ -397,7 +391,3 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
   EXPECT_POINTF_NEAR(gfx::PointF(494.0f, 174.0f), end_bound.edge_end(), 1.0f);
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);

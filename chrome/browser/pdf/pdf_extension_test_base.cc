@@ -326,7 +326,7 @@ void PDFExtensionTestBase::SimulateMouseClickAt(
 }
 
 bool PDFExtensionTestBase::UseOopif() const {
-  return false;
+  return true;
 }
 
 // This is intentionally empty.
