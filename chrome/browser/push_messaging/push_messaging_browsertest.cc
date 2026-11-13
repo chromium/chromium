@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -49,8 +50,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
-#include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -135,17 +136,15 @@ std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   return application_server_key;
 }
 
-void LegacyRegisterCallback(base::OnceClosure done_callback,
-                            std::string* out_registration_id,
-                            gcm::GCMClient::Result* out_result,
-                            const std::string& registration_id,
-                            gcm::GCMClient::Result result) {
-  if (out_registration_id)
-    *out_registration_id = registration_id;
-  if (out_result)
-    *out_result = result;
-  std::move(done_callback).Run();
-}
+// Kinds of stored subscriptions with a legacy (non-InstanceID) app_id.
+enum class LegacySubscriptionType {
+  // Only has a GCM registration ID. InstanceID does not know the app_id.
+  kWithoutInstanceIDToken,
+  // Also has an InstanceID token. Old versions of Chrome made these when a
+  // site subscribed again after the migration to InstanceID, because the
+  // subscribe path reuses the stored app_id.
+  kWithInstanceIDToken,
+};
 
 void DidRegister(base::OnceClosure done_callback,
                  const std::string& registration_id,
@@ -304,10 +303,17 @@ class PushMessagingBrowserTestBase
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
   void SetupOrphanedPushSubscription(std::string* out_app_id);
 
-  // Legacy subscribe path using GCMDriver rather than Instance IDs. Only
-  // for testing that we maintain support for existing stored registrations.
+  // Stores a subscription with a legacy (non-InstanceID) app_id directly in
+  // prefs and in the Service Worker database. Chrome no longer creates legacy
+  // subscriptions, so this tests the support for existing stored ones. Also
+  // creates the legacy encryption keys (empty authorized entity).
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
-  void LegacySubscribeSuccessfully(std::string* out_subscription_id = nullptr);
+  void LegacySubscribeSuccessfully(LegacySubscriptionType type);
+
+  // Returns the public key that is stored for `app_id` with an empty
+  // authorized entity, like the keys of legacy subscriptions. Creates new keys
+  // if there are none.
+  std::string GetLegacyP256dh(const std::string& app_id);
 
   // Strips server URL from a registration endpoint to get subscription token.
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
@@ -491,10 +497,7 @@ void PushMessagingBrowserTestBase::SetupOrphanedPushSubscription(
 }
 
 void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
-    std::string* out_subscription_id) {
-  // Create a non-InstanceID GCM registration. Have to directly access
-  // GCMDriver, since this codepath has been deleted from Push.
-
+    LegacySubscriptionType type) {
   ASSERT_EQ("ok - service worker registered",
             RunScript("registerServiceWorker()"));
 
@@ -505,24 +508,45 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
   int64_t service_worker_registration_id = 0LL;
   push_messaging::AppIdentifier app_identifier = LegacyGenerateForTesting(
       requesting_origin, service_worker_registration_id);
-  push_service_->IncreasePushSubscriptionCount(1, true /* is_pending */);
+  ASSERT_FALSE(
+      push_messaging::AppIdentifier::UseInstanceID(app_identifier.app_id()));
+
+  // Old versions of Chrome created the encryption keys of a legacy
+  // subscription with an empty authorized entity.
+  ASSERT_FALSE(GetLegacyP256dh(app_identifier.app_id()).empty());
 
   std::string subscription_id;
-  {
-    base::RunLoop run_loop;
-    gcm::GCMClient::Result register_result = gcm::GCMClient::UNKNOWN_ERROR;
-    gcm_driver_->Register(
-        app_identifier.app_id(), {kManifestSenderId},
-        base::BindOnce(&LegacyRegisterCallback, run_loop.QuitClosure(),
-                       &subscription_id, &register_result));
-    run_loop.Run();
-    ASSERT_EQ(gcm::GCMClient::SUCCESS, register_result);
+  switch (type) {
+    case LegacySubscriptionType::kWithoutInstanceIDToken:
+      // A legacy GCM registration ID, which InstanceID does not know.
+      subscription_id = "legacy-registration-id-" + app_identifier.app_id();
+      break;
+    case LegacySubscriptionType::kWithInstanceIDToken: {
+      base::RunLoop run_loop;
+      instance_id::InstanceID::Result result =
+          instance_id::InstanceID::UNKNOWN_ERROR;
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(
+          GetBrowser()->GetProfile())
+          ->driver()
+          ->GetInstanceID(app_identifier.app_id())
+          ->GetToken(kManifestSenderId, instance_id::kGCMScope,
+                     /*time_to_live=*/base::TimeDelta(), /*flags=*/{},
+                     base::BindLambdaForTesting(
+                         [&](const std::string& token,
+                             instance_id::InstanceID::Result token_result) {
+                           subscription_id = token;
+                           result = token_result;
+                           run_loop.Quit();
+                         }));
+      run_loop.Run();
+      ASSERT_EQ(instance_id::InstanceID::SUCCESS, result);
+      break;
+    }
   }
 
   PushMessagingAppIdentifier::PersistToPrefs(app_identifier,
                                              GetBrowser()->GetProfile());
   push_service_->IncreasePushSubscriptionCount(1, false /* is_pending */);
-  push_service_->DecreasePushSubscriptionCount(1, true /* was_pending */);
 
   {
     base::RunLoop run_loop;
@@ -532,9 +556,26 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
         run_loop.QuitClosure());
     run_loop.Run();
   }
+}
 
-  if (out_subscription_id)
-    *out_subscription_id = subscription_id;
+std::string PushMessagingBrowserTestBase::GetLegacyP256dh(
+    const std::string& app_id) {
+  std::string p256dh;
+  base::RunLoop run_loop;
+  // A legacy app_id stores its keys with an empty authorized entity.
+  instance_id::InstanceIDProfileServiceFactory::GetForProfile(
+      GetBrowser()->GetProfile())
+      ->driver()
+      ->GetInstanceID(app_id)
+      ->GetEncryptionInfo(
+          /*authorized_entity=*/std::string(),
+          base::BindLambdaForTesting(
+              [&](std::string public_key, std::string auth_secret) {
+                p256dh = std::move(public_key);
+                run_loop.Quit();
+              }));
+  run_loop.Run();
+  return p256dh;
 }
 
 void PushMessagingBrowserTestBase::EndpointToToken(const std::string& endpoint,
@@ -1253,8 +1294,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPayload) {
   EXPECT_EQ("[NULL]", RunScript("resultQueue.pop()"));
 }
 
+// OnMessage() does not check the format of the app_id. Messages for a legacy
+// (non-InstanceID) app_id are still delivered.
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, LegacyPushEvent) {
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully());
+  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(
+      LegacySubscriptionType::kWithoutInstanceIDToken));
   push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
@@ -2023,27 +2067,44 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
             RunScript("unsubscribeStoredPushSubscription()"));
 }
 
-// Push subscriptions used to be non-InstanceID GCM registrations. Still need
-// to be able to unsubscribe these, even though new ones are no longer created.
-// Flaky on some Win and Linux buildbots.  See crbug.com/41384686.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LegacyUnsubscribeSuccess DISABLED_LegacyUnsubscribeSuccess
-#else
-#define MAYBE_LegacyUnsubscribeSuccess LegacyUnsubscribeSuccess
-#endif
-IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
-                       MAYBE_LegacyUnsubscribeSuccess) {
-  std::string subscription_id1;
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(&subscription_id1));
+// Push subscriptions used to be non-InstanceID GCM registrations. Old versions
+// of Chrome gave such a legacy app_id an InstanceID token when the site
+// subscribed again, because the subscribe path reuses the stored app_id. These
+// subscriptions must stay valid, keep their legacy encryption keys, and be
+// unsubscribed through InstanceID only.
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, LegacyUnsubscribeSuccess) {
+  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(
+      LegacySubscriptionType::kWithInstanceIDToken));
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+  const std::string app_id = app_identifier.app_id();
+
+  // The subscription is valid, and it uses the existing keys that are stored
+  // with an empty authorized entity.
+  const std::string legacy_p256dh = GetLegacyP256dh(app_id);
+  blink::mojom::PushSubscriptionPtr subscription =
+      GetSubscriptionForAppIdentifier(app_identifier);
+  ASSERT_TRUE(subscription);
+  EXPECT_EQ(std::vector<uint8_t>(legacy_p256dh.begin(), legacy_p256dh.end()),
+            subscription->p256dh);
   EXPECT_EQ("ok - stored", RunScript("storePushSubscription()"));
 
-  // Resolves true if there was a subscription.
-  gcm_service_->AddExpectedUnregisterResponse(gcm::GCMClient::SUCCESS);
+  // Resolves true if there was a subscription. This deletes the InstanceID and
+  // the legacy keys.
+  base::RunLoop run_loop;
+  push_service()->SetUnsubscribeCallbackForTesting(run_loop.QuitClosure());
   EXPECT_EQ("unsubscribe result: true", RunScript("unsubscribePush()"));
+  run_loop.Run();
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       1);
+  EXPECT_EQ(app_id, gcm_driver_->last_deletetoken_app_id());
+  EXPECT_TRUE(PushMessagingAppIdentifier::FindByAppId(
+                  GetBrowser()->GetProfile(), app_id)
+                  .is_null());
+  // The legacy keys were removed, so new keys are created.
+  EXPECT_NE(legacy_p256dh, GetLegacyP256dh(app_id));
 
   // Resolves false if there was no longer a subscription.
   EXPECT_EQ("unsubscribe result: false",
@@ -2052,81 +2113,68 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       2);
+}
 
-  // Doesn't reject if there was a network error (deactivates subscription
-  // locally anyway).
-  std::string subscription_id2;
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(&subscription_id2));
-  EXPECT_NE(subscription_id1, subscription_id2);
-  gcm_service_->AddExpectedUnregisterResponse(gcm::GCMClient::NETWORK_ERROR);
-  EXPECT_EQ("unsubscribe result: true", RunScript("unsubscribePush()"));
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.UnregistrationReason",
-      static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
-      3);
-  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+// A legacy subscription without an InstanceID token only has a GCM
+// registration ID. InstanceID cannot validate it, so getSubscription() returns
+// null and the subscription and its legacy encryption keys are removed.
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
+                       LegacySubscriptionWithoutInstanceIDTokenIsRemoved) {
+  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(
+      LegacySubscriptionType::kWithoutInstanceIDToken));
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+  const std::string legacy_p256dh = GetLegacyP256dh(app_identifier.app_id());
 
-  // Doesn't reject if there were other push service errors (deactivates
-  // subscription locally anyway).
-  std::string subscription_id3;
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(&subscription_id3));
-  EXPECT_NE(subscription_id1, subscription_id3);
-  EXPECT_NE(subscription_id2, subscription_id3);
-  gcm_service_->AddExpectedUnregisterResponse(
-      gcm::GCMClient::INVALID_PARAMETER);
-  EXPECT_EQ("unsubscribe result: true", RunScript("unsubscribePush()"));
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.UnregistrationReason",
-      static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
-      4);
-
-  // Unsubscribing (with an existing reference to a PushSubscription), after
-  // replacing the Service Worker, actually still works, as the Service Worker
-  // registration is unchanged.
-  std::string subscription_id4;
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(&subscription_id4));
-  EXPECT_NE(subscription_id1, subscription_id4);
-  EXPECT_NE(subscription_id2, subscription_id4);
-  EXPECT_NE(subscription_id3, subscription_id4);
-  EXPECT_EQ("ok - stored", RunScript("storePushSubscription()"));
-  EXPECT_EQ("ok - service worker replaced",
-            RunScript("replaceServiceWorker()"));
-  EXPECT_EQ("unsubscribe result: true",
-            RunScript("unsubscribeStoredPushSubscription()"));
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.UnregistrationReason",
-      static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
-      5);
-
-  // Unsubscribing (with an existing reference to a PushSubscription), after
-  // unregistering the Service Worker, should fail.
-  std::string subscription_id5;
-  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(&subscription_id5));
-  EXPECT_NE(subscription_id1, subscription_id5);
-  EXPECT_NE(subscription_id2, subscription_id5);
-  EXPECT_NE(subscription_id3, subscription_id5);
-  EXPECT_NE(subscription_id4, subscription_id5);
-  EXPECT_EQ("ok - stored", RunScript("storePushSubscription()"));
-
-  // Unregister service worker and wait for callback.
   base::RunLoop run_loop;
-  push_service()->SetServiceWorkerUnregisteredCallbackForTesting(
-      run_loop.QuitClosure());
-  EXPECT_EQ("service worker unregistration status: true",
-            RunScript("unregisterServiceWorker()"));
+  push_service()->SetUnsubscribeCallbackForTesting(run_loop.QuitClosure());
+  ASSERT_EQ("false - not subscribed", RunScript("hasSubscription()"));
   run_loop.Run();
 
-  // Unregistering should have triggered an automatic unsubscribe.
-  histogram_tester_.ExpectBucketCount(
+  EXPECT_TRUE(PushMessagingAppIdentifier::FindByAppId(
+                  GetBrowser()->GetProfile(), app_identifier.app_id())
+                  .is_null());
+  // The legacy keys were removed, so new keys are created.
+  EXPECT_NE(legacy_p256dh, GetLegacyP256dh(app_identifier.app_id()));
+  histogram_tester_.ExpectUniqueSample(
+      "PushMessaging.GetRegistrationStatus",
+      static_cast<int>(
+          blink::mojom::PushGetRegistrationStatus::STORAGE_CORRUPT),
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "PushMessaging.UnregistrationReason",
+      static_cast<int>(blink::mojom::PushUnregistrationReason::
+                           GET_SUBSCRIPTION_STORAGE_CORRUPT),
+      1);
+}
+
+// Revoking the permission unsubscribes a legacy subscription through
+// InstanceID, and removes its legacy encryption keys.
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
+                       LegacySubscriptionPermissionRevoked) {
+  ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully(
+      LegacySubscriptionType::kWithInstanceIDToken));
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+  const std::string app_id = app_identifier.app_id();
+  const std::string legacy_p256dh = GetLegacyP256dh(app_id);
+
+  base::RunLoop run_loop;
+  push_service()->SetUnsubscribeCallbackForTesting(run_loop.QuitClosure());
+  HostContentSettingsMapFactory::GetForProfile(GetBrowser()->GetProfile())
+      ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
+  run_loop.Run();
+
+  EXPECT_TRUE(PushMessagingAppIdentifier::FindByAppId(
+                  GetBrowser()->GetProfile(), app_id)
+                  .is_null());
+  histogram_tester_.ExpectUniqueSample(
       "PushMessaging.UnregistrationReason",
       static_cast<int>(
-          blink::mojom::PushUnregistrationReason::SERVICE_WORKER_UNREGISTERED),
+          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
-  histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 6);
-
-  // Now manual unsubscribe should return false.
-  EXPECT_EQ("unsubscribe result: false",
-            RunScript("unsubscribeStoredPushSubscription()"));
+  EXPECT_EQ(app_id, gcm_driver_->last_deletetoken_app_id());
+  EXPECT_NE(legacy_p256dh, GetLegacyP256dh(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeOffline) {
@@ -2678,9 +2726,6 @@ IN_PROC_BROWSER_TEST_F(
   push_service()->SetContentSettingChangedCallbackForTesting(
       run_loop.QuitClosure());
   // This shouldn't (asynchronously) cause a DCHECK.
-  // TODO(johnme): Get this test running on Android with legacy GCM
-  // registrations, which have a different codepath due to sender_id being
-  // required for unsubscribing there.
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->GetProfile())
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 

@@ -1223,15 +1223,14 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
                      weak_factory_.GetWeakPtr(), app_id, sender_id, endpoint,
                      expiration_time, user_visible_only, std::move(callback));
 
-  if (push_messaging::AppIdentifier::UseInstanceID(app_id)) {
-    GetInstanceIDDriver()->GetInstanceID(app_id)->ValidateToken(
-        push_messaging::NormalizeSenderInfo(sender_id), kGCMScope,
-        subscription_id, std::move(validate_cb));
-  } else {
-    GetGCMDriver()->ValidateRegistration(
-        app_id, {push_messaging::NormalizeSenderInfo(sender_id)},
-        subscription_id, std::move(validate_cb));
-  }
+  // A legacy (non-InstanceID) app_id is validated through InstanceID as well.
+  // It only has an InstanceID token if the site subscribed again after the
+  // migration to InstanceID, because the subscribe path reuses the stored
+  // app_id. On Android, ValidateToken() always returns true, like
+  // GCMDriver::ValidateRegistration() did.
+  GetInstanceIDDriver()->GetInstanceID(app_id)->ValidateToken(
+      push_messaging::NormalizeSenderInfo(sender_id), kGCMScope,
+      subscription_id, std::move(validate_cb));
 }
 
 void PushMessagingServiceImpl::DidValidateSubscription(
@@ -1330,7 +1329,7 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
     UnregisterCallback callback) {
   if (app_id.empty()) {
     // Without an |app_id|, we can neither delete the subscription from the
-    // push_messaging::AppIdentifier map, nor unsubscribe with the GCM Driver.
+    // push_messaging::AppIdentifier map, nor delete the InstanceID.
     std::move(callback).Run(
         blink::mojom::PushUnregistrationStatus::SUCCESS_WAS_NOT_REGISTERED);
     return;
@@ -1380,42 +1379,26 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
     }
   }
 
-  // Run the unsubscribe callback *before* asking the InstanceIDDriver/GCMDriver
-  // to unsubscribe, since that's a slow process involving network retries, and
+  // Run the unsubscribe callback *before* asking the InstanceIDDriver to
+  // unsubscribe, since that's a slow process involving network retries, and
   // by this point enough local state has been deleted that the subscription is
   // inactive. Note that DeliverMessageCallback automatically unsubscribes if
   // messages are later received for a subscription that was locally deleted,
   // so as long as messages keep getting sent to it, the unsubscription should
-  // eventually reach GCM servers even if this particular attempt fails.
+  // eventually reach GCM servers even if this particular attempt fails. For a
+  // legacy (non-InstanceID) app_id without an InstanceID token, nothing is sent
+  // to the GCM servers. Chrome drops later messages for it, because the app_id
+  // is unknown.
   std::move(callback).Run(
       was_subscribed
           ? blink::mojom::PushUnregistrationStatus::SUCCESS_UNREGISTERED
           : blink::mojom::PushUnregistrationStatus::SUCCESS_WAS_NOT_REGISTERED);
 
-  if (push_messaging::AppIdentifier::UseInstanceID(app_id)) {
-    GetInstanceIDDriver()->GetInstanceID(app_id)->DeleteID(
-        base::BindOnce(&PushMessagingServiceImpl::DidDeleteID,
-                       weak_factory_.GetWeakPtr(), app_id, was_subscribed));
-
-  } else {
-    auto unregister_callback =
-        base::BindOnce(&PushMessagingServiceImpl::DidUnregister,
-                       weak_factory_.GetWeakPtr(), was_subscribed);
-#if BUILDFLAG(IS_ANDROID)
-    // On Android the backend is different, and requires the original sender_id.
-    // DidGetSenderIdUnexpectedUnsubscribe and
-    // DidDeleteServiceWorkerRegistration sometimes call us with an empty one.
-    if (sender_id.empty()) {
-      std::move(unregister_callback).Run(gcm::GCMClient::INVALID_PARAMETER);
-    } else {
-      GetGCMDriver()->UnregisterWithSenderId(
-          app_id, push_messaging::NormalizeSenderInfo(sender_id),
-          std::move(unregister_callback));
-    }
-#else
-    GetGCMDriver()->Unregister(app_id, std::move(unregister_callback));
-#endif
-  }
+  // DeleteID() also removes the encryption keys of a legacy (non-InstanceID)
+  // app_id, which are stored with an empty authorized entity.
+  GetInstanceIDDriver()->GetInstanceID(app_id)->DeleteID(
+      base::BindOnce(&PushMessagingServiceImpl::DidDeleteID,
+                     weak_factory_.GetWeakPtr(), app_id, was_subscribed));
 }
 
 void PushMessagingServiceImpl::DidUnregister(bool was_subscribed,
@@ -1469,9 +1452,6 @@ void PushMessagingServiceImpl::DidDeleteServiceWorkerRegistration(
       service_worker_unregistered_callback_for_testing_.Run();
     return;
   }
-  // Note this will not fully unsubscribe pre-InstanceID subscriptions on
-  // Android from GCM, as that requires a sender_id. (Ideally we'd fetch it
-  // from the SWDB in some "before_unregistered" SWObserver event.)
   UnsubscribeInternal(
       blink::mojom::PushUnregistrationReason::SERVICE_WORKER_UNREGISTERED,
       origin, service_worker_registration_id, app_identifier.app_id(),
@@ -1502,9 +1482,6 @@ void PushMessagingServiceImpl::DidDeleteServiceWorkerDatabase() {
           : service_worker_database_wiped_callback_for_testing_);
 
   for (const push_messaging::AppIdentifier& app_identifier : app_identifiers) {
-    // Note this will not fully unsubscribe pre-InstanceID subscriptions on
-    // Android from GCM, as that requires a sender_id. We can't fetch those from
-    // the Service Worker database anymore as it's been deleted.
     UnsubscribeInternal(
         blink::mojom::PushUnregistrationReason::SERVICE_WORKER_DATABASE_WIPED,
         app_identifier.origin(),
@@ -1727,10 +1704,8 @@ void PushMessagingServiceImpl::DidGetSenderIdUnexpectedUnsubscribe(
   // Unsubscribe the push_messaging::AppIdentifier with the push service.
   // It's possible for GetSenderId to have failed and sender_id to be empty, if
   // cookies (and the SW database) for an origin got cleared before permissions
-  // are cleared for the origin. In that case for legacy GCM registrations on
-  // Android, Unsubscribe will just delete the app identifier to block future
-  // messages.
-  // TODO(johnme): Auto-unregister before SW DB is cleared (crbug.com/40378791).
+  // are cleared for the origin. Unsubscribe does not use `sender_id`, so it
+  // still deletes the InstanceID of a legacy app_id in that case.
   UnsubscribeInternal(reason, app_identifier.origin(),
                       app_identifier.service_worker_registration_id(),
                       app_identifier.app_id(), sender_id, std::move(callback));
@@ -1952,12 +1927,16 @@ void PushMessagingServiceImpl::GetEncryptionInfoForAppId(
     const std::string& app_id,
     const std::string& sender_id,
     gcm::GCMEncryptionProvider::EncryptionInfoCallback callback) {
-  if (push_messaging::AppIdentifier::UseInstanceID(app_id)) {
-    GetInstanceIDDriver()->GetInstanceID(app_id)->GetEncryptionInfo(
-        push_messaging::NormalizeSenderInfo(sender_id), std::move(callback));
-  } else {
-    GetGCMDriver()->GetEncryptionInfo(app_id, std::move(callback));
-  }
+  // A legacy (non-InstanceID) app_id stores its encryption keys with an empty
+  // authorized entity. Keep using these keys, because the app server already
+  // has the public key. This has the same effect as the deprecated
+  // GCMDriver::GetEncryptionInfo().
+  const std::string authorized_entity =
+      push_messaging::AppIdentifier::UseInstanceID(app_id)
+          ? push_messaging::NormalizeSenderInfo(sender_id)
+          : std::string();
+  GetInstanceIDDriver()->GetInstanceID(app_id)->GetEncryptionInfo(
+      authorized_entity, std::move(callback));
 }
 
 gcm::GCMDriver* PushMessagingServiceImpl::GetGCMDriver() const {

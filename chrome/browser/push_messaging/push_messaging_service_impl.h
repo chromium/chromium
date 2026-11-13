@@ -449,7 +449,8 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // `user_visible` is false.
   bool IsPermissionSet(const GURL& origin, bool user_visible);
 
-  // Wrapper around {GCMDriver, InstanceID}::GetEncryptionInfo.
+  // Wrapper around InstanceID::GetEncryptionInfo. Uses an empty authorized
+  // entity for a legacy (non-InstanceID) app_id.
   void GetEncryptionInfoForAppId(
       const std::string& app_id,
       const std::string& sender_id,
