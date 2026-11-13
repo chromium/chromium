@@ -63,6 +63,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -956,6 +957,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.TargetDeviceCount",
                                       SendTabToSelfDeviceCount::kZeroDevices,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.SendTabToSelf",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   bubble_widget->CloseNow();
@@ -985,6 +989,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
 // `ShowBubble()` falls back to `SendTabToSelfNoTargetDeviceBubbleView`.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
                        FallsBackToNoTargetDeviceBubbleOnAuthError) {
+  base::HistogramTester histogram_tester;
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account_.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -997,6 +1002,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
   ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.SendTabToSelf",
+      CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
 class SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest
@@ -1009,9 +1017,11 @@ class SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest
 
 // Verifies that when `switches::kCrossDeviceSigninFromDesktopFollowup` is
 // disabled, `ShowBubble()` falls back to
-// `SendTabToSelfNoTargetDeviceBubbleView`.
+// `SendTabToSelfNoTargetDeviceBubbleView` and still records the promo decision
+// at the trigger.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
                        FallsBackToNoTargetDeviceBubbleWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
   SendTabToSelfBubbleController* controller =
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
@@ -1019,6 +1029,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
   ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.SendTabToSelf",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

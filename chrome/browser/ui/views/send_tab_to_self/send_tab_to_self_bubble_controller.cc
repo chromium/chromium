@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -34,7 +33,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
@@ -51,8 +49,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
-#include "chrome/browser/signin/signin_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace send_tab_to_self {
@@ -319,21 +315,11 @@ bool SendTabToSelfBubbleController::ShouldShowNoTargetDeviceQrBubble(
     EntryPointDisplayReason reason,
     BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (reason != EntryPointDisplayReason::kInformNoTargetDevice || !browser ||
-      !base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop) ||
-      !base::FeatureList::IsEnabled(
-          switches::kCrossDeviceSigninFromDesktopFollowup)) {
+  if (reason != EntryPointDisplayReason::kInformNoTargetDevice || !browser) {
     return false;
   }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  if (!identity_manager) {
-    return false;
-  }
-  const signin_util::SignedInState signed_in_state =
-      signin_util::GetSignedInState(identity_manager);
-  return signed_in_state == signin_util::SignedInState::kSignedIn ||
-         signed_in_state == signin_util::SignedInState::kSyncing;
+  return ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kSendTabToSelf, GetProfile());
 #else
   return false;
 #endif

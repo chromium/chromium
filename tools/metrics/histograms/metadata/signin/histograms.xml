@@ -2076,10 +2076,7 @@ prefs when the profile is loaded.  -->
   <summary>
     Records the decision (allow to show or block reason) for showing the
     cross-device sign-in promo. Recorded for {CrossDeviceSigninPromoEntryPoint}.
-    Logged once per trigger point (e.g. once per What's New page load when the
-    page requests its URL), even if the promo is deactivated. The What's New
-    page entry point skips the mobile device check, so HasMobileDevice is never
-    recorded for it.
+    Logged once per trigger point, even if the promo is deactivated.
   </summary>
   <token key="CrossDeviceSigninPromoEntryPoint"
       variants="CrossDeviceSigninPromoEntryPoint"/>

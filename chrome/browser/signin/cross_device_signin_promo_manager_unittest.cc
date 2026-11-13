@@ -263,11 +263,15 @@ TEST_P(CrossDeviceSigninPromoManagerEntryPointTest,
             syncer::DeviceInfo::OsType::kAndroid);
   EnableEntryPointDataTypeRequirement();
 
-  // The What's New page always shows a QR code, so signed-in users get the
-  // account-bound one even if they already have a phone.
-  if (entry_point() == CrossDeviceSigninPromoEntryPoint::kWhatsNewPage) {
+  // The What's New page and Send Tab To Self entry points skip the mobile
+  // device check, so signed-in users are eligible even if they already have a
+  // phone.
+  if (entry_point() == CrossDeviceSigninPromoEntryPoint::kWhatsNewPage ||
+      entry_point() == CrossDeviceSigninPromoEntryPoint::kSendTabToSelf) {
     EXPECT_TRUE(
         ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
+    EXPECT_TRUE(
+        ShouldKeepShowingCrossDeviceSigninPromo(entry_point(), profile()));
     histogram_tester.ExpectUniqueSample(
         GetShouldShowResultHistogramName(),
         CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
@@ -729,6 +733,27 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
         "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
         CrossDeviceSigninPromoShouldShowResult::kProfileTypeNotEligible, 1);
   }
+}
+
+// The Send Tab To Self entry point is gated by the follow-up feature flag. The
+// eligibility is still recorded when it is disabled (control arm).
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       SendTabToSelfRequiresFollowupFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kCrossDeviceSigninFromDesktopFollowup);
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kSendTabToSelf, profile()));
+  EXPECT_FALSE(ShouldKeepShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kSendTabToSelf, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.SendTabToSelf",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,

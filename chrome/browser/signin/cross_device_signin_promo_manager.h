@@ -44,9 +44,10 @@ enum class CrossDeviceSigninPromoShouldShowResult {
 
 // Returns whether the cross-device sign-in promo should start being shown at
 // `entry_point`: the entry point is enabled by its feature flags, the user is
-// eligible (signed in with no error, without a synced mobile device and with
-// the required data types enabled) and the impression/dismissal frequency caps
-// allow it. Meant to be called once at the promo's trigger point.
+// eligible (signed in with no error, without a synced mobile device where
+// applicable, and with the required data types enabled) and the
+// impression/dismissal frequency caps allow it. Meant to be called once at the
+// promo's trigger point.
 // Records the eligibility result in the
 // `Signin.CrossDeviceSigninPromo.ShouldShowResult.*` histograms. While the
 // `kCrossDeviceSigninPromoEligibilityLogging` kill switch is enabled, the
