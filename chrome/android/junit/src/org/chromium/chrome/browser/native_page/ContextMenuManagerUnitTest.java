@@ -16,6 +16,7 @@ import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +27,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPopupWindow;
 
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
@@ -74,6 +77,11 @@ public class ContextMenuManagerUnitTest {
         mAnchorView = new View(mActivity, null);
         mActivity.setContentView(mAnchorView);
         mManager = new ContextMenuManager(mNavigationDelegate, mTouchEnabledDelegate, () -> {}, "");
+    }
+
+    @After
+    public void tearDown() {
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.NOT_SET);
     }
 
     @Test
@@ -216,5 +224,34 @@ public class ContextMenuManagerUnitTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         assertFalse(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW, mDelegate));
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, mDelegate));
+    }
+
+    @Test
+    public void testHandleMenuItemClick_SaveForOffline() {
+        doReturn(false).when(mNavigationDelegate).isDownloadRestrictedByPolicy();
+        assertTrue(mManager.handleMenuItemClick(ContextMenuItemId.SAVE_FOR_OFFLINE, mDelegate));
+        verify(mDelegate).openItem(WindowOpenDisposition.SAVE_TO_DISK);
+    }
+
+    @Test
+    public void testHandleMenuItemClick_SaveForOfflineRestrictedByPolicy() {
+        doReturn(true).when(mNavigationDelegate).isDownloadRestrictedByPolicy();
+        assertTrue(mManager.handleMenuItemClick(ContextMenuItemId.SAVE_FOR_OFFLINE, mDelegate));
+        verify(mDelegate, never()).openItem(anyInt());
+    }
+
+    @Test
+    public void testNavigationDelegate_IsDownloadRestrictedByPolicy() {
+        NativePageNavigationDelegateImpl delegate =
+                new NativePageNavigationDelegateImpl(
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
+
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.FALSE);
+        assertFalse(delegate.isDownloadRestrictedByPolicy());
+
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
+        assertTrue(delegate.isDownloadRestrictedByPolicy());
+
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.NOT_SET);
     }
 }

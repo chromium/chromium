@@ -26,6 +26,9 @@ public interface NativePageNavigationDelegate {
     /** Returns whether context menus should allow the option to open a link in another window. */
     boolean isOpenInOtherWindowEnabled();
 
+    /** Returns whether context menus should disable saving links offline due to policy. */
+    boolean isDownloadRestrictedByPolicy();
+
     /**
      * Opens a URL with the desired disposition.
      *

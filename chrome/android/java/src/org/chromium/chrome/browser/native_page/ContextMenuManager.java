@@ -13,11 +13,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -264,9 +262,7 @@ public class ContextMenuManager {
             ListItemBuilder builder =
                     new ListItemBuilder().withTitleRes(titleId).withMenuId(itemId);
             if (itemId == ContextMenuItemId.SAVE_FOR_OFFLINE
-                    && ProfileManager.isInitialized()
-                    && DownloadUtils.isDownloadRestrictedByPolicy(
-                            ProfileManager.getLastUsedRegularProfile())) {
+                    && mNavigationDelegate.isDownloadRestrictedByPolicy()) {
                 builder.withEnabled(false);
             }
             menuModel.add(builder.build());
@@ -497,9 +493,7 @@ public class ContextMenuManager {
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenAllItems");
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
-                if (ProfileManager.isInitialized()
-                        && DownloadUtils.isDownloadRestrictedByPolicy(
-                                ProfileManager.getLastUsedRegularProfile())) {
+                if (mNavigationDelegate.isDownloadRestrictedByPolicy()) {
                     if (mAnchorView != null) {
                         Toast.makeText(
                                         mAnchorView.getContext(),

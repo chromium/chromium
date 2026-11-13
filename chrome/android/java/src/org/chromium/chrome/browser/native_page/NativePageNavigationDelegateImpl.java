@@ -10,6 +10,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -56,6 +57,11 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     @Override
     public boolean isOpenInOtherWindowEnabled() {
         return MultiWindowUtils.getInstance().isLinkNavigationToOtherWindowSupported(mActivity);
+    }
+
+    @Override
+    public boolean isDownloadRestrictedByPolicy() {
+        return DownloadUtils.isDownloadRestrictedByPolicy(mProfile);
     }
 
     @Override
