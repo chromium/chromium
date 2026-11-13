@@ -1205,30 +1205,6 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescriptionFallback) {
   EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria description");
 }
 
-// Tests IsOwnedByFrame().
-TEST_F(FormAutofillUtilsTest, IsOwnedByFrame) {
-  LoadHTML(R"(
-    <body>
-      <div id="div"></div>
-      <iframe id="child_frame"></iframe>
-    </body>
-  )");
-
-  WebDocument doc = GetDocument();
-  content::RenderFrame* main_frame = GetMainRenderFrame();
-  content::RenderFrame* child_frame = GetIframeById(doc, "child_frame");
-  WebElement div = GetElementById(doc, "div");
-
-  EXPECT_FALSE(IsOwnedByFrame(WebElement(), /*frame=*/nullptr));
-  EXPECT_FALSE(IsOwnedByFrame(WebElement(), main_frame));
-  EXPECT_FALSE(IsOwnedByFrame(div, /*frame=*/nullptr));
-  EXPECT_FALSE(IsOwnedByFrame(div, child_frame));
-  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
-  ExecuteJavaScriptForTests(R"(document.getElementById('div').remove();)");
-  content::RunAllTasksUntilIdle();
-  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
-}
-
 TEST_F(FormAutofillUtilsTest, ExtractFormData_IsActionEmptyFalse) {
   LoadHTML(
       "<body><form id='form1' action='done.html'><input "

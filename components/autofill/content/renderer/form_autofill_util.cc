@@ -2822,18 +2822,6 @@ void ClearPreviewedElements(
   }
 }
 
-bool IsOwnedByFrame(const WebNode& node, content::RenderFrame* frame) {
-  if (!node || !frame) {
-    return false;
-  }
-  const WebDocument& doc = node.GetDocument();
-  WebLocalFrame* node_frame = doc ? doc.GetFrame() : nullptr;
-  WebLocalFrame* expected_frame = frame->GetWebFrame();
-  return expected_frame && node_frame &&
-         expected_frame->GetLocalFrameToken() ==
-             node_frame->GetLocalFrameToken();
-}
-
 bool MaybeWasOwnedByFrame(const WebNode& node, content::RenderFrame* frame) {
   if (!node || !frame) {
     return true;

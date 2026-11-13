@@ -290,8 +290,9 @@ void FormSubmissionTracker::FormControlDidChangeImpl(
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
   // This function may be called asynchronously, so a navigation may have
-  // happened. Since this event isn't submission-related.
-  if (!form_util::IsOwnedByFrame(element, unsafe_render_frame())) {
+  // happened. Since this event isn't submission-related, we can ignore it.
+  if (WebDocument document = GetDocument();
+      !document || !element || document != element.GetDocument()) {
     return;
   }
   WebFormElement form = element.GetOwningFormForAutofill();
@@ -410,7 +411,8 @@ void FormSubmissionTracker::WillSubmitForm(const WebFormElement& form) {
   // form submission event. If we didn't, we would send |form| to an
   // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
   // this form before. See crbug.com/1240247#c13 for details.
-  if (!form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
+  if (WebDocument document = GetDocument();
+      !document || !form || document != form.GetDocument()) {
     return;
   }
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form);

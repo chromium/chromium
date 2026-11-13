@@ -229,14 +229,8 @@ void ClearPreviewedElements(
     base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
         previewed_elements);
 
-// Indicates if |node| is owned by |frame| in the sense of
-// https://dom.spec.whatwg.org/#concept-node-document. Note that being owned by
-// a frame does not require being attached to its DOM.
-bool IsOwnedByFrame(const blink::WebNode& node, content::RenderFrame* frame);
-
 // Returns true if `node` is currently owned by `frame` or its frame is nullptr,
-// in which case the frame is not known anymore. It is a weaker condition than
-// `IsOwnedByFrame(node, frame)`.
+// in which case the frame is not known anymore.
 bool MaybeWasOwnedByFrame(const blink::WebNode& node,
                           content::RenderFrame* frame);
 
