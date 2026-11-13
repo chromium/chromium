@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
@@ -34,10 +35,13 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "remoting/host/chromeos/features.h"
 
 namespace policy {
@@ -488,9 +492,17 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowTroubleshootingTools() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
-  return IsKioskSession(GetCurrentUserSessionType()) &&
-         CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
-             .GetBoolean(ash::prefs::kKioskTroubleshootingToolsEnabled);
+  if (!IsKioskSession(GetCurrentUserSessionType())) {
+    return false;
+  }
+  // TODO(crbug.com/278643115): Take `account_id` in the constructor.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  return CHECK_DEREF(CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                                     active_session->account_id()))
+                         .GetProfilePrefs())
+      .GetBoolean(ash::prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {

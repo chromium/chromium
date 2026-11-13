@@ -18,14 +18,15 @@
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "record.pb.h"
 
 namespace {
@@ -116,11 +117,21 @@ void EventBasedLogUploaderImpl::UploadEventBasedLogs(
   event_type_ = event_type;
   on_upload_completed_ = std::move(on_upload_completed);
 
-  Profile* profile = !user_manager::UserManager::Get()->IsUserLoggedIn()
-                         ? Profile::FromBrowserContext(
-                               CHECK_DEREF(ash::BrowserContextHelper::Get())
-                                   .GetSigninBrowserContext())
-                         : ProfileManager::GetActiveUserProfile();
+  // Event-based log uploads can fire on the login screen or right after login
+  // before async profile creation finishes.
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  content::BrowserContext* browser_context =
+      active_session
+          ? CHECK_DEREF(ash::BrowserContextHelper::Get())
+                .GetBrowserContextByAccountId(active_session->account_id())
+          : nullptr;
+  if (!browser_context) {
+    browser_context =
+        CHECK_DEREF(ash::BrowserContextHelper::Get()).GetSigninBrowserContext();
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 
   upload_id_ = upload_id.value_or(GenerateEventBasedLogUploadId());
   // Initialize SupportToolHandler.

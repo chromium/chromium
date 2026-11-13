@@ -12,13 +12,12 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace policy {
@@ -46,18 +45,17 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsUserLoggedIn() const {
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsUserEnterpriseManaged() const {
-  if (!IsUserLoggedIn()) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return false;
   }
-  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile) {
-    return false;
-  }
-  // TODO(https://crbug.com/1048607): Handle the case when |IsUserLoggedIn|
-  // returns true after Auth success but |IsManaged| returns false before user
-  // policy fetched.
-  return profile->GetProfilePolicyConnector()->IsManaged() &&
-         !profile->IsChild();
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  // Treat unset `is_managed()` before policy status is initialized as unmanaged
+  // so unmanaged users are not signed out prematurely.
+  return user.is_managed().value_or(false) && !user.IsChild();
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginSessionState() const {

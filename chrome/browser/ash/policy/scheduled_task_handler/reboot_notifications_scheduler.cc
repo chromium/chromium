@@ -8,16 +8,22 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/small_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_prefs/user_prefs.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 
 namespace policy {
 namespace {
@@ -316,10 +322,16 @@ void RebootNotificationsScheduler::MaybeShowPendingRebootDialog() {
 }
 
 PrefService* RebootNotificationsScheduler::GetPrefsForActiveProfile() const {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
     return nullptr;
-  return user_prefs::UserPrefs::Get(profile);
+  }
+  // Null before async profile creation finishes or during teardown.
+  return CHECK_DEREF(user_manager::UserManager::Get()->FindUserAndModify(
+                         active_session->account_id()))
+      .GetProfilePrefs();
 }
 
 void RebootNotificationsScheduler::OnRebootButtonClicked() {
@@ -342,9 +354,17 @@ void RebootNotificationsScheduler::CloseNotifications() {
 }
 
 bool RebootNotificationsScheduler::ShouldWaitFullRestoreInit() const {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  CHECK(browser_context);
   return ash::full_restore::FullRestoreServiceFactory::
-      IsFullRestoreAvailableForProfile(profile);
+      IsFullRestoreAvailableForProfile(
+          Profile::FromBrowserContext(browser_context));
 }
 
 bool RebootNotificationsScheduler::IsPostRebootPrefSet(PrefService* prefs) {

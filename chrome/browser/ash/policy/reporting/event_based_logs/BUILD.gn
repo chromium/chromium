@@ -25,7 +25,6 @@ static_library("event_based_logs") {
     "//chrome/browser/ash/policy/reporting/os_updates",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/support_tool",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",
@@ -33,7 +32,8 @@ static_library("event_based_logs") {
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_factory",
     "//components/reporting/util:status",
-    "//components/user_manager",
+    "//components/session_manager/core",
+    "//content/public/browser",
     "//services/preferences/public/cpp",
   ]
 

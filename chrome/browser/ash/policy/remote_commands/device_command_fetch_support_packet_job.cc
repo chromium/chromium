@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
@@ -53,6 +52,9 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 
 using enterprise_management::FetchSupportPacketResultCode;
 using enterprise_management::FetchSupportPacketResultNote;
@@ -334,14 +336,23 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_session_type_ = GetCurrentUserSessionType();
 
-  // Get sign-in profile on sign-in screen.
-  // TODO: b/252962974 - Remove the dependency to sign-in profile and use
-  // nullptr when user profile isn't created yet.
-  Profile* profile = current_session_type_ == UserSessionType::NO_SESSION
-                         ? Profile::FromBrowserContext(
-                               CHECK_DEREF(ash::BrowserContextHelper::Get())
-                                   .GetSigninBrowserContext())
-                         : ProfileManager::GetActiveUserProfile();
+  // Use the sign-in profile on the login screen.
+  // TODO(crbug.com/252962974): Remove the dependency on the sign-in profile and
+  // pass `nullptr` when the user profile isn't created yet.
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  content::BrowserContext* browser_context = nullptr;
+  if (active_session) {
+    browser_context =
+        CHECK_DEREF(ash::BrowserContextHelper::Get())
+            .GetBrowserContextByAccountId(active_session->account_id());
+    CHECK(browser_context);
+  } else {
+    browser_context =
+        CHECK_DEREF(ash::BrowserContextHelper::Get()).GetSigninBrowserContext();
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   // Initialize SupportToolHandler with the requested details.
   support_tool_handler_ = GetSupportToolHandler(
       support_packet_details_.issue_case_id,
