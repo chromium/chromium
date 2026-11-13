@@ -302,8 +302,12 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   content::RenderFrameHost* child_frame =
       content::ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child_frame);
+  // Focus the field without a user gesture. With a gesture, the renderer
+  // offers automatic generation on focus when a screen reader is enabled, and
+  // that popup would outlive the frame focus change below.
   ASSERT_TRUE(content::ExecJs(
-      child_frame, "document.getElementById('password_field').focus()"));
+      child_frame, "document.getElementById('password_field').focus()",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   content::FocusWebContentsOnFrame(WebContents(), child_frame);
   ASSERT_EQ(WebContents()->GetFocusedFrame(), child_frame);
 
