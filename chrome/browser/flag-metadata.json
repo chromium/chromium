@@ -6481,7 +6481,7 @@
       "tmartino@chromium.org",
       "bling-transactions-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "ios-passkey-modal-login-with-shim",
@@ -6490,7 +6490,7 @@
       "tmartino@chromium.org",
       "bling-transactions-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "ios-password-manager-actor-login",
