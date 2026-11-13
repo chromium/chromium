@@ -41,6 +41,7 @@ class GlobalMediaControlsCastStartTest;
 }  // namespace ash
 
 namespace content {
+class MediaSession;
 class WebContents;
 }  // namespace content
 
@@ -148,6 +149,7 @@ class MediaNotificationService
   }
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
+  static void SetMediaSessionForTest(content::MediaSession* media_session);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ash::MediaNotificationProviderObserver:

@@ -38,6 +38,9 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_media_session.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -192,6 +195,7 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
   }
 
   void TearDown() override {
+    MediaNotificationService::SetMediaSessionForTest(nullptr);
     media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
     MediaNotificationServiceTest::TearDown();
   }
@@ -309,6 +313,10 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForSession(const std::string& id) {
     return service()->CreateCastDialogControllerForSession(id);
+  }
+
+  MockWebContentsPresentationManager* presentation_manager() {
+    return presentation_manager_.get();
   }
 
  private:
@@ -626,6 +634,135 @@ TEST_F(MediaNotificationServiceCastTest,
   const media_router::CastModeSet mode = {
       media_router::MediaCastMode::REMOTE_PLAYBACK};
   EXPECT_EQ(mode, query_result_manager->GetSupportedCastModes());
+}
+
+TEST_F(
+    MediaNotificationServiceCastTest,
+    CreateCastDialogController_CrossOriginDefaultPresentationRequestAllowsRemotePlayback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  content::PresentationRequest default_request(
+      main_rfh()->GetGlobalId(), {GURL("https://receiver.example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  presentation_manager()->SetDefaultPresentationRequest(default_request);
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("child_frame");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://subframe.example.org"), child_rfh);
+
+  content::MockMediaSession mock_media_session;
+  EXPECT_CALL(mock_media_session, GetRoutedFrame())
+      .WillRepeatedly(testing::Return(child_rfh));
+  MediaNotificationService::SetMediaSessionForTest(&mock_media_session);
+
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* session_item = GetNotificationSessionItem(id);
+  ASSERT_NE(nullptr, session_item);
+
+  // Send MediaSessionInfo with RemotePlaybackMetadata to `session_item`.
+  auto session_info = MediaSessionInfo::New();
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New("vp8", "opus", false,
+                                                        false, "", false);
+  session_info->is_controllable = true;
+  session_item->MediaSessionInfoChanged(std::move(session_info));
+
+  // The cross-origin default presentation request should not prevent
+  // initializing with RemotePlayback.
+  std::unique_ptr<media_router::CastDialogController>
+      controller_remote_playback =
+          CreateCastDialogControllerForSession(id.ToString());
+  ASSERT_NE(nullptr, controller_remote_playback);
+  std::unique_ptr<media_router::MediaRouteStarter> starter =
+      controller_remote_playback->TakeMediaRouteStarter();
+  const auto* query_result_manager = starter->GetQueryResultManagerForTesting();
+  const media_router::CastModeSet expected_mode = {
+      media_router::MediaCastMode::REMOTE_PLAYBACK};
+  EXPECT_EQ(expected_mode, query_result_manager->GetSupportedCastModes());
+}
+
+TEST_F(
+    MediaNotificationServiceCastTest,
+    CreateCastDialogController_CrossOriginDefaultPresentationRequestBlocksDefaultSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  content::PresentationRequest default_request(
+      main_rfh()->GetGlobalId(), {GURL("https://receiver.example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  presentation_manager()->SetDefaultPresentationRequest(default_request);
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("child_frame");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://subframe.example.org"), child_rfh);
+
+  content::MockMediaSession mock_media_session;
+  EXPECT_CALL(mock_media_session, GetRoutedFrame())
+      .WillRepeatedly(testing::Return(child_rfh));
+  MediaNotificationService::SetMediaSessionForTest(&mock_media_session);
+
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* session_item = GetNotificationSessionItem(id);
+  ASSERT_NE(nullptr, session_item);
+
+  // No RemotePlaybackMetadata is sent, so RemotePlayback cannot be used.
+  // Because the default presentation request belongs to the main frame and the
+  // media session is routed to a cross-origin subframe, the service must not
+  // attach the unrelated default presentation request to the subframe session.
+  EXPECT_EQ(nullptr, CreateCastDialogControllerForSession(id.ToString()));
+}
+
+TEST_F(
+    MediaNotificationServiceCastTest,
+    CreateCastDialogController_SameOriginDefaultPresentationRequestPrefersPresentation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  content::PresentationRequest default_request(
+      main_rfh()->GetGlobalId(), {GURL("https://receiver.example.com")},
+      url::Origin::Create(GURL("https://example.com")));
+  presentation_manager()->SetDefaultPresentationRequest(default_request);
+
+  content::MockMediaSession mock_media_session;
+  EXPECT_CALL(mock_media_session, GetRoutedFrame())
+      .WillRepeatedly(testing::Return(main_rfh()));
+  MediaNotificationService::SetMediaSessionForTest(&mock_media_session);
+
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  auto* session_item = GetNotificationSessionItem(id);
+  ASSERT_NE(nullptr, session_item);
+
+  // Send MediaSessionInfo with RemotePlaybackMetadata to `session_item`.
+  auto session_info = MediaSessionInfo::New();
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New("vp8", "opus", false,
+                                                        false, "", false);
+  session_info->is_controllable = true;
+  session_item->MediaSessionInfoChanged(std::move(session_info));
+
+  // When the default presentation request matches the session's routed frame
+  // origin, presentation is preferred over RemotePlayback.
+  std::unique_ptr<media_router::CastDialogController> controller =
+      CreateCastDialogControllerForSession(id.ToString());
+  ASSERT_NE(nullptr, controller);
+  std::unique_ptr<media_router::MediaRouteStarter> starter =
+      controller->TakeMediaRouteStarter();
+  const auto* query_result_manager = starter->GetQueryResultManagerForTesting();
+  EXPECT_TRUE(query_result_manager->GetSupportedCastModes().contains(
+      media_router::MediaCastMode::PRESENTATION));
+  EXPECT_FALSE(query_result_manager->GetSupportedCastModes().contains(
+      media_router::MediaCastMode::REMOTE_PLAYBACK));
 }
 
 TEST_F(MediaNotificationServiceCastTest,
