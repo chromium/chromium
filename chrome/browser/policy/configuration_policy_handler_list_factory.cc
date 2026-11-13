@@ -326,6 +326,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAutoplayAllowlist,
     prefs::kAutoplayAllowlist,
     base::Value::Type::LIST },
+  { key::kBuiltInAIAPIsEnabled,
+    policy_prefs::kBuiltInAIAPIsEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kClipboardAllowedForUrls,
     prefs::kManagedClipboardAllowedForUrls,
     base::Value::Type::LIST },
@@ -2512,11 +2515,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebAudioOutputBufferingEnabled,
     prefs::kWebAudioOutputBufferingEnabled,
     base::Value::Type::BOOLEAN },
-#if !BUILDFLAG(IS_ANDROID)
-  { key::kBuiltInAIAPIsEnabled,
-    policy_prefs::kBuiltInAIAPIsEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   { key::kNTPFooterManagementNoticeEnabled,
     prefs::kNTPFooterManagementNoticeEnabled,
