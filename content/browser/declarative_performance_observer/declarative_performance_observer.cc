@@ -219,6 +219,11 @@ void DeclarativePerformanceObserver::OnPrerenderActivation(
 void DeclarativePerformanceObserver::OnVisibilityChanged(
     Visibility visibility) {
   CHECK(render_frame_host().IsActive());
+  // Once the first transition to HIDDEN has finalized the session, ignore
+  // subsequent visibility transitions so the session is not reopened.
+  if (is_session_ended_) {
+    return;
+  }
   if (enabled_types_.contains(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
     base::DictValue entry;
@@ -228,6 +233,11 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
     entry.Set("startTime", relative_time.InMillisecondsF());
     entry.Set("duration", 0.0);
     AddEntryToBuffer(std::move(entry));
+  }
+  if (visibility == Visibility::HIDDEN) {
+    // Backgrounded pages may be discarded or terminated without running unload;
+    // dispatch the buffered session report immediately.
+    EndSessionAndFlush();
   }
 }
 
@@ -350,6 +360,12 @@ void DeclarativePerformanceObserver::BindReceiver(
 
 void DeclarativePerformanceObserver::DidObservePerformanceEntries(
     std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries) {
+  // Once the session has been finalized (e.g. on the first transition to
+  // HIDDEN), drop entries arriving while the document remains open so they do
+  // not accumulate in memory until teardown.
+  if (is_session_ended_) {
+    return;
+  }
   for (auto& entry : entries) {
     switch (entry->which()) {
       case blink::mojom::DeclarativePerformanceEntry::Tag::kMark: {

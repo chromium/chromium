@@ -460,4 +460,35 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(all_reports[2].contains("ERR_EMPTY_RESPONSE"));
 }
 
+// Verifies end-to-end that hiding an active WebContents dispatches the session
+// report over HTTP without waiting for navigation or frame destruction, and
+// that subsequent foreground return and teardown do not emit a second report.
+IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
+                       SendsReportImmediatelyOnVisibilityHidden) {
+  GURL observer_url = https_server()->GetURL(
+      "origin1.com", "/declarative-performance-observer-page");
+  GURL cross_site_url =
+      https_server()->GetURL("origin2.com", "/clear-site-data");
+
+  EXPECT_TRUE(NavigateToURL(shell(), observer_url));
+  shell()->web_contents()->WasHidden();
+  WaitForReportCount(1u);
+
+  std::vector<std::string> reports = GetReceivedReports();
+  ASSERT_EQ(reports.size(), 1u);
+  EXPECT_TRUE(reports[0].contains("\"hidden\""));
+  EXPECT_TRUE(reports[0].contains("session-end"));
+
+  shell()->web_contents()->WasShown();
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  RenderFrameHostWrapper old_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(NavigateToURL(shell(), cross_site_url));
+  ASSERT_TRUE(old_rfh.WaitUntilRenderFrameDeleted());
+  storage_partition()->FlushNetworkInterfaceForTesting();
+
+  EXPECT_EQ(GetReceivedReports().size(), 1u);
+}
+
 }  // namespace content

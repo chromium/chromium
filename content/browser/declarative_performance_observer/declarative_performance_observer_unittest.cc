@@ -230,14 +230,17 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityStateOnCommit) {
   EXPECT_EQ(*(endEntry->FindString("name")), "session-end-event");
 }
 
-TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
+// Verifies that the first transition to `Visibility::HIDDEN` immediately
+// dispatches the single session report and ignores subsequent visibility
+// transitions and marks.
+TEST_F(DeclarativePerformanceObserverTest, FlushesOnceOnFirstVisibilityHidden) {
   const GURL kPageURL("https://example.com/index.html");
   const std::string kEndpoint("telemetry");
 
   auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
   policy->reporting_endpoint = kEndpoint;
-  policy->entry_types.push_back(
-      network::mojom::PerformanceEntryType::kVisibilityState);
+  policy->entry_types = {network::mojom::PerformanceEntryType::kVisibilityState,
+                         network::mojom::PerformanceEntryType::kMark};
 
   MockNavigationHandle navigation_handle(kPageURL, main_rfh());
   navigation_handle.set_has_committed(true);
@@ -252,38 +255,34 @@ TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
       DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
   ASSERT_TRUE(observer);
 
-  observer->OnVisibilityChanged(Visibility::HIDDEN);
-  observer->OnVisibilityChanged(Visibility::VISIBLE);
+  auto make_mark = [](const char* name) {
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+    entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewMark(
+        blink::mojom::DeclarativePerformanceMark::New(
+            name, base::Milliseconds(120), std::nullopt)));
+    return entries;
+  };
 
-  // Trigger unload to flush metrics
-  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+  observer->DidObservePerformanceEntries(make_mark("load_mark"));
+  observer->OnVisibilityChanged(Visibility::HIDDEN);
 
   ASSERT_EQ(network_context_.reports().size(), 1u);
+  ASSERT_EQ(network_context_.send_reports_for_source_calls().size(), 1u);
 
-  const auto& report = network_context_.reports()[0];
-  const base::ListValue* entries = report.body.FindList("entries");
+  const base::ListValue* entries =
+      network_context_.reports()[0].body.FindList("entries");
   ASSERT_TRUE(entries);
   ASSERT_EQ(entries->size(), 4u);
+  EXPECT_EQ(*(*entries)[0].GetDict().FindString("name"), "visible");
+  EXPECT_EQ(*(*entries)[1].GetDict().FindString("name"), "load_mark");
+  EXPECT_EQ(*(*entries)[2].GetDict().FindString("name"), "hidden");
+  EXPECT_EQ(*(*entries)[3].GetDict().FindString("entryType"), "session-end");
 
-  const base::Value& entry0_val = (*entries)[0];
-  const base::DictValue* entry0 = entry0_val.GetIfDict();
-  ASSERT_TRUE(entry0);
-  EXPECT_EQ(*(entry0->FindString("name")), "visible");
-
-  const base::Value& entry1_val = (*entries)[1];
-  const base::DictValue* entry1 = entry1_val.GetIfDict();
-  ASSERT_TRUE(entry1);
-  EXPECT_EQ(*(entry1->FindString("name")), "hidden");
-
-  const base::Value& entry2_val = (*entries)[2];
-  const base::DictValue* entry2 = entry2_val.GetIfDict();
-  ASSERT_TRUE(entry2);
-  EXPECT_EQ(*(entry2->FindString("name")), "visible");
-
-  const base::Value& entry3_val = (*entries)[3];
-  const base::DictValue* entry3 = entry3_val.GetIfDict();
-  ASSERT_TRUE(entry3);
-  EXPECT_EQ(*(entry3->FindString("entryType")), "session-end");
+  observer->OnVisibilityChanged(Visibility::VISIBLE);
+  observer->DidObservePerformanceEntries(make_mark("post_hidden_mark"));
+  observer->OnVisibilityChanged(Visibility::HIDDEN);
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+  EXPECT_EQ(network_context_.reports().size(), 1u);
 }
 
 TEST_F(DeclarativePerformanceObserverTest, RecordsNavigationTiming) {
