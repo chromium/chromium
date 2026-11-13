@@ -15189,6 +15189,7 @@
                         "PartitionAllocWithAdvancedChecks"
                     ],
                     "disable_features": [
+                        "ExcludeOopRasterizationFromSafetyChecks",
                         "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
                     ],
                     "disable_benchmarking": true
