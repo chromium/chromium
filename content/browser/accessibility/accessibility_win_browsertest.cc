@@ -844,7 +844,7 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckIA2Role(
 
 void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleValue(
     IAccessible* accessible) {
-  // Don't check the value if if's a DOCUMENT role, because the value
+  // Don't check the value if it's a DOCUMENT role, because the value
   // is supposed to be the url (and we don't keep track of that in the
   // test expectations).
   base::win::ScopedVariant role;
