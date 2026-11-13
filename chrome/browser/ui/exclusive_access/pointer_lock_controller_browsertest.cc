@@ -220,3 +220,28 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
                    ->pointer_lock_controller()
                    ->IsPointerLocked());
 }
+
+IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
+                       FullscreenAfterSilentPointerLock) {
+  RequestToLockPointer(/*user_gesture=*/true,
+                       /*last_unlocked_by_target=*/false);
+  // Wait for the pointer lock bubble to dismiss so the next lock is silent.
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  LostPointerLock();
+  RequestToLockPointer(/*user_gesture=*/true,
+                       /*last_unlocked_by_target=*/true);
+
+  ASSERT_TRUE(GetExclusiveAccessManager()
+                  ->pointer_lock_controller()
+                  ->IsPointerLocked());
+  ASSERT_TRUE(GetExclusiveAccessManager()
+                  ->pointer_lock_controller()
+                  ->IsPointerLockedSilently());
+
+  // Enter tab fullscreen while silently locked.
+  EnterActiveTabFullscreen();
+
+  // Fullscreen exit instruction should be displayed.
+  EXPECT_EQ(EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
+            GetExclusiveAccessBubbleType());
+}

@@ -108,15 +108,12 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
     }
 
-    if (pointer_lock_controller_.IsPointerLockedSilently()) {
-      return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
-    }
-
     if (keyboard_lock_controller_.RequiresPressAndHoldEscToExit()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
     }
 
-    if (pointer_lock_controller_.IsPointerLocked()) {
+    if (pointer_lock_controller_.IsPointerLocked() &&
+        !pointer_lock_controller_.IsPointerLockedSilently()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION;
     }
 
