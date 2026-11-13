@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
@@ -141,6 +142,9 @@ class BottomSheetCoordinator
     /** Observer for inset changes. */
     private InsetObserver mInsetObserver;
 
+    private @Nullable WindowInsetsAnimationListener mWindowInsetsAnimationListener;
+    private @Nullable OnLayoutChangeListener mContainerLayoutChangeListener;
+
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
@@ -200,6 +204,14 @@ class BottomSheetCoordinator
     /** Called when the activity containing the {@link BottomSheetCoordinator} is destroyed. */
     void destroy() {
         mIsDestroyed = true;
+        if (mWindowInsetsAnimationListener != null) {
+            mInsetObserver.removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
+            mWindowInsetsAnimationListener = null;
+        }
+        if (mContainerLayoutChangeListener != null) {
+            mSheetContainer.removeOnLayoutChangeListener(mContainerLayoutChangeListener);
+            mContainerLayoutChangeListener = null;
+        }
         mMediator.destroy();
         endAnimations();
     }
@@ -268,11 +280,12 @@ class BottomSheetCoordinator
         sizeAndPositionSheetInParent();
 
         // Listen to height changes on the root.
-        mSheetContainer.addOnLayoutChangeListener(
+        mContainerLayoutChangeListener =
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                        onContainerLayoutChange(left, top, right, bottom, keyboardDelegate));
+                        onContainerLayoutChange(left, top, right, bottom, keyboardDelegate);
+        mSheetContainer.addOnLayoutChangeListener(mContainerLayoutChangeListener);
 
-        mInsetObserver.addWindowInsetsAnimationListener(
+        mWindowInsetsAnimationListener =
                 new WindowInsetsAnimationListener() {
                     @Override
                     public void onPrepare(WindowInsetsAnimationCompat animation) {
@@ -298,7 +311,8 @@ class BottomSheetCoordinator
                         onInsetChanged();
                         mMediator.notifyInsetAnimationEnd();
                     }
-                });
+                };
+        mInsetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
 
         // Listen to height changes on the toolbar.
         mMediator.setToolbarSizeChangedCallback(

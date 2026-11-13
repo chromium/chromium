@@ -803,6 +803,31 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testDestroy_CleansUpObservers() {
+        verify(mInsetObserver)
+                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        mBottomSheet.destroy();
+
+        verify(mInsetObserver).removeWindowInsetsAnimationListener(listener);
+
+        // Verify that layout changes on the container are no longer observed after destroy.
+        measureAndLayoutContainer(SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT + 100);
+        assertEquals(
+                SHEET_CONTAINER_HEIGHT, mBottomSheet.getSheetContainerHeight(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testDestroy_BeforeInit_DoesNotThrow() {
+        BottomSheetCoordinator uninitializedSheet =
+                inflateAndAttachSheet(/* isLargeFormFactor= */ false);
+        // Calling destroy before init() must not throw NullPointerException.
+        uninitializedSheet.destroy();
+    }
+
+    @Test
     public void testRevertStateOnKeyboardHiding() {
         setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =
