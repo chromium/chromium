@@ -93,6 +93,9 @@ class NetworkSpeechRecognitionEngineImplTest
   void ProvideMockResponseStartDownstreamIfNeeded();
   void ProvideMockProtoResultDownstream(
       const proto::SpeechRecognitionEvent& result);
+  // Writes |response_string| (already length-prefixed) to the downstream pipe
+  // in one go.
+  void ProvideMockRawDataDownstream(const std::string& response_string);
   void ProvideMockResultDownstream(
       const media::mojom::WebSpeechRecognitionResultPtr& result);
   void ExpectResultsReceived(
@@ -369,6 +372,34 @@ TEST_F(NetworkSpeechRecognitionEngineImplTest, NetworkError) {
   ASSERT_EQ(0U, results_.size());
 }
 
+// An error status aborts recognition. Any chunks that arrived in the same
+// network read after the error must be dropped rather than dispatched.
+TEST_F(NetworkSpeechRecognitionEngineImplTest, ChunksAfterErrorAreDropped) {
+  StartMockRecognition();
+  ASSERT_TRUE(GetUpstreamRequest());
+  ASSERT_EQ("", ConsumeChunkedUploadData());
+
+  InjectDummyAudioChunk();
+  ASSERT_NE("", ConsumeChunkedUploadData());
+
+  proto::SpeechRecognitionEvent error_event;
+  error_event.set_status(proto::SpeechRecognitionEvent::STATUS_NO_SPEECH);
+  proto::SpeechRecognitionEvent result_event;
+  result_event.set_status(proto::SpeechRecognitionEvent::STATUS_SUCCESS);
+  proto::SpeechRecognitionResult* result = result_event.add_result();
+  result->set_final(true);
+  result->add_alternative()->set_transcript("ignored");
+
+  // Write both chunks at once so they are delivered in a single read.
+  ProvideMockRawDataDownstream(SerializeProtobufResponse(error_event) +
+                               SerializeProtobufResponse(result_event));
+
+  ASSERT_FALSE(engine_under_test_->IsRecognitionPending());
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNoSpeech, error_);
+  EXPECT_EQ(0U, results_.size());
+  EndMockRecognition();
+}
+
 TEST_F(NetworkSpeechRecognitionEngineImplTest, Stability) {
   StartMockRecognition();
   ASSERT_TRUE(GetUpstreamRequest());
@@ -642,11 +673,15 @@ void NetworkSpeechRecognitionEngineImplTest::
 
 void NetworkSpeechRecognitionEngineImplTest::ProvideMockProtoResultDownstream(
     const proto::SpeechRecognitionEvent& result) {
+  ProvideMockRawDataDownstream(SerializeProtobufResponse(result));
+}
+
+void NetworkSpeechRecognitionEngineImplTest::ProvideMockRawDataDownstream(
+    const std::string& response_string) {
   ProvideMockResponseStartDownstreamIfNeeded();
   ASSERT_TRUE(downstream_data_pipe_.get());
   ASSERT_TRUE(downstream_data_pipe_.is_valid());
 
-  std::string response_string = SerializeProtobufResponse(result);
   response_buffer_.append(response_string);
   base::span<const uint8_t> bytes_to_write =
       base::as_byte_span(response_string);

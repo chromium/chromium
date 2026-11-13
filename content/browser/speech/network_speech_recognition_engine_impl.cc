@@ -698,6 +698,7 @@ NetworkSpeechRecognitionEngineImpl::Abort(
   downstream_loader_.reset();
   upstream_loader_.reset();
   encoder_.reset();
+  chunked_byte_buffer_.Clear();
   return STATE_IDLE;
 }
 
