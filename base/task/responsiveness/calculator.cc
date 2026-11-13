@@ -8,10 +8,14 @@
 #include <set>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
@@ -23,6 +27,8 @@ namespace responsiveness {
 
 namespace {
 
+SecondarySources* g_secondary_sources = nullptr;
+
 // We divide the measurement interval into discretized time slices. Each slice
 // is marked as congested if it contained a congested task. A congested task is
 // one whose execution latency is greater than kCongestionThreshold.
@@ -31,8 +37,8 @@ constexpr auto kMeasurementPeriod = base::Seconds(30);
 // A task or event longer than kCongestionThreshold is considered congested.
 constexpr auto kCongestionThreshold = base::Milliseconds(100);
 
-// If there have been no events/tasks on the UI thread for a significant period
-// of time, it's likely because Chrome was suspended.
+// If there have been no events/tasks on the main thread for a significant
+// period of time, it's likely because Chrome was suspended.
 // This value is copied from queueing_time_estimator.cc:kInvalidPeriodThreshold.
 constexpr auto kSuspendInterval = base::Seconds(30);
 
@@ -89,6 +95,19 @@ void AddCongestedSlices(std::set<int>* congested_slices,
   }
 }
 
+void RecordCongestion(Calculator::SourceCongestions& source,
+                      base::TimeTicks queue_time,
+                      base::TimeTicks execution_start_time,
+                      base::TimeTicks execution_finish_time) {
+  if (execution_finish_time - queue_time >= kCongestionThreshold) {
+    source.congestion.emplace_back(queue_time, execution_finish_time);
+    if (execution_finish_time - execution_start_time >= kCongestionThreshold) {
+      source.execution_congestion.emplace_back(execution_start_time,
+                                               execution_finish_time);
+    }
+  }
+}
+
 }  // namespace
 
 Calculator::Congestion::Congestion(base::TimeTicks start_time,
@@ -97,91 +116,117 @@ Calculator::Congestion::Congestion(base::TimeTicks start_time,
   CHECK_LE(start_time, end_time, base::NotFatalUntil::M160);
 }
 
+Calculator::SourceCongestions::SourceCongestions(std::string_view name)
+    : name(name) {}
+Calculator::SourceCongestions::SourceCongestions(
+    std::string name,
+    CongestionList execution_congestion,
+    CongestionList congestion)
+    : name(std::move(name)),
+      execution_congestion(std::move(execution_congestion)),
+      congestion(std::move(congestion)) {}
+Calculator::SourceCongestions::SourceCongestions(SourceCongestions&&) = default;
+Calculator::SourceCongestions& Calculator::SourceCongestions::operator=(
+    SourceCongestions&&) = default;
+Calculator::SourceCongestions::~SourceCongestions() = default;
+
+Calculator::SourceCongestions Calculator::SourceCongestions::TakeOlderThanTime(
+    base::TimeTicks end_time) {
+  return SourceCongestions(
+      name,
+      Calculator::TakeCongestionsOlderThanTime(&execution_congestion, end_time),
+      Calculator::TakeCongestionsOlderThanTime(&congestion, end_time));
+}
+
+void Calculator::SourceCongestions::Clear() {
+  execution_congestion.clear();
+  congestion.clear();
+}
+
 Calculator::Calculator(
-    std::unique_ptr<ResponsivenessCalculatorDelegate> delegate)
-    : last_calculation_time_(base::TimeTicks::Now()),
+    std::unique_ptr<ResponsivenessCalculatorDelegate> delegate,
+    std::string_view histogram_prefix)
+    : Calculator(std::move(delegate), histogram_prefix, Config{}) {}
+
+Calculator::Calculator(
+    std::unique_ptr<ResponsivenessCalculatorDelegate> delegate,
+    std::string_view histogram_prefix,
+    Config config)
+    : histogram_prefix_(histogram_prefix),
+      consume_secondary_sources_(config.consume_secondary_sources),
+      main_thread_source_(config.main_source_name),
+      last_calculation_time_(base::TimeTicks::Now()),
       most_recent_activity_time_(last_calculation_time_),
       delegate_(std::move(delegate)),
       congestion_track_(
           kCongestionTrack,
-          static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this)))
+          static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this))) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (consume_secondary_sources_) {
+    SecondarySources::Get()->AttachConsumer();
+  }
 #if BUILDFLAG(IS_ANDROID)
-      ,
-      application_status_listener_(
-          base::android::ApplicationStatusListener::New(
-              base::BindRepeating(&Calculator::OnApplicationStateChanged,
-                                  // Listener is destroyed at destructor, and
-                                  // object will be alive for any callback.
-                                  base::Unretained(this)))) {
-  // This class assumes construction and access from the UI thread from all
-  // methods that aren't explicitly flagged otherwise (i.e. *OnIOThread()).
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
-  DETACH_FROM_SEQUENCE(io_thread_sequence_checker_);
-
-  OnApplicationStateChanged(
-      base::android::ApplicationStatusListener::GetState());
-}
-#else
-{
-  DETACH_FROM_SEQUENCE(io_thread_sequence_checker_);
-}
+  if (config.observe_application_status) {
+    application_status_listener_ =
+        base::android::ApplicationStatusListener::New(
+            base::BindRepeating(&Calculator::OnApplicationStateChanged,
+                                // Listener is destroyed at destructor, and
+                                // object will be alive for any callback.
+                                base::Unretained(this)));
+    OnApplicationStateChanged(
+        base::android::ApplicationStatusListener::GetState());
+  }
 #endif
+}
 
 Calculator::~Calculator() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (consume_secondary_sources_) {
+    SecondarySources::Get()->DetachConsumer();
+  }
 }
 
-void Calculator::TaskOrEventFinishedOnUIThread(
+void Calculator::TaskOrEventFinishedOnMainThread(
     base::TimeTicks queue_time,
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   // TODO(crbug.com/565336492): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK_GE(execution_start_time, queue_time);
 
-  if (execution_finish_time - queue_time >= kCongestionThreshold) {
-    GetCongestionOnUIThread().emplace_back(queue_time, execution_finish_time);
-    if (execution_finish_time - execution_start_time >= kCongestionThreshold) {
-      GetExecutionCongestionOnUIThread().emplace_back(execution_start_time,
-                                                      execution_finish_time);
-    }
-  }
+  RecordCongestion(main_thread_source_, queue_time, execution_start_time,
+                   execution_finish_time);
 
   // We rely on the assumption that |finish_time| is the current time.
   CalculateResponsivenessIfNecessary(/*current_time=*/execution_finish_time);
 }
 
-void Calculator::TaskOrEventFinishedOnIOThread(
-    base::TimeTicks queue_time,
-    base::TimeTicks execution_start_time,
-    base::TimeTicks execution_finish_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
-  // TODO(crbug.com/565232676): CHECK-exclusion: Convert to a CHECK once we
-  // are confident it won't be triggered.
-  DCHECK_GE(execution_start_time, queue_time);
-
-  if (execution_finish_time - queue_time >= kCongestionThreshold) {
-    base::AutoLock lock(io_thread_lock_);
-    congestion_on_io_thread_.emplace_back(queue_time, execution_finish_time);
-    if (execution_finish_time - execution_start_time >= kCongestionThreshold) {
-      execution_congestion_on_io_thread_.emplace_back(execution_start_time,
-                                                      execution_finish_time);
-    }
-  }
-}
-
 void Calculator::OnFirstIdle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   CHECK(!past_first_idle_, base::NotFatalUntil::M160);
   past_first_idle_ = true;
 }
 
 void Calculator::EmitResponsiveness(CongestionType congestion_type,
                                     size_t num_congested_slices,
-                                    StartupStage startup_stage,
                                     uint64_t event_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
+  base::trace_event::HistogramScope scoped_event(event_id);
+  const std::string base_histogram_name =
+      StrCat({histogram_prefix_, ".MainThreadsCongestion"});
+  EmitResponsivenessHistograms(base_histogram_name, congestion_type,
+                               num_congested_slices,
+                               /*notify_delegate=*/true);
+}
+
+void Calculator::EmitResponsivenessHistograms(
+    std::string_view base_histogram_name,
+    CongestionType congestion_type,
+    size_t num_congested_slices,
+    bool notify_delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   static constexpr size_t kMaxCongestedSlices =
       kMeasurementPeriod / kCongestionThreshold;
@@ -191,21 +236,20 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
   CHECK_LE(num_congested_slices, kMaxCongestedSlices,
            base::NotFatalUntil::M160);
   const int sample = checked_cast<int>(num_congested_slices);
-  base::trace_event::HistogramScope scoped_event(event_id);
   switch (congestion_type) {
     case CongestionType::kExecutionOnly: {
       base::UmaHistogramCustomCounts(
-          "Browser.MainThreadsCongestion.RunningOnly", sample, 1, 1000,
+          StrCat({base_histogram_name, ".RunningOnly"}), sample, 1, 1000,
           kBucketCount);
       // Only kFirstInterval and kPeriodic are reported with a suffix, stages
       // in between are only part of the unsuffixed histogram.
       if (startup_stage_ == StartupStage::kFirstInterval) {
         base::UmaHistogramCustomCounts(
-            "Browser.MainThreadsCongestion.RunningOnly.Initial", sample, 1,
+            StrCat({base_histogram_name, ".RunningOnly.Initial"}), sample, 1,
             1000, kBucketCount);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         base::UmaHistogramCustomCounts(
-            "Browser.MainThreadsCongestion.RunningOnly.Periodic", sample, 1,
+            StrCat({base_histogram_name, ".RunningOnly.Periodic"}), sample, 1,
             1000, kBucketCount);
       }
       break;
@@ -216,20 +260,20 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
           startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
         break;
       }
-      base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion", sample, 1,
+      base::UmaHistogramCustomCounts(base_histogram_name, sample, 1,
                                      kMaxCongestedSlicesInt, kBucketCount);
-      if (delegate_) {
+      if (notify_delegate && delegate_) {
         delegate_->OnResponsivenessEmitted(sample, 1, kMaxCongestedSlicesInt,
                                            kBucketCount);
       }
       if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
-        base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Initial",
-                                       sample, 1, kMaxCongestedSlicesInt,
-                                       kBucketCount);
+        base::UmaHistogramCustomCounts(
+            StrCat({base_histogram_name, ".Initial"}), sample, 1,
+            kMaxCongestedSlicesInt, kBucketCount);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
-        base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Periodic",
-                                       sample, 1, kMaxCongestedSlicesInt,
-                                       kBucketCount);
+        base::UmaHistogramCustomCounts(
+            StrCat({base_histogram_name, ".Periodic"}), sample, 1,
+            kMaxCongestedSlicesInt, kBucketCount);
       }
       break;
     }
@@ -238,11 +282,11 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
 
 void Calculator::EmitResponsivenessTraceEvents(
     CongestionType congestion_type,
-    StartupStage startup_stage,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     const std::set<int>& congested_slices,
     uint64_t event_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   // Only output kCongestedIntervalsMeasurementEvent event when there are
   // congested slices during the measurement.
   if (congested_slices.empty()) {
@@ -253,11 +297,11 @@ void Calculator::EmitResponsivenessTraceEvents(
   // measurement.
   if (congestion_type == CongestionType::kQueueAndExecution) {
     EmitCongestedIntervalsMeasurementTraceEvent(
-        startup_stage, start_time, end_time, congested_slices.size(), event_id);
+        start_time, end_time, congested_slices.size(), event_id);
     // Since a lot of startup tasks are queue and then released, queuing
     // congestion is very noisy and thus ignored before OnFirstIdle().
-    if (startup_stage == StartupStage::kFirstInterval ||
-        startup_stage == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
+    if (startup_stage_ == StartupStage::kFirstInterval ||
+        startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
       return;
     }
   }
@@ -289,13 +333,13 @@ void Calculator::EmitResponsivenessTraceEvents(
 }
 
 void Calculator::EmitCongestedIntervalsMeasurementTraceEvent(
-    StartupStage startup_stage,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     size_t num_congested_slices,
     uint64_t event_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   TRACE_EVENT_BEGIN(kLatencyEventCategory,
-                    GetCongestedIntervalsMeasurementEvent(startup_stage),
+                    GetCongestedIntervalsMeasurementEvent(startup_stage_),
                     congestion_track_, start_time);
   TRACE_EVENT_END(kLatencyEventCategory, congestion_track_, end_time,
                   perfetto::Flow::Global(event_id));
@@ -311,13 +355,18 @@ void Calculator::EmitCongestedIntervalTraceEvent(CongestionType congestion_type,
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   return last_calculation_time_;
+}
+
+Calculator::StartupStage Calculator::GetStartupStageForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  return startup_stage_;
 }
 
 void Calculator::CalculateResponsivenessIfNecessary(
     base::TimeTicks current_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   base::TimeTicks last_activity_time = most_recent_activity_time_;
   most_recent_activity_time_ = current_time;
@@ -326,11 +375,17 @@ void Calculator::CalculateResponsivenessIfNecessary(
   // [e.g. machine is asleep, process is backgrounded on Android]. We don't have
   // an explicit signal for this. Instead, we rely on the assumption that when
   // Chrome is not suspended, there is a steady stream of tasks and events on
-  // the UI thread. If there's been a significant amount of time since the last
-  // calculation, then it's likely because Chrome was suspended.
+  // the main thread. If there's been a significant amount of time since the
+  // last activity, then it's likely because Chrome was suspended.
+  // TODO(crbug.com/545547273): In child processes where the main thread can be
+  // idle for >30s while secondary threads (e.g. Compositor or IO) remain active
+  // and congested, secondary-thread congestions in that window are currently
+  // discarded when the main thread next runs a task.
   bool is_suspended = current_time - last_activity_time > kSuspendInterval;
 #if BUILDFLAG(IS_ANDROID)
-  is_suspended |= !is_application_visible_;
+  if (application_status_listener_) {
+    is_suspended |= !is_application_visible_;
+  }
 #endif
   if (is_suspended) {
     // Notify the delegate that the interval ended so that it can reset its
@@ -339,12 +394,9 @@ void Calculator::CalculateResponsivenessIfNecessary(
       delegate_->OnMeasurementIntervalEnded();
     }
     last_calculation_time_ = current_time;
-    GetExecutionCongestionOnUIThread().clear();
-    GetCongestionOnUIThread().clear();
-    {
-      base::AutoLock lock(io_thread_lock_);
-      execution_congestion_on_io_thread_.clear();
-      congestion_on_io_thread_.clear();
+    main_thread_source_.Clear();
+    if (consume_secondary_sources_) {
+      SecondarySources::Get()->Clear();
     }
     return;
   }
@@ -361,22 +413,14 @@ void Calculator::CalculateResponsivenessIfNecessary(
   const base::TimeTicks new_calculation_time =
       current_time - (time_since_last_calculation % kMeasurementPeriod);
 
-  // Acquire the congestions in the measurement interval from the UI and IO
-  // threads.
-  std::vector<CongestionList> execution_congestion_from_multiple_threads;
-  std::vector<CongestionList> congestion_from_multiple_threads;
-  execution_congestion_from_multiple_threads.push_back(
-      TakeCongestionsOlderThanTime(&GetExecutionCongestionOnUIThread(),
-                                   new_calculation_time));
-  congestion_from_multiple_threads.push_back(TakeCongestionsOlderThanTime(
-      &GetCongestionOnUIThread(), new_calculation_time));
-  {
-    base::AutoLock lock(io_thread_lock_);
-    execution_congestion_from_multiple_threads.push_back(
-        TakeCongestionsOlderThanTime(&execution_congestion_on_io_thread_,
-                                     new_calculation_time));
-    congestion_from_multiple_threads.push_back(TakeCongestionsOlderThanTime(
-        &congestion_on_io_thread_, new_calculation_time));
+  // Acquire the congestions in the measurement interval from the main and
+  // secondary sources.
+  std::vector<SourceCongestions> congestions_from_multiple_sources;
+  congestions_from_multiple_sources.push_back(
+      main_thread_source_.TakeOlderThanTime(new_calculation_time));
+  if (consume_secondary_sources_) {
+    SecondarySources::Get()->TakeCongestionsOlderThanTime(
+        congestions_from_multiple_sources, new_calculation_time);
   }
 
   if (delegate_) {
@@ -384,10 +428,10 @@ void Calculator::CalculateResponsivenessIfNecessary(
   }
 
   CalculateResponsiveness(CongestionType::kQueueAndExecution,
-                          std::move(congestion_from_multiple_threads),
+                          congestions_from_multiple_sources,
                           last_calculation_time_, new_calculation_time);
   CalculateResponsiveness(CongestionType::kExecutionOnly,
-                          std::move(execution_congestion_from_multiple_threads),
+                          congestions_from_multiple_sources,
                           last_calculation_time_, new_calculation_time);
 
   if (startup_stage_ == StartupStage::kFirstInterval) {
@@ -406,10 +450,10 @@ void Calculator::CalculateResponsivenessIfNecessary(
 
 void Calculator::CalculateResponsiveness(
     CongestionType congestion_type,
-    std::vector<CongestionList> congestions_from_multiple_threads,
+    const std::vector<SourceCongestions>& congestions_from_multiple_sources,
     base::TimeTicks start_time,
     base::TimeTicks end_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   while (start_time < end_time) {
     const base::TimeTicks current_interval_end_time =
@@ -425,17 +469,34 @@ void Calculator::CalculateResponsiveness(
     //   The slice [80035, 80135] is labeled 299.
     std::set<int> congested_slices;
 
-    for (const CongestionList& congestions :
-         congestions_from_multiple_threads) {
-      for (const Congestion& congestion : congestions) {
-        AddCongestedSlices(&congested_slices, congestion, start_time,
-                           current_interval_end_time);
+    for (const SourceCongestions& source : congestions_from_multiple_sources) {
+      const CongestionList& congestions =
+          congestion_type == CongestionType::kExecutionOnly
+              ? source.execution_congestion
+              : source.congestion;
+      if (!source.name.empty()) {
+        std::set<int> source_congested_slices;
+        for (const Congestion& congestion : congestions) {
+          AddCongestedSlices(&source_congested_slices, congestion, start_time,
+                             current_interval_end_time);
+        }
+        const std::string breakdown_histogram_name =
+            StrCat({histogram_prefix_, ".MainThreadsCongestion.", source.name});
+        EmitResponsivenessHistograms(breakdown_histogram_name, congestion_type,
+                                     source_congested_slices.size(),
+                                     /*notify_delegate=*/false);
+        congested_slices.insert(source_congested_slices.begin(),
+                                source_congested_slices.end());
+      } else {
+        for (const Congestion& congestion : congestions) {
+          AddCongestedSlices(&congested_slices, congestion, start_time,
+                             current_interval_end_time);
+        }
       }
     }
 
     uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
-    EmitResponsiveness(congestion_type, congested_slices.size(), startup_stage_,
-                       event_id);
+    EmitResponsiveness(congestion_type, congested_slices.size(), event_id);
 
     // If the 'latency' tracing category is enabled and we are ready to observe
     // queuing times (past first idle), emit trace events for the measurement
@@ -444,7 +505,7 @@ void Calculator::CalculateResponsiveness(
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory,
                                        &latency_category_enabled);
     if (latency_category_enabled) {
-      EmitResponsivenessTraceEvents(congestion_type, startup_stage_, start_time,
+      EmitResponsivenessTraceEvents(congestion_type, start_time,
                                     current_interval_end_time, congested_slices,
                                     event_id);
     }
@@ -453,20 +514,10 @@ void Calculator::CalculateResponsiveness(
   }
 }
 
-Calculator::CongestionList& Calculator::GetExecutionCongestionOnUIThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
-  return execution_congestion_on_ui_thread_;
-}
-
-Calculator::CongestionList& Calculator::GetCongestionOnUIThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
-  return congestion_on_ui_thread_;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void Calculator::OnApplicationStateChanged(
     base::android::ApplicationState state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   switch (state) {
     case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
     case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
@@ -510,6 +561,90 @@ Calculator::CongestionList Calculator::TakeCongestionsOlderThanTime(
                      });
   congestions->erase(congestions->begin(), first_congestion_to_keep);
   return congestions_to_return;
+}
+
+SecondarySources::SecondarySources() {
+  CHECK(!g_secondary_sources);
+  g_secondary_sources = this;
+}
+
+SecondarySources::~SecondarySources() {
+  {
+    base::AutoLock lock(lock_);
+    CHECK(!has_consumer_);
+  }
+  CHECK_EQ(g_secondary_sources, this);
+  g_secondary_sources = nullptr;
+}
+
+// static
+SecondarySources* SecondarySources::Get() {
+  return g_secondary_sources;
+}
+
+void SecondarySources::AttachConsumer() {
+  base::AutoLock lock(lock_);
+  CHECK(!has_consumer_);
+  has_consumer_ = true;
+}
+
+void SecondarySources::DetachConsumer() {
+  base::AutoLock lock(lock_);
+  CHECK(has_consumer_);
+  has_consumer_ = false;
+  for (Calculator::SourceCongestions& source : sources_) {
+    source.Clear();
+  }
+}
+
+SecondarySources::SourceId SecondarySources::RegisterSource(
+    std::string_view source_name) {
+  base::AutoLock lock(lock_);
+  if (!source_name.empty()) {
+    CHECK(!std::ranges::contains(sources_, source_name,
+                                 &Calculator::SourceCongestions::name));
+  }
+  sources_.emplace_back(source_name);
+  return SourceId(sources_.size());
+}
+
+void SecondarySources::RecordTaskOrEvent(
+    SourceId source_id,
+    base::TimeTicks queue_time,
+    base::TimeTicks execution_start_time,
+    base::TimeTicks execution_finish_time) {
+  // TODO(crbug.com/565232676): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_GE(execution_start_time, queue_time);
+  if (execution_finish_time - queue_time < kCongestionThreshold) {
+    return;
+  }
+  base::AutoLock lock(lock_);
+  if (!has_consumer_) {
+    return;
+  }
+  CHECK(!source_id.is_null());
+  const size_t index = source_id.value() - 1;
+  CHECK_LT(index, sources_.size());
+  RecordCongestion(sources_[index], queue_time, execution_start_time,
+                   execution_finish_time);
+}
+
+void SecondarySources::TakeCongestionsOlderThanTime(
+    std::vector<Calculator::SourceCongestions>& out,
+    base::TimeTicks end_time) {
+  base::AutoLock lock(lock_);
+  out.reserve(out.size() + sources_.size());
+  for (Calculator::SourceCongestions& source : sources_) {
+    out.push_back(source.TakeOlderThanTime(end_time));
+  }
+}
+
+void SecondarySources::Clear() {
+  base::AutoLock lock(lock_);
+  for (Calculator::SourceCongestions& source : sources_) {
+    source.Clear();
+  }
 }
 
 }  // namespace responsiveness

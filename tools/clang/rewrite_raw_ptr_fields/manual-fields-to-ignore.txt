@@ -262,7 +262,6 @@ cc::TilingSetRasterQueueRequired::TilingIterator::tiling_
 cc::TilingSetRasterQueueRequired::TilingIterator::tiling_data_
 content::FrameTree::NodeIterator::current_node_
 content::FrameTree::NodeIterator::root_of_subtree_to_skip_
-content::responsiveness::Watcher::Metadata::identifier
 mojo::core::UserMessageImpl::header_
 mojo::core::UserMessageImpl::message_event_
 mojo::core::UserMessageImpl::user_payload_
@@ -304,10 +303,6 @@ mojo::internal::MultiplexRouter::header_validator_
 url::CanonOutputT::buffer_
 prefs::ScopedDictionaryPrefUpdate::service_
 prefs::DictionaryValueUpdate::value_
-
-# Type is unsupported by raw_ptr to avoid being used in performance sensitive
-# base::Unretained.
-content::responsiveness::Watcher::calculator_io_
 
 # Hammering down visible nails in stack samples. Thought to hurt renderer
 # performance unacceptably.

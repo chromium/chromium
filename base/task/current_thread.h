@@ -37,6 +37,10 @@ namespace base {
 
 class CallbackListSubscription;
 
+namespace responsiveness {
+class Watcher;
+}  // namespace responsiveness
+
 namespace test {
 bool RunUntil(FunctionRef<bool(void)>);
 void TestPredicateOrRegisterOnNextIdleCallback(base::FunctionRef<bool(void)>,
@@ -150,6 +154,7 @@ class BASE_EXPORT CurrentThread {
 
     friend autofill::NextIdleBarrier;
     friend content::BrowserMainLoop;
+    friend responsiveness::Watcher;
     friend bool test::RunUntil(FunctionRef<bool(void)>);
     friend void test::TestPredicateOrRegisterOnNextIdleCallback(
         base::FunctionRef<bool(void)>,

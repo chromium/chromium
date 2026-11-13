@@ -49,6 +49,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/execution_fence.h"
+#include "base/task/responsiveness/watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -1380,6 +1381,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
       base::HangWatcher::GetInstance()->Start();
     }
+    base::responsiveness::Watcher::EnableForProcess();
 
     // WebView may have already initialized perfetto, so check if we should do
     // it here.

@@ -114,6 +114,7 @@
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
+#include "base/task/responsiveness/watcher.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
 #include "content/app/content_main_runner_impl.h"
 #include "content/app/mojo/mojo_init.h"
@@ -705,6 +706,8 @@ void BrowserTestBase::SetUp() {
     if (command_line->HasSwitch(switches::kDisableBestEffortTasks)) {
       best_effort_fence.emplace();
     }
+
+    base::responsiveness::Watcher::EnableForProcess();
 
     // We can only setup startup tracing after feature list is initialized
     // above.

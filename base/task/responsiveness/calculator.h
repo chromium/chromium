@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <set>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -15,6 +17,7 @@
 #include "base/task/responsiveness/responsiveness_calculator_delegate.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -25,46 +28,67 @@
 namespace base {
 namespace responsiveness {
 
-// This class receives execution latency on events and tasks, and uses that to
-// estimate responsiveness.
+class SecondarySources;
+
+// Aggregates `(queue_time, execution_start_time, execution_finish_time)`
+// tuples from `Watcher` (on the main thread and optionally via
+// `SecondarySources`) into responsiveness histograms and trace events,
+// accounting for startup stages (`OnFirstIdle()`) and process suspension.
 //
-// All members are UI-thread affine, with the exception of |*_on_io_thread_|
-// which are protected by |io_thread_lock_|.
+// Splits each 30s period into 300 100ms slices. For a congested task/event,
+// each point `t = start + k * 100ms` (k >= 1, `t < execution_finish_time`,
+// where `start` is `queue_time`, or `execution_start_time` for `.RunningOnly`)
+// marks its containing 100ms slice as congested:
+// - Union (`<histogram_prefix>.MainThreadsCongestion*`): slices congested on
+//   at least one monitored source.
+// - Breakdown (`<histogram_prefix>.MainThreadsCongestion.<source_name>*`):
+//   slices congested on a specific named source.
+//
+// All members are main-thread affine.
 class BASE_EXPORT Calculator {
  public:
-  explicit Calculator(
-      std::unique_ptr<ResponsivenessCalculatorDelegate> delegate);
+  struct Config {
+    // Optional breakdown histogram suffix for the main thread. When non-empty,
+    // main-thread congestion is also emitted to
+    // `<histogram_prefix>.MainThreadsCongestion.<main_source_name>*` (in
+    // addition to the union histograms).
+    std::string_view main_source_name = "";
+    // Whether to also aggregate congestions from `SecondarySources::Get()`
+    // (which must be non-null and outlive `this` when true; the main thread is
+    // tracked directly by `Calculator` and must not be registered there). When
+    // false, emitted histograms and trace events reflect only main-thread
+    // congestion.
+    bool consume_secondary_sources = false;
+    // Whether to observe `ApplicationStatusListener` on Android to treat
+    // backgrounded browser application states as suspended.
+    bool observe_application_status = false;
+  };
+
+  Calculator(std::unique_ptr<ResponsivenessCalculatorDelegate> delegate,
+             std::string_view histogram_prefix);
+  Calculator(std::unique_ptr<ResponsivenessCalculatorDelegate> delegate,
+             std::string_view histogram_prefix,
+             Config config);
 
   Calculator(const Calculator&) = delete;
   Calculator& operator=(const Calculator&) = delete;
 
   virtual ~Calculator();
 
-  // Must be called from the UI thread.
-  // virtual for testing.
+  // Must be called from the main thread. Virtual for testing.
   // Assumes that |execution_finish_time| is the current time.
   // The implementation will gracefully handle successive calls with unordered
   // |queue_time|s.
-  virtual void TaskOrEventFinishedOnUIThread(
+  virtual void TaskOrEventFinishedOnMainThread(
       base::TimeTicks queue_time,
       base::TimeTicks execution_start_time,
       base::TimeTicks execution_finish_time);
 
-  // Must be called from the IO thread.
-  // virtual for testing.
-  // The implementation will gracefully handle successive calls with unordered
-  // |queue_time|s.
-  virtual void TaskOrEventFinishedOnIOThread(
-      base::TimeTicks queue_time,
-      base::TimeTicks execution_start_time,
-      base::TimeTicks execution_finish_time);
-
-  // Must be invoked once-and-only-once, after the first time the
-  // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
-  // during startup). This will be used as a signal for the true end of
-  // "startup" and the beginning of recording
-  // Browser.MainThreadsCongestion.
-  void OnFirstIdle();
+  // Must be invoked once-and-only-once on the main thread, after it first
+  // reaches idle (done running tasks queued during startup). Signals the end of
+  // startup and starts recording queuing congestion (for all sources). Virtual
+  // for testing.
+  virtual void OnFirstIdle();
 
   // Each congested task/event is fully defined by |start_time| and |end_time|.
   // Note that |duration| = |end_time| - |start_time|.
@@ -73,6 +97,29 @@ class BASE_EXPORT Calculator {
 
     base::TimeTicks start_time;
     base::TimeTicks end_time;
+  };
+
+  using CongestionList = std::vector<Congestion>;
+
+  // Congestions accumulated for a single source, with optional breakdown
+  // histogram suffix `name` (empty = union histograms only). Not thread-safe
+  // (guarded by main-thread affinity in `Calculator` and by `lock_` in
+  // `SecondarySources`).
+  struct BASE_EXPORT SourceCongestions {
+    explicit SourceCongestions(std::string_view name);
+    SourceCongestions(std::string name,
+                      CongestionList execution_congestion,
+                      CongestionList congestion);
+    SourceCongestions(SourceCongestions&&);
+    SourceCongestions& operator=(SourceCongestions&&);
+    ~SourceCongestions();
+
+    SourceCongestions TakeOlderThanTime(base::TimeTicks end_time);
+    void Clear();
+
+    std::string name;
+    CongestionList execution_congestion;
+    CongestionList congestion;
   };
 
   // Types of congestion recorded by this Calculator. Public for testing.
@@ -100,7 +147,6 @@ class BASE_EXPORT Calculator {
   // Exposed for testing.
   virtual void EmitResponsiveness(CongestionType congestion_type,
                                   size_t num_congested_slices,
-                                  StartupStage startup_stage,
                                   uint64_t event_id);
 
   // Emits trace events for responsiveness metric. A trace event is emitted for
@@ -108,7 +154,6 @@ class BASE_EXPORT Calculator {
   // the specific congested slices.
   // Exposed for testing.
   void EmitResponsivenessTraceEvents(CongestionType congestion_type,
-                                     StartupStage startup_stage,
                                      base::TimeTicks start_time,
                                      base::TimeTicks end_time,
                                      const std::set<int>& congested_slices,
@@ -116,7 +161,6 @@ class BASE_EXPORT Calculator {
 
   // Exposed for testing.
   virtual void EmitCongestedIntervalsMeasurementTraceEvent(
-      StartupStage startup_stage,
       base::TimeTicks start_time,
       base::TimeTicks end_time,
       size_t num_congested_slices,
@@ -129,17 +173,17 @@ class BASE_EXPORT Calculator {
 
   // Exposed for testing.
   base::TimeTicks GetLastCalculationTime();
+  StartupStage GetStartupStageForTesting() const;
 
  private:
-  using CongestionList = std::vector<Congestion>;
-
   // If sufficient time has passed since the last calculation, then calculate
   // responsiveness again and update |last_calculation_time_|.
   //
-  // We only trigger this from the UI thread since triggering it from the IO
-  // thread would require us to grab the lock, which could cause contention. We
-  // only need this to trigger every 30s or so, and we generally expect there to
-  // be some activity on the UI thread if Chrome is actually in use.
+  // We only trigger this from the main thread since triggering it from
+  // secondary threads would require us to grab the lock, which could cause
+  // contention. We only need this to trigger every 30s or so, and we generally
+  // expect there to be some activity on the main thread if Chrome is actually
+  // in use.
   void CalculateResponsivenessIfNecessary(base::TimeTicks current_time);
 
   // Responsiveness is calculated by:
@@ -147,21 +191,16 @@ class BASE_EXPORT Calculator {
   //   2) In each interval, looking to see if there is a Congestion. If so, the
   //   interval is marked as |congested|.
   //   3) Computing the percentage of intervals that are congested.
-  //
-  // This method intentionally takes a std::vector<CongestionList>, as we may
-  // want to extend it in the future to take CongestionLists from other
-  // threads/processes.
   void CalculateResponsiveness(
       CongestionType congestion_type,
-      std::vector<CongestionList> congestions_from_multiple_threads,
+      const std::vector<SourceCongestions>& congestions_from_multiple_sources,
       base::TimeTicks start_time,
       base::TimeTicks end_time);
 
-  // Accessors for |execution_congestion_on_ui_thread_| and
-  // ||congestion_on_ui_thread_|. Must be called from the UI
-  // thread.
-  CongestionList& GetExecutionCongestionOnUIThread();
-  CongestionList& GetCongestionOnUIThread();
+  void EmitResponsivenessHistograms(std::string_view base_histogram_name,
+                                    CongestionType congestion_type,
+                                    size_t num_congested_slices,
+                                    bool notify_delegate);
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback invoked when the application state changes.
@@ -176,65 +215,99 @@ class BASE_EXPORT Calculator {
       CongestionList* congestions,
       base::TimeTicks end_time);
 
-  // Congestion from tasks/events with a long execution time on the UI thread.
-  // Should only be accessed via the accessor, which checks that the caller is
-  // on the UI thread.
-  CongestionList execution_congestion_on_ui_thread_;
+  const std::string histogram_prefix_;
+  const bool consume_secondary_sources_;
 
-  // Congestion from tasks/events with a long queueing + execution time on the
-  // UI thread. Should only be accessed via the accessor, which checks that the
-  // caller is on the UI thread.
-  CongestionList congestion_on_ui_thread_;
+  SEQUENCE_CHECKER(main_thread_sequence_checker_);
+
+  // Congestion from tasks/events on the main thread.
+  SourceCongestions main_thread_source_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Stores the current visibility state of the application. Accessed only on
-  // the UI thread.
-  bool is_application_visible_ = false;
+  // Stores the current visibility state of the application.
+  bool is_application_visible_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = false;
 #endif
 
-  StartupStage startup_stage_ = StartupStage::kFirstInterval;
-  bool past_first_idle_ = false;
-
-  // We expect there to be low contention and this lock to cause minimal
-  // overhead. If performance of this lock proves to be a problem, we can move
-  // to a lock-free data structure.
-  base::Lock io_thread_lock_;
-
-  // Congestion from tasks/events with a long execution time on the IO thread.
-  CongestionList execution_congestion_on_io_thread_ GUARDED_BY(io_thread_lock_);
-
-  // Congestion from tasks/events with a long queueing + execution time on the
-  // IO thread.
-  CongestionList congestion_on_io_thread_ GUARDED_BY(io_thread_lock_);
+  StartupStage startup_stage_ GUARDED_BY_CONTEXT(
+      main_thread_sequence_checker_) = StartupStage::kFirstInterval;
+  bool past_first_idle_ GUARDED_BY_CONTEXT(main_thread_sequence_checker_) =
+      false;
 
   // The last time at which metrics were emitted. All congestions older than
   // this time have been consumed. Newer congestions are still in their
   // CongestionLists waiting to be consumed.
-  base::TimeTicks last_calculation_time_;
+  base::TimeTicks last_calculation_time_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
-  // This class keeps track of the time at which any activity occurred on the UI
-  // thread. If a sufficiently long period of time passes without any activity,
-  // then it's assumed that the process was suspended. In this case, we should
-  // not emit any responsiveness metrics.
+  // This class keeps track of the time at which any activity occurred on the
+  // main thread. If a sufficiently long period of time passes without any
+  // activity, then it's assumed that the process was suspended. In this case,
+  // we should not emit any responsiveness metrics.
   //
   // Note that the process may be suspended while a task or event is being
   // executed, so a very long execution time should be treated similarly.
-  base::TimeTicks most_recent_activity_time_;
+  base::TimeTicks most_recent_activity_time_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
   // Used to record embedder-specific responsiveness metrics.
-  std::unique_ptr<ResponsivenessCalculatorDelegate> delegate_;
+  std::unique_ptr<ResponsivenessCalculatorDelegate> delegate_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
-  perfetto::NamedTrack congestion_track_;
-
-  SEQUENCE_CHECKER(ui_thread_sequence_checker_);
-  SEQUENCE_CHECKER(io_thread_sequence_checker_);
+  const perfetto::NamedTrack congestion_track_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Listener for changes in application state, unregisters itself when
   // destroyed.
-  const std::unique_ptr<base::android::ApplicationStatusListener>
-      application_status_listener_;
+  std::unique_ptr<base::android::ApplicationStatusListener>
+      application_status_listener_
+          GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 #endif
+};
+
+// Process-wide registry of secondary sources reporting responsiveness
+// congestions, modeled on `base::HangWatcher`. In production a leaked instance
+// is created via `Watcher::EnableForProcess()`; unit tests instantiate a
+// `SecondarySources` scoped to the test (outliving any attached consumer and
+// secondary-thread registrations).
+class BASE_EXPORT SecondarySources {
+ public:
+  using SourceId = base::IdType<SecondarySources, size_t, 0>;
+
+  SecondarySources();
+  SecondarySources(const SecondarySources&) = delete;
+  SecondarySources& operator=(const SecondarySources&) = delete;
+  ~SecondarySources();
+
+  // Returns the active process-wide registry, or nullptr if none exists.
+  static SecondarySources* Get();
+
+  SourceId RegisterSource(std::string_view source_name = "");
+  void RecordTaskOrEvent(SourceId source_id,
+                         base::TimeTicks queue_time,
+                         base::TimeTicks execution_start_time,
+                         base::TimeTicks execution_finish_time);
+
+  void TakeCongestionsOlderThanTime(
+      std::vector<Calculator::SourceCongestions>& out,
+      base::TimeTicks end_time);
+
+ private:
+  friend class Calculator;
+
+  void AttachConsumer();
+  void DetachConsumer();
+  void Clear();
+
+  // Low contention: acquired by secondary threads only when
+  // `execution_finish_time - queue_time >= 100ms` (plus registration), and by
+  // the main thread every 30s (or on suspend / attach / detach).
+  base::Lock lock_;
+  // Marks whether a `Calculator` is consuming this registry (at most one at a
+  // time). While unattached, `RecordTaskOrEvent()` drops congestions.
+  bool has_consumer_ GUARDED_BY(lock_) = false;
+  std::vector<Calculator::SourceCongestions> sources_ GUARDED_BY(lock_);
 };
 
 }  // namespace responsiveness

@@ -5,6 +5,7 @@
 #include "base/task/responsiveness/calculator.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -39,17 +40,15 @@ class FakeCalculator : public Calculator {
 
   void EmitResponsiveness(CongestionType congestion_type,
                           size_t congested_slices,
-                          StartupStage startup_stage,
                           uint64_t event_id) override {
-    EmitResponsivenessMock(congestion_type, congested_slices, startup_stage);
+    EmitResponsivenessMock(congestion_type, congested_slices,
+                           GetStartupStageForTesting());
     // Emit the histograms anyways for verification in some tests.
-    Calculator::EmitResponsiveness(congestion_type, congested_slices,
-                                   startup_stage, event_id);
+    Calculator::EmitResponsiveness(congestion_type, congested_slices, event_id);
   }
 
-  MOCK_METHOD5(EmitCongestedIntervalsMeasurementTraceEvent,
-               void(StartupStage startup_stage,
-                    base::TimeTicks start_time,
+  MOCK_METHOD4(EmitCongestedIntervalsMeasurementTraceEvent,
+               void(base::TimeTicks start_time,
                     base::TimeTicks end_time,
                     size_t num_congested_slices,
                     uint64_t event_id));
@@ -84,12 +83,15 @@ class MockDelegate : public ResponsivenessCalculatorDelegate {
 class ResponsivenessCalculatorTest : public testing::Test {
  public:
   void SetUp() override {
+    io_source_id_ = secondary_sources_.RegisterSource();
     auto delegate = std::make_unique<
         testing::NiceMock<MockDelegate>>();  // NiceMock because the delegate is
                                              // only verified in one test.
     delegate_ = delegate.get();
     calculator_ = std::make_unique<testing::StrictMock<FakeCalculator>>(
-        std::move(delegate));
+        std::move(delegate), "Browser",
+        Calculator::Config{.consume_secondary_sources = true,
+                           .observe_application_status = true});
     last_calculation_time_ = calculator_->GetLastCalculationTime();
 #if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener::NotifyApplicationStateChange(
@@ -98,10 +100,15 @@ class ResponsivenessCalculatorTest : public testing::Test {
 #endif
   }
 
+  void TearDown() override {
+    delegate_ = nullptr;
+    calculator_.reset();
+  }
+
   void AddEventUI(int queue_time_in_ms,
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
-    calculator_->TaskOrEventFinishedOnUIThread(
+    calculator_->TaskOrEventFinishedOnMainThread(
         last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
         last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
@@ -111,7 +118,8 @@ class ResponsivenessCalculatorTest : public testing::Test {
   void AddEventIO(int queue_time_in_ms,
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
-    calculator_->TaskOrEventFinishedOnIOThread(
+    secondary_sources_.RecordTaskOrEvent(
+        io_source_id_,
         last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
         last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
@@ -127,8 +135,10 @@ class ResponsivenessCalculatorTest : public testing::Test {
  protected:
   test::SingleThreadTaskEnvironment task_environment_;
 
+  SecondarySources secondary_sources_;
   std::unique_ptr<FakeCalculator> calculator_;
   raw_ptr<MockDelegate> delegate_;
+  SecondarySources::SourceId io_source_id_;
   base::TimeTicks last_calculation_time_;
 };
 
@@ -755,13 +765,13 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
   const std::set<int> congested_slices;
 
   uint64_t event_id = 42;
-  EXPECT_CALL(*calculator_, EmitCongestedIntervalsMeasurementTraceEvent(
-                                StartupStage::kPeriodic, _, _, _, event_id))
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _, event_id))
       .Times(0);
 
-  calculator_->EmitResponsivenessTraceEvents(
-      CongestionType::kQueueAndExecution, StartupStage::kPeriodic, kStartTime,
-      kFinishTime, congested_slices, event_id);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
+                                             kStartTime, kFinishTime,
+                                             congested_slices, event_id);
 }
 
 TEST_F(ResponsivenessCalculatorTest,
@@ -774,8 +784,8 @@ TEST_F(ResponsivenessCalculatorTest,
   const std::set<int> congested_slices = {1};
 
   uint64_t event_id = 42;
-  EXPECT_CALL(*calculator_, EmitCongestedIntervalsMeasurementTraceEvent(
-                                StartupStage::kPeriodic, _, _, _, event_id))
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _, event_id))
       .Times(0);
 
   EXPECT_CALL(*calculator_,
@@ -783,9 +793,9 @@ TEST_F(ResponsivenessCalculatorTest,
                                               kStartTime + 1 * kSliceInterval,
                                               kStartTime + 2 * kSliceInterval));
 
-  calculator_->EmitResponsivenessTraceEvents(
-      CongestionType::kExecutionOnly, StartupStage::kPeriodic, kStartTime,
-      kFinishTime, congested_slices, event_id);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kExecutionOnly,
+                                             kStartTime, kFinishTime,
+                                             congested_slices, event_id);
 }
 
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
@@ -795,12 +805,19 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
   constexpr base::TimeTicks kFinishTime =
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
 
+  // Advance past the initial startup interval so `kQueueAndExecution` slice
+  // trace events are emitted.
+  calculator_->OnFirstIdle();
+  AddEventUI(10, 10, 10);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  TriggerCalculation();
+
   const std::set<int> congested_slices = {3, 4, 5, 12, 15};
 
   uint64_t event_id = 42;
-  EXPECT_CALL(*calculator_,
-              EmitCongestedIntervalsMeasurementTraceEvent(
-                  StartupStage::kPeriodic, kStartTime, kFinishTime, 5, 42));
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalsMeasurementTraceEvent(
+                                kStartTime, kFinishTime, 5, 42));
 
   EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
                                 CongestionType::kQueueAndExecution,
@@ -815,9 +832,9 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
                                 kStartTime + 15 * kSliceInterval,
                                 kStartTime + 16 * kSliceInterval));
 
-  calculator_->EmitResponsivenessTraceEvents(
-      CongestionType::kQueueAndExecution, StartupStage::kPeriodic, kStartTime,
-      kFinishTime, congested_slices, event_id);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
+                                             kStartTime, kFinishTime,
+                                             congested_slices, event_id);
 }
 
 TEST_F(ResponsivenessCalculatorTest, Delegate) {
@@ -861,6 +878,77 @@ TEST_F(ResponsivenessCalculatorTest, Delegate) {
   AddEventUI(interval_mid, interval_mid,
              interval_mid + kCongestionThresholdInMs + 20);
   AddEventUI(interval_end, interval_end, interval_end);
+}
+
+// Verifies union calculation and per-source breakdown histograms across a
+// primary thread and multiple secondary sources.
+TEST(ResponsivenessCalculatorMultiSourceTest,
+     MultipleSourcesAndBreakdownHistograms) {
+  test::SingleThreadTaskEnvironment task_environment(
+      test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  SecondarySources secondary_sources;
+  const SecondarySources::SourceId io_source =
+      secondary_sources.RegisterSource("IO");
+  const SecondarySources::SourceId viz_source =
+      secondary_sources.RegisterSource("VizCompositor");
+  const SecondarySources::SourceId scheduler_source =
+      secondary_sources.RegisterSource("Scheduler");
+
+  testing::NiceMock<FakeCalculator> calculator(
+      nullptr, "GPU",
+      Calculator::Config{.main_source_name = "Main",
+                         .consume_secondary_sources = true});
+
+  calculator.OnFirstIdle();
+  const TimeTicks start = calculator.GetLastCalculationTime();
+
+  calculator.TaskOrEventFinishedOnMainThread(
+      start + Seconds(15), start + Seconds(15), start + Seconds(15));
+  calculator.TaskOrEventFinishedOnMainThread(
+      start + Seconds(30) + Milliseconds(1),
+      start + Seconds(30) + Milliseconds(1),
+      start + Seconds(30) + Milliseconds(1));
+
+  const TimeTicks interval2_start = calculator.GetLastCalculationTime();
+
+  calculator.TaskOrEventFinishedOnMainThread(
+      interval2_start + Milliseconds(205), interval2_start + Milliseconds(205),
+      interval2_start + Milliseconds(415));
+  secondary_sources.RecordTaskOrEvent(
+      io_source, interval2_start + Milliseconds(305),
+      interval2_start + Milliseconds(515), interval2_start + Milliseconds(515));
+  secondary_sources.RecordTaskOrEvent(viz_source,
+                                      interval2_start + Milliseconds(905),
+                                      interval2_start + Milliseconds(905),
+                                      interval2_start + Milliseconds(1015));
+  secondary_sources.RecordTaskOrEvent(
+      scheduler_source, interval2_start + Milliseconds(205),
+      interval2_start + Milliseconds(315), interval2_start + Milliseconds(315));
+
+  HistogramTester histograms;
+  calculator.TaskOrEventFinishedOnMainThread(
+      interval2_start + Seconds(30) + Milliseconds(1),
+      interval2_start + Seconds(30) + Milliseconds(1),
+      interval2_start + Seconds(30) + Milliseconds(1));
+
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion", 4, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.Initial", 4, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.RunningOnly", 3, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.Main", 2, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.Main.Initial", 2, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.Main.RunningOnly", 2,
+                                1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.IO", 2, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.IO.RunningOnly", 0,
+                                1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.VizCompositor", 1,
+                                1);
+  histograms.ExpectUniqueSample(
+      "GPU.MainThreadsCongestion.VizCompositor.RunningOnly", 1, 1);
+  histograms.ExpectUniqueSample("GPU.MainThreadsCongestion.Scheduler", 1, 1);
+  histograms.ExpectUniqueSample(
+      "GPU.MainThreadsCongestion.Scheduler.RunningOnly", 0, 1);
 }
 
 }  // namespace responsiveness

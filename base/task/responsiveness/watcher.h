@@ -8,64 +8,115 @@
 #include <stdint.h>
 
 #include <memory>
-#include <variant>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/functional/function_ref.h"
+#include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/responsiveness/calculator.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 
 namespace base {
 
 struct PendingTask;
-class SequencedTaskRunner;
 
 namespace responsiveness {
 
-class Calculator;
 class MessageLoopObserver;
 
-class BASE_EXPORT Watcher : public base::RefCounted<Watcher> {
+// Observes tasks and native OS events on the main thread (`SetUp()`,
+// `WillRunEventOnMainThread()` / `DidRunEventOnMainThread()`) and tasks on
+// secondary threads (`RegisterCurrentThread()`), and feeds `(queue_time,
+// execution_start_time, execution_finish_time)` tuples to an owned `Calculator`
+// (directly on the main thread, or via `SecondarySources` on secondary
+// threads):
+// - Ignores tasks/events that caused reentrancy and immediate tasks posted
+//   before observation started.
+// - Treats queueing time as zero (`queue_time = execution_start_time`) for
+//   delayed tasks, blocked/low-priority tasks, and native events.
+//
+// Instance methods are main-thread affine; `RegisterCurrentThread()` runs on
+// each monitored secondary thread.
+class BASE_EXPORT Watcher {
  public:
-  explicit Watcher(scoped_refptr<SequencedTaskRunner> io_task_runner);
-  void SetUp();
-  virtual void Destroy();
+  struct Config {
+    // Optional breakdown histogram suffix for the main thread. When non-empty,
+    // main-thread congestion is also emitted to
+    // `<histogram_prefix>.MainThreadsCongestion.<main_source_name>*` (in
+    // addition to the union histograms).
+    std::string_view main_source_name = "";
+    // Whether this Watcher's Calculator consumes congestions from
+    // `SecondarySources::Get()` (which must be non-null when true).
+    // Defaults to false so standalone single-thread Watchers do not collide
+    // with a process-wide Watcher.
+    bool consume_secondary_sources = false;
+    // If true, `SetUp()` schedules `OnFirstIdle()` on next main-thread idle to
+    // end startup and begin recording queuing congestion. Set to false when the
+    // owner calls `OnFirstIdle()` manually (e.g. `BrowserMainLoop`, to order it
+    // after `BrowserMainParts::OnFirstIdle()`).
+    bool register_first_idle_callback = true;
+    // Whether to observe `ApplicationStatusListener` on Android to treat
+    // backgrounded browser application states as suspended.
+    bool observe_application_status = false;
+    // Optional delegate notified of measurement intervals and emitted samples.
+    std::unique_ptr<ResponsivenessCalculatorDelegate> delegate;
+  };
 
-  // Must be invoked once-and-only-once, after SetUp(), the first time
-  // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
-  // during startup). This will be used as a signal for the true end of
-  // "startup" and the beginning of recording Browser.MainThreadsCongestion.
-  void OnFirstIdle();
+  explicit Watcher(std::string_view histogram_prefix);
+  Watcher(std::string_view histogram_prefix, Config config);
 
- protected:
-  friend class base::RefCounted<Watcher>;
-
-  // Exposed for tests.
-  virtual std::unique_ptr<Calculator> CreateCalculator();
-  virtual void RegisterMessageLoopObserverUI();
-  virtual void RegisterMessageLoopObserverIO();
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
 
   virtual ~Watcher();
 
-  void SetUpOnIOThread();
-  void TearDownOnUIThread();
-  void TearDownOnIOThread();
+  // Creates the `Calculator`, starts observing tasks on the calling (main)
+  // thread, attaches to `SecondarySources` if `consume_secondary_sources` is
+  // true, and schedules `OnFirstIdle()` if `register_first_idle_callback` is
+  // true. Separated from the constructor so subclasses can override
+  // `CreateCalculator()` / `ShouldRegisterMessageLoopObserver()`.
+  virtual void SetUp();
 
-  void WillRunTaskOnUIThread(const base::PendingTask* task,
-                             bool was_blocked_or_low_priority);
-  void DidRunTaskOnUIThread(const base::PendingTask* task);
+  // Creates the process-wide `SecondarySources` registry. Must be called before
+  // secondary threads start: `RegisterCurrentThread()` is a no-op when
+  // `SecondarySources::Get()` is null (avoiding `MessageLoopObserver` overhead
+  // in unmonitored processes whose threads call `RegisterCurrentThread()`).
+  static void EnableForProcess();
 
-  void WillRunTaskOnIOThread(const base::PendingTask* task,
-                             bool was_blocked_or_low_priority);
-  void DidRunTaskOnIOThread(const base::PendingTask* task);
+  // Registers the calling thread as a secondary thread in
+  // `SecondarySources::Get()` (emitting optional breakdown histograms under
+  // `source_name` when non-empty). Must only be called on process-lifetime
+  // singleton threads (registered sources remain in `SecondarySources` for the
+  // lifetime of the registry, and non-empty `source_name`s must be unique).
+  // Returns an empty runner if no `SecondarySources` exists. Destroy the
+  // returned `ScopedClosureRunner` on
+  // the same thread (e.g. in `CleanUp()` or when `Run()` returns) while
+  // `CurrentThread` is still valid and before the `SecondarySources` is
+  // destroyed.
+  [[nodiscard]] static ScopedClosureRunner RegisterCurrentThread(
+      std::string_view source_name = "");
 
-  void WillRunEventOnUIThread(uintptr_t opaque_identifier);
-  void DidRunEventOnUIThread(uintptr_t opaque_identifier);
+  // Signals the end of startup on the main thread. Called automatically from
+  // SetUp()'s idle callback when `register_first_idle_callback` is true;
+  // otherwise the owner must call it once-and-only-once, after SetUp(), the
+  // first time the main thread reaches idle.
+  void OnFirstIdle();
+
+ protected:
+  // Exposed for tests.
+  virtual std::unique_ptr<Calculator> CreateCalculator();
+  virtual bool ShouldRegisterMessageLoopObserver() const;
+  bool consume_secondary_sources() const { return consume_secondary_sources_; }
+
+  void WillRunEventOnMainThread(uintptr_t opaque_identifier);
+  void DidRunEventOnMainThread(uintptr_t opaque_identifier);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ResponsivenessWatcherTest, TaskForwarding);
@@ -98,61 +149,75 @@ class BASE_EXPORT Watcher : public base::RefCounted<Watcher> {
     bool caused_reentrancy = false;
   };
 
-  // Common implementations for the thread-specific methods.
-  void WillRunTask(const base::PendingTask* task,
-                   bool was_blocked_or_low_priority,
-                   std::vector<Metadata>* currently_running_metadata);
+  // Per-thread task/event observer affine to the sequence on which it is
+  // constructed. Main-thread instances forward directly to `calculator_`;
+  // secondary-thread instances forward directly to `secondary_sources_`.
+  class BASE_EXPORT ThreadObserver {
+   public:
+    ThreadObserver(Calculator* calculator, bool register_message_loop_observer);
+    ThreadObserver(SecondarySources* secondary_sources,
+                   SecondarySources::SourceId secondary_source_id,
+                   bool register_message_loop_observer);
+    ThreadObserver(const ThreadObserver&) = delete;
+    ThreadObserver& operator=(const ThreadObserver&) = delete;
+    ~ThreadObserver();
 
-  // TODO(crbug.com/40287434): After the "ReduceCpuUtilization2" feature is
-  // cleaned up (~January 2025), remove the std::variant in favor of a
-  // base::FunctionRef.
-  using TaskOrEventFinishedSignature = void(base::TimeTicks,
-                                            base::TimeTicks,
-                                            base::TimeTicks);
-  using TaskOrEventFinishedCallback =
-      base::FunctionRef<TaskOrEventFinishedSignature>;
-  // |callback| will either be synchronously invoked, or else never invoked.
-  void DidRunTask(const base::PendingTask* task,
-                  std::vector<Metadata>* currently_running_metadata,
-                  int* mismatched_task_identifiers,
-                  TaskOrEventFinishedCallback callback);
+    void WillRunTask(const base::PendingTask* task,
+                     bool was_blocked_or_low_priority);
+    void DidRunTask(const base::PendingTask* task);
+    void WillRunEvent(uintptr_t opaque_identifier);
+    void DidRunEvent(uintptr_t opaque_identifier);
 
-  scoped_refptr<SequencedTaskRunner> io_task_runner_;
+   private:
+    ThreadObserver(Calculator* calculator,
+                   SecondarySources* secondary_sources,
+                   SecondarySources::SourceId secondary_source_id,
+                   bool register_message_loop_observer);
 
-  // The following members are all affine to the UI thread.
-  std::unique_ptr<Calculator> calculator_;
-  std::unique_ptr<MessageLoopObserver> message_loop_observer_ui_;
-  bool destroy_was_called_ = false;
-  SEQUENCE_CHECKER(ui_sequence_checker_);
+    void RecordTaskOrEventFinished(base::TimeTicks queue_time,
+                                   base::TimeTicks execution_start_time,
+                                   base::TimeTicks execution_finish_time);
 
-  // Metadata for currently running tasks and events on the UI thread.
-  std::vector<Metadata> currently_running_metadata_ui_;
+    // Exactly one of `calculator_` (main-thread observer; outlives `this`
+    // because `~Watcher()` resets `main_thread_observer_` first) or
+    // `secondary_sources_` (secondary-thread observer; outlives all registered
+    // `ThreadObserver`s) is non-null, receiving completed task/event timestamps
+    // via `RecordTaskOrEventFinished()`.
+    const raw_ptr<Calculator> calculator_ = nullptr;
+    const raw_ptr<SecondarySources> secondary_sources_ = nullptr;
+    const SecondarySources::SourceId secondary_source_id_;
 
-  // Task identifiers should only be mismatched once, since the Watcher may
-  // register itself during a Task execution, and thus doesn't capture the
-  // initial WillRunTask() callback.
-  int mismatched_task_identifiers_ui_ = 0;
+    SEQUENCE_CHECKER(sequence_checker_);
 
-  // Event identifiers should be mismatched at most once, since the Watcher may
-  // register itself during an event execution, and thus doesn't capture the
-  // initial WillRunEventOnUIThread callback.
-  int mismatched_event_identifiers_ui_ = 0;
+    std::vector<Metadata> currently_running_metadata_
+        GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The following members are all affine to the IO thread.
-  std::unique_ptr<MessageLoopObserver> message_loop_observer_io_;
-  std::vector<Metadata> currently_running_metadata_io_;
-  int mismatched_task_identifiers_io_ = 0;
-  SEQUENCE_CHECKER(io_sequence_checker_);
+    // Task/event identifiers should be mismatched at most once, since the
+    // observer may register itself during a task or event execution and thus
+    // miss the initial WillRun* callback.
+    int mismatched_task_identifiers_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+    int mismatched_event_identifiers_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  // The implementation of this class guarantees that |calculator_io_| will be
-  // non-nullptr and point to a valid object any time it is used on the IO
-  // thread. To ensure this, the first task that this class posts onto the IO
-  // thread sets |calculator_io_|. On destruction, this class first tears down
-  // all consumers of |calculator_io_|, and then clears the member and destroys
-  // Calculator.
-  // `calculator_io_` is not a raw_ptr<...> because Calculator isn't supported
-  // in raw_ptr for performance reasons. See crbug.com/1287151.
-  RAW_PTR_EXCLUSION Calculator* calculator_io_ = nullptr;
+    std::unique_ptr<MessageLoopObserver> message_loop_observer_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+  };
+
+  const std::string histogram_prefix_;
+  const std::string main_source_name_;
+  const bool consume_secondary_sources_;
+  const bool register_first_idle_callback_;
+  const bool observe_application_status_;
+
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  std::unique_ptr<ResponsivenessCalculatorDelegate> delegate_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  CallbackListSubscription idle_callback_subscription_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  std::unique_ptr<Calculator> calculator_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  std::unique_ptr<ThreadObserver> main_thread_observer_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
 };
 
 }  // namespace responsiveness

@@ -389,7 +389,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // END Members initialized in |PostCreateThreads()| --------------------------
 
   // Members initialized in |PreMainMessageLoopRun()| --------------------------
-  scoped_refptr<base::responsiveness::Watcher> responsiveness_watcher_;
+  std::unique_ptr<base::responsiveness::Watcher> responsiveness_watcher_;
   base::CallbackListSubscription idle_callback_subscription_;
 
   // Members not associated with a specific phase.

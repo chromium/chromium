@@ -5,19 +5,18 @@
 #include "base/task/responsiveness/watcher.h"
 
 #include <utility>
-#include <variant>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/pending_task.h"
-#include "base/power_monitor/power_monitor.h"
+#include "base/task/current_thread.h"
 #include "base/task/responsiveness/calculator.h"
 #include "base/task/responsiveness/message_loop_observer.h"
 #include "base/task/responsiveness/responsiveness_calculator_delegate.h"
-#include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
 
 namespace base {
 namespace responsiveness {
@@ -30,106 +29,90 @@ Watcher::Metadata::Metadata(uintptr_t identifier,
       execution_start_time(execution_start_time) {}
 
 std::unique_ptr<Calculator> Watcher::CreateCalculator() {
-  return std::make_unique<Calculator>(nullptr);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  return std::make_unique<Calculator>(
+      std::move(delegate_), histogram_prefix_,
+      Calculator::Config{
+          .main_source_name = main_source_name_,
+          .consume_secondary_sources = consume_secondary_sources_,
+          .observe_application_status = observe_application_status_});
 }
 
-void Watcher::RegisterMessageLoopObserverUI() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  message_loop_observer_ui_ = std::make_unique<MessageLoopObserver>(
-      base::BindRepeating(&Watcher::WillRunTaskOnUIThread,
-                          base::Unretained(this)),
-      base::BindRepeating(&Watcher::DidRunTaskOnUIThread,
-                          base::Unretained(this)));
+Watcher::ThreadObserver::ThreadObserver(Calculator* calculator,
+                                        bool register_message_loop_observer)
+    : ThreadObserver(calculator,
+                     /*secondary_sources=*/nullptr,
+                     SecondarySources::SourceId(),
+                     register_message_loop_observer) {
+  CHECK(calculator_);
 }
 
-void Watcher::RegisterMessageLoopObserverIO() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  message_loop_observer_io_ = std::make_unique<MessageLoopObserver>(
-      base::BindRepeating(&Watcher::WillRunTaskOnIOThread,
-                          base::Unretained(this)),
-      base::BindRepeating(&Watcher::DidRunTaskOnIOThread,
-                          base::Unretained(this)));
+Watcher::ThreadObserver::ThreadObserver(
+    SecondarySources* secondary_sources,
+    SecondarySources::SourceId secondary_source_id,
+    bool register_message_loop_observer)
+    : ThreadObserver(/*calculator=*/nullptr,
+                     secondary_sources,
+                     secondary_source_id,
+                     register_message_loop_observer) {
+  CHECK(secondary_sources_);
 }
 
-void Watcher::WillRunTaskOnUIThread(const base::PendingTask* task,
-                                    bool was_blocked_or_low_priority) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-
-  WillRunTask(task, was_blocked_or_low_priority,
-              &currently_running_metadata_ui_);
+Watcher::ThreadObserver::ThreadObserver(
+    Calculator* calculator,
+    SecondarySources* secondary_sources,
+    SecondarySources::SourceId secondary_source_id,
+    bool register_message_loop_observer)
+    : calculator_(calculator),
+      secondary_sources_(secondary_sources),
+      secondary_source_id_(secondary_source_id) {
+  currently_running_metadata_.reserve(5);
+  if (register_message_loop_observer) {
+    message_loop_observer_ = std::make_unique<MessageLoopObserver>(
+        base::BindRepeating(&ThreadObserver::WillRunTask,
+                            base::Unretained(this)),
+        base::BindRepeating(&ThreadObserver::DidRunTask,
+                            base::Unretained(this)));
+  }
 }
 
-void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-
-  // Capturing `this` is safe because the callback is invoked synchronously by
-  // `DidRunTask()`.
-  auto lambda = [this](base::TimeTicks queue_time,
-                       base::TimeTicks execution_start_time,
-                       base::TimeTicks execution_finish_time) {
-    calculator_->TaskOrEventFinishedOnUIThread(queue_time, execution_start_time,
-                                               execution_finish_time);
-  };
-  DidRunTask(task, &currently_running_metadata_ui_,
-             &mismatched_task_identifiers_ui_, lambda);
+Watcher::ThreadObserver::~ThreadObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void Watcher::WillRunTaskOnIOThread(const base::PendingTask* task,
-                                    bool was_blocked_or_low_priority) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+void Watcher::ThreadObserver::WillRunTask(const base::PendingTask* task,
+                                          bool was_blocked_or_low_priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  WillRunTask(task, was_blocked_or_low_priority,
-              &currently_running_metadata_io_);
-}
-
-void Watcher::DidRunTaskOnIOThread(const base::PendingTask* task) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-
-  // Capturing `this` is safe because the callback is invoked synchronously by
-  // `DidRunTask()`.
-  auto lambda = [this](base::TimeTicks queue_time,
-                       base::TimeTicks execution_start_time,
-                       base::TimeTicks execution_finish_time) {
-    calculator_io_->TaskOrEventFinishedOnIOThread(
-        queue_time, execution_start_time, execution_finish_time);
-  };
-  DidRunTask(task, &currently_running_metadata_io_,
-             &mismatched_task_identifiers_io_, lambda);
-}
-
-void Watcher::WillRunTask(const base::PendingTask* task,
-                          bool was_blocked_or_low_priority,
-                          std::vector<Metadata>* currently_running_metadata) {
   // Reentrancy should be rare.
-  if (!currently_running_metadata->empty()) [[unlikely]] {
-    currently_running_metadata->back().caused_reentrancy = true;
+  if (!currently_running_metadata_.empty()) [[unlikely]] {
+    currently_running_metadata_.back().caused_reentrancy = true;
   }
 
   const base::TimeTicks execution_start_time = base::TimeTicks::Now();
-  currently_running_metadata->emplace_back(reinterpret_cast<uintptr_t>(task),
+  currently_running_metadata_.emplace_back(reinterpret_cast<uintptr_t>(task),
                                            was_blocked_or_low_priority,
                                            execution_start_time);
 }
 
-void Watcher::DidRunTask(const base::PendingTask* task,
-                         std::vector<Metadata>* currently_running_metadata,
-                         int* mismatched_task_identifiers,
-                         TaskOrEventFinishedCallback callback) {
+void Watcher::ThreadObserver::DidRunTask(const base::PendingTask* task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Calls to DidRunTask should always be paired with WillRunTask. The only time
-  // the identifier should differ is when Watcher is first constructed. The
-  // TaskRunner Observers may be added while a task is being run, which means
-  // that there was no corresponding WillRunTask.
-  if (currently_running_metadata->empty() ||
+  // the identifier should differ is when the observer is first constructed
+  // while a task is already running, which means there was no corresponding
+  // WillRunTask.
+  if (currently_running_metadata_.empty() ||
       (reinterpret_cast<uintptr_t>(task) !=
-       currently_running_metadata->back().identifier)) [[unlikely]] {
-    *mismatched_task_identifiers += 1;
+       currently_running_metadata_.back().identifier)) [[unlikely]] {
+    mismatched_task_identifiers_ += 1;
     // Mismatches can happen, so just ignore them for now. See
     // https://crbug.com/929813 and https://crbug.com/931874 for details.
-    return currently_running_metadata->clear();
+    return currently_running_metadata_.clear();
   }
 
-  const Metadata metadata = currently_running_metadata->back();
-  currently_running_metadata->pop_back();
+  const Metadata metadata = currently_running_metadata_.back();
+  currently_running_metadata_.pop_back();
 
   // Ignore tasks that caused reentrancy, since their execution latency will
   // be very large, but Chrome was still responsive.
@@ -166,43 +149,43 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   // confident it won't be triggered.
   DCHECK_LE(metadata.execution_start_time, execution_finish_time);
 
-  callback(queue_time, metadata.execution_start_time, execution_finish_time);
+  RecordTaskOrEventFinished(queue_time, metadata.execution_start_time,
+                            execution_finish_time);
 }
 
-void Watcher::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+void Watcher::ThreadObserver::WillRunEvent(uintptr_t opaque_identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Reentrancy should be rare.
-  if (!currently_running_metadata_ui_.empty()) [[unlikely]] {
-    currently_running_metadata_ui_.back().caused_reentrancy = true;
+  if (!currently_running_metadata_.empty()) [[unlikely]] {
+    currently_running_metadata_.back().caused_reentrancy = true;
   }
 
   const base::TimeTicks execution_start_time = base::TimeTicks::Now();
-  currently_running_metadata_ui_.emplace_back(
-      opaque_identifier, /* was_blocked_or_low_priority= */ false,
+  currently_running_metadata_.emplace_back(
+      opaque_identifier, /*was_blocked_or_low_priority=*/false,
       execution_start_time);
 }
 
-void Watcher::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+void Watcher::ThreadObserver::DidRunEvent(uintptr_t opaque_identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Calls to DidRunEventOnUIThread should always be paired with
-  // WillRunEventOnUIThread. The only time the identifier should differ is when
-  // Watcher is first constructed. The TaskRunner Observers may be added while a
-  // task is being run, which means that there was no corresponding WillRunTask.
-  if (currently_running_metadata_ui_.empty() ||
-      (opaque_identifier != currently_running_metadata_ui_.back().identifier))
+  // Calls to DidRunEvent should always be paired with WillRunEvent. The only
+  // time the identifier should differ is when the observer is first constructed
+  // during an event execution.
+  if (currently_running_metadata_.empty() ||
+      (opaque_identifier != currently_running_metadata_.back().identifier))
       [[unlikely]] {
-    mismatched_event_identifiers_ui_ += 1;
-    // See comment in DidRunTask() for why |currently_running_metadata_ui_| may
-    // be reset.
-    return currently_running_metadata_ui_.clear();
+    mismatched_event_identifiers_ += 1;
+    // See comment in DidRunTask() for why `currently_running_metadata_` may be
+    // reset.
+    return currently_running_metadata_.clear();
   }
 
   const bool caused_reentrancy =
-      currently_running_metadata_ui_.back().caused_reentrancy;
+      currently_running_metadata_.back().caused_reentrancy;
   const base::TimeTicks execution_start_time =
-      currently_running_metadata_ui_.back().execution_start_time;
-  currently_running_metadata_ui_.pop_back();
+      currently_running_metadata_.back().execution_start_time;
+  currently_running_metadata_.pop_back();
 
   // Ignore events that caused reentrancy, since their execution latency will
   // be very large, but Chrome was still responsive.
@@ -212,67 +195,95 @@ void Watcher::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
 
   const base::TimeTicks queue_time = execution_start_time;
   const base::TimeTicks execution_finish_time = base::TimeTicks::Now();
-  calculator_->TaskOrEventFinishedOnUIThread(queue_time, execution_start_time,
-                                             execution_finish_time);
+  RecordTaskOrEventFinished(queue_time, execution_start_time,
+                            execution_finish_time);
 }
 
-Watcher::Watcher(scoped_refptr<SequencedTaskRunner> io_task_runner)
-    : io_task_runner_(std::move(io_task_runner)) {
-  DETACH_FROM_SEQUENCE(io_sequence_checker_);
+void Watcher::ThreadObserver::RecordTaskOrEventFinished(
+    base::TimeTicks queue_time,
+    base::TimeTicks execution_start_time,
+    base::TimeTicks execution_finish_time) {
+  if (secondary_sources_) {
+    secondary_sources_->RecordTaskOrEvent(secondary_source_id_, queue_time,
+                                          execution_start_time,
+                                          execution_finish_time);
+  } else {
+    calculator_->TaskOrEventFinishedOnMainThread(
+        queue_time, execution_start_time, execution_finish_time);
+  }
 }
+
+bool Watcher::ShouldRegisterMessageLoopObserver() const {
+  return true;
+}
+
+void Watcher::WillRunEventOnMainThread(uintptr_t opaque_identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  main_thread_observer_->WillRunEvent(opaque_identifier);
+}
+
+void Watcher::DidRunEventOnMainThread(uintptr_t opaque_identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  main_thread_observer_->DidRunEvent(opaque_identifier);
+}
+
+Watcher::Watcher(std::string_view histogram_prefix)
+    : Watcher(histogram_prefix, Config{}) {}
+
+Watcher::Watcher(std::string_view histogram_prefix, Config config)
+    : histogram_prefix_(histogram_prefix),
+      main_source_name_(config.main_source_name),
+      consume_secondary_sources_(config.consume_secondary_sources),
+      register_first_idle_callback_(config.register_first_idle_callback),
+      observe_application_status_(config.observe_application_status),
+      delegate_(std::move(config.delegate)) {}
 
 Watcher::~Watcher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  idle_callback_subscription_ = {};
+  main_thread_observer_.reset();
+  calculator_.reset();
 }
 
 void Watcher::SetUp() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  CHECK(!calculator_);
 
-  // Set up |calculator_| before SetUpOnIOThread() uses |calculator_|.
   calculator_ = CreateCalculator();
-  currently_running_metadata_ui_.reserve(5);
+  main_thread_observer_ = std::make_unique<ThreadObserver>(
+      calculator_.get(), ShouldRegisterMessageLoopObserver());
 
-  RegisterMessageLoopObserverUI();
-  io_task_runner_->PostTask(FROM_HERE, base::BindOnce(&Watcher::SetUpOnIOThread,
-                                                      base::Unretained(this)));
+  if (register_first_idle_callback_) {
+    idle_callback_subscription_ =
+        CurrentThread::Get()->RegisterOnNextIdleCallback(
+            CurrentThread::RegisterOnNextIdleCallbackPasskey(),
+            base::BindOnce(&Watcher::OnFirstIdle, base::Unretained(this)));
+  }
 }
 
-void Watcher::Destroy() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  CHECK(!destroy_was_called_, base::NotFatalUntil::M160);
-  destroy_was_called_ = true;
+// static
+void Watcher::EnableForProcess() {
+  static base::NoDestructor<SecondarySources> secondary_sources;
+}
 
-  message_loop_observer_ui_.reset();
-
-  // `base::Unretained(this)` is safe because the reply callback holds a
-  // reference via `base::RetainedRef(this)`, keeping `this` alive across both
-  // `TearDownOnIOThread()` and `TearDownOnUIThread()`.
-  io_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&Watcher::TearDownOnIOThread, base::Unretained(this)),
-      base::BindOnce(&Watcher::TearDownOnUIThread, base::RetainedRef(this)));
+// static
+ScopedClosureRunner Watcher::RegisterCurrentThread(
+    std::string_view source_name) {
+  SecondarySources* secondary_sources = SecondarySources::Get();
+  if (!secondary_sources) {
+    return ScopedClosureRunner();
+  }
+  const SecondarySources::SourceId source_id =
+      secondary_sources->RegisterSource(source_name);
+  auto observer = std::make_unique<ThreadObserver>(
+      secondary_sources, source_id, /*register_message_loop_observer=*/true);
+  return ScopedClosureRunner(base::BindOnce(
+      [](std::unique_ptr<ThreadObserver>) {}, std::move(observer)));
 }
 
 void Watcher::OnFirstIdle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   calculator_->OnFirstIdle();
-}
-
-void Watcher::SetUpOnIOThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  currently_running_metadata_io_.reserve(5);
-  CHECK(calculator_.get(), base::NotFatalUntil::M160);
-  calculator_io_ = calculator_.get();
-  RegisterMessageLoopObserverIO();
-}
-
-void Watcher::TearDownOnUIThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-}
-
-void Watcher::TearDownOnIOThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  message_loop_observer_io_.reset();
-  calculator_io_ = nullptr;
 }
 
 }  // namespace responsiveness

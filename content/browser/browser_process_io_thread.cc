@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/responsiveness/watcher.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -101,6 +102,8 @@ void BrowserProcessIOThread::IOThreadRun(base::RunLoop* run_loop) {
     unregister_thread_closure = base::HangWatcher::RegisterThread(
         base::HangWatcher::ThreadType::kIOThread);
   }
+  base::ScopedClosureRunner unregister_responsiveness_closure =
+      base::responsiveness::Watcher::RegisterCurrentThread();
 
   Thread::Run(run_loop);
   NO_CODE_FOLDING();
