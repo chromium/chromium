@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -45,6 +46,7 @@ void ConversationImpl::Start() {
 
 void ConversationImpl::Stop() {
   audio_controller_observation_.Reset();
+  hotl_audio_sink_.Reset();
 
   audio_controller_->StopCapture();
   audio_controller_->StopPlayback();
@@ -78,6 +80,10 @@ void ConversationImpl::SetMicMuted(bool muted) {
   }
 }
 
+void ConversationImpl::SetHotlAudioSink(HotlAudioSinkCallback sink) {
+  hotl_audio_sink_ = std::move(sink);
+}
+
 SessionJournal& ConversationImpl::GetJournal() {
   return session_controller_->GetJournal();
 }
@@ -85,11 +91,20 @@ SessionJournal& ConversationImpl::GetJournal() {
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
                                        const media::AudioParameters& params,
                                        float energy) {
+  session_controller_->UserAudioLevelUpdate(energy);
+
+  if (hotl_audio_sink_) {
+    // Avoid logging local confirmation audio to the persistent session journal.
+    // Copy the callback locally to protect against synchronous re-entrancy
+    // (e.g. if the sink unregisters itself upon matching a keyword).
+    HotlAudioSinkCallback sink = hotl_audio_sink_;
+    sink.Run(pcm_data, params);
+    return;
+  }
+
   audio_logger_.OnCapturedAudio(base::as_bytes(pcm_data), params,
                                 speaker_tracker_.speaker());
-
   backend_->SendAudioChunk(pcm_data);
-  session_controller_->UserAudioLevelUpdate(energy);
 }
 
 void ConversationImpl::OnCaptureStarted() {
@@ -172,6 +187,11 @@ void ConversationImpl::OnTranscriptions(
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
                                      int64_t sequence_number) {
+  // See SetHotlAudioSink(). The dropped audio is handled like an interrupted
+  // turn: it is never played, so its playback is never reported.
+  if (hotl_audio_sink_) {
+    return;
+  }
   audio_controller_->PlayAudio(audio_data);
 }
 

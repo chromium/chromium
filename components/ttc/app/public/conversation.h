@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_TTC_APP_PUBLIC_CONVERSATION_H_
 #define COMPONENTS_TTC_APP_PUBLIC_CONVERSATION_H_
 
+#include <stdint.h>
+
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "url/gurl.h"
+
+namespace media {
+class AudioParameters;
+}  // namespace media
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
@@ -51,6 +58,16 @@ class Conversation {
   // hardware muting it). While muted no audio is captured or sent to the model;
   // the model can still finish a reply in progress.
   virtual void SetMicMuted(bool muted) = 0;
+
+  // Routes captured microphone PCM frames to `sink` instead of the TTC model
+  // backend while a Human-on-the-Loop (HOTL) confirmation is active. While a
+  // non-null sink is active, incoming model audio is dropped so the sink only
+  // hears the user. Passing a null callback restores normal routing to the
+  // backend.
+  using HotlAudioSinkCallback =
+      base::RepeatingCallback<void(base::span<const int16_t> pcm_data,
+                                   const media::AudioParameters& params)>;
+  virtual void SetHotlAudioSink(HotlAudioSinkCallback sink) = 0;
 
   // Returns the journal for recording events in this session.
   virtual SessionJournal& GetJournal() = 0;

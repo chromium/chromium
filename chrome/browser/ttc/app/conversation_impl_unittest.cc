@@ -656,4 +656,140 @@ TEST_F(ConversationImplTest, BackendInitializedIgnoredWhenSessionFinished) {
   EXPECT_EQ(session_controller_.session_id(), std::nullopt);
 }
 
+class ConversationImplHotlTest : public ConversationImplTest {
+ protected:
+  const media::AudioParameters params_{
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), /*sample_rate=*/16000,
+      /*frames_per_buffer=*/1600};
+  const std::vector<int16_t> samples_ = std::vector<int16_t>(1600, 8192);
+};
+
+TEST_F(ConversationImplHotlTest, SinkReceivesCapturedAudioInsteadOfBackend) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  std::vector<int16_t> sink_samples;
+  std::optional<media::AudioParameters> sink_params;
+  conversation.SetHotlAudioSink(
+      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
+                                     const media::AudioParameters& params) {
+        sink_samples.assign(pcm_data.begin(), pcm_data.end());
+        sink_params = params;
+      }));
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).Times(0);
+
+  constexpr float kAmplitude = 0.25f;
+  conversation.OnCapturedAudio(samples_, params_, kAmplitude);
+
+  EXPECT_EQ(sink_samples, samples_);
+  ASSERT_TRUE(sink_params.has_value());
+  EXPECT_EQ(sink_params->sample_rate(), 16000);
+  // The voice plate keeps showing the user's audio level.
+  ASSERT_TRUE(session_controller_.last_audio_level().has_value());
+  EXPECT_FLOAT_EQ(*session_controller_.last_audio_level(), kAmplitude);
+}
+
+TEST_F(ConversationImplHotlTest, ClearingSinkRestoresBackend) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  int sink_calls = 0;
+  conversation.SetHotlAudioSink(base::BindLambdaForTesting(
+      [&](base::span<const int16_t>, const media::AudioParameters&) {
+        ++sink_calls;
+      }));
+
+  // Frame 1 routes to the sink, not the backend.
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).Times(0);
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_calls, 1);
+
+  // Clearing the sink restores routing to the backend for subsequent frames.
+  conversation.SetHotlAudioSink(base::NullCallback());
+  EXPECT_CALL(backend(), SendAudioChunk(testing::ElementsAreArray(samples_)))
+      .Times(1);
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_calls, 1);
+}
+
+TEST_F(ConversationImplHotlTest, SequentialSinksRouteAudioToCurrentSink) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  int sink_a_calls = 0;
+  conversation.SetHotlAudioSink(base::BindLambdaForTesting(
+      [&](base::span<const int16_t>, const media::AudioParameters&) {
+        ++sink_a_calls;
+      }));
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).Times(0);
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_a_calls, 1);
+
+  int sink_b_calls = 0;
+  conversation.SetHotlAudioSink(base::BindLambdaForTesting(
+      [&](base::span<const int16_t>, const media::AudioParameters&) {
+        ++sink_b_calls;
+      }));
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_a_calls, 1);
+  EXPECT_EQ(sink_b_calls, 1);
+}
+
+TEST_F(ConversationImplHotlTest, StopClearsHotlAudioSink) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  int sink_calls = 0;
+  conversation.SetHotlAudioSink(base::BindLambdaForTesting(
+      [&](base::span<const int16_t>, const media::AudioParameters&) {
+        ++sink_calls;
+      }));
+
+  conversation.Stop();
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_calls, 0);
+}
+
+TEST_F(ConversationImplHotlTest, ReentrantSinkClearingDoesNotCrash) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  int sink_calls = 0;
+  conversation.SetHotlAudioSink(base::BindLambdaForTesting(
+      [&](base::span<const int16_t>, const media::AudioParameters&) {
+        ++sink_calls;
+        // Re-entrantly unregister the sink from within its own callback.
+        conversation.SetHotlAudioSink(base::NullCallback());
+      }));
+
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+  EXPECT_EQ(sink_calls, 1);
+
+  // Subsequent audio routes to backend after the re-entrant unregistration.
+  EXPECT_CALL(backend(), SendAudioChunk(testing::ElementsAreArray(samples_)))
+      .Times(1);
+  conversation.OnCapturedAudio(samples_, params_, 0.1f);
+}
+
+// While a HOTL sink is active, incoming model audio is dropped so the sink
+// only hears the user.
+TEST_F(ConversationImplHotlTest, SinkSilencesModelAudio) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  conversation.SetHotlAudioSink(base::BindRepeating(
+      [](base::span<const int16_t>, const media::AudioParameters&) {}));
+
+  // Incoming audio output while the sink is active is dropped and not played.
+  conversation.OnAudioOutput(std::vector<int16_t>(100, 1000),
+                             /*sequence_number=*/1);
+  EXPECT_FALSE(audio_controller().is_playing());
+
+  // Once the sink is cleared, audio output plays normally again.
+  conversation.SetHotlAudioSink(base::NullCallback());
+  conversation.OnAudioOutput(std::vector<int16_t>(100, 1000),
+                             /*sequence_number=*/2);
+  EXPECT_TRUE(audio_controller().is_playing());
+}
+
 }  // namespace ttc

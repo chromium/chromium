@@ -65,6 +65,7 @@ class ConversationImpl : public Conversation,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void OnPageContextInvalidated() override;
   void SetMicMuted(bool muted) override;
+  void SetHotlAudioSink(HotlAudioSinkCallback sink) override;
   SessionJournal& GetJournal() override;
 
   // AudioController::Observer implementation:
@@ -121,6 +122,8 @@ class ConversationImpl : public Conversation,
 
   SpeakerTracker speaker_tracker_;
   std::unique_ptr<PlaybackStatusReporter> playback_status_reporter_;
+
+  HotlAudioSinkCallback hotl_audio_sink_;
 
   base::ScopedObservation<AudioController, AudioController::Observer>
       audio_controller_observation_{this};
