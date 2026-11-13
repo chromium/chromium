@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/glic/common/glic_tab_observer_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/tab_interface.h"
@@ -50,7 +49,6 @@ TEST_F(GlicTabObserverAndroidTest, TabAdditionNotifiesObserver) {
   tab_model.AddTabFromWebContents(
       std::move(web_contents), 0, false,
       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND);
-  TabModelList::RemoveObserver(&observer);
 }
 
 TEST_F(GlicTabObserverAndroidTest, TabSelectionNotifiesObserver) {
@@ -78,7 +76,6 @@ TEST_F(GlicTabObserverAndroidTest, TabSelectionNotifiesObserver) {
   });
 
   tab_model.SetActiveIndex(1);
-  TabModelList::RemoveObserver(&observer);
 }
 
 TEST_F(GlicTabObserverAndroidTest,
@@ -115,7 +112,6 @@ TEST_F(GlicTabObserverAndroidTest,
   // Open a new tab
   tab_model.AddTabFromWebContents(std::move(web_contents2), 0, true,
                                   TabModel::TabLaunchType::FROM_CHROME_UI);
-  TabModelList::RemoveObserver(&observer);
 }
 
 TEST_F(GlicTabObserverAndroidTest, TabRemovalNotifiesObserver) {
@@ -134,7 +130,6 @@ TEST_F(GlicTabObserverAndroidTest, TabRemovalNotifiesObserver) {
   });
 
   tab_model.CloseTabAt(0);
-  TabModelList::RemoveObserver(&observer);
 }
 
 TEST_F(GlicTabObserverAndroidTest, TabClosureCommittedCleansUpObservation) {
