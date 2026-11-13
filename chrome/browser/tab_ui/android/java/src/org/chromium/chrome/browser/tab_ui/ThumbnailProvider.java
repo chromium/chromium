@@ -17,7 +17,6 @@ import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /** An interface to get the thumbnails to be shown inside the tab grid cards. */
 @NullMarked
@@ -108,28 +107,6 @@ public interface ThumbnailProvider {
                     isIncognito,
                     tabGroupColor,
                     actingTabIds);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(
-                    this.tabId,
-                    this.tabGroupId,
-                    this.urlList,
-                    this.isIncognito,
-                    this.tabGroupColor,
-                    this.actingTabIds);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj instanceof MultiThumbnailMetadata other)
-                    && this.tabId == other.tabId
-                    && Objects.equals(this.tabGroupId, other.tabGroupId)
-                    && Objects.equals(this.urlList, other.urlList)
-                    && this.isIncognito == other.isIncognito
-                    && Objects.equals(this.tabGroupColor, other.tabGroupColor)
-                    && Objects.equals(this.actingTabIds, other.actingTabIds);
         }
     }
 
