@@ -55,6 +55,10 @@ inline constexpr char kSearchSparkIconResourceName[] =
     "//resources/cr_components/searchbox/icons/search_spark.svg";
 inline constexpr char kReplyRotated180IconResourceName[] =
     "//resources/cr_components/searchbox/icons/reply_rotated180.svg";
+// Side panel icons. Following Chrome's naming, "dock_to_right" shows the side
+// panel on the left and "dock_to_left" shows it on the right.
+inline constexpr char kDockToLeftIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/dock_to_left.svg";
 inline constexpr char kDockToRightIconResourceName[] =
     "//resources/cr_components/searchbox/icons/dock_to_right.svg";
 }  // namespace searchbox_internal

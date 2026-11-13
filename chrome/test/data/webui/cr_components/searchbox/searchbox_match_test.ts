@@ -519,6 +519,17 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertTrue(iconStyle()
                    .getPropertyValue('-webkit-mask-image')
                    .includes('dock_to_right.svg'));
+
+    // The icon is not mirrored in RTL. The browser picks the icon for the
+    // physical side the side panel opens on.
+    const originalDir = document.documentElement.dir;
+    document.documentElement.dir = 'rtl';
+    try {
+      await microtasksFinished();
+      assertEquals('none', iconStyle().transform);
+    } finally {
+      document.documentElement.dir = originalDir;
+    }
   });
 
   test('HideDescription', async () => {
