@@ -45,3 +45,6 @@
 
 # TODO(crbug.com/40799125): Flaky.
 -PageLoadMetricsBrowserTest.SoftNavigation
+
+# Flaky (6/45 builds) since crrev.com/c/8796148: https://crbug.com/585474787
+-ActionAppMenuWithOtherDeviceTabsBrowserTest.OtherDeviceTabsSubmenuUpdatesWhenDevicesChange
