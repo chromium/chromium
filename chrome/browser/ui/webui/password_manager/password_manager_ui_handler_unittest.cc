@@ -121,10 +121,10 @@ class MockPasswordChangeActuator : public PasswordChangeActuator {
               (),
               (const, override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (content::WebContents*), (override));
-  MOCK_METHOD(password_manager::PasswordString,
-              GetGeneratedPassword,
-              (),
-              (const, override));
+  MOCK_METHOD(NewPasswordResult,
+              GetOrGenerateNewPassword,
+              (password_manager::PasswordFormManager*),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };

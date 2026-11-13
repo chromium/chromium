@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_SCRIPT_PASSWORD_CHANGE_ACTUATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -50,7 +51,8 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
   void Cancel() override;
   content::WebContents* GetExecutorWebContents() const override;
   void OpenPasswordChangeTab(content::WebContents* originator) override;
-  password_manager::PasswordString GetGeneratedPassword() const override;
+  NewPasswordResult GetOrGenerateNewPassword(
+      password_manager::PasswordFormManager* form_manager) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -87,7 +89,7 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
   const GURL change_password_url_;
   const std::u16string username_;
   const password_manager::PasswordString original_password_;
-  password_manager::PasswordString generated_password_;
+  std::optional<password_manager::PasswordString> generated_password_;
 
   const raw_ptr<Profile> profile_ = nullptr;
   const raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;

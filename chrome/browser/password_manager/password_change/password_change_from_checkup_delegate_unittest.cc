@@ -42,10 +42,10 @@ class MockPasswordChangeActuator : public PasswordChangeActuator {
               (),
               (const, override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (content::WebContents*), (override));
-  MOCK_METHOD(password_manager::PasswordString,
-              GetGeneratedPassword,
-              (),
-              (const, override));
+  MOCK_METHOD(NewPasswordResult,
+              GetOrGenerateNewPassword,
+              (password_manager::PasswordFormManager*),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
@@ -125,8 +125,6 @@ TEST_F(PasswordChangeFromCheckupDelegateTest,
 
   delegate()->StartPasswordChangeFlow(CreateTestCredential(), nullptr,
                                       callback.Get());
-
-  EXPECT_TRUE(delegate()->generated_password().empty());
 }
 
 TEST_F(PasswordChangeFromCheckupDelegateTest,
@@ -185,8 +183,7 @@ TEST_F(PasswordChangeFromCheckupDelegateTest,
   delegate()->OnActuationStateChanged(
       ActuatorState::kPasswordSuccessfullyChanged);
 
-  // Generated password should be empty after actuator is reset by Stop().
-  EXPECT_TRUE(delegate()->generated_password().empty());
+  EXPECT_FALSE(delegate()->get_actuator_for_testing());
 }
 
 TEST_F(PasswordChangeFromCheckupDelegateTest,
@@ -222,15 +219,11 @@ TEST_F(PasswordChangeFromCheckupDelegateTest,
 
 TEST_F(PasswordChangeFromCheckupDelegateTest,
        GeneratedPasswordDelegatesToActuator) {
-  // When actuator is not set.
-  EXPECT_TRUE(delegate()->generated_password().empty());
-
-  // When actuator is set.
   base::WeakPtr<MockPasswordChangeActuator> mock_actuator =
       InjectMockActuator();
   const password_manager::PasswordString generated_password(
       u"GeneratedP@ssword123");
-  EXPECT_CALL(*mock_actuator, GetGeneratedPassword())
+  EXPECT_CALL(*mock_actuator, GetOrGenerateNewPassword(nullptr))
       .WillOnce(Return(generated_password));
 
   EXPECT_EQ(delegate()->generated_password(), generated_password);

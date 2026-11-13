@@ -4,9 +4,10 @@
 
 #include "chrome/browser/password_manager/password_change/script_password_change_actuator.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/check.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
@@ -19,7 +20,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/generation/password_generator.h"
+#include "components/password_manager/core/browser/password_change/change_password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -40,33 +41,6 @@ using SubmissionError =
     ChangePasswordFormFillingSubmissionHelper::SubmissionError;
 using SubmissionVerificationResult =
     PasswordChangeSubmissionVerifier::SubmissionVerificationResult;
-
-password_manager::PasswordString GeneratePassword(
-    const password_manager::PasswordForm& form,
-    password_manager::PasswordGenerationFrameHelper* generation_helper,
-    ModelQualityLogsUploader* logs_uploader) {
-  auto iter = std::ranges::find(form.form_data.fields(),
-                                form.new_password_element_renderer_id,
-                                &autofill::FormFieldData::renderer_id);
-  CHECK(iter != form.form_data.fields().end());
-
-  autofill::FormSignature form_signature =
-      autofill::CalculateFormSignature(form.form_data);
-  autofill::FieldSignature field_signature =
-      autofill::CalculateFieldSignatureForField(*iter);
-
-  autofill::PasswordRequirementsSpec spec =
-      generation_helper->GetPasswordRequirementsSpec(
-          form.url,
-          autofill::password_generation::PasswordGenerationType::kAutomatic,
-          form_signature, field_signature, iter->max_length());
-
-  if (logs_uploader) {
-    logs_uploader->SetPasswordRequirementsSpec(spec);
-  }
-
-  return autofill::GeneratePassword(spec);
-}
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
     content::WebContents* web_contents) {
@@ -198,9 +172,19 @@ void ScriptPasswordChangeActuator::OpenPasswordChangeTab(
   }
 }
 
-password_manager::PasswordString
-ScriptPasswordChangeActuator::GetGeneratedPassword() const {
-  return generated_password_;
+PasswordChangeActuator::NewPasswordResult
+ScriptPasswordChangeActuator::GetOrGenerateNewPassword(
+    password_manager::PasswordFormManager* form_manager) {
+  if (form_manager) {
+    // The script actuator generates the password itself once the change
+    // password form is found.
+    NOTIMPLEMENTED();
+    return base::unexpected(
+        password_manager::PasswordChangeCredentialsProvider::Error::
+            kGenerationFailed);
+  }
+  CHECK(generated_password_.has_value());
+  return *generated_password_;
 }
 
 void ScriptPasswordChangeActuator::AddObserver(Observer* observer) {
@@ -216,10 +200,14 @@ void ScriptPasswordChangeActuator::OnPasswordChangeFormFound(
   form_finder_.reset();
 
   CHECK(form_manager);
-  generated_password_ =
-      GeneratePassword(*form_manager->GetParsedObservedForm(),
-                       form_manager->GetDriver()->GetPasswordGenerationHelper(),
-                       logs_uploader_.get());
+  password_manager::ChangePasswordGenerationResult generation_result =
+      password_manager::GeneratePasswordForChangePasswordForm(
+          *form_manager->GetParsedObservedForm(),
+          *form_manager->GetDriver()->GetPasswordGenerationHelper());
+  if (logs_uploader_) {
+    logs_uploader_->SetPasswordRequirementsSpec(generation_result.spec);
+  }
+  generated_password_ = std::move(generation_result.password);
 
   CHECK(GetExecutorWebContents());
   CHECK(!form_submission_helper_);
@@ -232,7 +220,7 @@ void ScriptPasswordChangeActuator::OnPasswordChangeFormFound(
           base::BindOnce(&ScriptPasswordChangeActuator::OnChangeFormSubmitted,
                          weak_ptr_factory_.GetWeakPtr()));
   form_submission_helper_->FillChangePasswordForm(
-      form_manager, username_, original_password_, generated_password_);
+      form_manager, username_, original_password_, *generated_password_);
   NotifyStateChanged(PasswordChangeActuator::State::kChangingPassword);
 }
 

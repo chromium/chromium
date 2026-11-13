@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -88,6 +89,9 @@ void PasswordChangeFromCheckupDelegate::OpenActuationTab() {
 
 password_manager::PasswordString
 PasswordChangeFromCheckupDelegate::generated_password() const {
-  return actuator_ ? actuator_->GetGeneratedPassword()
-                   : password_manager::PasswordString();
+  CHECK(actuator_);
+  PasswordChangeActuator::NewPasswordResult generated_password =
+      actuator_->GetOrGenerateNewPassword(/*form_manager=*/nullptr);
+  CHECK(generated_password.has_value());
+  return std::move(generated_password).value();
 }

@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -40,11 +41,23 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/common/autofill_test_util.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
+#include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_form_prediction_waiter.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -83,6 +96,77 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
                base::OnceCallback<void(content::NavigationHandle&)>),
               (override));
 };
+
+class MockGenerationPasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (const, override));
+};
+
+class MockGenerationPasswordManagerDriver
+    : public password_manager::StubPasswordManagerDriver {
+ public:
+  MOCK_METHOD(password_manager::PasswordGenerationFrameHelper*,
+              GetPasswordGenerationHelper,
+              (),
+              (override));
+};
+
+class MockPasswordGenerationFrameHelper
+    : public password_manager::PasswordGenerationFrameHelper {
+ public:
+  using password_manager::PasswordGenerationFrameHelper::
+      PasswordGenerationFrameHelper;
+  MOCK_METHOD(autofill::PasswordRequirementsSpec,
+              GetPasswordRequirementsSpec,
+              (const GURL&,
+               autofill::password_generation::PasswordGenerationType,
+               autofill::FormSignature,
+               autofill::FieldSignature,
+               uint64_t),
+              (override));
+};
+
+// Creates a change password form with a current and a new password field.
+autofill::FormData CreateChangePasswordFormData() {
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(autofill::test::CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password", /*value=*/"",
+      autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.back().set_is_enabled(true);
+  fields.push_back(autofill::test::CreateTestFormField(
+      /*label=*/"New Password:", /*name=*/"new-password", /*value=*/"",
+      autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  fields.back().set_is_enabled(true);
+  autofill::FormData form;
+  form.set_url(GURL(kTestUrl));
+  form.set_fields(std::move(fields));
+  return form;
+}
+
+// Creates a login form with a username and a password field.
+autofill::FormData CreateLoginFormData() {
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(autofill::test::CreateTestFormField(
+      /*label=*/"Username:", /*name=*/"username", /*value=*/"",
+      autofill::FormControlType::kInputText));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.back().set_is_enabled(true);
+  fields.push_back(autofill::test::CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password", /*value=*/"",
+      autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  fields.back().set_is_enabled(true);
+  autofill::FormData form;
+  form.set_url(GURL(kTestUrl));
+  form.set_fields(std::move(fields));
+  return form;
+}
 
 password_manager::StoredCredential CreateTestCredential() {
   GURL url(kTestUrl);
@@ -537,4 +621,165 @@ TEST_F(GlicPasswordChangeActuatorTest,
                affiliations::FacetURI::FromCanonicalSpec(
                    "https://affiliated.com"))},
            true);
+}
+
+// Tests for `GlicPasswordChangeActuator::GetOrGenerateNewPassword()`.
+class GlicPasswordChangeActuatorNewPasswordTest
+    : public GlicPasswordChangeActuatorTest {
+ public:
+  void SetUp() override {
+    GlicPasswordChangeActuatorTest::SetUp();
+    ON_CALL(client_, GetProfilePasswordStore)
+        .WillByDefault(Return(password_store_.get()));
+    ON_CALL(driver_, GetPasswordGenerationHelper)
+        .WillByDefault(Return(&generation_helper_));
+  }
+
+  // Creates a form manager observing a change password form, which is aware
+  // of `stored_credentials`.
+  password_manager::PasswordFormManager* CreateFormManager(
+      const std::vector<password_manager::PasswordForm>& stored_credentials) {
+    return CreateFormManager(CreateChangePasswordFormData(),
+                             stored_credentials);
+  }
+
+  password_manager::PasswordFormManager* CreateFormManager(
+      const autofill::FormData& form_data,
+      const std::vector<password_manager::PasswordForm>& stored_credentials) {
+    form_manager_ = std::make_unique<password_manager::PasswordFormManager>(
+        &client_, driver_.AsWeakPtr(), form_data, &form_fetcher_,
+        std::make_unique<password_manager::PasswordSaveManagerImpl>(&client_),
+        /*metrics_recorder=*/nullptr);
+    form_fetcher_.SetBestMatches(stored_credentials);
+    form_fetcher_.SetNonFederated(stored_credentials);
+    form_fetcher_.NotifyFetchCompleted();
+    static_cast<password_manager::PasswordFormPredictionWaiter::Client*>(
+        form_manager_.get())
+        ->OnWaitCompleted();
+    return form_manager_.get();
+  }
+
+  password_manager::PasswordForm CreateStoredCredential(
+      std::u16string password) {
+    password_manager::PasswordForm credential;
+    credential.url = GURL(kTestUrl);
+    credential.signon_realm = GURL(kTestUrl).GetWithEmptyPath().spec();
+    credential.username_value = kTestUsername;
+    credential.password_value =
+        password_manager::PasswordString(std::move(password));
+    credential.match_type = affiliations::MatchType::kExact;
+    credential.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    credential.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    return credential;
+  }
+
+  MockGenerationPasswordManagerDriver& driver() { return driver_; }
+  MockPasswordGenerationFrameHelper& generation_helper() {
+    return generation_helper_;
+  }
+  password_manager::MockPasswordStoreInterface& password_store() {
+    return *password_store_;
+  }
+
+ private:
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+  NiceMock<MockGenerationPasswordManagerClient> client_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
+      base::MakeRefCounted<
+          NiceMock<password_manager::MockPasswordStoreInterface>>();
+  NiceMock<MockGenerationPasswordManagerDriver> driver_;
+  NiceMock<MockPasswordGenerationFrameHelper> generation_helper_{&client_,
+                                                                 &driver_};
+  password_manager::FakeFormFetcher form_fetcher_;
+  std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
+};
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       GeneratesPasswordBasedOnRequirementsAndSavesBackup) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  autofill::PasswordRequirementsSpec spec;
+  spec.set_max_length(10);
+  EXPECT_CALL(
+      generation_helper(),
+      GetPasswordRequirementsSpec(
+          GURL(kTestUrl),
+          autofill::password_generation::PasswordGenerationType::kAutomatic, _,
+          _, _))
+      .WillOnce(Return(spec));
+  password_manager::StoredCredential saved_credential;
+  EXPECT_CALL(password_store(), UpdateLogin)
+      .WillOnce(MoveArg<0>(&saved_credential));
+
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+
+  ASSERT_TRUE(new_password.has_value());
+  EXPECT_EQ(new_password->size(), 10u);
+  EXPECT_EQ(saved_credential.username_value, kTestUsername);
+  EXPECT_EQ(saved_credential.password_value.value(), kTestPassword);
+  EXPECT_EQ(saved_credential.GetPasswordBackup(), new_password->value());
+  EXPECT_THAT(actuator()->GetOrGenerateNewPassword(/*form_manager=*/nullptr),
+              base::test::ValueIs(*new_password));
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       ReturnsAlreadyGeneratedPassword) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  EXPECT_CALL(generation_helper(), GetPasswordRequirementsSpec).Times(1);
+  EXPECT_CALL(password_store(), UpdateLogin).Times(1);
+
+  PasswordChangeActuator::NewPasswordResult first_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  PasswordChangeActuator::NewPasswordResult second_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+
+  ASSERT_TRUE(first_password.has_value());
+  EXPECT_FALSE(first_password->empty());
+  EXPECT_EQ(first_password, second_password);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       UsesCurrentPasswordFieldWithoutNewPasswordField) {
+  const autofill::FormData form_data = CreateLoginFormData();
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager(form_data, {CreateStoredCredential(kTestPassword)});
+  ASSERT_FALSE(
+      form_manager->GetParsedObservedForm()->new_password_element_renderer_id);
+  const autofill::FormFieldData& password_field = form_data.fields()[1];
+  EXPECT_CALL(
+      generation_helper(),
+      GetPasswordRequirementsSpec(
+          _, _, _, autofill::CalculateFieldSignatureForField(password_field),
+          password_field.max_length()));
+
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+
+  ASSERT_TRUE(new_password.has_value());
+  EXPECT_FALSE(new_password->empty());
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       NoPasswordWithoutFormManager) {
+  EXPECT_THAT(
+      actuator()->GetOrGenerateNewPassword(/*form_manager=*/nullptr),
+      base::test::ErrorIs(password_manager::PasswordChangeCredentialsProvider::
+                              Error::kGenerationFailed));
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       NoPasswordWithoutGenerationHelper) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  EXPECT_CALL(driver(), GetPasswordGenerationHelper)
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(password_store(), UpdateLogin).Times(0);
+  EXPECT_CALL(password_store(), AddLogin).Times(0);
+
+  EXPECT_THAT(
+      actuator()->GetOrGenerateNewPassword(form_manager),
+      base::test::ErrorIs(password_manager::PasswordChangeCredentialsProvider::
+                              Error::kGenerationFailed));
 }
