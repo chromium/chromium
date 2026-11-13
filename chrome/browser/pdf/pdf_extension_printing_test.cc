@@ -31,7 +31,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/context_menu_interceptor.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
@@ -89,7 +88,6 @@ void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
 }  // namespace
 
 using ::content::WebContents;
-using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 class PDFExtensionPrintingTest : public PDFExtensionTestBase,

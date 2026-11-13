@@ -48,7 +48,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -92,7 +91,6 @@
 namespace {
 
 using ::content::WebContents;
-using ::extensions::MimeHandlerViewGuest;
 
 std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree,
                                      bool skip_status_subtree) {
@@ -419,13 +417,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(found);
 }
 
+// TODO(crbug.com/585269450): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       PdfAccessibilitySelection) {
-  // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+                       DISABLED_PdfAccessibilitySelection) {
   // TODO(accessibility): Forcing renderer accessibility means the accessibility
   // tree updates in a way unexpected by the test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -478,21 +472,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
+// TODO(crbug.com/585269450): Fix and re-enable this test.
 // TODO(crbug.com/330202391): Fix the flakiness on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PdfAccessibilityContextMenuAction \
-  DISABLED_PdfAccessibilityContextMenuAction
-#else
-#define MAYBE_PdfAccessibilityContextMenuAction \
-  PdfAccessibilityContextMenuAction
-#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_PdfAccessibilityContextMenuAction) {
-  // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+                       DISABLED_PdfAccessibilityContextMenuAction) {
   // TODO(accessibility): Forcing renderer accessibility means the accessibility
   // tree updates in a way unexpected by the test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1472,13 +1455,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
 // This test suite contains simple tests for the PDF OCR feature.
 using PdfOcrUmaTest = PDFExtensionAccessibilityTest;
 
-IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
-  // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
-  // PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+// TODO(crbug.com/585270038): Re-enable once the metrics are recorded.
+IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, DISABLED_CheckOpenedWithScreenReader) {
   EnableScreenReader();
 
   base::HistogramTester histograms;
@@ -1500,13 +1478,8 @@ IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
-  // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
-  // PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+// TODO(crbug.com/585270038): Re-enable once the metrics are recorded.
+IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, DISABLED_CheckOpenedWithSelectToSpeak) {
   ::ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
 
   base::HistogramTester histograms;
@@ -1527,14 +1500,9 @@ IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
       /*expected_bucket_count=*/1);
 }
 
+// TODO(crbug.com/585270038): Re-enable once the metrics are recorded.
 IN_PROC_BROWSER_TEST_F(PdfOcrUmaTest,
-                       CheckSelectToSpeakPagesOcredWithAccessiblePdf) {
-  // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
-  // PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
+                       DISABLED_CheckSelectToSpeakPagesOcredWithAccessiblePdf) {
   ::ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
 
   base::HistogramTester histograms;
@@ -1637,9 +1605,6 @@ class PdfSearchifyIntegrationTest
     if (IsOcrServiceEnabled()) {
       enabled.push_back({ax::mojom::features::kScreenAIOCREnabled, {}});
     }
-    if (UseOopif()) {
-      enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
-    }
     return enabled;
   }
 
@@ -1648,9 +1613,6 @@ class PdfSearchifyIntegrationTest
         PDFExtensionAccessibilityTest::GetDisabledFeatures();
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
-    }
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
     return disabled;
   }

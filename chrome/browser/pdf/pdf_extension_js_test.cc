@@ -373,11 +373,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerAttachment) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Fullscreen) {
-#if BUILDFLAG(IS_MAC)
-  if (!UseOopif()) {
-    GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
-  }
-#endif
   set_simulate_view_focus(true);
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
@@ -628,12 +623,6 @@ class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2Test, Ink2) {
-  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
-  // GuestView PDF is fully deprecated.
-  if (!UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // One of the tests checks if the side panel is visible, so make the window
   // wide enough.
   GetActiveWebContents()->Resize({0, 0, 960, 100});
@@ -783,11 +772,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest, Ink2TextBoxViewport) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest, Ink2TextIntegration) {
-  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
-  // GuestView PDF is fully deprecated.
-  if (!UseOopif()) {
-    GTEST_SKIP();
-  }
   RunTestsInJsModule("ink2_text_integration_test.js", "test.pdf");
 }
 
@@ -807,12 +791,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest, InkTextAnnotations) {
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest,
                        Ink2TextStateManagementBottomToolbar) {
-  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
-  // GuestView PDF is fully deprecated.
-  if (!UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // The window must be smaller than 960px to show the bottom toolbar.
   GetActiveWebContents()->Resize({0, 0, 959, 1000});
   RunTestsInJsModule("ink2_text_state_management_test.js", "test.pdf");
@@ -820,12 +798,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest,
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2TextTest,
                        Ink2TextStateManagementSidePanel) {
-  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
-  // GuestView PDF is fully deprecated.
-  if (!UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // The window must be at least 960px to show the text side panel.
   GetActiveWebContents()->Resize({0, 0, 1200, 1000});
   RunTestsInJsModule("ink2_text_state_management_test.js", "test.pdf");

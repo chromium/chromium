@@ -76,9 +76,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   // Load the PDF at the given URL and ensure it has finished loading. Return
   // true if it loads successfully or false if it fails. If it doesn't finish
-  // loading the test will hang. This is done from outside of the BrowserPlugin
-  // guest to ensure sending messages to/from the plugin works correctly from
-  // there, since the PdfScriptingApi relies on doing this as well.
+  // loading the test will hang.
   testing::AssertionResult LoadPdf(const GURL& url);
 
   // Same as LoadPDF(), but loads into a new tab.
@@ -86,9 +84,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   // Same as `LoadPdf()` but loads URLs where the first child of the primary
   // main frame should be the embedder. This is a common case where an HTML page
-  // only embeds a single PDF. For GuestView PDF viewer, the embedder must be an
-  // embed element. `options` customizes how to check whether the PDF has
-  // loaded.
+  // only embeds a single PDF. `options` customizes how to check whether the PDF
+  // has loaded.
   testing::AssertionResult LoadPdfInFirstChild(
       const GURL& url,
       const pdf_extension_test_util::EnsurePDFHasLoadedOptions& options = {});
