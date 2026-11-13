@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] .grid 23
+  assert_equals: \n<div class="grid gridAutoContent max-content" data-expected-height="10" data-expected-width="110">\n    <div class="firstRowBothColumn">XX XX XX</div>\n    <div class="firstRowSecondColumn">XX XX XX</div>\n</div>\nwidth expected 110 but got 80
+Harness: the test ran to completion.
+

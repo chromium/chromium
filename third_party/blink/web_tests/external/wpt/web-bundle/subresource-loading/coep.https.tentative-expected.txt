@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Cross-origin subresource without Cross-Origin-Resource-Policy: header should be blocked and generate a report.
+  assert_equals: expected (string) "https://www1.web-platform.test:8444/web-bundle/resources/wbn/cors/no-corp.js" but got (undefined) undefined
+Harness: the test ran to completion.
+

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] missing crossorigin reflects as null
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] crossorigin="" reflects as "anonymous"
+  assert_equals: expected (string) "anonymous" but got (undefined) undefined
+[FAIL] crossorigin="anonymous" reflects as "anonymous"
+  assert_equals: expected (string) "anonymous" but got (undefined) undefined
+[FAIL] crossorigin="use-credentials" reflects as "use-credentials"
+  assert_equals: expected (string) "use-credentials" but got (undefined) undefined
+[FAIL] crossorigin="USE-CREDENTIALS" reflects as "use-credentials"
+  assert_equals: expected (string) "use-credentials" but got (undefined) undefined
+[FAIL] crossorigin="invalid" reflects as "anonymous"
+  assert_equals: expected (string) "anonymous" but got (undefined) undefined
+[FAIL] setting crossOrigin sets the content attribute
+  assert_equals: expected (string) "use-credentials" but got (object) null
+[FAIL] setting crossOrigin to null removes the content attribute
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

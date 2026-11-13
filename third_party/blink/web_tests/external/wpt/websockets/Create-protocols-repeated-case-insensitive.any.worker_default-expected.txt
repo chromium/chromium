@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Create WebSocket - Pass a valid URL and an array of protocol strings with repeated values but different case - SYNTAX_ERR is thrown
-  assert_throws_dom: function "function() {\n    wsocket = CreateWebSocketWithRepeatedProtocolsCaseInsensitive()\n  }" did not throw
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://web-platform.test:8001/websockets/constants.sub.js' failed to load.
 Harness: the test ran to completion.
 

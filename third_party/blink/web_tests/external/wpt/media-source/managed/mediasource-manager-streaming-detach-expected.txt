@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Detaching a streaming ManagedMediaSource sets streaming to false and fires endstreaming before sourceclose
+  assert_implements: ManagedMediaSource is supported undefined
+[FAIL] Detaching a ManagedMediaSource that is not streaming does not fire endstreaming
+  assert_implements: ManagedMediaSource is supported undefined
+Harness: the test ran to completion.
+

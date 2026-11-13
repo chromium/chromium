@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] 0 on a websocket
+  CreateWebSocket is not defined
+[FAIL] 500 on a websocket
+  CreateWebSocket is not defined
+[FAIL] NaN on a websocket
+  CreateWebSocket is not defined
+[FAIL] String on a websocket
+  CreateWebSocket is not defined
+[FAIL] null on a websocket
+  CreateWebSocket is not defined
+[FAIL] 2**16+1000 on a websocket
+  CreateWebSocket is not defined
+Harness: the test ran to completion.
+

@@ -9,5 +9,7 @@ This is a testharness.js-based test.
   assert_equals: The inserted selectedcontent should be updated once. expected 1 but got 2
 [FAIL] Inserting a select that already contains options updates its selectedcontent once.
   assert_equals: Inserting the select should update selectedcontent once. expected 1 but got 2
+[FAIL] Inserting an option that changes selectedness followed by selectedcontent updates every selectedcontent once.
+  assert_equals: The inserted selectedcontent should be updated once. expected 1 but got 2
 Harness: the test ran to completion.
 

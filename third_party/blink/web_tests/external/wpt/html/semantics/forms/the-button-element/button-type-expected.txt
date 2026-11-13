@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] a button in auto state with a command or commandfor attribute should return button type
+  assert_equals: expected "button" but got "submit"
+[FAIL] a button in auto state with a select element parent should return button type
+  assert_equals: expected "button" but got "submit"
+Harness: the test ran to completion.
+

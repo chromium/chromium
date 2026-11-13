@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: CreateWebSocket is not defined
+[NOTRUN] Create WebSocket - Close the Connection - close(code, 'reason more than 123 bytes') - SYNTAX_ERR is thrown
+Harness: the test ran to completion.
+

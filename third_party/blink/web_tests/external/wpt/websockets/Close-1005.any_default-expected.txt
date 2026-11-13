@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: CreateWebSocket is not defined
+[NOTRUN] Create WebSocket - Close the Connection - close(1005) - see '7.1.5.  The WebSocket Connection Close Code' in http://www.ietf.org/rfc/rfc6455.txt
+Harness: the test ran to completion.
+

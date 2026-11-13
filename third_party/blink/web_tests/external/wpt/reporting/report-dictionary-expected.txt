@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A report and its body are plain objects that can be structured-cloned
+  assert_equals: report prototype expected object "[object Object]" but got object "[object Report]"
+Harness: the test ran to completion.
+

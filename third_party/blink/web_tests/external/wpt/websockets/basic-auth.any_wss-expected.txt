@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] HTTP basic authentication should work with WebSockets
+  __SCHEME is not defined
+Harness: the test ran to completion.
+

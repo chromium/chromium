@@ -1264,6 +1264,25 @@ test(() => {
   document.body.appendChild(holder);
 
   try {
+    const el = document.createElement('div');
+    el.setAttribute('data-y', 'random(property-scoped, 1px, 300000px)');
+    el.setAttribute('data-x', 'attr(data-y type(<length>))');
+    el.style.setProperty('margin-left', 'attr(data-x type(<length>))');
+    el.style.setProperty('margin-right', 'random(ua-margin-left, 1px, 300000px)');
+    holder.appendChild(el);
+
+    const style = getComputedStyle(el);
+    test_random_equals(style['margin-left'], style['margin-right']);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() shared by property in chained typed attr()`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
     const t1 = document.createElement('div');
     t1.style.setProperty('width', 'random(--ident property-scoped, 1px, 300000px)');
     holder.appendChild(t1);

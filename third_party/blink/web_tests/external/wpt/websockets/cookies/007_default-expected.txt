@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] WebSockets: when to process set-cookie fields in ws response
-  assert_unreached: cookie was set during script execution Reached unreachable code
+  SCHEME_DOMAIN_PORT is not defined
 Harness: the test ran to completion.
 

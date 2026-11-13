@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] about:blank shares its origin with the initiator, so document.domain affects both
+  assert_equals: The initiator, after setting document.domain, can script the document expected (undefined) undefined but got (string) "SecurityError"
+Harness: the test ran to completion.
+
