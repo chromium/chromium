@@ -47,7 +47,7 @@ struct RawPtrPluginConfig {
     RawPtrPluginConfig config;
     config.container_config.enabled = true;
     config.container_config.included_container_types = {
-        "base::flat_tree",
+        "base::internal::flat_tree",
         "std::deque",
         "std::list",
         "std::set",
