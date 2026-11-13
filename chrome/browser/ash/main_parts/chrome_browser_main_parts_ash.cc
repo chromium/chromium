@@ -1454,13 +1454,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
                        shill::kEnableRFC8925Property));
 
     ash::ShillManagerClient::Get()->SetProperty(
-        shill::kUseLegacyDHCPCDProperty,
-        // The shill property UseLegacyDHCPCD is currently enabled by default.
-        // However, for the Finch study that aims to migrate to dhcpcd10, we
-        // need a Chrome flag that is disabled by default. That is why we use an
-        // opposite flag UseDHCPCD10 in Chrome and flip it here.
-        base::Value(!base::FeatureList::IsEnabled(features::kUseDHCPCD10)),
-        base::DoNothing(),
+        shill::kUseLegacyDHCPCDProperty, base::Value(false), base::DoNothing(),
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kUseLegacyDHCPCDProperty));
 

@@ -1552,11 +1552,6 @@ BASE_FEATURE(kTilingWindowResize, base::FEATURE_DISABLED_BY_DEFAULT);
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature toggles which dhcpcd version is used for IPv4 provisioning.
-// If it is enabled, dhcpcd10 will be used, otherwise the legacy dhcpcd7 will be
-// used. Note that IPv6 (DHCPv6-PD) always uses dhcpcd10.
-BASE_FEATURE(kUseDHCPCD10, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
 // (a.k.a. browser's Profile).
 BASE_FEATURE(kUseAnnotatedAccountId, base::FEATURE_DISABLED_BY_DEFAULT);

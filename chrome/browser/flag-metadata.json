@@ -9845,11 +9845,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "use-dhcpcd10",
-    "owners": [ "chenzikai@google.com", "cros-networking@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "use-fake-device-for-media-stream",
     "owners": [ "mcasas@chromium.org", "chromeos-gfx@google.com" ],
     // This flag is used for ChromeOS media testing to mock a source device.
