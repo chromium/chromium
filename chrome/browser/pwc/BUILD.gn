@@ -13,6 +13,7 @@ source_set("pwc") {
     "privileged_web_contents.h",
     "pwc_api_binder.h",
     "pwc_component_policy.h",
+    "pwc_content_settings_policy.h",
     "pwc_navigation_throttle.h",
     "pwc_permission_delegate.h",
   ]
@@ -21,6 +22,7 @@ source_set("pwc") {
     "privileged_web_contents.cc",
     "pwc_api_binder.cc",
     "pwc_component_policy.cc",
+    "pwc_content_settings_policy.cc",
     "pwc_navigation_throttle.cc",
   ]
 
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/input",
+    "//components/permissions",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

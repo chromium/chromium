@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
+#include "chrome/browser/pwc/pwc_content_settings_policy.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -167,21 +168,27 @@ PrivilegedWebContents::GetPermissionStatus(
         blink::mojom::PermissionStatus::DENIED,
         content::PermissionStatusSource::FEATURE_POLICY);
   }
-  if (!pwc->permission_delegate_) {
-    return content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::FEATURE_POLICY);
+  PwcContentSettingPolicy policy = GetPwcContentSettingPolicy(type);
+  switch (policy) {
+    case PwcContentSettingPolicy::kDelegated:
+      if (pwc->permission_delegate_) {
+        auto result = pwc->permission_delegate_->GetPermissionStatus(
+            render_frame_host, type);
+        if (result.has_value()) {
+          return result;
+        }
+      }
+      // Unhandled permission types default to DENIED to prevent ambient
+      // HostContentSettingsMap tab permissions from leaking into the PWC.
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::FEATURE_POLICY);
+
+    case PwcContentSettingPolicy::kBlocked:
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::FEATURE_POLICY);
   }
-  auto result =
-      pwc->permission_delegate_->GetPermissionStatus(render_frame_host, type);
-  if (result.has_value()) {
-    return result;
-  }
-  // Unhandled permission types default to DENIED to prevent ambient
-  // HostContentSettingsMap tab permissions from leaking into the PWC.
-  return content::PermissionResult(
-      blink::mojom::PermissionStatus::DENIED,
-      content::PermissionStatusSource::FEATURE_POLICY);
 }
 
 PrivilegedWebContents::PrivilegedWebContents(
