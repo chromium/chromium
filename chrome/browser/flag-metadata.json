@@ -5844,7 +5844,7 @@
       "harringtond@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-experimental-triggering",
@@ -5949,7 +5949,7 @@
       "harringtond@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-opt-in-dialog-a11y-fix",
