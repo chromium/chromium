@@ -243,6 +243,15 @@ void ActorService::SetTaskInterventionDelegate(
   }
 }
 
+void ActorService::SetNavigationConfirmationCallback(
+    ActorTaskId task_id,
+    NavigationConfirmationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ActorTask* task = FindActiveTask(task_id)) {
+    task->SetNavigationConfirmationCallback(std::move(callback));
+  }
+}
+
 void ActorService::InterruptTask(
     ActorTaskId task_id,
     InterruptRequest request,

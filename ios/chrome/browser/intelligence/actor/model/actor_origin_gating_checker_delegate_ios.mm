@@ -4,19 +4,25 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 
+#import <utility>
+
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/origin_gating/core/decision.h"
 #import "components/origin_gating/core/gateable_event.h"
 #import "components/origin_gating/core/gating_decision.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace actor {
 
 ActorOriginGatingCheckerDelegateIOS::ActorOriginGatingCheckerDelegateIOS(
-    const ActorEnterprisePolicyCheckerIOS* policy_checker)
-    : policy_checker_(policy_checker) {}
+    const ActorEnterprisePolicyCheckerIOS* policy_checker,
+    NavigationConfirmationCallback confirm_navigation_callback)
+    : policy_checker_(policy_checker),
+      confirm_navigation_callback_(std::move(confirm_navigation_callback)) {}
 
 ActorOriginGatingCheckerDelegateIOS::~ActorOriginGatingCheckerDelegateIOS() =
     default;
@@ -31,9 +37,9 @@ void ActorOriginGatingCheckerDelegateIOS::DoesOriginRequireUserConfirmation(
     const origin_gating::GateableEvent& event,
     DoesOriginRequireUserConfirmationCallback callback) const {
   // Same-origin responses are handled by `DecisionSource::kAllowSameOrigin`,
-  // and uncached cross-origin responses fail closed in `OnNoVerdict()`. Return
-  // false until iOS wires up a sensitive-URL check so cached origins can match
-  // `DecisionSource::kCacheWithoutUserConfirmation`.
+  // and uncached cross-origin responses are evaluated in `OnNoVerdict()`.
+  // Return false until iOS wires up a sensitive-URL check so cached origins can
+  // match `DecisionSource::kCacheWithoutUserConfirmation`.
   std::move(callback).Run(/*requires_user_confirmation=*/false);
 }
 
@@ -96,9 +102,31 @@ void ActorOriginGatingCheckerDelegateIOS::OnNoVerdict(
     return;
   }
 
-  // Uncached cross-origin navigation responses fail closed.
   CHECK(event.is_navigation_response());
+  const url::Origin destination_origin =
+      url::Origin::Create(event.destination());
+  if (confirm_navigation_callback_ && !destination_origin.opaque()) {
+    confirm_navigation_callback_.Run(
+        destination_origin,
+        base::BindOnce(&ActorOriginGatingCheckerDelegateIOS::
+                           OnNavigationConfirmationDecision,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  // Uncached cross-origin navigation responses fail closed when no confirmation
+  // callback is registered.
   std::move(callback).Run(
       {.is_allowed = false, .did_prompt_user = false, .bypass_cache = false});
+}
+
+void ActorOriginGatingCheckerDelegateIOS::OnNavigationConfirmationDecision(
+    base::OnceCallback<void(NoVerdictResult)> callback,
+    bool permission_granted) {
+  // TODO(crbug.com/556689818): Trigger iOS user confirmation prompt dialog when
+  // the Origin Critic rejects the navigation. Until then, fail closed.
+  std::move(callback).Run({.is_allowed = permission_granted,
+                           .did_prompt_user = false,
+                           .bypass_cache = false});
 }
 }  // namespace actor

@@ -14,6 +14,17 @@
 @class GeminiActuationRequest;
 @class GeminiActuationResponse;
 
+// Callback invoked with the origin critic decision (`allowed` = YES if the
+// navigation is permitted).
+typedef void (^GeminiNavigationConfirmationDecisionBlock)(BOOL allowed);
+
+// Block invoked to confirm whether an uncached cross-origin navigation to
+// `navigationOrigin` is aligned with the task and invoke `completion` with the
+// decision.
+typedef void (^GeminiNavigationConfirmationBlock)(
+    NSString* navigationOrigin,
+    GeminiNavigationConfirmationDecisionBlock completion);
+
 // Protocol for the Gemini actor delegate. This protocol is implemented by a
 // Gemini actuation handler passed downstream to enable it to communicate with
 // the upstream ActorService.
@@ -48,6 +59,12 @@
 // Asynchronously register an intervention delegate (1-to-1).
 - (void)setTaskInterventionDelegate:(id<ActorTaskInterventionDelegate>)delegate
                           forTaskID:(actor::ActorTaskId)taskID;
+
+// Registers `handler` as the navigation confirmation callback for `taskID`
+// (1-to-1). Passing nil clears any registered handler.
+- (void)setNavigationConfirmationHandler:
+            (GeminiNavigationConfirmationBlock)handler
+                               forTaskID:(actor::ActorTaskId)taskID;
 
 @end
 

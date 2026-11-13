@@ -300,6 +300,7 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   CancelOngoingActions(mojom::ActionResultCode::kTaskWentAway);
   policy_deciders_.clear();
   SetInterventionDelegate(nil);
+  navigation_confirmation_callback_.Reset();
   // TODO(crbug.com/576290373): Map `stop_reason` to the corresponding terminal
   // `ActorTaskState` (`kFinished`, `kFailed`, `kCancelled`) instead of
   // hardcoding `kCancelled`.
@@ -720,6 +721,34 @@ void ActorTask::OnNavigationBlocked(mojom::ActionResultCode code) {
     pending_act_->deferred_results->back() =
         ActionResult(ToolExecutionResult(code));
   }
+}
+
+void ActorTask::SetNavigationConfirmationCallback(
+    NavigationConfirmationCallback callback) {
+  navigation_confirmation_callback_ = std::move(callback);
+}
+
+void ActorTask::ConfirmNavigationToOrigin(
+    const url::Origin& navigation_origin,
+    NavigationConfirmationDecisionCallback callback) {
+  if (!navigation_confirmation_callback_ || IsCompleted()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  NavigationConfirmationDecisionCallback guarded_callback = base::BindOnce(
+      [](base::WeakPtr<ActorTask> weak_self,
+         NavigationConfirmationDecisionCallback inner_callback,
+         bool permission_granted) {
+        std::move(inner_callback)
+            .Run(weak_self && weak_self->navigation_confirmation_callback_ &&
+                 !weak_self->IsCompleted() && permission_granted);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  // Posted so that a callback completing synchronously never re-enters the
+  // task.
+  navigation_confirmation_callback_.Run(
+      navigation_origin,
+      base::BindPostTaskToCurrentDefault(std::move(guarded_callback)));
 }
 
 #pragma mark - ActorTaskBackgroundWorker::TaskStateDelegate

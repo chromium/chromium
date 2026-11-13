@@ -168,7 +168,13 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
     : state_(State::kInit),
       execution_updates_delegate_(execution_updates_delegate),
       owner_task_(&CHECK_DEREF(owner_task)),
-      origin_gating_delegate_(owner_task_->policy_checker()),
+      // `base::Unretained(owner_task_)` is safe because `owner_task_` owns
+      // `this` (`ActorEngine`) and `origin_gating_delegate_`, so `owner_task_`
+      // strictly outlives `origin_gating_delegate_`.
+      origin_gating_delegate_(
+          owner_task_->policy_checker(),
+          base::BindRepeating(&ActorTask::ConfirmNavigationToOrigin,
+                              base::Unretained(owner_task_))),
       form_filling_handler_(
           ActorTaskFormFillingHandler::Create(base::PassKey<ActorEngine>(),
                                               owner_task_->GetJournal(),

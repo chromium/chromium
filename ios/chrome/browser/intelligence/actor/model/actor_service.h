@@ -64,7 +64,8 @@ struct TaskSourceInfo;
 //   and notifications are dropped on `Shutdown()`. Callers holding state keyed
 //   on a pending reply must release it in their own teardown, which always
 //   precedes `Shutdown()`.
-// - Registrations (observers and the intervention delegate) apply immediately:
+// - Registrations (observers and the intervention delegate, and the navigation
+//   confirmation callback) apply immediately:
 //   an observer receives a notification if and only if it was posted after
 //   the observer is added and is delivered before it is removed.
 // - Getters return the state applied so far: commands still queued are not
@@ -119,6 +120,13 @@ class ActorService : public KeyedService {
   // Sets the intervention delegate for UI interaction on the given task.
   void SetTaskInterventionDelegate(ActorTaskId task_id,
                                    id<ActorTaskInterventionDelegate> delegate);
+
+  // Registers the safety-check callback for an active task's out-of-turn
+  // navigations. Confined to the ActorService sequence. Safely does nothing if
+  // the task has already ended.
+  void SetNavigationConfirmationCallback(
+      ActorTaskId task_id,
+      NavigationConfirmationCallback callback);
 
   // Enqueues the interrupt described by `request`. `callback` runs at most
   // once, asynchronously and never after `Shutdown()`: with the user's answer

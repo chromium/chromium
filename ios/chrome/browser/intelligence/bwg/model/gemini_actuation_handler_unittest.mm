@@ -1231,6 +1231,7 @@ TEST_F(GeminiActuationHandlerTest,
   fake_web_state_->ShouldAllowResponse(granted_response, response_info,
                                        granted_future.GetCallback());
   EXPECT_TRUE(granted_future.Get().ShouldAllowNavigation());
+
   NSURLResponse* ungranted_response = [[NSURLResponse alloc]
                 initWithURL:[NSURL URLWithString:@"https://ungranted.com/next"]
                    MIMEType:@"text/html"
@@ -1241,6 +1242,187 @@ TEST_F(GeminiActuationHandlerTest,
   fake_web_state_->ShouldAllowResponse(ungranted_response, response_info,
                                        ungranted_future.GetCallback());
   EXPECT_TRUE(ungranted_future.Get().ShouldCancelNavigation());
+
+  [handler disconnect];
+}
+
+// Tests that `setNavigationConfirmationHandler:forTaskID:` wires the
+// navigation confirmation block to evaluate out-of-turn cross origin navigation
+// responses and caches approved origins.
+TEST_F(
+    GeminiActuationHandlerTest,
+    SetNavigationConfirmationHandler_EvaluatesAndCachesCrossOriginNavigations) {
+  base::test::ScopedFeatureList feature_list(kActorOriginGating);
+  fake_web_state_->SetCurrentURL(GURL("https://www.google.com"));
+
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Book a flight"];
+
+  __block bool next_decision = false;
+  __block int confirmation_call_count = 0;
+  __block NSString* last_confirmed_origin = nil;
+  [handler
+      setNavigationConfirmationHandler:^(
+          NSString* navigation_origin,
+          GeminiNavigationConfirmationDecisionBlock completion) {
+        ++confirmation_call_count;
+        last_confirmed_origin = [navigation_origin copy];
+        completion(next_decision);
+      }
+                             forTaskID:task_id];
+
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+
+  // Case 1: Origin critic approves the cross-origin navigation.
+  next_decision = true;
+  NSURLResponse* approved_response = [[NSURLResponse
+      alloc] initWithURL:[NSURL
+                             URLWithString:@"https://www.airline.com/flights"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      approved_future;
+  fake_web_state_->ShouldAllowResponse(approved_response, response_info,
+                                       approved_future.GetCallback());
+  EXPECT_TRUE(approved_future.Get().ShouldAllowNavigation());
+  EXPECT_EQ(1, confirmation_call_count);
+  EXPECT_NSEQ(@"https://www.airline.com", last_confirmed_origin);
+
+  // Case 2: A subsequent navigation to the same approved origin hits
+  // `OriginGatingCache` without invoking the confirmation handler again.
+  next_decision = false;
+  last_confirmed_origin = nil;
+  NSURLResponse* cached_response = [[NSURLResponse
+      alloc] initWithURL:[NSURL
+                             URLWithString:@"https://www.airline.com/checkout"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      cached_future;
+  fake_web_state_->ShouldAllowResponse(cached_response, response_info,
+                                       cached_future.GetCallback());
+  EXPECT_TRUE(cached_future.Get().ShouldAllowNavigation());
+  EXPECT_EQ(1, confirmation_call_count);
+  EXPECT_EQ(nil, last_confirmed_origin);
+
+  // Case 3: Origin critic rejects a subsequent cross-origin navigation to a
+  // different uncached origin.
+  next_decision = false;
+  NSURLResponse* rejected_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://www.hotel.com/rooms"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      rejected_future;
+  fake_web_state_->ShouldAllowResponse(rejected_response, response_info,
+                                       rejected_future.GetCallback());
+  EXPECT_TRUE(rejected_future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(2, confirmation_call_count);
+  EXPECT_NSEQ(@"https://www.hotel.com", last_confirmed_origin);
+
+  [handler disconnect];
+}
+
+// Tests that `setNavigationConfirmationHandler:forTaskID:` ignores unknown task
+// IDs and clears the registered handler when `nil` is passed.
+TEST_F(GeminiActuationHandlerTest,
+       SetNavigationConfirmationHandler_UnknownTaskIdAndNilHandlerFailClosed) {
+  base::test::ScopedFeatureList feature_list(kActorOriginGating);
+  fake_web_state_->SetCurrentURL(GURL("https://www.google.com"));
+
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Book a flight"];
+
+  // Unknown task ID safely no-ops and does not approve navigations for
+  // `task_id`.
+  __block bool unknown_task_handler_called = false;
+  [handler
+      setNavigationConfirmationHandler:^(
+          NSString* navigation_origin,
+          GeminiNavigationConfirmationDecisionBlock completion) {
+        unknown_task_handler_called = true;
+        completion(YES);
+      }
+                             forTaskID:actor::ActorTaskId(9999)];
+
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  NSURLResponse* unconfirmed_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://www.airline.com/a"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      unconfirmed_future;
+  fake_web_state_->ShouldAllowResponse(unconfirmed_response, response_info,
+                                       unconfirmed_future.GetCallback());
+  EXPECT_TRUE(unconfirmed_future.Get().ShouldCancelNavigation());
+  EXPECT_FALSE(unknown_task_handler_called);
+
+  // Register a valid handler, then clear it with `nil` and verify navigations
+  // fail closed without invoking the cleared handler.
+  __block int call_count = 0;
+  [handler
+      setNavigationConfirmationHandler:^(
+          NSString* navigation_origin,
+          GeminiNavigationConfirmationDecisionBlock completion) {
+        ++call_count;
+        completion(YES);
+      }
+                             forTaskID:task_id];
+  [handler setNavigationConfirmationHandler:nil forTaskID:task_id];
+
+  NSURLResponse* cleared_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://www.hotel.com/b"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      cleared_future;
+  fake_web_state_->ShouldAllowResponse(cleared_response, response_info,
+                                       cleared_future.GetCallback());
+  EXPECT_TRUE(cleared_future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(0, call_count);
+
+  [handler disconnect];
+}
+
+// Tests that `setNavigationConfirmationHandler:forTaskID:` fails closed when
+// the confirmation block drops `completion` without invoking it.
+TEST_F(GeminiActuationHandlerTest,
+       SetNavigationConfirmationHandler_DroppedCompletionFailsClosed) {
+  base::test::ScopedFeatureList feature_list(kActorOriginGating);
+  fake_web_state_->SetCurrentURL(GURL("https://www.google.com"));
+
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Book a flight"];
+
+  __block int call_count = 0;
+  [handler
+      setNavigationConfirmationHandler:^(
+          NSString* navigation_origin,
+          GeminiNavigationConfirmationDecisionBlock completion) {
+        ++call_count;
+      }
+                             forTaskID:task_id];
+
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  NSURLResponse* dropped_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://www.airline.com/a"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      dropped_future;
+  fake_web_state_->ShouldAllowResponse(dropped_response, response_info,
+                                       dropped_future.GetCallback());
+  EXPECT_TRUE(dropped_future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(1, call_count);
 
   [handler disconnect];
 }

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
@@ -17,6 +19,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace actor {
 namespace {
@@ -35,7 +38,9 @@ constexpr std::string_view kCrossOriginUrl = "https://other.com/path";
 class ActorOriginGatingCheckerDelegateIOSTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
-  ActorOriginGatingCheckerDelegateIOS delegate_;
+  ActorOriginGatingCheckerDelegateIOS delegate_{
+      /*policy_checker=*/nullptr,
+      /*confirm_navigation_callback=*/base::NullCallback()};
 };
 
 // Tests that navigation requests never require user confirmation, even across
@@ -130,7 +135,8 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
                        base::ListValue().Append("allowed.example.com"));
 
   ActorEnterprisePolicyCheckerIOS policy_checker(&pref_service);
-  ActorOriginGatingCheckerDelegateIOS delegate_with_policy(&policy_checker);
+  ActorOriginGatingCheckerDelegateIOS delegate_with_policy(
+      &policy_checker, /*confirm_navigation_callback=*/base::NullCallback());
 
   // 1. Unlisted URL -> kNoDecision.
   {
@@ -181,12 +187,23 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
   EXPECT_TRUE(result.bypass_cache);
 }
 
-// Tests that `OnNoVerdict()` blocks execution when user confirmation is
-// required.
+// Tests that `OnNoVerdict()` blocks execution without invoking the navigation
+// confirmation callback when user confirmation is required.
 TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
        OnNoVerdict_ConfirmationRequired_BlocksExecution) {
+  bool callback_called = false;
+  ActorOriginGatingCheckerDelegateIOS delegate(
+      /*policy_checker=*/nullptr,
+      base::BindRepeating(
+          [](bool* out_called, const url::Origin& origin,
+             NavigationConfirmationDecisionCallback callback) {
+            *out_called = true;
+            std::move(callback).Run(/*permission_granted=*/true);
+          },
+          &callback_called));
+
   base::test::TestFuture<NoVerdictResult> future;
-  delegate_.OnNoVerdict(
+  delegate.OnNoVerdict(
       /*context=*/nullptr,
       origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
           .source = GURL(kSameOriginUrl1),
@@ -194,6 +211,7 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
       /*requires_user_confirmation=*/true, future.GetCallback());
 
   const NoVerdictResult result = future.Get();
+  EXPECT_FALSE(callback_called);
   EXPECT_FALSE(result.is_allowed);
   EXPECT_FALSE(result.did_prompt_user);
   EXPECT_FALSE(result.bypass_cache);
@@ -231,6 +249,58 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
 
   const NoVerdictResult result = future.Get();
   EXPECT_TRUE(result.is_allowed);
+  EXPECT_FALSE(result.did_prompt_user);
+  EXPECT_FALSE(result.bypass_cache);
+}
+
+// Tests that `OnNoVerdict()` allows execution when the navigation confirmation
+// callback approves an uncached cross-origin navigation response.
+TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
+       OnNoVerdict_ConfirmationApprovedByCritic_AllowsExecution) {
+  base::test::TestFuture<url::Origin, NavigationConfirmationDecisionCallback>
+      confirmation_future;
+  ActorOriginGatingCheckerDelegateIOS delegate(
+      /*policy_checker=*/nullptr,
+      confirmation_future.GetRepeatingCallback<
+          const url::Origin&, NavigationConfirmationDecisionCallback>());
+
+  base::test::TestFuture<NoVerdictResult> future;
+  delegate.OnNoVerdict(
+      /*context=*/nullptr,
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL(kSameOriginUrl1),
+          .destination = GURL(kCrossOriginUrl)}),
+      /*requires_user_confirmation=*/false, future.GetCallback());
+
+  auto [confirmed_origin, decision_callback] = confirmation_future.Take();
+  EXPECT_EQ(confirmed_origin, url::Origin::Create(GURL(kCrossOriginUrl)));
+  std::move(decision_callback).Run(/*permission_granted=*/true);
+
+  const NoVerdictResult result = future.Get();
+  EXPECT_TRUE(result.is_allowed);
+  EXPECT_FALSE(result.did_prompt_user);
+  EXPECT_FALSE(result.bypass_cache);
+}
+
+// Tests that `OnNoVerdict()` blocks execution when the navigation confirmation
+// callback rejects an uncached cross-origin navigation response.
+TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
+       OnNoVerdict_ConfirmationRejectedByCritic_BlocksExecution) {
+  ActorOriginGatingCheckerDelegateIOS delegate(
+      /*policy_checker=*/nullptr,
+      base::BindRepeating([](const url::Origin& origin,
+                             NavigationConfirmationDecisionCallback callback) {
+        std::move(callback).Run(/*permission_granted=*/false);
+      }));
+  base::test::TestFuture<NoVerdictResult> future;
+  delegate.OnNoVerdict(
+      /*context=*/nullptr,
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL(kSameOriginUrl1),
+          .destination = GURL(kCrossOriginUrl)}),
+      /*requires_user_confirmation=*/false, future.GetCallback());
+  const NoVerdictResult result = future.Get();
+  EXPECT_FALSE(result.is_allowed);
   EXPECT_FALSE(result.did_prompt_user);
   EXPECT_FALSE(result.bypass_cache);
 }

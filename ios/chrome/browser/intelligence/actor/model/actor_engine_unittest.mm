@@ -1640,4 +1640,90 @@ TEST_F(ActorEngineOriginGatingTest,
             origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
 }
 
+// Tests that when the navigation confirmation callback approves an ungranted
+// cross-origin redirect, the navigation succeeds and the approved origin is
+// cached in `OriginGatingCache` so subsequent navigations to that origin do not
+// re-query the callback.
+TEST_F(ActorEngineOriginGatingTest,
+       Act_NavigationConfirmationApprovedCachesOrigin) {
+  int confirmation_call_count = 0;
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [&](const url::Origin& origin,
+          NavigationConfirmationDecisionCallback callback) {
+        ++confirmation_call_count;
+        EXPECT_EQ(origin,
+                  url::Origin::Create(GURL("https://critic-approved.com")));
+        std::move(callback).Run(/*permission_granted=*/true);
+      }));
+
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
+  tab.navigation_manager->set_simulated_response_url(
+      GURL("https://critic-approved.com/landing"));
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://new-destination.com/welcome");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(1, confirmation_call_count);
+
+  origin_gating::OriginGatingChecker* task_checker =
+      task_->engine().GetOriginGatingChecker();
+  ASSERT_NE(task_checker, nullptr);
+
+  // A subsequent navigation response to the same origin should be resolved by
+  // `kCacheWithoutUserConfirmation` without invoking the callback again.
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      cached_future;
+  task_checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://critic-approved.com/checkout")}),
+      cached_future.GetCallback());
+
+  const origin_gating::GatingDecision& cached_decision = cached_future.Get<1>();
+  EXPECT_TRUE(cached_decision.is_allowed);
+  EXPECT_EQ(cached_decision.attribution,
+            origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
+  EXPECT_EQ(1, confirmation_call_count);
+}
+
+// Tests that origins pre-approved via `AddWritableMainframeOrigins` resolve via
+// `kCacheWithoutUserConfirmation` without invoking the navigation confirmation
+// callback.
+TEST_F(ActorEngineOriginGatingTest,
+       AddWritableMainframeOrigins_SkipsNavigationConfirmationCallback) {
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [](const url::Origin& origin,
+         NavigationConfirmationDecisionCallback callback) { FAIL(); }));
+
+  engine_->AddWritableMainframeOrigins(
+      {url::Origin::Create(GURL("https://granted.com"))});
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://granted.com/checkout")}),
+      future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
+}
+
 }  // namespace actor

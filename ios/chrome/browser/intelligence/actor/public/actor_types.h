@@ -19,6 +19,10 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/web_state_id.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace actor {
 
 // Strongly typed, performant unique ID representing an ActorTask.
@@ -197,6 +201,18 @@ struct InterruptTaskResult {
 // mode PageContextWrapper extraction.
 using TabObservationCallback =
     base::OnceCallback<void(PageContextWrapperCallbackResponse)>;
+
+// Callback invoked with the result of a navigation confirmation query (e.g.
+// from the server-side Origin Critic model). `permission_granted` is true
+// if the navigation to the new origin is aligned with the task.
+using NavigationConfirmationDecisionCallback =
+    base::OnceCallback<void(bool permission_granted)>;
+
+// Callback registered by the task creator to evaluate out-of-turn cross-origin
+// navigations against the Origin Critic model.
+using NavigationConfirmationCallback = base::RepeatingCallback<void(
+    const url::Origin& navigation_origin,
+    NavigationConfirmationDecisionCallback callback)>;
 
 }  // namespace actor
 

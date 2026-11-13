@@ -53,11 +53,12 @@ class AggregatedJournal;
 // task method is on the stack. Therefore:
 // - Outbound call-outs (observer notifications and `Act()` replies) are always
 //   posted with snapshot arguments.
-// - Intervention delegate requests are issued synchronously. The delegate never
-//   re-enters the task, as it only reaches it through `ActorService` enqueued
-//   commands.
+// - Intervention delegate and navigation confirmation requests are issued
+// synchronously. External callers never re-enters the task, as they only reach
+// it through `ActorService` enqueued commands.
 // - Callbacks handed to code outside the actor model (e.g. intervention
-//   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
+//   delegate and navigation confirmation completions) are wrapped with
+//  `BindPostTaskToCurrentDefault`.
 // Callbacks handed to the engine or timers stay synchronous.
 class ActorTask : public web::WebStateObserver,
                   public ActorEngine::ExecutionUpdatesDelegate,
@@ -189,6 +190,17 @@ class ActorTask : public web::WebStateObserver,
   ActorTaskBackgroundWorker* background_worker() const {
     return background_worker_.get();
   }
+
+  // Sets the callback used to query the Origin Critic model for out-of-turn
+  // cross-origin navigations.
+  void SetNavigationConfirmationCallback(
+      NavigationConfirmationCallback callback);
+
+  // Requests confirmation from the Origin Critic model for an out-of-turn
+  // navigation to `navigation_origin`.
+  void ConfirmNavigationToOrigin(
+      const url::Origin& navigation_origin,
+      NavigationConfirmationDecisionCallback callback);
 
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
@@ -366,6 +378,10 @@ class ActorTask : public web::WebStateObserver,
 
   // Handles the background continued processing task and the heartbeat.
   std::unique_ptr<ActorTaskBackgroundWorker> background_worker_;
+
+  // Callback for confirming out-of-turn cross-origin navigations via the
+  // Origin Critic model.
+  NavigationConfirmationCallback navigation_confirmation_callback_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

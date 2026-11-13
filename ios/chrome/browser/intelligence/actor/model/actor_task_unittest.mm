@@ -2343,4 +2343,132 @@ TEST_F(ActorTaskTest, TtcTaskSourceKeepsTabHelperInactive) {
   EXPECT_EQ(ActorControlState::kInactive, tab_helper->GetControlState());
 }
 
+// Tests that `ConfirmNavigationToOrigin` invokes the registered callback
+// synchronously and posts the decision reply asynchronously.
+TEST_F(ActorTaskTest, ConfirmNavigationToOrigin_ForwardsRequestAndDecision) {
+  bool callback_invoked = false;
+  std::optional<url::Origin> received_origin;
+
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [&](const url::Origin& origin,
+          NavigationConfirmationDecisionCallback decision_callback) {
+        callback_invoked = true;
+        received_origin = origin;
+        std::move(decision_callback).Run(true);
+      }));
+
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com"));
+  base::test::TestFuture<bool> decision_future;
+  task_->ConfirmNavigationToOrigin(target_origin,
+                                   decision_future.GetCallback());
+
+  // The outbound request runs synchronously, while the decision reply is posted
+  // so it never re-enters the caller on the same stack frame
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_FALSE(decision_future.IsReady());
+
+  EXPECT_TRUE(decision_future.Get());
+  ASSERT_TRUE(received_origin.has_value());
+  EXPECT_EQ(target_origin, *received_origin);
+}
+
+// Tests that `ConfirmNavigationToOrigin` fails closed synchronously when
+// `SetNavigationConfirmationCallback` is not called.
+TEST_F(ActorTaskTest, ConfirmNavigationToOrigin_WithoutCallback_FailsClosed) {
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com"));
+
+  base::test::TestFuture<bool> no_callback_future;
+  task_->ConfirmNavigationToOrigin(target_origin,
+                                   no_callback_future.GetCallback());
+  EXPECT_TRUE(no_callback_future.IsReady());
+  EXPECT_FALSE(no_callback_future.Get());
+}
+
+// Tests that `ConfirmNavigationToOrigin` fails closed synchronously without
+// invoking the callback when the task is stopped.
+TEST_F(ActorTaskTest, ConfirmNavigationToOrigin_AfterStop_FailsClosed) {
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com"));
+
+  bool callback_invoked = false;
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [&](const url::Origin& origin,
+          NavigationConfirmationDecisionCallback decision_callback) {
+        callback_invoked = true;
+        std::move(decision_callback).Run(true);
+      }));
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  base::test::TestFuture<bool> stopped_future;
+  task_->ConfirmNavigationToOrigin(target_origin, stopped_future.GetCallback());
+
+  EXPECT_TRUE(stopped_future.IsReady());
+  EXPECT_FALSE(stopped_future.Get());
+  EXPECT_FALSE(callback_invoked);
+}
+
+// Tests that `ConfirmNavigationToOrigin` fails closed when the task is stopped
+// while the confirmation request is in flight, even if the external callback
+// later resolves with `true`.
+TEST_F(ActorTaskTest, ConfirmNavigationToOrigin_StopWhileInFlight_FailsClosed) {
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com"));
+
+  base::test::TestFuture<NavigationConfirmationDecisionCallback>
+      in_flight_future;
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [&](const url::Origin& origin,
+          NavigationConfirmationDecisionCallback decision_callback) {
+        in_flight_future.SetValue(std::move(decision_callback));
+      }));
+
+  base::test::TestFuture<bool> decision_future;
+  task_->ConfirmNavigationToOrigin(target_origin,
+                                   decision_future.GetCallback());
+
+  // Wait until the outbound request has been delivered and is in flight.
+  NavigationConfirmationDecisionCallback in_flight_callback =
+      in_flight_future.Take();
+  EXPECT_FALSE(decision_future.IsReady());
+
+  // Stop the task while the confirmation request is still in flight, then
+  // resolve the in-flight callback with `true`.
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  std::move(in_flight_callback).Run(/*permission_granted=*/true);
+
+  EXPECT_FALSE(decision_future.Get());
+}
+
+// Tests that `ConfirmNavigationToOrigin` fails closed when the callback is
+// cleared via `SetNavigationConfirmationCallback({})` while a request is in
+// flight, even if the previous callback later resolves with `true`.
+TEST_F(ActorTaskTest,
+       ConfirmNavigationToOrigin_ClearCallbackWhileInFlight_FailsClosed) {
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com"));
+  base::test::TestFuture<NavigationConfirmationDecisionCallback>
+      in_flight_future;
+  task_->SetNavigationConfirmationCallback(base::BindLambdaForTesting(
+      [&](const url::Origin& origin,
+          NavigationConfirmationDecisionCallback decision_callback) {
+        in_flight_future.SetValue(std::move(decision_callback));
+      }));
+
+  base::test::TestFuture<bool> decision_future;
+  task_->ConfirmNavigationToOrigin(target_origin,
+                                   decision_future.GetCallback());
+
+  NavigationConfirmationDecisionCallback in_flight_callback =
+      in_flight_future.Take();
+  EXPECT_FALSE(decision_future.IsReady());
+
+  // Clear the callback while the confirmation request is in flight, then
+  // resolve the in-flight callback with `true`.
+  task_->SetNavigationConfirmationCallback({});
+  std::move(in_flight_callback).Run(/*permission_granted=*/true);
+
+  EXPECT_FALSE(decision_future.Get());
+}
 }  // namespace actor

@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/origin_gating/core/client_tool.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
@@ -24,8 +26,9 @@ class ActorEnterprisePolicyCheckerIOS;
 class ActorOriginGatingCheckerDelegateIOS
     : public origin_gating::OriginGatingChecker::Delegate {
  public:
-  explicit ActorOriginGatingCheckerDelegateIOS(
-      const ActorEnterprisePolicyCheckerIOS* policy_checker = nullptr);
+  ActorOriginGatingCheckerDelegateIOS(
+      const ActorEnterprisePolicyCheckerIOS* policy_checker,
+      NavigationConfirmationCallback confirm_navigation_callback);
   ~ActorOriginGatingCheckerDelegateIOS() override;
 
   ActorOriginGatingCheckerDelegateIOS(
@@ -49,8 +52,18 @@ class ActorOriginGatingCheckerDelegateIOS
                    base::OnceCallback<void(NoVerdictResult)> callback) override;
 
  private:
+  // Handles the result of querying the Origin Critic model for an out-of-turn
+  // cross-origin navigation.
+  void OnNavigationConfirmationDecision(
+      base::OnceCallback<void(NoVerdictResult)> callback,
+      bool permission_granted);
+
   // Pointer to the policy checker that holds enterprise policy state for Actor.
   raw_ptr<const ActorEnterprisePolicyCheckerIOS> policy_checker_ = nullptr;
+
+  // Callback to ask the owning task whether an out-of-turn cross-origin
+  // navigation is aligned with the task.
+  NavigationConfirmationCallback confirm_navigation_callback_;
 
   base::WeakPtrFactory<ActorOriginGatingCheckerDelegateIOS> weak_ptr_factory_{
       this};
