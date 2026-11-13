@@ -340,6 +340,7 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/browser/actor",
     "//components/autofill/core/common:test_support",
     "//components/critical_actions/core/browser",
     "//components/device_reauth:test_support",

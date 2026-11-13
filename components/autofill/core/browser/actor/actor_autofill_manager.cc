@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -91,6 +93,11 @@ bool ActorAutofillManager::IsTabInActorMode() const {
   return active_actor_task_.has_value();
 }
 
+void ActorAutofillManager::OnActorTaskStateChanged(
+    std::optional<ActorTaskInfo> task_info) {
+  active_actor_task_ = std::move(task_info);
+}
+
 void ActorAutofillManager::MaybeLogCriticalAction(
     AutofillManager& manager,
     FormGlobalId form_id,
@@ -102,6 +109,10 @@ void ActorAutofillManager::MaybeLogCriticalAction(
 
   if (!active_actor_task_) {
     return;  // Only log if the tab has an active Actor task.
+  }
+
+  if (active_actor_task_->is_under_user_control) {
+    return;  // The user is filling the form, not the actor.
   }
 
   if (!critical_action_service_) {

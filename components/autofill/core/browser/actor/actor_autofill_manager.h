@@ -29,6 +29,8 @@ class ActorAutofillManager : public AutofillManager::Observer {
   struct ActorTaskInfo {
     std::string conversation_id;
     ::actor::TaskId task_id;
+    // Fills made while the user controls the task are not logged.
+    bool is_under_user_control = false;
   };
 
   explicit ActorAutofillManager(
@@ -61,9 +63,7 @@ class ActorAutofillManager : public AutofillManager::Observer {
   std::optional<ActorTaskInfo> active_actor_task() const {
     return active_actor_task_;
   }
-  void set_active_actor_task(std::optional<ActorTaskInfo> task_info) {
-    active_actor_task_ = std::move(task_info);
-  }
+  void OnActorTaskStateChanged(std::optional<ActorTaskInfo> task_info);
 
   ActorKeyMetricsRecorder& key_metrics_recorder() {
     return key_metrics_recorder_;

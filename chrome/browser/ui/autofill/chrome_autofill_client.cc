@@ -1950,7 +1950,7 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   // completion should be issued before the `ActorTask` gets removed.
   if (actor::ActorTask::IsCompletedState(state)) {
     if (actor_autofill_manager_) {
-      actor_autofill_manager_->set_active_actor_task(std::nullopt);
+      actor_autofill_manager_->OnActorTaskStateChanged(std::nullopt);
     }
     return;
   }
@@ -1965,10 +1965,11 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
 
   // TODO(crbug.com/469428128): Evaluate whether
   // `actor::ActorTask::State::kCreated` state should enable the actor mode.
-  GetActorAutofillManager()->set_active_actor_task(
+  GetActorAutofillManager()->OnActorTaskStateChanged(
       ActorAutofillManager::ActorTaskInfo{
           .conversation_id = task.source_info().id.value_or(""),
           .task_id = task_id,
+          .is_under_user_control = task.IsUnderUserControl(),
       });
 
   // If the task was just created, known forms should be reparsed to ensure that

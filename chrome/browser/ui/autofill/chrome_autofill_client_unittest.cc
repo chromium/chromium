@@ -43,6 +43,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -877,6 +878,47 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
   EXPECT_TRUE(client()->IsTabInActorMode());
   check.Call();
   actor_service->NotifyTaskStateChanged(*task);
+}
+
+// Tests that `OnActorTaskStateChange()` tracks whether the user controls the
+// task, so that user fills during a pause are not logged as critical actions.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       OnActorTaskStateChange_TracksUserControl) {
+  actor::ActorKeyedServiceFake* actor_service =
+      static_cast<actor::ActorKeyedServiceFake*>(
+          actor::ActorKeyedService::Get(profile()));
+  ASSERT_TRUE(actor_service);
+
+  MockContentAutofillDriver* mock_driver = (*driver_injector_)[web_contents()];
+  ASSERT_TRUE(mock_driver);
+  EXPECT_CALL(*mock_driver, TriggerFormExtractionInAllFrames)
+      .Times(::testing::AnyNumber());
+
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  // Associate the active tab with the task.
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_interface());
+  task->AddTab(mock_tab_interface().GetHandle(),
+               /*stop_task_on_detach=*/true, base::DoNothing());
+
+  actor_service->NotifyTaskStateChanged(*task);
+  ASSERT_TRUE(client()->GetActorAutofillManager()->active_actor_task());
+  EXPECT_FALSE(client()
+                   ->GetActorAutofillManager()
+                   ->active_actor_task()
+                   ->is_under_user_control);
+
+  // The user takes over.
+  actor_service->PauseTaskForTesting(task_id, /*from_actor=*/false);
+  actor_service->NotifyTaskStateChanged(*task);
+  ASSERT_TRUE(client()->GetActorAutofillManager()->active_actor_task());
+  EXPECT_TRUE(client()
+                  ->GetActorAutofillManager()
+                  ->active_actor_task()
+                  ->is_under_user_control);
+  EXPECT_TRUE(client()->IsTabInActorMode());
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
