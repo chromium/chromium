@@ -3260,8 +3260,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that leaving fullscreen closes a popup kept open for a draft typed
 // in fullscreen, keeping the draft, and reopens it unfocused once the
 // transition completes.
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       ExitingFullscreenHidesDraftPopupTypedInFullscreen) {
+// TODO(crbug.com/585293340): Flaky on Mac.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    DISABLED_ExitingFullscreenHidesDraftPopupTypedInFullscreen) {
   if (IsWebUIToolbarEnabled()) {
     GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
                     "isn't closed in fullscreen or reopened after.";
@@ -5520,8 +5522,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that tab fullscreen, which hides the toolbar, keeps a popup closed
 // for an unfocused draft, keeping the draft, and that the popup reopens
 // unfocused once tab fullscreen exits.
+// TODO(crbug.com/585294336): Flaky on Mac.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       TabFullscreenKeepsDraftPopupClosedUntilExit) {
+                       DISABLED_TabFullscreenKeepsDraftPopupClosedUntilExit) {
   if (IsWebUIToolbarEnabled()) {
     GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
                     "isn't closed in fullscreen or reopened after.";
