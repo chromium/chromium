@@ -9,7 +9,6 @@
 #include <iterator>
 #include <map>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -61,8 +60,6 @@
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {
-
-namespace ranges = std::ranges;
 
 namespace {
 
@@ -465,7 +462,6 @@ void PdfAccessibilityTree::DoSetAccessibilityViewportInfo(
   CHECK_GT(scale_, 0);
   scroll_ = gfx::PointF(viewport_info.scroll).OffsetFromOrigin();
   offset_ = gfx::PointF(viewport_info.offset).OffsetFromOrigin();
-  orientation_ = viewport_info.orientation;
   selection_ = viewport_info.selection;
 
   auto obj = GetPluginContainerAXObject();

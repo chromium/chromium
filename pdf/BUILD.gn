@@ -393,9 +393,7 @@ if (enable_pdf) {
     ]
 
     deps = [
-      ":pdf_accessibility_constants_helper",
       "//services/screen_ai/buildflags",
-      "//skia",
       "//ui/gfx/geometry",
     ]
   }

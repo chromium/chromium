@@ -37,26 +37,11 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style)
-    : AccessibilityTextRunInfo(start_index,
-                               len,
-                               bounds,
-                               direction,
-                               style,
-                               /*is_searchified=*/false) {}
-
-AccessibilityTextRunInfo::AccessibilityTextRunInfo(
-    uint32_t start_index,
-    uint32_t len,
-    const gfx::RectF& bounds,
-    AccessibilityTextDirection direction,
-    const AccessibilityTextStyleInfo& style,
-    bool is_searchified)
     : start_index(start_index),
       len(len),
       bounds(bounds),
       direction(direction),
-      style(style),
-      is_searchified(is_searchified) {}
+      style(style) {}
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
     const AccessibilityTextRunInfo& other) = default;
@@ -126,12 +111,6 @@ AccessibilityHighlightInfo::~AccessibilityHighlightInfo() = default;
 AccessibilityPageObjects::AccessibilityPageObjects() = default;
 
 AccessibilityPageObjects::AccessibilityPageObjects(
-    const std::vector<AccessibilityLinkInfo>& links,
-    const std::vector<AccessibilityImageInfo>& images,
-    const std::vector<AccessibilityHighlightInfo>& highlights)
-    : links(links), images(images), highlights(highlights) {}
-
-AccessibilityPageObjects::AccessibilityPageObjects(
     const AccessibilityPageObjects& other) = default;
 
 AccessibilityPageObjects::~AccessibilityPageObjects() = default;
@@ -142,28 +121,6 @@ AccessibilityViewportInfo::AccessibilityViewportInfo(
 AccessibilityViewportInfo::~AccessibilityViewportInfo() = default;
 
 AccessibilityActionData::AccessibilityActionData() = default;
-
-AccessibilityActionData::AccessibilityActionData(
-    AccessibilityAction action,
-    AccessibilityAnnotationType annotation_type,
-    const gfx::Point& target_point,
-    const gfx::Rect& target_rect,
-    uint32_t annotation_index,
-    uint32_t page_index,
-    AccessibilityScrollAlignment horizontal_scroll_alignment,
-    AccessibilityScrollAlignment vertical_scroll_alignment,
-    const PageCharacterIndex& selection_start_index,
-    const PageCharacterIndex& selection_end_index)
-    : action(action),
-      annotation_type(annotation_type),
-      target_point(target_point),
-      target_rect(target_rect),
-      annotation_index(annotation_index),
-      page_index(page_index),
-      horizontal_scroll_alignment(horizontal_scroll_alignment),
-      vertical_scroll_alignment(vertical_scroll_alignment),
-      selection_start_index(selection_start_index),
-      selection_end_index(selection_end_index) {}
 
 AccessibilityActionData::AccessibilityActionData(
     const AccessibilityActionData& other) = default;

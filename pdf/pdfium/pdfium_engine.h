@@ -99,7 +99,6 @@ class PDFiumPermissions;
 class Thumbnail;
 enum class AccessibilityScrollAlignment;
 struct AccessibilityActionData;
-struct AccessibilityFocusInfo;
 struct PageCharacterIndex;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -394,9 +393,6 @@ class PDFiumEngine : public DocumentLoader::Client,
   void UpdateFocus(bool has_focus);
 
   bool has_focus() const { return has_focus_; }
-
-  // Returns the focus info of current focus item.
-  AccessibilityFocusInfo GetFocusInfo();
 
   // Returns whether the "/Marked" attribute in the "MarkInfo" dictionary in the
   // PDF's catalog is set to true. This should indicate whether the PDF includes

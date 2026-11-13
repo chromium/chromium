@@ -794,19 +794,6 @@ AdjustedPageTextData GetAdjustedPageTextData(PDFiumPage* page,
   return {std::move(adjusted_page_text), std::move(removed_indices)};
 }
 
-FocusObjectType GetAnnotationFocusType(FPDF_ANNOTATION_SUBTYPE annot_type) {
-  switch (annot_type) {
-    case FPDF_ANNOT_LINK:
-      return FocusObjectType::kLink;
-    case FPDF_ANNOT_HIGHLIGHT:
-      return FocusObjectType::kHighlight;
-    case FPDF_ANNOT_WIDGET:
-      return FocusObjectType::kTextField;
-    default:
-      return FocusObjectType::kNone;
-  }
-}
-
 std::u16string GetAttachmentAttribute(FPDF_ATTACHMENT attachment,
                                       FPDF_BYTESTRING field) {
   return CallPDFiumWideStringBufferApi(
@@ -1949,41 +1936,6 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
   if (caret_) {
     caret_->SetVisible(has_focus && !IsSelecting());
   }
-}
-
-AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
-  AccessibilityFocusInfo focus_info = {FocusObjectType::kNone, 0, 0};
-
-  switch (focus_element_type_) {
-    case FocusElementType::kNone: {
-      break;
-    }
-    case FocusElementType::kPage: {
-      int page_index = -1;
-      FPDF_ANNOTATION focused_annot = nullptr;
-      FPDF_BOOL ret = FORM_GetFocusedAnnot(form(), &page_index, &focused_annot);
-      DCHECK(ret);
-
-      if (PageIndexInBounds(page_index) && focused_annot) {
-        FocusObjectType type =
-            GetAnnotationFocusType(FPDFAnnot_GetSubtype(focused_annot));
-        int annot_index = FPDFPage_GetAnnotIndex(pages_[page_index]->GetPage(),
-                                                 focused_annot);
-        if (type != FocusObjectType::kNone && annot_index >= 0) {
-          focus_info.focused_object_type = type;
-          focus_info.focused_object_page_index = page_index;
-          focus_info.focused_annotation_index_in_page = annot_index;
-        }
-      }
-      FPDFPage_CloseAnnot(focused_annot);
-      break;
-    }
-    case FocusElementType::kDocument: {
-      focus_info.focused_object_type = FocusObjectType::kDocument;
-      break;
-    }
-  }
-  return focus_info;
 }
 
 bool PDFiumEngine::IsPDFDocTagged() const {

@@ -25,7 +25,6 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -39,7 +38,6 @@ class PdfAccessibilityActionHandler;
 }  // namespace chrome_pdf
 
 namespace content {
-class RenderAccessibility;
 class RenderFrame;
 }  // namespace content
 
@@ -246,11 +244,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // From PDF plugin we receive all the data in logical pixels. Which is
   // without the zoom and scale factor applied. We apply the `zoom_` and
   // `scale_` to generate the final bounding boxes of elements in accessibility
-  // tree. `orientation_` represents page rotations as multiples of 90 degrees,
-  // based on `chrome_pdf::PageOrientation`.
+  // tree.
   double zoom_ = 1.0;
   double scale_ = 1.0;
-  int32_t orientation_ = 0;
   gfx::Vector2dF scroll_;
   gfx::Vector2dF offset_;
   chrome_pdf::Selection selection_;
