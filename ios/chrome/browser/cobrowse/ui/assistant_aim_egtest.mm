@@ -1598,8 +1598,8 @@ void RemoveSharedTab(NSString* title) {
 }
 
 // Tests that after sending a follow-up query in Co-browse, navigating to a new
-// URL in the SAME tab and re-focusing the Co-browse omnibox auto-attaches the
-// new page while preserving the previously shared page from the same tab.
+// URL in the SAME tab removes the previous page from Shared Tabs and
+// re-focusing the Co-browse omnibox auto-attaches only the new page.
 - (void)testCobrowseFollowUpAfterSameTabNavigation {
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
@@ -1662,16 +1662,8 @@ void RemoveSharedTab(NSString* title) {
   [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
       performAction:grey_tap()];
 
-  // 7. Verify that BOTH pony.html (preserved from previous turn) and
-  // chromium_logo_page.html (newly auto-attached from the same tab) are shared.
-  VerifySharedTabs(@[ kPonyPageTitle, kChromiumLogoPageTitle ], @[],
-                   /*dismissAfterVerification=*/YES);
-
-  // 8. Remove pony.html (Page A) from Shared Tabs, refocus the omnibox, and
-  // verify that chromium_logo_page.html (Page B) remains in Shared Tabs.
-  RemoveSharedTab(kPonyPageTitle);
-  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
-      performAction:grey_tap()];
+  // 7. Verify that pony.html (navigated away) was removed and only
+  // chromium_logo_page.html (newly auto-attached from the same tab) is shared.
   VerifySharedTabs(@[ kChromiumLogoPageTitle ], @[ kPonyPageTitle ],
                    /*dismissAfterVerification=*/YES);
 }
