@@ -28,10 +28,17 @@ AtomicString CSSTransition::transitionProperty() const {
 }
 
 V8AnimationPlayState CSSTransition::playState() const {
-  // TODO(1043778): Flush is likely not required once the CSSTransition is
-  // disassociated from its owning element.
-  if (GetDocument())
-    GetDocument()->UpdateStyleAndLayoutTree();
+  if (Document* document = GetDocument()) {
+    document->UpdateStyleAndLayoutTree();
+  }
+  if (Element* owning_element = OwningElement()) {
+    Document& owning_document = owning_element->GetDocument();
+    owning_document.UpdateStyleAndLayoutTreeForElement(
+        owning_element, DocumentUpdateReason::kWebAnimation);
+    if (owning_document.NeedsLayoutTreeUpdate()) {
+      owning_document.UpdateStyleAndLayoutTree();
+    }
+  }
   return Animation::playState();
 }
 

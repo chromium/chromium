@@ -404,14 +404,21 @@ HeapVector<ScriptObject> KeyframeEffect::getKeyframes(
   if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 
-  KeyframeVector keyframes = ignore_css_keyframes_
-                                 ? model_->GetFrames()
-                                 : model_->GetComputedKeyframes(EffectTarget());
+  // Per CSS Animations 2, getKeyframes() returns computed keyframes only when
+  // the effect is associated with a CSSAnimation and its keyframes have not
+  // been replaced by a successful call to setKeyframes().
+  // https://drafts.csswg.org/css-animations-2/#keyframes
+  const bool use_css_computed_keyframes =
+      !ignore_css_keyframes_ && model_->IsCssKeyframeEffectModel() &&
+      GetAnimation() && GetAnimation()->IsCSSAnimation();
+
+  KeyframeVector keyframes = use_css_computed_keyframes
+                                 ? model_->GetComputedKeyframes(EffectTarget())
+                                 : model_->GetFrames();
 
   KeyframeOrderStrategy strategy =
-      ignore_css_keyframes_ || !model_->IsCssKeyframeEffectModel()
-          ? KeyframeOrderStrategy::kSpecifiedOrdering
-          : KeyframeOrderStrategy::kCssKeyframeOrdering;
+      use_css_computed_keyframes ? KeyframeOrderStrategy::kCssKeyframeOrdering
+                                 : KeyframeOrderStrategy::kSpecifiedOrdering;
   Vector<int> indices = CalculateKeyframeOrdering(keyframes, strategy);
 
   Vector<double> computed_offsets =

@@ -12,6 +12,22 @@
 
 namespace blink {
 
+namespace {
+
+void FlushStyleForElement(Element* element) {
+  if (!element) {
+    return;
+  }
+  Document& document = element->GetDocument();
+  document.UpdateStyleAndLayoutTreeForElement(
+      element, DocumentUpdateReason::kWebAnimation);
+  if (document.NeedsLayoutTreeUpdate()) {
+    document.UpdateStyleAndLayoutTree();
+  }
+}
+
+}  // namespace
+
 CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
                            AnimationTimeline* timeline,
                            AnimationEffect* content,
@@ -106,10 +122,19 @@ AnimationEffect::EventDelegate* CSSAnimation::CreateEventDelegate(
 }
 
 void CSSAnimation::FlushStyles() const {
-  // TODO(1043778): Flush is likely not required once the CSSAnimation is
-  // disassociated from its owning element.
-  if (GetDocument()) {
-    GetDocument()->UpdateStyleAndLayoutTree();
+  // Flush the animation's own document, the owning element's document, and the
+  // effect target's document, since any of these may differ in cross-document
+  // animations or after node adoption.
+  if (Document* document = GetDocument()) {
+    document->UpdateStyleAndLayoutTree();
+  }
+  FlushStyleForElement(OwningElement());
+  if (const auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
+    Element* target = keyframe_effect->EffectTarget();
+    if (!target) {
+      target = keyframe_effect->target();
+    }
+    FlushStyleForElement(target);
   }
 }
 

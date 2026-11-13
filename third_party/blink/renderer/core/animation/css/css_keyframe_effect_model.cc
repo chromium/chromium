@@ -137,8 +137,12 @@ StringKeyframe* FindOrInsertKeyframe(
 KeyframeEffectModelBase::KeyframeVector
 CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
   const KeyframeEffectModelBase::KeyframeVector& keyframes = GetFrames();
-  if (!element)
+  // Computed keyframes can only be produced when the effect has a target for
+  // which computed property values can be calculated.
+  // https://drafts.csswg.org/css-animations-2/#keyframes
+  if (!element || !element->GetComputedStyle()) {
     return keyframes;
+  }
 
   KeyframeEffectModelBase::KeyframeVector computed_keyframes;
 
