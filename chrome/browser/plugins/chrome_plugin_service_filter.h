@@ -62,6 +62,7 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // Sets a callback to be called when `this` adds itself as an observer to a
   // RenderProcessHost.
