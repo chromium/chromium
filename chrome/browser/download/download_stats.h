@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/download/download_commands.h"
-#include "chrome/browser/download/download_prompt_status.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 
@@ -132,11 +131,6 @@ void RecordDownloadPathValidation(download::PathValidationResult result,
 void RecordDownloadCancelReason(DownloadCancelReason reason);
 
 void RecordDownloadStartPerProfileType(Profile* profile);
-
-#if BUILDFLAG(IS_ANDROID)
-// Records whether the download dialog is shown to the user.
-void RecordDownloadPromptStatus(DownloadPromptStatus status);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 enum class DownloadUiContextMenuAction {
   // Drop down button for download UI context menu is visible

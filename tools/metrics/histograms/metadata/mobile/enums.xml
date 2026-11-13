@@ -114,12 +114,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ERROR_OPTION"/>
 </enum>
 
-<enum name="DownloadPromptStatus">
-  <int value="0" label="Show initial"/>
-  <int value="1" label="Show prompt"/>
-  <int value="2" label="Don't show prompt"/>
-</enum>
-
 <enum name="IOSActivityScenario">
   <int value="0" label="Tab Share Button"/>
   <int value="1" label="QR Code Image"/>

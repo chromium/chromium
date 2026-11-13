@@ -1026,16 +1026,6 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationChannelId" variants="NotificationChannelId"/>
 </histogram>
 
-<histogram name="MobileDownload.DownloadPromptStatus"
-    enum="DownloadPromptStatus" expires_after="2023-02-16">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Android: Records whether download dialog will be shown to the user. Recorded
-    when the download preference is initialized in native.
-  </summary>
-</histogram>
-
 <histogram name="MobileDownload.Location.Dialog.Result"
     enum="DownloadLocationDialogResult" expires_after="2022-02-16">
   <owner>qinmin@chromium.org</owner>

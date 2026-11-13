@@ -27,7 +27,6 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prompt_status.h"
-#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/trusted_sources_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -280,8 +279,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   prompt_for_download_.Init(prefs::kPromptForDownload, prefs);
 #if BUILDFLAG(IS_ANDROID)
   prompt_for_download_android_.Init(prefs::kPromptForDownloadAndroid, prefs);
-  RecordDownloadPromptStatus(
-      static_cast<DownloadPromptStatus>(*prompt_for_download_android_));
   auto_open_pdf_enabled_.Init(prefs::kAutoOpenPdfEnabled, prefs);
 #endif
   download_path_.Init(prefs::kDownloadDefaultDirectory, prefs);

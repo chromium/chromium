@@ -8,7 +8,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_item_model.h"
-#include "chrome/browser/download/download_prompt_status.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,24 +21,8 @@ namespace {
 constexpr char kDownloadCancelReasonHistogram[] = "Download.CancelReason";
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr char kDownloadPromptStatusHistogram[] =
-    "MobileDownload.DownloadPromptStatus";
 constexpr char kShowedDownloadWarningHistogram[] =
     "Download.ShowedDownloadWarning";
-
-TEST(DownloadStatsTest, RecordDownloadPromptStatus) {
-  base::HistogramTester histogram_tester;
-  RecordDownloadPromptStatus(DownloadPromptStatus::SHOW_INITIAL);
-  histogram_tester.ExpectBucketCount(kDownloadPromptStatusHistogram,
-                                     DownloadPromptStatus::SHOW_INITIAL, 1);
-  RecordDownloadPromptStatus(DownloadPromptStatus::SHOW_PREFERENCE);
-  histogram_tester.ExpectBucketCount(kDownloadPromptStatusHistogram,
-                                     DownloadPromptStatus::SHOW_PREFERENCE, 1);
-  RecordDownloadPromptStatus(DownloadPromptStatus::DONT_SHOW);
-  histogram_tester.ExpectBucketCount(kDownloadPromptStatusHistogram,
-                                     DownloadPromptStatus::DONT_SHOW, 1);
-  histogram_tester.ExpectTotalCount(kDownloadPromptStatusHistogram, 3);
-}
 
 TEST(DownloadStatsTest, RecordDangerousDownloadWarningShownForSafeDownload) {
   // Initialize mocks.

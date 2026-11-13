@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
@@ -65,7 +64,6 @@ TEST(DownloadPrefsTest, Prerequisites) {
 // Verifies prefs are registered correctly.
 TEST(DownloadPrefsTest, RegisterPrefs) {
   content::BrowserTaskEnvironment task_environment_;
-  base::HistogramTester histogram_tester;
 
   // Download prefs are registered when creating the profile.
   TestingProfile profile;
@@ -73,8 +71,6 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Download prompt prefs should be registered correctly.
-  histogram_tester.ExpectBucketCount("MobileDownload.DownloadPromptStatus",
-                                     DownloadPromptStatus::SHOW_INITIAL, 1);
   int prompt_status = profile.GetTestingPrefService()->GetInteger(
       prefs::kPromptForDownloadAndroid);
   EXPECT_EQ(prompt_status,
