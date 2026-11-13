@@ -28,7 +28,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
@@ -64,8 +63,6 @@ base::win::ScopedHandle GetBatteryHandle(
     return base::win::ScopedHandle();
   }
 
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
   base::win::ScopedHandle battery(
       ::CreateFile(interface_detail->DevicePath, GENERIC_READ | GENERIC_WRITE,
                    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
@@ -224,7 +221,7 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   // to avoid the performance cost of concurrent calls.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})};
 
   base::WeakPtrFactory<BatteryLevelProviderWin> weak_ptr_factory_{this};
@@ -237,13 +234,11 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
 // static
 std::optional<BatteryLevelProvider::BatteryState>
 BatteryLevelProviderWin::GetBatteryStateImpl() {
-  // Proactively mark as blocking to fail early, since calls below may also
-  // trigger ScopedBlockingCall.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
   // Mitigate the issues caused by loading DLLs on a background thread
-  // (http://crbug/973868).
+  // (crbug.com/973868). This scoper is used instead of setting the task runner
+  // to MUST_USE_FOREGROUND because this will only boost the priority on the
+  // first call to GetBatteryStateImpl, after which all needed DLL's should be
+  // loaded.
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
   // Battery interfaces are enumerated at every sample to detect when a new
