@@ -163,6 +163,7 @@ class InputStateModel {
   std::optional<std::string> GetLensCrop() const;
   void RemoveLensCrop();
   const std::optional<LensCrop>& lens_crop() const { return lens_crop_; }
+  uint64_t lens_crop_sequence() const { return lens_crop_sequence_; }
 
   // Gets the `PrefService`.
   void SetPrefService(PrefService* pref_service);
@@ -265,6 +266,7 @@ class InputStateModel {
 
   // Stores the active region crop preview, if any.
   std::optional<LensCrop> lens_crop_;
+  uint64_t lens_crop_sequence_ = 0;
 
   // Set by `EnableDynamicAimFulfillment()`; never cleared.
   bool dynamic_aim_fulfillment_enabled_ = false;

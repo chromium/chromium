@@ -443,6 +443,7 @@ InputStateModel::InputStateModel(
   user_modified_tool_in_thread_ =
       new_input_state_model.user_modified_tool_in_thread_;
   lens_crop_ = new_input_state_model.lens_crop_;
+  lens_crop_sequence_ = new_input_state_model.lens_crop_sequence_;
   // The copy goes to the next surface (e.g. AI Mode follow-ups) and doesn't
   // keep the opt-in, so reset `will_fulfill_in_aim`.
   RecomputeRouting();
@@ -1076,6 +1077,7 @@ void InputStateModel::SetLensCrop(const std::string& data_uri) {
   // There is only ever one region crop; setting a crop replaces any existing
   // crop.
   lens_crop_ = LensCrop{data_uri};
+  ++lens_crop_sequence_;
   NotifySubscribers();
 }
 
@@ -1089,6 +1091,7 @@ std::optional<std::string> InputStateModel::GetLensCrop() const {
 void InputStateModel::RemoveLensCrop() {
   if (lens_crop_.has_value()) {
     lens_crop_.reset();
+    ++lens_crop_sequence_;
     NotifySubscribers();
   }
 }

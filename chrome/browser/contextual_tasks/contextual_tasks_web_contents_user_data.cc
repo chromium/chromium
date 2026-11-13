@@ -183,6 +183,21 @@ bool IsTabDeselectionEnabled() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+tabs::TabInterface* ResolveActiveBrowserTab(
+    BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface) {
+    return nullptr;
+  }
+  if (tabs::TabInterface* active_tab =
+          browser_window_interface->GetActiveTabInterface()) {
+    return active_tab;
+  }
+  if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+    return tab_list->GetActiveTab();
+  }
+  return nullptr;
+}
+
 void RemoveAttachedTabUnderline(
     std::optional<int32_t> session_tab_id,
     const ContextualTasksWebContentsUserData& user_data,
@@ -527,6 +542,10 @@ void ContextualTasksWebContentsUserData::SubscribeToInputStateModel(
     return;
   }
   subscribed_model_ = model;
+#if !BUILDFLAG(IS_ANDROID)
+  ClearVisualSelectionState();
+  cached_lens_crop_sequence_ = 0;
+#endif
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_lens_crop_mounted = false;
   page_state.last_lens_crop_data_uri.clear();
@@ -537,6 +556,12 @@ void ContextualTasksWebContentsUserData::SubscribeToInputStateModel(
         subscribed_model_->Subscribe(base::BindRepeating(
             &ContextualTasksWebContentsUserData::OnInputStateChanged,
             base::Unretained(this)));
+#if !BUILDFLAG(IS_ANDROID)
+    if (subscribed_model_->lens_crop().has_value()) {
+      cached_lens_crop_sequence_ = subscribed_model_->lens_crop_sequence();
+      CacheVisualSelectionState();
+    }
+#endif
   } else {
     input_state_subscription_ = {};
   }
@@ -941,6 +966,19 @@ void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
     pending_context_uploads_.insert(context_token);
     failed_context_uploads_.erase(context_token);
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (!visual_selection_invalidated_ &&
+      visual_selection_overlay_token_.has_value() &&
+      context_token == *visual_selection_overlay_token_) {
+    if (auto* session_handle = GetExistingContextualSessionHandle()) {
+      if (std::optional<contextual_search::FileInfo> updated = FindLensFileInfo(
+              *session_handle, visual_selection_overlay_token_);
+          updated.has_value()) {
+        visual_selection_file_info_ = std::move(updated);
+      }
+    }
+  }
+#endif
   MaybeFinishPendingSubmit();
   UpdateContextState();
   UpdateSuggestInputs();
@@ -1628,6 +1666,7 @@ void ContextualTasksWebContentsUserData::RemoveLensCrop() {
   base::UmaHistogramBoolean("ContextualTasks.LensRegionChip.Dismissed", true);
 
 #if !BUILDFLAG(IS_ANDROID)
+  ClearVisualSelectionState();
   if (auto* controller = GetLensSearchController()) {
     if (auto* overlay = controller->lens_overlay_controller()) {
       overlay->ClearRegionSelection();
@@ -1648,6 +1687,18 @@ void ContextualTasksWebContentsUserData::OnInputStateChanged(
 
   const auto& crop = subscribed_model_->lens_crop();
   bool has_crop = crop.has_value();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (has_crop) {
+    if (subscribed_model_->lens_crop_sequence() != cached_lens_crop_sequence_) {
+      cached_lens_crop_sequence_ = subscribed_model_->lens_crop_sequence();
+      CacheVisualSelectionState();
+    }
+  } else {
+    cached_lens_crop_sequence_ = subscribed_model_->lens_crop_sequence();
+    ClearVisualSelectionState();
+  }
+#endif
 
   auto& page_state = GetPrimaryPageSearchState();
   if (has_crop && crop->data_uri != page_state.last_lens_crop_data_uri) {
@@ -1935,6 +1986,17 @@ ContextualTasksWebContentsUserData::GetExistingContextualSessionHandle() const {
 std::optional<base::UnguessableToken>
 ContextualTasksWebContentsUserData::GetLensOverlayToken() {
 #if !BUILDFLAG(IS_ANDROID)
+  SyncVisualSelectionCacheWithModel();
+  const auto model = subscribed_model_ ? subscribed_model_ : last_active_model_;
+  if (model && model->lens_crop().has_value()) {
+    if (IsVisualSelectionInvalidated()) {
+      return std::nullopt;
+    }
+    if (visual_selection_overlay_token_.has_value()) {
+      return visual_selection_overlay_token_;
+    }
+  }
+
   auto* controller = GetLensSearchController();
   if (controller && !controller->IsClosing()) {
     auto* overlay = controller->lens_overlay_controller();
@@ -1950,13 +2012,14 @@ ContextualTasksWebContentsUserData::GetLensOverlayToken() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+tabs::TabInterface* ContextualTasksWebContentsUserData::GetActiveBrowserTab() {
+  return ResolveActiveBrowserTab(GetBrowserWindowInterface());
+}
+
 LensSearchController*
 ContextualTasksWebContentsUserData::GetLensSearchController() const {
-  auto* browser_window_interface = GetBrowserWindowInterface();
-  if (!browser_window_interface) {
-    return nullptr;
-  }
-  auto* active_tab = browser_window_interface->GetActiveTabInterface();
+  tabs::TabInterface* active_tab =
+      ResolveActiveBrowserTab(GetBrowserWindowInterface());
   if (!active_tab || !active_tab->GetContents()) {
     return nullptr;
   }
@@ -1972,6 +2035,9 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
   implicit_tab_.reset();
   pending_context_uploads_.clear();
   failed_context_uploads_.clear();
+#if !BUILDFLAG(IS_ANDROID)
+  ClearVisualSelectionState();
+#endif
   if (auto model = GetOrCreateInputStateModel()) {
     model->RemoveLensCrop();
   }
@@ -2158,6 +2224,26 @@ bool ContextualTasksWebContentsUserData::OnBrowserTabClosedOrNavigated(
     std::optional<GURL> current_url,
     std::optional<std::string> current_title) {
   auto* session_handle = GetExistingContextualSessionHandle();
+#if !BUILDFLAG(IS_ANDROID)
+  SyncVisualSelectionCacheWithModel();
+  if (visual_selection_tab_session_id_.has_value() &&
+      *visual_selection_tab_session_id_ == tab_session_id) {
+    const bool page_changed = has_visual_selection_source_page_ &&
+                              (!visual_selection_source_page_ ||
+                               !visual_selection_source_page_->IsPrimary());
+    const bool url_changed =
+        !has_visual_selection_source_page_ &&
+        visual_selection_tab_url_.has_value() && current_url.has_value() &&
+        (session_handle ? !session_handle->AreUrlsEquivalent(
+                              *visual_selection_tab_url_,
+                              visual_selection_tab_title_.value_or(""),
+                              *current_url, current_title.value_or(""))
+                        : *visual_selection_tab_url_ != *current_url);
+    if (!current_url.has_value() || page_changed || url_changed) {
+      InvalidateVisualSelectionState();
+    }
+  }
+#endif
   if (!session_handle) {
     return false;
   }
@@ -2807,21 +2893,179 @@ void ContextualTasksWebContentsUserData::
       implicit_tab_count);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksWebContentsUserData::SyncVisualSelectionCacheWithModel() {
+  const auto model = subscribed_model_ ? subscribed_model_ : last_active_model_;
+  if (!model || !model->lens_crop().has_value()) {
+    if (cached_lens_crop_sequence_ != 0 ||
+        visual_selection_overlay_token_.has_value() ||
+        visual_selection_file_info_.has_value() ||
+        visual_selection_invalidated_) {
+      ClearVisualSelectionState();
+      cached_lens_crop_sequence_ = model ? model->lens_crop_sequence() : 0;
+    }
+    return;
+  }
+  if (model->lens_crop_sequence() != cached_lens_crop_sequence_) {
+    cached_lens_crop_sequence_ = model->lens_crop_sequence();
+    CacheVisualSelectionState();
+  }
+}
+
+void ContextualTasksWebContentsUserData::CacheVisualSelectionState() {
+  ClearVisualSelectionState();
+  if (tabs::TabInterface* active_tab = GetActiveBrowserTab()) {
+    if (content::WebContents* tab_contents = active_tab->GetContents()) {
+      const SessionID tab_id =
+          sessions::SessionTabHelper::IdForTab(tab_contents);
+      if (tab_id.is_valid()) {
+        visual_selection_tab_session_id_ = tab_id;
+      }
+      visual_selection_tab_url_ = tab_contents->GetLastCommittedURL();
+      visual_selection_tab_title_ = base::UTF16ToUTF8(tab_contents->GetTitle());
+      visual_selection_source_page_ =
+          tab_contents->GetPrimaryPage().GetWeakPtr();
+      has_visual_selection_source_page_ = true;
+    }
+  }
+  auto* controller = GetLensSearchController();
+  if (controller && !controller->IsClosing()) {
+    if (auto* overlay = controller->lens_overlay_controller();
+        overlay && overlay->HasRegionSelection()) {
+      if (auto* router = controller->query_router()) {
+        visual_selection_overlay_token_ =
+            router->overlay_tab_context_file_token();
+      }
+    }
+  }
+  if (auto* session_handle = GetExistingContextualSessionHandle()) {
+    visual_selection_file_info_ =
+        FindLensFileInfo(*session_handle, visual_selection_overlay_token_);
+    if (visual_selection_file_info_.has_value()) {
+      if (!visual_selection_overlay_token_.has_value() &&
+          !visual_selection_file_info_->file_token.is_empty()) {
+        visual_selection_overlay_token_ =
+            visual_selection_file_info_->file_token;
+      }
+      if (!visual_selection_tab_session_id_.has_value() &&
+          visual_selection_file_info_->tab_session_id.has_value()) {
+        visual_selection_tab_session_id_ =
+            visual_selection_file_info_->tab_session_id;
+      }
+      if (!visual_selection_tab_url_.has_value() &&
+          visual_selection_file_info_->tab_url.has_value()) {
+        visual_selection_tab_url_ = visual_selection_file_info_->tab_url;
+      }
+      if (!visual_selection_tab_title_.has_value() &&
+          visual_selection_file_info_->tab_title.has_value()) {
+        visual_selection_tab_title_ = visual_selection_file_info_->tab_title;
+      }
+    }
+  }
+}
+
+void ContextualTasksWebContentsUserData::InvalidateVisualSelectionState() {
+  visual_selection_overlay_token_.reset();
+  visual_selection_file_info_.reset();
+  visual_selection_source_page_.reset();
+  visual_selection_invalidated_ = true;
+}
+
+void ContextualTasksWebContentsUserData::ClearVisualSelectionState() {
+  visual_selection_overlay_token_.reset();
+  visual_selection_file_info_.reset();
+  visual_selection_tab_session_id_.reset();
+  visual_selection_tab_url_.reset();
+  visual_selection_tab_title_.reset();
+  visual_selection_source_page_.reset();
+  has_visual_selection_source_page_ = false;
+  visual_selection_invalidated_ = false;
+}
+
+bool ContextualTasksWebContentsUserData::IsVisualSelectionInvalidated() {
+  if (visual_selection_invalidated_) {
+    return true;
+  }
+  if (has_visual_selection_source_page_ &&
+      (!visual_selection_source_page_ ||
+       !visual_selection_source_page_->IsPrimary())) {
+    InvalidateVisualSelectionState();
+    return true;
+  }
+  return false;
+}
+
+std::optional<contextual_search::FileInfo>
+ContextualTasksWebContentsUserData::FindLensFileInfo(
+    contextual_search::ContextualSearchSessionHandle& session_handle,
+    std::optional<base::UnguessableToken> candidate_token) const {
+  std::vector<contextual_search::FileInfo> uploaded_files =
+      session_handle.GetUploadedContextFileInfos();
+  std::vector<contextual_search::FileInfo> submitted_files =
+      session_handle.GetSubmittedContextFileInfos();
+  uploaded_files.insert(uploaded_files.end(), submitted_files.begin(),
+                        submitted_files.end());
+
+  auto is_valid_file = [](const contextual_search::FileInfo& info) {
+    return !info.is_superceded &&
+           contextual_search::IsValidContextUploadStatusForMultimodalRequest(
+               info.upload_status) &&
+           info.request_id.has_value();
+  };
+
+  if (candidate_token.has_value()) {
+    for (const auto& info : uploaded_files) {
+      if (info.file_token == *candidate_token && is_valid_file(info)) {
+        return info;
+      }
+    }
+    if (auto* context_controller = session_handle.GetController()) {
+      if (const auto* info = context_controller->GetFileInfo(*candidate_token);
+          info && is_valid_file(*info)) {
+        return *info;
+      }
+    }
+    return std::nullopt;
+  }
+
+  for (const auto& info : uploaded_files) {
+    if (is_valid_file(info) && info.is_implicit_upload && info.input_data &&
+        info.input_data->upload_type ==
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY) {
+      return info;
+    }
+  }
+  return std::nullopt;
+}
+#endif
+
 std::vector<lens::AddedContext>
 ContextualTasksWebContentsUserData::GetLensAddedContexts(
     std::optional<base::UnguessableToken>& overlay_token) {
 #if !BUILDFLAG(IS_ANDROID)
+  SyncVisualSelectionCacheWithModel();
   const std::optional<base::UnguessableToken> candidate_overlay_token =
       std::exchange(overlay_token, std::nullopt);
-  auto* controller = GetLensSearchController();
-  if (!controller || controller->IsClosing() ||
-      !controller->IsCurrentTabSameOrigin()) {
-    return {};
-  }
 
-  auto* overlay = controller->lens_overlay_controller();
-  if (!overlay || !overlay->HasRegionSelection()) {
-    return {};
+  const base::WeakPtr<contextual_search::InputStateModel> model =
+      GetOrCreateInputStateModel();
+  const bool has_lens_crop = model && model->lens_crop().has_value();
+
+  auto* controller = GetLensSearchController();
+  if (has_lens_crop) {
+    if (IsVisualSelectionInvalidated()) {
+      return {};
+    }
+  } else {
+    if (!controller || controller->IsClosing() ||
+        !controller->IsCurrentTabSameOrigin()) {
+      return {};
+    }
+    auto* overlay = controller->lens_overlay_controller();
+    if (!overlay || !overlay->HasRegionSelection()) {
+      return {};
+    }
   }
 
   auto* session_handle = GetOrCreateContextualSessionHandle();
@@ -2829,75 +3073,35 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
     return {};
   }
 
-  // Identify the context file corresponding to the region crop across uploaded
-  // and submitted context files.
-  const contextual_search::FileInfo* file_info = nullptr;
-  std::vector<contextual_search::FileInfo> uploaded_files =
-      session_handle->GetUploadedContextFileInfos();
-  std::vector<contextual_search::FileInfo> submitted_files =
-      session_handle->GetSubmittedContextFileInfos();
-  uploaded_files.insert(uploaded_files.end(), submitted_files.begin(),
-                        submitted_files.end());
-
-  if (candidate_overlay_token.has_value()) {
-    for (const auto& info : uploaded_files) {
-      if (info.file_token == *candidate_overlay_token && !info.is_superceded &&
-          contextual_search::IsValidContextUploadStatusForMultimodalRequest(
-              info.upload_status) &&
-          info.request_id.has_value()) {
-        file_info = &info;
-        break;
-      }
-    }
-    // Deselecting a Turn-0 full-page overlay tab removes its token from
-    // `submitted_context_tokens_` while keeping the `FileInfo` alive in the
-    // context controller until `TakeRemovedContexts()` runs on submit.
-    if (!file_info && session_handle->GetController()) {
-      if (const contextual_search::FileInfo* controller_info =
-              session_handle->GetController()->GetFileInfo(
-                  *candidate_overlay_token);
-          controller_info && !controller_info->is_superceded &&
-          contextual_search::IsValidContextUploadStatusForMultimodalRequest(
-              controller_info->upload_status) &&
-          controller_info->request_id.has_value()) {
-        file_info = controller_info;
-      }
-    }
-  } else {
-    for (const auto& info : uploaded_files) {
-      if (!info.is_superceded &&
-          contextual_search::IsValidContextUploadStatusForMultimodalRequest(
-              info.upload_status) &&
-          info.request_id.has_value() && info.is_implicit_upload &&
-          info.input_data &&
-          info.input_data->upload_type ==
-              lens::LensOverlayContextualInputUploadType::
-                  CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY) {
-        file_info = &info;
-        break;
-      }
-    }
+  std::optional<contextual_search::FileInfo> resolved_file_info =
+      FindLensFileInfo(*session_handle, candidate_overlay_token);
+  if (!resolved_file_info.has_value() && has_lens_crop &&
+      visual_selection_file_info_.has_value() &&
+      (!candidate_overlay_token.has_value() ||
+       visual_selection_file_info_->file_token == *candidate_overlay_token)) {
+    resolved_file_info = visual_selection_file_info_;
   }
-
-  if (!file_info) {
+  if (!resolved_file_info.has_value()) {
     return {};
   }
+  const contextual_search::FileInfo* file_info = &*resolved_file_info;
 
+  tabs::TabInterface* active_tab =
+      controller ? controller->GetTabInterface() : GetActiveBrowserTab();
   content::WebContents* active_contents =
-      controller->GetTabInterface()
-          ? controller->GetTabInterface()->GetContents()
-          : nullptr;
+      active_tab ? active_tab->GetContents() : nullptr;
   const SessionID target_tab_id = file_info->tab_session_id.value_or(
-      active_contents ? sessions::SessionTabHelper::IdForTab(active_contents)
-                      : SessionID::InvalidValue());
-  const GURL target_tab_url = file_info->tab_url.value_or(
-      active_contents ? active_contents->GetLastCommittedURL() : GURL());
-  const std::string target_tab_title = file_info->tab_title.value_or(
-      active_contents ? base::UTF16ToUTF8(active_contents->GetTitle()) : "");
-
-  const base::WeakPtr<contextual_search::InputStateModel> model =
-      GetOrCreateInputStateModel();
-  const bool has_lens_crop = model && model->lens_crop().has_value();
+      visual_selection_tab_session_id_.value_or(
+          active_contents
+              ? sessions::SessionTabHelper::IdForTab(active_contents)
+              : SessionID::InvalidValue()));
+  const GURL target_tab_url =
+      file_info->tab_url.value_or(visual_selection_tab_url_.value_or(
+          active_contents ? active_contents->GetLastCommittedURL() : GURL()));
+  const std::string target_tab_title =
+      file_info->tab_title.value_or(visual_selection_tab_title_.value_or(
+          active_contents ? base::UTF16ToUTF8(active_contents->GetTitle())
+                          : ""));
   const bool is_tab_deselected = IsTabDeselectedForSubmission(
       *session_handle, target_tab_id, target_tab_url, target_tab_title);
 
@@ -2912,7 +3116,8 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
     return {};
   }
 
-  auto* query_controller = controller->lens_overlay_query_controller();
+  auto* query_controller =
+      controller ? controller->lens_overlay_query_controller() : nullptr;
   std::string search_session_id = session_handle->search_session_id();
   if (search_session_id.empty() && query_controller) {
     search_session_id = query_controller->search_session_id();
@@ -2977,9 +3182,12 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
       visual_search_interaction_data =
           query_controller->GetVisualSearchInteractionData();
     }
-    if (!visual_search_interaction_data.has_value()) {
-      visual_search_interaction_data = CreateCropInteractionData(
-          overlay->selected_region(), overlay->initial_screenshot());
+    if (!visual_search_interaction_data.has_value() && controller) {
+      if (auto* overlay = controller->lens_overlay_controller();
+          overlay && overlay->selected_region()) {
+        visual_search_interaction_data = CreateCropInteractionData(
+            overlay->selected_region(), overlay->initial_screenshot());
+      }
     }
     if (!visual_search_interaction_data.has_value()) {
       if (!has_lens_crop && omit_tab_webpage_context) {
