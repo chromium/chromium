@@ -5789,7 +5789,7 @@
   {
     "name": "glic-chrome-status-icon-win",
     "owners": [ "andreaxg@google.com", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-context-menu-below-search",
@@ -5912,7 +5912,7 @@
       "andreaxg@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-marketing-auto-open",
@@ -5993,7 +5993,7 @@
   {
     "name": "glic-show-not-tell-tutorials",
     "owners": [ "andreaxg@google.com", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-spark-settings-accessible-labels",
