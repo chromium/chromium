@@ -398,8 +398,6 @@ void UpdateOverlaySupport() {
   }
   base::UmaHistogramBoolean("GPU.DirectComposition.OverlaysSupported",
                             supports_overlays);
-  base::UmaHistogramBoolean("GPU.DirectComposition.HardwareOverlaysSupported",
-                            supports_hardware_overlays);
 
   // Update global caps.
   SetSupportsOverlays(supports_overlays);

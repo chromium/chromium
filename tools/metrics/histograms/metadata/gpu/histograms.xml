@@ -949,16 +949,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2026-02-22">
-  <owner>magchen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    True if the GPU driver supports hardware overlays. Recorded during Chrome
-    GPU initialization and each time the overlay caps change.
-  </summary>
-</histogram>
-
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
     expires_after="2026-01-14">
   <owner>magchen@chromium.org</owner>
