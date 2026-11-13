@@ -164,8 +164,7 @@ UsbChooserContext::UsbChooserContext(Profile* profile)
     : ObjectPermissionContextBase(
           ContentSettingsType::USB_GUARD,
           ContentSettingsType::USB_CHOOSER_DATA,
-          HostContentSettingsMapFactory::GetForProfile(profile)),
-      is_incognito_(profile->IsOffTheRecord()) {
+          HostContentSettingsMapFactory::GetForProfile(profile)) {
   usb_policy_allowed_devices_ =
       std::make_unique<UsbPolicyAllowedDevices>(profile->GetPrefs());
 }
@@ -289,7 +288,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
         DCHECK(devices_.contains(guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
-            content_settings::SettingSource::kUser, is_incognito_));
+            content_settings::SettingSource::kUser, IsOffTheRecord()));
       }
     }
   }
@@ -337,7 +336,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
       objects.push_back(std::make_unique<Object>(
           url, std::move(object), content_settings::SettingSource::kPolicy,
-          is_incognito_));
+          IsOffTheRecord()));
     }
   }
 
@@ -359,7 +358,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       DCHECK(devices_.contains(guid));
       objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
-          content_settings::SettingSource::kUser, is_incognito_));
+          content_settings::SettingSource::kUser, IsOffTheRecord()));
     }
   }
 
@@ -402,7 +401,7 @@ UsbChooserContext::GetAllGrantedObjects() {
 
       objects.push_back(std::make_unique<Object>(
           url, std::move(object), content_settings::SettingSource::kPolicy,
-          is_incognito_));
+          IsOffTheRecord()));
     }
   }
 

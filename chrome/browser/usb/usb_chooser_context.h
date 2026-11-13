@@ -134,7 +134,6 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
       device::mojom::UsbDeviceInfoPtr device_info);
 #endif
 
-  bool is_incognito_;
   bool is_initialized_ = false;
   base::queue<device::mojom::UsbDeviceManager::GetDevicesCallback>
       pending_get_devices_requests_;

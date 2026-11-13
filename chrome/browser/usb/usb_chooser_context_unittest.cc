@@ -375,7 +375,8 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   {
     std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
         store->GetGrantedObjects(origin);
-    EXPECT_EQ(1u, objects.size());
+    ASSERT_EQ(1u, objects.size());
+    EXPECT_FALSE(objects[0]->incognito);
     std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
         store->GetAllGrantedObjects();
     ASSERT_EQ(1u, all_origin_objects.size());
@@ -384,12 +385,35 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   {
     std::vector<std::unique_ptr<UsbChooserContext::Object>> objects =
         incognito_store->GetGrantedObjects(origin);
-    EXPECT_EQ(1u, objects.size());
+    ASSERT_EQ(1u, objects.size());
+    EXPECT_TRUE(objects[0]->incognito);
     std::vector<std::unique_ptr<UsbChooserContext::Object>> all_origin_objects =
         incognito_store->GetAllGrantedObjects();
     ASSERT_EQ(1u, all_origin_objects.size());
     EXPECT_TRUE(all_origin_objects[0]->incognito);
   }
+}
+
+TEST_F(UsbChooserContextTest, GuestPermissionObjectsAreIncognito) {
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  auto guest_profile = builder.Build();
+  ASSERT_FALSE(guest_profile->IsOffTheRecord());
+  ASSERT_TRUE(HostContentSettingsMapFactory::GetForProfile(guest_profile.get())
+                  ->IsOffTheRecord());
+
+  const auto origin = url::Origin::Create(GURL("https://www.google.com"));
+  auto device_info =
+      device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "");
+  auto* store = GetChooserContext(guest_profile.get());
+  store->GrantDevicePermission(origin, *device_info);
+
+  auto objects = store->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_TRUE(objects[0]->incognito);
+  auto all_origin_objects = store->GetAllGrantedObjects();
+  ASSERT_EQ(1u, all_origin_objects.size());
+  EXPECT_TRUE(all_origin_objects[0]->incognito);
 }
 
 TEST_F(UsbChooserContextTest, UsbGuardPermission) {
