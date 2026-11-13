@@ -7636,7 +7636,7 @@
     {
       name: "WebBluetoothMaxWriteWithoutResponseSize",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebBluetoothScanning",
