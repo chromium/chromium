@@ -13920,6 +13920,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTtcFreDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ttc::kTtcFre)},
 
+    {"ttc-get-pointer", flag_descriptions::kTtcGetPointerName,
+     flag_descriptions::kTtcGetPointerDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(ttc::kTtcGetPointer)},
+
     {"ttc-live-recipe", flag_descriptions::kTtcLiveRecipeName,
      flag_descriptions::kTtcLiveRecipeDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ttc::kTtcLiveRecipe,

@@ -1919,6 +1919,10 @@ inline constexpr char kTtcFreName[] = "TTC FRE";
 inline constexpr char kTtcFreDescription[] =
     "Enables the first run experience for TTC.";
 
+inline constexpr char kTtcGetPointerName[] = "TTC Get Pointer";
+inline constexpr char kTtcGetPointerDescription[] =
+    "Enables the get_pointer tool for TTC.";
+
 inline constexpr char kActorObserveScreenshotDefaultName[] =
     "Actor observe screenshot default";
 inline constexpr char kActorObserveScreenshotDefaultDescription[] =
