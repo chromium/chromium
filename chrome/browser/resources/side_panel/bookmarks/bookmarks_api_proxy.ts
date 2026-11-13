@@ -181,7 +181,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.undo();
   }
 
-  // Asynchronously gets the list of non empty permanent bookmark nodes.
+  // Asynchronously gets the list of permanent bookmark nodes.
   getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}> {
     return this.handler.getAllBookmarks();
   }

@@ -7,7 +7,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
+import {editingDisabledByPolicy, PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
@@ -488,5 +488,65 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     await microtasksFinished();
 
     assertDeepEquals(folder.children!, [b4, b5, b3]);
+  });
+
+  test('HidesEmptyManagedFolderUntilPopulated', async () => {
+    const emptyManagedFolder: BookmarksTreeNode = {
+      id: 'SIDE_PANEL_MANAGED_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
+      index: 1,
+      title: 'Managed bookmarks',
+      url: null,
+      dateAdded: null,
+      dateLastUsed: null,
+      unmodifiable: true,
+      children: [],
+    };
+    bookmarksApi.setAllBookmarks(
+        [...structuredClone(folders), emptyManagedFolder]);
+    service.startListening();
+    await delegate.whenCalled('onBookmarksLoaded');
+
+    // Empty managed folder should not be shown at top level.
+    let topLevel = service.filterBookmarks(undefined, 0, undefined, []);
+    assertFalse(
+        topLevel.some(node => node.id === 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+
+    // Updating the managed folder's title while empty should update the stored
+    // folder without crashing or exposing it.
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        'SIDE_PANEL_MANAGED_BOOKMARKS_ID', 'Managed by corp', '');
+    await microtasksFinished();
+    assertEquals(
+        'Managed by corp',
+        service.findBookmarkWithId('SIDE_PANEL_MANAGED_BOOKMARKS_ID')!.title);
+    topLevel = service.filterBookmarks(undefined, 0, undefined, []);
+    assertFalse(
+        topLevel.some(node => node.id === 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+
+    // Adding a managed bookmark dynamically should expose the managed folder
+    // without crashing.
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
+      id: 'managed_1',
+      title: 'Managed link',
+      index: 0,
+      parentId: 'SIDE_PANEL_MANAGED_BOOKMARKS_ID',
+      url: 'https://managed.example.com/',
+      children: null,
+      dateAdded: 10,
+      dateLastUsed: null,
+      unmodifiable: true,
+    });
+    await microtasksFinished();
+
+    topLevel = service.filterBookmarks(undefined, 0, undefined, []);
+    const managedFolder =
+        topLevel.find(node => node.id === 'SIDE_PANEL_MANAGED_BOOKMARKS_ID');
+    assertTrue(!!managedFolder);
+
+    // Editing dynamically loaded managed nodes must be disabled by policy.
+    assertTrue(editingDisabledByPolicy([managedFolder]));
+    assertTrue(
+        editingDisabledByPolicy([service.findBookmarkWithId('managed_1')!]));
   });
 });

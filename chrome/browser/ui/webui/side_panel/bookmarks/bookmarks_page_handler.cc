@@ -356,8 +356,7 @@ side_panel::mojom::BookmarksTreeNodePtr ConstructMojoNode(
   mojo_node->index = bookmark_merged_surface.GetIndexOf(node);
   mojo_node->date_added = node->date_added().InSecondsFSinceUnixEpoch();
   mojo_node->date_last_used = node->date_last_used().InSecondsFSinceUnixEpoch();
-  mojo_node->unmodifiable = bookmarks::IsDescendantOf(
-      node, bookmark_merged_surface.managed_bookmark_service()->managed_node());
+  mojo_node->unmodifiable = bookmark_merged_surface.IsNodeManaged(node);
   if (node->is_folder()) {
     if (with_children) {
       const BookmarkParentFolder& sub_parent =
@@ -412,7 +411,7 @@ void BookmarksPageHandler::BookmarkCurrentTabInFolder(
   std::optional<BookmarkParentFolder> parent =
       GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
                                            folder_id);
-  if (!parent) {
+  if (!parent || bookmark_merged_surface_->IsParentFolderManaged(*parent)) {
     return;
   }
   chrome::BookmarkCurrentTabInFolder(
@@ -426,7 +425,7 @@ void BookmarksPageHandler::CreateFolder(const std::string& folder_id,
   std::optional<BookmarkParentFolder> parent =
       GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
                                            folder_id);
-  if (!parent) {
+  if (!parent || bookmark_merged_surface_->IsParentFolderManaged(*parent)) {
     std::move(callback).Run("");
     return;
   }
@@ -698,7 +697,8 @@ void BookmarksPageHandler::RenameBookmark(int64_t node_id,
   bookmarks::BookmarkModel* model = bookmark_merged_surface_->bookmark_model();
   const bookmarks::BookmarkNode* node_to_rename =
       bookmarks::GetBookmarkNodeByID(model, node_id);
-  if (!node_to_rename) {
+  if (!node_to_rename ||
+      bookmark_merged_surface_->IsNodeManaged(node_to_rename)) {
     return;
   }
 
@@ -719,7 +719,8 @@ void BookmarksPageHandler::RemoveBookmarks(const std::vector<int64_t>& node_ids,
     // This fixes the issue when `node_ids` contain both parent and children at
     // the same time. This is possible when using the compact view with tree
     // view. Undo may not be working as expected.
-    if (!node_to_remove) {
+    if (!node_to_remove ||
+        bookmark_merged_surface_->IsNodeManaged(node_to_remove)) {
       continue;
     }
     // Using extensions metrics recording as this action was previously done
@@ -812,23 +813,17 @@ void BookmarksPageHandler::SendAllBookmarks(GetAllBookmarksCallback callback) {
 
   std::vector<side_panel::mojom::BookmarksTreeNodePtr> mojo_nodes;
   int permanent_folder_side_panel_index = 0;
-  // Prepare all non empty permanent nodes using a merged view.
   for (const BookmarkParentFolder& folder : permanent_folders) {
     const auto& underlying_nodes =
         bookmark_merged_surface_->GetUnderlyingNodes(folder);
     CHECK(!underlying_nodes.empty());
 
-    // TODO(crbug.com/401176689): This causes the Mobile/ManagedBookmark folders
-    // not to be pushed if empty. Upon sign in/sync event, if the Mobile
-    // Bookmarks gets populated while the SidePanel is showing, the added node
-    // would not find its parent in the displayed nodes.
-    // This would apply to all folders that are not showing visible if empty.
-    bool any_visible = std::ranges::any_of(
-        underlying_nodes,
-        [](const bookmarks::BookmarkNode* node) { return node->IsVisible(); });
-    if (!any_visible) {
-      continue;
-    }
+    // Always send all permanent folders even when empty: permanent folders do
+    // not emit `OnBookmarkNodeAdded` notifications, so `PowerBookmarksService`
+    // needs every permanent folder in the initial tree if bookmarks are later
+    // synced, added, or loaded via enterprise policy while the side panel is
+    // open. Empty Mobile/Other children flatten to nothing, and the WebUI hides
+    // an empty Managed Bookmarks folder row.
 
     side_panel::mojom::BookmarksTreeNodePtr mojo_node =
         side_panel::mojom::BookmarksTreeNode::New();
@@ -911,6 +906,9 @@ void BookmarksPageHandler::OnCanPasteFromClipboard(
 
 void BookmarksPageHandler::BookmarkNodeAdded(const BookmarkParentFolder& parent,
                                              size_t index) {
+  if (!bookmark_merged_surface_->loaded() || get_all_bookmarks_callback_) {
+    return;
+  }
   const bookmarks::BookmarkNode* added_node =
       bookmark_merged_surface_->GetNodeAtIndex(parent, index);
   // `with_children` false here because `BookmarkNodeAdded` will be called for
@@ -922,6 +920,9 @@ void BookmarksPageHandler::BookmarkNodeAdded(const BookmarkParentFolder& parent,
 void BookmarksPageHandler::BookmarkNodesRemoved(
     const BookmarkParentFolder& parent,
     const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+  if (!bookmark_merged_surface_->loaded() || get_all_bookmarks_callback_) {
+    return;
+  }
   std::vector<std::string> mojo_node_ids;
   std::ranges::transform(nodes, std::back_inserter(mojo_node_ids),
                          [](const bookmarks::BookmarkNode* node) {
@@ -932,6 +933,9 @@ void BookmarksPageHandler::BookmarkNodesRemoved(
 
 void BookmarksPageHandler::BookmarkParentFolderChildrenReordered(
     const BookmarkParentFolder& folder) {
+  if (!bookmark_merged_surface_->loaded() || get_all_bookmarks_callback_) {
+    return;
+  }
   std::vector<std::string> mojo_children_ordered_ids;
   for (const bookmarks::BookmarkNode* child :
        bookmark_merged_surface_->GetChildren(folder)) {
@@ -946,18 +950,27 @@ void BookmarksPageHandler::BookmarkNodeMoved(
     size_t old_index,
     const BookmarkParentFolder& new_parent,
     size_t new_index) {
+  if (!bookmark_merged_surface_->loaded() || get_all_bookmarks_callback_) {
+    return;
+  }
   page_->OnBookmarkNodeMoved(GetFolderSidePanelID(old_parent), old_index,
                              GetFolderSidePanelID(new_parent), new_index);
 }
 
 void BookmarksPageHandler::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
-  page_->OnBookmarkNodeChanged(base::ToString(node->id()),
-                               base::UTF16ToUTF8(node->GetTitle()),
+  if (!bookmark_merged_surface_->loaded() || get_all_bookmarks_callback_ ||
+      node->is_root()) {
+    return;
+  }
+  const std::string node_id =
+      node->is_folder()
+          ? GetFolderSidePanelID(BookmarkParentFolder::FromFolderNode(node))
+          : base::ToString(node->id());
+  page_->OnBookmarkNodeChanged(node_id, base::UTF16ToUTF8(node->GetTitle()),
                                node->is_url() ? node->url().spec() : "");
 }
 
-std::string GetFolderSidePanelIDForTesting(
-    const BookmarkParentFolder& folder) {
+std::string GetFolderSidePanelIDForTesting(const BookmarkParentFolder& folder) {
   return GetFolderSidePanelID(folder);
 }

@@ -42,6 +42,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -247,6 +248,7 @@ class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return managed_bookmark_service_.get();
   }
   BookmarkMergedSurfaceService* service() { return bookmark_merged_service_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return prefs_.get(); }
   testing::NiceMock<MockBookmarksPage>& mock_bookmarks_page() {
     return mock_bookmarks_page_;
   }
@@ -393,22 +395,129 @@ TEST_F(BookmarksPageHandlerTest,
        GetAllBookmarksContentWithEmptyPermanentNodes) {
   const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
   const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* mobile_node = model()->mobile_node();
+  const bookmarks::BookmarkNode* managed_node =
+      managed_bookmark_service()->managed_node();
 
   base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
       mock_callback;
   EXPECT_CALL(mock_callback, Run(testing::_))
       .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
                         nodes) {
-        // Total count: 2 - BookmarkBar + Other node (even if empty).
-        EXPECT_THAT(nodes, SizeIs(2));
-        // Bookmark is empty but still pushed.
+        // Total count: 4 - `BookmarkBar` + `Other` + `Mobile` + `Managed` (even
+        // if empty, so later synced or policy-loaded bookmarks find their
+        // parent in the WebUI).
+        EXPECT_THAT(nodes, SizeIs(4));
         ASSERT_TRUE(bookmark_bar->children().empty());
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(bookmark_bar)));
-        // Other node is empty but still pushed.
         ASSERT_TRUE(other_node->children().empty());
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(other_node)));
+        ASSERT_TRUE(mobile_node->children().empty());
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(mobile_node)));
+        ASSERT_TRUE(managed_node->children().empty());
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(managed_node)));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       MobileBookmarkSyncedAfterEmptyInitialLoadHasSentParent) {
+  std::string sent_mobile_folder_id;
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
+                        nodes) {
+        for (const auto& node : nodes) {
+          if (node->id == kSidePanelMobileBookmarksID) {
+            sent_mobile_folder_id = node->id;
+          }
+        }
+      });
+  handler()->GetAllBookmarks(mock_callback.Get());
+  ASSERT_EQ(kSidePanelMobileBookmarksID, sent_mobile_folder_id);
+
+  model()->CreateAccountPermanentFolders();
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .WillOnce([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(sent_mobile_folder_id, mojo_node->parent_id);
+      });
+  AddNodesFromModelString(model(), model()->account_mobile_node(), "m1 ");
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       ManagedBookmarkLoadedAfterEmptyInitialLoadHasSentParent) {
+  std::string sent_managed_folder_id;
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
+                        nodes) {
+        for (const auto& node : nodes) {
+          if (node->id == kSidePanelManagedBookmarksID) {
+            sent_managed_folder_id = node->id;
+          }
+        }
+      });
+  handler()->GetAllBookmarks(mock_callback.Get());
+  ASSERT_EQ(kSidePanelManagedBookmarksID, sent_managed_folder_id);
+
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodeChanged(kSidePanelManagedBookmarksID,
+                                    "Enterprise Bookmarks", ""));
+  prefs()->SetString(bookmarks::prefs::kManagedBookmarksFolderName,
+                     "Enterprise Bookmarks");
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .WillOnce([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(sent_managed_folder_id, mojo_node->parent_id);
+      });
+  base::ListValue managed_list;
+  managed_list.Append(
+      base::DictValue().Set("name", "Managed").Set("url", "https://foo.com/"));
+  prefs()->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
+                          std::move(managed_list));
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, ManagedFolderAndNodesCannotBeModified) {
+  ClearHandler();
+  CreateHandler(/*managed_bookmarks_count=*/1);
+  LoadBookmarkModel();
+
+  const bookmarks::BookmarkNode* managed_node =
+      managed_bookmark_service()->managed_node();
+  ASSERT_EQ(1u, managed_node->children().size());
+  const bookmarks::BookmarkNode* managed_child =
+      managed_node->children()[0].get();
+  const std::u16string original_title = managed_child->GetTitle();
+
+  base::MockCallback<BookmarksPageHandler::CreateFolderCallback>
+      create_callback;
+  EXPECT_CALL(create_callback, Run(""));
+  handler()->CreateFolder(kSidePanelManagedBookmarksID, "Blocked",
+                          create_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&create_callback);
+
+  EXPECT_CALL(create_callback, Run(""));
+  handler()->CreateFolder(base::ToString(managed_child->id()), "Blocked",
+                          create_callback.Get());
+  EXPECT_EQ(1u, managed_node->children().size());
+
+  handler()->BookmarkCurrentTabInFolder(kSidePanelManagedBookmarksID);
+  EXPECT_EQ(1u, managed_node->children().size());
+
+  handler()->RenameBookmark(managed_child->id(), "Renamed");
+  EXPECT_EQ(original_title, managed_child->GetTitle());
+
+  base::MockCallback<BookmarksPageHandler::RemoveBookmarksCallback>
+      remove_callback;
+  EXPECT_CALL(remove_callback, Run());
+  handler()->RemoveBookmarks({managed_child->id()}, remove_callback.Get());
+  EXPECT_EQ(1u, managed_node->children().size());
 }
 
 TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAllNodes) {
@@ -464,14 +573,17 @@ TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAccountNodes) {
       model()->account_mobile_node();
   AddNodesFromModelString(model(), account_mobile_node, "a5 ");
   const bookmarks::BookmarkNode* mobile_node = model()->mobile_node();
+  const bookmarks::BookmarkNode* managed_node =
+      managed_bookmark_service()->managed_node();
 
   base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
       mock_callback;
   EXPECT_CALL(mock_callback, Run(testing::_))
       .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
                         nodes) {
-        // Total count: 3 - BookmarkBar (Merged) + Other node (Merged) + Mobile.
-        EXPECT_THAT(nodes, SizeIs(3));
+        // Total count: 4 - `BookmarkBar` (Merged) + `Other` (Merged) + `Mobile`
+        // + `Managed`.
+        EXPECT_THAT(nodes, SizeIs(4));
         // Both `bookmark_bar` and `account_bookmark_bar` are merged into one.
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(bookmark_bar)));
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(account_bookmark_bar)));
@@ -484,6 +596,7 @@ TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAccountNodes) {
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(account_mobile_node)));
         ASSERT_TRUE(mobile_node->children().empty());
         EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(mobile_node)));
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(managed_node)));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
 }
@@ -795,7 +908,6 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarks) {
       side_panel_web_contents())
       ->OnDrop(data);
 
-
   // Drop the data. This should move it.
   base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
   EXPECT_CALL(mock_callback, Run());
@@ -860,7 +972,6 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarksInDifferentProfile) {
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
-
 
   // Drop the data in the other browser. This should copy it.
   base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;

@@ -402,8 +402,21 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
   onBookmarkChanged(id: string) {
     const bookmark = this.bookmarksService_.findBookmarkWithId(id)!;
-     this.updatedElementIds_ = [bookmark.id];
-    if (this.bookmarkShouldShow_(bookmark) ||
+    this.updatedElementIds_ = [bookmark.id];
+    let activeFolderChanged = false;
+    const nextActiveFolderPath = this.activeFolderPath.map(folder => {
+      const updated = this.bookmarksService_.findBookmarkWithId(folder.id);
+      if (updated && updated !== folder) {
+        activeFolderChanged = true;
+        return updated;
+      }
+      return folder;
+    });
+    if (activeFolderChanged) {
+      this.activeFolderPath = nextActiveFolderPath;
+      this.dispatchActiveFolderPathChanged_();
+    }
+    if (activeFolderChanged || this.bookmarkShouldShow_(bookmark) ||
         this.bookmarkIsShowing_(bookmark)) {
       this.updateDisplayList_();
     }
@@ -596,8 +609,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
       return this.bookmarksService_.bookmarkMatchesSearchQueryAndLabels(
           bookmark, this.labels, this.searchQuery);
     }
-    return this.visibleParent_(
-        this.bookmarksService_.findBookmarkWithId(bookmark.parentId)!);
+    const parent = this.bookmarksService_.findBookmarkWithId(bookmark.parentId);
+    return !!parent && this.visibleParent_(parent);
   }
 
   getActiveFolder(): BookmarksTreeNode|undefined {

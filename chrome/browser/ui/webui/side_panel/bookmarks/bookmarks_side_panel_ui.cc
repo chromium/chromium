@@ -191,9 +191,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "editBookmarksEnabled",
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
-  source->AddBoolean(
-      "hasManagedBookmarks",
-      !prefs->GetList(bookmarks::prefs::kManagedBookmarks).empty());
   source->AddBoolean("shoppingListEnabled",
                      commerce::IsShoppingListAllowedForEnterprise(prefs));
 

@@ -1396,6 +1396,124 @@ suite('General', () => {
       assertFalse(powerBookmarksApp.$.contextMenu.isOpen());
     });
 
+    test('DynamicManagedFolderLifecycleAndPolicyGuard', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const customApi = new TestBookmarksApiProxy();
+      customApi.setAllBookmarks([
+        ...structuredClone(FOLDERS),
+        {
+          id: 'SIDE_PANEL_MANAGED_BOOKMARKS_ID',
+          parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
+          index: 2,
+          title: 'Managed bookmarks',
+          url: null,
+          dateAdded: null,
+          dateLastUsed: null,
+          unmodifiable: true,
+          children: [],
+        },
+      ]);
+      BookmarksApiProxyImpl.setInstance(customApi);
+
+      const app = document.createElement('power-bookmarks-app');
+      const recordedPromise = eventToPromise('bookmark-count-recorded', app);
+      const parentElement = document.createElement('div');
+      parentElement.style.height = '500px';
+      parentElement.appendChild(app);
+      document.body.appendChild(parentElement);
+
+      await customApi.whenCalled('getAllBookmarks');
+      await recordedPromise;
+      await microtasksFinished();
+      powerBookmarksApp = app;
+
+      // Empty managed folder is hidden at top level.
+      assertEquals(
+          undefined, getBookmarkWithId(app, 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+
+      // Changing managed folder title while empty does not crash or reveal it.
+      customApi.callbackRouterRemote.onBookmarkNodeChanged(
+          'SIDE_PANEL_MANAGED_BOOKMARKS_ID', 'Managed by corp', '');
+      await microtasksFinished();
+      assertEquals(
+          undefined, getBookmarkWithId(app, 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+
+      // Adding a managed child exposes the managed folder.
+      customApi.callbackRouterRemote.onBookmarkNodeAdded({
+        id: 'managed_1',
+        title: 'Corp Link',
+        index: 0,
+        parentId: 'SIDE_PANEL_MANAGED_BOOKMARKS_ID',
+        url: 'https://corp.example.com/',
+        children: null,
+        dateAdded: 10,
+        dateLastUsed: null,
+        unmodifiable: true,
+      });
+      await microtasksFinished();
+      assertTrue(!!getBookmarkWithId(app, 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+
+      // Opening the dynamically populated managed folder, updating its title,
+      // and receiving live additions must keep activeFolderPath and UI in sync,
+      // while policy guards block New Folder and Add Current Tab.
+      await openBookmark('SIDE_PANEL_MANAGED_BOOKMARKS_ID');
+      await microtasksFinished();
+      customApi.callbackRouterRemote.onBookmarkNodeChanged(
+          'SIDE_PANEL_MANAGED_BOOKMARKS_ID', 'Managed Renamed', '');
+      await microtasksFinished();
+      const activeTitle =
+          app.$.bookmarksList.$.heading.shadowRoot.querySelector(
+              '#folder-header .title-span.active');
+      assertTrue(!!activeTitle);
+      assertEquals('Managed Renamed', activeTitle.textContent.trim());
+
+      customApi.callbackRouterRemote.onBookmarkNodeAdded({
+        id: 'managed_2',
+        title: 'Corp Link 2',
+        index: 1,
+        parentId: 'SIDE_PANEL_MANAGED_BOOKMARKS_ID',
+        url: 'https://corp2.example.com/',
+        children: null,
+        dateAdded: 11,
+        dateLastUsed: null,
+        unmodifiable: true,
+      });
+      await microtasksFinished();
+      assertTrue(!!getBookmarkWithId(app, 'managed_2'));
+
+      getAddNewFolderButton().click();
+      await microtasksFinished();
+      assertTrue(app.$.disabledFeatureDialog.open);
+      assertEquals(0, customApi.getCallCount('createFolder'));
+
+      app.$.disabledFeatureDialog.close();
+      app.shadowRoot.querySelector<HTMLElement>(
+                        '#addCurrentTabButton')!.click();
+      await microtasksFinished();
+      assertTrue(app.$.disabledFeatureDialog.open);
+      assertEquals(0, customApi.getCallCount('bookmarkCurrentTabInFolder'));
+
+      // Navigate back and remove the managed children; the folder hides again.
+      const folderHeader =
+          app.$.bookmarksList.$.heading.shadowRoot.querySelector(
+              '#folder-header');
+      assertTrue(!!folderHeader);
+      const backButton =
+          folderHeader.shadowRoot!.querySelector<HTMLElement>('#backButton');
+      assertTrue(!!backButton);
+      const backRecorded =
+          eventToPromise('bookmark-count-recorded', app.$.bookmarksList);
+      backButton.click();
+      await backRecorded;
+      await microtasksFinished();
+
+      customApi.callbackRouterRemote.onBookmarkNodesRemoved(
+          ['managed_1', 'managed_2']);
+      await microtasksFinished();
+      assertEquals(
+          undefined, getBookmarkWithId(app, 'SIDE_PANEL_MANAGED_BOOKMARKS_ID'));
+    });
+
     test('ShowUiOnlyCalledOnce', async () => {
       // connectedCallback was already called once during setup.
       assertEquals(1, bookmarksApi.getArgs('showUi').length);

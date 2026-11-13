@@ -46,16 +46,10 @@ export function editingDisabledByPolicy(bookmarks: BookmarksTreeNode[]) {
   if (!loadTimeData.getBoolean('editBookmarksEnabled')) {
     return true;
   }
-  if (loadTimeData.getBoolean('hasManagedBookmarks')) {
-    const managedNodeId = loadTimeData.getString('managedBookmarksFolderId');
-    for (const bookmark of bookmarks) {
-      if (bookmark.id === managedNodeId ||
-          bookmark.parentId === managedNodeId) {
-        return true;
-      }
-    }
-  }
-  return false;
+  const managedNodeId = loadTimeData.getString('managedBookmarksFolderId');
+  return bookmarks.some(
+      bookmark => bookmark.unmodifiable || bookmark.id === managedNodeId ||
+          bookmark.parentId === managedNodeId);
 }
 
 // Return an array that includes folder and all its descendants.
@@ -241,15 +235,22 @@ export class PowerBookmarksService {
       excludeFolder?: BookmarksTreeNode): BookmarksTreeNode[] {
     let bookmarks: BookmarksTreeNode[] = [];
     if (activeFolder) {
-      bookmarks = activeFolder.children!.slice();
+      bookmarks = (activeFolder.children ?? []).slice();
     } else {
+      const otherBookmarksId = loadTimeData.getString('otherBookmarksId');
+      const mobileBookmarksId = loadTimeData.getString('mobileBookmarksId');
+      const managedBookmarksFolderId =
+          loadTimeData.getString('managedBookmarksFolderId');
       let topLevelBookmarks: BookmarksTreeNode[] = [];
-      this.folders_.forEach(
-          folder => topLevelBookmarks = topLevelBookmarks.concat(
-              (folder.id === loadTimeData.getString('otherBookmarksId') ||
-               folder.id === loadTimeData.getString('mobileBookmarksId')) ?
-                  folder.children! :
-                  [folder]));
+      this.folders_.forEach(folder => {
+        const children = folder.children ?? [];
+        if (folder.id === otherBookmarksId || folder.id === mobileBookmarksId) {
+          topLevelBookmarks = topLevelBookmarks.concat(children);
+        } else if (
+            folder.id !== managedBookmarksFolderId || children.length > 0) {
+          topLevelBookmarks.push(folder);
+        }
+      });
       bookmarks = topLevelBookmarks;
     }
     if (searchQuery || labels.find((label) => label.active)) {
@@ -403,20 +404,29 @@ export class PowerBookmarksService {
   }
 
   private onBookmarkNodeChanged_(id: string, newTitle: string, newUrl: string) {
-    const bookmark = this.findBookmarkWithId(id)!;
-    bookmark.title = newTitle;
-    if (bookmark.url && newUrl) {
-      bookmark.url = newUrl;
+    const bookmark = this.findBookmarkWithId(id);
+    if (!bookmark) {
+      return;
     }
     // Deep copy is necessary to ensure that the original bookmark object is
     // not directly mutated. This helps LitElement's change detection recognize
     // the changes since the reference to the object will change.
     const deepCopyBookmark = structuredClone(bookmark);
+    deepCopyBookmark.title = newTitle;
+    if (deepCopyBookmark.url && newUrl) {
+      deepCopyBookmark.url = newUrl;
+    }
     const parent = this.findBookmarkWithId(bookmark.parentId);
     if (parent) {
       const index =
           parent.children!.findIndex(child => child.id === bookmark.id);
       parent.children![index] = deepCopyBookmark;
+    } else {
+      const index =
+          this.folders_.findIndex(folder => folder.id === bookmark.id);
+      if (index !== -1) {
+        this.folders_[index] = deepCopyBookmark;
+      }
     }
     this.findBookmarkImageUrls_(deepCopyBookmark, false, true);
     this.delegate_.onBookmarkChanged(id);
