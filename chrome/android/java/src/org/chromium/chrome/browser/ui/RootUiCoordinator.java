@@ -2741,17 +2741,8 @@ public class RootUiCoordinator
             mEdgeToEdgeControllerCreator = null;
         }
 
-        // Skip bottom-chin OnCreateController metrics when EdgeToEdgeController is initialized
-        // solely for top edge-to-edge (e.g. on 3-button navigation phones), where the bottom chin
-        // is not supported. Otherwise, enabling sEdgeToEdgeTopInset would record NAVIGATION_MODE
-        // ineligibility into bottom-chin OnCreateController histograms and
-        // EdgeToEdgeChinEligibility only in the Enabled arm.
-        boolean initializedSolelyForTop =
-                supportsTopInset()
-                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)
-                        && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity);
         boolean eligible = false;
-        if (!initializedSolelyForTop) {
+        if (shouldRecordBottomChinEligibilityOnCreate()) {
             eligible = EdgeToEdgeUtils.recordEligibilityOnCreateForBottomChin(mActivity);
 
             UmaSessionStats.registerSyntheticFieldTrial(
@@ -2789,6 +2780,20 @@ public class RootUiCoordinator
             }
             mEdgeToEdgeTopScalp = createEdgeToEdgeTopScalp();
         }
+    }
+
+    /**
+     * Returns whether bottom-chin {@code OnCreateController} eligibility metrics should be
+     * recorded. Returns {@code false} when {@link EdgeToEdgeController} is initialized solely for
+     * top edge-to-edge (e.g. on 3-button navigation phones), where the bottom chin is unsupported
+     * and recording would skew bottom-chin metrics in the {@code sEdgeToEdgeTopInset} Enabled arm.
+     */
+    private boolean shouldRecordBottomChinEligibilityOnCreate() {
+        boolean initializedSolelyForTop =
+                supportsTopInset()
+                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)
+                        && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity);
+        return !initializedSolelyForTop;
     }
 
     private void recordIfMissingNavigationBar() {
