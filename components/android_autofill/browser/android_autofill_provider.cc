@@ -152,6 +152,36 @@ void AndroidAutofillProvider::RenderFrameDeleted(
   }
 }
 
+void AndroidAutofillProvider::RenderFrameHostStateChanged(
+    content::RenderFrameHost* rfh,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  auto should_hide_popup = [](content::RenderFrameHost::LifecycleState state) {
+    switch (state) {
+      case content::RenderFrameHost::LifecycleState::kActive:
+        return false;
+      case content::RenderFrameHost::LifecycleState::kPendingCommit:
+      case content::RenderFrameHost::LifecycleState::kPrerendering:
+      case content::RenderFrameHost::LifecycleState::kInBackForwardCache:
+      case content::RenderFrameHost::LifecycleState::kPendingDeletion:
+        return true;
+    }
+    NOTREACHED();
+  };
+
+  if (should_hide_popup(new_state)) {
+    if (session_state_ && session_state_->manager &&
+        session_state_->last_queried_field_rfh_id == rfh->GetGlobalId()) {
+      OnHidePopup(session_state_->manager.get());
+      session_state_->last_queried_field_rfh_id = {};
+    }
+    if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
+      ClearCredManCompletionCallback();
+      credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
+    }
+  }
+}
+
 void AndroidAutofillProvider::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||

@@ -1936,6 +1936,24 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   FocusSubFrameFormField(sub_frame_webauthn_email_field());
 }
 
+// Tests that when a subframe is showing the CredMan sheet and the main frame
+// navigates away (e.g., placing the subframe into BFCache), the CredMan sheet
+// status and completion callback are reset.
+TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
+       MainFrameNavigationResetsSubFrameCredManSheet) {
+  EXPECT_CALL(*sub_frame_mock_delegate_, TriggerCredManUi);
+  FocusSubFrameFormField(sub_frame_webauthn_email_field());
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  Mock::VerifyAndClearExpectations(sub_frame_mock_delegate_);
+
+  EXPECT_CALL(*sub_frame_mock_delegate_, SetRequestCompletionCallback);
+  sub_frame_mock_delegate_ = nullptr;
+  sub_frame_ = nullptr;
+  NavigateAndCommitFrame(main_frame(), GURL("https://other.com/"));
+
+  EXPECT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+}
+
 // Tests that when CredMan is triggered for a same-origin field in an unrelated
 // form (different from the active session's form), the active session is
 // preserved without cancelling it or overwriting its focused field.
@@ -3251,7 +3269,7 @@ TEST_F(AndroidAutofillProviderTestHidingLogic,
 // *main frame* hides the popup.
 TEST_F(AndroidAutofillProviderTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
-  AskForValuesToFill(main_frame());
+  AskForValuesToFill(sub_frame_);
   EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(AtLeast(1));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
