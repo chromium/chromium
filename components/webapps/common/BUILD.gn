@@ -8,12 +8,17 @@ source_set("common") {
   sources = [
     "constants.cc",
     "constants.h",
+    "default_apps_for_testing.cc",
+    "default_apps_for_testing.h",
     "manifest_id.cc",
     "manifest_id.h",
     "manifest_id_constants.h",
     "web_app_id.h",
   ]
-  deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 }
 
 mojom("mojo_bindings") {

@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
@@ -204,6 +205,9 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
+
+  // Disables default apps while set, see `CreateFakeSubsystems()`.
+  base::ScopedClosureRunner disable_default_apps_;
 
   ::testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };

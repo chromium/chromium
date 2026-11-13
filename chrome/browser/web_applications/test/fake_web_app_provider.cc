@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
@@ -41,10 +40,10 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/webapps/common/default_apps_for_testing.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -269,10 +268,11 @@ void FakeWebAppProvider::StartWithSubsystems() {
 }
 
 void FakeWebAppProvider::CreateFakeSubsystems() {
-  // Disable preinstalled apps by default as they add noise and time to tests
-  // that don't need them.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableDefaultApps);
+  // Disable default apps by default as they add noise and time to tests that
+  // don't need them.
+  if (!disable_default_apps_) {
+    disable_default_apps_ = webapps::DisableDefaultAppsForTesting();
+  }
 
   SetDatabaseFactory(std::make_unique<FakeWebAppDatabaseFactory>());
 

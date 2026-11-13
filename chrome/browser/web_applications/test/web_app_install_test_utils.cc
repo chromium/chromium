@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/run_loop.h"
@@ -32,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -124,8 +122,6 @@ void WaitUntilWebAppProviderAndSubsystemsReady(WebAppProvider* provider) {
 }
 
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableDefaultApps);
   FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile);
   DCHECK(provider);
   provider->StartWithSubsystems();

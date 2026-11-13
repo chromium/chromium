@@ -628,6 +628,7 @@ source_set("extensions") {
     "//components/update_client:common_impl",
     "//components/user_prefs",
     "//components/vector_icons",
+    "//components/webapps/common",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/browser:crx_installer",
@@ -1011,7 +1012,6 @@ source_set("extensions") {
       "//components/site_engagement/core/mojom:mojo_bindings",
       "//components/supervised_user/core/common",
       "//components/webapps/browser",
-      "//components/webapps/common",
       "//components/webauthn/json",
 
       # TODO(crbug.com/346472679): Remove this dependency:

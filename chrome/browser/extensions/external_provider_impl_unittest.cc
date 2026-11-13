@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -36,13 +36,13 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/webapps/common/default_apps_for_testing.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -165,10 +165,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
   // Creates and adds the external app/extension providers.
   void AddExternalProviders() {
-    // This switch is set when creating a TestingProfile, but needs to be
-    // removed for some ExternalProviders to be created.
-    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        switches::kDisableDefaultApps);
+    // Default apps are disabled by the `FakeWebAppProvider` of the
+    // `TestingProfile`, but need to be enabled for some `ExternalProvider`s to
+    // be created.
+    base::AutoReset<bool> enable_default_apps =
+        webapps::EnableDefaultAppsForTesting();
 
     ProviderCollection providers;
     ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
@@ -223,12 +224,6 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
   // ExtensionServiceTestBase overrides:
   void SetUp() override {
-    // Prevent ExtensionService from creating an initial set of external
-    // providers, which has side effects (setting prefs). We create providers in
-    // AddExternalProviders() above. Adding this switch is similar to browser
-    // test behavior (see chrome/test/base/test_launcher_utils.cc).
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDefaultApps);
     ExtensionServiceTestBase::SetUp();
     test_server_ = std::make_unique<net::test_server::EmbeddedTestServer>();
 

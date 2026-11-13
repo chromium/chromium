@@ -48,6 +48,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/default_apps_for_testing.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -835,6 +836,9 @@ void ExternalProviderImpl::CreateExternalProviders(
   // It would only slowdown tests and make them flaky.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kDisableDefaultApps)) {
+    return;
+  }
+  if (webapps::AreDefaultAppsDisabledForTesting()) {  // IN-TEST
     return;
   }
 

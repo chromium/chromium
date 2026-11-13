@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -115,10 +114,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   ShelfContextMenuTest& operator=(const ShelfContextMenuTest&) = delete;
 
  protected:
-  ShelfContextMenuTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::chrome_switches::kDisableDefaultApps);
-  }
+  ShelfContextMenuTest() = default;
   ~ShelfContextMenuTest() override = default;
 
   void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
@@ -127,9 +123,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   }
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::chrome_switches::kDisableDefaultApps);
-
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();

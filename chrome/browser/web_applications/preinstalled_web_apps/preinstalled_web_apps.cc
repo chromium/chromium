@@ -17,6 +17,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/webapps/common/default_apps_for_testing.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
@@ -131,9 +132,12 @@ ScopedPreinstallUrlAllowList SetPreinstallUrlAllowListForTesting(
 }
 
 bool PreinstalledWebAppsDisabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kDisableDefaultApps) &&
-         !GetPreinstallUrlAllowListForTesting().has_value();
+  const bool default_apps_disabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kDisableDefaultApps) ||
+      webapps::AreDefaultAppsDisabledForTesting();  // IN-TEST
+  return default_apps_disabled &&
+         !GetPreinstallUrlAllowListForTesting().has_value();  // IN-TEST
 }
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps(

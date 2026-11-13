@@ -39,12 +39,12 @@ struct DeviceInfo {
 };
 
 // An allow list for a set of preinstalled web app that will be installed even
-// if `switches::kDisableDefaultApps` is set.
+// if default apps are disabled, see `PreinstalledWebAppsDisabled()`.
 using PreinstallUrlAllowList = std::optional<base::flat_set<GURL>>;
 PreinstallUrlAllowList& GetPreinstallUrlAllowListForTesting();
 
 // Temporarily sets an allow list for a set of install URLs that will be
-// permitted to be preinstalled even if `switches::kDisableDefaultApps` is set.
+// permitted to be preinstalled even if default apps are disabled.
 // This allows tests to enable particular preinstalled web apps without enabling
 // all of them. Enabling all has the side effect of installing a queue of web
 // apps, some of which require network access that hit a 30s timeout period (see
@@ -57,6 +57,9 @@ using ScopedPreinstallUrlAllowList =
 ScopedPreinstallUrlAllowList SetPreinstallUrlAllowListForTesting(
     PreinstallUrlAllowList preinstall_url_allow_list);
 
+// Returns whether preinstalled web apps are disabled, i.e. if default apps are
+// disabled by `switches::kDisableDefaultApps` or
+// `webapps::DisableDefaultAppsForTesting()`, and no allow list is set.
 bool PreinstalledWebAppsDisabled();
 
 // Returns the list of web apps that should be pre-installed on new profiles.
