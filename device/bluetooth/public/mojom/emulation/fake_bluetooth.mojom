@@ -226,6 +226,13 @@ interface FakeCentral {
   // disconnection.
   SimulateGATTDisconnection(string address) => (bool success);
 
+  // Simulates the ATT MTU exchange procedure from BT 4.2 Vol 3 Part F 3.4.2
+  // establishing |mtu| for the connection to the peripheral with |address|.
+  // |mtu| must be at least 23, the smallest ATT_MTU an LE connection can use.
+  // Calls callback with false if |mtu| is smaller than that or if there was any
+  // error when simulating the MTU change.
+  SimulateGATTMtuChange(string address, uint16 mtu) => (bool success);
+
   // Simulates an Indication from the peripheral's GATT `Service Changed`
   // Characteristic from BT 4.2 Vol 3 Part G 7.1. This Indication is signaled
   // when services, characteristics, or descriptors are changed, added, or

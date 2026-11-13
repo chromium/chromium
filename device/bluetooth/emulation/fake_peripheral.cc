@@ -41,6 +41,10 @@ void FakePeripheral::SetSystemConnected(bool connected) {
   system_connected_ = connected;
 }
 
+void FakePeripheral::SetMtu(uint16_t mtu) {
+  mtu_ = mtu;
+}
+
 void FakePeripheral::SetServiceUUIDs(UUIDSet service_uuids) {
   device::BluetoothDevice::GattServiceMap gatt_services;
   bool inserted;
@@ -106,6 +110,9 @@ bool FakePeripheral::AllResponsesConsumed() {
 
 void FakePeripheral::SimulateGATTDisconnection() {
   gatt_services_.clear();
+  // The ATT MTU is negotiated per connection, so it is no longer established
+  // once the connection is gone.
+  mtu_.reset();
   // TODO(crbug.com/41322843): Only set get_connected_ to false once system
   // connected peripherals are supported and Web Bluetooth uses them. See issue
   // for more details.
@@ -211,6 +218,10 @@ bool FakePeripheral::IsGattConnected() const {
   // peripherals are supported and Web Bluetooth uses them. See issue for more
   // details.
   return system_connected_ || gatt_connected_;
+}
+
+std::optional<uint16_t> FakePeripheral::GetMtu() const {
+  return mtu_;
 }
 
 bool FakePeripheral::IsConnectable() const {

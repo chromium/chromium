@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/bluetooth_emulation_handler.h"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <string_view>
@@ -704,6 +705,38 @@ void BluetoothEmulationHandler::SimulateGATTDisconnection(
             if (!success) {
               std::move(callback)->sendFailure(Response::ServerError(
                   "Failed to simulate GATT disconnection"));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback)));
+}
+
+void BluetoothEmulationHandler::SimulateGATTMtuChange(
+    const std::string& address,
+    int mtu,
+    std::unique_ptr<SimulateGATTMtuChangeCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+  if (mtu < bluetooth::kMinAttMtu ||
+      mtu > std::numeric_limits<uint16_t>::max()) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"MTU ", base::NumberToString(mtu),
+                      " is outside the valid ATT_MTU range"})));
+    return;
+  }
+
+  fake_central_->SimulateGATTMtuChange(
+      address, mtu,
+      base::BindOnce(
+          [](std::unique_ptr<SimulateGATTMtuChangeCallback> callback,
+             bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError("Failed to simulate GATT MTU change"));
               return;
             }
             std::move(callback)->sendSuccess();

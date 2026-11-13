@@ -4,6 +4,7 @@
 #ifndef DEVICE_BLUETOOTH_EMULATION_FAKE_CENTRAL_H_
 #define DEVICE_BLUETOOTH_EMULATION_FAKE_CENTRAL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,6 +23,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace bluetooth {
+
+// Smallest ATT_MTU an LE connection can use (Bluetooth Core Specification Vol
+// 3, Part G, Section 5.2.1).
+inline constexpr int kMinAttMtu = 23;
 
 class FakePeripheral;
 class FakeRemoteGattCharacteristic;
@@ -68,6 +73,9 @@ class FakeCentral final : public mojom::FakeCentral,
   void SimulateGATTDisconnection(
       const std::string& address,
       SimulateGATTDisconnectionCallback callback) override;
+  void SimulateGATTMtuChange(const std::string& address,
+                             uint16_t mtu,
+                             SimulateGATTMtuChangeCallback callback) override;
   void SimulateGATTServicesChanged(
       const std::string& address,
       SimulateGATTServicesChangedCallback callback) override;

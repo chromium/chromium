@@ -54,11 +54,23 @@ class BluetoothHelper {
               const deviceId = devices[0].id;
               return this.protocol_.DeviceAccess.selectPrompt({id, deviceId});
             });
+    await this.dispatchClick_();
     const requestDevicePromise =
-        this.session_.evaluateAsyncWithUserGesture(async (options) => {
+        this.session_.evaluateAsync(async (options) => {
           return navigator.bluetooth.requestDevice(options);
         }, ...args);
     await Promise.all([deviceRequestPromptedPromise, requestDevicePromise]);
+  }
+
+  // requestDevice() needs transient user activation. The gesture carried by
+  // Runtime.evaluate is attached to whichever context the inspector happens to
+  // have entered, so activate the frame with an input event instead.
+  async dispatchClick_() {
+    const event = {x: 0, y: 0, button: 'left', clickCount: 1};
+    await this.protocol_.Input.dispatchMouseEvent(
+        {type: 'mousePressed', ...event});
+    await this.protocol_.Input.dispatchMouseEvent(
+        {type: 'mouseReleased', ...event});
   }
 
   peripheralAddress() {

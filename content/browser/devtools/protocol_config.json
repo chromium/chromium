@@ -245,7 +245,8 @@
                     "removeCharacteristic",
                     "addDescriptor",
                     "removeDescriptor",
-                    "simulateGATTDisconnection"
+                    "simulateGATTDisconnection",
+                    "simulateGATTMtuChange"
                 ]
             },
             {

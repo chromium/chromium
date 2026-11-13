@@ -200,6 +200,14 @@ experimental domain BluetoothEmulation
     parameters
       string address
 
+  # Simulates the ATT MTU exchange procedure from Bluetooth Core Specification
+  # Vol 3 Part F 3.4.2 establishing |mtu| for the connection to the peripheral
+  # with |address|.
+  command simulateGATTMtuChange
+    parameters
+      string address
+      integer mtu
+
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
   event gattOperationReceived

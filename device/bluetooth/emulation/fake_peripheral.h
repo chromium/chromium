@@ -74,6 +74,9 @@ class FakePeripheral : public device::BluetoothDevice {
   // Simulates a GATT disconnection from the peripheral.
   void SimulateGATTDisconnection();
 
+  // Sets the ATT MTU returned by GetMtu().
+  void SetMtu(uint16_t mtu);
+
   // Adds a fake primary service with |service_uuid| to this peripheral.
   // Returns the service's Id.
   std::string AddFakeService(const device::BluetoothUUID& service_uuid);
@@ -104,6 +107,7 @@ class FakePeripheral : public device::BluetoothDevice {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsConnected() const override;
   bool IsGattConnected() const override;
+  std::optional<uint16_t> GetMtu() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   bool ExpectingPinCode() const override;
@@ -180,6 +184,10 @@ class FakePeripheral : public device::BluetoothDevice {
 
   // Used to decide if the GattServicesDiscovered method is called.
   std::optional<uint16_t> next_discovery_response_;
+
+  // The ATT MTU established by the simulated MTU exchange procedure, unset
+  // until SetMtu() is called.
+  std::optional<uint16_t> mtu_;
 
   const raw_ref<FakeCentral> fake_central_;
 

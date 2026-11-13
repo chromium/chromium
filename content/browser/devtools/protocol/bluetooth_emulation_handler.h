@@ -103,6 +103,10 @@ class CONTENT_EXPORT BluetoothEmulationHandler
   void SimulateGATTDisconnection(
       const std::string& address,
       std::unique_ptr<SimulateGATTDisconnectionCallback> callback) override;
+  void SimulateGATTMtuChange(
+      const std::string& address,
+      int mtu,
+      std::unique_ptr<SimulateGATTMtuChangeCallback> callback) override;
 
   // bluetooth::mojom::FakeCentralClient
   void DispatchGATTOperationEvent(

@@ -312,6 +312,31 @@ void FakeCentral::SimulateGATTDisconnection(
   std::move(callback).Run(true);
 }
 
+void FakeCentral::SimulateGATTMtuChange(
+    const std::string& address,
+    uint16_t mtu,
+    SimulateGATTMtuChangeCallback callback) {
+  if (mtu < kMinAttMtu) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  FakePeripheral* fake_peripheral = GetFakePeripheral(address);
+  if (fake_peripheral == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  fake_peripheral->SetMtu(mtu);
+  // BluetoothAdapter declares the MTU notification only on the platforms whose
+  // backends report MTU changes.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  NotifyDeviceMTUChanged(fake_peripheral, mtu);
+#endif
+  std::move(callback).Run(true);
+}
+
 void FakeCentral::SimulateGATTServicesChanged(
     const std::string& address,
     SimulateGATTServicesChangedCallback callback) {

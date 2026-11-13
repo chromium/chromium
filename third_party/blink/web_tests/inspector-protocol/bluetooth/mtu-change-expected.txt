@@ -1,0 +1,6 @@
+Tests simulating ATT MTU changes.
+maxWriteWithoutResponseSize on connect: 20
+maxWriteWithoutResponseSize after MTU change: 97
+Invalid MTU: MTU 10 is outside the valid ATT_MTU range
+Unknown peripheral: Failed to simulate GATT MTU change
+
