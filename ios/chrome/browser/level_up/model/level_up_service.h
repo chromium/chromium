@@ -45,7 +45,9 @@ class LevelUpService : public KeyedService {
   // Enables or disables the feature UI.
   void SetUIEnabled(bool ui_enabled);
 
-  // Returns the current level of the user.
+  // Returns the user's current level, which is the higher of the stored
+  // highest-level pref and the level calculated from completed task that are
+  // available on this device.
   int GetCurrentLevel() const;
 
   // Returns a pair of (the number of tasks remaining to reach the next level,
@@ -109,13 +111,12 @@ class LevelUpService : public KeyedService {
   // Populates the map of available tasks.
   void PopulateTasks();
 
-  // Loads saved completed tasks and UI state from preferences.
-  void LoadPrefs();
+  // Returns the list of completed task as strings from preferences in the
+  // order they were completed.
+  std::vector<std::string> GetCompletedTasks() const;
 
-  // Recalculates the user's level based on completed tasks, enforcing
-  // monotonicity, and updates the saved highest level preference if the level
-  // increases.
-  void UpdateLevelAndPref();
+  // Updates the kLevelUpHighestLevel when level has changed locally.
+  void UpdateHighestLevelPref();
 
   // Returns the additional completed tasks required to reach the given level
   // from the previous level.
@@ -129,11 +130,11 @@ class LevelUpService : public KeyedService {
   // Declared const since it does not modify any service state.
   int CalculateLevel(size_t completed_count) const;
 
+  // Returns the number of completed tasks that are available on this device.
+  size_t GetAvailableCompletedTaskCount() const;
+
   // Called when the `kLevelUpOptIn` preference changes.
   void OnOptInPrefChanged();
-
-  // Called when the `kLevelUpUIEnabled` preference changes.
-  void OnUIEnabledPrefChanged();
 
   // Called when `kLevelUpCompletedTasks` or `kLevelUpHighestLevel` preferences
   // changes.
@@ -148,13 +149,7 @@ class LevelUpService : public KeyedService {
   std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;
   std::map<std::string, LevelUpTaskStatType> stat_trigger_user_actions_;
-  // List of completed task identifiers in the order they were completed.
-  // Stored as strings rather than TaskType enums to support storing unknown
-  // tasks received via sync from newer versions of the app.
-  std::vector<std::string> completed_tasks_;
   base::ObserverList<LevelUpServiceObserver> observers_;
-  int current_level_ = 1;
-  bool is_ui_enabled_ = true;
 };
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_LEVEL_UP_SERVICE_H_

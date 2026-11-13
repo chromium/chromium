@@ -261,17 +261,12 @@ LevelUpService::LevelUpService(
     return;
   }
   PopulateTasks();
-  LoadPrefs();
 
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         prefs::kLevelUpOptIn,
         base::BindRepeating(&LevelUpService::OnOptInPrefChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kLevelUpUIEnabled,
-        base::BindRepeating(&LevelUpService::OnUIEnabledPrefChanged,
                             base::Unretained(this)));
     pref_change_registrar_.AddMultiple(
         {prefs::kLevelUpCompletedTasks, prefs::kLevelUpHighestLevel},
@@ -311,14 +306,14 @@ void LevelUpService::OnOptInPrefChanged() {
   }
 }
 
-void LevelUpService::OnUIEnabledPrefChanged() {
-  if (pref_service_) {
-    is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
-  }
-}
-
 void LevelUpService::OnCompletedTasksAndHighestLevelPrefsChanged() {
-  LoadPrefs();
+  int highest_level_pref =
+      pref_service_->GetInteger(prefs::kLevelUpHighestLevel);
+  int calculated_level = CalculateLevel(GetAvailableCompletedTaskCount());
+  int current_level = std::max(calculated_level, highest_level_pref);
+  if (current_level > highest_level_pref) {
+    pref_service_->SetInteger(prefs::kLevelUpHighestLevel, current_level);
+  }
   NotifyObserversOfTaskComplete();
 }
 
@@ -331,28 +326,34 @@ bool LevelUpService::IsOptedIn() const {
 }
 
 bool LevelUpService::IsUIEnabled() const {
-  return is_ui_enabled_;
+  return pref_service_ && pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
 }
 
 void LevelUpService::SetUIEnabled(bool ui_enabled) {
-  if (is_ui_enabled_ == ui_enabled) {
+  if (IsUIEnabled() == ui_enabled) {
     return;
   }
-  is_ui_enabled_ = ui_enabled;
-  pref_service_->SetBoolean(prefs::kLevelUpUIEnabled, is_ui_enabled_);
+  pref_service_->SetBoolean(prefs::kLevelUpUIEnabled, ui_enabled);
 }
 
 int LevelUpService::GetCurrentLevel() const {
-  return current_level_;
+  if (!pref_service_) {
+    return 1;
+  }
+  int highest_level_pref =
+      pref_service_->GetInteger(prefs::kLevelUpHighestLevel);
+  int calculated_level = CalculateLevel(GetAvailableCompletedTaskCount());
+  return std::max(highest_level_pref, calculated_level);
 }
 
 std::pair<int, int> LevelUpService::GetTasksRemainingForNextLevel() const {
-  if (current_level_ >= kMaxLevel) {
+  int current_level = GetCurrentLevel();
+  if (current_level >= kMaxLevel) {
     return {0, 0};
   }
-  int next_level = current_level_ + 1;
+  int next_level = current_level + 1;
   int total_required = GetTotalTasksRequiredForLevel(next_level);
-  int completed = completed_tasks_.size();
+  int completed = GetAvailableCompletedTaskCount();
   int required = std::max(0, total_required - completed);
 
   int base_amount_for_next_level = GetTasksIncrementForLevel(next_level);
@@ -375,14 +376,12 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     return;
   }
 
-  if (!std::ranges::contains(completed_tasks_, storage_id)) {
-    completed_tasks_.push_back(storage_id);
-    // Update prefs.
+  if (!IsTaskCompleted(task_type)) {
     ScopedListPrefUpdate update(pref_service_, prefs::kLevelUpCompletedTasks);
     update->Append(storage_id);
 
     RecordLevelUpTaskCompleted(task_type);
-    UpdateLevelAndPref();
+    UpdateHighestLevelPref();
     pref_service_->SetInteger(
         prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
   }
@@ -391,12 +390,9 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
 void LevelUpService::ResetAllTasksStatus() {
   // Clear and reset UI state prefs.
   pref_service_->ClearPref(prefs::kLevelUpUIEnabled);
-  is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
   pref_service_->ClearPref(prefs::kLevelUpNewTasksNotificationEnabled);
 
   // Clear or override task prefs.
-  completed_tasks_.clear();
-  current_level_ = 1;
   pref_service_->ClearPref(prefs::kLevelUpCompletedTasks);
   pref_service_->SetInteger(prefs::kLevelUpHighestLevel, 1);
   pref_service_->SetInteger(prefs::kLevelUpTabsDeclutteredStat, 0);
@@ -409,7 +405,7 @@ void LevelUpService::ResetAllTasksStatus() {
 
 bool LevelUpService::IsTaskCompleted(TaskType task_type) const {
   std::string storage_id = TaskTypeToString(task_type);
-  return std::ranges::contains(completed_tasks_, storage_id);
+  return std::ranges::contains(GetCompletedTasks(), storage_id);
 }
 
 std::vector<const TaskInfo*> LevelUpService::GetRecommendedTasks() const {
@@ -426,7 +422,7 @@ std::vector<const TaskInfo*> LevelUpService::GetRecommendedTasks() const {
   // 5. If fewer than 4 tasks are still selected, backfill remaining slots with
   //    any completed tasks at random.
 
-  // Determine category recency from `completed_tasks_` in reverse order (most
+  // Determine category recency from completed tasks in reverse order (most
   // recent first). Default category order if no completed tasks exist:
   // Productivity, Safety, Search.
   std::vector<LevelUpTaskCategory> category_recency;
@@ -434,8 +430,8 @@ std::vector<const TaskInfo*> LevelUpService::GetRecommendedTasks() const {
       LevelUpTaskCategory::kProductivity, LevelUpTaskCategory::kSafety,
       LevelUpTaskCategory::kSearch};
 
-  for (auto it = completed_tasks_.rbegin(); it != completed_tasks_.rend();
-       ++it) {
+  const std::vector<std::string> completed_tasks = GetCompletedTasks();
+  for (auto it = completed_tasks.rbegin(); it != completed_tasks.rend(); ++it) {
     TaskType task_type = StringToTaskType(*it);
     const TaskInfo* info = GetTaskInfo(task_type);
     if (!info) {
@@ -535,8 +531,8 @@ std::vector<LevelUpTaskStatType> LevelUpService::GetOrderedStatTypes() const {
       LevelUpTaskStatType::kPhotoSearchesPerformed,
   };
 
-  for (auto it = completed_tasks_.rbegin(); it != completed_tasks_.rend();
-       ++it) {
+  const std::vector<std::string> completed_tasks = GetCompletedTasks();
+  for (auto it = completed_tasks.rbegin(); it != completed_tasks.rend(); ++it) {
     TaskType task_type = StringToTaskType(*it);
     std::optional<LevelUpTaskStatType> stat_type =
         GetStatTypeForTaskType(task_type);
@@ -589,32 +585,30 @@ void LevelUpService::PopulateTasks() {
       LevelUpTaskStatType::kPhotoSearchesPerformed;
 }
 
-void LevelUpService::LoadPrefs() {
-  is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
-
-  completed_tasks_.clear();
+std::vector<std::string> LevelUpService::GetCompletedTasks() const {
+  std::vector<std::string> completed_tasks;
+  if (!pref_service_) {
+    return completed_tasks;
+  }
   const base::ListValue& list =
       pref_service_->GetList(prefs::kLevelUpCompletedTasks);
   for (const auto& value : list) {
     const std::string* str = value.GetIfString();
-    if (!str || std::ranges::contains(completed_tasks_, *str)) {
+    if (!str || std::ranges::contains(completed_tasks, *str)) {
       continue;
     }
-    completed_tasks_.push_back(*str);
+    completed_tasks.push_back(*str);
   }
-
-  UpdateLevelAndPref();
+  return completed_tasks;
 }
 
-void LevelUpService::UpdateLevelAndPref() {
+void LevelUpService::UpdateHighestLevelPref() {
   int highest_level_pref =
       pref_service_->GetInteger(prefs::kLevelUpHighestLevel);
-  int calculated_level = CalculateLevel(completed_tasks_.size());
-  current_level_ = std::max(highest_level_pref, calculated_level);
-
-  if (current_level_ > highest_level_pref) {
-    pref_service_->SetInteger(prefs::kLevelUpHighestLevel, current_level_);
-    RecordLevelUpLevelChanged(current_level_);
+  int current_level = GetCurrentLevel();
+  if (current_level > highest_level_pref) {
+    pref_service_->SetInteger(prefs::kLevelUpHighestLevel, current_level);
+    RecordLevelUpLevelChanged(current_level);
   }
 }
 
@@ -651,6 +645,15 @@ int LevelUpService::CalculateLevel(size_t completed_count) const {
     }
   }
   return kMaxLevel;
+}
+
+size_t LevelUpService::GetAvailableCompletedTaskCount() const {
+  // Level thresholds are derived from `tasks_`, so completed tasks synced from
+  // an app version with a different task set must not count toward the level.
+  return std::ranges::count_if(
+      GetCompletedTasks(), [this](const std::string& storage_id) {
+        return tasks_.contains(StringToTaskType(storage_id));
+      });
 }
 
 void LevelUpService::AddObserver(LevelUpServiceObserver* observer) {

@@ -479,10 +479,12 @@
     return;
   }
   RecordLevelUpOptInStateChanged(false);
-  _levelUpService->ResetAllTasksStatus();
+  // `ResetAllTasksStatus()` will be triggered by OnOptInPrefChanged in
+  // LevelUpService.mm if _prefService exists.
   if (_prefService) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, false);
   } else {
+    _levelUpService->ResetAllTasksStatus();
     [self.delegate levelUpMediatorWantsToBeDismissed:self];
   }
 }
