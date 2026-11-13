@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -19,6 +18,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import static org.chromium.base.test.transit.RootSpec.anyRoot;
+import static org.chromium.base.test.transit.ViewElement.rootSpecOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -36,7 +40,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -61,7 +64,6 @@ import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -146,7 +148,6 @@ public class MismatchNotificationControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/570552795): Re-enable.
     public void testSignedOutMessagePrimaryButton_legacy() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -166,31 +167,35 @@ public class MismatchNotificationControllerTest {
     }
 
     private void startAndVerifySigninFlow() {
-        // Click the primary button.
-        onView(withText(R.string.custom_tabs_signed_out_message_button)).perform(click());
+        // Click the primary button to initiate the sign-in flow.
+        waitForView(withText(R.string.custom_tabs_signed_out_message_button)).click();
 
         // Verify that the message was dismissed.
-        onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());
+        waitForNoView(withText(R.string.custom_tabs_signed_out_message_subtitle));
 
-        // Verify that the bottom sheet is displayed
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_header_title),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_header_subtitle),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()));
-        onView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
+        // Verify that the bottom sheet is displayed. Use RootSpec.anyRoot() because
+        // launching SigninAndHistorySyncActivity over CustomTabActivity in Android Desktop
+        // freeform multi-window can leave the underlying or transitioning window unfocused,
+        // causing Espresso's RootViewPicker to time out with RootViewWithoutFocusException.
+        waitForView(
+                allOf(
+                        withId(R.id.account_picker_header_title),
+                        withParent(withId(R.id.account_picker_state_collapsed))),
+                rootSpecOption(anyRoot()));
+        waitForView(
+                allOf(
+                        withId(R.id.account_picker_header_subtitle),
+                        withParent(withId(R.id.account_picker_state_collapsed))),
+                rootSpecOption(anyRoot()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()), rootSpecOption(anyRoot()));
 
         // Accept sign in
-        onView(
+        waitForView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .perform(click());
+                                withParent(withId(R.id.account_picker_state_collapsed))),
+                        rootSpecOption(anyRoot()))
+                .click();
 
         mSigninTestRule.completeDeviceLockIfOnAutomotive();
 
@@ -218,7 +223,7 @@ public class MismatchNotificationControllerTest {
         SigninTestUtil.signin(TestAccounts.ACCOUNT1);
 
         // Verify that the message was dismissed.
-        onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());
+        waitForNoView(withText(R.string.custom_tabs_signed_out_message_subtitle));
     }
 
     @Test
@@ -237,7 +242,7 @@ public class MismatchNotificationControllerTest {
         mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         // Verify that the message was dismissed.
-        onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());
+        waitForNoView(withText(R.string.custom_tabs_signed_out_message_subtitle));
 
         assertEquals(
                 "Account switch should result in TIMED_OUT",
@@ -282,7 +287,7 @@ public class MismatchNotificationControllerTest {
                 mActivityTestRule.getActivity().findViewById(R.id.message_container);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(messageContainer.getChildCount(), is(0)));
-        onView(withText(titleRes)).check(doesNotExist());
+        waitForNoView(withText(titleRes));
 
         assertEquals(
                 "Swiping away should result in DISMISSED",
