@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ConfirmQuitHelper.ConfirmQuitResult;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ConfirmQuitHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -145,7 +146,7 @@ public class ConfirmQuitHelperUnitTest {
                         "Android.ConfirmQuit.Result", ConfirmQuitResult.QUIT_HOLD);
 
         mConfirmQuitHelper.handleQuitRequest(mContext);
-        ShadowLooper.idleMainLooper(ConfirmQuitHelper.HOLD_DURATION_MS);
+        ShadowLooper.idleMainLooper(ConfirmQuitHelper.HOLD_DURATION_MS, TimeUnit.MILLISECONDS);
 
         verify(mObserver).onTerminate(false);
         assertFalse(mConfirmQuitHelper.isQuitInProgress());

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.ServiceConnection;
@@ -112,7 +113,7 @@ public class ScopedServiceBindingBatchImplTest {
 
         // ScopedServiceBindingBatchImpl uses a handler to post tasks to the launcher thread.
         // We can use a shadow looper to control the execution of these tasks.
-        mLauncherLooper = ShadowLooper.getShadowMainLooper();
+        mLauncherLooper = shadowOf(Looper.getMainLooper());
         mLauncherHandler = new Handler(Looper.getMainLooper());
     }
 
