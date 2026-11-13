@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
@@ -39,10 +38,8 @@ struct WakeLockProvider::WakeLockDataPerType {
 };
 
 WakeLockProvider::WakeLockProvider(
-    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
     const WakeLockContextCallback& native_view_getter)
-    : file_task_runner_(std::move(file_task_runner)),
-      native_view_getter_(native_view_getter) {
+    : native_view_getter_(native_view_getter) {
   // Populates |wake_lock_store_| with entries for all types of wake locks.
   wake_lock_store_[mojom::WakeLockType::kPreventAppSuspension] =
       std::make_unique<WakeLockDataPerType>();
@@ -75,8 +72,7 @@ void WakeLockProvider::GetWakeLockContextForID(
     mojo::PendingReceiver<mojom::WakeLockContext> receiver) {
   DCHECK_GE(context_id, 0);
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WakeLockContext>(context_id, file_task_runner_,
-                                        native_view_getter_),
+      std::make_unique<WakeLockContext>(context_id, native_view_getter_),
       std::move(receiver));
 }
 

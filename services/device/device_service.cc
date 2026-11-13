@@ -75,8 +75,7 @@ DeviceService::DeviceService(
       network_connection_tracker_(params->network_connection_tracker),
       geolocation_api_key_(params->geolocation_api_key),
       wake_lock_context_callback_(params->wake_lock_context_callback),
-      wake_lock_provider_(file_task_runner_,
-                          params->wake_lock_context_callback) {
+      wake_lock_provider_(params->wake_lock_context_callback) {
   receivers_.Add(this, std::move(receiver));
 
 #if BUILDFLAG(IS_ANDROID)
@@ -173,8 +172,9 @@ void DeviceService::BindPressureManager(
     return;
   }
 
-  if (!pressure_manager_)
+  if (!pressure_manager_) {
     pressure_manager_ = PressureManagerImpl::Create();
+  }
   pressure_manager_->Bind(std::move(receiver));
 }
 #endif
@@ -189,10 +189,11 @@ void DeviceService::OverrideNFCProviderBinderForTesting(
 void DeviceService::BindNFCProvider(
     mojo::PendingReceiver<mojom::NFCProvider> receiver) {
   const auto& binder_override = internal::GetNFCProviderBinderOverride();
-  if (binder_override)
+  if (binder_override) {
     binder_override.Run(std::move(receiver));
-  else
+  } else {
     GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
+  }
 }
 #endif
 
@@ -222,8 +223,9 @@ void DeviceService::BindHidManager(
 #if BUILDFLAG(IS_CHROMEOS)
 void DeviceService::BindMtpManager(
     mojo::PendingReceiver<mojom::MtpManager> receiver) {
-  if (!mtp_device_manager_)
+  if (!mtp_device_manager_) {
     mtp_device_manager_ = MtpDeviceManager::Initialize();
+  }
   mtp_device_manager_->AddReceiver(std::move(receiver));
 }
 #endif
@@ -300,8 +302,9 @@ void DeviceService::BindSensorProvider(
     mojo::PendingReceiver<mojom::SensorProvider> receiver) {
   if (!sensor_provider_) {
     auto platform_provider = PlatformSensorProvider::Create();
-    if (!platform_provider)
+    if (!platform_provider) {
       return;
+    }
     sensor_provider_ =
         std::make_unique<SensorProviderImpl>(std::move(platform_provider));
   }
@@ -326,8 +329,9 @@ void DeviceService::BindTimeZoneMonitor(
     return;
   }
 
-  if (!time_zone_monitor_)
+  if (!time_zone_monitor_) {
     time_zone_monitor_ = TimeZoneMonitor::Create(file_task_runner_);
+  }
   time_zone_monitor_->Bind(std::move(receiver));
 }
 
@@ -347,8 +351,9 @@ void DeviceService::BindUsbDeviceManager(
   // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
-  if (!usb_device_manager_)
+  if (!usb_device_manager_) {
     usb_device_manager_ = std::make_unique<usb::DeviceManagerImpl>();
+  }
 
   usb_device_manager_->AddReceiver(std::move(receiver));
 }
@@ -358,8 +363,9 @@ void DeviceService::BindUsbDeviceManagerTest(
   // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
-  if (!usb_device_manager_)
+  if (!usb_device_manager_) {
     usb_device_manager_ = std::make_unique<usb::DeviceManagerImpl>();
+  }
 
   if (!usb_device_manager_test_) {
     usb_device_manager_test_ = std::make_unique<usb::DeviceManagerTest>(

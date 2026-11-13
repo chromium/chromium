@@ -9,14 +9,13 @@
 #include <memory>
 #include <string>
 
-#include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/device/wake_lock/wake_lock.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace device {
 
@@ -24,8 +23,7 @@ namespace device {
 class WakeLockProvider : public mojom::WakeLockProvider,
                          public device::WakeLock::Observer {
  public:
-  WakeLockProvider(scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-                   const WakeLockContextCallback& native_view_getter);
+  explicit WakeLockProvider(const WakeLockContextCallback& native_view_getter);
 
   WakeLockProvider(const WakeLockProvider&) = delete;
   WakeLockProvider& operator=(const WakeLockProvider&) = delete;
@@ -64,7 +62,6 @@ class WakeLockProvider : public mojom::WakeLockProvider,
   // Returns |WakeLockDataPerType| associated with wake lock of type |type|.
   WakeLockDataPerType& GetWakeLockDataPerType(mojom::WakeLockType type);
 
-  scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   WakeLockContextCallback native_view_getter_;
 
   mojo::ReceiverSet<mojom::WakeLockProvider> receivers_;

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 
@@ -18,11 +17,8 @@ const int WakeLockContext::WakeLockInvalidContextId = -1;
 
 WakeLockContext::WakeLockContext(
     int context_id,
-    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
     const WakeLockContextCallback& native_view_getter)
-    : file_task_runner_(std::move(file_task_runner)),
-      context_id_(context_id),
-      native_view_getter_(native_view_getter) {}
+    : context_id_(context_id), native_view_getter_(native_view_getter) {}
 
 WakeLockContext::~WakeLockContext() = default;
 
