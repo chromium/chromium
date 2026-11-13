@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
@@ -63,7 +64,8 @@ void SVGImageChromeClient::DetachImage() {
 }
 
 void SVGImageChromeClient::ChromeDestroyed() {
-  DetachImage();
+  // `~SVGImage()` detaches `this` before shutting down the document host.
+  CHECK_EQ(image_, nullptr);
 }
 
 void SVGImageChromeClient::InvalidateContainer() {
