@@ -17,9 +17,6 @@ class Textfield;
 }  // namespace views
 
 // View showing a label and text field for entering an authenticator PIN.
-//
-// TODO(martinkr): Reuse for BLE PIN or fold into
-// AuthenticatorClientPinEntrySheetModel.
 class AuthenticatorClientPinEntryView : public views::View,
                                         public views::TextfieldController {
   METADATA_HEADER(AuthenticatorClientPinEntryView, views::View)
