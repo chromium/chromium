@@ -129,10 +129,8 @@ public class BookmarkEditDesktopTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
-                        if (!mActivity.isFinishing() && !mActivity.isDestroyed()) {
-                            mActivity.finish();
-                        }
                     });
+            ApplicationTestUtils.finishActivity(mActivity);
         }
         if (mBookmarkModel != null && mModelObserver != null) {
             ThreadUtils.runOnUiThreadBlocking(
