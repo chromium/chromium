@@ -76,7 +76,62 @@ class NonGarbageCollectedContainerRoot {
   Member<LinkedObject> obj_;
 };
 
+struct CopyStepHook {
+  void (*fn)(IncrementalMarkingTestDriver*) = nullptr;
+  IncrementalMarkingTestDriver* driver = nullptr;
+
+  CopyStepHook() = default;
+  CopyStepHook(void (*fn)(IncrementalMarkingTestDriver*),
+               IncrementalMarkingTestDriver* driver)
+      : fn(fn), driver(driver) {}
+  CopyStepHook(const CopyStepHook& other) : fn(other.fn), driver(other.driver) {
+    if (fn && ThreadState::Current()->IsIncrementalMarking()) {
+      fn(driver);
+    }
+  }
+  CopyStepHook& operator=(const CopyStepHook& other) {
+    fn = other.fn;
+    driver = other.driver;
+    if (fn && ThreadState::Current()->IsIncrementalMarking()) {
+      fn(driver);
+    }
+    return *this;
+  }
+};
+
+struct NestedHeapVectorContainer {
+  DISALLOW_NEW();
+
+ public:
+  NestedHeapVectorContainer() = default;
+  explicit NestedHeapVectorContainer(
+      LinkedObject* obj,
+      void (*fn)(IncrementalMarkingTestDriver*) = nullptr,
+      IncrementalMarkingTestDriver* driver = nullptr)
+      : hook_(fn, driver) {
+    items_.push_back(obj);
+  }
+  NestedHeapVectorContainer(const NestedHeapVectorContainer&) = default;
+  NestedHeapVectorContainer& operator=(const NestedHeapVectorContainer&) =
+      default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(items_); }
+
+  CopyStepHook hook_;
+  HeapVector<Member<LinkedObject>> items_;
+};
+
 }  // namespace
+
+}  // namespace incremental_marking_test
+
+template <>
+struct VectorTraits<incremental_marking_test::NestedHeapVectorContainer>
+    : VectorTraitsBase<incremental_marking_test::NestedHeapVectorContainer> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
+namespace incremental_marking_test {
 
 TEST_F(IncrementalMarkingTest, HeapVectorPushBackMember) {
   WeakPersistent<LinkedObject> obj = MakeGarbageCollected<LinkedObject>();
@@ -201,6 +256,98 @@ TEST_F(IncrementalMarkingTest, HeapVectorCopyNonGCedContainerInCtor) {
   // Copy during object construction does not emit write barriers as
   // in-construction/on-stack objects would be found during conservative GC.
   EXPECT_FALSE(obj);
+}
+
+TEST_F(IncrementalMarkingTest, HeapVectorCopyNestedHeapVectorContainer) {
+  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
+  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> dst =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> src =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  // Drain the outer backing write barrier during element 0's copy before its
+  // nested vector backing is allocated, and finish GC during element 1's copy.
+  src->emplace_back(
+      obj1, [](IncrementalMarkingTestDriver* d) { d->TriggerMarkingSteps(); },
+      &driver);
+  src->emplace_back(
+      obj2, [](IncrementalMarkingTestDriver* d) { d->FinishGC(); }, &driver);
+  driver.StartGC();
+  *dst = *src;
+  EXPECT_TRUE(obj1);
+  ASSERT_EQ(2u, dst->size());
+  ASSERT_EQ(1u, (*dst)[0].items_.size());
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+  PreciselyCollectGarbage();
+  EXPECT_TRUE(obj1);
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+}
+
+TEST_F(IncrementalMarkingTest, HeapVectorCopyNestedHeapVectorReservedBacking) {
+  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
+  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> dst =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  dst->reserve(4);
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> src =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  src->emplace_back(obj1);
+  src->emplace_back(
+      obj2, [](IncrementalMarkingTestDriver* d) { d->FinishGC(); }, &driver);
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  *dst = *src;
+  EXPECT_TRUE(obj1);
+  ASSERT_EQ(2u, dst->size());
+  ASSERT_EQ(1u, (*dst)[0].items_.size());
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+  PreciselyCollectGarbage();
+  EXPECT_TRUE(obj1);
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+}
+
+TEST_F(IncrementalMarkingTest,
+       HeapVectorCopyAssignExistingNestedHeapVectorContainer) {
+  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
+  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> dst =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  dst->emplace_back(MakeGarbageCollected<LinkedObject>());
+  dst->emplace_back(MakeGarbageCollected<LinkedObject>());
+  Persistent<GCedHeapVector<NestedHeapVectorContainer, 1>> src =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  src->emplace_back(
+      obj1, [](IncrementalMarkingTestDriver* d) { d->TriggerMarkingSteps(); },
+      &driver);
+  src->emplace_back(
+      obj2, [](IncrementalMarkingTestDriver* d) { d->FinishGC(); }, &driver);
+  driver.StartGC();
+  *dst = *src;
+  EXPECT_TRUE(obj1);
+  ASSERT_EQ(2u, dst->size());
+  ASSERT_EQ(1u, (*dst)[0].items_.size());
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+  PreciselyCollectGarbage();
+  EXPECT_TRUE(obj1);
+  EXPECT_EQ(obj1, (*dst)[0].items_[0]);
+}
+
+TEST_F(IncrementalMarkingTest, HeapVectorCopyNestedHeapVectorContainerInCtor) {
+  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
+  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
+  GCedHeapVector<NestedHeapVectorContainer, 1>* src =
+      MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>();
+  src->emplace_back(obj1);
+  src->emplace_back(obj2);
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  MakeGarbageCollected<GCedHeapVector<NestedHeapVectorContainer, 1>>(*src);
+  driver.FinishGC();
+  EXPECT_FALSE(obj1);
+  EXPECT_FALSE(obj2);
 }
 
 TEST_F(IncrementalMarkingTest, HeapVectorCopyStdPair) {
