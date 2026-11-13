@@ -222,9 +222,9 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
   std::erase_if(results, [](const auto& form) {
     return form.match_type == affiliations::MatchType::kGrouped;
   });
-  // TODO(crbug.com/40269204): process PSL and affilated credentials if needed.
-  // TODO(crbug.com/40269204): process conflicting passwords differently if
-  // necessary.
+  // PSL-matched and affiliated credentials are treated like exact matches, so
+  // an existing credential with the same username on any of them is handled
+  // as a conflict below.
   auto credential_with_same_username_it =
       std::ranges::find_if(results, [this](const StoredCredential& result) {
         return result.username_value == incoming_credentials_.username_value;
