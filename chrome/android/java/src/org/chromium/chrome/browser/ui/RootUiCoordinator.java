@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
@@ -1991,6 +1992,14 @@ public class RootUiCoordinator
                 LensOverlayCoordinator.getOrCreateForTab(tab)
                         .start(LensOverlayInvocationSource.APP_MENU);
                 RecordUserAction.record("MobileMenuLensOverlay");
+            }
+            return true;
+        } else if (id == R.id.ask_google_about_page_menu_id) {
+            Tab tab = mActivityTabProvider.get();
+            if (tab != null && tab.getWebContents() != null) {
+                ContextualTasksUtils.openAskGoogleAboutThisPage(
+                        tab, LensOverlayInvocationSource.APP_MENU_ASK_GOOGLE);
+                RecordUserAction.record("MobileMenuAskGoogleAboutThisPage");
             }
             return true;
         } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {

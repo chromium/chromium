@@ -22115,6 +22115,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuAskGoogleAboutThisPage">
+  <owner>ender@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <description>
+    User pressed 'Ask Google about this page' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuBack">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed the back icon in the app menu.</description>

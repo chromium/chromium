@@ -84,6 +84,8 @@ import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtilsJni;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
@@ -257,6 +259,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Mock private ContextualTasksUtils.Natives mContextualTasksUtilsJni;
     @Mock private NativePage mNativePage;
     @Mock private NavigationController mNavigationController;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
@@ -4665,6 +4668,26 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         when(mPrefService.getBoolean(Pref.PRINTING_ENABLED)).thenReturn(false);
         assertFalse(isPrintVisible(/* isDesktop= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_ENTRY_POINTS)
+    public void askGoogleItemEnabled() {
+        setUpMocksForPageMenu();
+        ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
+        doReturn(true).when(mContextualTasksUtilsJni).shouldShowAskGoogleEntryPoints(mWebContents);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertTrue(isMenuVisible(modelList, R.id.ask_google_about_page_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_ENTRY_POINTS)
+    public void askGoogleItemDisabled() {
+        setUpMocksForPageMenu();
+        ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
+        doReturn(false).when(mContextualTasksUtilsJni).shouldShowAskGoogleEntryPoints(mWebContents);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertFalse(isMenuVisible(modelList, R.id.ask_google_about_page_menu_id));
     }
 
     private MenuItem getExpectedBookmarksParentMenuTitle() {
