@@ -96,7 +96,7 @@ public class ToolbarButtonIphTest {
                 .thenReturn(new TriggerDetails(true, false));
 
         mPage = mPage.loadAboutBlank();
-        mPage.tabSwitcherButtonElement.check(matches(withHighlight(true)));
+        mPage.toolbar.tabSwitcherButtonElement.check(matches(withHighlight(true)));
         mPage.openRegularTabSwitcher();
     }
 }

@@ -8,8 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.view.View;
 import android.widget.ListView;
 
@@ -56,7 +54,7 @@ public class BottomBarPtTest {
     @MediumTest
     public void testBottomBarAppMenuKeptBelowTopControls() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
-        View toolbar = assumeNonNull(page.toolbarElement).value();
+        View toolbar = page.toolbar.toolbarElement.value();
         RegularWebPageAppMenuFacility menu = page.openRegularTabAppMenu();
         ListView listView = menu.menuListElement.value();
 

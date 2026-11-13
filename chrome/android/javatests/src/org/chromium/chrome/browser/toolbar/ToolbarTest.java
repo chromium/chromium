@@ -657,26 +657,28 @@ public class ToolbarTest {
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHomeButton_loadsNtpOnSameTab() {
         WebPageStation webPage = mPage;
-        webPage.homeButtonElement.checkPresent();
+        webPage.toolbar.homeButtonElement.checkPresent();
 
         RegularNewTabPageStation ntp =
-                webPage.homeButtonElement
+                webPage.toolbar
+                        .homeButtonElement
                         .clickTo()
                         .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(webPage).build());
-        ntp.homeButtonElement.checkPresent();
+        ntp.toolbar.homeButtonElement.checkPresent();
 
         WebPageStation incognitoWebPage = ntp.openNewIncognitoTabOrWindowFast().loadAboutBlank();
-        incognitoWebPage.homeButtonElement.checkPresent();
+        incognitoWebPage.toolbar.homeButtonElement.checkPresent();
 
         IncognitoNewTabPageStation incognitoNtp =
                 incognitoWebPage
+                        .toolbar
                         .homeButtonElement
                         .clickTo()
                         .arriveAt(
                                 IncognitoNewTabPageStation.newBuilder()
                                         .initFrom(incognitoWebPage)
                                         .build());
-        incognitoNtp.homeButtonElement.checkPresent();
+        incognitoNtp.toolbar.homeButtonElement.checkPresent();
     }
 
     @Test
