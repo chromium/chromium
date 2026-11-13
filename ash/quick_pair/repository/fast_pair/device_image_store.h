@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -28,15 +28,20 @@ namespace quick_pair {
 
 class FastPairImageDecoder;
 
-// Saves any discovered device images in a flat_map model_id_to_images_.
-// Images are saved in DeviceImageInfo objects and are loaded from prefs on
-// creation. Images can be persisted to prefs (i.e. on device pair) or
-// evicted from prefs (i.e. on device unpair). Images can be retrieved
-// given a model_id.
+// Saves any discovered device images in an LRU cache model_id_to_images_.
+// Images are saved in DeviceImageInfo objects. Images can be persisted to
+// prefs (i.e. on device pair) or evicted from prefs (i.e. on device unpair).
+// Persisted images are only kept in prefs, not in model_id_to_images_, to
+// avoid duplicating them in memory. Images in model_id_to_images_ are
+// zstd-compressed. Images can be retrieved given a model_id.
 class DeviceImageStore {
  public:
   static constexpr char kDeviceImageStorePref[] =
       "fast_pair.device_image_store";
+
+  // Maximum number of unpersisted device models in `model_id_to_images_`.
+  // Matches `FastPairRepositoryImpl::kMaxMetadataCacheSize`.
+  static constexpr size_t kMaxUnpersistedModels = 20;
 
   // Corresponds to the types of device images that we currently support. Used
   // to keep track of pending downloads.
@@ -81,9 +86,10 @@ class DeviceImageStore {
                          DeviceMetadata* device_metadata,
                          FetchDeviceImagesCallback on_images_saved_callback);
 
-  // Persists the DeviceImageInfo for |model_id| in model_id_to_images_
-  // to local state prefs. Returns true if images were persisted, false
-  // if |model_id| has no saved images or there was an error when persisting.
+  // Moves the DeviceImageInfo for |model_id| in model_id_to_images_
+  // to local state prefs. Returns true if images were persisted or are already
+  // persisted, false if |model_id| has no saved images or there was an error
+  // when persisting.
   bool PersistDeviceImages(const std::string& model_id);
 
   // Evicts the DeviceImageInfo corresponding to |model_id| from
@@ -96,6 +102,7 @@ class DeviceImageStore {
   std::optional<bluetooth_config::DeviceImageInfo> GetImagesForDeviceModel(
       const std::string& model_id);
 
+  // Returns the number of models whose images are not persisted yet.
   size_t SizeForTesting() const { return model_id_to_images_.size(); }
 
  private:
@@ -103,9 +110,12 @@ class DeviceImageStore {
   FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest,
                            PersistDeviceImagesNoMacAddress);
   FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, EvictDeviceImages);
+  FRIEND_TEST_ALL_PREFIXES(DeviceImageStoreTest,
+                           KeepsUnpersistedImagesCompressedInMemory);
 
-  // Loads device images stored in prefs to model_id_to_images_.
-  void LoadPersistedImagesFromPrefs();
+  // Returns the images persisted in prefs for |model_id|, if any.
+  std::optional<bluetooth_config::DeviceImageInfo> GetPersistedImages(
+      const std::string& model_id) const;
 
   // Returns true if |images| contains at least one image, false otherwise.
   bool DeviceImageInfoHasImages(
@@ -121,7 +131,8 @@ class DeviceImageStore {
 
   // Callee ensures |image| is not empty. Encodes |image| as a base64 data URL
   // and saves it to the DeviceImageInfo belonging to |model_id| in field
-  // |image_type|. Invokes |on_images_saved_callback| with the
+  // |image_type|, in prefs if the images for |model_id| are persisted.
+  // Invokes |on_images_saved_callback| with the
   // |image_type| where the image was saved on success, empty string
   // otherwise.
   void SaveImageAsBase64(const std::string& model_id,
@@ -129,14 +140,14 @@ class DeviceImageStore {
                          FetchDeviceImagesCallback on_images_saved_callback,
                          gfx::Image image);
 
-  // Clears the in-memory map and reloads from prefs. Used by tests.
+  // Clears the in-memory map of images that are not persisted. Used by tests
+  // to simulate a restart.
   void RefreshCacheForTest();
 
-  // Maps from model IDs to images stored in DeviceImageInfo.
-  base::flat_map<std::string, bluetooth_config::DeviceImageInfo>
-      model_id_to_images_;
-  // Used to lazily load images from prefs.
-  bool loaded_images_from_prefs_ = false;
+  // LRU cache from model IDs to images that are not persisted yet. Each image
+  // is stored zstd-compressed to reduce memory usage.
+  base::LRUCache<std::string, bluetooth_config::DeviceImageInfo>
+      model_id_to_images_{kMaxUnpersistedModels};
   raw_ptr<FastPairImageDecoder> image_decoder_;
   const raw_ref<PrefService> local_state_;
   base::WeakPtrFactory<DeviceImageStore> weak_ptr_factory_{this};

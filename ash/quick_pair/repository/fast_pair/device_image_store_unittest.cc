@@ -12,6 +12,7 @@
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
@@ -328,12 +329,137 @@ TEST_F(DeviceImageStoreTest, LookupAndPersistMissDoNotInsertEmptyRecords) {
 TEST_F(DeviceImageStoreTest, EvictDeviceImagesRemovesInMemoryEntry) {
   device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
                                          base::DoNothing());
-  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
   EXPECT_EQ(device_image_store_->SizeForTesting(), 1u);
 
-  EXPECT_TRUE(device_image_store_->EvictDeviceImages(kTestModelId));
+  // Returns false because the images were never persisted to prefs.
+  EXPECT_FALSE(device_image_store_->EvictDeviceImages(kTestModelId));
   EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
   EXPECT_FALSE(device_image_store_->GetImagesForDeviceModel(kTestModelId));
+}
+
+TEST_F(DeviceImageStoreTest, KeepsUnpersistedImagesCompressedInMemory) {
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         base::DoNothing());
+
+  const std::string expected_image =
+      webui::GetBitmapDataUrl(test_image_.AsBitmap());
+  auto in_memory_it =
+      device_image_store_->model_id_to_images_.Peek(kTestModelId);
+  ASSERT_NE(in_memory_it, device_image_store_->model_id_to_images_.end());
+  const DeviceImageInfo& in_memory_images = in_memory_it->second;
+  EXPECT_LT(in_memory_images.default_image().size(), expected_image.size());
+  EXPECT_LT(in_memory_images.case_image().size(), expected_image.size());
+
+  // Images are decompressed when retrieved and persisted.
+  std::optional<DeviceImageInfo> images =
+      device_image_store_->GetImagesForDeviceModel(kTestModelId);
+  ASSERT_TRUE(images);
+  EXPECT_EQ(images->default_image(), expected_image);
+  EXPECT_EQ(images->case_image(), expected_image);
+
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+  const base::DictValue* images_dict =
+      local_state()
+          ->GetDict(DeviceImageStore::kDeviceImageStorePref)
+          .FindDict(kTestModelId);
+  ASSERT_TRUE(images_dict);
+  std::optional<DeviceImageInfo> persisted_images =
+      DeviceImageInfo::FromDictionaryValue(*images_dict);
+  ASSERT_TRUE(persisted_images);
+  EXPECT_EQ(persisted_images->default_image(), expected_image);
+  EXPECT_EQ(persisted_images->case_image(), expected_image);
+}
+
+TEST_F(DeviceImageStoreTest, PersistDeviceImagesDropsInMemoryCopy) {
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         base::DoNothing());
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 1u);
+
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
+
+  // Images are still served from prefs, and persisting again succeeds.
+  std::optional<DeviceImageInfo> images =
+      device_image_store_->GetImagesForDeviceModel(kTestModelId);
+  ASSERT_TRUE(images);
+  EXPECT_EQ(images->default_image(),
+            webui::GetBitmapDataUrl(test_image_.AsBitmap()));
+  EXPECT_EQ(images->case_image(),
+            webui::GetBitmapDataUrl(test_image_.AsBitmap()));
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+}
+
+TEST_F(DeviceImageStoreTest, FetchDeviceImagesSkipsPersistedImages) {
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         base::DoNothing());
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+
+  base::MockCallback<DeviceImageStore::FetchDeviceImagesCallback> callback;
+  EXPECT_CALL(callback,
+              Run(testing::Pair(
+                  _, DeviceImageStore::FetchDeviceImagesResult::kSkipped)))
+      .Times(4);
+  EXPECT_CALL(*mock_decoder_, DecodeImageFromUrl(_, _, _)).Times(0);
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         callback.Get());
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
+}
+
+TEST_F(DeviceImageStoreTest, ImagesFetchedAfterPersistAreSavedToPrefs) {
+  // Persist only the default image.
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata default_only_metadata(std::move(response), test_image_);
+  device_image_store_->FetchDeviceImages(kTestModelId, &default_only_metadata,
+                                         base::DoNothing());
+  EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
+
+  // True wireless images fetched later are saved to prefs, not memory.
+  device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
+                                         base::DoNothing());
+  EXPECT_EQ(device_image_store_->SizeForTesting(), 0u);
+
+  const base::DictValue* images_dict =
+      local_state()
+          ->GetDict(DeviceImageStore::kDeviceImageStorePref)
+          .FindDict(kTestModelId);
+  ASSERT_TRUE(images_dict);
+  std::optional<DeviceImageInfo> images =
+      DeviceImageInfo::FromDictionaryValue(*images_dict);
+  ASSERT_TRUE(images);
+  const std::string expected_image =
+      webui::GetBitmapDataUrl(test_image_.AsBitmap());
+  EXPECT_EQ(images->default_image(), expected_image);
+  EXPECT_EQ(images->left_bud_image(), expected_image);
+  EXPECT_EQ(images->right_bud_image(), expected_image);
+  EXPECT_EQ(images->case_image(), expected_image);
+}
+
+TEST_F(DeviceImageStoreTest, EvictsLeastRecentlyUsedUnpersistedImages) {
+  auto model_id_for_index = [](size_t index) {
+    return base::StringPrintf("MODEL_%zu", index);
+  };
+
+  for (size_t i = 0; i < DeviceImageStore::kMaxUnpersistedModels; ++i) {
+    device_image_store_->FetchDeviceImages(
+        model_id_for_index(i), device_metadata_.get(), base::DoNothing());
+  }
+  EXPECT_EQ(device_image_store_->SizeForTesting(),
+            DeviceImageStore::kMaxUnpersistedModels);
+
+  // Reading model 0 promotes it to most-recently-used.
+  EXPECT_TRUE(
+      device_image_store_->GetImagesForDeviceModel(model_id_for_index(0)));
+
+  // Fetching one more unpersisted model evicts model 1 (least-recently-used).
+  device_image_store_->FetchDeviceImages(
+      model_id_for_index(DeviceImageStore::kMaxUnpersistedModels),
+      device_metadata_.get(), base::DoNothing());
+  EXPECT_EQ(device_image_store_->SizeForTesting(),
+            DeviceImageStore::kMaxUnpersistedModels);
+  EXPECT_TRUE(
+      device_image_store_->GetImagesForDeviceModel(model_id_for_index(0)));
+  EXPECT_FALSE(
+      device_image_store_->GetImagesForDeviceModel(model_id_for_index(1)));
 }
 
 }  // namespace ash::quick_pair

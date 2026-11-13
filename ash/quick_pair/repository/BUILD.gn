@@ -63,6 +63,8 @@ source_set("repository") {
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/protobuf:protobuf_lite",
+    "//third_party/zstd:compress",
+    "//third_party/zstd:decompress",
     "//ui/base",
   ]
 }

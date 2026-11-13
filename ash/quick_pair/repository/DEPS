@@ -1,3 +1,4 @@
 include_rules = [
-  "+crypto/sha2.h"
+  "+crypto/sha2.h",
+  "+third_party/zstd/src/lib/zstd.h",
 ]
