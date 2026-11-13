@@ -7,6 +7,7 @@
 
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
@@ -48,7 +49,7 @@ class TabsDependencyInstallerManager
   explicit TabsDependencyInstallerManager(Browser* browser);
 
   base::ObserverList<TabsDependencyInstaller, true> installers_;
-  std::vector<web::WebState*> installed_web_states_;
+  std::vector<raw_ptr<web::WebState>> installed_web_states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_MANAGER_H_
