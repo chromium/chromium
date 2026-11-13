@@ -476,12 +476,6 @@ static std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env,
 }
 
 // static
-static bool JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
-  return g_browser_process->local_state()->GetBoolean(
-      enterprise_reporting::kCloudReportingEnabled);
-}
-
-// static
 static bool JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
     JNIEnv* env,
     Profile* profile) {

@@ -9,6 +9,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Util methods for interacting with managed browser (enterprise) state. */
@@ -32,7 +34,7 @@ public class ManagedBrowserUtils {
 
     /** Wrapper around native call to get if cloud browser reporting is enabled. */
     public static boolean isBrowserReportingEnabled() {
-        return ManagedBrowserUtilsJni.get().isBrowserReportingEnabled();
+        return LocalStatePrefs.get().getBoolean(Pref.CLOUD_REPORTING_ENABLED);
     }
 
     /** Wrapper around native call to get if cloud profile reporting is enabled. */
@@ -63,8 +65,6 @@ public class ManagedBrowserUtils {
 
         @JniType("std::u16string")
         String getTitle(@JniType("Profile*") Profile profile);
-
-        boolean isBrowserReportingEnabled();
 
         boolean isProfileReportingEnabled(@JniType("Profile*") Profile profile);
 

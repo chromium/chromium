@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.prefs.PrefService;
@@ -75,7 +76,7 @@ public class ManagementViewTest {
     public void testNotManaged() {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        LocalStatePrefs.get().setBoolean(Pref.CLOUD_REPORTING_ENABLED, false);
         doReturn(false)
                 .when(mMockPrefService)
                 .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
@@ -151,7 +152,7 @@ public class ManagementViewTest {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
-        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        LocalStatePrefs.get().setBoolean(Pref.CLOUD_REPORTING_ENABLED, true);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileReportingEnabled(mMockProfile);
         doReturn(false)
                 .when(mMockPrefService)
@@ -175,7 +176,7 @@ public class ManagementViewTest {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
-        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        LocalStatePrefs.get().setBoolean(Pref.CLOUD_REPORTING_ENABLED, true);
         doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isProfileReportingEnabled(mMockProfile);
@@ -201,7 +202,7 @@ public class ManagementViewTest {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
-        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        LocalStatePrefs.get().setBoolean(Pref.CLOUD_REPORTING_ENABLED, false);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileReportingEnabled(mMockProfile);
         doReturn(false)
                 .when(mMockPrefService)
@@ -225,7 +226,7 @@ public class ManagementViewTest {
         doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
-        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        LocalStatePrefs.get().setBoolean(Pref.CLOUD_REPORTING_ENABLED, false);
         doReturn(false)
                 .when(mMockManagedBrowserUtilNatives)
                 .isProfileReportingEnabled(mMockProfile);
