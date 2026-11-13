@@ -209,7 +209,7 @@
   font-weight: 500;
   line-height: 20px;
   overflow: hidden;
-  text-align: left;
+  text-align: start;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
@@ -258,8 +258,8 @@
   --cr-icon-image: url('chrome://resources/images/icon_clear_old.svg');
   align-self: center;
   display: none;
+  inset-inline-end: 16px;
   position: absolute;
-  right: 16px;
 }
 
 :host-context([webui-rounded-icons]) .chip-remove-button {
