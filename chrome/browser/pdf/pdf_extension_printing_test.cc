@@ -275,8 +275,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
 
-  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(extension_host);
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SimulateMouseClickAt(extension_host, embedder_web_contents,
+  SimulateMouseClickAt(extension_host, web_contents,
                        blink::WebInputEvent::kNoModifiers,
                        blink::WebMouseEvent::Button::kRight, {1, 1});
   print_observer.WaitUntilPreviewIsReady();
@@ -299,8 +299,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
           embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
 
-  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(extension_host);
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SimulateMouseClickAt(extension_host, embedder_web_contents,
+  SimulateMouseClickAt(extension_host, web_contents,
                        blink::WebInputEvent::kNoModifiers,
                        blink::WebMouseEvent::Button::kRight, {1, 1});
   print_observer.WaitUntilPreviewIsReady();
@@ -326,8 +326,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
       pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
-  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
+  SetInputFocusOnPlugin(extension_host, web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::mojom::MenuSourceType::kMouse);
   print_observer.WaitUntilPreviewIsReady();
@@ -355,8 +355,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
       pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
-  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
+  SetInputFocusOnPlugin(extension_host, web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::mojom::MenuSourceType::kMouse);
   print_observer.WaitUntilPreviewIsReady();
@@ -427,8 +427,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
       pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
-  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(plugin_frame);
@@ -437,8 +437,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   SetupPrintViewManagerForJobMonitoring(plugin_frame);
-  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
-  SimulateMouseClickAt(plugin_frame, embedder_web_contents,
+  SetInputFocusOnPlugin(extension_host, web_contents);
+  SimulateMouseClickAt(plugin_frame, web_contents,
                        blink::WebInputEvent::kNoModifiers,
                        blink::WebMouseEvent::Button::kRight, {1, 1});
   menu_interceptor.Wait();

@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   ASSERT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(1, tab_strip_model->active_index());
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
 
   {
     TabChangedWaiter tab_changed_waiter(browser());
@@ -200,9 +200,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, SpaceKeyInForm) {
 
   // Since the PDF contains a text form that takes up the entire PDF page, this
   // clicks into that form.
-  auto* embedder_web_contents = GetEmbedderWebContents();
-  ASSERT_TRUE(embedder_web_contents);
-  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetInputFocusOnPlugin(extension_host, web_contents);
 
   // Wait for the input event to propagate into `plugin_host`.
   while (true) {
@@ -227,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, SpaceKeyInForm) {
   // back to the browser.
   //
   // If the space key press did not register at all, this hangs.
-  EXPECT_TRUE(base::test::RunUntil([embedder_web_contents, view]() {
-    embedder_web_contents->SelectAll();
+  EXPECT_TRUE(base::test::RunUntil([web_contents, view]() {
+    web_contents->SelectAll();
     return view->GetSelectedText() == u" ";
   }));
 }

@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithNoTitle) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   const std::u16string kExpectedTitle = u"test.pdf";
-  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()
                                 ->GetController()
                                 .GetLastCommittedEntry()
                                 ->GetTitleForDisplay());
@@ -1048,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithTitle) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-title.pdf")));
 
   const std::u16string kExpectedTitle = u"PDF title test";
-  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()
                                 ->GetController()
                                 .GetLastCommittedEntry()
                                 ->GetTitleForDisplay());
@@ -1099,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, IsContentsMimeTypePdfEmbedPdf) {
 
   // Verify that MIME type associated with embedded PDF `WebContents` is not
   // `application/pdf`.
-  EXPECT_NE(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
+  EXPECT_NE(pdf::kPDFMimeType, GetActiveWebContents()->GetContentsMimeType());
 }
 
 // Tests that PDF MIME type is set for full-page PDF `WebContents`.
@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, IsContentsMimeTypePdfFullPagePdf) {
 
   // Verify that MIME type associated with full-page PDF `WebContents` is
   // `application/pdf`.
-  EXPECT_EQ(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
+  EXPECT_EQ(pdf::kPDFMimeType, GetActiveWebContents()->GetContentsMimeType());
 }
 
 // Test that a sandboxed iframe navigation to a PDF with a Content-Disposition:
@@ -1290,7 +1290,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithSpace) {
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
   ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Get the viewport height, since the scroll distance is based on it.
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithPageDownUp) {
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
   ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Get the viewport height, since the scroll distance is based on it.
@@ -1386,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithArrowLeftRight) {
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200"));
   ASSERT_TRUE(extension_host);
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
   ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowRight to scroll right.
@@ -1428,7 +1428,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithArrowLeftRightScrollToPage) {
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
   ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowRight to scroll to next page.
@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithArrowDownUp) {
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
-  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  SetInputFocusOnPlugin(extension_host, GetActiveWebContents());
   ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowDown to scroll down.
@@ -1741,8 +1741,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlLeft) {
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
-                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+  SimulateMouseClickAt(extension_host, web_contents, kDefaultKeyModifier,
+                       blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
@@ -1768,7 +1768,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, Middle) {
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), 0,
+  SimulateMouseClickAt(extension_host, web_contents, 0,
                        blink::WebMouseEvent::Button::kMiddle,
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlShiftLeft) {
 
   const int modifiers = blink::WebInputEvent::kShiftKey | kDefaultKeyModifier;
 
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), modifiers,
+  SimulateMouseClickAt(extension_host, web_contents, modifiers,
                        blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
@@ -1820,7 +1820,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftMiddle) {
   WebContents* web_contents = GetActiveWebContents();
 
   SimulateMouseClickAt(
-      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      extension_host, web_contents, blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kMiddle, GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
@@ -1844,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftLeft) {
   WebContents* web_contents = GetActiveWebContents();
 
   SimulateMouseClickAt(
-      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      extension_host, web_contents, blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
   BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
@@ -1888,8 +1888,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
 
   // Now click on the link to example.com in the PDF. This should open up a new
   // tab.
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
-                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+  SimulateMouseClickAt(extension_host, web_contents, kDefaultKeyModifier,
+                       blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(extension_host));
 
   ui_test_utils::TabAddedWaiter(browser()).Wait();
@@ -1940,11 +1940,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, LinkClickInPdfInNonTab) {
                       "window.viewer.browserApi.getStreamInfo().tabId = "
                       "    chrome.tabs.TAB_ID_NONE;"));
 
-  FailOnNavigation fail_if_mimehandler_navigates(GetActiveWebContents());
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
-                       blink::WebInputEvent::kNoModifiers,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(extension_host));
+  content::WebContents* target_contents = GetActiveWebContents();
+  FailOnNavigation fail_if_mimehandler_navigates(target_contents);
+  SimulateMouseClickAt(
+      extension_host, target_contents, blink::WebInputEvent::kNoModifiers,
+      blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
 
   // The PDF extension frame must not navigate away. If
   // `fail_if_mimehandler_navigates` doesn't see a navigation, we consider the
@@ -1974,8 +1974,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, CtrlLeft) {
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
-                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+  SimulateMouseClickAt(extension_host, web_contents, kDefaultKeyModifier,
+                       blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
@@ -2002,7 +2002,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, Middle) {
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), 0,
+  SimulateMouseClickAt(extension_host, web_contents, 0,
                        blink::WebMouseEvent::Button::kMiddle,
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
@@ -2033,7 +2033,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   WebContents* web_contents = GetActiveWebContents();
 
   SimulateMouseClickAt(
-      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      extension_host, web_contents, blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
   BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
@@ -2066,7 +2066,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
 
   void ClickLeftSideOfEditableComboBox(
       content::RenderFrameHost* extension_host) {
-    SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), 0,
+    SimulateMouseClickAt(extension_host, GetActiveWebContents(), 0,
                          blink::WebMouseEvent::Button::kLeft,
                          GetEditableComboBoxLeftPosition(extension_host));
 
@@ -2085,7 +2085,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     // Make sure that the plugin frame of guest has focus.
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), plugin_frame);
     for (char ch : std::string_view("HELLO")) {
-      content::SimulateCharTyped(GetEmbedderWebContents(), ch);
+      content::SimulateCharTyped(GetActiveWebContents(), ch);
       content::InputEventAckWaiter key_waiter(
           plugin_frame->GetRenderWidgetHost(),
           blink::WebInputEvent::Type::kKeyUp);
@@ -2099,8 +2099,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
               pdf_frame_util::FindPdfChildFrame(extension_host));
     content::SimulateKeyPressWithoutChar(
-        GetEmbedderWebContents(), ui::DomKey::ARROW_LEFT,
-        ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT, false, false, false, false);
+        GetActiveWebContents(), ui::DomKey::ARROW_LEFT, ui::DomCode::ARROW_LEFT,
+        ui::VKEY_LEFT, false, false, false, false);
   }
 
   // Presses down shift, presses the left arrow, and lets go of shift.
@@ -2108,10 +2108,9 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     // Make sure that the plugin frame of guest has focus.
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
               pdf_frame_util::FindPdfChildFrame(extension_host));
-    content::SimulateKeyPressWithoutChar(GetEmbedderWebContents(),
-                                         ui::DomKey::ARROW_LEFT,
-                                         ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT,
-                                         false, /*shift=*/true, false, false);
+    content::SimulateKeyPressWithoutChar(
+        GetActiveWebContents(), ui::DomKey::ARROW_LEFT, ui::DomCode::ARROW_LEFT,
+        ui::VKEY_LEFT, false, /*shift=*/true, false, false);
   }
 
   // Presses the right arrow key.
@@ -2120,7 +2119,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
               pdf_frame_util::FindPdfChildFrame(extension_host));
     content::SimulateKeyPressWithoutChar(
-        GetEmbedderWebContents(), ui::DomKey::ARROW_RIGHT,
+        GetActiveWebContents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, false, false, false);
   }
 
@@ -2130,7 +2129,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
               pdf_frame_util::FindPdfChildFrame(extension_host));
     content::SimulateKeyPressWithoutChar(
-        GetEmbedderWebContents(), ui::DomKey::ARROW_RIGHT,
+        GetActiveWebContents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, /*shift=*/true, false,
         false);
   }
@@ -2349,7 +2348,7 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
   // SimulateKeyPress(). Using IDC_COPY does not work on Mac in browser_tests.
   void SendCopyCommandAndCheckCopyPasteClipboard(const std::string& expected) {
     DoActionAndCheckClipboard(
-        base::BindLambdaForTesting([&]() { GetEmbedderWebContents()->Copy(); }),
+        base::BindLambdaForTesting([&]() { GetActiveWebContents()->Copy(); }),
         ui::ClipboardBuffer::kCopyPaste, expected);
   }
 
@@ -2459,7 +2458,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   // Press shift + right arrow 3 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetEmbedderWebContents(), false, true, false, false);
+        GetActiveWebContents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
                                      ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
@@ -2493,7 +2492,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   // Press shift + left arrow 3 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetEmbedderWebContents(), false, true, false, false);
+        GetActiveWebContents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
                                      ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
@@ -2507,7 +2506,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   // Press shift + right arrow 2 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetEmbedderWebContents(), false, true, false, false);
+        GetActiveWebContents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
                                      ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
@@ -3313,7 +3312,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, SubmitForm) {
 
   // Click on the "Submit Form" button.
   SimulateMouseClickAt(
-      extension_host, GetEmbedderWebContents(),
+      extension_host, GetActiveWebContents(),
       blink::WebInputEvent::kNoModifiers, blink::WebMouseEvent::Button::kLeft,
       ConvertPageCoordToScreenCoord(extension_host, {210, 210}));
 

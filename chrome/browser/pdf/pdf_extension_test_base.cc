@@ -200,7 +200,7 @@ void PDFExtensionTestBase::TestGetSelectedTextReply(
   // If there's a flush message received but not a getSelectedText message, then
   // the message didn't come through.
   EXPECT_EQ(expect_success,
-            content::EvalJs(GetEmbedderWebContents()->GetPrimaryMainFrame(),
+            content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                             kGetSelectedTextReplyScript));
 }
 
@@ -210,18 +210,6 @@ WebContents* PDFExtensionTestBase::GetActiveWebContents() {
 
 void PDFExtensionTestBase::ResetFeatureList() {
   feature_list_.Reset();
-}
-
-content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
-  content::WebContents* contents = GetActiveWebContents();
-
-  // OOPIF PDF viewer only has a single `WebContents`.
-  if (UseOopif()) {
-    return contents;
-  }
-
-  MimeHandlerViewGuest* guest = GetOnlyMimeHandlerView(contents);
-  return guest ? guest->embedder_web_contents() : nullptr;
 }
 
 TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager() {
