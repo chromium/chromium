@@ -7,60 +7,57 @@ import {html, repeat} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicsViewElement} from './topics_view.js';
 
 export function getHtml(this: TopicsViewElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-    <main id="topics-view" aria-busy="${this.loadState_ === 'loading'}">
-      <section class="container">
-        <div class="header-container">
-          <div>
-            <h1>Topics</h1>
-            ${this.feedbackEnabled_ ? html`
-              <p id="fishfoodNote">
-                Fishfood: rate each topic with thumbs up or down. These
+<main id="topics-view" aria-busy="${this.loadState_ === 'loading'}">
+  <section class="container">
+    <div class="header-container">
+      <div>
+        <h1>Topics</h1>
+        ${this.feedbackEnabled_ ? html`
+          <p id="fishfoodNote">
+            Fishfood: rate each topic with thumbs up or down. These
                 controls are temporary and only shown for testing.
-              </p>
-            ` : ''}
-          </div>
-          ${this.feedbackEnabled_ ? html`
-            <cr-button id="sendFeedbackButton"
-                @click="${this.onSendFeedbackClick_}">
-              Send fishfood feedback
-            </cr-button>
-          ` : ''}
-        </div>
+          </p>
+        ` : ''}
+      </div>
+      ${this.feedbackEnabled_ ? html`
+        <cr-button id="sendFeedbackButton"
+            @click="${this.onSendFeedbackClick_}">
+          Send fishfood feedback
+        </cr-button>
+      ` : ''}
+    </div>
 
-        ${this.loadState_ === 'error' ? html`
-          <p id="errorState" class="empty-state" role="status">
-            Couldn't load topics.
-          </p>
-        ` : ''}
-        ${this.isEmpty_() ? html`
-          <p id="emptyState" class="empty-state" role="status">
-            No topics yet.
-          </p>
-        ` : ''}
-        ${this.hasTopics_() ? html`
-          <div id="cardsList" class="cards-list" role="list"
-              aria-label="Topics">
-            ${repeat(this.topics, topic => topic.id, topic => html`
-              <topic-card role="listitem" .topic="${topic}"
-                  .feedback="${this.getFeedback_(topic)}"
-                  @jump-back-in="${this.onJumpBackIn_}"
-                  @topic-feedback-change="${this.onTopicFeedbackChange_}">
-              </topic-card>
-            `)}
-          </div>
-        ` : ''}
-      </section>
-    </main>
-    ${this.showExportDialog_ ? html`
-      <!-- Temporary Fishfood Feedback -->
-      <topic-feedback-export-dialog .topics="${this.topics}"
-          .feedbacks="${this.feedbacks_}"
-          @export-dialog-close="${this.onExportDialogClose_}"
-          @topic-feedbacks-cleared="${this.onTopicFeedbacksCleared_}">
-      </topic-feedback-export-dialog>
+    ${this.loadState_ === 'error' ? html`
+      <p id="errorState" class="empty-state" role="status">
+        Couldn't load topics.
+      </p>
     ` : ''}
-  <!--_html_template_end_-->`;
-  // clang-format on
+    ${this.isEmpty_() ? html`
+      <p id="emptyState" class="empty-state" role="status">
+        No topics yet.
+      </p>
+    ` : ''}
+    ${this.hasTopics_() ? html`
+      <div id="cardsList" class="cards-list" role="list" aria-label="Topics">
+        ${repeat(this.topics, topic => topic.id, topic => html`
+          <topic-card role="listitem" .topic="${topic}"
+              .feedback="${this.getFeedback_(topic)}"
+              @jump-back-in="${this.onJumpBackIn_}"
+              @topic-feedback-change="${this.onTopicFeedbackChange_}">
+          </topic-card>
+        `)}
+      </div>
+    ` : ''}
+  </section>
+</main>
+${this.showExportDialog_ ? html`
+  <!-- Temporary Fishfood Feedback -->
+  <topic-feedback-export-dialog .topics="${this.topics}"
+      .feedbacks="${this.feedbacks_}"
+      @export-dialog-close="${this.onExportDialogClose_}"
+      @topic-feedbacks-cleared="${this.onTopicFeedbacksCleared_}">
+  </topic-feedback-export-dialog>
+` : ''}
+<!--_html_template_end_-->`;
 }

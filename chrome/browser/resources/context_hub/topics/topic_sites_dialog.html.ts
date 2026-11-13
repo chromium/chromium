@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicSitesDialogElement} from './topic_sites_dialog.js';
 
 export function getHtml(this: TopicSitesDialogElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog">
   <div slot="title">
@@ -38,8 +37,8 @@ export function getHtml(this: TopicSitesDialogElement) {
               </span>
             ` : ''}
             <cr-icon-button class="reject" data-index="${index}"
-                iron-icon="${this.isRejected_(site) ?
-                    'cr:cancel-filled' : 'cr:close'}"
+                iron-icon="${
+                    this.isRejected_(site) ? 'cr:cancel-filled' : 'cr:close'}"
                 title="${this.isRejected_(site) ? 'Undo' : 'Doesn\'t belong'}"
                 aria-label="${this.getRejectAriaLabel_(site)}"
                 aria-pressed="${this.isRejected_(site)}"
@@ -63,5 +62,4 @@ export function getHtml(this: TopicSitesDialogElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -8,71 +8,55 @@ import type {ContextHubAppElement} from './app.js';
 
 export function getHtml(this: ContextHubAppElement) {
   return html`
-    <!-- SIDEBAR -->
-    <aside>
-      <div>
-        <!-- Logo Section -->
-        <div class="logo-section">
-          <cr-icon icon="cr:chrome-product"></cr-icon>
-          <span id="sidebar-logo-text">Context Hub</span>
-        </div>
-
-        <!-- Navigation Links -->
-        <cr-menu-selector id="selector"
-            selectable="a:not(.disabled)"
-            selected-attribute="selected"
-            attr-for-selected="data-route"
-            selected="${this.currentView_}"
-            @selected-changed="${this.onSelectedChanged_}"
-            @click="${this.onSelectorClick_}">
-          <a role="menuitem"
-              href="#launchpad"
-              data-route="launchpad"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
-            LaunchPad
-          </a>
-          <a role="menuitem"
-              href="#memory-banks"
-              data-route="memory-banks"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:history"></cr-icon>
-            Memory banks
-          </a>
-          <a role="menuitem"
-              href="#tab-groups"
-              data-route="tab-groups"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:domain"></cr-icon>
-            Tab groups
-          </a>
-          <a role="menuitem"
-              href="#topics"
-              data-route="topics"
-              class="cr-nav-menu-item">
-            <cr-icon icon="context-hub:topic"></cr-icon>
-            Topics
-          </a>
-          <a role="menuitem"
-              href="#jumpstart"
-              data-route="jumpstart"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:search"></cr-icon>
-            JumpStart
-          </a>
-          <a role="menuitem"
-              href="#record-replay"
-              data-route="record-replay"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:videocam"></cr-icon>
-            Record and Replay
-          </a>
-        </cr-menu-selector>
-      </div>
-    </aside>
-
-    <!-- CONTENT AREA -->
-    <div class="content-area" .innerHTML="${this.getCurrentViewElement_()}">
+<!-- SIDEBAR -->
+<aside>
+  <div>
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <cr-icon icon="cr:chrome-product"></cr-icon>
+      <span id="sidebar-logo-text">Context Hub</span>
     </div>
-  `;
+
+    <!-- Navigation Links -->
+    <cr-menu-selector id="selector" selectable="a:not(.disabled)"
+        selected-attribute="selected" attr-for-selected="data-route"
+        selected="${this.currentView_}"
+        @selected-changed="${this.onSelectedChanged_}"
+        @click="${this.onSelectorClick_}">
+      <a role="menuitem" href="#launchpad" data-route="launchpad"
+          class="cr-nav-menu-item">
+        <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
+        LaunchPad
+      </a>
+      <a role="menuitem" href="#memory-banks" data-route="memory-banks"
+          class="cr-nav-menu-item">
+        <cr-icon icon="cr:history"></cr-icon>
+        Memory banks
+      </a>
+      <a role="menuitem" href="#tab-groups" data-route="tab-groups"
+          class="cr-nav-menu-item">
+        <cr-icon icon="cr:domain"></cr-icon>
+        Tab groups
+      </a>
+      <a role="menuitem" href="#topics" data-route="topics"
+          class="cr-nav-menu-item">
+        <cr-icon icon="context-hub:topic"></cr-icon>
+        Topics
+      </a>
+      <a role="menuitem" href="#jumpstart" data-route="jumpstart"
+          class="cr-nav-menu-item">
+        <cr-icon icon="cr:search"></cr-icon>
+        JumpStart
+      </a>
+      <a role="menuitem" href="#record-replay" data-route="record-replay"
+          class="cr-nav-menu-item">
+        <cr-icon icon="cr:videocam"></cr-icon>
+        Record and Replay
+      </a>
+    </cr-menu-selector>
+  </div>
+</aside>
+
+<!-- CONTENT AREA -->
+<div class="content-area" .innerHTML="${this.getCurrentViewElement_()}"></div>`;
 }

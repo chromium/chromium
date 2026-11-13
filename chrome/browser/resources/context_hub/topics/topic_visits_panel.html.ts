@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicVisitsPanelElement} from './topic_visits_panel.js';
 
 export function getHtml(this: TopicVisitsPanelElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="banner" role="note">
   <cr-icon icon="cr:info" aria-hidden="true"></cr-icon>
@@ -38,8 +37,8 @@ export function getHtml(this: TopicVisitsPanelElement) {
         <span class="rejected-label" aria-hidden="true">Doesn't belong</span>
       ` : ''}
       <cr-icon-button class="reject" data-index="${index}"
-          iron-icon="${this.isRejected_(visit) ?
-              'cr:cancel-filled' : 'cr:close'}"
+          iron-icon="${
+              this.isRejected_(visit) ? 'cr:cancel-filled' : 'cr:close'}"
           title="${this.isRejected_(visit) ? 'Undo' : 'Doesn\'t belong'}"
           aria-label="${this.getRejectAriaLabel_(visit)}"
           aria-pressed="${this.isRejected_(visit)}"
@@ -49,5 +48,4 @@ export function getHtml(this: TopicVisitsPanelElement) {
   `)}
 </ul>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

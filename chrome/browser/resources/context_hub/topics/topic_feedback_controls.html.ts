@@ -7,29 +7,27 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicFeedbackControlsElement} from './topic_feedback_controls.js';
 
 export function getHtml(this: TopicFeedbackControlsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="ratingRow">
   <cr-icon-button id="thumbsUp"
       iron-icon="${this.isLiked_() ? 'cr:thumb-up-filled' : 'cr:thumb-up'}"
       title="Good topic" aria-label="${this.getThumbsUpAriaLabel_()}"
-      aria-pressed="${this.isLiked_()}"
-      @click="${this.onThumbsUpClick_}">
+      aria-pressed="${this.isLiked_()}" @click="${this.onThumbsUpClick_}">
   </cr-icon-button>
   <cr-icon-button id="thumbsDown"
-      iron-icon="${this.isDisliked_() ? 'cr:thumb-down-filled' :
-                                        'cr:thumb-down'}"
+      iron-icon="${
+          this.isDisliked_() ? 'cr:thumb-down-filled' : 'cr:thumb-down'}"
       title="Bad topic" aria-label="${this.getThumbsDownAriaLabel_()}"
-      aria-pressed="${this.isDisliked_()}"
-      @click="${this.onThumbsDownClick_}">
+      aria-pressed="${this.isDisliked_()}" @click="${this.onThumbsDownClick_}">
   </cr-icon-button>
   ${this.popoverDefects && this.isDisliked_() ? html`
     <button id="reasonsButton" popovertarget="defectsPanel"
         ?invalid="${this.isDefectMissing_()}"
         aria-expanded="${this.defectsPopoverOpen_}">
       ${this.getReasonsButtonLabel_()}
-      <cr-icon icon="${this.defectsPopoverOpen_ ?
-          'cr:arrow-drop-up' : 'cr:arrow-drop-down'}">
+      <cr-icon
+          icon="${this.defectsPopoverOpen_ ? 'cr:arrow-drop-up' :
+                                             'cr:arrow-drop-down'}">
       </cr-icon>
     </button>
   ` : ''}
@@ -65,8 +63,7 @@ ${this.isDisliked_() ? html`
     <!-- Extra fields from the embedder, e.g. the topic a duplicate is of. -->
     <slot></slot>
     <cr-textarea id="comment" label="Comment" autogrow rows="2"
-        .value="${this.getComment_()}"
-        ?required="${this.isCommentRequired_()}"
+        .value="${this.getComment_()}" ?required="${this.isCommentRequired_()}"
         ?invalid="${this.isCommentMissing_()}"
         .firstFooter="${this.getCommentError_()}"
         @value-changed="${this.onCommentValueChanged_}"
@@ -75,5 +72,4 @@ ${this.isDisliked_() ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

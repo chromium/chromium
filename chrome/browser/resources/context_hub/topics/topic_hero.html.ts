@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicHeroElement} from './topic_hero.js';
 
 export function getHtml(this: TopicHeroElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <svg class="pattern" width="100%" height="100%"
     xmlns="http://www.w3.org/2000/svg">
@@ -17,9 +16,10 @@ export function getHtml(this: TopicHeroElement) {
       <g transform="translate(-28, -28)">
         <path class="pattern-shape" d="${this.getBadgePath_()}"></path>
       </g>
-      <text class="pattern-icon" x="0" y="2" font-size="22"
-          text-anchor="middle" dominant-baseline="central">${
-          this.getTextIcon_()}</text>
+      <text class="pattern-icon" x="0" y="2" font-size="22" text-anchor="middle"
+          dominant-baseline="central">
+        ${this.getTextIcon_()}
+      </text>
     </g>
     <pattern id="topic-hive-pattern" x="0" y="0" width="64" height="112"
         patternUnits="userSpaceOnUse">
@@ -32,5 +32,4 @@ export function getHtml(this: TopicHeroElement) {
 </svg>
 <div class="gradient-overlay"></div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

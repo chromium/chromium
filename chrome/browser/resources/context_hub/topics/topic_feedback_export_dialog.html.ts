@@ -8,7 +8,6 @@ import {EXPORT_WINDOW_DAYS} from './topic_feedback_export_dialog.js';
 import type {TopicFeedbackExportDialogElement} from './topic_feedback_export_dialog.js';
 
 export function getHtml(this: TopicFeedbackExportDialogElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <!-- Temporary Fishfood Feedback -->
 <!-- TODO(crbug.com/558572977): Use internationalized strings once GRD -->
@@ -16,6 +15,7 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
 <cr-dialog id="dialog" show-on-attach @close="${this.onDialogClose_}">
   <div slot="title">
     <div id="title">Send fishfood feedback</div>
+    <!-- lit-template-format-off -->
     <div id="subtitle">
       Download your ratings and recent browsing as a file, then upload it to
       the ${this.getFormUrl_() ? html`<a id="formLink"
@@ -23,6 +23,7 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
           @click="${this.onFormLinkClick_}">feedback form</a>` :
           html`feedback form`}.
     </div>
+    <!-- lit-template-format-on -->
   </div>
   <div slot="body">
     <section id="windowSection">
@@ -109,8 +110,10 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
     <section id="coverageSection">
       <h2>Your ratings</h2>
       <div id="ratingStatus" ?complete="${this.areAllTopicsHandled_()}">
-        <cr-icon icon="${this.areAllTopicsHandled_() ?
-            'cr:check-circle' : 'cr:error'}" aria-hidden="true">
+        <cr-icon
+            icon="${
+                this.areAllTopicsHandled_() ? 'cr:check-circle' : 'cr:error'}"
+            aria-hidden="true">
         </cr-icon>
         <div id="ratingProgress">${this.getRatingProgressText_()}</div>
       </div>
@@ -142,12 +145,16 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
         <ul id="coverageTopics">
           ${this.getCoverageTopics_().map(topic => html`
             <li ?done="${this.isCoverageTopicDone_(topic)}">
-              <cr-icon icon="${this.isCoverageTopicDone_(topic) ?
-                  'cr:check-circle' : 'cr:chevron-right'}"
+              <cr-icon
+                  icon="${this.isCoverageTopicDone_(topic) ?
+                      'cr:check-circle' :
+                      'cr:chevron-right'}"
                   aria-hidden="true">
               </cr-icon>
               <a href="#" data-id="${topic.id}"
-                  @click="${this.onCoverageTopicClick_}">${topic.title}</a>
+                  @click="${this.onCoverageTopicClick_}">
+                ${topic.title}
+              </a>
               ${this.isCoverageTopicDone_(topic) ? html`
                 <span class="secondary">Reviewed</span>
               ` : ''}
@@ -155,8 +162,8 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
           `)}
         </ul>
       ` : ''}
-      <cr-textarea id="missingTopics"
-          label="Missing topics (optional)" autogrow rows="2"
+      <cr-textarea id="missingTopics" label="Missing topics (optional)" autogrow
+          rows="2"
           placeholder="What did you browse that should have been a topic?"
           .value="${this.missingTopics_}"
           @value-changed="${this.onMissingTopicsValueChanged_}">
@@ -212,8 +219,7 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
     </cr-button>
     <cr-button id="download"
         class="${this.isFormNextStep_() ? 'cancel-button' : 'action-button'}"
-        ?disabled="${!this.canDownload_()}"
-        @click="${this.onDownloadClick_}">
+        ?disabled="${!this.canDownload_()}" @click="${this.onDownloadClick_}">
       ${this.isFormNextStep_() ? 'Download again' : 'Download JSON'}
     </cr-button>
     ${this.isFormNextStep_() ? html`
@@ -225,5 +231,4 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

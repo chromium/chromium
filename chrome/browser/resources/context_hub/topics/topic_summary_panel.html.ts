@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicSummaryPanelElement} from './topic_summary_panel.js';
 
 export function getHtml(this: TopicSummaryPanelElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <p id="longDescription">${this.topic?.longDescription || ''}</p>
 <!-- TODO(crbug.com/558572977): Use internationalized strings once GRD -->
@@ -39,7 +38,8 @@ ${this.feedbackEnabled_ && this.queries_.length > 0 ? html`
           <cr-icon-button class="query-like" data-index="${query.index}"
               data-liked="true"
               iron-icon="${this.isQueryRated_(query.index, true) ?
-                  'cr:thumb-up-filled' : 'cr:thumb-up'}"
+                  'cr:thumb-up-filled' :
+                  'cr:thumb-up'}"
               title="Useful"
               aria-label="${this.getQueryAriaLabel_('Useful', query)}"
               aria-pressed="${this.isQueryRated_(query.index, true)}"
@@ -48,7 +48,8 @@ ${this.feedbackEnabled_ && this.queries_.length > 0 ? html`
           <cr-icon-button class="query-dislike" data-index="${query.index}"
               data-liked="false"
               iron-icon="${this.isQueryRated_(query.index, false) ?
-                  'cr:thumb-down-filled' : 'cr:thumb-down'}"
+                  'cr:thumb-down-filled' :
+                  'cr:thumb-down'}"
               title="Not useful"
               aria-label="${this.getQueryAriaLabel_('Not useful', query)}"
               aria-pressed="${this.isQueryRated_(query.index, false)}"
@@ -60,5 +61,4 @@ ${this.feedbackEnabled_ && this.queries_.length > 0 ? html`
   </section>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

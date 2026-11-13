@@ -12,60 +12,52 @@ import type {MemoryBanksElement} from './memory_banks.js';
 
 export function getHtml(
     this: MemoryBanksElement, entry: MemoryBankEntry, index: number) {
-  // clang-format off
   return html`
-    <a class="card ${this.isSelected(entry.id) ? 'selected' : ''}"
-        href="${entry.url}" target="_blank">
-      <cr-checkbox class="card-checkbox no-label"
-          data-id="${entry.id}"
-          ?checked="${this.isSelected(entry.id)}"
-          @change="${this.onCheckboxChange}"
-          @click="${this.onCheckboxClick}">
-      </cr-checkbox>
-      ${entry.type === EntryType.kImage && entry.imageUrl ? html`
-        <div class="card-body image-type">
-          <img is="cr-auto-img" class="card-image-preview"
-              auto-src="${entry.imageUrl}" alt="">
-        </div>
-      ` : ''}
-      ${entry.type === EntryType.kTextSelection ? html`
-        <div class="card-body">
-          <p class="text-preview">"${entry.selectedText || ''}"</p>
-        </div>
-      ` : ''}
-      ${entry.type === EntryType.kTab ? html`
-        <div class="card-body tab-type">
-          <cr-icon icon="cr:draft-filled"></cr-icon>
-        </div>
-      ` : ''}
-      <div class="card-footer">
-        <div class="footer-main">
-          <div class="favicon"
-              style="background-image: ${
-      getFaviconForPageURL(entry.url, true)}">
-          </div>
-          <div class="meta-text">
-            <span class="card-title" title="${entry.tabTitle}">${
-      entry.tabTitle}</span>
-            <span class="card-date">${this.formatDate_(entry.timestamp)}</span>
-          </div>
-        </div>
-        ${
-      entry.tags && entry.tags.length > 0 ? html`
-          <div class="card-tags">
-            ${entry.tags.slice(0, 4).map(tag => html`
-              <span class="tag-pill" title="${tag}">${tag}</span>
-            `)}
-          </div>
-        ` :
-                                            ''}
-        <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
-            title="More actions"
-            data-index="${index}"
-            @click="${this.onMoreActionsClick_}">
-        </cr-icon-button>
+<a class="card ${this.isSelected(entry.id) ? 'selected' : ''}"
+    href="${entry.url}" target="_blank">
+  <cr-checkbox class="card-checkbox no-label" data-id="${entry.id}"
+      ?checked="${this.isSelected(entry.id)}" @change="${this.onCheckboxChange}"
+      @click="${this.onCheckboxClick}">
+  </cr-checkbox>
+  ${entry.type === EntryType.kImage && entry.imageUrl ? html`
+    <div class="card-body image-type">
+      <img is="cr-auto-img" class="card-image-preview"
+          auto-src="${entry.imageUrl}" alt="">
+    </div>
+  ` : ''}
+  ${entry.type === EntryType.kTextSelection ? html`
+    <div class="card-body">
+      <p class="text-preview">"${entry.selectedText || ''}"</p>
+    </div>
+  ` : ''}
+  ${entry.type === EntryType.kTab ? html`
+    <div class="card-body tab-type">
+      <cr-icon icon="cr:draft-filled"></cr-icon>
+    </div>
+  ` : ''}
+  <div class="card-footer">
+    <div class="footer-main">
+      <div class="favicon"
+          style="background-image: ${getFaviconForPageURL(entry.url, true)}">
       </div>
-    </a>
-  `;
-  // clang-format on
+      <div class="meta-text">
+        <span class="card-title" title="${entry.tabTitle}">
+          ${entry.tabTitle}
+        </span>
+        <span class="card-date">${this.formatDate_(entry.timestamp)}</span>
+      </div>
+    </div>
+    ${entry.tags && entry.tags.length > 0 ? html`
+      <div class="card-tags">
+        ${entry.tags.slice(0, 4).map(tag => html`
+          <span class="tag-pill" title="${tag}">${tag}</span>
+        `)}
+      </div>
+    ` : ''}
+    <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
+        title="More actions" data-index="${index}"
+        @click="${this.onMoreActionsClick_}">
+    </cr-icon-button>
+  </div>
+</a>`;
 }

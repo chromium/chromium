@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TopicCollectionCarouselElement} from './topic_collection_carousel.js';
 
 export function getHtml(this: TopicCollectionCarouselElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="header">
   <h2 id="title">${this.collection?.title || ''}</h2>
@@ -15,16 +14,15 @@ export function getHtml(this: TopicCollectionCarouselElement) {
     <!-- Temporary Fishfood Feedback -->
     <div id="collectionRating">
       <cr-icon-button class="collection-like" data-liked="true"
-          iron-icon="${this.isRated_(true) ?
-              'cr:thumb-up-filled' : 'cr:thumb-up'}"
+          iron-icon="${
+              this.isRated_(true) ? 'cr:thumb-up-filled' : 'cr:thumb-up'}"
           title="Useful collection"
           aria-label="${this.getRatingAriaLabel_('Useful collection')}"
-          aria-pressed="${this.isRated_(true)}"
-          @click="${this.onRatingClick_}">
+          aria-pressed="${this.isRated_(true)}" @click="${this.onRatingClick_}">
       </cr-icon-button>
       <cr-icon-button class="collection-dislike" data-liked="false"
-          iron-icon="${this.isRated_(false) ?
-              'cr:thumb-down-filled' : 'cr:thumb-down'}"
+          iron-icon="${
+              this.isRated_(false) ? 'cr:thumb-down-filled' : 'cr:thumb-down'}"
           title="Not a useful collection"
           aria-label="${this.getRatingAriaLabel_('Not a useful collection')}"
           aria-pressed="${this.isRated_(false)}"
@@ -52,9 +50,8 @@ export function getHtml(this: TopicCollectionCarouselElement) {
             style="${this.getFaviconColorStyle_(item.url)}">
           ${this.getImageUrl_(item.url) ? html`
             <img class="card-page-image" is="cr-auto-img"
-                auto-src="${this.getImageUrl_(item.url)}"
-                data-url="${item.url}" alt=""
-                @error="${this.onCardImageError_}">
+                auto-src="${this.getImageUrl_(item.url)}" data-url="${item.url}"
+                alt="" @error="${this.onCardImageError_}">
           ` : html`
             <span class="card-favicon"
                 style="background-image: ${this.getFavicon_(item.url)}">
@@ -75,8 +72,8 @@ export function getHtml(this: TopicCollectionCarouselElement) {
           <span class="rejected-label" aria-hidden="true">Doesn't belong</span>
         ` : ''}
         <cr-icon-button class="reject" data-index="${index}"
-            iron-icon="${this.isItemRejected_(item) ?
-                'cr:cancel-filled' : 'cr:close'}"
+            iron-icon="${
+                this.isItemRejected_(item) ? 'cr:cancel-filled' : 'cr:close'}"
             title="${this.isItemRejected_(item) ? 'Undo' : 'Doesn\'t belong'}"
             aria-label="${this.getRejectAriaLabel_(item)}"
             aria-pressed="${this.isItemRejected_(item)}"
@@ -87,5 +84,4 @@ export function getHtml(this: TopicCollectionCarouselElement) {
   `)}
 </ul>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
