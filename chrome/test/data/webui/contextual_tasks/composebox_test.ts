@@ -35,7 +35,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createCtComposeboxApp, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {createCtComposeboxApp, disableAnimationsRecursively, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
 import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -60,25 +60,6 @@ function pressEnter(element: HTMLElement) {
     bubbles: true,
     composed: true,
   }));
-}
-
-function disableAnimationsRecursively(element: Element) {
-  const noAnimation = document.createElement('style');
-  noAnimation.textContent = `
-    :host, * {
-      transition: none !important;
-      animation: none !important;
-      transition-duration: 0s !important;
-      animation-duration: 0s !important;
-    }
-  `;
-
-  if (element.shadowRoot) {
-    element.shadowRoot.appendChild(noAnimation);
-
-    const children = element.shadowRoot.querySelectorAll('*');
-    children.forEach(child => disableAnimationsRecursively(child));
-  }
 }
 
 suite('ContextualTasksComposeboxTest', () => {

@@ -22,7 +22,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
-import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, disableAnimationsRecursively, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
 import {ADD_FILE_CONTEXT_FN, uploadFileAndVerify} from './test_searchbox_utils.js';
 
 suite('ContextualTasksComposeboxFilesTest', () => {
@@ -708,25 +708,6 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
     });
   });
 });
-
-function disableAnimationsRecursively(element: Element) {
-  const noAnimation = document.createElement('style');
-  noAnimation.textContent = `
-    :host, * {
-    transition: none !important;
-    animation: none !important;
-    transition-duration: 0s !important;
-    animation-duration: 0s !important;
-    }
-  `;
-
-  if (element.shadowRoot) {
-    element.shadowRoot.appendChild(noAnimation);
-
-    const children = element.shadowRoot.querySelectorAll('*');
-    children.forEach(child => disableAnimationsRecursively(child));
-  }
-}
 
 suite('ContextualTasksComposeboxForkAutoTabTest', () => {
   const AUTO_TOKEN = '0000000000000000AAAAAAAAAAAAAA01';

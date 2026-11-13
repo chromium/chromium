@@ -390,7 +390,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       origin: tabAttachment.source,
     } as TabUpload);
   }
-
 }
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/Componentization.md)
 

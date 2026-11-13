@@ -50,6 +50,25 @@ export function assertStyle(
   assertEquals(expected, actual, error);
 }
 
+export function disableAnimationsRecursively(element: Element) {
+  const noAnimation = document.createElement('style');
+  noAnimation.textContent = `
+    :host, * {
+    transition: none !important;
+    animation: none !important;
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+    }
+  `;
+
+  if (element.shadowRoot) {
+    element.shadowRoot.appendChild(noAnimation);
+
+    const children = element.shadowRoot.querySelectorAll('*');
+    children.forEach(child => disableAnimationsRecursively(child));
+  }
+}
+
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
 

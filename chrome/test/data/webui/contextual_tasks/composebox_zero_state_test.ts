@@ -23,28 +23,9 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, FAKE_TOKEN_STRING, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {assertStyle, disableAnimationsRecursively, FAKE_TOKEN_STRING, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_FILE_CONTEXT_FN, setupAutocompleteResults, uploadFileAndVerify} from './test_searchbox_utils.js';
-
-function disableAnimationsRecursively(element: Element) {
-  const noAnimation = document.createElement('style');
-  noAnimation.textContent = `
-    :host, * {
-    transition: none !important;
-    animation: none !important;
-    transition-duration: 0s !important;
-    animation-duration: 0s !important;
-    }
-  `;
-
-  if (element.shadowRoot) {
-    element.shadowRoot.appendChild(noAnimation);
-
-    const children = element.shadowRoot.querySelectorAll('*');
-    children.forEach(child => disableAnimationsRecursively(child));
-  }
-}
 
 // Checks if suggestions container is rendered yet.
 function checkIfCanFindSuggestionsContainer(
