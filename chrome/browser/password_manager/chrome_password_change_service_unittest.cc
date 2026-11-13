@@ -468,9 +468,6 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
 
 TEST_F(ChromePasswordChangeServiceTest, PasswordChangeDisabledByUserPref) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
   GURL url("https://test.com/");
 
   prefs()->SetBoolean(password_manager::prefs::kAutomatedPasswordChangeEnabled,
