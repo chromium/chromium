@@ -9,15 +9,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
@@ -38,10 +44,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState.IconSize;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
@@ -58,6 +67,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.DocumentType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
@@ -471,6 +481,95 @@ public class BasicSuggestionProcessorUnitTest {
 
         assertNotEquals(icon1, icon2);
         assertEquals(mBitmap, ((BitmapDrawable) icon2.drawable).getBitmap());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS)
+    public void vectorIcons_shownAsMediumIconsWhenEnabled() {
+        mProcessor.onNativeInitialized();
+        mIsBookmarked.mState = true;
+        int sizeDp = mResourceProvider.getEdgeSizeDp(IconSize.MEDIUM);
+        doReturn(new BitmapDrawable(ContextUtils.getApplicationContext().getResources(), mBitmap))
+                .when(mImageSupplier)
+                .getVectorIcon(any(), eq(true), eq(sizeDp));
+
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
+
+        verify(mImageSupplier).getVectorIcon(eq(mSuggestion), eq(true), eq(sizeDp));
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertNotNull(icon);
+        assertEquals(IconSize.MEDIUM, icon.size);
+        assertTrue(icon.allowTint);
+        assertEquals(mBitmap, ((BitmapDrawable) icon.drawable).getBitmap());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS)
+    public void vectorIcons_doNotOverrideSuggestionImages() {
+        mProcessor.onNativeInitialized();
+        int sizeDp = mResourceProvider.getEdgeSizeDp(IconSize.MEDIUM);
+        doReturn(new BitmapDrawable(ContextUtils.getApplicationContext().getResources(), mBitmap))
+                .when(mImageSupplier)
+                .getVectorIcon(any(), eq(false), eq(sizeDp));
+        // Simulate an image served synchronously from the in-memory cache.
+        Drawable image = new ColorDrawable(0xFF0000FF);
+        doAnswer(
+                        inv -> {
+                            inv.<Callback<Drawable>>getArgument(1).onResult(image);
+                            return null;
+                        })
+                .when(mImageSupplier)
+                .fetchImage(any(), any());
+
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, "")
+                        .setIsSearch(true)
+                        .setImageUrl(JUnitTestGURLs.URL_1)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertNotNull(icon);
+        assertEquals(IconSize.LARGE, icon.size);
+        assertSame(image, icon.drawable);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS)
+    public void vectorIcons_keepFallbackWhenUnavailable() {
+        mProcessor.onNativeInitialized();
+        doReturn(null).when(mImageSupplier).getVectorIcon(any(), anyBoolean(), anyInt());
+
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
+
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertNotNull(icon);
+        assertEquals(IconSize.SMALL, icon.size);
+        assertEquals(R.drawable.ic_globe_24dp, icon.resourceIdForTesting);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS)
+    public void vectorIcons_notFetchedForDocumentSuggestions() {
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "")
+                        .setDocumentType(DocumentType.DRIVE_DOCS)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        verify(mImageSupplier, never()).getVectorIcon(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS)
+    public void vectorIcons_notFetchedWhenDisabled() {
+        mProcessor.onNativeInitialized();
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
+
+        verify(mImageSupplier, never()).getVectorIcon(any(), anyBoolean(), anyInt());
     }
 
     @Test

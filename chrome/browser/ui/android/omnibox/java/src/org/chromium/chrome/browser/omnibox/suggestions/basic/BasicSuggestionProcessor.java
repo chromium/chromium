@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
@@ -19,6 +20,8 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState.IconSize;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -29,6 +32,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.DocumentType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.IconType;
@@ -171,6 +175,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
+        OmniboxDrawableState vectorIcon = getVectorIcon(suggestion);
+        if (vectorIcon != null) return vectorIcon;
+
         @DrawableRes int icon = 0;
         boolean allowTint = true;
         if (suggestion.getType() == OmniboxSuggestionType.DOCUMENT_SUGGESTION) {
@@ -209,6 +216,27 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         return icon == 0
                 ? super.getFallbackIcon(suggestion)
                 : OmniboxDrawableState.forSmallIcon(mUiContext.resourceProvider, icon, allowTint);
+    }
+
+    /**
+     * When {@link OmniboxFeatures#isNativeVectorIconsEnabled()}, returns the suggestion's native
+     * vector icon presented as a medium icon, or {@code null} if the icon should be sourced from
+     * XML drawables instead. Document suggestions keep their multi-color Android drawables.
+     *
+     * @param suggestion The suggestion to retrieve the vector icon for.
+     */
+    private @Nullable OmniboxDrawableState getVectorIcon(AutocompleteMatch suggestion) {
+        if (!OmniboxFeatures.isNativeVectorIconsEnabled()) return null;
+        OmniboxImageSupplier imageSupplier = mUiContext.imageSupplier;
+        if (imageSupplier == null) return null;
+        if (suggestion.getType() == OmniboxSuggestionType.DOCUMENT_SUGGESTION) return null;
+
+        Drawable drawable =
+                imageSupplier.getVectorIcon(
+                        suggestion,
+                        mBookmarkState.isBookmarked(suggestion.getUrl()),
+                        mUiContext.resourceProvider.getEdgeSizeDp(IconSize.MEDIUM));
+        return drawable == null ? null : OmniboxDrawableState.forVectorIcon(drawable);
     }
 
     @Override
