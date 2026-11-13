@@ -6,11 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -25,18 +23,11 @@
 #include "url/url_constants.h"
 
 namespace {
-constexpr size_t kMaxDonatedTabs = 2;
-constexpr char kMaxDonatedTabsValue[] = "2";
+constexpr size_t kTestMaxDonatedTabsCount = 2;
 }  // namespace
 
 class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
  public:
-  AuxiliarySearchProviderBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        chrome::android::kAuxiliarySearchDonation,
-        {{"auxiliary_search_max_donation_tab", kMaxDonatedTabsValue}});
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -76,7 +67,6 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
 
  private:
   std::unique_ptr<AuxiliarySearchProvider> auxiliary_search_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QuerySensitiveTab) {
@@ -84,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QuerySensitiveTab) {
   std::vector<TabAndroid*> tab_vec = CreateOneTab(true);
 
   provider()->GetNonSensitiveTabsInternal(
-      tab_vec,
+      tab_vec, AuxiliarySearchProvider::kMaxDonatedTabsCount,
       base::BindOnce(
           [](base::OnceClosure done,
              std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
@@ -113,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   tab_vec.push_back(second_tab);
 
   provider()->GetNonSensitiveTabsInternal(
-      tab_vec,
+      tab_vec, AuxiliarySearchProvider::kMaxDonatedTabsCount,
       base::BindOnce(
           [](base::OnceClosure done,
              std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
@@ -125,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
-                       QueryNonSensitiveTab_flagTest) {
+                       QueryNonSensitiveTab_CappedByMaxCount) {
   base::RunLoop run_loop;
   std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
 
@@ -153,12 +143,12 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   tab_vec.push_back(third_tab);
 
   provider()->GetNonSensitiveTabsInternal(
-      tab_vec,
+      tab_vec, kTestMaxDonatedTabsCount,
       base::BindOnce(
           [](base::OnceClosure done,
              std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
-            // Only 2 should be here since the flag is set to 2.
-            EXPECT_EQ(kMaxDonatedTabs, non_sensitive_tabs.size());
+            // Only 2 should be here since the max count is set to 2.
+            EXPECT_EQ(kTestMaxDonatedTabsCount, non_sensitive_tabs.size());
             std::move(done).Run();
           },
           run_loop.QuitClosure()));
@@ -169,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QueryEmptyTabList) {
   base::RunLoop run_loop;
 
   provider()->GetNonSensitiveTabsInternal(
-      std::vector<TabAndroid*>(),
+      std::vector<TabAndroid*>(), AuxiliarySearchProvider::kMaxDonatedTabsCount,
       base::BindOnce(
           [](base::OnceClosure done,
              std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
@@ -187,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, NativeTabTest) {
   std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
 
   provider()->GetNonSensitiveTabsInternal(
-      tab_vec,
+      tab_vec, AuxiliarySearchProvider::kMaxDonatedTabsCount,
       base::BindOnce(
           [](base::OnceClosure done,
              std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {

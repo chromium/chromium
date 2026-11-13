@@ -106,7 +106,6 @@ BASE_DECLARE_FEATURE(kAsyncFirstFrameDrawn);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
 BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAutomotiveBackButtonBarStreamline);
-BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kAuxiliarySearchHistoryDonation);
 BASE_DECLARE_FEATURE(kAvoidRecreateOnTouchscreenOrColorModeChange);
 BASE_DECLARE_FEATURE(kBackGestureReflectsDesktopBehavior);
@@ -436,16 +435,6 @@ inline constexpr base::FeatureParam<int>
         &kAuxiliarySearchHistoryDonation,
         /*name=*/"auxiliary_search_history_donation_delay",
         /*default_value=*/base::Minutes(5).InSeconds()};
-
-inline constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
-    &kAuxiliarySearchDonation,
-    "auxiliary_search_max_donation_bookmark",
-    100);
-
-inline constexpr base::FeatureParam<size_t> kAuxiliarySearchMaxTabsCountParam(
-    &kAuxiliarySearchDonation,
-    "auxiliary_search_max_donation_tab",
-    100);
 
 inline constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
     &kCCTNavigationalPrefetch,

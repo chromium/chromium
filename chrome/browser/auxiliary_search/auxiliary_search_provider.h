@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
 
 #include <jni.h>
+#include <stddef.h>
 
 #include <memory>
 
@@ -35,6 +36,9 @@ enum class AuxiliarySearchEntryType {
 // information for the auxiliary search.
 class AuxiliarySearchProvider : public KeyedService {
  public:
+  // The maximum number of tabs donated to the auxiliary search.
+  static constexpr size_t kMaxDonatedTabsCount = 100;
+
   AuxiliarySearchProvider(
       visited_url_ranking::VisitedURLRankingService* ranking_service);
 
@@ -64,7 +68,7 @@ class AuxiliarySearchProvider : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QueryNonSensitiveTab);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
-                           QueryNonSensitiveTab_flagTest);
+                           QueryNonSensitiveTab_CappedByMaxCount);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QueryEmptyTabList);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, NativeTabTest);
@@ -75,7 +79,10 @@ class AuxiliarySearchProvider : public KeyedService {
 
   static void FilterTabsByScheme(std::vector<TabAndroid*>& tabs);
 
+  // Returns at most `max_donated_tabs_count` non-sensitive tabs from
+  // `all_tabs` via `callback`.
   void GetNonSensitiveTabsInternal(std::vector<TabAndroid*> all_tabs,
+                                   size_t max_donated_tabs_count,
                                    NonSensitiveTabsCallback callback) const;
 
   const raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;

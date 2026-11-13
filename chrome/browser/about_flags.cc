@@ -2669,25 +2669,6 @@ const FeatureEntry::FeatureVariation
          kAndroidAppIntegrationMultiDataSource_SkipBothDeviceAndSchemaCheck,
          nullptr}};
 
-const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
-    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
-    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
-const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_100[] = {
-    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "100"},
-    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "100"}};
-const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_200[] = {
-    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "200"},
-    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "200"}};
-const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_500[] = {
-    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "500"},
-    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "500"}};
-const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
-    {"50 counts", kAuxiliarySearchDonation_MaxDonation_20, nullptr},
-    {"100 counts", kAuxiliarySearchDonation_MaxDonation_100, nullptr},
-    {"200 counts", kAuxiliarySearchDonation_MaxDonation_200, nullptr},
-    {"500 counts", kAuxiliarySearchDonation_MaxDonation_500, nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpAurora_TightPadding[] = {
     {"change_button_color", "true"},
     {"padding_style", "1"}};
@@ -6727,13 +6708,6 @@ const FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kNewTabPageCustomizationV2,
          kNewTabPageCustomizationV2Variations,
          "NewTabPageCustomizationV2")},
-
-    {"auxiliary-search-donation",
-     flag_descriptions::kAuxiliarySearchDonationName,
-     flag_descriptions::kAuxiliarySearchDonationDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAuxiliarySearchDonation,
-                                    kAuxiliarySearchDonationVariations,
-                                    "AuxiliarySearchDonation")},
 
     {"auxiliary-search-history-donation",
      flag_descriptions::kAuxiliarySearchHistoryDonationName,

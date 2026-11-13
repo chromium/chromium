@@ -104,8 +104,7 @@ public class AuxiliarySearchProvider {
                 System.currentTimeMillis() - TimeUnit.HOURS.toMillis(DEFAULT_TAB_AGE_HOURS);
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
-        // We will get up to 100 tabs as default. This is controlled by feature
-        // AuxiliarySearchDonation.
+        // Native caps the result at AuxiliarySearchProvider::kMaxDonatedTabsCount tabs.
         mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, callback);
     }
 
@@ -116,8 +115,6 @@ public class AuxiliarySearchProvider {
             callback.onResult(null);
             return;
         }
-        // We will get up to 100 tabs as default. This is controlled by feature
-        // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
     }
 

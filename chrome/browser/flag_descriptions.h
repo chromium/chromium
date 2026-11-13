@@ -327,11 +327,6 @@ inline constexpr char kAutomaticUsbDetachName[] =
 inline constexpr char kAutomaticUsbDetachDescription[] =
     "Automatically detach kernel drivers when a USB interface is busy.";
 
-inline constexpr char kAuxiliarySearchDonationName[] =
-    "Auxiliary Search Donation";
-inline constexpr char kAuxiliarySearchDonationDescription[] =
-    "If enabled, override Auxiliary Search donation cap.";
-
 inline constexpr char kAuxiliarySearchHistoryDonationName[] =
     "Auxiliary Search History Donation";
 inline constexpr char kAuxiliarySearchHistoryDonationDescription[] =

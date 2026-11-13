@@ -101,7 +101,7 @@ void CallJavaCallbackWithTabList(
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
     std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
   CHECK_LE(non_sensitive_tabs.size(),
-           chrome::android::kAuxiliarySearchMaxTabsCountParam.Get(),
+           AuxiliarySearchProvider::kMaxDonatedTabsCount,
            base::NotFatalUntil::M161);
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tabs_list;
   std::ranges::transform(non_sensitive_tabs, std::back_inserter(j_tabs_list),
@@ -154,7 +154,7 @@ void AuxiliarySearchProvider::GetNonSensitiveTabs(
     std::vector<TabAndroid*> tabs,
     const base::android::JavaRef<jobject>& j_callback_obj) const {
   GetNonSensitiveTabsInternal(
-      std::move(tabs),
+      std::move(tabs), kMaxDonatedTabsCount,
       base::BindOnce(
           &CallJavaCallbackWithTabList, env,
           base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)));
@@ -201,6 +201,7 @@ void AuxiliarySearchProvider::FilterTabsByScheme(
 
 void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
     std::vector<TabAndroid*> all_tabs,
+    size_t max_donated_tabs_count,
     NonSensitiveTabsCallback callback) const {
   FilterTabsByScheme(all_tabs);
 
@@ -212,15 +213,17 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
       // In theory, this could be folded into CallJavaCallbackWithTabList
       // instead of using a trampoline callback, but some tests exercise this
       // helper function directly.
-      base::BindOnce([](std::vector<base::WeakPtr<TabAndroid>> tabs) {
-        std::erase_if(tabs, [](const auto& tab) { return !tab; });
-        const size_t max_tabs =
-            chrome::android::kAuxiliarySearchMaxTabsCountParam.Get();
-        if (tabs.size() > max_tabs) {
-          tabs.resize(max_tabs);
-        }
-        return tabs;
-      }).Then(std::move(callback)));
+      base::BindOnce(
+          [](size_t max_donated_tabs_count,
+             std::vector<base::WeakPtr<TabAndroid>> tabs) {
+            std::erase_if(tabs, [](const auto& tab) { return !tab; });
+            if (tabs.size() > max_donated_tabs_count) {
+              tabs.resize(max_donated_tabs_count);
+            }
+            return tabs;
+          },
+          max_donated_tabs_count)
+          .Then(std::move(callback)));
 
   for (const auto& tab : all_tabs) {
     SensitivityPersistedTabDataAndroid::From(
