@@ -16,26 +16,27 @@ namespace webapps {
 
 // Helper class for installing a web app as auto-minted TWA by calling the
 // API of Android-side WebApp service.
+//
+// `Install()` passes ownership to the Java TwaInstaller through
+// `jni_zero::JniUniquePtr`. Java destroys this object in `onFlowCompleted()`
+// after it reports the last event.
 class TwaInstaller {
  public:
   static bool Install(std::unique_ptr<AddToHomescreenParams> params,
                       const AddToHomescreenEventCallback& event_callback);
 
-  // Called from the Java side to run `event_callback_`.
-  void OnInstallEvent(JNIEnv* env, int event);
+  ~TwaInstaller();
 
-  // Called from the Java side to destroy this class.
-  void Destroy(JNIEnv* env);
+  // Called from the Java side to run `event_callback_`. Must only be called
+  // before Java calls `destroy()` on its `JniUniquePtr`.
+  void OnInstallEvent(JNIEnv* env, int event);
 
   TwaInstaller(const TwaInstaller&) = delete;
   TwaInstaller& operator=(const TwaInstaller&) = delete;
 
  private:
-  bool Start();
-
   TwaInstaller(std::unique_ptr<AddToHomescreenParams> params,
                AddToHomescreenEventCallback event_callback);
-  ~TwaInstaller();
 
   std::unique_ptr<AddToHomescreenParams> params_;
   AddToHomescreenEventCallback event_callback_;

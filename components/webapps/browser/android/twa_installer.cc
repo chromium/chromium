@@ -4,12 +4,16 @@
 
 #include "components/webapps/browser/android/twa_installer.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/webapps_jni_headers/TwaInstaller_jni.h"
@@ -21,9 +25,13 @@ namespace webapps {
 // static
 bool TwaInstaller::Install(std::unique_ptr<AddToHomescreenParams> params,
                            const AddToHomescreenEventCallback& event_callback) {
-  // This class will be destroyed by its Java counterpart.
-  auto* installer = new TwaInstaller(std::move(params), event_callback);
-  return installer->Start();
+  std::u16string title = params->shortcut_info->short_name;
+  std::string manifest_url = params->shortcut_info->manifest_url.spec();
+  auto installer =
+      base::WrapUnique(new TwaInstaller(std::move(params), event_callback));
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TwaInstaller_start(
+      env, jni_zero::MakeUnique(std::move(installer)), title, manifest_url);
 }
 
 TwaInstaller::TwaInstaller(std::unique_ptr<AddToHomescreenParams> params,
@@ -34,19 +42,8 @@ TwaInstaller::TwaInstaller(std::unique_ptr<AddToHomescreenParams> params,
 
 TwaInstaller::~TwaInstaller() = default;
 
-bool TwaInstaller::Start() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TwaInstaller_start(env, reinterpret_cast<intptr_t>(this),
-                                 params_->shortcut_info->short_name,
-                                 params_->shortcut_info->manifest_url.spec());
-}
-
 void TwaInstaller::OnInstallEvent(JNIEnv* env, int event) {
   event_callback_.Run(static_cast<AddToHomescreenEvent>(event), *params_);
-}
-
-void TwaInstaller::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 }  // namespace webapps

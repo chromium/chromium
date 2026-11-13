@@ -15,7 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -45,13 +48,16 @@ public class TwaInstaller {
                 Runnable installCancelledCallback);
     }
 
+    @JniType("::webapps::TwaInstaller")
+    interface NativeTwaInstaller extends JniTypeToken {}
+
     private static boolean sHasWebAppManagerForTesting;
     private static @Nullable WebAppManager sWebAppManagerForTesting;
     private static @Nullable InstallDelegateForTesting sInstallDelegateForTesting;
 
-    private final long mNativeInstaller;
+    private final JniUniquePtr<NativeTwaInstaller> mNativeInstaller;
 
-    TwaInstaller(long nativeInstaller) {
+    TwaInstaller(JniUniquePtr<NativeTwaInstaller> nativeInstaller) {
         mNativeInstaller = nativeInstaller;
     }
 
@@ -83,7 +89,7 @@ public class TwaInstaller {
     @CalledByNative
     @VisibleForTesting
     static boolean start(
-            long nativeInstaller,
+            JniUniquePtr<NativeTwaInstaller> nativeInstaller,
             @JniType("std::u16string") String title,
             @JniType("std::string") String manifestUrl) {
         return new TwaInstaller(nativeInstaller).start(title, manifestUrl);
@@ -182,13 +188,11 @@ public class TwaInstaller {
 
     private void onFlowCompleted(@AddToHomescreenEvent int event) {
         TwaInstallerJni.get().onInstallEvent(mNativeInstaller, event);
-        TwaInstallerJni.get().destroy(mNativeInstaller);
+        mNativeInstaller.destroy();
     }
 
     @NativeMethods
     interface Natives {
-        void onInstallEvent(long nativeTwaInstaller, int event);
-
-        void destroy(long nativeTwaInstaller);
+        void onInstallEvent(JniPtr<NativeTwaInstaller> self, int event);
     }
 }
