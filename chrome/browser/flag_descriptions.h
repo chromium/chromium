@@ -2271,12 +2271,6 @@ inline constexpr char kEnableProcessIsolationUiName[] =
 inline constexpr char kEnableProcessIsolationUiDescription[] =
     "Shows the Enable Process Isolation toggle in chrome://settings/system.";
 
-inline constexpr char kEnableStaticQrCodeForPixName[] =
-    "Enable Static Qr Code For Pix";
-inline constexpr char kEnableStaticQrCodeForPixDescription[] =
-    "When enabled, pix pay flow will be triggered when users click the copy "
-    "button of static qr code.";
-
 inline constexpr char kEnableIframeForPixName[] = "Enable Iframe For Pix";
 inline constexpr char kEnableIframeForPixDescription[] =
     "When enabled, pix pay flow will be triggered when users click the copy "

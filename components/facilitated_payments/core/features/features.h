@@ -36,7 +36,6 @@ extern const base::FeatureParam<std::string> kVideoUrlOnPrompt;
 #endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnablePixInCct);
 BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
-BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEwalletPayments);
 #endif  // BUILDFLAG(IS_ANDROID)

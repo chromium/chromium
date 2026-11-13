@@ -175,9 +175,7 @@ std::optional<PixFlowExitedReason> PixManager::GetExitedReasonForIframe(
 
 void PixManager::OnValidPixCode(std::string pix_code,
                                 PixCodeRustValidationResult validation_result) {
-  if (validation_result == PixCodeRustValidationResult::kStatic &&
-      !base::FeatureList::IsEnabled(
-          payments::facilitated::kEnableStaticQrCodeForPix)) {
+  if (validation_result == PixCodeRustValidationResult::kStatic) {
     // Pix code is static and not supported.
     LogPixFlowExitedReason(PixFlowExitedReason::kStaticCode);
     return;

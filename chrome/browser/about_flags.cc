@@ -10244,11 +10244,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          payments::facilitated::kEnablePixPaymentsInLandscapeMode)},
 
-    {"enable-static-qr-code-for-pix",
-     flag_descriptions::kEnableStaticQrCodeForPixName,
-     flag_descriptions::kEnableStaticQrCodeForPixDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(payments::facilitated::kEnableStaticQrCodeForPix)},
-
     {"enable-iframe-for-pix", flag_descriptions::kEnableIframeForPixName,
      flag_descriptions::kEnableIframeForPixDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnableIframeForPix)},

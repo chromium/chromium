@@ -1090,9 +1090,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       PayflowExitedReason_StaticCode_FeatureDisabled_PixFlowsAbandoned) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableStaticQrCodeForPix);
+       PayflowExitedReason_StaticCode_PixFlowsAbandoned) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -1107,24 +1105,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       "FacilitatedPayments.Pix.PayflowExitedReason",
       /*sample=*/PixFlowExitedReason::kStaticCode,
       /*expected_bucket_count=*/1);
-}
-
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       StaticCode_FeatureEnabled_ApiClientAvailabilityChecked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableStaticQrCodeForPix);
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(1);
-
-  test_api(*pix_manager_)
-      .OnValidPixCode(/*pix_code=*/std::string(),
-                      PixCodeRustValidationResult::kStatic);
-
-  // The payflow continues, so no exit reason is logged.
-  histogram_tester.ExpectTotalCount(
-      "FacilitatedPayments.Pix.PayflowExitedReason", 0);
 }
 
 // If payments data manager is unavailable, neither the payflow nor the account
