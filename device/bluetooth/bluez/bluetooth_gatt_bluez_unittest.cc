@@ -1025,6 +1025,50 @@ TEST_F(BluetoothGattBlueZTest, GattDescriptorAddedAndRemoved) {
   EXPECT_EQ(descriptor->GetIdentifier(), observer.last_gatt_descriptor_id());
 }
 
+TEST_F(BluetoothGattBlueZTest, GattDeviceMtu) {
+  BluetoothDevice* device = AddLeDevice();
+  ASSERT_TRUE(device);
+
+  TestBluetoothAdapterObserver observer(adapter_);
+  fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
+  ASSERT_EQ(1, observer.gatt_service_added_count());
+
+  BluetoothRemoteGattService* service =
+      device->GetGattService(observer.last_gatt_service_id());
+  ASSERT_TRUE(service);
+
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
+  BluetoothRemoteGattCharacteristic* characteristic =
+      service->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
+                                     ->GetHeartRateMeasurementPath()
+                                     .value());
+  ASSERT_TRUE(characteristic);
+  EXPECT_FALSE(device->GetMtu().has_value());
+
+  BluetoothGattCharacteristicClient::Properties* properties =
+      fake_bluetooth_gatt_characteristic_client_->GetProperties(
+          dbus::ObjectPath(characteristic->GetIdentifier()));
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(0, observer.device_mtu_changed_count());
+  properties->mtu.set_valid(true);
+  properties->mtu.ReplaceValue(258);
+
+  std::optional<uint16_t> mtu = device->GetMtu();
+  ASSERT_TRUE(mtu.has_value());
+  EXPECT_EQ(258, *mtu);
+
+  // Changing the MTU property notifies adapter observers.
+  EXPECT_EQ(1, observer.device_mtu_changed_count());
+  EXPECT_EQ(258, observer.last_mtu_value());
+  EXPECT_EQ(device, observer.last_device());
+}
+
 TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue) {
   fake_bluetooth_device_client_->CreateDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),

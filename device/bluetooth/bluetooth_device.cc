@@ -459,6 +459,10 @@ void BluetoothDevice::CreateGattConnection(
   CreateGattConnectionImpl(std::move(service_uuid));
 }
 
+std::optional<uint16_t> BluetoothDevice::GetMtu() const {
+  return std::nullopt;
+}
+
 void BluetoothDevice::SetGattServicesDiscoveryComplete(bool complete) {
   gatt_services_discovery_complete_ = complete;
 }

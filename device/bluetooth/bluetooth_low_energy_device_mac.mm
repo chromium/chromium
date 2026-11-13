@@ -14,6 +14,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/hash.h"
@@ -327,6 +328,7 @@ void BluetoothLowEnergyDeviceMac::DidUpdateValue(
       GetBluetoothRemoteGattCharacteristicMac(characteristic);
   DCHECK(gatt_characteristic_mac);
   gatt_characteristic_mac->DidUpdateValue(error);
+  MaybeNotifyMtuChange();
 }
 
 void BluetoothLowEnergyDeviceMac::DidWriteValue(
@@ -336,6 +338,34 @@ void BluetoothLowEnergyDeviceMac::DidWriteValue(
       GetBluetoothRemoteGattCharacteristicMac(characteristic);
   DCHECK(gatt_characteristic_mac);
   gatt_characteristic_mac->DidWriteValue(error);
+  MaybeNotifyMtuChange();
+}
+
+std::optional<uint16_t> BluetoothLowEnergyDeviceMac::GetMtu() const {
+  // CoreBluetooth does not expose the raw ATT MTU. Approximate it from the
+  // maximum write-without-response payload, which is MTU - 3 per the
+  // Bluetooth Core Specification (Vol 3, Part F, 3.4.5).
+  if (!peripheral_) {
+    return std::nullopt;
+  }
+  NSUInteger max_payload = [peripheral_
+      maximumWriteValueLengthForType:CBCharacteristicWriteWithoutResponse];
+  if (max_payload == 0) {
+    return std::nullopt;
+  }
+  return base::saturated_cast<uint16_t>(max_payload + 3);
+}
+
+void BluetoothLowEnergyDeviceMac::MaybeNotifyMtuChange() {
+  if (!connected_) {
+    return;
+  }
+  std::optional<uint16_t> mtu = GetMtu();
+  if (!mtu || mtu == last_known_mtu_) {
+    return;
+  }
+  last_known_mtu_ = mtu;
+  GetLowEnergyAdapter()->NotifyDeviceMTUChanged(this, *mtu);
 }
 
 void BluetoothLowEnergyDeviceMac::DidUpdateNotificationState(
@@ -421,6 +451,7 @@ void BluetoothLowEnergyDeviceMac::DidConnectPeripheral() {
   DVLOG(1) << *this << ": GATT connected.";
   if (!connected_) {
     connected_ = true;
+    last_known_mtu_ = GetMtu();
     DidConnectGatt(/*error_code=*/std::nullopt);
     DiscoverPrimaryServices();
   } else {
@@ -512,6 +543,7 @@ BluetoothLowEnergyDeviceMac::GetBluetoothRemoteGattDescriptorMac(
 
 void BluetoothLowEnergyDeviceMac::DidDisconnectPeripheral(NSError* error) {
   connected_ = false;
+  last_known_mtu_.reset();
   DVLOG(1) << *this << ": Disconnected from peripheral.";
   if (error) {
     DVLOG(1) << *this << ": Bluetooth error: "

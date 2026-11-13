@@ -140,6 +140,19 @@ BluetoothRemoteGattCharacteristicBlueZ::GetService() const {
   return service_;
 }
 
+std::optional<uint16_t> BluetoothRemoteGattCharacteristicBlueZ::GetMtu() const {
+  bluez::BluetoothGattCharacteristicClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothGattCharacteristicClient()
+          ->GetProperties(object_path());
+  DCHECK(properties);
+
+  if (!properties->mtu.is_valid()) {
+    return std::nullopt;
+  }
+  return properties->mtu.value();
+}
+
 bool BluetoothRemoteGattCharacteristicBlueZ::IsNotifying() const {
   bluez::BluetoothGattCharacteristicClient::Properties* properties =
       bluez::BluezDBusManager::Get()

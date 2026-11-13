@@ -102,6 +102,11 @@ class BluetoothTestMac : public BluetoothTestBase {
   void ExpectedChangeNotifyValueAttempts(int attempts) override;
   void ExpectedNotifyValue(NotifyValueState expected_value_state) override;
 
+  // Sets the value the mock peripheral for |device| returns from
+  // -[CBPeripheral maximumWriteValueLengthForType:].
+  void SetPeripheralMaximumWriteValueLength(BluetoothDevice* device,
+                                            size_t max_write_value_length);
+
   // Apple devices have the only platform for which we need to discover each set
   // of attributes individually so we need a method to simulate discovering each
   // set of attributes.

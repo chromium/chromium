@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include <limits>
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -310,6 +311,20 @@ void BluetoothDeviceAndroid::OnConnectionStateChange(JNIEnv* env,
     SetGattServicesDiscoveryComplete(false);
     DidDisconnectGatt();
   }
+}
+
+std::optional<uint16_t> BluetoothDeviceAndroid::GetMtu() const {
+  return mtu_;
+}
+
+void BluetoothDeviceAndroid::OnMtuChanged(JNIEnv* env,
+                                          int32_t mtu,
+                                          bool success) {
+  if (!success || mtu < 0 || mtu > std::numeric_limits<uint16_t>::max()) {
+    return;
+  }
+  mtu_ = static_cast<uint16_t>(mtu);
+  GetAndroidAdapter()->NotifyDeviceMTUChanged(this, *mtu_);
 }
 
 void BluetoothDeviceAndroid::OnGattServicesDiscovered(JNIEnv* env) {

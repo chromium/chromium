@@ -60,6 +60,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
+  // Returns GattSession.MaxPduSize for the active GATT session, if available.
+  std::optional<uint16_t> GetMtu() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   bool ExpectingPinCode() const override;
@@ -136,6 +138,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
       ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
           IGattSessionStatusChangedEventArgs* event_args);
 
+  void OnMaxPduSizeChanged(
+      ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::IGattSession*
+          gatt_session,
+      IInspectable* object);
+
   void OnConnectionStatusChanged(
       ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice* ble_device,
       IInspectable* object);
@@ -186,6 +193,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
 
   std::optional<EventRegistrationToken> connection_changed_token_;
   std::optional<EventRegistrationToken> gatt_session_status_changed_token_;
+  std::optional<EventRegistrationToken> max_pdu_size_changed_token_;
   std::optional<EventRegistrationToken> gatt_services_changed_token_;
   std::optional<EventRegistrationToken> name_changed_token_;
 

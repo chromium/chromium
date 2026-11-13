@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -68,6 +69,11 @@ class BluetoothRemoteGattCharacteristicBlueZ
       base::span<const uint8_t> value,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
+
+  // Returns the ATT MTU negotiated for the connection that carries this
+  // characteristic, as reported by BlueZ, or std::nullopt if the value is
+  // not (yet) available.
+  std::optional<uint16_t> GetMtu() const;
 #if BUILDFLAG(IS_CHROMEOS)
   void PrepareWriteRemoteCharacteristic(base::span<const uint8_t> value,
                                         base::OnceClosure callback,

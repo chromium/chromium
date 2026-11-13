@@ -1378,14 +1378,6 @@ void BluetoothAdapterBlueZ::NotifyDeviceAddressChanged(
     observer.DeviceAddressChanged(this, device, old_address);
 }
 
-void BluetoothAdapterBlueZ::NotifyDeviceMTUChanged(BluetoothDeviceBlueZ* device,
-                                                   uint16_t mtu) {
-  DCHECK(device->adapter_ == this);
-
-  for (auto& observer : observers_)
-    observer.DeviceMTUChanged(this, device, mtu);
-}
-
 void BluetoothAdapterBlueZ::NotifyDeviceAdvertisementReceived(
     BluetoothDeviceBlueZ* device,
     int16_t rssi,

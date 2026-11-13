@@ -252,11 +252,19 @@ interface WebBluetoothService {
   // if a connection to the device didn't exist already. If a GATT connection
   // existed already then this function increases the ref count to keep that
   // connection alive.
-  // Returns the result of the connection request.
+  // Returns the result of the connection request. On success,
+  // |max_write_without_response_size| is the largest value, in octets, that
+  // writeValueWithoutResponse() can send in a single ATT Write Command. This
+  // is the ATT_MTU negotiated for the connection (the smaller of the local
+  // Host's transmit ATT_MTU and the peer's receive ATT_MTU) minus the 3-octet
+  // ATT Write Command header. Defaults to 20 (23 - 3) when no MTU exchange
+  // has happened or the platform does not expose the value. Later changes are
+  // pushed via WebBluetoothServerClient.MaxWriteWithoutResponseSizeChanged.
   RemoteServerConnect(
     WebBluetoothDeviceId device_id,
     pending_associated_remote<WebBluetoothServerClient> client) => (
-    WebBluetoothResult result);
+    WebBluetoothResult result,
+    uint16 max_write_without_response_size);
 
   // If a GATT connection exists for Device identified by |device_id| then
   // decreases the ref count for that connection.
@@ -370,6 +378,11 @@ interface WebBluetoothService {
 interface WebBluetoothServerClient {
   // Called when a device disconnects.
   GATTServerDisconnected();
+
+  // Called when the ATT MTU for the device's connection changes, with the
+  // updated maxWriteWithoutResponseSize (ATT_MTU - 3). This is best-effort:
+  // not every platform reports MTU changes.
+  MaxWriteWithoutResponseSizeChanged(uint16 max_write_without_response_size);
 };
 
 // Classes that implement this interface will be notified of characteristic

@@ -180,6 +180,7 @@
     "lostpointercapture",
     "managedconfigurationchange",
     "mark",
+    "maxwritewithoutresponsesizechanged",
     "message",
     "messageerror",
     "midimessage",

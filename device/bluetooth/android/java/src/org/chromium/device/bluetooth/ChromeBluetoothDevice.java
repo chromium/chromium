@@ -256,12 +256,8 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onMtuChanged(final int mtu, final int status) {
-            Log.i(
-                    TAG,
-                    "onMtuChanged mtu:%d status:%d==%s",
-                    mtu,
-                    status,
-                    status == android.bluetooth.BluetoothGatt.GATT_SUCCESS ? "OK" : "Error");
+            final boolean success = status == android.bluetooth.BluetoothGatt.GATT_SUCCESS;
+            Log.i(TAG, "onMtuChanged mtu:%d status:%d==%s", mtu, status, success ? "OK" : "Error");
             ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
@@ -269,6 +265,8 @@ final class ChromeBluetoothDevice {
                                         || mBluetoothGatt == null) {
                                     return;
                                 }
+                                ChromeBluetoothDeviceJni.get()
+                                        .onMtuChanged(mNativeBluetoothDeviceAndroid, mtu, success);
                                 mBluetoothGatt.discoverServices();
                             });
         }
@@ -423,6 +421,9 @@ final class ChromeBluetoothDevice {
         // Binds to BluetoothDeviceAndroid::OnConnectionStateChange.
         void onConnectionStateChange(
                 JniPtr<NativeBluetoothDeviceAndroid> self, int status, boolean connected);
+
+        // Binds to BluetoothDeviceAndroid::OnMtuChanged.
+        void onMtuChanged(JniPtr<NativeBluetoothDeviceAndroid> self, int mtu, boolean success);
 
         // Binds to BluetoothDeviceAndroid::CreateGattRemoteService.
         void createGattRemoteService(

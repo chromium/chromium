@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_BLUETOOTH_FRAME_CONNECTED_BLUETOOTH_DEVICES_H_
 #define CONTENT_BROWSER_BLUETOOTH_FRAME_CONNECTED_BLUETOOTH_DEVICES_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -73,6 +75,13 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // had a connection.
   void CloseConnectionsToDevicesNotInList(
       const std::set<blink::WebBluetoothDeviceId>& permitted_ids);
+
+  // Notifies the WebBluetoothServerClient associated with |device_address|,
+  // if there is a connection to that device, that the
+  // maxWriteWithoutResponseSize for the connection changed.
+  void NotifyMaxWriteWithoutResponseSizeChanged(
+      const std::string& device_address,
+      uint16_t max_write_without_response_size);
 
  private:
   // Increments the Connected Devices count of the frame's WebContents.

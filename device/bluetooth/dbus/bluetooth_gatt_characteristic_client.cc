@@ -20,6 +20,11 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
+namespace {
+
+constexpr char kMTUProperty[] = "MTU";
+
+}  // namespace
 
 // static
 const char BluetoothGattCharacteristicClient::kNoResponseError[] =
@@ -39,6 +44,7 @@ BluetoothGattCharacteristicClient::Properties::Properties(
   RegisterProperty(bluetooth_gatt_characteristic::kNotifyingProperty,
                    &notifying);
   RegisterProperty(bluetooth_gatt_characteristic::kFlagsProperty, &flags);
+  RegisterProperty(kMTUProperty, &mtu);
 }
 
 BluetoothGattCharacteristicClient::Properties::~Properties() = default;

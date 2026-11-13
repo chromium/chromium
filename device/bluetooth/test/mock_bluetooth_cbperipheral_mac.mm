@@ -24,6 +24,7 @@ using base::apple::ObjCCast;
 @synthesize state = _state;
 @synthesize delegate = _delegate;
 @synthesize bluetoothTestMac = _bluetoothTestMac;
+@synthesize maximumWriteValueLength = _maximumWriteValueLength;
 
 - (instancetype)init {
   [self doesNotRecognizeSelector:_cmd];
@@ -87,6 +88,10 @@ using base::apple::ObjCCast;
 }
 
 - (void)discoverDescriptorsForCharacteristic:(CBCharacteristic*)characteristic {
+}
+
+- (NSUInteger)maximumWriteValueLengthForType:(CBCharacteristicWriteType)type {
+  return _maximumWriteValueLength;
 }
 
 - (void)readValueForCharacteristic:(CBCharacteristic*)characteristic {

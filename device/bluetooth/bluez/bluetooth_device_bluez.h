@@ -72,6 +72,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 #endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsConnected() const override;
   bool IsGattConnected() const override;
+  std::optional<uint16_t> GetMtu() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;

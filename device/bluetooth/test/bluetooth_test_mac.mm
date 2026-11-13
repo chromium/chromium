@@ -764,6 +764,12 @@ void BluetoothTestMac::ResetRetrieveConnectedPeripheralServiceUUIDs() {
   [mock_central_manager_->get() resetRetrieveConnectedPeripheralServiceUUIDs];
 }
 
+void BluetoothTestMac::SetPeripheralMaximumWriteValueLength(
+    BluetoothDevice* device,
+    size_t max_write_value_length) {
+  GetMockCBPeripheral(device).maximumWriteValueLength = max_write_value_length;
+}
+
 MockCBPeripheral* BluetoothTestMac::GetMockCBPeripheral(
     BluetoothDevice* device) const {
   auto* device_mac = static_cast<BluetoothLowEnergyDeviceMac*>(device);

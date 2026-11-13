@@ -234,6 +234,11 @@ void BluetoothRemoteGattServiceBlueZ::GattCharacteristicPropertyChanged(
       GetAdapter()->NotifyGattCharacteristicValueChanged(
           characteristic_bluez, properties->value.value());
     }
+  } else if (property_name == properties->mtu.name()) {
+    if (properties->mtu.is_valid()) {
+      GetAdapter()->NotifyDeviceMTUChanged(GetDevice(),
+                                           properties->mtu.value());
+    }
   }
 }
 

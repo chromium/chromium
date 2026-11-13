@@ -102,6 +102,13 @@ void FakeGattSessionWinrt::SimulateGattConnectionError() {
   status_changed_handler_->Invoke(this, args.Get());
 }
 
+void FakeGattSessionWinrt::SetMaxPduSize(uint16_t max_pdu_size) {
+  max_pdu_size_ = max_pdu_size;
+  if (max_pdu_size_changed_handler_) {
+    max_pdu_size_changed_handler_->Invoke(this, nullptr);
+  }
+}
+
 HRESULT FakeGattSessionWinrt::get_DeviceId(IBluetoothDeviceId** value) {
   return E_NOTIMPL;
 }
@@ -126,7 +133,8 @@ HRESULT FakeGattSessionWinrt::get_MaintainConnection(::boolean* value) {
 }
 
 HRESULT FakeGattSessionWinrt::get_MaxPduSize(UINT16* value) {
-  return E_NOTIMPL;
+  *value = max_pdu_size_;
+  return S_OK;
 }
 
 HRESULT FakeGattSessionWinrt::get_SessionStatus(GattSessionStatus* value) {
@@ -137,12 +145,14 @@ HRESULT FakeGattSessionWinrt::get_SessionStatus(GattSessionStatus* value) {
 HRESULT FakeGattSessionWinrt::add_MaxPduSizeChanged(
     ITypedEventHandler<GattSession*, IInspectable*>* handler,
     EventRegistrationToken* token) {
-  return E_NOTIMPL;
+  max_pdu_size_changed_handler_ = handler;
+  return S_OK;
 }
 
 HRESULT
 FakeGattSessionWinrt::remove_MaxPduSizeChanged(EventRegistrationToken token) {
-  return E_NOTIMPL;
+  max_pdu_size_changed_handler_ = nullptr;
+  return S_OK;
 }
 
 HRESULT FakeGattSessionWinrt::add_SessionStatusChanged(

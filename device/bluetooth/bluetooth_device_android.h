@@ -100,6 +100,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   // See android.bluetooth.BluetoothGattCallback.onConnectionStateChange.
   void OnConnectionStateChange(JNIEnv* env, int32_t status, bool connected);
 
+  // Callback indicating that the ATT MTU has changed.
+  // See android.bluetooth.BluetoothGattCallback.onMtuChanged.
+  void OnMtuChanged(JNIEnv* env, int32_t mtu, bool success);
+
+  // BluetoothDevice:
+  // Returns the most recent effective ATT MTU reported via onMtuChanged().
+  std::optional<uint16_t> GetMtu() const override;
+
   // Callback indicating when all services of the device have been
   // discovered.
   void OnGattServicesDiscovered(JNIEnv* env);
@@ -139,6 +147,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // A bit-wise flag indicating connected states of Bluetooth transports.
   uint8_t connected_transport_ = 0;
+
+  // Most recent effective ATT MTU reported via onMtuChanged().
+  std::optional<uint16_t> mtu_;
 
   // Cached values to serve when the Bluetooth adapter is off and the Android
   // system doesn't serve them.

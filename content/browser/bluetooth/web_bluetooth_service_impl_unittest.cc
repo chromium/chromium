@@ -258,6 +258,15 @@ class FakeWebBluetoothServerClient
     disconnected_callback_ = std::move(callback);
   }
 
+  std::optional<uint16_t> max_write_without_response_size() const {
+    return max_write_without_response_size_;
+  }
+
+  void set_max_write_without_response_size_callback(
+      base::OnceClosure callback) {
+    max_write_without_response_size_callback_ = std::move(callback);
+  }
+
  private:
   // blink::mojom::WebBluetoothServerClient:
   void GATTServerDisconnected() override {
@@ -267,10 +276,20 @@ class FakeWebBluetoothServerClient
     }
   }
 
+  void MaxWriteWithoutResponseSizeChanged(
+      uint16_t max_write_without_response_size) override {
+    max_write_without_response_size_ = max_write_without_response_size;
+    if (max_write_without_response_size_callback_) {
+      std::move(max_write_without_response_size_callback_).Run();
+    }
+  }
+
   mojo::AssociatedReceiver<blink::mojom::WebBluetoothServerClient> receiver_{
       this};
   bool disconnected_ = false;
   base::OnceClosure disconnected_callback_;
+  std::optional<uint16_t> max_write_without_response_size_;
+  base::OnceClosure max_write_without_response_size_callback_;
 };
 
 class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
@@ -293,9 +312,23 @@ class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
                        start_scan_result_));
   }
 
-  void AddObserver(BluetoothAdapter::Observer* observer) override {}
+  void AddObserver(BluetoothAdapter::Observer* observer) override {
+    observer_ = observer;
+  }
 
-  void RemoveObserver(BluetoothAdapter::Observer* observer) override {}
+  void RemoveObserver(BluetoothAdapter::Observer* observer) override {
+    if (observer_ == observer) {
+      observer_ = nullptr;
+    }
+  }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  void NotifyDeviceMTUChanged(BluetoothDevice* device, uint16_t mtu) {
+    ASSERT_TRUE(observer_);
+    observer_->DeviceMTUChanged(this, device, mtu);
+  }
+#endif
 
   BluetoothDevice* GetDevice(const std::string& address) override {
     for (auto& device : mock_devices_) {
@@ -316,6 +349,8 @@ class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
 
  private:
   ~FakeBluetoothAdapter() override = default;
+
+  raw_ptr<BluetoothAdapter::Observer> observer_ = nullptr;
 
   // Inputs for `DiscoverySessionResultCallback`.
   bool is_start_scan_result_error_;
@@ -341,7 +376,16 @@ class FakeBluetoothDevice : public NiceMock<MockBluetoothDevice> {
                                       /*name=*/"device with battery",
                                       /*address=*/"00:00:01",
                                       /*paired=*/false,
-                                      /*connected=*/true) {}
+                                      /*connected=*/true) {
+    ON_CALL(*this, CreateGattConnection)
+        .WillByDefault([this](GattConnectionCallback callback,
+                              std::optional<device::BluetoothUUID>) {
+          std::move(callback).Run(
+              std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
+                  base::WrapRefCounted(adapter_), GetAddress()),
+              /*error_code=*/std::nullopt);
+        });
+  }
 
   bool IsGattServicesDiscoveryComplete() const override {
     return gatt_services_discovery_complete_;
@@ -355,6 +399,13 @@ class FakeBluetoothDevice : public NiceMock<MockBluetoothDevice> {
       const std::string& identifier) const override {
     return GetMockService(identifier);
   }
+
+  std::optional<uint16_t> GetMtu() const override { return mtu_; }
+
+  void SetMtu(std::optional<uint16_t> mtu) { mtu_ = mtu; }
+
+ private:
+  std::optional<uint16_t> mtu_;
 };
 
 class FakeBluetoothCharacteristic
@@ -914,6 +965,17 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     return battery_device_id;
   }
 
+  // Connects to the device with |device_id| and returns the result together
+  // with the maxWriteWithoutResponseSize seeded in the connect response.
+  std::pair<WebBluetoothResult, uint16_t> ConnectToDevice(
+      const blink::WebBluetoothDeviceId& device_id) {
+    TestFuture<WebBluetoothResult, uint16_t> connect_future;
+    service_ptr_->RemoteServerConnect(
+        device_id, server_client_.BindNewEndpointAndPassRemote(),
+        connect_future.GetCallback());
+    return {connect_future.Get<0>(), connect_future.Get<1>()};
+  }
+
   FakeBluetoothDeviceBundle& battery_device_bundle() const {
     return *battery_device_bundle_;
   }
@@ -1082,6 +1144,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
   std::unique_ptr<FakeBluetoothDeviceBundle> battery_device_bundle_;
   std::unique_ptr<FakeBluetoothDeviceBundle> heart_rate_device_bundle_;
   FakeWebBluetoothCharacteristicClient characteristic_client_;
+  FakeWebBluetoothServerClient server_client_;
   TestFuture<void> scanning_prompt_shown_;
   TestFuture<void> contents_destroyed_;
 };
@@ -1567,6 +1630,52 @@ TEST_F(WebBluetoothServiceImplTest,
   EXPECT_TRUE(client_2.on_connection_error_called());
   EXPECT_TRUE(client_3.on_connection_error_called());
 }
+
+TEST_F(WebBluetoothServiceImplTest,
+       RemoteServerConnectSeedsMaxWriteWithoutResponseSize) {
+  const blink::WebBluetoothDeviceId device_id =
+      AddTestDevice(battery_device_bundle());
+  battery_device_bundle().device().SetMtu(258);
+
+  const auto [result, max_write_without_response_size] =
+      ConnectToDevice(device_id);
+  EXPECT_EQ(result, WebBluetoothResult::SUCCESS);
+  EXPECT_EQ(max_write_without_response_size, 255u);
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       RemoteServerConnectSeedsDefaultMaxWriteWithoutResponseSize) {
+  const blink::WebBluetoothDeviceId device_id =
+      AddTestDevice(battery_device_bundle());
+
+  const auto [result, max_write_without_response_size] =
+      ConnectToDevice(device_id);
+  EXPECT_EQ(result, WebBluetoothResult::SUCCESS);
+  // 20 is the default ATT_MTU of 23 octets minus the 3-octet ATT Write
+  // Command header, used when the platform does not report an MTU.
+  EXPECT_EQ(max_write_without_response_size, 20u);
+}
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+TEST_F(WebBluetoothServiceImplTest,
+       DeviceMTUChangedUpdatesMaxWriteWithoutResponseSizeClient) {
+  const blink::WebBluetoothDeviceId device_id =
+      AddTestDevice(battery_device_bundle());
+
+  ASSERT_EQ(ConnectToDevice(device_id).first, WebBluetoothResult::SUCCESS);
+
+  base::RunLoop run_loop;
+  server_client_.set_max_write_without_response_size_callback(
+      run_loop.QuitClosure());
+  adapter_->NotifyDeviceMTUChanged(&battery_device_bundle().device(), 517);
+  run_loop.Run();
+
+  EXPECT_EQ(server_client_.max_write_without_response_size(), 514u);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 TEST_F(WebBluetoothServiceImplTest,
        ReadCharacteristicValueErrorWithValueIgnored) {
@@ -2388,7 +2497,7 @@ TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
       .WillOnce(base::test::InvokeFuture(connection_future));
 
   FakeWebBluetoothServerClient server_client;
-  base::test::TestFuture<WebBluetoothResult> connect_future;
+  base::test::TestFuture<WebBluetoothResult, uint16_t> connect_future;
   RemoteServerConnect(device_id, server_client.BindNewEndpointAndPassRemote(),
                       connect_future.GetCallback());
 
@@ -2403,7 +2512,7 @@ TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
 
   // Pruning pending_connection_device_ids_ makes OnCreateGATTConnection drop
   // the connection instead of handing it to the renderer.
-  EXPECT_EQ(connect_future.Get(), WebBluetoothResult::CONNECT_CONN_FAILED);
+  EXPECT_EQ(connect_future.Get<0>(), WebBluetoothResult::CONNECT_CONN_FAILED);
 }
 
 TEST_F(WebBluetoothServiceImplTest,
@@ -2566,10 +2675,10 @@ TEST_F(WebBluetoothServiceImplTest, ForgetDevice_ClosesGattConnection) {
       });
 
   FakeWebBluetoothServerClient server_client;
-  base::test::TestFuture<WebBluetoothResult> connect_future;
+  base::test::TestFuture<WebBluetoothResult, uint16_t> connect_future;
   RemoteServerConnect(device_id, server_client.BindNewEndpointAndPassRemote(),
                       connect_future.GetCallback());
-  EXPECT_EQ(connect_future.Get(), WebBluetoothResult::SUCCESS);
+  EXPECT_EQ(connect_future.Get<0>(), WebBluetoothResult::SUCCESS);
 
   base::test::TestFuture<void> disconnected_future;
   server_client.SetDisconnectedCallback(disconnected_future.GetCallback());

@@ -349,6 +349,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Indicates whether an active GATT connection exists to the device.
   virtual bool IsGattConnected() const = 0;
 
+  // Returns the ATT MTU that bounds outgoing Attribute Protocol PDUs to the
+  // device, if the platform exposes it. This is the minimum of the local
+  // Host's transmit ATT_MTU and the peer's receive ATT_MTU, as established by
+  // the ATT MTU exchange procedure (Bluetooth Core Spec, Vol 3, Part F,
+  // Section 3.4.2).
+  virtual std::optional<uint16_t> GetMtu() const;
+
   // Indicates whether the paired device accepts connections initiated from the
   // adapter. This value is undefined for unpaired devices. Only available for
   // Chrome OS.

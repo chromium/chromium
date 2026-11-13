@@ -26,6 +26,9 @@ class BluetoothTestMac;
 @property(nonatomic, readonly) CBPeripheral* peripheral;
 @property(strong, readonly) NSArray* services;
 @property(nonatomic, assign) device::BluetoothTestMac* bluetoothTestMac;
+// Value returned by -maximumWriteValueLengthForType:. Defaults to 0, which
+// makes the MTU unavailable.
+@property(nonatomic, assign) NSUInteger maximumWriteValueLength;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUTF8StringIdentifier:(const char*)identifier;

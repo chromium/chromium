@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 
 #include <stdint.h>
@@ -319,8 +318,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_GetProperties) {
   // Read the properties. Because ordering is unknown swap as necessary.
   int properties1 = service->GetCharacteristics()[0]->GetProperties();
   int properties2 = service->GetCharacteristics()[1]->GetProperties();
-  if (properties2 == 0)
+  if (properties2 == 0) {
     std::swap(properties1, properties2);
+  }
   EXPECT_EQ(0, properties1);
   EXPECT_EQ(7, properties2);
 }
@@ -341,6 +341,58 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_GetService) {
   EXPECT_EQ(service_, characteristic1_->GetService());
   EXPECT_EQ(service_, characteristic2_->GetService());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_P(BluetoothRemoteGattCharacteristicTestWinrt, GetDeviceMtu) {
+  ASSERT_NO_FATAL_FAILURE(FakeCharacteristicBoilerplate());
+
+  std::optional<uint16_t> mtu = device_->GetMtu();
+  if (UsesNewGattSessionHandling()) {
+    ASSERT_TRUE(mtu.has_value());
+    EXPECT_EQ(23, *mtu);
+  } else {
+    EXPECT_FALSE(mtu.has_value());
+  }
+}
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+TEST_F(BluetoothRemoteGattCharacteristicTest,
+       GetDeviceMtuAndNotifyChangeOnRead) {
+  ASSERT_NO_FATAL_FAILURE(FakeCharacteristicBoilerplate(
+      BluetoothRemoteGattCharacteristic::PROPERTY_READ));
+  TestBluetoothAdapterObserver observer(adapter_);
+
+  // The MTU is unknown while the mock peripheral reports no maximum write
+  // value length.
+  EXPECT_FALSE(device_->GetMtu().has_value());
+
+  // Simulate the OS reporting a larger write-without-response payload. The
+  // change should be detected and observers notified when a read completes.
+  base::RunLoop run_loop;
+  observer.set_quit_closure(run_loop.QuitClosure());
+  SetPeripheralMaximumWriteValueLength(device_, 512);
+  characteristic1_->ReadRemoteCharacteristic(
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
+  std::vector<uint8_t> empty_vector;
+  SimulateGattCharacteristicRead(characteristic1_, empty_vector);
+  run_loop.Run();
+
+  std::optional<uint16_t> mtu = device_->GetMtu();
+  ASSERT_TRUE(mtu.has_value());
+  EXPECT_EQ(515, *mtu);
+  EXPECT_EQ(1, observer.device_mtu_changed_count());
+  EXPECT_EQ(515, observer.last_mtu_value());
+
+  // Completing another read without an MTU change should not notify again.
+  // The CoreBluetooth mocks deliver the read completion synchronously, so the
+  // observer count is final once the simulated read returns.
+  characteristic1_->ReadRemoteCharacteristic(
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
+  SimulateGattCharacteristicRead(characteristic1_, empty_vector);
+  EXPECT_EQ(1, observer.device_mtu_changed_count());
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
 #define MAYBE_ReadRemoteCharacteristic_Empty ReadRemoteCharacteristic_Empty

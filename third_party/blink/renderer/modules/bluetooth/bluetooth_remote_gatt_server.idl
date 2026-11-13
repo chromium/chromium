@@ -14,6 +14,8 @@
 {
     [SameObject] readonly attribute BluetoothDevice device;
     readonly attribute boolean connected;
+    [RuntimeEnabled=WebBluetoothMaxWriteWithoutResponseSize] readonly attribute unsigned short maxWriteWithoutResponseSize;
+    [RuntimeEnabled=WebBluetoothMaxWriteWithoutResponseSize] attribute EventHandler onmaxwritewithoutresponsesizechanged;
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerConnect] Promise<BluetoothRemoteGATTServer> connect();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerDisconnect] void disconnect();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerGetPrimaryService] Promise<BluetoothRemoteGATTService> getPrimaryService (BluetoothServiceUUID service);

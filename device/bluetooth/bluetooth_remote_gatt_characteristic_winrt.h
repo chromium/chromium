@@ -5,10 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_WINRT_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_WINRT_H_
 
+#include <stdint.h>
 #include <windows.devices.bluetooth.genericattributeprofile.h>
 #include <wrl/client.h>
-
-#include <stdint.h>
 
 #include <memory>
 #include <string>

@@ -392,6 +392,19 @@ void BluetoothAdapter::NotifyGattNeedsDiscovery(BluetoothDevice* device) {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+void BluetoothAdapter::NotifyDeviceMTUChanged(BluetoothDevice* device,
+                                              uint16_t mtu) {
+  DCHECK(device);
+  DCHECK_EQ(device->GetAdapter(), this);
+
+  for (auto& observer : observers_) {
+    observer.DeviceMTUChanged(this, device, mtu);
+  }
+}
+#endif
+
 void BluetoothAdapter::NotifyGattServiceAdded(
     BluetoothRemoteGattService* service) {
   DCHECK_EQ(service->GetDevice()->GetAdapter(), this);

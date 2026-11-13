@@ -49,6 +49,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
     // descriptor bit field. [read-only, optional]
     dbus::Property<std::vector<std::string>> flags;
 
+    // The characteristic MTU. [read-only, optional]
+    dbus::Property<uint16_t> mtu;
+
     Properties(dbus::ObjectProxy* object_proxy,
                const std::string& interface_name,
                const PropertyChangedCallback& callback);

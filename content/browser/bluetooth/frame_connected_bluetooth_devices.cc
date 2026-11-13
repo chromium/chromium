@@ -118,6 +118,20 @@ void FrameConnectedBluetoothDevices::CloseConnectionsToDevicesNotInList(
     CloseConnectionToDeviceWithId(device_id);
 }
 
+void FrameConnectedBluetoothDevices::NotifyMaxWriteWithoutResponseSizeChanged(
+    const std::string& device_address,
+    uint16_t max_write_without_response_size) {
+  auto device_address_iter = device_address_to_id_map_.find(device_address);
+  if (device_address_iter == device_address_to_id_map_.end()) {
+    return;
+  }
+  auto device_id_iter =
+      device_id_to_connection_map_.find(device_address_iter->second);
+  CHECK(device_id_iter != device_id_to_connection_map_.end());
+  device_id_iter->second->server_client->MaxWriteWithoutResponseSizeChanged(
+      max_write_without_response_size);
+}
+
 void FrameConnectedBluetoothDevices::IncrementDevicesConnectedCount() {
   web_contents_impl_->IncrementBluetoothConnectedDeviceCount();
 }

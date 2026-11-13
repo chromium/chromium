@@ -258,6 +258,15 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const std::string& characteristic_instance_id,
       const std::vector<uint8_t>& value);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // BluetoothAdapter::Observer:
+  void DeviceMTUChanged(device::BluetoothAdapter* adapter,
+                        device::BluetoothDevice* device,
+                        uint16_t mtu) override;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
   // WebBluetoothService methods:
   void GetAvailability(GetAvailabilityCallback callback) override;
   void RequestDevice(blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,

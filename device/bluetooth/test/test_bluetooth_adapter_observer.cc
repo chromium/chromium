@@ -49,11 +49,14 @@ void TestBluetoothAdapterObserver::Reset() {
   device_bonded_changed_count_ = 0;
   device_new_bonded_status_ = false;
 #endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  device_mtu_changed_count_ = 0;
+  device_mtu_ = 0;
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   device_paired_changed_count_ = 0;
   device_new_paired_status_ = false;
-  device_mtu_changed_count_ = 0;
-  device_mtu_ = 0;
   device_advertisement_received_count_ = 0;
   device_eir_.clear();
   device_connected_state_changed_values_.clear();
@@ -210,6 +213,20 @@ void TestBluetoothAdapterObserver::DeviceBondedChanged(
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+void TestBluetoothAdapterObserver::DeviceMTUChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    uint16_t mtu) {
+  ++device_mtu_changed_count_;
+  last_device_ = device;
+  device_mtu_ = mtu;
+
+  QuitMessageLoop();
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void TestBluetoothAdapterObserver::DevicePairedChanged(
     device::BluetoothAdapter* adapter,
@@ -218,17 +235,6 @@ void TestBluetoothAdapterObserver::DevicePairedChanged(
   ++device_paired_changed_count_;
   last_device_ = device;
   device_new_paired_status_ = new_paired_status;
-
-  QuitMessageLoop();
-}
-
-void TestBluetoothAdapterObserver::DeviceMTUChanged(
-    device::BluetoothAdapter* adapter,
-    device::BluetoothDevice* device,
-    uint16_t mtu) {
-  ++device_mtu_changed_count_;
-  last_device_ = device;
-  device_mtu_ = mtu;
 
   QuitMessageLoop();
 }

@@ -165,6 +165,15 @@ void RemoveGattSessionStatusHandler(IGattSession* gatt_session,
   }
 }
 
+void RemoveMaxPduSizeChangedHandler(IGattSession* gatt_session,
+                                    EventRegistrationToken token) {
+  HRESULT hr = gatt_session->remove_MaxPduSizeChanged(token);
+  if (FAILED(hr)) {
+    BLUETOOTH_LOG(DEBUG) << "Removing MaxPduSizeChanged Handler failed: "
+                         << logging::SystemErrorCodeToString(hr);
+  }
+}
+
 void RemoveGattServicesChangedHandler(IBluetoothLEDevice* ble_device,
                                       EventRegistrationToken token) {
   HRESULT hr = ble_device->remove_GattServicesChanged(token);
@@ -289,6 +298,21 @@ bool BluetoothDeviceWinrt::IsGattConnected() const {
     return IsConnected();
 
   return gatt_session_ && gatt_session_status_ == GattSessionStatus_Active;
+}
+
+std::optional<uint16_t> BluetoothDeviceWinrt::GetMtu() const {
+  if (!gatt_session_) {
+    return std::nullopt;
+  }
+
+  uint16_t max_pdu_size;
+  HRESULT hr = gatt_session_->get_MaxPduSize(&max_pdu_size);
+  if (FAILED(hr)) {
+    BLUETOOTH_LOG(DEBUG) << "GattSession::get_MaxPduSize failed: "
+                         << logging::SystemErrorCodeToString(hr);
+    return std::nullopt;
+  }
+  return max_pdu_size;
 }
 
 bool BluetoothDeviceWinrt::IsConnectable() const {
@@ -671,6 +695,10 @@ void BluetoothDeviceWinrt::OnGattSessionFromDeviceId(
       gatt_session_.Get(), &IGattSession::add_SessionStatusChanged,
       base::BindRepeating(&BluetoothDeviceWinrt::OnGattSessionStatusChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+  max_pdu_size_changed_token_ = AddTypedEventHandler(
+      gatt_session_.Get(), &IGattSession::add_MaxPduSizeChanged,
+      base::BindRepeating(&BluetoothDeviceWinrt::OnMaxPduSizeChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Check whether we missed the initial GattSessionStatus change notification
   // because the OS had already established a connection.
@@ -715,6 +743,19 @@ void BluetoothDeviceWinrt::OnGattSessionStatusChanged(
     ClearGattServices();
     DidDisconnectGatt();
   }
+}
+
+void BluetoothDeviceWinrt::OnMaxPduSizeChanged(IGattSession* gatt_session,
+                                               IInspectable* object) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_EQ(gatt_session_.Get(), gatt_session);
+
+  std::optional<uint16_t> max_pdu_size = GetMtu();
+  if (!max_pdu_size) {
+    return;
+  }
+
+  adapter_->NotifyDeviceMTUChanged(this, *max_pdu_size);
 }
 
 void BluetoothDeviceWinrt::OnConnectionStatusChanged(
@@ -853,6 +894,11 @@ void BluetoothDeviceWinrt::ClearEventRegistrations() {
   if (gatt_session_status_changed_token_) {
     RemoveGattSessionStatusHandler(gatt_session_.Get(),
                                    *gatt_session_status_changed_token_);
+  }
+
+  if (max_pdu_size_changed_token_) {
+    RemoveMaxPduSizeChangedHandler(gatt_session_.Get(),
+                                   *max_pdu_size_changed_token_);
   }
 
   if (gatt_services_changed_token_) {

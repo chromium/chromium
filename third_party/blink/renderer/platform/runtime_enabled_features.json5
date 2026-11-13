@@ -7646,6 +7646,11 @@
       base_feature: "none",
     },
     {
+      name: "WebBluetoothMaxWriteWithoutResponseSize",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WebBluetoothScanning",
       status: "experimental",
     },

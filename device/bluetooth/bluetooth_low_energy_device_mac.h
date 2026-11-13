@@ -85,6 +85,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
       ConnectToServiceErrorCallback error_callback) override;
   bool IsLowEnergyDevice() override;
 
+  // Returns the current ATT MTU derived from the maximum write-without-
+  // response payload reported by CoreBluetooth (payload + 3, per Bluetooth
+  // Core Specification Vol 3, Part F, 3.4.5), or std::nullopt if the value
+  // is unavailable.
+  std::optional<uint16_t> GetMtu() const override;
+
  protected:
   // BluetoothDevice override.
   void CreateGattConnectionImpl(
@@ -152,6 +158,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   // Callback used when the CoreBluetooth Peripheral is disconnected.
   void DidDisconnectPeripheral(NSError* error);
 
+  // Checks whether the ATT MTU changed since the last check and notifies the
+  // adapter's observers if so. CoreBluetooth does not report MTU changes, so
+  // this is called when a GATT operation completes.
+  void MaybeNotifyMtuChange();
+
   // CoreBluetooth data structure.
   CBPeripheral* __strong peripheral_;
 
@@ -172,6 +183,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   // decreases each time DidDiscoverPrimaryServices() is called. Once the
   // value is set to 0, characteristics and properties are discovered.
   int discovery_pending_count_;
+
+  // Last ATT MTU reported to observers, used to detect changes in
+  // MaybeNotifyMtuChange().
+  std::optional<uint16_t> last_known_mtu_;
 };
 
 // Stream operator for logging.

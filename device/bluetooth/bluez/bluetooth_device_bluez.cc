@@ -25,6 +25,7 @@
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_connection_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_pairing_bluez.h"
+#include "device/bluetooth/bluez/bluetooth_remote_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_service_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_socket_bluez.h"
@@ -471,6 +472,24 @@ bool BluetoothDeviceBlueZ::IsGattConnected() const {
   // Connections.
   return IsConnected();
 #endif
+}
+
+std::optional<uint16_t> BluetoothDeviceBlueZ::GetMtu() const {
+  // BlueZ exposes the ATT MTU as a property of each characteristic rather
+  // than of the connection, but the value is negotiated per ATT bearer. Read
+  // it from the first characteristic that reports one.
+  for (device::BluetoothRemoteGattService* service : GetGattServices()) {
+    for (device::BluetoothRemoteGattCharacteristic* characteristic :
+         service->GetCharacteristics()) {
+      std::optional<uint16_t> mtu =
+          static_cast<BluetoothRemoteGattCharacteristicBlueZ*>(characteristic)
+              ->GetMtu();
+      if (mtu.has_value()) {
+        return mtu;
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 bool BluetoothDeviceBlueZ::IsConnectable() const {

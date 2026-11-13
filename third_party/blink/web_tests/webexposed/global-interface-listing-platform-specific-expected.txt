@@ -71,11 +71,14 @@ interface BluetoothRemoteGATTServer : EventTarget
     attribute @@toStringTag
     getter connected
     getter device
+    getter maxWriteWithoutResponseSize
+    getter onmaxwritewithoutresponsesizechanged
     method connect
     method constructor
     method disconnect
     method getPrimaryService
     method getPrimaryServices
+    setter onmaxwritewithoutresponsesizechanged
 interface BluetoothRemoteGATTService
     attribute @@toStringTag
     getter device

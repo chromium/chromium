@@ -175,14 +175,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     virtual void DevicePairedChanged(BluetoothAdapter* adapter,
                                      BluetoothDevice* device,
                                      bool new_paired_status) {}
+#endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Called when the MTU |mtu| (Bluetooth Spec Vol 3, Part F, 3.4.2) used in
     // ATT communication with device |device| known to the adapter |adapter|
     // changed.
     virtual void DeviceMTUChanged(BluetoothAdapter* adapter,
                                   BluetoothDevice* device,
                                   uint16_t mtu) {}
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     // Called when advertisement is received from |device|. |eir| is the
     // extended inquiry response specified in Bluetooth Core Spec, Vol 3,
     // Part C, Section 11.
@@ -720,6 +725,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   void NotifyDeviceIsBlockedByPolicyChanged(BluetoothDevice* device,
                                             bool new_blocked_status);
   void NotifyGattNeedsDiscovery(BluetoothDevice* device);
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // Announces to observers that the ATT MTU for |device| changed.
+  void NotifyDeviceMTUChanged(BluetoothDevice* device, uint16_t mtu);
 #endif
 
   void NotifyGattServiceAdded(BluetoothRemoteGattService* service);

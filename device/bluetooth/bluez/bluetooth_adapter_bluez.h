@@ -232,9 +232,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void NotifyDeviceAddressChanged(BluetoothDeviceBlueZ* device,
                                   const std::string& old_address);
 
-  // Announce to observers MTU change in ATT communication to |device|.
-  void NotifyDeviceMTUChanged(BluetoothDeviceBlueZ* device, uint16_t mtu);
-
   // Announce to observers advertisement received from |device|.
   void NotifyDeviceAdvertisementReceived(BluetoothDeviceBlueZ* device,
                                          int16_t rssi,

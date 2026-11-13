@@ -67,13 +67,16 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
                            device::BluetoothDevice* device,
                            bool new_bonded_status) override;
 #endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  void DeviceMTUChanged(device::BluetoothAdapter* adapter,
+                        device::BluetoothDevice* device,
+                        uint16_t mtu) override;
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
-  void DeviceMTUChanged(device::BluetoothAdapter* adapter,
-                        device::BluetoothDevice* device,
-                        uint16_t mtu) override;
   void DeviceAdvertisementReceived(device::BluetoothAdapter* adapter,
                                    device::BluetoothDevice* device,
                                    int16_t rssi,
@@ -171,13 +174,16 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   bool device_new_bonded_status() const { return device_new_bonded_status_; }
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  int device_mtu_changed_count() const { return device_mtu_changed_count_; }
+  uint16_t last_mtu_value() const { return device_mtu_; }
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count() const {
     return device_paired_changed_count_;
   }
   bool device_new_paired_status() const { return device_new_paired_status_; }
-  int device_mtu_changed_count() const { return device_mtu_changed_count_; }
-  uint16_t last_mtu_value() const { return device_mtu_; }
   int device_advertisement_received_count() const {
     return device_advertisement_received_count_;
   }
@@ -294,11 +300,14 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   bool device_new_bonded_status_;
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  int device_mtu_changed_count_;
+  uint16_t device_mtu_;
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count_;
   bool device_new_paired_status_;
-  int device_mtu_changed_count_;
-  uint16_t device_mtu_;
   int device_advertisement_received_count_;
   std::vector<uint8_t> device_eir_;
   std::vector<bool> device_connected_state_changed_values_;

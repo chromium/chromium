@@ -33,6 +33,7 @@ class FakeGattSessionWinrt
   void SimulateGattConnection();
   void SimulateGattDisconnection();
   void SimulateGattConnectionError();
+  void SetMaxPduSize(uint16_t max_pdu_size);
 
   // IGattSession:
   IFACEMETHODIMP get_DeviceId(
@@ -68,11 +69,16 @@ class FakeGattSessionWinrt
  private:
   raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   bool maintain_connection_ = false;
+  uint16_t max_pdu_size_ = 23;
 
   ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSessionStatus
       status_ = ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
           GattSessionStatus_Closed;
 
+  Microsoft::WRL::ComPtr<ABI::Windows::Foundation::ITypedEventHandler<
+      ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSession*,
+      IInspectable*>>
+      max_pdu_size_changed_handler_;
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::ITypedEventHandler<
       ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSession*,
       ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::

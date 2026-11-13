@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_error.h"
@@ -37,6 +38,19 @@ BluetoothRemoteGATTServer::BluetoothRemoteGATTServer(ExecutionContext* context,
 
 void BluetoothRemoteGATTServer::GATTServerDisconnected() {
   DispatchDisconnected();
+}
+
+void BluetoothRemoteGATTServer::MaxWriteWithoutResponseSizeChanged(
+    uint16_t max_write_without_response_size) {
+  if (!connected_) {
+    return;
+  }
+  if (max_write_without_response_size_ == max_write_without_response_size) {
+    return;
+  }
+  max_write_without_response_size_ = max_write_without_response_size;
+  DispatchEvent(
+      *Event::Create(event_type_names::kMaxwritewithoutresponsesizechanged));
 }
 
 const AtomicString& BluetoothRemoteGATTServer::InterfaceName() const {
@@ -92,8 +106,8 @@ void BluetoothRemoteGATTServer::Trace(Visitor* visitor) const {
 
 void BluetoothRemoteGATTServer::ConnectCallback(
     ScriptPromiseResolver<BluetoothRemoteGATTServer>* resolver,
-    mojom::blink::WebBluetoothResult result) {
-
+    mojom::blink::WebBluetoothResult result,
+    uint16_t max_write_without_response_size) {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebBluetoothCancelConnect)) {
     if (!RemoveFromActiveAlgorithms(resolver)) {
@@ -105,6 +119,7 @@ void BluetoothRemoteGATTServer::ConnectCallback(
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
     connected_ = true;
+    max_write_without_response_size_ = max_write_without_response_size;
     feature_handle_for_scheduler_ =
         resolver->GetExecutionContext()->GetScheduler()->RegisterFeature(
             SchedulingPolicy::Feature::kWebBluetooth,
