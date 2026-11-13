@@ -410,6 +410,14 @@ if (!is_android) {
         "//chrome/test/base:chrome_test_utils",
       ]
     }
+
+    if (is_win) {
+      sources += [ "document_pip_system_menu_interactive_uitest.cc" ]
+      deps += [
+        "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
+        "//ui/views",
+      ]
+    }
   }
 
   source_set("test_support_ui") {

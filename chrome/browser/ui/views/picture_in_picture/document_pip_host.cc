@@ -84,6 +84,10 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_aura_linux.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_win.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -152,9 +156,14 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHostBackPointer);
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHost);
 
-// Suppresses the Linux window manager's title bar menu by providing the
-// controller checked by WindowEventFilterLinux::OnClickedCaption(). On other
-// platforms, installing this controller has no effect.
+// Suppresses the title bar context menu with a controller that shows nothing.
+// On Linux, WindowEventFilterLinux::OnClickedCaption() checks for it before
+// showing the window manager's menu. On Windows, when !UsesNativeSystemMenu(),
+// HWNDMessageHandler does not capture the mouse on WM_NCRBUTTONDOWN.
+// Widget::OnMouseEvent() captures it only if the NonClientView handles the
+// press, which a ContextMenuController makes it do. Without capture, the
+// release arrives as WM_NCRBUTTONUP rather than the WM_RBUTTONUP that
+// HWNDMessageHandler handles for the custom menu, and reaches DefWindowProc().
 class DocumentPipHost::NoOpContextMenuController
     : public views::ContextMenuController {
  public:
@@ -345,6 +354,8 @@ void DocumentPipHost::CreateAndShowPipWindow(
 
 #if BUILDFLAG(IS_LINUX)
   widget_ = CreateDocumentPipWidgetLinux(this, params);
+#elif BUILDFLAG(IS_WIN)
+  widget_ = CreateDocumentPipWidgetWin(params);
 #else
   widget_ = std::make_unique<views::Widget>();
 #endif

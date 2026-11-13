@@ -103,6 +103,12 @@ source_set("picture_in_picture") {
     ]
   }
 
+  if (is_win) {
+    public += [ "document_pip_native_widget_win.h" ]
+    sources += [ "document_pip_native_widget_win.cc" ]
+    deps += [ "//chrome/browser/ui:ui_features" ]
+  }
+
   if (is_mac) {
     public += [ "document_pip_native_widget_mac.h" ]
     sources += [ "document_pip_native_widget_mac.mm" ]
