@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["italic",""]] "<span style=font-style:italic>fo[o</span><span style=font-style:oblique>b]ar</span>" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","false"],["italic",""]] "<span style=font-style:italic>fo[o</span><span style=font-style:oblique>b]ar</span>" queryCommandState("italic") after
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["italic",""]] "<span style=font-style:italic>fo[o</span><span style=font-style:oblique>b]ar</span>" queryCommandValue("italic") after
-  assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","true"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","true"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandValue("italic") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","true"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandValue("italic") after

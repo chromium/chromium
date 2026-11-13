@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","true"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandState("strikethrough") after
-  assert_equals: Wrong result returned expected false but got true
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandValue("strikethrough") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","false"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","false"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandValue("strikethrough") after

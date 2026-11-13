@@ -1,15 +1,11 @@
 This is a testharness.js-based test.
-Found 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 169 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["strikethrough",""]] "<strike>foo[bar]baz</strike>" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","false"],["strikethrough",""]] "<strike>foo[bar]baz</strike>" queryCommandState("strikethrough") after
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["strikethrough",""]] "<strike>foo[bar]baz</strike>" queryCommandValue("strikethrough") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","true"],["strikethrough",""]] "<strike>foo[b<span style=\\"color:blue\\">ar]ba</span>z</strike>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"text-decoration:line-through\\">foo</span>b<span style=\\"color:rgb(0, 0, 255)\\">ar<span style=\\"text-decoration:line-through\\">ba</span></span><span style=\\"text-decoration:line-through\\">z</span>" but got "<strike>foo</strike>b<span style=\\"color:rgb(0, 0, 255)\\">ar<span style=\\"text-decoration-line:line-through\\">ba</span></span><span style=\\"text-decoration-line:line-through\\">z</span>"
-[FAIL] [["stylewithcss","true"],["strikethrough",""]] "<strike>foo[b<span style=\\"color:blue\\">ar]ba</span>z</strike>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","true"],["strikethrough",""]] "<strike>foo[b<span style=\\"color:blue\\">ar]ba</span>z</strike>" queryCommandValue("strikethrough") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","true"],["strikethrough",""]] "<strike>foo[b<span style=\\"color:blue\\">ar]ba</span>z</strike>" queryCommandValue("strikethrough") after

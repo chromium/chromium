@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
-Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<pre>bar</pre>baz]" queryCommandValue("fontname") after
-  assert_equals: Wrong result returned expected "sans-serif" but got "serif"
+Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-family:sans-serif\\">foo<samp><span style=\\"font-family:sans-serif\\">bar</span></samp>baz</span>" but got "<span style=\\"font-family:sans-serif\\">foo<samp>bar</samp>baz</span>"
-[FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandIndeterm("fontname") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" compare innerHTML

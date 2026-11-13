@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["inserttext","\\t"]] "http://a[]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "http://a\\t" but got "http://a<span style=\\"white-space:pre\\">\\t</span>"
 [FAIL] [["inserttext","a"]] "<a href=/>foo[]</a>bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"/\\">fooa</a>bar" but got "<a href=\\"/\\">foo</a>abar"
-[FAIL] [["defaultparagraphseparator","div"],["inserttext","a"]] "<p>fo[o<p>b]ar" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["stylewithcss","true"],["inserttext","a"]] "<p>[foo<span style=color:#aBcDeF>bar]</span>baz" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" compare innerHTML

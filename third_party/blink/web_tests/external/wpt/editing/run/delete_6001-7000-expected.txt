@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foar</li></ol>" but got "<ol><li>fo</li><li>ar</li></ol>"
-[FAIL] [["stylewithcss","true"],["delete",""]] "<span style=display:block>fo[o</span><span style=display:block>b]ar</span>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"display:none\\">fo</span><span style=\\"display:none\\">ar</span>" but got ""
 [FAIL] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" compare innerHTML

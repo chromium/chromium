@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<li>bar</li><ol><li>baz</li></ol></li><li>quz</li></ol>"
 [FAIL] [["outdent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
@@ -10,8 +10,6 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol><ol><li>baz</li></ol>"
-[FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" compare innerHTML
@@ -104,8 +102,6 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li value=\\"5\\">bar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
 [FAIL] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li value=\\"5\\">bar</li></ul>" but got "<ul><li>foo</li><li>bar</li></ul>"
-[FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li>baz</li></ol>"
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" compare innerHTML

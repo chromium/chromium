@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after
-  assert_equals: Wrong result returned expected false but got true
+Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after

@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 193 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") after
-  assert_equals: Wrong result returned expected "div" but got ""
 [FAIL] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("subscript") after

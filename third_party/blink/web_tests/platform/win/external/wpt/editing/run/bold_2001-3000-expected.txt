@@ -1,15 +1,9 @@
 This is a testharness.js-based test.
-Found 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["bold",""]] "<span style=\\"font-weight: 900\\">foo[barbaz</span>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-weight:900\\">foo</span>barbaz" but got "<span style=\\"font-weight:900\\">foobarbaz</span>"
+Found 163 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["bold",""]] "<span style=\\"font-weight: 900\\">foo[barbaz</span>}" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["bold",""]] "<span style=\\"font-weight: 900\\">foo[barbaz</span>}" queryCommandState("bold") after
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["bold",""]] "<span style=\\"font-weight: 900\\">foo[barbaz</span>}" queryCommandValue("bold") after
-  assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","true"],["bold",""]] "<h3>foo[bar]baz</h3>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","true"],["bold",""]] "<h3>foo[bar]baz</h3>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","true"],["bold",""]] "<h3>foo[bar]baz</h3>" queryCommandValue("bold") after

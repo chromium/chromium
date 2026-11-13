@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<script>foo[]bar</script>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><script>foo</script><br></div><div><script>bar</script>baz</div>" but got "<div><br></div><script>foobar</script>baz"
-[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<script>foo[]bar</script>baz" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<script>foo[]bar</script>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><script>foo</script><br></p><p><script>bar</script>baz</p>" but got "<p><br></p><script>foobar</script>baz"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" compare innerHTML

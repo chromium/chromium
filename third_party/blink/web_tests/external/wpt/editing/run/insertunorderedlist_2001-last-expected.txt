@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") after
-  assert_equals: Wrong result returned expected true but got false
-[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "true" but got "false"
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("insertunorderedlist", false, "") return value
   assert_equals: expected true but got false
 [FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("inserttext", false, "abc") return value

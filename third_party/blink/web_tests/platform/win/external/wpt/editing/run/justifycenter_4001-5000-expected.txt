@@ -1,15 +1,7 @@
 This is a testharness.js-based test.
-Found 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandState("stylewithcss") after
-  assert_equals: Wrong result returned expected false but got true
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandState("justifycenter") after
-  assert_equals: Wrong result returned expected true but got false
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandValue("justifycenter") after
-  assert_equals: Wrong result returned expected "center" but got "left"
+Found 84 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\\"text-align:center\\"><p>foo</p></div><p style=\\"text-align:center\\">bar</p><div style=\\"text-align:center\\"><p>baz</p></div><p>extra</p>"
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\\"text-align:center\\"><p>foo</p></div><p style=\\"text-align:center\\">bar</p><div style=\\"text-align:center\\"><p>baz</p></div><p>extra</p>"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" compare innerHTML

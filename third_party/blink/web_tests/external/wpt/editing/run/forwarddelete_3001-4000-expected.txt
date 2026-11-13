@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p style=color:blue>foo[]<p style=color:brown>bar" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
+Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p style=color:blue>foo[]<p style=color:brown>bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"color:rgb(0, 0, 255)\\">foo<font color=\\"#a52a2a\\">bar</font></p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foo<span style=\\"color:rgb(165, 42, 42)\\">bar</span></p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[]<p style=color:brown>bar" compare innerHTML

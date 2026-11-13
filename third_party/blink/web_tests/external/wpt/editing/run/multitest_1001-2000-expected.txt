@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 Found 186 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["italic",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "false"
+  assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["italic",""],["insertparagraph",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<div>bar</div>"
 [FAIL] [["italic",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("italic") before

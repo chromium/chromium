@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<div>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\\"#0000ff\\">quz</font></p>" but got "<p>foo<span style=\\"color:rgb(0, 0, 255)\\">quz</span></p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML

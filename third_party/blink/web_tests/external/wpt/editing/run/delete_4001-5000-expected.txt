@@ -1,17 +1,7 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo<p style=text-decoration:line-through>[]bar" queryCommandState("stylewithcss") after
-  assert_equals: Wrong result returned expected false but got true
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo<p style=text-decoration:line-through>[]bar" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo<p style=text-decoration:line-through>[]bar" queryCommandValue("defaultparagraphseparator") after
-  assert_equals: Wrong result returned expected "p" but got "div"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<p><u>foo</u><p>[]bar" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["delete",""]] "<p style=color:blue>foo</p>[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\\"color:rgb(0, 0, 255)\\">foo</span>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
-[FAIL] [["stylewithcss","true"],["delete",""]] "<p style=color:blue>foo</p>[]bar" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["delete",""]] "<p style=color:blue>foo</p>[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\\"#0000ff\\">foo</font>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "foo<p style=color:brown>[]bar" compare innerHTML

@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
-Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyfull",""]] "<table align=justify><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("justifyfull") after
-  assert_equals: Wrong result returned expected "justify" but got "left"
+Found 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyfull",""]] "<table align=justify><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\"><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></div><p>extra</p>" but got "<table align=\\"justify\\" style=\\"text-align:justify\\"><tbody><tr><td style=\\"text-align:justify\\">foo</td><td style=\\"text-align:justify\\">bar</td><td style=\\"text-align:justify\\">baz</td></tr></tbody></table><p>extra</p>"
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyfull",""]] "<table align=justify><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyfull",""]] "<table align=justify data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\"><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></div><p>extra</p>" but got "<table align=\\"justify\\" style=\\"text-align:justify\\"><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table><p>extra</p>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyfull",""]] "<table align=justify data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML

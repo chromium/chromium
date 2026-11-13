@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("formatblock") after
-  assert_equals: Wrong result returned expected "h5" but got "p"
+Found 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["formatblock","<address>"]] "<p>[foo<p>bar]" queryCommandValue("formatblock") before
   assert_equals: Wrong result returned expected "p" but got ""
 [FAIL] [["defaultparagraphseparator","p"],["formatblock","<address>"]] "<p>[foo<p>bar]" queryCommandValue("formatblock") before

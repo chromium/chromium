@@ -1,13 +1,11 @@
 This is a testharness.js-based test.
-Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["outdent",""]] "<ol><li><h1>[foo]</h1></ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1>" but got "foo"
 [FAIL] [["outdent",""]] "<ol><li><xmp>[foo]</xmp></li></ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<xmp>foo</xmp>" but got "foo"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><li>bar</li><li>baz</li></ol></blockquote>" but got "<blockquote><ol><li>foo<div><li>bar</li></div></li><li>baz</li></ol></blockquote>"
-[FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><li>bar</li><li>baz</li></ol></blockquote>" but got "<blockquote><ol><li>foo<div><li>bar</li></div></li><li>baz</li></ol></blockquote>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol> <li>[foo]</li></ol>" compare innerHTML

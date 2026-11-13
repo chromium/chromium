@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<del>[foobar]</del>" queryCommandValue("formatblock") after
-  assert_equals: Wrong result returned expected "div" but got ""
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<quasit>[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "{<p><p> <p>foo</p>}" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p> foo</p>" but got "<p></p><p> </p><p>foo</p>"
 [FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "{<p><p> <p>foo</p>}" compare innerHTML

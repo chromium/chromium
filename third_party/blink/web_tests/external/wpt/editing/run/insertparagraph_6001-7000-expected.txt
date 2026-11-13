@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\">foo</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\" id=\\"y\\">foo</p></div>"
-[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\">foo</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\" id=\\"y\\">foo</p></div>"
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]bar</ol>" compare innerHTML

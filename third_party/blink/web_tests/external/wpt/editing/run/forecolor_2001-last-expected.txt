@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before
   assert_equals: Wrong result returned expected true but got false
-[FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") after
-  assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML

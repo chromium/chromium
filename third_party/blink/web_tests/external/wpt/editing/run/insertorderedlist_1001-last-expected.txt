@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 163 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>" queryCommandState("insertorderedlist") after
-  assert_equals: Wrong result returned expected true but got false
 [FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>" queryCommandValue("insertorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "false"
+  assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>bar<li>[baz]</ul><li>quz</ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul><ol><li>baz</li></ol><li>quz</li></ul>" but got "<ul><li>foo<ul><li>bar</li></ul><ol><li>baz</li></ol></li><li>quz</li></ul>"
 [FAIL] [["insertorderedlist",""]] "<ul><li>foo<ul><li>bar<li>[baz]</ul><li>quz</ul>" queryCommandValue("insertorderedlist") before
@@ -144,8 +142,6 @@ Found 163 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><p>bar</p></blockquote><p>baz</p>" but got "<p><ol><li>foo</li></ol></p><blockquote><p>bar</p></blockquote><p>baz</p>"
-[FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandValue("insertorderedlist") after

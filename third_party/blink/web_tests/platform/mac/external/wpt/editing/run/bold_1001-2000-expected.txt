@@ -1,15 +1,9 @@
 This is a testharness.js-based test.
-Found 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("stylewithcss") after
-  assert_equals: Wrong result returned expected false but got true
+Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("bold") after
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("bold") after
-  assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar]</span>baz" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar]</span>baz" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar]</span>baz" queryCommandValue("bold") after

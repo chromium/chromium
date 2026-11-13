@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ul><li><div>foo[]</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li><div>foo</div></li><li><div><br></div></li></ul>" but got "<ul><li><div>foo</div></li></ul>"
-[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ul><li><div>foo[]</ul>" queryCommandValue("defaultparagraphseparator") after
-  assert_equals: Wrong result returned expected "p" but got "div"
-[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div><p>foo[]</div>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div><div>foo[]</div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div>foo</div><div><br></div></div>" but got "<div><div>foo</div></div><div><br></div>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div><div>foo[]</div>" compare innerHTML

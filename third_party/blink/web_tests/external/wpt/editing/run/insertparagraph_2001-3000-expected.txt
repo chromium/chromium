@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<blockquote><p>foo[]<p>bar</blockquote>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><p><br></p><p>bar</p></blockquote>" but got "<blockquote><p>foo</p><p>bar</p></blockquote>"
-[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<blockquote><p>foo[]<p>bar</blockquote>" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
+Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<span>foo[]bar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span>foo</span></div><div><span>bar</span></div>" but got "<span>foo</span><div><span>bar</span></div>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<span>foo[]bar</span>" compare innerHTML
@@ -14,8 +10,6 @@ Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span>foo</span></p><p><span>bar</span>baz</p>" but got "<span>foo</span><p><span>bar</span>baz</p>"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b>foo[]bar</b>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b>foo</b></div><div><b>bar</b></div>" but got "<b>foo</b><div><b>bar</b></div>"
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b>foo[]bar</b>" queryCommandState("stylewithcss") before
-  assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b>foo[]bar</b>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b>foo</b></div><div><b>bar</b></div>" but got "<b>foo</b><div><b>bar</b></div>"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b>foo[]bar</b>" compare innerHTML

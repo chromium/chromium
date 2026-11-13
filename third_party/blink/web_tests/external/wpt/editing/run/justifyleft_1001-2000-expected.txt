@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:justify><p>[foo<p>bar]</div><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p><p>extra</p>" but got "<div style=\\"text-align:justify\\"><p style=\\"text-align:left\\">foo</p><p style=\\"text-align:left\\">bar</p></div><p>extra</p>"
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:justify><p>[foo<p>bar]</div><p>extra" queryCommandValue("defaultparagraphseparator") before
-  assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["justifyleft",""]] "<div align=left><p>[foo]<p>bar</div><p>extra" queryCommandValue("justifyleft") before
   assert_equals: Wrong result returned expected "left" but got "-webkit-left"
 [FAIL] [["justifyleft",""]] "<div align=left><p>[foo]<p>bar</div><p>extra" queryCommandValue("justifyleft") after
