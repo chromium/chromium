@@ -2500,6 +2500,28 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
       WaitForVisibleOmniboxUnfocused());
 }
 
+// Verifies that typing text, highlighting a suggestion match, and clicking
+// outside to blur accepts the highlighted match as the unfocused draft.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TypedQueryHighlightedMatchKeptAsDraftOnBlur) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("ffffff"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      WaitForWebUIInputValue("suggestion-1"), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull), CheckUserInputInProgress(true),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()->edit_model()->user_text();
+          },
+          u"suggestion-1"),
+      WaitForOmniboxText(u"suggestion-1"),
+      WaitForWebUIInputValue("suggestion-1"));
+}
+
 // Verifies that after typing a draft and clicking outside (leaving the popup
 // visible but unfocused), clicking back into the WebUI input and typing again
 // reopens the results dropdown, and pressing Enter navigates to a search for
@@ -7571,6 +7593,41 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
       WaitForOmniboxText(base::ASCIIToUTF16(std::string_view(kZpsMatch0))),
       ClickWebPageBody(kTab1), WaitForPopupDismissed(),
       WaitForOmniboxText(u""));
+}
+
+// Verifies that with the dropdown closed on the NTP, opening ZPS with
+// ArrowDown, highlighting a match and then clicking outside keeps the match's
+// text as an unfocused draft instead of reverting it, unlike
+// `ZpsSelectionRevertsOnBlur` above, where ZPS was opened on focus.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       ZpsOpenedViaArrowDownKeepsSelectionOnBlur) {
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(),
+      // Escape with nothing highlighted closes the dropdown, keeping the empty
+      // input focused.
+      PressKey(ui::VKEY_ESCAPE), WaitForDropdownClosedWithEmptyInput(),
+      // ArrowDown reopens ZPS, starting user input, and highlights a match.
+      PressKey(ui::VKEY_DOWN), WaitForZpsShown(), PressKey(ui::VKEY_DOWN),
+      WaitForWebUIInputValue(kZpsMatch0),
+      WaitForOmniboxText(base::ASCIIToUTF16(std::string_view(kZpsMatch0))),
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull), CheckUserInputInProgress(true),
+      WaitForOmniboxText(base::ASCIIToUTF16(std::string_view(kZpsMatch0))),
+      WaitForWebUIInputValue(kZpsMatch0));
+}
+
+// Verifies that with the dropdown closed on the NTP, opening ZPS with
+// ArrowDown without highlighting any match and then clicking outside reverts
+// user input and closes the popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       ZpsOpenedViaArrowDownWithoutSelectionRevertsOnBlur) {
+  RunTestSequence(FocusOmniboxOnNtpAndWaitForZps(), PressKey(ui::VKEY_ESCAPE),
+                  WaitForDropdownClosedWithEmptyInput(),
+                  PressKey(ui::VKEY_DOWN), WaitForZpsShown(),
+                  CheckUserInputInProgress(true), ClickWebPageBody(kTab1),
+                  WaitForPopupDismissed(),
+                  CheckPopupState(OmniboxPopupState::kNone),
+                  CheckUserInputInProgress(false), WaitForOmniboxText(u""));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

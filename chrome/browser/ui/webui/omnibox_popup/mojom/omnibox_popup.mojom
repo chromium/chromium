@@ -119,6 +119,11 @@ interface PageHandler {
   // Discards the call if `sequence_number` is stale.
   OnInputCleared(uint32 sequence_number);
 
+  // Starts user input in the omnibox edit model when the user opens the
+  // dropdown via keyboard navigation.
+  // Discards the call if `sequence_number` is stale.
+  StartUserInput(uint32 sequence_number);
+
   // Notifies the browser that the user has pasted text into the Omnibox.
   // Discards the call if `sequence_number` is stale.
   OnPaste(string text, gfx.mojom.Range selection, uint32 sequence_number);

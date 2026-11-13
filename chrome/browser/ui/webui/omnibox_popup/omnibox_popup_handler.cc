@@ -161,6 +161,15 @@ void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {
   }
 }
 
+void OmniboxPopupHandler::StartUserInput(uint32_t sequence_number) {
+  if (sequence_number < current_sequence_number_) {
+    return;
+  }
+  if (controller_ && controller_->edit_model()) {
+    controller_->edit_model()->SetInputInProgress(true);
+  }
+}
+
 void OmniboxPopupHandler::OnPaste(const std::string& text,
                                   const gfx::Range& selection,
                                   uint32_t sequence_number) {

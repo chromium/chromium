@@ -2248,6 +2248,13 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
+    if (!this.dropdownIsVisible &&
+        (e.key === 'ArrowUp' || e.key === 'ArrowDown') &&
+        !this.getInputElement()?.isMultiline() && !this.userInputInProgress_) {
+      this.userInputInProgress_ = true;
+      this.popupPageHandler_.startUserInput(this.currentSequenceNum_);
+    }
+
     if (e.key === 'Enter' && !this.hasSelection_) {
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).
