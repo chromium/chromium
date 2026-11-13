@@ -288,6 +288,54 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
+// Verifies that, when ui_scale != 1, the dragged window origin is set in UI DIP
+// from motion events, whose location is in Wayland DIP. Otherwise, the origin
+// drifts away from the cursor, eg: with GNOME's "Large Text" accessibility
+// setting.
+TEST_P(WaylandWindowDragControllerTest, UiScale_DetachedMotionSetsOrigin) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+  connection_->window_manager()->SetFontScale(1.25f);
+  WaylandTestBase::SyncDisplay();
+  ASSERT_EQ(1.25f, window_->applied_state().ui_scale);
+
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+
+  bool motion_sent = false;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    if (event->type() == EventType::kMouseEntered && !motion_sent) {
+      EXPECT_EQ(State::kDetached, drag_controller_state());
+      motion_sent = true;
+      // Run via a task, as this is in the middle of OnDragEnter().
+      ScheduleTestTask(base::BindOnce(
+          &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+          base::Unretained(this), gfx::Point(100, 100)));
+    }
+  });
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_))
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
+        EXPECT_EQ(State::kDetached, drag_controller_state());
+        // The motion location is 100,100 in Wayland DIP, ie: 80,80 in UI DIP,
+        // and the drag offset is 10,10 in UI DIP.
+        EXPECT_EQ(gfx::Point(70, 70), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
+        SendDndDropAndFinished();
+      });
+
+  // RunMoveLoop() blocks until the dragging session ends.
+  EXPECT_TRUE(move_loop_handler->RunMoveLoop(gfx::Vector2d(10, 10)));
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_TRUE(motion_sent);
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
 // Check the following flow works as expected:
 // 1. With a single window open,
 // 2. Touch down and move the touch point a bit (drag),

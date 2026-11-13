@@ -678,8 +678,14 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // offset. Note that setting a new location (i.e: bounds.origin()) for a
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
+  //
+  // `event` is intercepted before WaylandWindow::DispatchEvent(), so its
+  // location is still in Wayland DIP, whereas `drag_offset_` and the window
+  // origin are in UI DIP, i.e. scaled by `ui_scale`.
   if (dragged_window_) {
-    dragged_window_->SetOrigin(event->location() - drag_offset_);
+    const gfx::Point location = gfx::ToFlooredPoint(gfx::ScalePoint(
+        event->location_f(), 1.f / dragged_window_->applied_state().ui_scale));
+    dragged_window_->SetOrigin(location - drag_offset_);
   }
 
   should_process_drag_motion_events_ = false;
