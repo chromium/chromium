@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
@@ -36,8 +37,9 @@ enum class SafetyLevel {
 // The underlying Dawn instance may outlive this wrapper (e.g. via references
 // held by wgpu objects), so the platform is disconnected from the Dawn instance
 // before it is destroyed.
-class DawnInstance : public dawn::native::Instance,
-                     public base::RefCountedThreadSafe<DawnInstance> {
+class GPU_GLES2_EXPORT DawnInstance
+    : public dawn::native::Instance,
+      public base::RefCountedThreadSafe<DawnInstance> {
  public:
   // Creates a DawnInstance configured for servicing WebGPU contexts. The
   // safety level is derived from `gpu_preferences`.

@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"
 #include "gpu/command_buffer/service/logger.h"
@@ -94,6 +95,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
           this, command_buffer_.get(), manager->shared_image_manager(),
           memory_tracker_.get(), manager->outputter(),
           manager->gpu_preferences(), std::move(shared_context_state),
+          webgpu::DawnInstance::CreateForWebGPU(manager->gpu_preferences()),
           dawn_cache_options, channel_);
 
   scoped_sync_point_client_state_ =

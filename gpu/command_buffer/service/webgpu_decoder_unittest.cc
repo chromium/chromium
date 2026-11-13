@@ -11,11 +11,13 @@
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/context_group.h"
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/test_helper.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +39,8 @@ class WebGPUDecoderTest : public ::testing::Test {
 
     decoder_ = WebGPUDecoder::Create(
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
-        &outputter_, {}, nullptr, DawnCacheOptions(),
+        &outputter_, {}, nullptr,
+        DawnInstance::CreateForWebGPU(GpuPreferences()), DawnCacheOptions(),
         &mock_isolation_key_provider_);
     ASSERT_EQ(decoder_->Initialize(GpuFeatureInfo()), ContextResult::kSuccess);
   }

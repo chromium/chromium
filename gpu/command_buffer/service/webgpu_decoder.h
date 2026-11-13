@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"
@@ -30,6 +31,7 @@ class Outputter;
 namespace webgpu {
 
 class DawnCachingInterfaceFactory;
+class DawnInstance;
 
 // Options specifically passed for Dawn caching;
 struct DawnCacheOptions {
@@ -48,6 +50,7 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
       gles2::Outputter* outputter,
       const GpuPreferences& gpu_preferences,
       scoped_refptr<SharedContextState> shared_context_state,
+      scoped_refptr<DawnInstance> dawn_instance,
       const DawnCacheOptions& dawn_cache_options = {},
       IsolationKeyProvider* isolation_key_provider = nullptr);
 

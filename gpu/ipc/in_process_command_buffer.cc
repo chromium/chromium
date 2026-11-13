@@ -69,6 +69,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #endif
 
@@ -337,7 +338,9 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               this, command_buffer_.get(),
               task_executor_->shared_image_manager(), memory_tracker,
               task_executor_->outputter(), task_executor_->gpu_preferences(),
-              context_state_);
+              context_state_,
+              webgpu::DawnInstance::CreateForWebGPU(
+                  task_executor_->gpu_preferences()));
       gpu::ContextResult result =
           webgpu_decoder->Initialize(task_executor_->gpu_feature_info());
       if (result != gpu::ContextResult::kSuccess) {
