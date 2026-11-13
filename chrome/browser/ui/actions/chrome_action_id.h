@@ -386,7 +386,7 @@
   E(kActionShowPasswordsBubbleOrPage) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionCopyUrl, IDC_COPY_URL) \
-  E(kActionTabGroupsMenu, IDC_SAVED_TAB_GROUPS_MENU) \
+  E(kActionTabGroupsMenu) \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionSplitTab, IDC_NEW_SPLIT_TAB) \
   E(kActionFederation) \

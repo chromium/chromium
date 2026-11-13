@@ -88,6 +88,7 @@ source_set("unit_tests") {
   deps = [
     ":actions",
     ":actions_headers",
+    ":command_id_to_action_id",
     "//testing/gmock",
     "//testing/gtest",
   ]
