@@ -46,6 +46,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -69,6 +70,7 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorForegroundServiceManager}. */
@@ -77,6 +79,7 @@ import java.util.concurrent.TimeUnit;
 public class ActorForegroundServiceManagerTest {
     private static final int OPT_IN_NOTIFICATION_ID =
             ActorNotificationFactory.OPT_IN_NOTIFICATION_ID;
+    private static final Set<Integer> TASK_TAB_IDS = Set.of(10);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -416,6 +419,52 @@ public class ActorForegroundServiceManagerTest {
     }
 
     @Test
+    public void testOnTaskStateChanged_TaskTabVisible_UpdatesAndPinsSilently() {
+        setTaskTabVisible(true);
+
+        mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        verify(mNotificationService)
+                .updateNotificationForTask(
+                        eq(1), eq(ActorTaskState.ACTING), /* isSilent= */ eq(true), anyBoolean());
+        verify(mNotificationService)
+                .getForegroundNotification(eq(mTask), /* isSilent= */ eq(true), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_TaskTabNotVisible_UpdatesAndPinsLoudly() {
+        setTaskTabVisible(false);
+
+        mManager.onTaskStateChanged(1, ActorTaskState.WAITING_ON_USER);
+        ShadowLooper.idleMainLooper();
+
+        verify(mNotificationService)
+                .updateNotificationForTask(
+                        eq(1),
+                        eq(ActorTaskState.WAITING_ON_USER),
+                        /* isSilent= */ eq(false),
+                        anyBoolean());
+        verify(mNotificationService)
+                .getForegroundNotification(eq(mTask), /* isSilent= */ eq(false), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
+    }
+
+    @Test
+    public void testTaskCompleted_TaskTabVisible_RequestsSilentCachedNotificationForPin() {
+        setTaskTabVisible(true);
+        mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
+
+        mManager.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        verify(mNotificationService)
+                .getCachedNotification(eq(1), /* isSilent= */ eq(true), anyBoolean());
+    }
+
+    @Test
     public void testOnTaskStateChanged_ShowsWarningNotification() {
         mManager.setKeyedServiceForTesting(mKeyedService);
         ActorTaskTimeoutManager timeoutManager = mock(ActorTaskTimeoutManager.class);
@@ -739,6 +788,7 @@ public class ActorForegroundServiceManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
     public void testOnPendingTaskCountChanged_StartsServiceWithPlaceholderNotification() {
         mManager.setKeyedServiceForTesting(mKeyedService);
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
@@ -752,9 +802,19 @@ public class ActorForegroundServiceManagerTest {
         assertTrue(mManager.hasPendingTasks());
         assertTrue("Service should be bound on pending task.", mManager.isServiceBoundForTesting());
         verify(mServiceController).startAndBindService(any());
-        verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
+        assertFalse(isSilent(getPinnedPlaceholderNotification()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
+    public void testOnPendingTaskCountChanged_SilenceAfterFirstWorking_PinsSilentPlaceholder() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(isSilent(getPinnedPlaceholderNotification()));
     }
 
     @Test
@@ -1286,5 +1346,27 @@ public class ActorForegroundServiceManagerTest {
 
         assertFalse(mManager.hasOptInNotification());
         verify(mCancelCallback, times(1)).run();
+    }
+
+    private void setTaskTabVisible(boolean visible) {
+        when(mNotificationService.getTask(1)).thenReturn(mTask);
+        when(mTask.getTabs()).thenReturn(TASK_TAB_IDS);
+        when(mServiceController.isActivityVisibleForTabs(TASK_TAB_IDS)).thenReturn(visible);
+    }
+
+    private Notification getPinnedPlaceholderNotification() {
+        ArgumentCaptor<Notification> notificationCaptor =
+                ArgumentCaptor.forClass(Notification.class);
+        verify(mServiceController)
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        notificationCaptor.capture());
+        return notificationCaptor.getValue();
+    }
+
+    // NotificationCompat implements setSilent() on a non-summary notification through the
+    // summary-only group alert behavior.
+    private static boolean isSilent(Notification notification) {
+        return notification.getGroupAlertBehavior() == Notification.GROUP_ALERT_SUMMARY;
     }
 }

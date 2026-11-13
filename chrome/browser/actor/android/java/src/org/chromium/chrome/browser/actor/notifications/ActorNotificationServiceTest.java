@@ -21,10 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
@@ -62,7 +60,6 @@ import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServi
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
@@ -1537,13 +1534,19 @@ public class ActorNotificationServiceTest {
         // Each buildNotification calls createTrustedBringTabToFrontIntent twice (content + action).
         verify(mServiceController, org.mockito.Mockito.times(2))
                 .createTrustedBringTabToFrontIntent(mTask);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertAlerts(mNotificationService.getCachedNotificationWrapperForTesting(taskId));
 
         // Transitioning from CREATED to ACTING must rebuild the notification so its PendingIntent
-        // extras pick up the newly provisioned target tab ID and Glic conversation ID.
+        // extras pick up the newly provisioned target tab ID and Glic conversation ID. The rebuilt
+        // notification currently alerts again, so a non-silent CREATED -> ACTING sequence alerts
+        // twice. This records current behavior rather than a requirement.
         mNotificationService.updateNotificationForTask(
                 taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
         verify(mServiceController, org.mockito.Mockito.times(4))
                 .createTrustedBringTabToFrontIntent(mTask);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertAlerts(mNotificationService.getCachedNotificationWrapperForTesting(taskId));
     }
 
     @Test
@@ -1747,7 +1750,7 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
-    public void testDemotion_AfterClearNativePtr_PreservesTabIdOnPendingIntent() {
+    public void testDemotion_AfterClearNativePtr_PreservesTabIdOnRoutingIntent() {
         long nativeTaskPtr = 1234L;
         int taskId = 50;
         int expectedTabId = 99;
@@ -1760,56 +1763,36 @@ public class ActorNotificationServiceTest {
                         nativeTaskPtr,
                         taskId,
                         "Test Task",
-                        mock(Profile.class),
+                        mProfile,
                         "conv-id-50",
                         /* isExperimentalTriggering= */ false);
         when(mKeyedService.getTask(taskId)).thenReturn(realTask);
-        when(mServiceController.createTrustedBringTabToFrontIntent(any()))
-                .thenAnswer(
-                        invocation -> {
-                            ActorTask task = invocation.getArgument(0);
-                            Intent intent = new Intent("BRING_TAB_TO_FRONT_ACTION");
-                            intent.putExtra(
-                                    IntentHandler.BRING_TAB_TO_FRONT_EXTRA, task.getTargetTabId());
-                            intent.putExtra(
-                                    NotificationConstants.EXTRA_ACTOR_TASK_STATE, task.getState());
-                            return intent;
-                        });
+        List<Intent> routingIntents = captureRoutingIntents();
 
-        // Post terminal live notification while native task is still alive.
         mNotificationService.updateNotificationForTask(
                 taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
         assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+        assertEquals(
+                expectedTabId, IntentHandler.getBringTabToFrontId(getLastIntent(routingIntents)));
 
         // Native ActorTask is destroyed on the next UI message-loop tick after task completion.
         realTask.clearNativePtr();
         when(mKeyedService.getTask(taskId)).thenReturn(null);
+        routingIntents.clear();
 
-        assertEquals(expectedTabId, realTask.getLastActuatedTabId());
-        assertEquals(expectedTabId, realTask.getTargetTabId());
-        assertEquals(ActorTaskState.FINISHED, realTask.getState());
-
-        // Advance looper to fire demotion runnable after native task destruction.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
-
         Notification demoted =
                 mNotificationService.getCachedNotification(
                         taskId, /* isSilent= */ false, /* isWarning= */ false);
         assertNotNull(demoted);
         assertNotNull(demoted.contentIntent);
 
-        Intent demotedIntent = shadowOf(demoted.contentIntent).getSavedIntent();
-        if (NotificationIntentInterceptor.INTENT_ACTION.equals(demotedIntent.getAction())) {
-            PendingIntent wrappedPendingIntent =
-                    NotificationIntentInterceptor.getPendingIntentForTesting(demotedIntent);
-            demotedIntent = shadowOf(wrappedPendingIntent).getSavedIntent();
-        }
+        Intent demotedIntent = getLastIntent(routingIntents);
         assertEquals(
-                "Demoted notification PendingIntent must preserve the last actuated tab ID",
+                "Demoted notification must route to the last actuated tab",
                 expectedTabId,
-                demotedIntent.getIntExtra(
-                        IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID));
+                IntentHandler.getBringTabToFrontId(demotedIntent));
         assertEquals(
                 ActorTaskState.FINISHED,
                 demotedIntent.getIntExtra(
@@ -1817,7 +1800,7 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
-    public void testDemotion_AfterClearNativePtr_PreservesFallbackTabIdOnPendingIntent() {
+    public void testDemotion_AfterClearNativePtr_PreservesFallbackTabIdOnRoutingIntent() {
         long nativeTaskPtr = 1234L;
         int taskId = 51;
         int expectedFallbackTabId = 77;
@@ -1831,56 +1814,37 @@ public class ActorNotificationServiceTest {
                         nativeTaskPtr,
                         taskId,
                         "Test Task",
-                        mock(Profile.class),
+                        mProfile,
                         "conv-id-51",
                         /* isExperimentalTriggering= */ false);
         when(mKeyedService.getTask(taskId)).thenReturn(realTask);
-        when(mServiceController.createTrustedBringTabToFrontIntent(any()))
-                .thenAnswer(
-                        invocation -> {
-                            ActorTask task = invocation.getArgument(0);
-                            Intent intent = new Intent("BRING_TAB_TO_FRONT_ACTION");
-                            intent.putExtra(
-                                    IntentHandler.BRING_TAB_TO_FRONT_EXTRA, task.getTargetTabId());
-                            intent.putExtra(
-                                    NotificationConstants.EXTRA_ACTOR_TASK_STATE, task.getState());
-                            return intent;
-                        });
+        List<Intent> routingIntents = captureRoutingIntents();
 
-        // Post terminal live notification while native task is still alive.
         mNotificationService.updateNotificationForTask(
                 taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
         assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+        assertEquals(
+                expectedFallbackTabId,
+                IntentHandler.getBringTabToFrontId(getLastIntent(routingIntents)));
 
         // Native ActorTask is destroyed on the next UI message-loop tick after task completion.
         realTask.clearNativePtr();
         when(mKeyedService.getTask(taskId)).thenReturn(null);
+        routingIntents.clear();
 
-        assertEquals(Tab.INVALID_TAB_ID, realTask.getLastActuatedTabId());
-        assertEquals(expectedFallbackTabId, realTask.getTargetTabId());
-        assertEquals(ActorTaskState.FINISHED, realTask.getState());
-
-        // Advance looper to fire demotion runnable after native task destruction.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
-
         Notification demoted =
                 mNotificationService.getCachedNotification(
                         taskId, /* isSilent= */ false, /* isWarning= */ false);
         assertNotNull(demoted);
         assertNotNull(demoted.contentIntent);
 
-        Intent demotedIntent = shadowOf(demoted.contentIntent).getSavedIntent();
-        if (NotificationIntentInterceptor.INTENT_ACTION.equals(demotedIntent.getAction())) {
-            PendingIntent wrappedPendingIntent =
-                    NotificationIntentInterceptor.getPendingIntentForTesting(demotedIntent);
-            demotedIntent = shadowOf(wrappedPendingIntent).getSavedIntent();
-        }
+        Intent demotedIntent = getLastIntent(routingIntents);
         assertEquals(
-                "Demoted notification PendingIntent must preserve the fallback tab ID",
+                "Demoted notification must route to the fallback tab",
                 expectedFallbackTabId,
-                demotedIntent.getIntExtra(
-                        IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID));
+                IntentHandler.getBringTabToFrontId(demotedIntent));
         assertEquals(
                 ActorTaskState.FINISHED,
                 demotedIntent.getIntExtra(
@@ -1910,18 +1874,7 @@ public class ActorNotificationServiceTest {
                         /* glicConversationId= */ null,
                         /* isExperimentalTriggering= */ false);
 
-        ActorForegroundServiceControllerImpl controller =
-                spy(new ActorForegroundServiceControllerImpl());
-        List<Intent> createdIntents = new ArrayList<>();
-        doAnswer(
-                        invocation -> {
-                            Intent intent = (Intent) invocation.callRealMethod();
-                            createdIntents.add(intent);
-                            return intent;
-                        })
-                .when(controller)
-                .createTrustedBringTabToFrontIntent(any());
-        ActorForegroundServiceController.setInstanceForTesting(controller);
+        List<Intent> createdIntents = captureRoutingIntents();
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         ActorKeyedServiceFactory.setForTesting(mKeyedService);
         when(mKeyedService.getTask(taskId)).thenReturn(realTask);
@@ -1947,11 +1900,7 @@ public class ActorNotificationServiceTest {
                 (demoted.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull(demoted.contentIntent);
 
-        // The demoted notification reuses the live notification's PendingIntent request code, and
-        // the shadow PendingIntent keeps the live intent's extras, so inspect the routing intent
-        // built during demotion instead.
-        assertFalse(createdIntents.isEmpty());
-        Intent demotedIntent = createdIntents.get(createdIntents.size() - 1);
+        Intent demotedIntent = getLastIntent(createdIntents);
         assertTrue(IntentHandler.isActorNotificationIntent(demotedIntent));
         assertEquals(88, IntentHandler.getBringTabToFrontId(demotedIntent));
         assertEquals("conv-id-53", IntentHandler.getGlicConversationId(demotedIntent));
@@ -2208,6 +2157,31 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
+    public void testLiveNotificationDisabled_StateChangePostsNonSilentAlertOnceNotification() {
+        int taskId = 1;
+        setUpTask(taskId);
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        updateTask(taskId, ActorTaskState.WAITING_ON_USER);
+
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        NotificationWrapper wrapper =
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId);
+        assertNotNull(wrapper);
+        assertFalse("A non-live notification must not be forced silent", wrapper.isSilent());
+        Notification notification = findNotification(/* tag= */ null, taskId);
+        assertSame(wrapper.getNotification(), notification);
+        assertNotEquals(Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
+        assertFalse(
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        // Every non-live notification is alert-once, so this in-place update does not alert again.
+        assertTrue((notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
+    }
+
+    @Test
     @Config(
             sdk = VERSION_CODES.VANILLA_ICE_CREAM,
             shadows = {ShadowSystemClock.class})
@@ -2395,6 +2369,44 @@ public class ActorNotificationServiceTest {
         assertFalse(
                 "First ACTING notification after clearAll() should be loud",
                 mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+    }
+
+    /**
+     * Routes tab-routing intent creation through the real controller and records each intent.
+     *
+     * <p>The demoted notification reuses the live notification's PendingIntent request code, and
+     * the shadow PendingIntent merges new extras into the live intent instead of replacing them, so
+     * an extra dropped at demotion stays visible there. Inspect the recorded intents instead.
+     */
+    private List<Intent> captureRoutingIntents() {
+        ActorForegroundServiceControllerImpl controller =
+                spy(new ActorForegroundServiceControllerImpl());
+        List<Intent> createdIntents = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            Intent intent = (Intent) invocation.callRealMethod();
+                            createdIntents.add(intent);
+                            return intent;
+                        })
+                .when(controller)
+                .createTrustedBringTabToFrontIntent(any());
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        return createdIntents;
+    }
+
+    private static Intent getLastIntent(List<Intent> intents) {
+        assertFalse(intents.isEmpty());
+        return intents.get(intents.size() - 1);
+    }
+
+    private static void assertAlerts(@Nullable NotificationWrapper wrapper) {
+        assertNotNull(wrapper);
+        assertFalse(wrapper.isSilent());
+        Notification notification = wrapper.getNotification();
+        // NotificationCompat implements setSilent() on a non-summary notification through the
+        // summary-only group alert behavior.
+        assertNotEquals(Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
+        assertEquals(0, notification.flags & Notification.FLAG_ONLY_ALERT_ONCE);
     }
 
     private void setUpTask(int taskId) {
