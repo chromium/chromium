@@ -39,7 +39,7 @@ constexpr char kTranslateUrl[] =
     "https://translation.googleapis.com/language/translate/v2?key=%s";
 constexpr char kUploadContentType[] = "application/json";
 constexpr char kHttpErrorMessageTemplate[] =
-    "Failed to recieve response, got errror: %s";
+    "Failed to receive response, got error: %s";
 
 // Response constants.
 constexpr char kDataKey[] = "data";
