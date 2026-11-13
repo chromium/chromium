@@ -59,6 +59,31 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java:AdaptiveToolbarRadioButtonState) -->
 
+<!-- LINT.IfChange(AdaptiveUiContainer) -->
+
+<enum name="AdaptiveUiContainer">
+  <int value="0" label="BOTTOM_SHEET"/>
+  <int value="1" label="MODAL_DIALOG"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiContainer.java:AdaptiveUiContainer) -->
+
+<!-- LINT.IfChange(AdaptiveUiDismissReason) -->
+
+<enum name="AdaptiveUiDismissReason">
+  <int value="0" label="BACK_PRESS"/>
+  <int value="1" label="TOUCH_OUTSIDE"/>
+  <int value="2" label="SWIPE_DOWN"/>
+  <int value="3" label="CLOSE_BUTTON"/>
+  <int value="4" label="PRIMARY_ACTION"/>
+  <int value="5" label="SECONDARY_ACTION"/>
+  <int value="6" label="NAVIGATION"/>
+  <int value="7" label="TAB_SWITCHED"/>
+  <int value="8" label="TAB_CLOSED"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java:DismissReason) -->
+
 <enum name="AgsaProcessName">
   <int value="0" label=":googleapp"/>
   <int value="1" label=":search"/>

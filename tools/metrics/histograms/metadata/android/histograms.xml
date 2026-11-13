@@ -34,6 +34,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".FirstRunActivity" summary="FirstRunActivity"/>
 </variants>
 
+<!-- LINT.IfChange(AdaptiveUiContainerSuffix) -->
+
+<variants name="AdaptiveUiContainer">
+  <variant name="BottomSheet" summary="BottomSheet"/>
+  <variant name="ModalDialog" summary="ModalDialog"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiControllerImpl.java:AdaptiveUiContainerSuffix) -->
+
 <variants name="AndroidFeatureModuleName">
   <variant name="ar" summary="Augmented Reality Module"/>
   <variant name="cablev2_authenticator" summary="caBLEv2 Authenticator Module"/>
@@ -551,6 +560,52 @@ chromium-metrics-reviews@google.com.
     records the button variant currently being shown on the toolbar. Recorded
     for both regular and incognito profiles.
   </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveUi.ContainerShown" enum="AdaptiveUiContainer"
+    expires_after="2027-11-11">
+  <owner>spdonghao@google.com</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records the container (0 = Bottom Sheet, 1 = Modal Dialog) chosen by the
+    AdaptiveUiController when an entry is shown. Recorded once per show, when
+    the container starts presenting the entry.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveUi.DismissReason.{Container}"
+    enum="AdaptiveUiDismissReason" expires_after="2027-11-11">
+  <owner>spdonghao@google.com</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records the DismissReason when an AdaptiveUiEntry targeting {Container} is
+    dismissed after being shown. Recorded once per dismissal of a shown entry.
+  </summary>
+  <token key="Container" variants="AdaptiveUiContainer"/>
+</histogram>
+
+<histogram name="Android.AdaptiveUi.DismissReasonBeforeShown.{Container}"
+    enum="AdaptiveUiDismissReason" expires_after="2027-11-11">
+  <owner>spdonghao@google.com</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records the DismissReason when an AdaptiveUiEntry targeting {Container} is
+    dismissed before the container ever showed it (e.g. while queued or during
+    teardown). Recorded once per dismissal of a never-shown entry.
+  </summary>
+  <token key="Container" variants="AdaptiveUiContainer"/>
+</histogram>
+
+<histogram name="Android.AdaptiveUi.EntryDeferred.{Container}" enum="Boolean"
+    expires_after="2027-11-11">
+  <owner>spdonghao@google.com</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records whether an AdaptiveUiEntry targeting {Container} was deferred (i.e.
+    queued or suppressed by the container instead of showing immediately).
+    Recorded when AdaptiveUiController#show hands the entry to the container.
+  </summary>
+  <token key="Container" variants="AdaptiveUiContainer"/>
 </histogram>
 
 <histogram name="Android.AppLaunchDrawBlocker.ActiveTabAvailable" units="ms"

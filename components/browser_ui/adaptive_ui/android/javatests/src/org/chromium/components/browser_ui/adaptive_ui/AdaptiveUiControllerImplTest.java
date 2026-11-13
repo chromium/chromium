@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -539,6 +540,161 @@ public class AdaptiveUiControllerImplTest {
                         .setUserCritical(UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
                         .build();
         assertEquals(expected, content.getSheetType());
+    }
+
+    @Test
+    public void testMetrics_ContainerShownAndDismissal() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        HistogramWatcher sheetWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.ContainerShown",
+                                AdaptiveUiContainer.BOTTOM_SHEET)
+                        .expectBooleanRecord("Android.AdaptiveUi.EntryDeferred.BottomSheet", false)
+                        .expectNoRecords("Android.AdaptiveUi.DismissReasonBeforeShown.BottomSheet")
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReason.BottomSheet",
+                                DismissReason.PRIMARY_ACTION)
+                        .build();
+
+        AdaptiveUiEntry sheetEntry = newEntry();
+        mController.show(sheetEntry);
+        BottomSheetContent content = captureSheetContent();
+        mCurrentSheetContent = content;
+        captureSheetObserver().onSheetContentChanged(content);
+        mController.dismiss(sheetEntry, DismissReason.PRIMARY_ACTION);
+        content.destroy();
+        sheetWatcher.assertExpected();
+
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            for (ModalDialogManagerObserver o :
+                                    captureAllDialogObservers(/* expectedCount= */ 1)) {
+                                o.onDialogCreated(model, /* dialog= */ null);
+                                o.onDialogShown(new View(mActivity));
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.TAB));
+        HistogramWatcher dialogWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.ContainerShown",
+                                AdaptiveUiContainer.MODAL_DIALOG)
+                        .expectBooleanRecord("Android.AdaptiveUi.EntryDeferred.ModalDialog", false)
+                        .expectNoRecords("Android.AdaptiveUi.DismissReasonBeforeShown.ModalDialog")
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReason.ModalDialog",
+                                DismissReason.TAB_SWITCHED)
+                        .build();
+
+        mController.show(newEntry());
+        PropertyModel dialogModel = captureDialogModel(ModalDialogType.TAB);
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialogModel, DialogDismissalCause.TAB_SWITCHED);
+        dialogWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_DeferredAndDismissedBeforeShown() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+        HistogramWatcher sheetWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.AdaptiveUi.ContainerShown")
+                        .expectNoRecords("Android.AdaptiveUi.DismissReason.BottomSheet")
+                        .expectBooleanRecord("Android.AdaptiveUi.EntryDeferred.BottomSheet", true)
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReasonBeforeShown.BottomSheet",
+                                DismissReason.CLOSE_BUTTON)
+                        .build();
+
+        AdaptiveUiEntry sheetEntry = newEntry();
+        mController.show(sheetEntry);
+        mController.dismiss(sheetEntry, DismissReason.CLOSE_BUTTON);
+        sheetWatcher.assertExpected();
+
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        HistogramWatcher dialogWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.AdaptiveUi.ContainerShown")
+                        .expectNoRecords("Android.AdaptiveUi.DismissReason.ModalDialog")
+                        .expectBooleanRecord("Android.AdaptiveUi.EntryDeferred.ModalDialog", true)
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReasonBeforeShown.ModalDialog",
+                                DismissReason.NAVIGATION)
+                        .build();
+
+        AdaptiveUiEntry dialogEntry = newEntry();
+        mController.show(dialogEntry);
+        mController.dismiss(dialogEntry, DismissReason.NAVIGATION);
+        dialogWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_EntryDeferredSkippedWhenDismissedInsideShow() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            model.get(ModalDialogProperties.CONTROLLER)
+                                    .onDismiss(model, DialogDismissalCause.NOT_ATTACHED_TO_WINDOW);
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.TAB));
+        HistogramWatcher droppedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.AdaptiveUi.ContainerShown")
+                        .expectNoRecords("Android.AdaptiveUi.EntryDeferred.ModalDialog")
+                        .expectNoRecords("Android.AdaptiveUi.DismissReason.ModalDialog")
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReasonBeforeShown.ModalDialog",
+                                DismissReason.TAB_CLOSED)
+                        .build();
+
+        mController.show(newEntry());
+        droppedWatcher.assertExpected();
+
+        AdaptiveUiEntry entry = newEntry();
+        doAnswer(
+                        invocation -> {
+                            mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
+                            return null;
+                        })
+                .when(mObserver)
+                .onShown(anyInt());
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            for (ModalDialogManagerObserver o :
+                                    captureAllDialogObservers(/* expectedCount= */ 2)) {
+                                o.onDialogCreated(model, /* dialog= */ null);
+                                o.onDialogShown(new View(mActivity));
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.TAB));
+        HistogramWatcher hiddenInOnShownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.ContainerShown",
+                                AdaptiveUiContainer.MODAL_DIALOG)
+                        .expectNoRecords("Android.AdaptiveUi.EntryDeferred.ModalDialog")
+                        .expectNoRecords("Android.AdaptiveUi.DismissReasonBeforeShown.ModalDialog")
+                        .expectIntRecord(
+                                "Android.AdaptiveUi.DismissReason.ModalDialog",
+                                DismissReason.CLOSE_BUTTON)
+                        .build();
+
+        mController.show(entry);
+        hiddenInOnShownWatcher.assertExpected();
     }
 
     private List<ModalDialogManagerObserver> captureAllDialogObservers(int expectedCount) {

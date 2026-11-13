@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -16,6 +17,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,14 +127,22 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
         if (mDestroyed || mPresenters.containsKey(entry)) return null;
 
         @AdaptiveUiContainer int container = selectContainer(entry.getAllowedContainers());
+        Set<AdaptiveUiEntry> shownEntries = new HashSet<>();
         Runnable onShown =
                 () -> {
                     if (mDestroyed) return;
+                    shownEntries.add(entry);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Android.AdaptiveUi.ContainerShown",
+                            container,
+                            AdaptiveUiContainer.COUNT);
                     notifyShown(entry, container);
                 };
         Callback<Integer> onDismissed =
                 reason -> {
                     mPresenters.remove(entry);
+                    boolean dismissedBeforeShown = !shownEntries.remove(entry);
+                    recordDismissalMetrics(container, reason, dismissedBeforeShown);
                     notifyDismissed(entry, reason);
                 };
         Presenter presenter =
@@ -154,7 +164,13 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
                                 onShown,
                                 onDismissed);
         mPresenters.put(entry, presenter);
-        return presenter.show() ? container : null;
+        boolean shownNow = presenter.show();
+        if (mPresenters.containsKey(entry)) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.AdaptiveUi.EntryDeferred." + getContainerSuffix(container),
+                    !shownEntries.contains(entry) && !shownNow);
+        }
+        return shownNow ? container : null;
     }
 
     @Override
@@ -187,6 +203,25 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
                     : AdaptiveUiContainer.BOTTOM_SHEET;
         }
         return sheetAllowed ? AdaptiveUiContainer.BOTTOM_SHEET : AdaptiveUiContainer.MODAL_DIALOG;
+    }
+
+    // LINT.IfChange(AdaptiveUiContainerSuffix)
+    private static String getContainerSuffix(@AdaptiveUiContainer int container) {
+        return container == AdaptiveUiContainer.MODAL_DIALOG ? "ModalDialog" : "BottomSheet";
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:AdaptiveUiContainerSuffix)
+
+    private static void recordDismissalMetrics(
+            @AdaptiveUiContainer int container,
+            @DismissReason int reason,
+            boolean dismissedBeforeShown) {
+        String histogram =
+                dismissedBeforeShown
+                        ? "Android.AdaptiveUi.DismissReasonBeforeShown."
+                        : "Android.AdaptiveUi.DismissReason.";
+        RecordHistogram.recordEnumeratedHistogram(
+                histogram + getContainerSuffix(container), reason, DismissReason.COUNT);
     }
 
     private static void notifyShown(AdaptiveUiEntry entry, @AdaptiveUiContainer int container) {

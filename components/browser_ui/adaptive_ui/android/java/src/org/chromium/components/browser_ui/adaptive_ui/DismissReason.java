@@ -13,7 +13,12 @@ import java.lang.annotation.RetentionPolicy;
 
 // One-way: DialogDismissalCause and StateChangeReason changes require updating this IntDef.
 // LINT.IfChange(DismissReason)
-/** Reasons for dismissing an adaptive UI entry. */
+/**
+ * Reasons for dismissing an adaptive UI entry.
+ *
+ * <p>These values are persisted to logs. Entries should not be renumbered and numeric values should
+ * never be reused.
+ */
 @NullMarked
 @IntDef({
     DismissReason.BACK_PRESS,
@@ -61,4 +66,5 @@ public @interface DismissReason {
     int COUNT = 9;
 }
 // LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinator.java:DialogDismissReasonMapping,
-// //components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java:SheetDismissReasonMapping)
+// //components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java:SheetDismissReasonMapping,
+// //tools/metrics/histograms/metadata/android/enums.xml:AdaptiveUiDismissReason)
