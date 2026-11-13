@@ -166,37 +166,8 @@ class ContentFacilitatedPaymentsDriverFactoryTest
 };
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-  base::HistogramTester histogram_tester;
-
-  ON_CALL(*client_, GetOptimizationGuideDecider)
-      .WillByDefault(testing::Return(decider_.get()));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-  content::RenderFrameHost* iframe =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-
-  factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
-
-  histogram_tester.ExpectBucketCount(
-      "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PixFlowExitedReason::kPixCodeInIFrame,
-      /*expected_count=*/0);
-}
-
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnTextCopiedToClipboard_PixCodeInIFrame_CorrectIframeUrlPassedToDriver) {
   ON_CALL(*client_, GetOptimizationGuideDecider)
       .WillByDefault(testing::Return(decider_.get()));
 
@@ -249,9 +220,6 @@ TEST_F(
 TEST_F(
     ContentFacilitatedPaymentsDriverFactoryTest,
     OnTextCopiedToClipboard_ErrorDocument_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
   base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://example.com"));
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();

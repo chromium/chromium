@@ -4179,11 +4179,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-iframe-for-pix",
-    "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "enable-input-event-logging",
     "owners": [ "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Used to attach input device debugging information to feedback reports.

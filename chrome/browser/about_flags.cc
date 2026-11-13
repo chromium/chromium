@@ -10224,10 +10224,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          payments::facilitated::kEnablePixPaymentsInLandscapeMode)},
-
-    {"enable-iframe-for-pix", flag_descriptions::kEnableIframeForPixName,
-     flag_descriptions::kEnableIframeForPixDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(payments::facilitated::kEnableIframeForPix)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-standard-device-bound-session-credentials",

@@ -249,7 +249,6 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{payments::facilitated::kEwalletPayments,
-                            payments::facilitated::kEnableIframeForPix,
                             payments::facilitated::
                                 kEnableDesktopQrCodeDetection},
       /*disabled_features=*/{});
@@ -284,8 +283,8 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
 // Test that the `PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST` optimization
 // type is not registered when the `ChromeFacilitatedPaymentClient` is created
 // and the QR code detection experiment is disabled. The other allowlists are
-// unaffected; `EWALLET_MERCHANT_ALLOWLIST` and `PIX_PSP_ALLOWLIST` are still
-// registered because their gating features are enabled by default.
+// unaffected; `EWALLET_MERCHANT_ALLOWLIST` is still registered because its
+// gating feature is enabled by default.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        RegisterAllowlists_QrCodeDetectionExpOff) {
   base::test::ScopedFeatureList feature_list;
@@ -342,37 +341,6 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_EWalletExpOff) {
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
-      .Times(0);
-
-  // Re-create the client; it should not register the allowlist.
-  client_.reset();
-  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      mock_tab_, web_contents(), &optimization_guide_decider_);
-}
-
-// Test that the `PIX_PSP_ALLOWLIST` optimization type is not registered when
-// the `ChromeFacilitatedPaymentClient` is created and the iframe experiment is
-// disabled.
-TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_IframeExpOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      payments::facilitated::kEnableIframeForPix);
-
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::A2A_MERCHANT_ALLOWLIST)))
-      .Times(1);
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
-      .Times(1);
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
-      .Times(1);
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_PSP_ALLOWLIST)))
       .Times(0);
 
   // Re-create the client; it should not register the allowlist.

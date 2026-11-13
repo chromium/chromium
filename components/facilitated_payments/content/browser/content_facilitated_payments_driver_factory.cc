@@ -283,14 +283,6 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
   content::RenderFrameHost* main_frame =
       render_frame_host->GetOutermostMainFrame();
 
-  // If the copy event occurred in iframe, only proceed if the iframe flag is
-  // enabled.
-  if (render_frame_host != main_frame &&
-      !base::FeatureList::IsEnabled(kEnableIframeForPix)) {
-    LogPixFlowExitedReason(PixFlowExitedReason::kPixCodeInIFrame);
-    return;
-  }
-
   if (!render_frame_host->IsActive()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kFrameNotActive);
     return;

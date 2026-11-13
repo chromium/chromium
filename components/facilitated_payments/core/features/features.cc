@@ -45,10 +45,6 @@ const base::FeatureParam<bool> kQrCodeDetectionRequireKeywordMatch{
 BASE_FEATURE(kEnableEwalletNewAccountLinking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, pix pay flow will be triggered when users click the copy button
-// within iframe.
-BASE_FEATURE(kEnableIframeForPix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will offer a native Pix account linking flow for
 // users on Chrome, removing the Wallet app dependency.
 BASE_FEATURE(kEnablePixAccountLinkingNative, base::FEATURE_DISABLED_BY_DEFAULT);

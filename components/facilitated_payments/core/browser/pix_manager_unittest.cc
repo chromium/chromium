@@ -394,8 +394,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled, CopyTrigger_LogPixCodeCopied) {
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_LogPixCodeCopied_HasIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
@@ -414,42 +412,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
   EXPECT_EQ(ukm_entries[0].metrics.at("HasIframe"), true);
-}
-
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       CopyTrigger_UrlInAllowlist__ControlIdPopulatedInInitiatePaymentRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableIframeForPix);
-  int64_t iframe_control_id = 3397366;
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-  GURL url("https://example.com/");
-  url::Origin origin = url::Origin::Create(url);
-  // Mock allowlist check result.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kTrue));
-  // If Pix validation is run, then IsAvailable should get called once.
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
-
-  pix_manager_->OnPixCodeCopiedToClipboard(
-      url, std::nullopt, origin, /*is_same_origin=*/false,
-      PixCodeRustValidationResult::kDynamic,
-      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
-      ukm::UkmRecorder::GetNewSourceID());
-
-  EXPECT_THAT(test_api(*pix_manager_)
-                  .initiate_payment_request_details()
-                  ->chrome_experiment_ids_,
-              testing::ElementsAre(iframe_control_id));
 }
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
@@ -573,9 +535,6 @@ TEST_F(
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_InIframe_IframeUrlNotAllowlisted_PixValidationNotTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
   GURL main_frame_url("https://merchant.com/");
   GURL iframe_url("https://unknown-psp.com/");
   url::Origin origin = url::Origin::Create(main_frame_url);
@@ -604,8 +563,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 TEST_F(
     PixManagerTestWithAccountLinkingEnabled,
     CopyTrigger_InIframe_IframeUrlNotAllowlisted_SameOriginWithAllowlistedMerchant_PixValidationTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
@@ -649,8 +606,6 @@ TEST_F(
     PixManagerTestWithAccountLinkingEnabled,
     CopyTrigger_InIframe_IframeUrlNotAllowlisted_SameOriginWithNonAllowlistedMerchant_PixValidationNotTriggered) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
@@ -699,8 +654,6 @@ TEST_F(
     PixManagerTestWithAccountLinkingEnabled,
     CopyTrigger_InIframe_IframeUrlNotAllowlisted_PayflowExitedHistogramLogged) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
 
   GURL main_frame_url("https://merchant.com/");
   GURL iframe_url("https://unknown-psp.com/");
@@ -729,34 +682,7 @@ TEST_F(
 }
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       CopyTrigger_InIframe_FeatureDisabled_PayflowExitedHistogramNotLogged) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kEnableIframeForPix);
-
-  GURL main_frame_url("https://merchant.com/");
-  GURL iframe_url("https://unknown-psp.com/");
-  url::Origin origin = url::Origin::Create(main_frame_url);
-
-  // Mock optimization guide is not called.
-  EXPECT_CALL(*optimization_guide_decider_,
-              CanApplyOptimization(
-                  testing::Eq(iframe_url),
-                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
-                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                      testing::Eq(nullptr))))
-      .Times(0);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PixFlowExitedReason::kIframeUrlNotAllowlisted,
-      /*expected_bucket_count=*/0);
-}
-
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_InIframe_IframeUrlAllowlisted_PixValidationTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
@@ -786,8 +712,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_InIframe_PspHostnamePopulatedInInitiatePaymentRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
@@ -817,44 +741,8 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       CopyTrigger_InIframe_ExperimentIdPopulatedInInitiatePaymentRequest) {
-  base::test::ScopedFeatureList feature_list;
-  int64_t iframe_experiment_id = 3397365;
-  feature_list.InitAndEnableFeature(kEnableIframeForPix);
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-
-  GURL main_frame_url("https://merchant.com/");
-  GURL iframe_url("https://trusted-psp.com/");
-  url::Origin origin = url::Origin::Create(main_frame_url);
-
-  // Mock allowlist check to return true.
-  EXPECT_CALL(*optimization_guide_decider_,
-              CanApplyOptimization(
-                  testing::Eq(iframe_url),
-                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
-                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                      testing::Eq(nullptr))))
-      .WillOnce(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kTrue));
-
-  pix_manager_->OnPixCodeCopiedToClipboard(
-      main_frame_url, iframe_url, origin, /*is_same_origin=*/false,
-      PixCodeRustValidationResult::kDynamic,
-      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
-      ukm::UkmRecorder::GetNewSourceID());
-
-  EXPECT_THAT(test_api(*pix_manager_)
-                  .initiate_payment_request_details()
-                  ->chrome_experiment_ids_,
-              testing::ElementsAre(iframe_experiment_id));
-}
-
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_InIframe_LogPixCodeCopiedInIframe) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
 
   GURL main_frame_url("https://merchant.com/");
   GURL iframe_url("https://unknown-psp.com/");
@@ -875,8 +763,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_NotInIframe_PixCodeCopiedIframeNotLogged) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
 
   GURL main_frame_url("https://merchant.com/");
   // Empty iframe_url since copy event did not happen in an iframe.
@@ -931,8 +817,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        IsIframeStateUpdatedOnConsecutiveCalls) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   GURL main_frame_url("https://merchant.com/");
@@ -1425,8 +1309,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
 
 TEST_F(PixManagerTestWithAccountLinkingEnabled, LogTransactionResultForIframe) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
 
   GURL url("https://merchant.com/");
   GURL iframe_url("https://trusted-psp.com/");
@@ -1473,8 +1355,6 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled, LogTransactionResultForIframe) {
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        LogTransactionResultForMainFrame) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
 
   GURL url("https://merchant.com/");
   url::Origin origin = url::Origin::Create(url);

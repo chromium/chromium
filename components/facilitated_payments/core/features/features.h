@@ -25,7 +25,6 @@ extern const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio;
 // candidate, to extract images for QR code decoding.
 extern const base::FeatureParam<bool> kQrCodeDetectionRequireKeywordMatch;
 BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
-BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);
 extern const base::FeatureParam<int>
     kPixAccountLinkingNativeTriggerDelaySeconds;

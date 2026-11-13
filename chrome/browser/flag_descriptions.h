@@ -2261,11 +2261,6 @@ inline constexpr char kEnableProcessIsolationUiName[] =
 inline constexpr char kEnableProcessIsolationUiDescription[] =
     "Shows the Enable Process Isolation toggle in chrome://settings/system.";
 
-inline constexpr char kEnableIframeForPixName[] = "Enable Iframe For Pix";
-inline constexpr char kEnableIframeForPixDescription[] =
-    "When enabled, pix pay flow will be triggered when users click the copy "
-    "button within iframe.";
-
 inline constexpr char kDesktopGlowUpName[] = "Desktop Glow Up";
 inline constexpr char kDesktopGlowUpDescription[] =
     "Enables all Desktop Glow Up features.";

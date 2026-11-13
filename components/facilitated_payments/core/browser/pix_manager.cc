@@ -29,9 +29,6 @@ namespace {
 static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(2);
 static constexpr FacilitatedPaymentsType kPaymentsType =
     FacilitatedPaymentsType::kPix;
-// Experiment and control IDs for iframe.
-constexpr int64_t kIframeExperimentId = 3397365;
-constexpr int64_t kIframeControlId = 3397366;
 
 bool IsValidPixCode(PixCodeRustValidationResult validation_result) {
   switch (validation_result) {
@@ -96,15 +93,6 @@ void PixManager::OnPixCodeCopiedToClipboard(
   pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   LogPixCodeCopied(ukm_source_id_, pix_code_is_in_iframe_);
-  // TODO(crbug.com/479520609): Stop populating experiment IDs once backend
-  // experiment is fully enabled without the integrator trigger.
-  if (base::FeatureList::IsEnabled(kEnableIframeForPix)) {
-    initiate_payment_request_details_->chrome_experiment_ids_.push_back(
-        kIframeExperimentId);
-  } else {
-    initiate_payment_request_details_->chrome_experiment_ids_.push_back(
-        kIframeControlId);
-  }
   // If the copy event happened inside an iframe, check whether the iframe URL
   // is allowlisted. Otherwise, check whether the main frame URL is allowlisted.
   if (pix_code_is_in_iframe_) {
