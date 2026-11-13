@@ -11,6 +11,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * This is the Java half of
  * chrome/browser/ui/browser_window/public/global_browser_collection_platform_delegate.h, which
@@ -41,12 +44,58 @@ final class GlobalBrowserCollectionPlatformDelegate
      */
     @VisibleForTesting
     GlobalBrowserCollectionPlatformDelegate(long nativePointer) {
+        assert nativePointer != 0;
         mNativePointer = nativePointer;
         var tracker = ChromeAndroidTaskTrackerImpl.getInstance();
-        // If there are any existing tasks, add observers to them now as the implementation of
-        // ChromeAndroidTaskTrackerObserver only receives signals on future events.
-        for (ChromeAndroidTask task : tracker.getAllTasks()) {
-            onTaskAdded(task);
+        List<ChromeAndroidTask> existingTasks = tracker.getAllTasks();
+
+        // Invoke onBrowserCreated() for existing windows and subscribe to each task:
+        // ChromeAndroidTaskTrackerObserver and AndroidBrowserWindowObserver only notify on future
+        // events, so pre-existing tasks and windows must be registered now in creation order.
+        for (ChromeAndroidTask task : existingTasks) {
+            assert !task.hasAndroidBrowserWindowObserver(this);
+            task.addAndroidBrowserWindowObserver(this);
+            for (long androidBrowserWindowPtr : task.getAllNativeBrowserWindowPtrs()) {
+                GlobalBrowserCollectionPlatformDelegateJni.get()
+                        .onBrowserCreated(mNativePointer, androidBrowserWindowPtr);
+            }
+        }
+
+        // Invoke onBrowserActivated() to seed initial MRU activation order:
+        // AndroidBrowserWindowObserver only receives future activation events, so historical and
+        // current activation state must be replayed explicitly. Because native
+        // GlobalBrowserCollection::OnBrowserActivated() rotates each activated browser to the
+        // front of `browsers_activation_order_`, replaying from oldest-activated to
+        // currently-active (and secondary windows in reverse before `activePtr`) leaves the active
+        // window at the front and never-activated windows untouched at the back in creation order:
+        //
+        //   Initial (after onBrowserCreated for T1=never, T2=t200, T3=t100, T4=active):
+        //     [T1, T2, T3, T4]
+        //   1. Replay oldest inactive T3 (t100):  [T3, T1, T2, T4]
+        //   2. Replay newer inactive  T2 (t200):  [T2, T3, T1, T4]
+        //   3. Replay currently active T4:        [T4, T2, T3, T1]  (MRU -> never-activated)
+        existingTasks.sort(
+                Comparator.comparingInt(
+                                (ChromeAndroidTask task) ->
+                                        task.getActiveNativeBrowserWindowPtr() != 0 ? 1 : 0)
+                        .thenComparingLong(ChromeAndroidTask::getLastActivatedTimeMillis));
+        for (ChromeAndroidTask task : existingTasks) {
+            long activePtr = task.getActiveNativeBrowserWindowPtr();
+            if (activePtr == 0 && task.getLastActivatedTimeMillis() <= 0) {
+                continue;
+            }
+            List<Long> ptrs = task.getAllNativeBrowserWindowPtrs();
+            for (int i = ptrs.size() - 1; i >= 0; i--) {
+                long ptr = ptrs.get(i);
+                if (ptr != activePtr) {
+                    GlobalBrowserCollectionPlatformDelegateJni.get()
+                            .onBrowserActivated(mNativePointer, ptr);
+                }
+            }
+            if (activePtr != 0) {
+                GlobalBrowserCollectionPlatformDelegateJni.get()
+                        .onBrowserActivated(mNativePointer, activePtr);
+            }
         }
         tracker.addObserver(this);
     }
@@ -57,7 +106,11 @@ final class GlobalBrowserCollectionPlatformDelegate
     @CalledByNative
     @VisibleForTesting
     void destroy() {
-        ChromeAndroidTaskTrackerImpl.getInstance().removeObserver(this);
+        var tracker = ChromeAndroidTaskTrackerImpl.getInstance();
+        tracker.removeObserver(this);
+        for (ChromeAndroidTask task : tracker.getAllTasks()) {
+            task.removeAndroidBrowserWindowObserver(this);
+        }
         mNativePointer = 0;
     }
 
@@ -66,6 +119,7 @@ final class GlobalBrowserCollectionPlatformDelegate
         // If there are any existing windows in the task, count them now as the implementation of
         // AndroidBrowserWindowObserver only receives signals on future events.
         assert !task.hasAndroidBrowserWindowObserver(this);
+        task.addAndroidBrowserWindowObserver(this);
         if (mNativePointer != 0) {
             for (long androidBrowserWindowPtr : task.getAllNativeBrowserWindowPtrs()) {
                 GlobalBrowserCollectionPlatformDelegateJni.get()
@@ -77,7 +131,6 @@ final class GlobalBrowserCollectionPlatformDelegate
                         .onBrowserActivated(mNativePointer, activePtr);
             }
         }
-        task.addAndroidBrowserWindowObserver(this);
     }
 
     @Override

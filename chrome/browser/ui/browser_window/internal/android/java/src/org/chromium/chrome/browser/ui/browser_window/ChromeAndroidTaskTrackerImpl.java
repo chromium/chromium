@@ -33,7 +33,6 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -226,25 +225,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return mObservers.removeObserver(observer);
     }
 
-    /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
-    long[] getAllNativeBrowserWindowPtrs() {
-        ThreadUtils.assertOnUiThread();
-        return getNativeBrowserWindowPtrs(getAllTasks());
-    }
-
-    /**
-     * Returns an array of the native {@code BrowserWindowInterface} addresses, sorted by the
-     * descending order of {@link ChromeAndroidTask#getLastActivatedTimeMillis()}.
-     */
-    long[] getNativeBrowserWindowPtrsOrderedByActivation() {
-        ThreadUtils.assertOnUiThread();
-        List<ChromeAndroidTask> tasks = getAllTasks();
-        tasks.sort(
-                Comparator.comparingLong(ChromeAndroidTask::getLastActivatedTimeMillis).reversed());
-
-        return getNativeBrowserWindowPtrs(tasks);
-    }
-
     /** Activates the second to last activated task, if there are at least two tasks. */
     void activatePenultimatelyActivatedTask() {
         ThreadUtils.assertOnUiThread();
@@ -259,7 +239,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     /** Count of tasks. */
     int countOfTasks() {
-        return getAllTasks().size();
+        return mTasks.size();
     }
 
     /** Returns all ALIVE Tasks. */
@@ -332,20 +312,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
 
         return ApplicationStatus.getTaskId(activity);
-    }
-
-    /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
-    private long[] getNativeBrowserWindowPtrs(Collection<ChromeAndroidTask> chromeAndroidTasks) {
-        List<Long> ptrs = new ArrayList<>();
-        for (var task : chromeAndroidTasks) {
-            ptrs.addAll(task.getAllNativeBrowserWindowPtrs());
-        }
-
-        long[] nativeBrowserWindowPtrs = new long[ptrs.size()];
-        for (int i = 0; i < ptrs.size(); i++) {
-            nativeBrowserWindowPtrs[i] = ptrs.get(i);
-        }
-        return nativeBrowserWindowPtrs;
     }
 
     @Nullable

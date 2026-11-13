@@ -49,7 +49,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -104,12 +104,10 @@ using content::WebContents;
 namespace {
 
 BrowserWindowInterface* FindBrowserWindowInterface(SessionID window_id) {
-  for (BrowserWindowInterface* window : GetAllBrowserWindowInterfaces()) {
-    if (window->GetSessionID() == window_id) {
-      return window;
-    }
+  if (!window_id.is_valid()) {
+    return nullptr;
   }
-  return nullptr;
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithID(window_id);
 }
 
 }  // namespace

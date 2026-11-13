@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/function_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+
+#include "base/functional/function_ref.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {

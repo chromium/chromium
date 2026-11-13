@@ -8,6 +8,7 @@ import("//chrome/common/features.gni")
 source_set("internal") {
   sources = [
     "browser_collection.cc",
+    "browser_window_interface_iterator.cc",
     "create_browser_window.cc",
     "global_browser_collection.cc",
     "profile_browser_collection.cc",
@@ -43,9 +44,6 @@ source_set("internal") {
       "android/android_base_window.h",
       "android/android_browser_window.cc",
       "android/android_browser_window.h",
-      "android/android_browser_window_enumerator.cc",
-      "android/android_browser_window_enumerator.h",
-      "android/browser_window_interface_iterator_android.cc",
       "android/create_browser_window_android.cc",
       "android/global_browser_collection_platform_delegate_android.cc",
     ]
@@ -64,7 +62,6 @@ source_set("internal") {
   } else {
     sources += [
       "browser_window_features.cc",
-      "browser_window_interface_iterator_non_android.cc",
       "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
       "embedder_browser_window_features.cc",
@@ -261,9 +258,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "android/android_base_window_unittest.cc",
-      "android/android_browser_window_enumerator_unittest.cc",
       "android/android_browser_window_unittest.cc",
-      "android/browser_window_interface_iterator_android_unittest.cc",
     ]
     deps += [
       "//base",
@@ -298,7 +293,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowObserverNotifier.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
-      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraints.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
@@ -345,7 +339,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
-      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/GlobalBrowserCollectionPlatformDelegate.java",
     ]
     deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -18,13 +19,18 @@
 #include "ui/base/l10n/l10n_util.h"
 
 GlobalBrowserCollection::GlobalBrowserCollection()
-    : platform_delegate_(GlobalBrowserCollectionPlatformDelegate(*this)) {}
+    : platform_delegate_(*this) {}
 
 GlobalBrowserCollection::~GlobalBrowserCollection() = default;
 
 // static
 GlobalBrowserCollection* GlobalBrowserCollection::GetInstance() {
-  return g_browser_process->GetFeatures()->global_browser_collection();
+  CHECK(g_browser_process);
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  CHECK(features);
+  GlobalBrowserCollection* collection = features->global_browser_collection();
+  CHECK(collection);
+  return collection;
 }
 
 bool GlobalBrowserCollection::IsEmpty() const {

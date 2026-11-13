@@ -830,6 +830,7 @@ if (is_android) {
       "//chrome/browser/ui/android/omnibox:jni_headers",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/android/webid",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/digital_credentials",
       "//chrome/browser/ui/tabs:page_context_eligibility_helper",
