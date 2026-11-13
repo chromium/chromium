@@ -400,6 +400,66 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {
   EXPECT_FALSE(stop_future.Get());
 }
 
+TEST_F(ActorKeyedServiceAdapterTest, PauseTaskMapsReasonsToPausedStates) {
+  const struct {
+    proto::PauseTaskRequest::Reason proto_reason;
+    ActorTask::State expected_state;
+  } kTestCases[] = {
+      {proto::PauseTaskRequest::REASON_UNSPECIFIED,
+       ActorTask::State::kPausedByActor},
+      {proto::PauseTaskRequest::USER_REQUESTED,
+       ActorTask::State::kPausedByUser},
+      {proto::PauseTaskRequest::YIELD_TO_USER,
+       ActorTask::State::kPausedByActor},
+      {proto::PauseTaskRequest::AWAITING_USER_CONFIRMATION,
+       ActorTask::State::kPausedByActor},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+    adapter_.StartTask(proto::StartTaskRequest(), start_future.GetCallback());
+    TaskId task_id = std::get<0>(start_future.Get());
+
+    proto::PauseTaskRequest pause_request;
+    pause_request.set_reason(test_case.proto_reason);
+    base::test::TestFuture<bool> pause_future;
+    adapter_.PauseTask(task_id, pause_request, pause_future.GetCallback());
+    EXPECT_TRUE(pause_future.Get());
+
+    ActorTask* task = actor_service_->GetTask(task_id);
+    ASSERT_TRUE(task);
+    EXPECT_EQ(task->GetState(), test_case.expected_state);
+  }
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       PauseTaskReturnsFalseForUnknownOrAlreadyPausedTask) {
+  base::test::TestFuture<bool> unknown_future;
+  adapter_.PauseTask(TaskId(9999), proto::PauseTaskRequest(),
+                     unknown_future.GetCallback());
+  EXPECT_FALSE(unknown_future.Get());
+
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(proto::StartTaskRequest(), start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
+
+  proto::PauseTaskRequest user_pause_request;
+  user_pause_request.set_reason(proto::PauseTaskRequest::USER_REQUESTED);
+  base::test::TestFuture<bool> first_pause_future;
+  adapter_.PauseTask(task_id, user_pause_request,
+                     first_pause_future.GetCallback());
+  EXPECT_TRUE(first_pause_future.Get());
+
+  proto::PauseTaskRequest actor_pause_request;
+  actor_pause_request.set_reason(proto::PauseTaskRequest::YIELD_TO_USER);
+  base::test::TestFuture<bool> second_pause_future;
+  adapter_.PauseTask(task_id, actor_pause_request,
+                     second_pause_future.GetCallback());
+  EXPECT_FALSE(second_pause_future.Get());
+  EXPECT_EQ(actor_service_->GetTask(task_id)->GetState(),
+            ActorTask::State::kPausedByUser);
+}
+
 TEST_F(ActorKeyedServiceAdapterTest, ActRejectsUnknownTask) {
   proto::PerformActionsRequest unknown_request;
   unknown_request.add_actions()->mutable_wait()->set_wait_time_ms(0);

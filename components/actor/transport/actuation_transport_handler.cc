@@ -83,8 +83,11 @@ void ActuationTransportHandler::OnMessage(
                      message.stop_task());
       break;
     case proto::ServerToBrowserPayload::kPauseTask:
+      HandlePauseTask(message.request_id(), message.task_id(),
+                      message.pause_task());
+      break;
     case proto::ServerToBrowserPayload::kResumeTask:
-      // TODO(crbug.com/574548405): Route pause and resume task payloads.
+      // TODO(crbug.com/574548405): Route resume task payloads.
       NOTIMPLEMENTED();
       break;
     case proto::ServerToBrowserPayload::PAYLOAD_NOT_SET:
@@ -215,6 +218,35 @@ void ActuationTransportHandler::OnStopTaskComplete(
   upstream.mutable_stop_task()->set_status(
       success ? proto::StopTaskResponse::STATUS_OK
               : proto::StopTaskResponse::STATUS_FAILED);
+  std::ignore =
+      SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
+}
+
+void ActuationTransportHandler::HandlePauseTask(
+    const std::string& request_id,
+    const std::string& task_id_str,
+    const proto::PauseTaskRequest& request) {
+  auto it = active_tasks_.find(task_id_str);
+  if (it == active_tasks_.end()) {
+    OnPauseTaskComplete(request_id, task_id_str, false);
+    return;
+  }
+  delegate_->PauseTask(
+      it->second, request,
+      base::BindOnce(&ActuationTransportHandler::OnPauseTaskComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id, task_id_str));
+}
+
+void ActuationTransportHandler::OnPauseTaskComplete(
+    const std::string& request_id,
+    const std::string& task_id_str,
+    bool success) {
+  proto::BrowserToServerPayload upstream;
+  upstream.set_task_id(task_id_str);
+  upstream.set_request_id(request_id);
+  upstream.mutable_pause_task()->set_status(
+      success ? proto::PauseTaskResponse::STATUS_OK
+              : proto::PauseTaskResponse::STATUS_FAILED);
   std::ignore =
       SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
 }

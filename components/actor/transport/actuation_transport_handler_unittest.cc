@@ -84,6 +84,14 @@ class FakeActuationDelegate : public ActuationDelegate {
     std::move(callback).Run(true);
   }
 
+  void PauseTask(TaskId task_id,
+                 const proto::PauseTaskRequest& request,
+                 PauseTaskCallback callback) override {
+    last_pause_task_id_ = task_id;
+    last_pause_request_ = request;
+    pending_pause_callback_ = std::move(callback);
+  }
+
   void Act(TaskId task_id,
            const proto::PerformActionsRequest& request,
            ActCallback callback) override {
@@ -110,6 +118,16 @@ class FakeActuationDelegate : public ActuationDelegate {
     return stopped_task_ids_;
   }
 
+  const std::optional<TaskId>& last_pause_task_id() const {
+    return last_pause_task_id_;
+  }
+  const std::optional<proto::PauseTaskRequest>& last_pause_request() const {
+    return last_pause_request_;
+  }
+  PauseTaskCallback TakePauseCallback() {
+    return std::move(pending_pause_callback_);
+  }
+
   const std::optional<TaskId>& last_act_task_id() const {
     return last_act_task_id_;
   }
@@ -127,6 +145,10 @@ class FakeActuationDelegate : public ActuationDelegate {
   std::optional<TaskId> last_stop_task_id_;
   std::optional<proto::StopTaskRequest> last_stop_request_;
   std::vector<TaskId> stopped_task_ids_;
+
+  std::optional<TaskId> last_pause_task_id_;
+  std::optional<proto::PauseTaskRequest> last_pause_request_;
+  PauseTaskCallback pending_pause_callback_;
 
   std::optional<TaskId> last_act_task_id_;
   std::optional<proto::PerformActionsRequest> last_perform_actions_request_;
@@ -818,6 +840,90 @@ TEST_F(ActuationTransportHandlerTest, ActRejectsUnownedTask) {
             proto::PerformActionsResponse::STATUS_TAB_DISCONNECTED);
   EXPECT_EQ(upstream.perform_actions().action_status_code(),
             static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+}
+
+TEST_F(ActuationTransportHandlerTest,
+       PauseTaskForwardsOwnedTaskAndSendsResponse) {
+  StartSessionTask(7, "server-task-7");
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("server-task-7");
+  downstream.set_request_id("req_pause_1");
+  downstream.mutable_pause_task()->set_reason(
+      proto::PauseTaskRequest::YIELD_TO_USER);
+
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  ASSERT_TRUE(delegate_->last_pause_task_id().has_value());
+  EXPECT_EQ(*delegate_->last_pause_task_id(), TaskId(7));
+  ASSERT_TRUE(delegate_->last_pause_request().has_value());
+  EXPECT_EQ(delegate_->last_pause_request()->reason(),
+            proto::PauseTaskRequest::YIELD_TO_USER);
+
+  delegate_->TakePauseCallback().Run(true);
+
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  const auto& upstream = session_.sent_messages()[1];
+  EXPECT_EQ(upstream.task_id(), "server-task-7");
+  EXPECT_EQ(upstream.request_id(), "req_pause_1");
+  ASSERT_TRUE(upstream.has_pause_task());
+  EXPECT_EQ(upstream.pause_task().status(),
+            proto::PauseTaskResponse::STATUS_OK);
+
+  downstream.set_request_id("req_pause_2");
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+  delegate_->TakePauseCallback().Run(false);
+
+  ASSERT_EQ(session_.sent_messages().size(), 3u);
+  EXPECT_EQ(session_.sent_messages()[2].task_id(), "server-task-7");
+  EXPECT_EQ(session_.sent_messages()[2].request_id(), "req_pause_2");
+  ASSERT_TRUE(session_.sent_messages()[2].has_pause_task());
+  EXPECT_EQ(session_.sent_messages()[2].pause_task().status(),
+            proto::PauseTaskResponse::STATUS_FAILED);
+}
+
+TEST_F(ActuationTransportHandlerTest,
+       PauseTaskRejectsUnownedOrPendingStartTask) {
+  proto::ServerToBrowserPayload unowned;
+  unowned.set_task_id("server-task-unowned");
+  unowned.set_request_id("req_pause_unowned");
+  unowned.mutable_pause_task()->set_reason(
+      proto::PauseTaskRequest::USER_REQUESTED);
+
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      unowned.SerializeAsString());
+
+  EXPECT_FALSE(delegate_->last_pause_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 1u);
+  EXPECT_EQ(session_.sent_messages()[0].task_id(), "server-task-unowned");
+  EXPECT_EQ(session_.sent_messages()[0].request_id(), "req_pause_unowned");
+  ASSERT_TRUE(session_.sent_messages()[0].has_pause_task());
+  EXPECT_EQ(session_.sent_messages()[0].pause_task().status(),
+            proto::PauseTaskResponse::STATUS_FAILED);
+
+  proto::ServerToBrowserPayload start_msg;
+  start_msg.set_task_id("server-task-pending");
+  start_msg.set_request_id("req_start_1");
+  start_msg.mutable_start_task();
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      start_msg.SerializeAsString());
+
+  proto::ServerToBrowserPayload pending_pause;
+  pending_pause.set_task_id("server-task-pending");
+  pending_pause.set_request_id("req_pause_pending");
+  pending_pause.mutable_pause_task();
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      pending_pause.SerializeAsString());
+
+  EXPECT_FALSE(delegate_->last_pause_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  EXPECT_EQ(session_.sent_messages()[1].task_id(), "server-task-pending");
+  EXPECT_EQ(session_.sent_messages()[1].request_id(), "req_pause_pending");
+  ASSERT_TRUE(session_.sent_messages()[1].has_pause_task());
+  EXPECT_EQ(session_.sent_messages()[1].pause_task().status(),
+            proto::PauseTaskResponse::STATUS_FAILED);
 }
 
 TEST_F(ActuationTransportHandlerTest,

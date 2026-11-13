@@ -46,6 +46,18 @@ ActorTask::StoppedReason ToStoppedReason(
   }
 }
 
+bool IsPausedFromActor(proto::PauseTaskRequest::Reason reason) {
+  switch (reason) {
+    case proto::PauseTaskRequest::USER_REQUESTED:
+      return false;
+    case proto::PauseTaskRequest::REASON_UNSPECIFIED:
+    case proto::PauseTaskRequest::YIELD_TO_USER:
+    case proto::PauseTaskRequest::AWAITING_USER_CONFIRMATION:
+    default:
+      return true;
+  }
+}
+
 proto::PerformActionsResponse::Status ToPerformActionsStatus(
     int32_t action_result) {
   switch (static_cast<mojom::ActionResultCode>(action_result)) {
@@ -240,6 +252,19 @@ void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
   }
 
   actor_service_->StopTask(task_id, ToStoppedReason(request.reason()));
+  std::move(callback).Run(true);
+}
+
+void ActorKeyedServiceAdapter::PauseTask(TaskId task_id,
+                                         const proto::PauseTaskRequest& request,
+                                         PauseTaskCallback callback) {
+  ActorTask* task = actor_service_->GetTask(task_id);
+  if (!task || task->IsCompleted() || task->IsUnderUserControl()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  task->Pause(IsPausedFromActor(request.reason()));
   std::move(callback).Run(true);
 }
 
