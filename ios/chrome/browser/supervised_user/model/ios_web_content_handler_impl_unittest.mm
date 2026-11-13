@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -101,4 +102,50 @@ TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheet) {
       supervised_user::LocalApprovalResult::kCanceled, 1);
 
   EXPECT_OCMOCK_VERIFY(mock_parent_access_commands_handler_);
+}
+
+TEST_F(IOSWebContentHandlerImplTest, NilCommandsHandlerDoesNotCrash) {
+  auto handler_with_nil_commands = std::make_unique<IOSWebContentHandlerImpl>(
+      &web_state_, nil, /*is_main_frame=*/true);
+
+  supervised_user::WebFilteringResult result;
+  result.url = GURL("https://www.example.com");
+  result.behavior = supervised_user::FilteringBehavior::kBlock;
+  result.reason = supervised_user::FilteringBehaviorReason::DEFAULT;
+  GURL target_url = settings_service().GetEffectiveUrlToUnblock(result);
+
+  bool initiated = true;
+  handler_with_nil_commands->RequestLocalApproval(
+      target_url, result, u"Bob",
+      base::BindOnce([](bool* out, bool val) { *out = val; }, &initiated));
+  EXPECT_FALSE(initiated);
+
+  handler_with_nil_commands->MaybeCloseLocalApproval();
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 0);
+}
+
+TEST_F(IOSWebContentHandlerImplTest,
+       DeallocatedCommandsHandlerFailsGracefully) {
+  std::unique_ptr<IOSWebContentHandlerImpl> handler;
+  @autoreleasepool {
+    id transient_commands_handler =
+        OCMStrictProtocolMock(@protocol(ParentAccessCommands));
+    handler = std::make_unique<IOSWebContentHandlerImpl>(
+        &web_state_, transient_commands_handler, /*is_main_frame=*/true);
+  }
+
+  supervised_user::WebFilteringResult result;
+  result.url = GURL("https://www.example.com");
+  result.behavior = supervised_user::FilteringBehavior::kBlock;
+  result.reason = supervised_user::FilteringBehaviorReason::DEFAULT;
+  GURL target_url = settings_service().GetEffectiveUrlToUnblock(result);
+
+  bool initiated = true;
+  handler->RequestLocalApproval(
+      target_url, result, u"Bob",
+      base::BindOnce([](bool* out, bool val) { *out = val; }, &initiated));
+  EXPECT_FALSE(initiated);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 0);
 }

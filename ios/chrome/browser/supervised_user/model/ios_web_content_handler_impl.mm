@@ -25,9 +25,7 @@ IOSWebContentHandlerImpl::IOSWebContentHandlerImpl(
     bool is_main_frame)
     : is_main_frame_(is_main_frame),
       web_state_(web_state),
-      commands_handler_(commands_handler) {
-  CHECK(commands_handler_);
-}
+      commands_handler_(commands_handler) {}
 
 IOSWebContentHandlerImpl::~IOSWebContentHandlerImpl() = default;
 
@@ -44,6 +42,13 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     return;
   }
 
+  if (!commands_handler_) {
+    // Non-tab WebStates (e.g. Lens Overlay, Reader Mode) and detached tabs do
+    // not have a `ParentAccessCommands` dispatcher.
+    std::move(callback).Run(false);
+    return;
+  }
+
   base::OnceCallback<void(
       supervised_user::LocalApprovalResult,
       std::optional<supervised_user::LocalWebApprovalErrorType>)>
@@ -51,8 +56,6 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
           &IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
           weak_factory_.GetWeakPtr(), target_url, base::TimeTicks::Now());
 
-  // The command handler must stay alive after initialization.
-  CHECK(commands_handler_);
   [commands_handler_
       showParentAccessBottomSheetForWebState:web_state_
                                    targetURL:target_url
