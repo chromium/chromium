@@ -9,13 +9,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.collection.ArraySet;
 import androidx.collection.LruCache;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -23,8 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
@@ -41,13 +37,6 @@ import java.util.Locale;
  */
 @NullMarked
 public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorageDelegate {
-    @IntDef({ClientType.DOWNLOAD_HOME, ClientType.NTP_SUGGESTIONS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ClientType {
-        int DOWNLOAD_HOME = 0;
-        int NTP_SUGGESTIONS = 1;
-    }
-
     /**
      * Avoid excessive requests leading to no available threads, add limitation. Since if the number
      * of running threads is too large and all threads are busy with no idle threads available,
@@ -71,9 +60,6 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      */
     private final BitmapCache mBitmapCache;
 
-    /** The client type of the client using this provider. */
-    private final @ClientType int mClient;
-
     /**
      * Tracks a set of Content Ids where thumbnail generation or retrieval failed. This should
      * prevent making subsequent (potentially expensive) thumbnail generation requests when there
@@ -94,8 +80,6 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
 
     private boolean mDestroyed;
 
-    private int mCacheSizeMaxBytesUma;
-
     /** The maximum number of concurrent requests to allow. */
     private final int mRequestLimit;
 
@@ -103,15 +87,11 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      * Constructor to build the thumbnail provider with default thumbnail cache size.
      *
      * @param referencePool The application's reference pool.
-     * @param client The associated client type.
      * @param useMultiRequests Whether to use multiple requests or a single request for fetching
      *     thumbnails.
      */
-    public ThumbnailProviderImpl(
-            DiscardableReferencePool referencePool,
-            @ClientType int client,
-            boolean useMultiRequests) {
-        this(referencePool, DEFAULT_MAX_CACHE_BYTES, client, useMultiRequests);
+    public ThumbnailProviderImpl(DiscardableReferencePool referencePool, boolean useMultiRequests) {
+        this(referencePool, DEFAULT_MAX_CACHE_BYTES, useMultiRequests);
     }
 
     /**
@@ -119,19 +99,16 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      *
      * @param referencePool The application's reference pool.
      * @param bitmapCacheSizeByte The size in bytes of the in-memory LRU bitmap cache.
-     * @param client The associated client type.
      * @param useMultiRequests Whether to use multiple requests or a single request for fetching
      *     thumbnails.
      */
     public ThumbnailProviderImpl(
             DiscardableReferencePool referencePool,
             int bitmapCacheSizeByte,
-            @ClientType int client,
             boolean useMultiRequests) {
         ThreadUtils.assertOnUiThread();
         mBitmapCache = new BitmapCache(referencePool, bitmapCacheSizeByte);
         mStorage = ThumbnailDiskStorage.create(this);
-        mClient = client;
         mRequestLimit = useMultiRequests ? MAX_REQUEST_LIMIT : 1;
     }
 
@@ -142,7 +119,6 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
         // Drop any references to any current requests.
         mRequestQueue.clear();
         mInProgressRequestMap.clear();
-        recordBitmapCacheSize();
         mStorage.destroy();
         mBitmapCache.destroy();
     }
@@ -220,10 +196,6 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
     private @Nullable Bitmap getBitmapFromCache(String requestKey) {
         Bitmap cachedBitmap = mBitmapCache.getBitmap(requestKey);
         assert cachedBitmap == null || !cachedBitmap.isRecycled();
-
-        RecordHistogram.recordBooleanHistogram(
-                "Android.ThumbnailProvider.CachedBitmap.Found." + getClientTypeUmaSuffix(mClient),
-                cachedBitmap != null);
         return cachedBitmap;
     }
 
@@ -325,7 +297,6 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
             // Cache under the same key used to check for in-progress requests.
             mBitmapCache.putBitmap(requestKey, bitmap);
             mNoBitmapCache.remove(contentId);
-            mCacheSizeMaxBytesUma = Math.max(mCacheSizeMaxBytesUma, mBitmapCache.size());
             for (ThumbnailRequest request : currentRequestSet) {
                 request.onThumbnailRetrieved(contentId, bitmap);
             }
@@ -336,23 +307,5 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
             }
         }
         processQueue();
-    }
-
-    private void recordBitmapCacheSize() {
-        RecordHistogram.recordMemoryKBHistogram(
-                "Android.ThumbnailProvider.BitmapCache.Size." + getClientTypeUmaSuffix(mClient),
-                mCacheSizeMaxBytesUma / ConversionUtils.BYTES_PER_KILOBYTE);
-    }
-
-    private static String getClientTypeUmaSuffix(@ClientType int clientType) {
-        switch (clientType) {
-            case ClientType.DOWNLOAD_HOME:
-                return "DownloadHome";
-            case ClientType.NTP_SUGGESTIONS:
-                return "NTPSnippets";
-            default:
-                assert false;
-                return "Other";
-        }
     }
 }

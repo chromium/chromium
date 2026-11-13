@@ -394,11 +394,6 @@ chromium-metrics-reviews@google.com.
       summary="WebviewVariationsSeedFetch"/>
 </variants>
 
-<variants name="ThumbnailProvider_ClientType">
-  <variant name="DownloadHome" summary="Download home"/>
-  <variant name="NTPSnippets" summary="NTP snippets"/>
-</variants>
-
 <!-- LINT.IfChange(WebViewChromiumStartupMode) -->
 
 <variants name="WebViewChromiumStartupMode">
@@ -6877,28 +6872,6 @@ chromium-metrics-reviews@google.com.
     on a Poisson distributed frequency with a mean of 5 minutes starting 1
     minute after TabContentManager native initialization. Note that this memory
     may be distributed across the GPU process and Browser process.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.ThumbnailProvider.BitmapCache.Size.{ThumbnailProvider_ClientType}"
-    units="KB" expires_after="2021-01-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Measures the size of the bitmap cache used. Recorded whenever a bitmap is
-    added to the cache. {ThumbnailProvider_ClientType}
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.ThumbnailProvider.CachedBitmap.Found.{ThumbnailProvider_ClientType}"
-    enum="BooleanFound" expires_after="2021-01-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records the status of a thumbnail query from the thumbnail provider
-    in-memory cache. {ThumbnailProvider_ClientType}
   </summary>
 </histogram>
 

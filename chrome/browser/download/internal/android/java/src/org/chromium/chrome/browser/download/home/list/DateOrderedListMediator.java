@@ -250,7 +250,6 @@ class DateOrderedListMediator implements BackPressHandler {
                 new ThumbnailProviderImpl(
                         discardableReferencePool,
                         config.inMemoryThumbnailCacheSizeBytes,
-                        ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME,
                         /* useMultiRequests= */ true);
         new MediatorSelectionObserver(selectionDelegate);
 

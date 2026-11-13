@@ -52,9 +52,7 @@ public class ThumbnailProviderImplTest {
                     sReferencePool = new DiscardableReferencePool();
                     sThumbnailProvider =
                             new ThumbnailProviderImpl(
-                                    sReferencePool,
-                                    ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
-                                    /* useMultiRequests= */ false);
+                                    sReferencePool, /* useMultiRequests= */ false);
                 });
     }
 
@@ -271,9 +269,7 @@ public class ThumbnailProviderImplTest {
                         () -> {
                             ThumbnailProviderImpl p =
                                     new ThumbnailProviderImpl(
-                                            sReferencePool,
-                                            ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
-                                            /* useMultiRequests= */ true);
+                                            sReferencePool, /* useMultiRequests= */ true);
                             for (int i = 0; i < numRequests; i++) {
                                 p.getThumbnail(requests[i]);
                             }
@@ -307,9 +303,7 @@ public class ThumbnailProviderImplTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new ThumbnailProviderImpl(
-                                        sReferencePool,
-                                        ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
-                                        /* useMultiRequests= */ true));
+                                        sReferencePool, /* useMultiRequests= */ true));
 
         CallbackHelper destroyCallback = new CallbackHelper();
         PostTask.runOrPostTask(
