@@ -114,7 +114,7 @@ constexpr auto kTextAnnotationColors =
         {SkColorSetRGB(0x12, 0xA4, 0xAF), TextAnnotationColor::kCyan3},
         {SkColorSetRGB(0x19, 0x67, 0xD2), TextAnnotationColor::kBlue3},
     });
-// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_annotation_text_mixin.ts:TextAnnotationColors)
+// LINT.ThenChange(//chrome/browser/resources/pdf/constants.ts:TextAnnotationColors)
 
 constexpr char kStrokeInputDeviceMetricName[] = "PDF.Ink2StrokeInputDeviceType";
 constexpr char kTextHighlightInputDeviceMetricName[] =

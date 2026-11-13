@@ -8,18 +8,11 @@ import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Color} from '../constants.js';
+import type {Color, ColorOption} from '../constants.js';
 import {colorsEqual, hexToColor} from '../pdf_viewer_utils.js';
 
 import {getCss} from './ink_color_selector.css.js';
 import {getHtml} from './ink_color_selector.html.js';
-
-export interface ColorOption {
-  label: string;
-  color: string;
-  blended: boolean;
-}
-
 
 const InkColorSelectorElementBase = I18nMixinLit(CrLitElement);
 

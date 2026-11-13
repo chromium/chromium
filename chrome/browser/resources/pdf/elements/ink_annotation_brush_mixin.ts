@@ -7,10 +7,9 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
-import type {AnnotationBrush, Color} from '../constants.js';
+import type {AnnotationBrush, Color, ColorOption} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
-import type {ColorOption} from './ink_color_selector.js';
 import {PEN_SIZES} from './ink_size_selector.js';
 
 type Constructor<T> = new (...args: any[]) => T;

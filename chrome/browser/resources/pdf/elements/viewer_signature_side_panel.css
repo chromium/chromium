@@ -9,6 +9,7 @@
  * #include=pdf-shared side-panel-shared
  * #css_wrapper_metadata_end */
 
+ink-color-selector,
 signature-selector {
   margin: 16px 0 32px;
 }
