@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
 
 import android.app.Activity;
-import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.app.InfeasibleActivityOptionsException;
 import android.app.PendingIntent;
@@ -41,8 +39,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.AndroidRuntimeException;
 import android.view.Display;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -73,13 +69,11 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -104,28 +98,10 @@ public class PopupCreatorImplUnitTest {
     // CustomTabActivity#onCreate.
     private static class TestCustomTabActivity extends CustomTabActivity {
         private BrowserServicesIntentDataProvider mIntentDataProvider;
-        private ActivityWindowAndroid mWindowAndroid;
-        private BrowserControlsManager mBrowserControlsManager;
-        private WindowManager mWindowManager;
 
         @Override
         public BrowserServicesIntentDataProvider getIntentDataProvider() {
             return mIntentDataProvider;
-        }
-
-        @Override
-        public ActivityWindowAndroid getWindowAndroid() {
-            return mWindowAndroid;
-        }
-
-        @Override
-        public BrowserControlsManager getBrowserControlsManager() {
-            return mBrowserControlsManager;
-        }
-
-        @Override
-        public WindowManager getWindowManager() {
-            return mWindowManager != null ? mWindowManager : super.getWindowManager();
         }
     }
 
@@ -143,10 +119,6 @@ public class PopupCreatorImplUnitTest {
     @Mock InsetObserver mInsetObserver;
     @Mock WindowInsetsCompat mWindowInsetsCompat;
     @Mock WebContents mWebContents;
-    @Mock BrowserControlsManager mBrowserControlsManager;
-    @Mock WindowManager mWindowManager;
-    @Mock WindowMetrics mWindowMetrics;
-    @Mock AppTask mAppTask;
 
     private static final int DISPLAY_ID = 73;
     private static final float DENSITY = 1.0f;
@@ -923,47 +895,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
-    public void testAdjustWindowBounds_nullFeatures_bailsOut() {
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, null);
-        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
-    public void testAdjustWindowBounds_perfectMatch_noOp() {
-        setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
-
-        // Request features matching the current viewport size (200x300)
-        WindowFeatures windowFeatures = new WindowFeatures(null, null, 200, 300);
-
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, windowFeatures);
-        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
-    public void testAdjustWindowBounds_callsMoveTaskTo() {
-        setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
-
-        // Request features larger than the current viewport
-        WindowFeatures windowFeatures = new WindowFeatures(null, null, 400, 500);
-
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, windowFeatures);
-
-        ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
-        verify(mMoveTaskDelegate).moveTaskTo(any(), anyInt(), captor.capture());
-
-        Rect targetBounds = captor.getValue();
-        // Width difference: 400 - 200 = 200dp
-        // Height difference: 500 - 300 = 200dp
-        // Assuming density = 1.0f from setup() -> 200px diffs
-        // New right = 210 + 200 = 410
-        // New bottom = 320 + 200 = 520
-        assertEquals(new Rect(10, 20, 410, 520), targetBounds);
-    }
-
-    @Test
     public void testDocPip_rejectsNonPrimaryOtrProfile() {
         Profile profile = mock(Profile.class);
         doReturn(true).when(profile).isOffTheRecord();
@@ -973,33 +904,6 @@ public class PopupCreatorImplUnitTest {
                 mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                         null, mWebContents, new PictureInPictureWindowOptions()));
         verify(mWebContents, never()).getDocumentPictureInPictureOpener();
-    }
-
-    private void setupMocksForAdjustWindowBounds(
-            int viewportWidthDp, int viewportHeightDp, Rect windowBoundsPx) {
-        mActivity.getActivityTabProvider().setForTesting(mTab);
-        doReturn(mWebContents).when(mTab).getWebContents();
-
-        doReturn(viewportWidthDp).when(mWebContents).getWidth();
-        doReturn(viewportHeightDp).when(mWebContents).getHeight();
-
-        mActivity.mWindowManager = mWindowManager;
-        doReturn(mWindowMetrics).when(mWindowManager).getCurrentWindowMetrics();
-        doReturn(windowBoundsPx).when(mWindowMetrics).getBounds();
-
-        mActivity.mWindowAndroid = mWindow;
-        doReturn(mDisplay).when(mWindow).getDisplay();
-        doReturn(1.0f).when(mDisplay).getDipScale();
-        mActivity.mBrowserControlsManager = mBrowserControlsManager;
-
-        // adjustWindowBoundsToRequested() requires a resizable ChromeAndroidTask for mActivity.
-        var deps =
-                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                        mActivity.getTaskId(),
-                        /* isPendingTask= */ false,
-                        /* isDesktopMode= */ true);
-        mAppTask = deps.mMockAppTask;
-        mMoveTaskDelegate = deps.mMockMoveTaskDelegate;
     }
 
     @Test

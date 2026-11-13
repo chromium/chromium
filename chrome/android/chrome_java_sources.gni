@@ -581,6 +581,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderProperties.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderUtils.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderViewBinder.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/PopupBoundsAdjuster.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizationManager.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizationManagerHolder.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizeDelegate.java",

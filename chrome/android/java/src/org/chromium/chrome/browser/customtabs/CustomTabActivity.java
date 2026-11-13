@@ -40,7 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.PopupBoundsAdjuster;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -75,6 +77,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 /** The activity for custom tabs. It will be launched on top of a client's task. */
@@ -91,6 +94,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             ChromeFeatureList.sCctBlockTouchesDuringEnterAnimation.isEnabled();
     private boolean mIsEnterAnimationCompleted;
     private @Nullable AuxiliarySearchController mAuxiliarySearchController;
+    private @Nullable PopupBoundsAdjuster mPopupBoundsAdjuster;
     private CustomTabActivityTimeoutHandler mTimeoutHandler;
     private static @Nullable Runnable sOnFinishCallbackForTesting;
     private final CustomTabActivityTabProvider.Observer mTabChangeObserver =
@@ -266,6 +270,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 });
         super.finishNativeInitialization();
 
+        adjustWindowBounds(windowAndroid);
+    }
+
+    private void adjustWindowBounds(WindowAndroid windowAndroid) {
         // Window bounds adjustments are called here because we probe WebContents' width and height
         // from the native object.
         // The condition including {@link #getSavedInstanceState} should be false iff the Activity
@@ -273,11 +281,16 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // features requested in the Intent as they should apply only for the initial launch of the
         // Activity.
         var intentDataProvider = assumeNonNull(getIntentDataProvider());
-        if (intentDataProvider.getUiType() == CustomTabsUiType.POPUP
-                && getSavedInstanceState() == null) {
-            PopupCreatorImpl.adjustWindowBoundsToRequested(
-                    this, intentDataProvider.getRequestedWindowFeatures());
+        if (intentDataProvider.getUiType() != CustomTabsUiType.POPUP
+                || getSavedInstanceState() != null) {
+            return;
         }
+        WindowFeatures requestedWindowFeatures = intentDataProvider.getRequestedWindowFeatures();
+        Tab popupTab = getActivityTabProvider().get();
+        if (requestedWindowFeatures == null || popupTab == null) return;
+        mPopupBoundsAdjuster =
+                new PopupBoundsAdjuster(windowAndroid, TabWindowManagerSingleton.getInstance());
+        mPopupBoundsAdjuster.adjust(requestedWindowFeatures, popupTab);
     }
 
     @Override
@@ -352,6 +365,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     protected void onDestroyInternal() {
         mAuxiliarySearchController = null;
+        mPopupBoundsAdjuster = null;
         if (mTimeoutHandler != null) mTimeoutHandler.onDestroy();
         super.onDestroyInternal();
     }
