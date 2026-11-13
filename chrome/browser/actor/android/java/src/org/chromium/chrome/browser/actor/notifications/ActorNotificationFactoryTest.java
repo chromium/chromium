@@ -220,6 +220,32 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
+    public void testBuildNotification_GoToChromeActionRoutesLikeContentIntent() {
+        Intent routingIntent = new Intent("MOCK_ACTION");
+        routingIntent.putExtra("mock_extra", 7);
+        when(mServiceController.createTrustedBringTabToFrontIntent(mTask))
+                .thenReturn(routingIntent);
+
+        Notification notification =
+                ActorNotificationFactory.buildNotification(
+                                mTask,
+                                ActorTaskState.ACTING,
+                                /* isSilent= */ false,
+                                /* isWarning= */ false)
+                        .getNotification();
+
+        assertAction(notification);
+        Intent contentIntent = unwrapNotificationIntent(notification.contentIntent);
+        Intent actionIntent = unwrapNotificationIntent(notification.actions[0].actionIntent);
+        assertEquals("MOCK_ACTION", actionIntent.getAction());
+        assertEquals(7, actionIntent.getIntExtra("mock_extra", 0));
+        assertTrue(contentIntent.filterEquals(actionIntent));
+        assertEquals(
+                contentIntent.getIntExtra("mock_extra", 0),
+                actionIntent.getIntExtra("mock_extra", 0));
+    }
+
+    @Test
     public void testBuildNotification_Complete() {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(
@@ -895,6 +921,16 @@ public class ActorNotificationFactoryTest {
                 "Small icon should be ic_chrome",
                 R.drawable.ic_chrome,
                 notification.getSmallIcon().getResId());
+    }
+
+    private static Intent unwrapNotificationIntent(PendingIntent pendingIntent) {
+        Intent intent = shadowOf(pendingIntent).getSavedIntent();
+        if (NotificationIntentInterceptor.INTENT_ACTION.equals(intent.getAction())) {
+            intent =
+                    shadowOf(NotificationIntentInterceptor.getPendingIntentForTesting(intent))
+                            .getSavedIntent();
+        }
+        return intent;
     }
 
     private void assertAction(Notification notification) {
