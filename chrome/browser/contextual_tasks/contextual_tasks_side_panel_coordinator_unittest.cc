@@ -27,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -127,10 +128,6 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/native_theme/native_theme.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
 #endif
 
 using testing::_;
@@ -262,12 +259,7 @@ class CountingTabContextualizationController
 class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
  public:
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
-      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
-                      "Android.";
-    }
-#endif
+    SKIP_IF_CONTEXTUAL_TASKS_UNSUPPORTED();
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
@@ -391,12 +383,9 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
-      // SetUp() skipped the test.
+    if (IsSkipped()) {
       return;
     }
-#endif
     mock_controller_ = nullptr;
     mock_panel_host_ = nullptr;
 

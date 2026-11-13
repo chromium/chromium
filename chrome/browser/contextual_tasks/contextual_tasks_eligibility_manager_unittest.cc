@@ -6,7 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
@@ -17,10 +17,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#endif
 
 using testing::_;
 using testing::Return;
@@ -35,12 +31,7 @@ class ContextualTasksEligibilityManagerTest : public testing::Test {
   ~ContextualTasksEligibilityManagerTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
-      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
-                      "Android.";
-    }
-#endif
+    SKIP_IF_CONTEXTUAL_TASKS_UNSUPPORTED();
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
         prefs_, nullptr, nullptr, nullptr);

@@ -1272,6 +1272,7 @@ source_set("test_support") {
   testonly = true
   sources = [
     "contextual_tasks_test_user_variation.h",
+    "contextual_tasks_test_utils.h",
     "mock_contextual_tasks_page.cc",
     "mock_contextual_tasks_page.h",
     "mock_contextual_tasks_panel_controller.cc",

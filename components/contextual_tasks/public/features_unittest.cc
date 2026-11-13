@@ -276,6 +276,7 @@ TEST(FeaturesTest, IsContextualTasksUIEnabled_DesktopAndroid) {
       {kContextualTasks, kContextualTasksRearchitecture,
        kContextualTasksSidePanelRearchitecture});
 
+  EXPECT_TRUE(IsContextualTasksFormFactorSupported());
   EXPECT_TRUE(IsContextualTasksUIEnabled());
 }
 
@@ -290,6 +291,7 @@ TEST(FeaturesTest, IsContextualTasksUIEnabled_NotDesktopAndroid) {
       {});
 
   // Phones and tablets are not supported, even with every flag enabled.
+  EXPECT_FALSE(IsContextualTasksFormFactorSupported());
   EXPECT_FALSE(IsContextualTasksUIEnabled());
 }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -288,13 +288,18 @@ bool GetContextualTasksSpatialModelToolbarLayoutEnabled();
 
 bool GetContextualTasksSpatialModelToolbarLayoutNewThreadInOverflow();
 
+// Returns whether the device's form factor supports Contextual Tasks UI: all
+// desktop platforms, and desktop Android. Returns false on Android phones and
+// tablets.
+bool IsContextualTasksFormFactorSupported();
+
 // Returns whether the Contextual Tasks side panel container, coordinator,
 // and supporting response services should be initialized.
 // Returns true if full Contextual Tasks (`kContextualTasks`),
 // infrastructure-only mode (`kContextualTasksSidePanel`), or the Contextual
 // Tasks rearchitecture (`kContextualTasksRearchitecture` /
-// `kContextualTasksSidePanelRearchitecture`) is enabled. On Android, always
-// returns false unless the device is a desktop form factor.
+// `kContextualTasksSidePanelRearchitecture`) is enabled. Always returns false
+// when `IsContextualTasksFormFactorSupported()` is false.
 bool IsContextualTasksUIEnabled();
 
 bool IsStickyConversationEnabled();

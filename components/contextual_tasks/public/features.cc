@@ -1312,14 +1312,20 @@ bool IsContextualTasksSingleTabMenuItemEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSingleTabMenuItem);
 }
 
-bool IsContextualTasksUIEnabled() {
+bool IsContextualTasksFormFactorSupported() {
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, Contextual Tasks is only supported on the desktop form factor.
-  // Phones and tablets are not supported.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+  // Supported on desktop Android only; not supported on phones and tablets.
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP;
+#else
+  // Supported on all desktop platforms (Windows, Mac, Linux, ChromeOS).
+  return true;
+#endif
+}
+
+bool IsContextualTasksUIEnabled() {
+  if (!IsContextualTasksFormFactorSupported()) {
     return false;
   }
-#endif
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks) ||
          base::FeatureList::IsEnabled(kContextualTasksRearchitecture) ||

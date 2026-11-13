@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -17,10 +18,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/chrome_test_utils.h"
@@ -72,12 +69,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
-      GTEST_SKIP() << "Contextual Tasks UI is only supported on the desktop "
-                      "form factor on Android.";
-    }
-#endif
+    SKIP_IF_CONTEXTUAL_TASKS_UNSUPPORTED();
     WebUIMochaBrowserTest::SetUp();
   }
 

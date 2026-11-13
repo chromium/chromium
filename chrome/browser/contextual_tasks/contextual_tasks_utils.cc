@@ -697,7 +697,7 @@ std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
     BrowserWindowInterface* browser_window) {
 #if BUILDFLAG(IS_ANDROID)
   // We shouldn't reach this method for phones and tablets.
-  CHECK(IsAndroidDesktopFormFactor());
+  CHECK(IsContextualTasksFormFactorSupported());
   return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
       browser_window);
 #else
