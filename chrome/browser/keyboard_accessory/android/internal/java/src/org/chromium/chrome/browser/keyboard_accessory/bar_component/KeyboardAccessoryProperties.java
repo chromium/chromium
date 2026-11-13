@@ -259,29 +259,6 @@ class KeyboardAccessoryProperties {
         int getCaptionId() {
             return mCaptionId;
         }
-
-        @Override
-        public String toString() {
-            String typeName = "BarItem(" + getViewType() + ")"; // Fallback. We shouldn't crash.
-            switch (getViewType()) {
-                case Type.ACTION_BUTTON:
-                    typeName = "ACTION_BUTTON";
-                    break;
-                case Type.SUGGESTION:
-                    typeName = "SUGGESTION";
-                    break;
-                case Type.TAB_LAYOUT:
-                    typeName = "TAB_LAYOUT";
-                    break;
-                case Type.ACTION_CHIP:
-                    typeName = "ACTION_CHIP";
-                    break;
-                case Type.DISMISS_CHIP:
-                    typeName = "DISMISS_CHIP";
-                    break;
-            }
-            return typeName + ": " + mAction;
-        }
     }
 
     /**
@@ -381,11 +358,6 @@ class KeyboardAccessoryProperties {
 
         @Nullable String getFeatureForIph() {
             return mFeature;
-        }
-
-        @Override
-        public String toString() {
-            return "Autofill" + super.toString();
         }
 
         @VisibleForTesting
