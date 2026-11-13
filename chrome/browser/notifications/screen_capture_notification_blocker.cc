@@ -82,7 +82,9 @@ void ScreenCaptureNotificationBlocker::OnClosedNotification(
 
 void ScreenCaptureNotificationBlocker::OnAction(
     MutedNotificationHandler::Action action) {
-  CHECK(state_ == NotifyState::kNotifyMuted, base::NotFatalUntil::M161);
+  // TODO(crbug.com/584661832): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(state_ == NotifyState::kNotifyMuted);
   CloseMuteNotification();
 
   switch (action) {
