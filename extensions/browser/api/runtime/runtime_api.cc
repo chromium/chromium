@@ -356,37 +356,34 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
   // gathered enough data to analyze usage.
   RecordUninstallURLHistogram(browser_context, extension->id());
 
+  if (startup_complete_) {
+    return;
+  }
+
   if (dispatch_chrome_updated_event_) {
-    // Dispatch `runtime.onInstalled` (with reason `"chrome_update"`) and
-    // `runtime.onExtensionLoaded` (with reason `kBrowserUpdate`) when the
+    // Dispatch `runtime.onInstalled` (with reason `"chrome_update"`) when the
     // browser has been updated to a new version.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
                                   base::UnsafeDangling(
                                       static_cast<void*>(browser_context_)),
                                   extension->id(), base::Version(), true));
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
-            base::UnsafeDangling(static_cast<void*>(browser_context_)),
-            extension->id(), api::runtime::OnLoadedReason::kBrowserUpdate,
-            /*previous_version=*/std::nullopt));
-    return;
   }
 
-  if (!startup_complete_) {
-    // Dispatch `runtime.onExtensionLoaded` with reason `kStartup` when the
-    // extension is loaded during initial browser startup.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
-            base::UnsafeDangling(static_cast<void*>(browser_context_)),
-            extension->id(), api::runtime::OnLoadedReason::kStartup,
-            /*previous_version=*/std::nullopt));
-  }
+  // Dispatch `runtime.onExtensionLoaded` with reason `kBrowserUpdate` after a
+  // browser update, or `kStartup` otherwise. Pick the reason now, because
+  // `OnExtensionsReady()` can reset the browser update flag before the task
+  // runs. If this load also enables the extension, `OnExtensionEnabled()`
+  // cancels this event before the task runs, so only `kEnable` is dispatched.
+  const api::runtime::OnLoadedReason reason =
+      dispatch_chrome_updated_event_
+          ? api::runtime::OnLoadedReason::kBrowserUpdate
+          : api::runtime::OnLoadedReason::kStartup;
+  pending_startup_load_extensions_.insert(extension->id());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RuntimeAPI::MaybeDispatchStartupLoadedEvent,
+                     weak_ptr_factory_.GetWeakPtr(), extension->id(), reason));
 }
 
 void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -400,10 +397,21 @@ void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
   //   would make `OnExtensionEnabled()` skip `kEnable`, so `kEnable` is
   //   dispatched instead.
   pending_install_load_versions_.erase(extension->id());
+  // Likewise drop any pending `kStartup` or `kBrowserUpdate` event, so that a
+  // later enable gets only `kEnable` and an extension that stays unloaded gets
+  // nothing.
+  pending_startup_load_extensions_.erase(extension->id());
 }
 
 void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
                                     const Extension* extension) {
+  // If the extension is enabled during browser startup, the same
+  // `ExtensionRegistrar::EnableExtension()` call already ran
+  // `OnExtensionLoaded()`, which posted a `kStartup` or `kBrowserUpdate`
+  // `runtime.onExtensionLoaded` event. `kEnable` takes precedence over both,
+  // so drop that event.
+  pending_startup_load_extensions_.erase(extension->id());
+
   // If the extension was installed or updated while it wasn't enabled (while
   // disabled, including when the update itself disabled it, or while
   // blocklisted or blocked), the `ExtensionRegistrar` call that loaded it again
@@ -976,6 +984,20 @@ void RuntimeAPI::MaybeDispatchInstallOrUpdateLoadedEvent(
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
       browser_context_.get(), extension_id, loaded_reason,
       previous_version_str);
+}
+
+void RuntimeAPI::MaybeDispatchStartupLoadedEvent(
+    const ExtensionId& extension_id,
+    api::runtime::OnLoadedReason reason) {
+  if (!pending_startup_load_extensions_.erase(extension_id)) {
+    // Either `OnExtensionEnabled()` or `OnExtensionUnloaded()` dropped the
+    // event.
+    return;
+  }
+
+  RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
+      browser_context_.get(), extension_id, reason,
+      /*previous_version=*/std::nullopt);
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {

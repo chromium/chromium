@@ -3264,6 +3264,265 @@ IN_PROC_BROWSER_TEST_F(RuntimeBrowserUpdateLifecycleEventsApiTest,
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
+// Base test fixture for an extension that is enabled during browser startup.
+// The `PRE_` test installs the extension from
+// `WriteLifecycleEventsTestExtension()` and disables it with
+// `disable_reason::DISABLE_RELOAD`, as if shutdown interrupted a reload. At the
+// next startup, `ExtensionService::Init()` calls
+// `ExtensionRegistrar::EnabledReloadableExtensions()`, which enables the
+// extension before `ExtensionSystem::ready()` is signaled.
+class RuntimeEnableDuringStartupLifecycleEventsApiTest
+    : public RuntimeLifecycleEventsApiTest {
+ public:
+  RuntimeEnableDuringStartupLifecycleEventsApiTest() = default;
+  ~RuntimeEnableDuringStartupLifecycleEventsApiTest() override = default;
+
+  RuntimeEnableDuringStartupLifecycleEventsApiTest(
+      const RuntimeEnableDuringStartupLifecycleEventsApiTest&) = delete;
+  RuntimeEnableDuringStartupLifecycleEventsApiTest& operator=(
+      const RuntimeEnableDuringStartupLifecycleEventsApiTest&) = delete;
+
+ protected:
+  // Returns whether the current test is a `PRE_` test.
+  static bool IsPreTest() {
+    const std::string_view test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    return test_name.starts_with("PRE_");
+  }
+
+  // Installs the extension, disables it with `disable_reason::DISABLE_RELOAD`,
+  // and waits until both the install and the disable persist across the
+  // browser restart.
+  void InstallAndDisableForInterruptedReload() {
+    ObserveServiceWorkerRegistrationBeforeInstallOnAndroid();
+    TestExtensionDir dir;
+    const Extension* extension =
+        InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+    ASSERT_TRUE(extension);
+    const ExtensionId extension_id = extension->id();
+
+    // Persist the install before disabling, since disabling the extension
+    // unregisters its service worker.
+    WaitForExtensionPersistedBeforeRestartOnAndroid();
+
+    // Disable the extension and wait for its service worker to be unregistered,
+    // so that no stale registration is left on disk at restart.
+    service_worker_test_utils::TestServiceWorkerTaskQueueObserver
+        worker_observer;
+    extension_registrar()->DisableExtension(extension_id,
+                                            {disable_reason::DISABLE_RELOAD});
+    {
+      SCOPED_TRACE("Waiting for the service worker to be unregistered");
+      worker_observer.WaitForWorkerUnregistered(extension_id);
+    }
+    ASSERT_TRUE(
+        extension_registry()->disabled_extensions().Contains(extension_id));
+
+    // Persist the disable reason.
+    WaitForExtensionPersistedBeforeRestartOnAndroid();
+  }
+
+  // Returns the enabled extension written by
+  // `WriteLifecycleEventsTestExtension()`, or null if there is none.
+  const Extension* GetEnabledLifecycleEventsTestExtension() {
+    for (const auto& extension : extension_registry()->enabled_extensions()) {
+      if (extension->name() == "Lifecycle Events Test") {
+        return extension.get();
+      }
+    }
+    return nullptr;
+  }
+};
+
+// Test fixture for an extension that is enabled during browser startup. The
+// test's `ExtensionTestMessageListener`s need to be created in
+// `CreatedBrowserMainParts()` so that we catch the events when the extension
+// loads on browser start (before the test case runs).
+class RuntimeStartupEnableLifecycleEventsApiTest
+    : public RuntimeEnableDuringStartupLifecycleEventsApiTest {
+ public:
+  RuntimeStartupEnableLifecycleEventsApiTest() = default;
+  ~RuntimeStartupEnableLifecycleEventsApiTest() override = default;
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
+    if (!IsPreTest()) {
+      // Without the fix, the extension sends `"loaded:startup:"` before
+      // `"loaded:enable:1.0"`. Use it as the failure message, so that the wait
+      // on `loaded_enable_listener_` fails as soon as it arrives.
+      loaded_enable_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:enable:1.0");
+      loaded_enable_listener_->set_failure_message("loaded:startup:");
+      loaded_startup_failure_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:startup:");
+      enabled_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("enabled");
+    }
+    RuntimeEnableDuringStartupLifecycleEventsApiTest::CreatedBrowserMainParts(
+        main_parts);
+  }
+
+ protected:
+  ExtensionTestMessageListener* loaded_enable_listener() {
+    return loaded_enable_listener_.get();
+  }
+  const ExtensionTestMessageListener* loaded_startup_failure_listener() const {
+    return loaded_startup_failure_listener_.get();
+  }
+  ExtensionTestMessageListener* enabled_listener() {
+    return enabled_listener_.get();
+  }
+
+ private:
+  std::unique_ptr<ExtensionTestMessageListener> loaded_enable_listener_;
+  std::unique_ptr<ExtensionTestMessageListener>
+      loaded_startup_failure_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> enabled_listener_;
+};
+
+// Installs the extension and disables it as if shutdown interrupted a reload,
+// so that it's enabled during the next browser startup.
+IN_PROC_BROWSER_TEST_F(RuntimeStartupEnableLifecycleEventsApiTest,
+                       PRE_OnExtensionLoadedOnEnableDuringStartup) {
+  ASSERT_NO_FATAL_FAILURE(InstallAndDisableForInterruptedReload());
+}
+
+// Test that when an extension is enabled during browser startup:
+// - `chrome.runtime.onExtensionLoaded` is fired only with reason `"enable"` and
+//   `previousVersion` set to the extension's current version.
+// - `chrome.runtime.onEnabled` is fired.
+IN_PROC_BROWSER_TEST_F(RuntimeStartupEnableLifecycleEventsApiTest,
+                       OnExtensionLoadedOnEnableDuringStartup) {
+  // Wait for the events that the extension receives when it's enabled.
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_enable_listener()->WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener()->WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late
+  // `"loaded:startup:"` message would have arrived, then verify that it
+  // didn't.
+  const Extension* extension = GetEnabledLifecycleEventsTestExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_EQ("done",
+            ExecuteScriptInBackgroundPage(
+                extension->id(), "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(loaded_startup_failure_listener()->was_satisfied());
+}
+
+// Test fixture for an extension that is enabled during the first browser
+// startup after a browser update. The test's `ExtensionTestMessageListener`s
+// need to be created in `CreatedBrowserMainParts()` so that we catch the events
+// when the extension loads on browser start (before the test case runs).
+class RuntimeBrowserUpdateEnableLifecycleEventsApiTest
+    : public RuntimeEnableDuringStartupLifecycleEventsApiTest {
+ public:
+  RuntimeBrowserUpdateEnableLifecycleEventsApiTest() {
+    if (!IsPreTest()) {
+      ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
+          /*did_update=*/true);
+    }
+  }
+  ~RuntimeBrowserUpdateEnableLifecycleEventsApiTest() override = default;
+
+  RuntimeBrowserUpdateEnableLifecycleEventsApiTest(
+      const RuntimeBrowserUpdateEnableLifecycleEventsApiTest&) = delete;
+  RuntimeBrowserUpdateEnableLifecycleEventsApiTest& operator=(
+      const RuntimeBrowserUpdateEnableLifecycleEventsApiTest&) = delete;
+
+  void TearDownOnMainThread() override {
+    ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
+        /*did_update=*/false);
+    RuntimeEnableDuringStartupLifecycleEventsApiTest::TearDownOnMainThread();
+  }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
+    if (!IsPreTest()) {
+      installed_listener_ = std::make_unique<ExtensionTestMessageListener>(
+          "installed:chrome_update:");
+      // Without the fix, the extension sends `"loaded:browser_update:"` before
+      // `"loaded:enable:1.0"`. Use it as the failure message, so that the wait
+      // on `loaded_enable_listener_` fails as soon as it arrives.
+      loaded_enable_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:enable:1.0");
+      loaded_enable_listener_->set_failure_message("loaded:browser_update:");
+      loaded_browser_update_failure_listener_ =
+          std::make_unique<ExtensionTestMessageListener>(
+              "loaded:browser_update:");
+      enabled_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("enabled");
+    }
+    RuntimeEnableDuringStartupLifecycleEventsApiTest::CreatedBrowserMainParts(
+        main_parts);
+  }
+
+ protected:
+  ExtensionTestMessageListener* installed_listener() {
+    return installed_listener_.get();
+  }
+  ExtensionTestMessageListener* loaded_enable_listener() {
+    return loaded_enable_listener_.get();
+  }
+  const ExtensionTestMessageListener* loaded_browser_update_failure_listener()
+      const {
+    return loaded_browser_update_failure_listener_.get();
+  }
+  ExtensionTestMessageListener* enabled_listener() {
+    return enabled_listener_.get();
+  }
+
+ private:
+  std::unique_ptr<ExtensionTestMessageListener> installed_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> loaded_enable_listener_;
+  std::unique_ptr<ExtensionTestMessageListener>
+      loaded_browser_update_failure_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> enabled_listener_;
+};
+
+// Installs the extension and disables it as if shutdown interrupted a reload,
+// so that it's enabled during the next browser startup.
+IN_PROC_BROWSER_TEST_F(RuntimeBrowserUpdateEnableLifecycleEventsApiTest,
+                       PRE_OnExtensionLoadedOnEnableDuringBrowserUpdate) {
+  ASSERT_NO_FATAL_FAILURE(InstallAndDisableForInterruptedReload());
+}
+
+// Test that when an extension is enabled during the first browser startup
+// after a browser update:
+// - `chrome.runtime.onExtensionLoaded` is fired only with reason `"enable"` and
+//   `previousVersion` set to the extension's current version.
+// - `chrome.runtime.onInstalled` is still fired with reason `"chrome_update"`.
+// - `chrome.runtime.onEnabled` is fired.
+IN_PROC_BROWSER_TEST_F(RuntimeBrowserUpdateEnableLifecycleEventsApiTest,
+                       OnExtensionLoadedOnEnableDuringBrowserUpdate) {
+  // Wait for the events that the extension receives when it's enabled after
+  // the browser update.
+  {
+    SCOPED_TRACE("Waiting for browser update install event message");
+    ASSERT_TRUE(installed_listener()->WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_enable_listener()->WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener()->WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late
+  // `"loaded:browser_update:"` message would have arrived, then verify that it
+  // didn't.
+  const Extension* extension = GetEnabledLifecycleEventsTestExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_EQ("done",
+            ExecuteScriptInBackgroundPage(
+                extension->id(), "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(loaded_browser_update_failure_listener()->was_satisfied());
+}
+
 class RuntimeAsyncListenerRegistrationApiTest : public ExtensionApiTest {
  private:
   base::test::ScopedFeatureList feature_list_{

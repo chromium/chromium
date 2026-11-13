@@ -380,6 +380,14 @@ class RuntimeAPIOnExtensionLoadedPrecedenceTest : public ApiUnitTest {
   }
 
   // Sends `RuntimeAPI` the notification that `ExtensionRegistry` sends when the
+  // extension is loaded. The fixture never signals `ExtensionSystem::ready()`,
+  // so `RuntimeAPI` treats this as a load during browser startup.
+  void NotifyLoaded() {
+    ExtensionRegistryObserver* observer = runtime_api_;
+    observer->OnExtensionLoaded(browser_context(), extension());
+  }
+
+  // Sends `RuntimeAPI` the notification that `ExtensionRegistry` sends when the
   // extension is unloaded because it was disabled.
   void NotifyUnloaded() {
     ExtensionRegistryObserver* observer = runtime_api_;
@@ -560,6 +568,60 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
   // Verify that only `kUpdate` was dispatched, with the pre-update version.
   EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
               testing::ElementsAre(testing::Pair("update", "0.0.1")));
+}
+
+// Verifies that when an extension loads during browser startup,
+// `runtime.onExtensionLoaded` is dispatched with reason `kStartup`.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       LoadDuringStartupDispatchesStartup) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Load the extension during startup, then let the posted dispatches run.
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  // Verify that only `kStartup` was dispatched.
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("startup", "")));
+}
+
+// Verifies that when an extension is enabled during browser startup:
+// - `runtime.onExtensionLoaded` is dispatched only with reason `kEnable` and
+//   the extension's current version, since `kEnable` takes precedence over
+//   `kStartup`.
+// - `runtime.onEnabled` is dispatched exactly once.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       EnableDuringStartupDispatchesOnlyEnable) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Send the notifications in the order that
+  // `ExtensionRegistrar::EnableExtension()` triggers them for an extension that
+  // is enabled during startup, then let the posted dispatches run.
+  NotifyLoaded();
+  NotifyEnabled();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(
+                  testing::Pair("enable", extension()->version().GetString())));
+  EXPECT_EQ(1, CountOnEnabledEvents(observer));
+}
+
+// Verifies that if an extension loads during browser startup and is unloaded
+// before the posted `kStartup` dispatch runs,
+// `RuntimeAPI::OnExtensionUnloaded()` drops the pending `kStartup`, so no
+// `runtime.onExtensionLoaded` is dispatched.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       LoadThenUnloadDuringStartupDispatchesNothing) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Load the extension during startup and unload it before any posted task
+  // runs, then let the posted dispatches run.
+  NotifyLoaded();
+  NotifyUnloaded();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
 }
 
 }  // namespace extensions

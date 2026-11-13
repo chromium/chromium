@@ -145,6 +145,13 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   // already dispatched it.
   void MaybeDispatchInstallOrUpdateLoadedEvent(const ExtensionId& extension_id);
 
+  // Dispatches `runtime.onExtensionLoaded` with `reason` (`kStartup` or
+  // `kBrowserUpdate`) for the extension with `extension_id`. Does nothing if
+  // the extension is no longer in `pending_startup_load_extensions_`, because
+  // `OnExtensionEnabled()` or `OnExtensionUnloaded()` removed it.
+  void MaybeDispatchStartupLoadedEvent(const ExtensionId& extension_id,
+                                       api::runtime::OnLoadedReason reason);
+
   // Cancels any previously scheduled restart request.
   void MaybeCancelRunningDelayedRestartTimer();
 
@@ -223,6 +230,12 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   // - `OnExtensionReloaded()` doesn't dispatch `kReload` when an extension is
   //   reloaded through the install path, as an unpacked extension is.
   std::map<ExtensionId, base::Version> pending_install_load_versions_;
+
+  // IDs of extensions whose `kStartup` or `kBrowserUpdate`
+  // `runtime.onExtensionLoaded` event is posted but not yet dispatched.
+  // `OnExtensionEnabled()` removes an extension that is enabled during startup,
+  // so that only `kEnable` is dispatched for it.
+  ExtensionIdSet pending_startup_load_extensions_;
 
   bool did_read_delayed_restart_preferences_;
   bool was_last_restart_due_to_delayed_restart_api_;
