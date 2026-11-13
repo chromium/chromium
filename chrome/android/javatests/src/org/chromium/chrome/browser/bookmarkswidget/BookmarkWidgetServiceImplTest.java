@@ -301,6 +301,70 @@ public class BookmarkWidgetServiceImplTest {
 
     @Test
     @MediumTest
+    public void testSavedIdIsNotAFolder_fallsBackToDefaultFolder() {
+        BookmarkId defaultFolder =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BookmarkId folder = mBookmarkModel.getDefaultBookmarkFolder();
+                            BookmarkId bookmarkId =
+                                    mBookmarkModel.addBookmark(
+                                            folder, /* index= */ 0, TEST_TITLE, TEST_URL);
+                            SharedPreferences prefs =
+                                    BookmarkWidgetServiceImpl.getWidgetState(WIDGET_ID);
+                            prefs.edit()
+                                    .putString(
+                                            "bookmarkswidget.current_folder", bookmarkId.toString())
+                                    .apply();
+                            return folder;
+                        });
+
+        mFactory.onDataSetChanged();
+
+        RemoteViews headerViews = mFactory.getViewAt(0);
+        assertNotNull(headerViews);
+        View headerView = headerViews.apply(mContext, new FrameLayout(mContext));
+        TextView headerTitle = headerView.findViewById(R.id.title);
+        assertNotNull(headerTitle);
+        assertEquals(
+                "Widget should fall back to the default folder instead of treating the URL"
+                        + " bookmark as a subfolder.",
+                FakeBookmarkModel.MOBILE_FOLDER_TITLE,
+                headerTitle.getText().toString());
+
+        // Position 0 is the up-navigation row for the default folder ("Mobile bookmarks"),
+        // followed by the added URL bookmark at position 1 and Partner bookmarks at position 2.
+        assertEquals(3, mFactory.getCount());
+
+        RemoteViews itemViews = mFactory.getViewAt(1);
+        assertNotNull(itemViews);
+        assertEquals(R.layout.bookmark_widget_item, itemViews.getLayoutId());
+
+        View itemView = itemViews.apply(mContext, new FrameLayout(mContext));
+        TextView titleView = itemView.findViewById(R.id.title);
+        ImageView favicon = itemView.findViewById(R.id.favicon);
+        ImageView backButton = itemView.findViewById(R.id.back_button);
+
+        assertNotNull(titleView);
+        assertNotNull(favicon);
+        assertNotNull(backButton);
+
+        assertEquals(TEST_TITLE, titleView.getText().toString());
+        assertEquals(
+                "Favicon should be visible for a bookmark.", View.VISIBLE, favicon.getVisibility());
+        assertEquals(
+                "Back button should be hidden for a bookmark.",
+                View.GONE,
+                backButton.getVisibility());
+
+        SharedPreferences prefs = BookmarkWidgetServiceImpl.getWidgetState(WIDGET_ID);
+        assertEquals(
+                "Saved current folder should be overwritten with the fallback default folder.",
+                defaultFolder.toString(),
+                prefs.getString("bookmarkswidget.current_folder", /* defValue= */ null));
+    }
+
+    @Test
+    @MediumTest
     public void testRootFolder_withoutAccountBookmarkFoldersActive() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

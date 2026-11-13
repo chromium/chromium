@@ -180,7 +180,7 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             if (folderId != null) {
                 mFolder = mBookmarkModel.getBookmarkById(folderId);
             }
-            if (mFolder == null) {
+            if (mFolder == null || !mFolder.isFolder()) {
                 folderId = mBookmarkModel.getDefaultBookmarkFolder();
                 mFolder = mBookmarkModel.getBookmarkById(folderId);
             }
