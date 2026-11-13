@@ -20,7 +20,8 @@
 }
 
 #expanded,
-#folded {
+#folded,
+#ghostLoader {
   height: 100%;
 }
 
@@ -50,44 +51,34 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Stack the views in one grid cell and hide each unless it is active. Uses CSS
+ * rather than the hidden attribute so the views can cross-fade. */
 :host([enable-threads-rail-hybrid_]) #expanded,
-:host([enable-threads-rail-hybrid_]) #folded {
+:host([enable-threads-rail-hybrid_]) #folded,
+:host([enable-threads-rail-hybrid_]) #ghostLoader {
   grid-area: 1 / 1;
   justify-self: start;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
-/* Keep opacity: 1 (and no will-change) on #folded at rest so it does not
- * create a stacking context that traps cr-tooltip (z-index: 1002) behind
- * #rhsContent (z-index: 1). */
-:host([enable-threads-rail-hybrid_]) #folded {
+/* Show the active view. Keep opacity: 1 at rest so #folded does not create a
+ * stacking context that traps its cr-tooltip. */
+:host([enable-threads-rail-hybrid_][view_=folded]) #folded,
+:host([enable-threads-rail-hybrid_][view_=expanded]) #expanded {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
 }
 
-:host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
-    #folded {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-:host([enable-threads-rail-hybrid_]) #expanded {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-:host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
-    #expanded {
+:host([enable-threads-rail-hybrid_][view_=ghostLoader]) #ghostLoader {
   opacity: 1;
-  pointer-events: auto;
   visibility: visible;
 }
 
 @starting-style {
-  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
-      #expanded {
+  :host([enable-threads-rail-hybrid_][view_=expanded]) #expanded {
     opacity: 0;
   }
 }
@@ -106,16 +97,15 @@
   }
 
   :host([enable-threads-rail-hybrid_]) #folded {
-    /* Delay fade-in by 150ms on collapse so #expanded fades out first, then
-     * fade #folded in over the remaining 150ms. */
-    transition: opacity 150ms ease 150ms, visibility 0s 0s;
-  }
-
-  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
-      #folded {
     /* Fade out over the first 100ms of the 450ms expand transition before
      * #expanded begins fading in at 225ms. */
     transition: opacity 100ms ease, visibility 0s 100ms;
+  }
+
+  :host([enable-threads-rail-hybrid_][view_=folded]) #folded {
+    /* Delay fade-in by 150ms on collapse so #expanded fades out first, then
+     * fade #folded in over the remaining 150ms. */
+    transition: opacity 150ms ease 150ms, visibility 0s 0s;
   }
 
   :host([enable-threads-rail-hybrid_]) #expanded {
@@ -123,10 +113,22 @@
     transition: opacity 240ms ease, visibility 0s 240ms;
   }
 
-  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
-      #expanded {
+  :host([enable-threads-rail-hybrid_][view_=expanded]) #expanded {
     /* Delay fade-in by 225ms (50% of the 450ms expand transition) and fade in
      * over the remaining 225ms. */
     transition: opacity 225ms ease 225ms, visibility 0s 0s;
+  }
+
+  :host([enable-threads-rail-hybrid_]) #ghostLoader {
+    /* Fade out in sync with #expanded fading in (see above), so that the two
+     * cross-fade. */
+    transition: opacity 225ms ease 225ms, visibility 0s 450ms;
+  }
+
+  :host([enable-threads-rail-hybrid_][view_=ghostLoader]) #ghostLoader {
+    /* Show immediately on expand, since #folded is hidden immediately too.
+     * Without this, the fade-out transition above would also apply here and
+     * delay the ghost loader by 450ms. */
+    transition: none;
   }
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/composebox/threads_rail.js';
+import './lhs_ghost_loader.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -66,6 +67,22 @@ export interface NtpLhsThemePalette {
   railBackground?: string;
 }
 
+// The primary view of the LHS. In hybrid mode, #folded and #expanded stay
+// rendered once the iframe is ready so that they can cross-fade (see
+// left_hand_side.css), so more than one view may be painted during a
+// transition.
+export enum LhsView {
+  // Nothing is visible. Used in full-iframe mode until the iframe is ready.
+  NONE = 'none',
+  // The folded threads rail. Used in hybrid mode only.
+  FOLDED = 'folded',
+  // The ghost loader shown while the expanded iframe loads. Used in hybrid
+  // mode only.
+  GHOST_LOADER = 'ghostLoader',
+  // The expanded LHS iframe.
+  EXPANDED = 'expanded',
+}
+
 export class LeftHandSideElement extends CrLitElement {
   static get is() {
     return 'cr-left-hand-side';
@@ -96,11 +113,12 @@ export class LeftHandSideElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      isExpandedReady_: {
-        type: Boolean,
+      isExpandedReady_: {type: Boolean},
+      threadsRailPreloadDebounceMs_: {type: Number},
+      view_: {
+        type: String,
         reflect: true,
       },
-      threadsRailPreloadDebounceMs_: {type: Number},
     };
   }
 
@@ -117,6 +135,14 @@ export class LeftHandSideElement extends CrLitElement {
       loadTimeData.valueExists('threadsRailPreloadDebounceMs') ?
       loadTimeData.getInteger('threadsRailPreloadDebounceMs') :
       100;
+  // The primary view, reflected as the `view_` attribute so that
+  // left_hand_side.css can style each view. Derived in willUpdate().
+  protected accessor view_: LhsView = LhsView.NONE;
+  // Accessible name of the ghost loader. Together with aria-busy, it keeps the
+  // LHS region in the a11y tree as busy while the expanded iframe loads,
+  // instead of the region silently going missing.
+  protected readonly ghostLoaderLabel_: string =
+      loadTimeData.getString('aimThreadsHistoryLabel');
   private eventTracker_: EventTracker = new EventTracker();
   private iframeResizeObserver_: ResizeObserver|null = null;
   private lastIframeWidth_: number = 0;
@@ -143,6 +169,11 @@ export class LeftHandSideElement extends CrLitElement {
     this.cancelPreloadTimer_();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    this.view_ = this.getVisibleView_();
+  }
+
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.enableThreadsRailHybrid_) {
@@ -157,13 +188,25 @@ export class LeftHandSideElement extends CrLitElement {
         changedProperties as Map<PropertyKey, unknown>;
     if (this.enableThreadsRailHybrid_ &&
         (changedPrivateProperties.has('isExpanded_') ||
-         changedPrivateProperties.has('isExpandedReady_') ||
          changedPrivateProperties.has('expandedWidth_') ||
          changedPrivateProperties.has('collapsedWidth_'))) {
       this.setHostWidth_(
-          (this.isExpanded_ && this.isExpandedReady_) ? this.expandedWidth_ :
-                                                        this.collapsedWidth_);
+          this.isExpanded_ ? this.expandedWidth_ : this.collapsedWidth_);
     }
+  }
+
+  // Returns the primary view to show. Every view in getHtml() is inert unless
+  // it is the primary view. Opacity and visibility for the cross-fade between
+  // views, including hiding the folded rail while the ghost loader replaces
+  // it, are handled in left_hand_side.css.
+  protected getVisibleView_(): LhsView {
+    if (this.enableThreadsRailHybrid_) {
+      if (!this.isExpanded_) {
+        return LhsView.FOLDED;
+      }
+      return this.isExpandedReady_ ? LhsView.EXPANDED : LhsView.GHOST_LOADER;
+    }
+    return this.isExpandedReady_ ? LhsView.EXPANDED : LhsView.NONE;
   }
 
   private setHostWidth_(width: number) {
