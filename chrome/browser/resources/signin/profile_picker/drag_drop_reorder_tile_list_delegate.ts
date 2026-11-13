@@ -207,10 +207,13 @@ export class DragDropReorderTileListDelegate {
 
   // Clear all drag events listeners and reset tiles drag state.
   clearListeners() {
+    this.resetActiveDrag_();
     this.scrollController_.stop();
     for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
-      tile.draggable = false;
+      if (tile) {
+        tile.draggable = false;
+      }
     }
 
     this.eventTracker_.removeAll();
@@ -289,6 +292,7 @@ export class DragDropReorderTileListDelegate {
       return;
     }
 
+    this.resetActiveDrag_();
     this.isDragging_ = true;
     // 'event.target' corresponds to the tile being dragged. Implicit cast to
     // an HTMLElement.
@@ -401,6 +405,10 @@ export class DragDropReorderTileListDelegate {
   // Transition effects are disabled at this point not to have back and forth
   // animations.
   private onDragEnd_(event: DragEvent) {
+    if (!this.isDragging_) {
+      return;
+    }
+
     // The 'event.target' of the 'dragend' event is expected to be the same as
     // the one that started the drag event cycle.
     assert(this.draggingTile_);
@@ -414,7 +422,8 @@ export class DragDropReorderTileListDelegate {
     // data change.
     this.resetAllTilesWithoutTransition_();
 
-    if (this.dropTargetIndex_ !== -1) {
+    if (this.dropTargetIndex_ !== -1 &&
+        this.dropTargetIndex_ !== this.dragStartIndex_) {
       // In case a reorder should happen:
       // - Apply the changes on the original list.
       // - The changes will cause a re-rendering of the Lit element which
@@ -594,6 +603,18 @@ export class DragDropReorderTileListDelegate {
     this.draggingTile_ = null;
   }
 
+  private resetActiveDrag_() {
+    if (!this.isDragging_) {
+      return;
+    }
+
+    this.isDragging_ = false;
+    this.scrollController_.stop();
+    this.dropTargetIndex_ = -1;
+    this.resetAllTilesWithoutTransition_();
+    this.resetDraggingTile_();
+  }
+
   // Clear all tiles transition effects, and remove the temporary transforms on
   // all tiles that shifted or are shifting.
   private resetAllTilesWithoutTransition_() {
@@ -602,6 +623,10 @@ export class DragDropReorderTileListDelegate {
     // animate.
     for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
+      if (!tile) {
+        continue;
+      }
+      tile.ontransitionend = null;
       tile.classList.remove(SHIFTED_TAG);
       tile.classList.remove(SHIFTING_TAG);
       tile.style.removeProperty('transition');

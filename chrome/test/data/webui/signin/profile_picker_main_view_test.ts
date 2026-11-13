@@ -757,6 +757,13 @@ suite('ProfilePickerProfilesReorderingTest', function() {
       assertProfileNamesOrder(
           mainViewElement.getProfileListForTesting(),
           cycle.expectedEndProfileOrder, `Cycle ${c} end order check`);
+
+      if (c < dragData.dragEventCycles.length - 1) {
+        webUIListenerCallback(
+            'profiles-list-changed',
+            [...mainViewElement.getProfileListForTesting()]);
+        await microtasksFinished();
+      }
     }
   }
 
@@ -1032,6 +1039,150 @@ suite('ProfilePickerProfilesReorderingTest', function() {
         },
       ],
     });
+  });
+
+  function assertAllCardsClean(cards: ProfileCardElement[]) {
+    for (const card of cards) {
+      assertFalse(card.classList.contains('dragging'));
+      assertFalse(card.classList.contains('shifting'));
+      assertFalse(card.classList.contains('shifted'));
+      assertEquals('', card.style.opacity);
+      assertEquals('', card.style.transform);
+      assertEquals('', card.style.transition);
+      assertEquals('', card.style.zIndex);
+    }
+  }
+
+  test('ProfileReorder_DragBlockedWhileOrderUpdateInFlight', async function() {
+    await setupProfileReorderingTest(5);
+    mainViewElement.setDraggingTransitionDurationForTesting(300);
+    const initialProfiles = generateProfilesList(5);
+    webUIListenerCallback('profiles-list-changed', [...initialProfiles]);
+    await microtasksFinished();
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    assertEquals(5, cards.length);
+
+    // Cycle 1: Drag card 0 -> card 3 and drop mid-transition.
+    cards[0]!.dispatchEvent(new DragEvent('dragstart'));
+    cards[3]!.dispatchEvent(new DragEvent('dragenter'));
+    assertTrue(cards[0]!.classList.contains('dragging'));
+    assertEquals('0.001', cards[0]!.style.opacity);
+    cards[0]!.dispatchEvent(new DragEvent('dragend'));
+
+    let args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [0, 3, ProfileOrderUpdateType.DRAG_AND_DROP]);
+    browserProxy.resetResolver('updateProfileOrder');
+
+    // Cycle 2: Immediately attempt a second drag before C++ replies with
+    // 'profiles-list-changed'. The drag start must be prevented cleanly as
+    // a no-op without throwing or leaving the card invisible.
+    const blockedDragStart = new DragEvent('dragstart', {cancelable: true});
+    cards[4]!.dispatchEvent(blockedDragStart);
+    assertTrue(blockedDragStart.defaultPrevented);
+    assertFalse(cards[4]!.classList.contains('dragging'));
+    assertEquals('', cards[4]!.style.opacity);
+
+    cards[1]!.dispatchEvent(new DragEvent('dragenter'));
+    await microtasksFinished();
+
+    // Async C++ 'profiles-list-changed' from Cycle 1 arrives.
+    const cycle1BackendProfiles: ProfileState[] = [
+      initialProfiles[1]!,
+      initialProfiles[2]!,
+      initialProfiles[3]!,
+      initialProfiles[0]!,
+      initialProfiles[4]!,
+    ];
+    webUIListenerCallback('profiles-list-changed', cycle1BackendProfiles);
+    await microtasksFinished();
+
+    // Releasing the blocked drag must be a safe no-op (no assertion error).
+    cards[4]!.dispatchEvent(new DragEvent('dragend'));
+    assertAllCardsClean(cards);
+    assertEquals(0, browserProxy.getCallCount('updateProfileOrder'));
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile2', 'profile3', 'profile0', 'profile4'],
+        'Order preserved after blocked mid-update drag');
+
+    // Cycle 3: Now that 'profiles-list-changed' has arrived, dragging works
+    // normally again.
+    cards[4]!.dispatchEvent(new DragEvent('dragstart'));
+    cards[1]!.dispatchEvent(new DragEvent('dragenter'));
+    assertTrue(cards[4]!.classList.contains('dragging'));
+    assertEquals('0.001', cards[4]!.style.opacity);
+    cards[4]!.dispatchEvent(new DragEvent('dragend'));
+    assertAllCardsClean(cards);
+
+    args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [4, 1, ProfileOrderUpdateType.DRAG_AND_DROP]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile4', 'profile2', 'profile3', 'profile0'],
+        'Order updated after subsequent drag');
+  });
+
+  test('ProfileReorder_NoOpDragDoesNotBlockSubsequentDrag', async function() {
+    await setupProfileReorderingTest(3);
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    assertEquals(3, cards.length);
+
+    // Drag card 1 onto card 2, then back onto card 2 (resetting to slot 1).
+    cards[1]!.dispatchEvent(new DragEvent('dragstart'));
+    cards[2]!.dispatchEvent(new DragEvent('dragenter'));
+    cards[2]!.dispatchEvent(new DragEvent('dragenter'));
+    cards[1]!.dispatchEvent(new DragEvent('dragend'));
+    assertAllCardsClean(cards);
+    assertEquals(0, browserProxy.getCallCount('updateProfileOrder'));
+
+    // Because no order update was sent to C++, a subsequent drag can start
+    // immediately without waiting for 'profiles-list-changed'.
+    cards[0]!.dispatchEvent(new DragEvent('dragstart'));
+    cards[2]!.dispatchEvent(new DragEvent('dragenter'));
+    cards[0]!.dispatchEvent(new DragEvent('dragend'));
+    assertAllCardsClean(cards);
+
+    const args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [0, 2, ProfileOrderUpdateType.DRAG_AND_DROP]);
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile2', 'profile0'], 'Order updated after no-op drag');
+  });
+
+  test('ProfileReorder_MidDragUpdateCancelsCleanly', async function() {
+    await setupProfileReorderingTest(3);
+    mainViewElement.setDraggingTransitionDurationForTesting(300);
+    const initialProfiles = generateProfilesList(3);
+    webUIListenerCallback('profiles-list-changed', [...initialProfiles]);
+    await microtasksFinished();
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    assertEquals(3, cards.length);
+
+    cards[2]!.dispatchEvent(new DragEvent('dragstart'));
+    cards[0]!.dispatchEvent(new DragEvent('dragenter'));
+    assertTrue(cards[2]!.classList.contains('dragging'));
+    assertEquals('0.001', cards[2]!.style.opacity);
+
+    // An external 'profiles-list-changed' (e.g. avatar update) arriving
+    // mid-drag resets the active drag cleanly instead of leaving the card
+    // invisible or throwing on dragend.
+    webUIListenerCallback('profiles-list-changed', [...initialProfiles]);
+    await microtasksFinished();
+    assertAllCardsClean(cards);
+
+    cards[2]!.dispatchEvent(new DragEvent('dragend'));
+    assertAllCardsClean(cards);
+    assertEquals(0, browserProxy.getCallCount('updateProfileOrder'));
   });
 
   function getMenuButtons(card: ProfileCardElement): {

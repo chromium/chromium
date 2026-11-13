@@ -107,6 +107,8 @@ export class ProfilePickerMainViewElement extends
 
   private dragDelegate_: DragDropReorderTileListDelegate|null = null;
   private dragDuration_: number = 300;
+  private updatingProfileOrder_: boolean = false;
+  private dragToggledOff_: boolean = false;
 
   protected accessor pickerButtonsDisabled_: boolean = false;
 
@@ -234,15 +236,24 @@ export class ProfilePickerMainViewElement extends
 
       this.dragDelegate_ = new DragDropReorderTileListDelegate(
           this, this.profilesList_, this, this.dragDuration_);
+      this.updateDragEnabled_();
     }
+  }
+
+  private updateDragEnabled_() {
+    this.dragDelegate_?.toggleDrag(
+        !this.pickerButtonsDisabled_ && !this.updatingProfileOrder_ &&
+        !this.dragToggledOff_);
   }
 
   /**
    * Handler for when the profiles list are updated.
    */
   private handleProfilesListChanged_(profilesList: ProfileState[]) {
+    this.updatingProfileOrder_ = false;
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
+    this.updateDragEnabled_();
   }
 
   /**
@@ -299,11 +310,8 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected onToggleDrag_(e: CustomEvent<{toggle: boolean}>) {
-    if (!this.dragDelegate_) {
-      return;
-    }
-
-    this.dragDelegate_.toggleDrag(e.detail.toggle);
+    this.dragToggledOff_ = !e.detail.toggle;
+    this.updateDragEnabled_();
   }
 
   protected onMoveProfile_(e: CustomEvent<{direction: MoveProfileDirection}>) {
@@ -322,6 +330,8 @@ export class ProfilePickerMainViewElement extends
     const [movedProfile] = this.profilesList_.splice(initialIndex, 1);
     assert(movedProfile);
     this.profilesList_.splice(finalIndex, 0, movedProfile);
+    this.updatingProfileOrder_ = true;
+    this.updateDragEnabled_();
     this.requestUpdate();
     this.manageProfilesBrowserProxy_.updateProfileOrder(
         initialIndex, finalIndex, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON);
@@ -333,16 +343,12 @@ export class ProfilePickerMainViewElement extends
 
   private disableAllPickerButtons_() {
     this.pickerButtonsDisabled_ = true;
-    if (this.dragDelegate_) {
-      this.dragDelegate_.toggleDrag(false);
-    }
+    this.updateDragEnabled_();
   }
 
   private enableAllPickerButtons_() {
     this.pickerButtonsDisabled_ = false;
-    if (this.dragDelegate_) {
-      this.dragDelegate_.toggleDrag(true);
-    }
+    this.updateDragEnabled_();
   }
 
   // Redirects the call to the handler, to create/use a browser to show the
@@ -413,6 +419,9 @@ export class ProfilePickerMainViewElement extends
 
   // @override
   onDragEnd(initialIndex: number, finalIndex: number): void {
+    assert(initialIndex !== finalIndex);
+    this.updatingProfileOrder_ = true;
+    this.updateDragEnabled_();
     this.manageProfilesBrowserProxy_.updateProfileOrder(
         initialIndex, finalIndex, ProfileOrderUpdateType.DRAG_AND_DROP);
   }
