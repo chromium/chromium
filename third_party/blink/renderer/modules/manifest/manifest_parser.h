@@ -128,6 +128,11 @@ class MODULES_EXPORT ManifestParser {
                                     const String& key,
                                     Trim trim);
 
+  // Helper function to parse single-line strings (stripping CR/LF/tab
+  // characters after trimming whitespace), returning a null String if empty or
+  // missing.
+  String ParseSingleLineString(const JSONObject* object, const String& key);
+
   // Helper function to look up an array or object under |key|, logging a type
   // error if the property exists but has the wrong JSON type.
   const JSONArray* ParseArray(const JSONObject* object, const String& key);
@@ -192,21 +197,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed TextDirection.
   mojom::blink::Manifest::TextDirection ParseDir(const JSONObject* object);
 
-  // Parses the 'name' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-name-member
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseName(const JSONObject* object);
-
-  // Parses the 'short_name' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-short-name-member
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseShortName(const JSONObject* object);
-
-  // Parses the 'description' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#description-member-0
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseDescription(const JSONObject* object);
-
   // Parses the 'id' field of the manifest.
   std::pair<KURL, ParseIdResultType> ParseId(const JSONObject* object,
                                              const KURL& start_url);
@@ -248,16 +238,6 @@ class MODULES_EXPORT ManifestParser {
   // failed.
   device::mojom::blink::ScreenOrientationLockType ParseOrientation(
       const JSONObject* object);
-
-  // Parses the 'src' field of an icon, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-src-member-of-an-image
-  // Returns the parsed KURL if any, an empty KURL if the parsing failed.
-  KURL ParseIconSrc(const JSONObject* icon);
-
-  // Parses the 'type' field of an icon, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-type-member-of-an-image
-  // Returns the parsed string if any, an empty string if the parsing failed.
-  String ParseIconType(const JSONObject* icon);
 
   // Parses the 'sizes' field of an icon, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-a-sizes-member-of-an-image
@@ -301,10 +281,6 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestScreenshot::FormFactor ParseScreenshotFormFactor(
       const JSONObject* screenshot);
 
-  // Parse the 'label' field of 'screenshots' as defined in:
-  // https://www.w3.org/TR/manifest-app-info/#label-member
-  String ParseScreenshotLabel(const JSONObject* object);
-
   // A helper function for parsing ImageResources under |key| in the manifest.
   Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResourceArray(
       const String& key,
@@ -313,22 +289,7 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
       const JSONValue* object);
 
-  // Parses the 'name' field of a shortcut, as defined in:
-  // https://w3c.github.io/manifest/#shortcuts-member
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseShortcutName(const JSONObject* shortcut);
-
-  // Parses the 'short_name' field of a shortcut, as defined in:
-  // https://w3c.github.io/manifest/#shortcuts-member
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseShortcutShortName(const JSONObject* shortcut);
-
-  // Parses the 'description' field of a shortcut, as defined in:
-  // https://w3c.github.io/manifest/#shortcuts-member
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseShortcutDescription(const JSONObject* shortcut);
-
-  // Parses the 'url' field of an icon, as defined in:
+  // Parses the 'url' field of a shortcut, as defined in:
   // https://w3c.github.io/manifest/#shortcuts-member
   // Returns the parsed KURL if any, an empty KURL if the parsing failed.
   KURL ParseShortcutUrl(const JSONObject* shortcut);
@@ -454,24 +415,12 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 
-  // Parses the 'start_url' field of the 'lock_screen' field of a Manifest,
-  // as defined in:
-  // https://github.com/WICG/lock-screen/
-  // Returns the parsed KURL if any, or an empty KURL if parsing failed.
-  KURL ParseLockScreenStartUrl(const JSONObject* lock_screen);
-
   // Parses the 'lock_screen' field of a Manifest, as defined in:
   // https://github.com/WICG/lock-screen/
   // Returns a parsed ManifestLockScreenPtr, or nullptr if not present or
   // parsing failed.
   mojom::blink::ManifestLockScreenPtr ParseLockScreen(
       const JSONObject* manifest);
-
-  // Parses the 'new_note_url' field of the 'note_taking' field of a Manifest,
-  // as defined in:
-  // https://wicg.github.io/manifest-incubations/#dfn-new_note_url
-  // Returns the parsed KURL if any, or an empty KURL if parsing failed.
-  KURL ParseNoteTakingNewNoteUrl(const JSONObject* note_taking);
 
   // Parses the 'note_taking' field of a Manifest, as defined in:
   // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
@@ -480,21 +429,6 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestNoteTakingPtr ParseNoteTaking(
       const JSONObject* manifest);
 
-  // Parses the 'platform' field of a related application, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-platform-member-of-an-application
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseRelatedApplicationPlatform(const JSONObject* application);
-
-  // Parses the 'url' field of a related application, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-url-member-of-an-application
-  // Returns the parsed KURL if any, a null optional if the parsing failed.
-  std::optional<KURL> ParseRelatedApplicationURL(const JSONObject* application);
-
-  // Parses the 'id' field of a related application, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-id-member-of-an-application
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseRelatedApplicationId(const JSONObject* application);
-
   // Parses the 'related_applications' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-related_applications-member
   // Returns a vector of ManifestRelatedApplicationPtr with the successfully
@@ -502,12 +436,6 @@ class MODULES_EXPORT ManifestParser {
   // or empty.
   Vector<mojom::blink::ManifestRelatedApplicationPtr> ParseRelatedApplications(
       const JSONObject* object);
-
-  // Parses the 'prefer_related_applications' field on the manifest, as defined
-  // in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-prefer_related_applications-member
-  // returns true iff the field could be parsed as the boolean true.
-  bool ParsePreferRelatedApplications(const JSONObject* object);
 
   // Parses the 'migrate_from' field of the manifest, as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/pwa-migration-explainer.md
@@ -520,21 +448,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns a ManifestMigrateToPtr, or nullptr if not present or parsing
   // failed.
   mojom::blink::ManifestMigrateToPtr ParseMigrateTo(const JSONObject* object);
-
-  // Parses the 'theme_color' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-theme_color-member
-  // Returns the parsed theme color if any, or a null optional otherwise.
-  std::optional<SkColor> ParseThemeColor(const JSONObject* object);
-
-  // Parses the 'background_color' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-background_color-member
-  // Returns the parsed background color if any, or a null optional otherwise.
-  std::optional<SkColor> ParseBackgroundColor(const JSONObject* object);
-
-  // Parses the 'gcm_sender_id' field of the manifest.
-  // This is a proprietary extension of the Web Manifest specification.
-  // Returns the parsed string if any, a null string if the parsing failed.
-  String ParseGCMSenderID(const JSONObject* object);
 
   // Checks the structure of the 'permissions_policy' field of the manifest.
   // This check is fatal for the manifest parsing.
@@ -582,20 +495,9 @@ class MODULES_EXPORT ManifestParser {
   HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseLocalizedField(const JSONObject* object, const String& field_name);
 
-  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-  ParseNameLocalized(const JSONObject* object);
-
-  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-  ParseShortNameLocalized(const JSONObject* object);
-
-  HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-  ParseDescriptionLocalized(const JSONObject* object);
-
   std::optional<PatternInit> MaybeCreatePatternInit(
       const JSONObject* pattern_object,
       const String& field_name);
-
-  String ParseVersion(const JSONObject* object);
 
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,

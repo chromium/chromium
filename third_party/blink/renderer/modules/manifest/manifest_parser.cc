@@ -350,9 +350,12 @@ bool ManifestParser::Parse() {
 
   manifest_->manifest_url = manifest_url_;
   manifest_->dir = ParseDir(root_object.get());
-  manifest_->name = ParseName(root_object.get());
-  manifest_->short_name = ParseShortName(root_object.get());
-  manifest_->description = ParseDescription(root_object.get());
+  manifest_->name = ParseSingleLineString(root_object.get(), "name");
+  manifest_->short_name =
+      ParseSingleLineString(root_object.get(), "short_name");
+  manifest_->description =
+      ParseString(root_object.get(), "description", Trim(true))
+          .value_or(String());
   const auto& [start_url, start_url_parse_result] =
       ParseStartURL(root_object.get(), document_url_);
   manifest_->start_url = start_url;
@@ -462,7 +465,7 @@ bool ManifestParser::Parse() {
                       WebFeature::kWebAppManifestRelated_Applications);
   }
   manifest_->prefer_related_applications =
-      ParsePreferRelatedApplications(root_object.get());
+      ParseBoolean(root_object.get(), "prefer_related_applications", false);
   if (manifest_->prefer_related_applications) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestPrefer_Related_Applications);
@@ -481,19 +484,22 @@ bool ManifestParser::Parse() {
                                   WebDXFeature::kAppMigration);
   }
 
-  manifest_->theme_color = ParseThemeColor(root_object.get());
+  manifest_->theme_color = ParseColor(root_object.get(), "theme_color");
   if (manifest_->theme_color.has_value()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestThemeColor);
   }
 
-  manifest_->background_color = ParseBackgroundColor(root_object.get());
+  manifest_->background_color =
+      ParseColor(root_object.get(), "background_color");
   if (manifest_->background_color.has_value()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestBackgroundColor);
   }
 
-  manifest_->gcm_sender_id = ParseGCMSenderID(root_object.get());
+  manifest_->gcm_sender_id =
+      ParseString(root_object.get(), "gcm_sender_id", Trim(true))
+          .value_or(String());
   manifest_->shortcuts = ParseShortcuts(root_object.get());
   if (!manifest_->shortcuts.empty()) {
     UseCounter::CountWebDXFeature(execution_context_,
@@ -528,22 +534,26 @@ bool ManifestParser::Parse() {
     }
   }
 
-  manifest_->version = ParseVersion(root_object.get());
+  manifest_->version =
+      ParseString(root_object.get(), "version", Trim(false)).value_or(String());
   if (!manifest_->version.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestVersion);
   }
 
-  auto name_localized = ParseNameLocalized(root_object.get());
+  auto name_localized =
+      ParseLocalizedField(root_object.get(), "name_localized");
   if (!name_localized.empty()) {
     manifest_->name_localized = std::move(name_localized);
   }
 
-  auto short_name_localized = ParseShortNameLocalized(root_object.get());
+  auto short_name_localized =
+      ParseLocalizedField(root_object.get(), "short_name_localized");
   if (!short_name_localized.empty()) {
     manifest_->short_name_localized = std::move(short_name_localized);
   }
 
-  auto description_localized = ParseDescriptionLocalized(root_object.get());
+  auto description_localized =
+      ParseLocalizedField(root_object.get(), "description_localized");
   if (!description_localized.empty()) {
     manifest_->description_localized = std::move(description_localized);
   }
@@ -605,6 +615,16 @@ std::optional<String> ManifestParser::ParseString(const JSONObject* object,
     value = value.StripWhiteSpace();
   }
   return value;
+}
+
+String ManifestParser::ParseSingleLineString(const JSONObject* object,
+                                             const String& key) {
+  std::optional<String> str = ParseString(object, key, Trim(true));
+  if (!str.has_value()) {
+    return String();
+  }
+  String cleaned = str->RemoveCharacters(IsCrLfOrTabChar);
+  return cleaned.empty() ? String() : cleaned;
 }
 
 const JSONArray* ManifestParser::ParseArray(const JSONObject* object,
@@ -823,35 +843,6 @@ mojom::blink::Manifest::TextDirection ManifestParser::ParseDir(
   return *textDirection;
 }
 
-String ManifestParser::ParseName(const JSONObject* object) {
-  std::optional<String> name = ParseString(object, "name", Trim(true));
-  if (name.has_value()) {
-    name = name->RemoveCharacters(IsCrLfOrTabChar);
-    if (name->length() == 0) {
-      name = std::nullopt;
-    }
-  }
-  return name.has_value() ? *name : String();
-}
-
-String ManifestParser::ParseShortName(const JSONObject* object) {
-  std::optional<String> short_name =
-      ParseString(object, "short_name", Trim(true));
-  if (short_name.has_value()) {
-    short_name = short_name->RemoveCharacters(IsCrLfOrTabChar);
-    if (short_name->length() == 0) {
-      short_name = std::nullopt;
-    }
-  }
-  return short_name.has_value() ? *short_name : String();
-}
-
-String ManifestParser::ParseDescription(const JSONObject* object) {
-  std::optional<String> description =
-      ParseString(object, "description", Trim(true));
-  return description.has_value() ? *description : String();
-}
-
 std::pair<KURL, ManifestParser::ParseIdResultType> ManifestParser::ParseId(
     const JSONObject* object,
     const KURL& start_url) {
@@ -1017,16 +1008,6 @@ ManifestParser::ParseOrientation(const JSONObject* object) {
   return orientation_enum;
 }
 
-KURL ManifestParser::ParseIconSrc(const JSONObject* icon) {
-  return ParseURL(icon, "src", manifest_url_,
-                  ParseURLRestrictions::kNoRestrictions);
-}
-
-String ManifestParser::ParseIconType(const JSONObject* icon) {
-  std::optional<String> type = ParseString(icon, "type", Trim(true));
-  return type.value_or(g_empty_string);
-}
-
 Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
   std::optional<String> sizes_str = ParseString(icon, "sizes", Trim(false));
   if (!sizes_str.has_value()) {
@@ -1126,11 +1107,6 @@ ManifestParser::ParseScreenshotFormFactor(const JSONObject* screenshot) {
   return mojom::blink::ManifestScreenshot::FormFactor::kUnknown;
 }
 
-String ManifestParser::ParseScreenshotLabel(const JSONObject* object) {
-  std::optional<String> label = ParseString(object, "label", Trim(true));
-  return label.has_value() ? *label : String();
-}
-
 Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
     const JSONObject* object) {
   return ParseImageResourceArray("icons", object);
@@ -1195,7 +1171,8 @@ Vector<mojom::blink::ManifestScreenshotPtr> ManifestParser::ParseScreenshots(
 
     screenshot->image = std::move(*image);
     screenshot->form_factor = ParseScreenshotFormFactor(screenshot_object);
-    screenshot->label = ParseScreenshotLabel(screenshot_object);
+    screenshot->label =
+        ParseString(screenshot_object, "label", Trim(true)).value_or(String());
 
     screenshots.push_back(std::move(screenshot));
   }
@@ -1230,7 +1207,8 @@ ManifestParser::ParseImageResource(const JSONValue* object) {
   }
 
   auto icon = mojom::blink::ManifestImageResource::New();
-  icon->src = ParseIconSrc(icon_object);
+  icon->src = ParseURL(icon_object, "src", manifest_url_,
+                       ParseURLRestrictions::kNoRestrictions);
   // An icon MUST have a valid src. If it does not, it MUST be ignored.
   if (!icon->src.IsValid()) {
     return std::nullopt;
@@ -1242,7 +1220,8 @@ ManifestParser::ParseImageResource(const JSONValue* object) {
     return std::nullopt;
   }
 
-  icon->type = ParseIconType(icon_object);
+  icon->type =
+      ParseString(icon_object, "type", Trim(true)).value_or(g_empty_string);
   icon->sizes = ParseIconSizes(icon_object);
   auto purpose = ParseIconPurpose(icon_object);
   if (!purpose) {
@@ -1251,24 +1230,6 @@ ManifestParser::ParseImageResource(const JSONValue* object) {
 
   icon->purpose = std::move(*purpose);
   return icon;
-}
-
-String ManifestParser::ParseShortcutName(const JSONObject* shortcut) {
-  std::optional<String> name =
-      ParseStringForMember(shortcut, "shortcut", "name", true, Trim(true));
-  return name.has_value() ? *name : String();
-}
-
-String ManifestParser::ParseShortcutShortName(const JSONObject* shortcut) {
-  std::optional<String> short_name = ParseStringForMember(
-      shortcut, "shortcut", "short_name", false, Trim(true));
-  return short_name.has_value() ? *short_name : String();
-}
-
-String ManifestParser::ParseShortcutDescription(const JSONObject* shortcut) {
-  std::optional<String> description = ParseStringForMember(
-      shortcut, "shortcut", "description", false, Trim(true));
-  return description.has_value() ? *description : String();
 }
 
 KURL ManifestParser::ParseShortcutUrl(const JSONObject* shortcut) {
@@ -1311,24 +1272,35 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
     }
 
     // A shortcut MUST have a valid name. If it does not, it MUST be ignored.
-    shortcut->name = ParseShortcutName(shortcut_object);
-    if (shortcut->name == String()) {
+    shortcut->name = ParseStringForMember(shortcut_object, "shortcut", "name",
+                                          /*required=*/true, Trim(true))
+                         .value_or(String());
+    if (shortcut->name.IsNull()) {
       continue;
     }
 
-    shortcut->short_name = ParseShortcutShortName(shortcut_object);
-    shortcut->description = ParseShortcutDescription(shortcut_object);
+    shortcut->short_name =
+        ParseStringForMember(shortcut_object, "shortcut", "short_name",
+                             /*required=*/false, Trim(true))
+            .value_or(String());
+    shortcut->description =
+        ParseStringForMember(shortcut_object, "shortcut", "description",
+                             /*required=*/false, Trim(true))
+            .value_or(String());
 
     // Parse localized text fields
-    auto name_localized = ParseNameLocalized(shortcut_object);
+    auto name_localized =
+        ParseLocalizedField(shortcut_object, "name_localized");
     if (!name_localized.empty()) {
       shortcut->name_localized = std::move(name_localized);
     }
-    auto short_name_localized = ParseShortNameLocalized(shortcut_object);
+    auto short_name_localized =
+        ParseLocalizedField(shortcut_object, "short_name_localized");
     if (!short_name_localized.empty()) {
       shortcut->short_name_localized = std::move(short_name_localized);
     }
-    auto description_localized = ParseDescriptionLocalized(shortcut_object);
+    auto description_localized =
+        ParseLocalizedField(shortcut_object, "description_localized");
     if (!description_localized.empty()) {
       shortcut->description_localized = std::move(description_localized);
     }
@@ -1511,15 +1483,12 @@ ManifestParser::ParseShareTargetParams(const JSONObject* share_target_params) {
 
   // NOTE: These are key names for query parameters, which are filled with share
   // data. As such, |params.url| is just a string.
-  std::optional<String> text =
-      ParseString(share_target_params, "text", Trim(true));
-  params->text = text.has_value() ? *text : String();
-  std::optional<String> title =
-      ParseString(share_target_params, "title", Trim(true));
-  params->title = title.has_value() ? *title : String();
-  std::optional<String> url =
-      ParseString(share_target_params, "url", Trim(true));
-  params->url = url.has_value() ? *url : String();
+  params->text =
+      ParseString(share_target_params, "text", Trim(true)).value_or(String());
+  params->title =
+      ParseString(share_target_params, "title", Trim(true)).value_or(String());
+  params->url =
+      ParseString(share_target_params, "url", Trim(true)).value_or(String());
 
   auto files = ParseTargetFiles("files", share_target_params);
   if (!files.empty()) {
@@ -1981,20 +1950,6 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
   return std::move(scope_extension);
 }
 
-KURL ManifestParser::ParseLockScreenStartUrl(const JSONObject* lock_screen) {
-  if (!lock_screen->Get("start_url")) {
-    return KURL();
-  }
-  KURL start_url = ParseURL(lock_screen, "start_url", manifest_url_,
-                            ParseURLRestrictions::kWithinScope);
-  if (!start_url.IsValid()) {
-    // Error already reported by ParseURL.
-    return KURL();
-  }
-
-  return start_url;
-}
-
 mojom::blink::ManifestLockScreenPtr ManifestParser::ParseLockScreen(
     const JSONObject* manifest) {
   const JSONObject* lock_screen_object = ParseObject(manifest, "lock_screen");
@@ -2002,23 +1957,10 @@ mojom::blink::ManifestLockScreenPtr ManifestParser::ParseLockScreen(
     return nullptr;
   }
   auto lock_screen = mojom::blink::ManifestLockScreen::New();
-  lock_screen->start_url = ParseLockScreenStartUrl(lock_screen_object);
-
+  lock_screen->start_url =
+      ParseURL(lock_screen_object, "start_url", manifest_url_,
+               ParseURLRestrictions::kWithinScope);
   return lock_screen;
-}
-
-KURL ManifestParser::ParseNoteTakingNewNoteUrl(const JSONObject* note_taking) {
-  if (!note_taking->Get("new_note_url")) {
-    return KURL();
-  }
-  KURL new_note_url = ParseURL(note_taking, "new_note_url", manifest_url_,
-                               ParseURLRestrictions::kWithinScope);
-  if (!new_note_url.IsValid()) {
-    // Error already reported by ParseURL.
-    return KURL();
-  }
-
-  return new_note_url;
 }
 
 mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(
@@ -2028,28 +1970,10 @@ mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(
     return nullptr;
   }
   auto note_taking = mojom::blink::ManifestNoteTaking::New();
-  note_taking->new_note_url = ParseNoteTakingNewNoteUrl(note_taking_object);
-
+  note_taking->new_note_url =
+      ParseURL(note_taking_object, "new_note_url", manifest_url_,
+               ParseURLRestrictions::kWithinScope);
   return note_taking;
-}
-
-String ManifestParser::ParseRelatedApplicationPlatform(
-    const JSONObject* application) {
-  std::optional<String> platform =
-      ParseString(application, "platform", Trim(true));
-  return platform.has_value() ? *platform : String();
-}
-
-std::optional<KURL> ManifestParser::ParseRelatedApplicationURL(
-    const JSONObject* application) {
-  return ParseURL(application, "url", manifest_url_,
-                  ParseURLRestrictions::kNoRestrictions);
-}
-
-String ManifestParser::ParseRelatedApplicationId(
-    const JSONObject* application) {
-  std::optional<String> id = ParseString(application, "id", Trim(true));
-  return id.has_value() ? *id : String();
 }
 
 Vector<mojom::blink::ManifestRelatedApplicationPtr>
@@ -2069,7 +1993,9 @@ ManifestParser::ParseRelatedApplications(const JSONObject* object) {
     }
 
     auto application = mojom::blink::ManifestRelatedApplication::New();
-    application->platform = ParseRelatedApplicationPlatform(application_object);
+    application->platform =
+        ParseString(application_object, "platform", Trim(true))
+            .value_or(String());
     // "If platform is undefined, move onto the next item if any are left."
     if (application->platform.empty()) {
       AddErrorInfo(
@@ -2078,8 +2004,10 @@ ManifestParser::ParseRelatedApplications(const JSONObject* object) {
       continue;
     }
 
-    application->id = ParseRelatedApplicationId(application_object);
-    application->url = ParseRelatedApplicationURL(application_object);
+    application->id =
+        ParseString(application_object, "id", Trim(true)).value_or(String());
+    application->url = ParseURL(application_object, "url", manifest_url_,
+                                ParseURLRestrictions::kNoRestrictions);
     // "If both id and url are undefined, move onto the next item if any are
     // left."
     if ((!application->url.has_value() || !application->url->IsValid()) &&
@@ -2094,10 +2022,6 @@ ManifestParser::ParseRelatedApplications(const JSONObject* object) {
   }
 
   return applications;
-}
-
-bool ManifestParser::ParsePreferRelatedApplications(const JSONObject* object) {
-  return ParseBoolean(object, "prefer_related_applications", false);
 }
 
 Vector<mojom::blink::ManifestMigrateFromPtr> ManifestParser::ParseMigrateFrom(
@@ -2226,22 +2150,6 @@ mojom::blink::ManifestMigrateToPtr ManifestParser::ParseMigrateTo(
   migrate_to->install_url = install_url;
 
   return migrate_to;
-}
-
-std::optional<SkColor> ManifestParser::ParseThemeColor(
-    const JSONObject* object) {
-  return ParseColor(object, "theme_color");
-}
-
-std::optional<SkColor> ManifestParser::ParseBackgroundColor(
-    const JSONObject* object) {
-  return ParseColor(object, "background_color");
-}
-
-String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
-  std::optional<String> gcm_sender_id =
-      ParseString(object, "gcm_sender_id", Trim(true));
-  return gcm_sender_id.has_value() ? *gcm_sender_id : String();
 }
 
 // Errors here fail the whole manifest parsing because an IWA with manlformed
@@ -2612,10 +2520,6 @@ ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object,
   return init;
 }
 
-String ManifestParser::ParseVersion(const JSONObject* object) {
-  return ParseString(object, "version", Trim(false)).value_or(String());
-}
-
 void ManifestParser::AddErrorInfo(const String& error_msg,
                                   bool critical,
                                   int error_line,
@@ -2717,21 +2621,6 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
                                   WebDXFeature::kManifestLocalization);
   }
   return result;
-}
-
-HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-ManifestParser::ParseNameLocalized(const JSONObject* object) {
-  return ParseLocalizedField(object, "name_localized");
-}
-
-HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-ManifestParser::ParseShortNameLocalized(const JSONObject* object) {
-  return ParseLocalizedField(object, "short_name_localized");
-}
-
-HashMap<base::i18n::LanguageTag, mojom::blink::ManifestLocalizedTextObjectPtr>
-ManifestParser::ParseDescriptionLocalized(const JSONObject* object) {
-  return ParseLocalizedField(object, "description_localized");
 }
 
 }  // namespace blink
