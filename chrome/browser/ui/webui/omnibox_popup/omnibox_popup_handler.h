@@ -65,6 +65,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
                           uint32_t sequence_number,
                           bool show_full_url) override;
   void Revert(uint32_t sequence_number) override;
+  void RevertTemporaryText(uint32_t sequence_number) override;
   void LogEscapeAction(
       omnibox_popup::mojom::OmniboxEscapeAction action) override;
   void OnInputCleared(uint32_t sequence_number) override;

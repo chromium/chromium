@@ -106,6 +106,12 @@ interface PageHandler {
   // Discards the call if `sequence_number` is stale.
   Revert(uint32 sequence_number);
 
+  // Reverts the temporary text of a selected match in the omnibox edit model
+  // back to the user's text, resetting its selection to the initial line (the
+  // default match, or no match if there is none). Stage 1 of Escape.
+  // Discards the call if `sequence_number` is stale.
+  RevertTemporaryText(uint32 sequence_number);
+
   // Logs the Escape key press action to UMA.
   LogEscapeAction(OmniboxEscapeAction action);
 

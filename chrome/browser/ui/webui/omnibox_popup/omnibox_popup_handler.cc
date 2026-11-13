@@ -131,6 +131,16 @@ void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
   show_full_url_ = false;
 }
 
+void OmniboxPopupHandler::RevertTemporaryText(uint32_t sequence_number) {
+  if (sequence_number < current_sequence_number_) {
+    return;
+  }
+  if (controller_ && controller_->edit_model() &&
+      controller_->edit_model()->has_temporary_text()) {
+    controller_->edit_model()->RevertTemporaryTextAndPopup();
+  }
+}
+
 void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {
   if (sequence_number < current_sequence_number_) {
     return;

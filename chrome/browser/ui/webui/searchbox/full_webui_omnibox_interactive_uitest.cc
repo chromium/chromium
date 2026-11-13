@@ -141,6 +141,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
@@ -7452,8 +7453,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest, ZpsShownOnFocus) {
 }
 
 // Verifies that from a highlighted ZPS match, Escape #1 reverts the input to
-// the typed text (""), keeping the dropdown open; Escape #2 closes the
-// dropdown, keeping the omnibox focused; and ArrowDown then reopens ZPS.
+// the typed text (""), keeping the dropdown open with nothing highlighted;
+// Escape #2 closes the dropdown, keeping the omnibox focused; and ArrowDown
+// then reopens ZPS.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
                        DoubleEscapeFromZpsMatchThenArrowDownReopensZps) {
   RunTestSequence(
@@ -7461,16 +7463,79 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
       // Highlight the second match, which fills its text into the input.
       PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(kZpsMatch0),
       PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(kZpsMatch1),
-      // Escape #1 reverts the input and selects the first match, keeping the
-      // dropdown open.
+      // Escape #1 reverts the input, keeping the dropdown open. ZPS has no
+      // default match, so nothing is highlighted.
       PressKey(ui::VKEY_ESCAPE), WaitForWebUIInputValue(""),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible && "
-                           "el.selection?.line === 0"),
+                           "el.selection?.line === -1"),
       // Escape #2 closes the dropdown.
       PressKey(ui::VKEY_ESCAPE), WaitForDropdownClosedWithEmptyInput(),
       // ArrowDown reopens ZPS.
       PressKey(ui::VKEY_DOWN), WaitForZpsShown());
+}
+
+// Verifies that Escape from the *first* ZPS match reverts the temporary text
+// in the WebUI and in the native omnibox alike, keeping the dropdown open with
+// nothing highlighted, and that a second Escape then closes the dropdown. ZPS
+// has no default match, so the first match is temporary text like any other.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       EscapeFromFirstZpsMatchRevertsTemporaryText) {
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(),
+      // Highlight the first match, which fills its text into the input and
+      // into the native omnibox.
+      PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(kZpsMatch0),
+      WaitForOmniboxText(base::ASCIIToUTF16(std::string_view(kZpsMatch0))),
+      // Escape #1 reverts both, keeping the dropdown open with no selection.
+      PressKey(ui::VKEY_ESCAPE), WaitForWebUIInputValue(""),
+      WaitForOmniboxText(u""),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible && "
+                           "el.selection?.line === -1"),
+      // Escape #2 closes the dropdown.
+      PressKey(ui::VKEY_ESCAPE), WaitForDropdownClosedWithEmptyInput());
+}
+
+// Verifies that on a regular web page (non-NTP), Escape from a highlighted ZPS
+// match reverts both the WebUI input and the native omnibox back to the page's
+// permanent URL, keeping the dropdown open with nothing highlighted, and that
+// a second Escape closes the dropdown while preserving the permanent URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       EscapeFromZpsMatchOnWebPageRevertsToPermanentUrl) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+  const std::u16string display_url16 = base::ASCIIToUTF16(display_url);
+  const std::string zps_text =
+      l10n_util::GetStringUTF8(IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL);
+  const std::u16string zps_text16 =
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL);
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupDismissed(),
+      CheckPageClassification(&omnibox::IsOtherWebPage),
+      ClickUnfocusedOmniboxAndWaitForZeroSuggestDropdown(),
+      WaitForWebUIInputValue(display_url), WaitForOmniboxText(display_url16),
+      // Highlight the ZPS match, which previews its text in both the WebUI
+      // input and the native omnibox.
+      PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(zps_text),
+      WaitForOmniboxText(zps_text16),
+      // Escape #1 reverts both back to the permanent URL, keeping the dropdown
+      // open with no selection.
+      PressKey(ui::VKEY_ESCAPE), WaitForWebUIInputValue(display_url),
+      WaitForOmniboxText(display_url16),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible && "
+                           "el.selection?.line === -1"),
+      // Escape #2 closes the dropdown, keeping the permanent URL and focus.
+      PressKey(ui::VKEY_ESCAPE),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForWebUIInputValue(display_url), WaitForOmniboxText(display_url16),
+      WaitForOmniboxFocus(true));
 }
 
 // Verifies that after typing a query, Escape #1 closes the dropdown, keeping
