@@ -63,10 +63,6 @@ NSString* GetDeletionConfirmationString(bool has_local_profile,
       IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESSES_CONFIRMATION_TITLE);
 }
 
-NSString* GetDeletionConfirmationStringWithEntities() {
-  return l10n_util::GetNSString(IDS_IOS_SETTINGS_AUTOFILL_DELETE_TITLE_LOCAL);
-}
-
 BOOL ContainsLocalEntity(NSArray<TableViewItem*>* items) {
   for (TableViewItem* item in items) {
     if (IsDeletableItem(item)) {

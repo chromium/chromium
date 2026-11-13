@@ -16,10 +16,6 @@ NSString* GetDeletionConfirmationString(bool has_local_profile,
                                         bool has_home_work_name_email_profile,
                                         const std::u16string& user_email);
 
-// Returns the deletion confirmation message when local Autofill AI entities
-// are selected for deletion.
-NSString* GetDeletionConfirmationStringWithEntities();
-
 @class TableViewItem;
 
 // Returns YES if `items` contains any local (deletable) entities.
