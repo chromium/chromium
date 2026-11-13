@@ -12,6 +12,7 @@
     <string name="title_activity_browser">WebView Browser Tester</string>
     <string name="title_activity_browser_second_process">Second Process Browser Tester</string>
     <string name="title_activity_manually_triggered_startup">Manually Triggered Startup Tester</string>
+    <string name="title_activity_js_bridge">WebView JS Bridge Tester</string>
     <string name="title_activity_layout_test">WebView Layout Test</string>
     <string name="title_activity_multi_profile">WebView Multi-Profile Tester</string>
     <string name="title_activity_thread_test">WebView Thread Test</string>
