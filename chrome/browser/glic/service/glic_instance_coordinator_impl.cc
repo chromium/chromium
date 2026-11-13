@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -124,6 +125,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       service_(service),
       contextual_cueing_service_(contextual_cueing_service),
       memory_consumer_registration_(
+          std::in_place,
           kMemoryConsumerName,
           kGlicInstanceCoordinatorTraits,
           this,
@@ -652,6 +654,7 @@ bool GlicInstanceCoordinatorImpl::MaybeStartWarming(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
+  memory_consumer_registration_.reset();
   metrics_.OnShutdown();
 
   // Take ownership of the handlers to avoid iterator invalidation when

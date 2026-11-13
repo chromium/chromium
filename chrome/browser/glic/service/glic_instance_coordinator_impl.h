@@ -390,7 +390,7 @@ class GlicInstanceCoordinatorImpl
   base::RepeatingCallbackList<void(GlicInstanceImpl*)>
       instance_created_callback_list_;
 
-  base::MemoryConsumerRegistration memory_consumer_registration_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   // The effective awake limit applied during OnUpdateMemoryLimit() and
   // OnReleaseMemory().
