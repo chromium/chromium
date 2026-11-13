@@ -35,6 +35,7 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetModalType(ui::mojom::ModalType::kSystem);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -50,17 +51,8 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildViewRaw(label);
 
-  // Shown on the root window for new windows.
-  views::DialogDelegate::CreateDialogWidget(this, nullptr /* context */,
-                                            nullptr /* parent */)
-      ->Show();
-
   update_timer_.Start(FROM_HERE, base::Milliseconds(kCountdownUpdateIntervalMs),
                       this, &IdleActionWarningDialogView::UpdateTitle);
-}
-
-void IdleActionWarningDialogView::CloseDialog() {
-  GetWidget()->Close();
 }
 
 void IdleActionWarningDialogView::Update(base::TimeTicks idle_action_time) {

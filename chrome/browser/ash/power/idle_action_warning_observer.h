@@ -7,17 +7,11 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-
-namespace views {
-class Widget;
-}
+#include "ui/views/widget/widget.h"
 
 namespace ash {
-
-class IdleActionWarningDialogView;
 
 // Listens for notifications that the idle action is imminent and shows a
 // warning dialog to the user.
@@ -33,22 +27,19 @@ class IdleActionWarningObserver {
 
  private:
   class PowerManagerObserver;
-  class WidgetObserver;
 
   // PowerManagerClient::Observer:
   void IdleActionImminent(base::TimeDelta time_until_idle_action);
   void IdleActionDeferred();
   void PowerChanged(const power_manager::PowerSupplyProperties& proto);
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget);
+  void OnWidgetClosed(views::Widget::ClosedReason reason);
 
   void HideDialogIfPresent();
 
   std::unique_ptr<PowerManagerObserver> power_manager_observer_;
-  std::unique_ptr<WidgetObserver> widged_observer_;
 
-  raw_ptr<IdleActionWarningDialogView> warning_dialog_ = nullptr;  // Not owned.
+  std::unique_ptr<views::Widget> warning_widget_;
 
   // Used to derive the correct idle action (IdleActionAC/IdleActionBattery).
   bool on_battery_power_ = false;

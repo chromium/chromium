@@ -9,6 +9,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
@@ -21,7 +23,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/prefs/pref_service.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
 namespace {
@@ -84,23 +86,6 @@ class IdleActionWarningObserver::PowerManagerObserver
   raw_ptr<IdleActionWarningObserver> idle_action_warning_observer_;
 };
 
-class IdleActionWarningObserver::WidgetObserver : public views::WidgetObserver {
- public:
-  WidgetObserver(IdleActionWarningObserver* idle_action_warning_observer,
-                 views::Widget* widget)
-      : idle_action_warning_observer_(idle_action_warning_observer) {
-    observation_.Observe(widget);
-  }
-
-  void OnWidgetDestroying(views::Widget* widget) override {
-    idle_action_warning_observer_->OnWidgetDestroying(widget);
-  }
-
- private:
-  base::ScopedObservation<views::Widget, WidgetObserver> observation_{this};
-  raw_ptr<IdleActionWarningObserver> idle_action_warning_observer_;
-};
-
 IdleActionWarningObserver::IdleActionWarningObserver() {
   power_manager_observer_ = std::make_unique<PowerManagerObserver>(
       this, chromeos::PowerManagerClient::Get());
@@ -108,10 +93,6 @@ IdleActionWarningObserver::IdleActionWarningObserver() {
 
 IdleActionWarningObserver::~IdleActionWarningObserver() {
   power_manager_observer_.reset();
-  widged_observer_.reset();
-  if (warning_dialog_) {
-    warning_dialog_->CloseDialog();
-  }
 }
 
 void IdleActionWarningObserver::IdleActionImminent(
@@ -127,12 +108,19 @@ void IdleActionWarningObserver::IdleActionImminent(
 
   const base::TimeTicks idle_action_time =
       base::TimeTicks::Now() + time_until_idle_action;
-  if (warning_dialog_) {
-    warning_dialog_->Update(idle_action_time);
+  if (warning_widget_) {
+    static_cast<IdleActionWarningDialogView*>(
+        warning_widget_->widget_delegate())
+        ->Update(idle_action_time);
   } else {
-    warning_dialog_ = new IdleActionWarningDialogView(idle_action_time);
-    widged_observer_ =
-        std::make_unique<WidgetObserver>(this, warning_dialog_->GetWidget());
+    // Shown on the root window for new windows.
+    warning_widget_ =
+        base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+            new IdleActionWarningDialogView(idle_action_time),
+            nullptr /* context */, nullptr /* parent */));
+    warning_widget_->MakeCloseSynchronous(base::BindOnce(
+        &IdleActionWarningObserver::OnWidgetClosed, base::Unretained(this)));
+    warning_widget_->Show();
     ReportMetricsForDemoMode(IdleLogoutWarningEvent::kShown);
   }
 }
@@ -148,16 +136,14 @@ void IdleActionWarningObserver::PowerChanged(
       power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
 }
 
-void IdleActionWarningObserver::OnWidgetDestroying(views::Widget* widget) {
-  CHECK(warning_dialog_, base::NotFatalUntil::M160);
-  CHECK_EQ(widget, warning_dialog_->GetWidget(), base::NotFatalUntil::M160);
-  widged_observer_.reset();
-  warning_dialog_ = nullptr;
+void IdleActionWarningObserver::OnWidgetClosed(
+    views::Widget::ClosedReason reason) {
+  warning_widget_.reset();
 }
 
 void IdleActionWarningObserver::HideDialogIfPresent() {
-  if (warning_dialog_) {
-    warning_dialog_->CloseDialog();
+  if (warning_widget_) {
+    warning_widget_.reset();
     ReportMetricsForDemoMode(IdleLogoutWarningEvent::kCanceled);
   }
 }

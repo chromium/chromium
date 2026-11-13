@@ -24,8 +24,6 @@ class IdleActionWarningDialogView : public views::DialogDelegateView {
   IdleActionWarningDialogView& operator=(const IdleActionWarningDialogView&) =
       delete;
 
-  void CloseDialog();
-
   void Update(base::TimeTicks idle_action_time);
 
   // views::DialogDelegateView:
