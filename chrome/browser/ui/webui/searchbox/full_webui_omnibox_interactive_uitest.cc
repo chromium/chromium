@@ -6436,6 +6436,84 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForPopupTransitionLockout(), WaitForPopupActive());
 }
 
+#if defined(USE_AURA)
+// Verifies that right-clicking the page while the omnibox is focused on the New
+// Tab Page blurs the omnibox and focuses the page, as with the Views omnibox on
+// Aura, and that the browser window keeps activation while the page's context
+// menu is shown. If the popup took activation back before the menu was shown, a
+// click on a menu item (e.g. "Inspect") would reactivate the browser window and
+// cancel the menu before its command ran. See b/580819291.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RightClickPageOnNtpBlursOmniboxAndKeepsContextMenu) {
+  auto is_browser_widget_active = [this]() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->IsActive();
+  };
+  auto is_page_focused = [this]() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->GetFocusManager()->GetFocusedView() ==
+           browser_view->GetActiveContentsWebView();
+  };
+  RunTestSequence(
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      MoveMouseTo(ContentsWebView::kContentsWebViewElementId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    const gfx::Rect bounds = el->GetScreenBounds();
+                    return gfx::Point(bounds.x() + 20, bounds.bottom() - 20);
+                  })),
+      ClickMouse(ui_controls::RIGHT),
+      PollUntil([]() { return !!views::MenuController::GetActiveInstance(); },
+                "WaitForPageContextMenuShown"),
+      // The omnibox is blurred, and with no draft the popup closes.
+      WaitForPopupDismissed(), WaitForPopupState(OmniboxPopupState::kNone),
+      // Let any queued focus request for the popup run.
+      WaitForPopupTransitionLockout(),
+      CheckResult([]() { return !!views::MenuController::GetActiveInstance(); },
+                  true, "PageContextMenuStillShown"),
+      CheckResult(is_browser_widget_active, true, "BrowserWidgetActive"),
+      CheckEditModelFocus(false), CheckNativeOmniboxViewUnfocused(),
+      CheckResult(is_page_focused, true, "PageFocused"), Do([]() {
+        views::MenuController::GetActiveInstance()->Cancel(
+            views::MenuController::ExitType::kAll);
+      }),
+      PollUntil([]() { return !views::MenuController::GetActiveInstance(); },
+                "WaitForPageContextMenuClosed"),
+      // Closing the menu leaves the page focused, with the omnibox blurred.
+      WaitForPopupTransitionLockout(),
+      CheckResult(is_browser_widget_active, true,
+                  "BrowserWidgetActiveAfterMenu"),
+      CheckEditModelFocus(false), CheckPopupState(OmniboxPopupState::kNone),
+      CheckResult(is_page_focused, true, "PageFocusedAfterMenu"));
+}
+
+// Verifies that right-clicking the page with an omnibox draft blurs the
+// omnibox, while the draft keeps the popup open, as a left-click does.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RightClickPageWithDraftBlursOmniboxAndKeepsDraft) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("draft"), CheckUserInputInProgress(true),
+      MoveMouseTo(ContentsWebView::kContentsWebViewElementId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    const gfx::Rect bounds = el->GetScreenBounds();
+                    return gfx::Point(bounds.x() + 20, bounds.bottom() - 20);
+                  })),
+      ClickMouse(ui_controls::RIGHT),
+      PollUntil([]() { return !!views::MenuController::GetActiveInstance(); },
+                "WaitForPageContextMenuShown"),
+      WaitForVisibleOmniboxUnfocused(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      CheckUserInputInProgress(true), Do([]() {
+        views::MenuController::GetActiveInstance()->Cancel(
+            views::MenuController::ExitType::kAll);
+      }),
+      PollUntil([]() { return !views::MenuController::GetActiveInstance(); },
+                "WaitForPageContextMenuClosed"),
+      WaitForWebUIInputValue("draft"));
+}
+#endif  // defined(USE_AURA)
+
 // Fixture for walking the elements of the Full WebUI omnibox popup with Tab and
 // Shift+Tab. With the history seeded in `SetUpOnMainThread()`, typing "title2"
 // produces these matches, in this order:

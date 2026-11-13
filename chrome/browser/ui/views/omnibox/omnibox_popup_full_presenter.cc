@@ -1143,10 +1143,16 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
-  // Right-clicks (context menu triggers) should never clear focus.
-  if (event.IsMouseEvent() && event.AsMouseEvent()->IsRightMouseButton()) {
+  const bool is_right_click =
+      event.IsMouseEvent() && event.AsMouseEvent()->IsRightMouseButton();
+
+#if !defined(USE_AURA)
+  // Right-clicks (context menu triggers) don't clear focus. On Aura they blur
+  // the omnibox like other clicks on the page; see the end of this method.
+  if (is_right_click) {
     return;
   }
+#endif  // !defined(USE_AURA)
 
   views::Widget* browser_widget = GetBrowserWidget();
   if (!browser_widget) {
@@ -1219,6 +1225,11 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
   }
 
   if (contains_top_container) {
+    // Right-clicks on top chrome open its context menus, e.g. the omnibox's
+    // own, which hands focus to the popup, so they leave the omnibox alone.
+    if (is_right_click) {
+      return;
+    }
     // Clear autocomplete matches and reset `activeQueryId_` on WebUI only if
     // click is outside of the popup and in the top container while popup is
     // shown.
@@ -1232,6 +1243,14 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
+  // A click on the page blurs the omnibox. On Aura this includes right-clicks,
+  // as with the Views omnibox, since the window system moves focus to the page
+  // on any mouse press. Blurring also cancels any pending focus request, which
+  // a right-click would otherwise make when it activates the browser window
+  // (restoring the location bar as its stored focus view). That request would
+  // reactivate the popup before the asynchronously shown page context menu
+  // opens, and the menu would then be cancelled as soon as a click on it
+  // reactivated the browser window (b/580819291).
   DeactivatePopupAndKillFocus(FocusAfterBlur::kWebContents);
 }
 
