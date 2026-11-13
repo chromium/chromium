@@ -644,7 +644,7 @@ void ProcessDownloadGaiaPasswordPublicKeyResponse(
       response.current_gaia_password_encryption_key_data().public_key();
   if (key_str.empty()) {
     std::move(callback).Run(
-        TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError,
+        TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey,
         std::vector<uint8_t>());
     return;
   }

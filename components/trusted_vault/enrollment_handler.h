@@ -12,6 +12,9 @@
 
 namespace trusted_vault {
 
+enum class TrustedVaultCanEnrollOutcomeForUMA;
+enum class TrustedVaultEnrollOutcomeForUMA;
+
 // Interface for an enrollment handler.
 // Classes that implement this interface are used by
 // `StandaloneTrustedVaultBackend` to check eligibility and enroll a primary
@@ -21,12 +24,15 @@ namespace trusted_vault {
 class EnrollmentHandler {
  public:
   // Invoked with true if the account is eligible for non-interactive
-  // enrollment into the security domain, or false otherwise.
-  using CanEnrollCallback = base::OnceCallback<void(bool)>;
+  // enrollment into the security domain, or false otherwise, along with the
+  // outcome for metric recording.
+  using CanEnrollCallback =
+      base::OnceCallback<void(bool, TrustedVaultCanEnrollOutcomeForUMA)>;
   // Invoked with the newly rotated shared key and its version on successful
-  // enrollment into the security domain, or an empty vector and -1 on failure.
-  using EnrollCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>&, int)>;
+  // enrollment into the security domain, or an empty vector and -1 on failure,
+  // along with the outcome for metric recording.
+  using EnrollCallback = base::OnceCallback<
+      void(const std::vector<uint8_t>&, int, TrustedVaultEnrollOutcomeForUMA)>;
 
   EnrollmentHandler() = default;
   EnrollmentHandler(const EnrollmentHandler&) = delete;

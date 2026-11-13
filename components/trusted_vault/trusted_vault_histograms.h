@@ -194,6 +194,43 @@ enum class TrustedVaultRecoveryFlowEndpoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultRecoveryFlowEndpoint)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultCanEnrollOutcome)
+enum class TrustedVaultCanEnrollOutcomeForUMA {
+  kEligible = 0,
+  kUnsupportedSecurityDomain = 1,
+  kNoPrimaryAccount = 2,
+  kPersistentAuthError = 3,
+  kAlreadyEnrolled = 4,
+  kNoLocalKeys = 5,
+  kNoEligibleGaiaPassword = 6,
+  kGaiaPasswordFetchFailed = 7,
+  kMaxValue = kGaiaPasswordFetchFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultCanEnrollOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultEnrollOutcome)
+enum class TrustedVaultEnrollOutcomeForUMA {
+  kSuccess = 0,
+  kSuccessAfterRetry = 1,
+  kUnsupportedSecurityDomain = 2,
+  kNoPrimaryAccount = 3,
+  kPersistentAuthError = 4,
+  kAlreadyEnrolled = 5,
+  kNoLocalKeys = 6,
+  kAlreadyInProgress = 7,
+  kNoEligibleGaiaPassword = 8,
+  kGaiaPasswordFetchFailed = 9,
+  kLocalDataObsolete = 10,
+  kGaiaPasswordRegistrationFailed = 11,
+  kKeyRotationFailed = 12,
+  kMaxValue = kKeyRotationFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultEnrollOutcome)
+
 void RecordTrustedVaultRecoveryFlowTriggeredEndpoint(
     TrustedVaultRecoveryFlowEndpoint endpoint);
 
@@ -248,8 +285,19 @@ void RecordTrustedVaultDownloadKeysStatus(
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status);
 
+// Records the outcome of rotating the shared key for `security_domain_id`.
 void RecordTrustedVaultKeyRotationStatus(SecurityDomainId security_domain_id,
                                          TrustedVaultKeyRotationStatus status);
+
+// Records the outcome of checking non-interactive enrollment eligibility for
+// `security_domain_id`.
+void RecordTrustedVaultCanEnrollOutcome(
+    SecurityDomainId security_domain_id,
+    TrustedVaultCanEnrollOutcomeForUMA outcome);
+
+// Records the outcome of enrolling into `security_domain_id`.
+void RecordTrustedVaultEnrollOutcome(SecurityDomainId security_domain_id,
+                                     TrustedVaultEnrollOutcomeForUMA outcome);
 
 void RecordTrustedVaultRecoverKeysOutcome(
     SecurityDomainId security_domain_id,

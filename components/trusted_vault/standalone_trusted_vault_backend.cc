@@ -623,45 +623,97 @@ void StandaloneTrustedVaultBackend::CanEnroll(
     SecurityDomainId security_domain,
     base::OnceCallback<void(bool)> cb) {
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  if (primary_account_.has_value() &&
-      primary_account_->gaia == account_info.gaia &&
-      refresh_token_error_state_ !=
-          RefreshTokenErrorState::kPersistentAuthError) {
-    auto it = enrollment_handlers_.find(security_domain);
-    if (it != enrollment_handlers_.end() && it->second) {
-      it->second->CanEnroll(std::move(cb));
-      return;
-    }
+  if (!connection_) {
+    // Feature disabled.
+    std::move(cb).Run(false);
+    return;
   }
-  std::move(cb).Run(false);
+  if (!primary_account_.has_value() ||
+      primary_account_->gaia != account_info.gaia) {
+    RecordTrustedVaultCanEnrollOutcome(
+        security_domain, TrustedVaultCanEnrollOutcomeForUMA::kNoPrimaryAccount);
+    std::move(cb).Run(false);
+    return;
+  }
+  auto it = enrollment_handlers_.find(security_domain);
+  CHECK(it != enrollment_handlers_.end());
+  if (!it->second) {
+    RecordTrustedVaultCanEnrollOutcome(
+        security_domain,
+        TrustedVaultCanEnrollOutcomeForUMA::kUnsupportedSecurityDomain);
+    std::move(cb).Run(false);
+    return;
+  }
+  if (refresh_token_error_state_ ==
+      RefreshTokenErrorState::kPersistentAuthError) {
+    RecordTrustedVaultCanEnrollOutcome(
+        security_domain,
+        TrustedVaultCanEnrollOutcomeForUMA::kPersistentAuthError);
+    std::move(cb).Run(false);
+    return;
+  }
+  it->second->CanEnroll(
+      base::BindOnce(&StandaloneTrustedVaultBackend::OnCanEnrollCompleted,
+                     primary_account_weak_ptr_factory_.GetWeakPtr(),
+                     security_domain, std::move(cb)));
+}
+
+void StandaloneTrustedVaultBackend::OnCanEnrollCompleted(
+    SecurityDomainId security_domain,
+    base::OnceCallback<void(bool)> cb,
+    bool can_enroll,
+    TrustedVaultCanEnrollOutcomeForUMA outcome) {
+  CHECK(primary_account_.has_value());
+  RecordTrustedVaultCanEnrollOutcome(security_domain, outcome);
+  std::move(cb).Run(can_enroll);
 }
 
 void StandaloneTrustedVaultBackend::Enroll(const CoreAccountInfo& account_info,
                                            SecurityDomainId security_domain,
                                            EnrollCallback cb) {
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  if (primary_account_.has_value() &&
-      primary_account_->gaia == account_info.gaia &&
-      refresh_token_error_state_ !=
-          RefreshTokenErrorState::kPersistentAuthError) {
-    auto it = enrollment_handlers_.find(security_domain);
-    if (it != enrollment_handlers_.end() && it->second) {
-      it->second->Enroll(
-          base::BindOnce(&StandaloneTrustedVaultBackend::OnEnrolled,
-                         primary_account_weak_ptr_factory_.GetWeakPtr(),
-                         security_domain, std::move(cb)));
-      return;
-    }
+  if (!connection_) {
+    // Feature disabled.
+    std::move(cb).Run(std::vector<uint8_t>(), -1);
+    return;
   }
-  std::move(cb).Run(std::vector<uint8_t>(), -1);
+  if (!primary_account_.has_value() ||
+      primary_account_->gaia != account_info.gaia) {
+    RecordTrustedVaultEnrollOutcome(
+        security_domain, TrustedVaultEnrollOutcomeForUMA::kNoPrimaryAccount);
+    std::move(cb).Run(std::vector<uint8_t>(), -1);
+    return;
+  }
+  auto it = enrollment_handlers_.find(security_domain);
+  CHECK(it != enrollment_handlers_.end());
+  if (!it->second) {
+    RecordTrustedVaultEnrollOutcome(
+        security_domain,
+        TrustedVaultEnrollOutcomeForUMA::kUnsupportedSecurityDomain);
+    std::move(cb).Run(std::vector<uint8_t>(), -1);
+    return;
+  }
+  if (refresh_token_error_state_ ==
+      RefreshTokenErrorState::kPersistentAuthError) {
+    RecordTrustedVaultEnrollOutcome(
+        security_domain, TrustedVaultEnrollOutcomeForUMA::kPersistentAuthError);
+    std::move(cb).Run(std::vector<uint8_t>(), -1);
+    return;
+  }
+  it->second->Enroll(
+      base::BindOnce(&StandaloneTrustedVaultBackend::OnEnrolled,
+                     primary_account_weak_ptr_factory_.GetWeakPtr(),
+                     security_domain, std::move(cb)));
 }
 
 void StandaloneTrustedVaultBackend::OnEnrolled(
     SecurityDomainId security_domain,
     EnrollCallback cb,
     const std::vector<uint8_t>& new_shared_key,
-    int new_key_version) {
+    int new_key_version,
+    TrustedVaultEnrollOutcomeForUMA outcome) {
   CHECK(primary_account_.has_value());
+  RecordTrustedVaultEnrollOutcome(security_domain, outcome);
   if (!new_shared_key.empty()) {
     std::vector<std::vector<uint8_t>> keys =
         storage_->GetVaultKeys(primary_account_->gaia, security_domain);

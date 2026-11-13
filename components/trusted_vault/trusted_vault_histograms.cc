@@ -212,6 +212,23 @@ void RecordTrustedVaultKeyRotationStatus(SecurityDomainId security_domain_id,
       status);
 }
 
+void RecordTrustedVaultCanEnrollOutcome(
+    SecurityDomainId security_domain_id,
+    TrustedVaultCanEnrollOutcomeForUMA outcome) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"TrustedVault.CanEnrollOutcome.",
+                    GetSecurityDomainNameForUma(security_domain_id)}),
+      outcome);
+}
+
+void RecordTrustedVaultEnrollOutcome(SecurityDomainId security_domain_id,
+                                     TrustedVaultEnrollOutcomeForUMA outcome) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"TrustedVault.EnrollOutcome.",
+                    GetSecurityDomainNameForUma(security_domain_id)}),
+      outcome);
+}
+
 void RecordTrustedVaultRecoverKeysOutcome(
     SecurityDomainId security_domain_id,
     TrustedVaultRecoverKeysOutcomeForUMA status) {

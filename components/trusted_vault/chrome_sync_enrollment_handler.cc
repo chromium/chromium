@@ -19,6 +19,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/random.h"
 
@@ -27,6 +28,22 @@ namespace trusted_vault {
 namespace {
 
 constexpr size_t kSharedKeyLength = 32;
+
+void FulfillCanEnrollWithFailure(
+    ChromeSyncEnrollmentHandler::CanEnrollCallback callback,
+    TrustedVaultCanEnrollOutcomeForUMA outcome) {
+  base::BindPostTaskToCurrentDefault(
+      base::BindOnce(std::move(callback), false, outcome))
+      .Run();
+}
+
+void FulfillEnrollWithFailure(
+    ChromeSyncEnrollmentHandler::EnrollCallback callback,
+    TrustedVaultEnrollOutcomeForUMA outcome) {
+  base::BindPostTaskToCurrentDefault(
+      base::BindOnce(std::move(callback), std::vector<uint8_t>(), -1, outcome))
+      .Run();
+}
 
 }  // namespace
 
@@ -62,26 +79,62 @@ ChromeSyncEnrollmentHandler::ChromeSyncEnrollmentHandler(
 
 ChromeSyncEnrollmentHandler::~ChromeSyncEnrollmentHandler() = default;
 
-bool ChromeSyncEnrollmentHandler::SatisfiesLocalPrerequisites() const {
-  // ChromeSync enrollment is currently only possible if the device is
-  // pre-enrolled (i.e. keys are not empty and there is no non-constant key).
+// static
+TrustedVaultCanEnrollOutcomeForUMA
+ChromeSyncEnrollmentHandler::GetCanEnrollOutcomeForUMAFromLocalIneligibility(
+    LocalIneligibility local_ineligibility) {
+  switch (local_ineligibility) {
+    case LocalIneligibility::kAlreadyEnrolled:
+      return TrustedVaultCanEnrollOutcomeForUMA::kAlreadyEnrolled;
+    case LocalIneligibility::kNoLocalKeys:
+      return TrustedVaultCanEnrollOutcomeForUMA::kNoLocalKeys;
+  }
+  NOTREACHED();
+}
+
+// static
+TrustedVaultEnrollOutcomeForUMA
+ChromeSyncEnrollmentHandler::GetEnrollOutcomeForUMAFromLocalIneligibility(
+    LocalIneligibility local_ineligibility) {
+  switch (local_ineligibility) {
+    case LocalIneligibility::kAlreadyEnrolled:
+      return TrustedVaultEnrollOutcomeForUMA::kAlreadyEnrolled;
+    case LocalIneligibility::kNoLocalKeys:
+      return TrustedVaultEnrollOutcomeForUMA::kNoLocalKeys;
+  }
+  NOTREACHED();
+}
+
+std::optional<ChromeSyncEnrollmentHandler::LocalIneligibility>
+ChromeSyncEnrollmentHandler::GetLocalIneligibility() const {
+  // ChromeSync enrollment is currently only possible if the security domain is
+  // in the pre-enrollment state according to local storage (i.e. keys are not
+  // empty and there is no non-constant key). Note that this does not check
+  // whether the local device itself is registered: enrollment still works if
+  // the constant key was stored locally by a client; storing the rotated key
+  // locally afterwards allows the device to register.
   // Technically, it would also be possible to perform enrollment if the
   // security domain was empty / not created. However, that adds additional
   // complexity for a case that should never happen, because the trusted vault
   // client eagerly pre-enrolls into the `kChromeSync` security domain anyways.
-  return !storage_
-              ->GetVaultKeys(primary_account_.gaia,
-                             SecurityDomainId::kChromeSync)
-              .empty() &&
-         !storage_->HasNonConstantKey(primary_account_.gaia,
-                                      SecurityDomainId::kChromeSync);
+  if (storage_->HasNonConstantKey(primary_account_.gaia,
+                                  SecurityDomainId::kChromeSync)) {
+    return LocalIneligibility::kAlreadyEnrolled;
+  }
+  if (storage_
+          ->GetVaultKeys(primary_account_.gaia, SecurityDomainId::kChromeSync)
+          .empty()) {
+    return LocalIneligibility::kNoLocalKeys;
+  }
+  return std::nullopt;
 }
 
 void ChromeSyncEnrollmentHandler::CanEnroll(CanEnrollCallback callback) {
-  if (!SatisfiesLocalPrerequisites()) {
-    base::BindPostTaskToCurrentDefault(
-        base::BindOnce(std::move(callback), false))
-        .Run();
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillCanEnrollWithFailure(
+        std::move(callback),
+        GetCanEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
     return;
   }
 
@@ -103,24 +156,73 @@ void ChromeSyncEnrollmentHandler::OnGaiaPasswordPublicKeyDownloadedForCanEnroll(
     TrustedVaultDownloadPasswordPublicKeyStatus status,
     const std::vector<uint8_t>& public_key) {
   CHECK(ongoing_can_enroll_.has_value());
+  ongoing_can_enroll_->request.reset();
+
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillOngoingCanEnrollWithFailure(
+        GetCanEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
+    return;
+  }
+
+  switch (status) {
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess:
+      break;
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey:
+      FulfillOngoingCanEnrollWithFailure(
+          TrustedVaultCanEnrollOutcomeForUMA::kNoEligibleGaiaPassword);
+      return;
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kTransientAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kPersistentAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError:
+      FulfillOngoingCanEnrollWithFailure(
+          TrustedVaultCanEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
+      return;
+  }
+
+  if (!SecureBoxPublicKey::CreateByImport(public_key)) {
+    FulfillOngoingCanEnrollWithFailure(
+        TrustedVaultCanEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
+    return;
+  }
+
   std::vector<CanEnrollCallback> callbacks =
       std::move(ongoing_can_enroll_->callbacks);
   ongoing_can_enroll_.reset();
-
-  const bool can_enroll =
-      status == TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess &&
-      SecureBoxPublicKey::CreateByImport(public_key) &&
-      SatisfiesLocalPrerequisites();
   for (CanEnrollCallback& cb : callbacks) {
-    std::move(cb).Run(can_enroll);
+    std::move(cb).Run(true, TrustedVaultCanEnrollOutcomeForUMA::kEligible);
+  }
+}
+
+void ChromeSyncEnrollmentHandler::FulfillOngoingCanEnrollWithFailure(
+    TrustedVaultCanEnrollOutcomeForUMA outcome) {
+  CHECK(ongoing_can_enroll_.has_value());
+  std::vector<CanEnrollCallback> callbacks =
+      std::move(ongoing_can_enroll_->callbacks);
+  ongoing_can_enroll_.reset();
+  for (CanEnrollCallback& cb : callbacks) {
+    FulfillCanEnrollWithFailure(std::move(cb), outcome);
   }
 }
 
 void ChromeSyncEnrollmentHandler::Enroll(EnrollCallback callback) {
-  if (!SatisfiesLocalPrerequisites() || ongoing_enroll_.has_value()) {
-    base::BindPostTaskToCurrentDefault(
-        base::BindOnce(std::move(callback), std::vector<uint8_t>(), -1))
-        .Run();
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillEnrollWithFailure(
+        std::move(callback),
+        GetEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
+    return;
+  }
+
+  if (ongoing_enroll_.has_value()) {
+    FulfillEnrollWithFailure(
+        std::move(callback),
+        TrustedVaultEnrollOutcomeForUMA::kAlreadyInProgress);
     return;
   }
 
@@ -140,16 +242,38 @@ void ChromeSyncEnrollmentHandler::OnGaiaPasswordPublicKeyDownloadedForEnroll(
   CHECK(ongoing_enroll_.has_value());
   ongoing_enroll_->request.reset();
 
-  if (status != TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess ||
-      !SatisfiesLocalPrerequisites()) {
-    FulfillOngoingEnroll({}, -1);
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillOngoingEnrollWithFailure(
+        GetEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
     return;
+  }
+
+  switch (status) {
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess:
+      break;
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey:
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kNoEligibleGaiaPassword);
+      return;
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kTransientAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kPersistentAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError:
+    case TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError:
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
+      return;
   }
 
   std::unique_ptr<SecureBoxPublicKey> imported_public_key =
       SecureBoxPublicKey::CreateByImport(public_key);
   if (!imported_public_key) {
-    FulfillOngoingEnroll({}, -1);
+    FulfillOngoingEnrollWithFailure(
+        TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
     return;
   }
 
@@ -187,18 +311,24 @@ void ChromeSyncEnrollmentHandler::OnGaiaPasswordRegisteredForEnroll(
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kLocalDataObsolete);
+      return;
     case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::
         kPrimaryAccountChangeAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kNetworkError:
     case TrustedVaultRegistrationStatus::kOtherError:
-      FulfillOngoingEnroll({}, -1);
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordRegistrationFailed);
       return;
   }
 
-  if (!SatisfiesLocalPrerequisites()) {
-    FulfillOngoingEnroll({}, -1);
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillOngoingEnrollWithFailure(
+        GetEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
     return;
   }
 
@@ -231,8 +361,10 @@ void ChromeSyncEnrollmentHandler::OnKeyRotatedForEnroll(
   CHECK(ongoing_enroll_.has_value());
   ongoing_enroll_->request.reset();
 
-  if (!SatisfiesLocalPrerequisites()) {
-    FulfillOngoingEnroll({}, -1);
+  if (const std::optional<LocalIneligibility> local_ineligibility =
+          GetLocalIneligibility()) {
+    FulfillOngoingEnrollWithFailure(
+        GetEnrollOutcomeForUMAFromLocalIneligibility(*local_ineligibility));
     return;
   }
 
@@ -247,21 +379,42 @@ void ChromeSyncEnrollmentHandler::OnKeyRotatedForEnroll(
     return;
   }
 
-  if (status != TrustedVaultKeyRotationStatus::kSuccess) {
-    FulfillOngoingEnroll({}, -1);
-    return;
+  switch (status) {
+    case TrustedVaultKeyRotationStatus::kSuccess: {
+      const TrustedVaultEnrollOutcomeForUMA outcome =
+          ongoing_enroll_->has_retried_key_rotation
+              ? TrustedVaultEnrollOutcomeForUMA::kSuccessAfterRetry
+              : TrustedVaultEnrollOutcomeForUMA::kSuccess;
+      EnrollCallback cb = std::move(ongoing_enroll_->callback);
+      ongoing_enroll_.reset();
+      std::move(cb).Run(new_shared_key, new_key_version, outcome);
+      return;
+    }
+    case TrustedVaultKeyRotationStatus::kLocalDataObsolete:
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kLocalDataObsolete);
+      return;
+    case TrustedVaultKeyRotationStatus::kMembershipMismatch:
+    case TrustedVaultKeyRotationStatus::kEmptySecurityDomain:
+    case TrustedVaultKeyRotationStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultKeyRotationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+    case TrustedVaultKeyRotationStatus::kNetworkError:
+    case TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed:
+    case TrustedVaultKeyRotationStatus::kOtherError:
+      FulfillOngoingEnrollWithFailure(
+          TrustedVaultEnrollOutcomeForUMA::kKeyRotationFailed);
+      return;
   }
-
-  FulfillOngoingEnroll(new_shared_key, new_key_version);
 }
 
-void ChromeSyncEnrollmentHandler::FulfillOngoingEnroll(
-    const std::vector<uint8_t>& new_shared_key,
-    int new_key_version) {
+void ChromeSyncEnrollmentHandler::FulfillOngoingEnrollWithFailure(
+    TrustedVaultEnrollOutcomeForUMA outcome) {
   CHECK(ongoing_enroll_.has_value());
   EnrollCallback cb = std::move(ongoing_enroll_->callback);
   ongoing_enroll_.reset();
-  std::move(cb).Run(new_shared_key, new_key_version);
+  FulfillEnrollWithFailure(std::move(cb), outcome);
 }
 
 }  // namespace trusted_vault

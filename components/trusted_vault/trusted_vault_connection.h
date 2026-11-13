@@ -82,6 +82,9 @@ enum class TrustedVaultDownloadKeysStatus {
 
 enum class TrustedVaultDownloadPasswordPublicKeyStatus {
   kSuccess,
+  // Used when the server responds with an empty public key (e.g. no Gaia
+  // password encryption key is stored for the user).
+  kNoPublicKey,
   // Used when request wasn't sent due to transient auth error that prevented
   // fetching an access token.
   kTransientAccessTokenFetchError,

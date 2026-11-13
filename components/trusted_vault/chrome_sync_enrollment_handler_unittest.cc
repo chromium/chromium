@@ -18,6 +18,7 @@
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,13 +108,14 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
   handler()->CanEnroll(future.GetCallback());
   ASSERT_FALSE(download_callback.is_null());
   std::move(download_callback)
       .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
            kValidPublicKey);
-  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>(), TrustedVaultCanEnrollOutcomeForUMA::kEligible);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
@@ -122,18 +124,22 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
 
   // No keys in storage.
   {
-    base::test::TestFuture<bool> future;
+    base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
     handler()->CanEnroll(future.GetCallback());
-    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(future.Get<0>());
+    EXPECT_EQ(future.Get<1>(),
+              TrustedVaultCanEnrollOutcomeForUMA::kNoLocalKeys);
   }
 
   // Non-constant key in storage.
   storage()->SetVaultKeys(account_info().gaia, SecurityDomainId::kChromeSync,
                           {{1, 2, 3}}, /*last_key_version=*/1);
   {
-    base::test::TestFuture<bool> future;
+    base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
     handler()->CanEnroll(future.GetCallback());
-    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(future.Get<0>());
+    EXPECT_EQ(future.Get<1>(),
+              TrustedVaultCanEnrollOutcomeForUMA::kAlreadyEnrolled);
   }
 }
 
@@ -156,8 +162,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  base::test::TestFuture<bool> future1;
-  base::test::TestFuture<bool> future2;
+  base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future1;
+  base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future2;
   handler()->CanEnroll(future1.GetCallback());
   handler()->CanEnroll(future2.GetCallback());
 
@@ -166,13 +172,41 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
       .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
            kValidPublicKey);
 
-  EXPECT_TRUE(future1.Get());
-  EXPECT_TRUE(future2.Get());
+  EXPECT_TRUE(future1.Get<0>());
+  EXPECT_EQ(future1.Get<1>(), TrustedVaultCanEnrollOutcomeForUMA::kEligible);
+  EXPECT_TRUE(future2.Get<0>());
+  EXPECT_EQ(future2.Get<1>(), TrustedVaultCanEnrollOutcomeForUMA::kEligible);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
        ShouldReturnFalseIfDownloadFailsOrInvalid) {
   StoreConstantKeys();
+
+  // No Gaia password public key on the server.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&download_callback](
+                const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
+    handler()->CanEnroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey,
+             std::vector<uint8_t>());
+    EXPECT_FALSE(future.Get<0>());
+    EXPECT_EQ(future.Get<1>(),
+              TrustedVaultCanEnrollOutcomeForUMA::kNoEligibleGaiaPassword);
+  }
 
   // Network error.
   {
@@ -189,13 +223,15 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<bool> future;
+    base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
     handler()->CanEnroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
         .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError,
              std::vector<uint8_t>());
-    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(future.Get<0>());
+    EXPECT_EQ(future.Get<1>(),
+              TrustedVaultCanEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
   }
 
   // Invalid public key bytes.
@@ -213,13 +249,15 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<bool> future;
+    base::test::TestFuture<bool, TrustedVaultCanEnrollOutcomeForUMA> future;
     handler()->CanEnroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
         .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
              /*invalid_public_key=*/{1, 2, 3});
-    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(future.Get<0>());
+    EXPECT_EQ(future.Get<1>(),
+              TrustedVaultCanEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
   }
 }
 
@@ -297,7 +335,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldEnroll) {
         return std::make_unique<TrustedVaultConnection::Request>();
       });
 
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future;
   handler()->Enroll(future.GetCallback());
 
   ASSERT_FALSE(download_callback.is_null());
@@ -315,6 +355,7 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldEnroll) {
 
   EXPECT_EQ(future.Get<0>(), rotated_key);
   EXPECT_EQ(future.Get<1>(), kNewKeyVersion);
+  EXPECT_EQ(future.Get<2>(), TrustedVaultEnrollOutcomeForUMA::kSuccess);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
@@ -360,14 +401,20 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
         return std::make_unique<TrustedVaultConnection::Request>();
       });
 
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future1;
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future2;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future1;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future2;
   handler()->Enroll(future1.GetCallback());
   handler()->Enroll(future2.GetCallback());
 
   // The second call should fail immediately without disrupting the first.
   EXPECT_THAT(future2.Get<0>(), IsEmpty());
   EXPECT_EQ(future2.Get<1>(), -1);
+  EXPECT_EQ(future2.Get<2>(),
+            TrustedVaultEnrollOutcomeForUMA::kAlreadyInProgress);
 
   ASSERT_FALSE(download_callback.is_null());
   std::move(download_callback)
@@ -382,13 +429,25 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
 
   EXPECT_THAT(future1.Get<0>(), SizeIs(32));
   EXPECT_EQ(future1.Get<1>(), kNewKeyVersion);
+  EXPECT_EQ(future1.Get<2>(), TrustedVaultEnrollOutcomeForUMA::kSuccess);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
-       ShouldFailEnrollIfLocalPrerequisitesLostMidFlight) {
+       ShouldFailEnrollIfLocalPrerequisitesNotMetOrLostMidFlight) {
   const int kConstantKeyVersion = 5;
   const std::vector<uint8_t> kValidPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  // No keys stored initially -> kNoLocalKeys.
+  {
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
+    handler()->Enroll(future.GetCallback());
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(), TrustedVaultEnrollOutcomeForUMA::kNoLocalKeys);
+  }
 
   StoreConstantKeys(kConstantKeyVersion);
 
@@ -404,7 +463,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future;
   handler()->Enroll(future.GetCallback());
   ASSERT_FALSE(download_callback.is_null());
 
@@ -419,6 +480,144 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
 
   EXPECT_THAT(future.Get<0>(), IsEmpty());
   EXPECT_EQ(future.Get<1>(), -1);
+  EXPECT_EQ(future.Get<2>(), TrustedVaultEnrollOutcomeForUMA::kAlreadyEnrolled);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest,
+       ShouldFailEnrollOnNoEligibleGaiaPasswordOrLocalDataObsolete) {
+  const int kConstantKeyVersion = 5;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  StoreConstantKeys(kConstantKeyVersion);
+
+  // Server responds with kNoPublicKey -> kNoEligibleGaiaPassword.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey,
+             std::vector<uint8_t>());
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kNoEligibleGaiaPassword);
+  }
+
+  // RegisterAuthenticationFactor responds with kLocalDataObsolete.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+        register_callback;
+    EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const MemberKeysSource&, const SecureBoxPublicKey&,
+                AuthenticationFactorTypeAndRegistrationParams,
+                TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                    callback) {
+              register_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+             kValidPublicKey);
+    ASSERT_FALSE(register_callback.is_null());
+    std::move(register_callback)
+        .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete, 0);
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kLocalDataObsolete);
+  }
+
+  // RotateSharedKey responds with kLocalDataObsolete.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+        register_callback;
+    EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const MemberKeysSource&, const SecureBoxPublicKey&,
+                AuthenticationFactorTypeAndRegistrationParams,
+                TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                    callback) {
+              register_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RotateSharedKeyCallback rotate_callback;
+    EXPECT_CALL(*connection(), RotateSharedKey)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const TrustedVaultKeyAndVersion&, const std::vector<uint8_t>&,
+                TrustedVaultConnection::RotateSharedKeyCallback callback) {
+              rotate_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+             kValidPublicKey);
+    ASSERT_FALSE(register_callback.is_null());
+    std::move(register_callback)
+        .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+    ASSERT_FALSE(rotate_callback.is_null());
+    std::move(rotate_callback)
+        .Run(TrustedVaultKeyRotationStatus::kLocalDataObsolete, 0);
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kLocalDataObsolete);
+  }
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
@@ -473,7 +672,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
         return std::make_unique<TrustedVaultConnection::Request>();
       });
 
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future;
   handler()->Enroll(future.GetCallback());
 
   ASSERT_FALSE(download_callback.is_null());
@@ -488,6 +689,7 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
   ASSERT_FALSE(rotate_callback1.is_null());
   std::move(rotate_callback1)
       .Run(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+  EXPECT_FALSE(future.IsReady());
 
   ASSERT_FALSE(rotate_callback2.is_null());
   std::move(rotate_callback2)
@@ -495,6 +697,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
 
   EXPECT_THAT(future.Get<0>(), SizeIs(32));
   EXPECT_EQ(future.Get<1>(), kNewKeyVersion);
+  EXPECT_EQ(future.Get<2>(),
+            TrustedVaultEnrollOutcomeForUMA::kSuccessAfterRetry);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest,
@@ -547,7 +751,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
         return std::make_unique<TrustedVaultConnection::Request>();
       });
 
-  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  base::test::TestFuture<const std::vector<uint8_t>&, int,
+                         TrustedVaultEnrollOutcomeForUMA>
+      future;
   handler()->Enroll(future.GetCallback());
 
   ASSERT_FALSE(download_callback.is_null());
@@ -562,6 +768,7 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
   ASSERT_FALSE(rotate_callback1.is_null());
   std::move(rotate_callback1)
       .Run(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+  EXPECT_FALSE(future.IsReady());
 
   ASSERT_FALSE(rotate_callback2.is_null());
   std::move(rotate_callback2)
@@ -569,6 +776,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest,
 
   EXPECT_THAT(future.Get<0>(), IsEmpty());
   EXPECT_EQ(future.Get<1>(), -1);
+  EXPECT_EQ(future.Get<2>(),
+            TrustedVaultEnrollOutcomeForUMA::kKeyRotationFailed);
 }
 
 TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
@@ -591,7 +800,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
     handler()->Enroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
@@ -600,6 +811,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
 
     EXPECT_THAT(future.Get<0>(), IsEmpty());
     EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
   }
 
   // Invalid public key bytes.
@@ -616,7 +829,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
     handler()->Enroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
@@ -625,6 +840,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
 
     EXPECT_THAT(future.Get<0>(), IsEmpty());
     EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordFetchFailed);
   }
 
   // RegisterAuthenticationFactor fails.
@@ -653,7 +870,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
     handler()->Enroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
@@ -665,6 +884,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
 
     EXPECT_THAT(future.Get<0>(), IsEmpty());
     EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kGaiaPasswordRegistrationFailed);
   }
 
   // RotateSharedKey fails with a non-retryable error.
@@ -702,7 +923,9 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    base::test::TestFuture<const std::vector<uint8_t>&, int,
+                           TrustedVaultEnrollOutcomeForUMA>
+        future;
     handler()->Enroll(future.GetCallback());
     ASSERT_FALSE(download_callback.is_null());
     std::move(download_callback)
@@ -717,6 +940,8 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
 
     EXPECT_THAT(future.Get<0>(), IsEmpty());
     EXPECT_EQ(future.Get<1>(), -1);
+    EXPECT_EQ(future.Get<2>(),
+              TrustedVaultEnrollOutcomeForUMA::kKeyRotationFailed);
   }
 }
 

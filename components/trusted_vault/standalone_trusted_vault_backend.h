@@ -264,10 +264,16 @@ class StandaloneTrustedVaultBackend
                                     TrustedVaultRegistrationStatus status,
                                     int unused_epoch);
 
+  void OnCanEnrollCompleted(SecurityDomainId security_domain,
+                            base::OnceCallback<void(bool)> cb,
+                            bool can_enroll,
+                            TrustedVaultCanEnrollOutcomeForUMA outcome);
+
   void OnEnrolled(SecurityDomainId security_domain,
                   EnrollCallback cb,
                   const std::vector<uint8_t>& new_shared_key,
-                  int new_key_version);
+                  int new_key_version,
+                  TrustedVaultEnrollOutcomeForUMA outcome);
 
   // Invokes |callback| with currently available keys for |gaia_id|.
   void FulfillFetchKeys(

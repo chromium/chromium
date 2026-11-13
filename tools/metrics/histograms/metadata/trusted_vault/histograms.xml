@@ -43,6 +43,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedVault.CanEnrollOutcome{SecurityDomainId}"
+    enum="TrustedVaultCanEnrollOutcome" expires_after="2027-05-05">
+  <owner>thomasth@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
+  <summary>
+    Records the outcome of checking whether the primary account is eligible for
+    non-interactive enrollment into {SecurityDomainId}. Recorded once upon
+    completion of every evaluation of enrollment eligibility (not recorded if
+    network requests are disabled or if the evaluation is aborted).
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram
     name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
     enum="DownloadAuthenticationFactorsRegistrationStateResult"
@@ -76,6 +89,19 @@ chromium-metrics-reviews@google.com.
     Note: This histogram covers all registration versions.
   </summary>
   <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
+<histogram name="TrustedVault.EnrollOutcome{SecurityDomainId}"
+    enum="TrustedVaultEnrollOutcome" expires_after="2027-05-05">
+  <owner>thomasth@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
+  <summary>
+    Records the end-to-end outcome of attempting to enroll the primary account
+    into {SecurityDomainId}. Recorded once upon completion of every enrollment
+    attempt, even if shared key rotation is retried internally (not recorded if
+    network requests are disabled or if the attempt is aborted).
+  </summary>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 

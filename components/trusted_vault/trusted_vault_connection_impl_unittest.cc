@@ -1776,7 +1776,7 @@ TEST_P(TrustedVaultConnectionImplTest,
 }
 
 TEST_P(TrustedVaultConnectionImplTest,
-       DownloadGaiaPasswordPublicKeyEmptyKeyError) {
+       DownloadGaiaPasswordPublicKeyNoPublicKey) {
   trusted_vault_pb::GetCurrentGaiaPasswordEncryptionKeyDataResponse response;
   // The public key inside the response is empty.
 
@@ -1793,7 +1793,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       net::HTTP_OK, response.SerializeAsString()));
 
   EXPECT_EQ(future.Get<0>(),
-            TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError);
+            TrustedVaultDownloadPasswordPublicKeyStatus::kNoPublicKey);
   EXPECT_THAT(future.Get<1>(), IsEmpty());
 }
 

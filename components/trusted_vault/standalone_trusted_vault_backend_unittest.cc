@@ -2021,17 +2021,29 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       GetEnrollmentHandler(SecurityDomainId::kChromeSync);
   ASSERT_THAT(handler, NotNull());
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*handler, CanEnroll)
-      .WillOnce(base::test::RunOnceCallback<0>(true));
+      .WillOnce(base::test::RunOnceCallback<0>(
+          true, TrustedVaultCanEnrollOutcomeForUMA::kEligible));
   base::MockCallback<base::OnceCallback<void(bool)>> cb1;
   EXPECT_CALL(cb1, Run(true));
   backend()->CanEnroll(kAccountInfo, SecurityDomainId::kChromeSync, cb1.Get());
 
   EXPECT_CALL(*handler, CanEnroll)
-      .WillOnce(base::test::RunOnceCallback<0>(false));
+      .WillOnce(base::test::RunOnceCallback<0>(
+          false, TrustedVaultCanEnrollOutcomeForUMA::kNoEligibleGaiaPassword));
   base::MockCallback<base::OnceCallback<void(bool)>> cb2;
   EXPECT_CALL(cb2, Run(false));
   backend()->CanEnroll(kAccountInfo, SecurityDomainId::kChromeSync, cb2.Get());
+
+  histogram_tester.ExpectTotalCount("TrustedVault.CanEnrollOutcome.ChromeSync",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "TrustedVault.CanEnrollOutcome.ChromeSync",
+      TrustedVaultCanEnrollOutcomeForUMA::kEligible, 1);
+  histogram_tester.ExpectBucketCount(
+      "TrustedVault.CanEnrollOutcome.ChromeSync",
+      TrustedVaultCanEnrollOutcomeForUMA::kNoEligibleGaiaPassword, 1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -2045,28 +2057,43 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // No primary account set yet.
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<bool> future;
     backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
                          future.GetCallback());
     EXPECT_FALSE(future.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.CanEnrollOutcome.ChromeSync",
+        TrustedVaultCanEnrollOutcomeForUMA::kNoPrimaryAccount,
+        /*expected_bucket_count=*/1);
   }
 
   SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
 
   // Called for non-primary account.
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<bool> future;
     backend()->CanEnroll(kOtherAccount, SecurityDomainId::kChromeSync,
                          future.GetCallback());
     EXPECT_FALSE(future.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.CanEnrollOutcome.ChromeSync",
+        TrustedVaultCanEnrollOutcomeForUMA::kNoPrimaryAccount,
+        /*expected_bucket_count=*/1);
   }
 
   // Called for unsupported security domain (`kPasskeys`).
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<bool> future;
     backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kPasskeys,
                          future.GetCallback());
     EXPECT_FALSE(future.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.CanEnrollOutcome.HwProtected",
+        TrustedVaultCanEnrollOutcomeForUMA::kUnsupportedSecurityDomain,
+        /*expected_bucket_count=*/1);
   }
 
   // Persistent auth error present.
@@ -2074,20 +2101,28 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       kPrimaryAccount, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                            kPersistentAuthError);
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<bool> future;
     backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
                          future.GetCallback());
     EXPECT_FALSE(future.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.CanEnrollOutcome.ChromeSync",
+        TrustedVaultCanEnrollOutcomeForUMA::kPersistentAuthError,
+        /*expected_bucket_count=*/1);
   }
 
   // Connection disabled.
   ResetBackend(/*connection=*/nullptr);
   SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
   {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<bool> future;
     backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
                          future.GetCallback());
     EXPECT_FALSE(future.Get());
+    histogram_tester.ExpectTotalCount(
+        "TrustedVault.CanEnrollOutcome.ChromeSync", 0);
   }
 }
 
@@ -2101,13 +2136,21 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::WeakPtr<MockEnrollmentHandler> handler1 =
       GetEnrollmentHandler(SecurityDomainId::kChromeSync)->GetWeakPtr();
 
-  EXPECT_CALL(*handler1, CanEnroll);
+  base::HistogramTester histogram_tester;
+  EnrollmentHandler::CanEnrollCallback handler_cb;
+  EXPECT_CALL(*handler1, CanEnroll).WillOnce(MoveArg<0>(&handler_cb));
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
   EXPECT_CALL(cb, Run).Times(0);
   backend()->CanEnroll(kAccountInfo1, SecurityDomainId::kChromeSync, cb.Get());
 
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo2);
   EXPECT_THAT(handler1, IsNull());
+  // Even if a callback already posted before the primary account change runs
+  // afterwards, it must be dropped.
+  std::move(handler_cb)
+      .Run(true, TrustedVaultCanEnrollOutcomeForUMA::kEligible);
+  histogram_tester.ExpectTotalCount("TrustedVault.CanEnrollOutcome.ChromeSync",
+                                    0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
@@ -2143,7 +2186,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*handler, Enroll)
-      .WillOnce(base::test::RunOnceCallback<0>(kRotatedKey, kNewKeyVersion));
+      .WillOnce(base::test::RunOnceCallback<0>(
+          kRotatedKey, kNewKeyVersion,
+          TrustedVaultEnrollOutcomeForUMA::kSuccess));
   EXPECT_CALL(*connection(),
               DownloadIsRecoverabilityDegraded(Eq(kAccountInfo), _, _))
       .WillOnce(
@@ -2163,6 +2208,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
                     enroll_cb.Get());
   environment.FastForwardBy(base::Milliseconds(1));
 
+  histogram_tester.ExpectUniqueSample("TrustedVault.EnrollOutcome.ChromeSync",
+                                      TrustedVaultEnrollOutcomeForUMA::kSuccess,
+                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason."
       "ChromeSync",
@@ -2193,9 +2241,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // No primary account set yet.
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.EnrollOutcome.ChromeSync",
+        TrustedVaultEnrollOutcomeForUMA::kNoPrimaryAccount,
+        /*expected_bucket_count=*/1);
   }
 
   StoreKeysAndMimicRecoveryFactorRegistration(
@@ -2205,16 +2258,26 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Non-primary account.
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kOtherAccount, SecurityDomainId::kChromeSync, cb.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.EnrollOutcome.ChromeSync",
+        TrustedVaultEnrollOutcomeForUMA::kNoPrimaryAccount,
+        /*expected_bucket_count=*/1);
   }
 
   // Unsupported security domain (`kPasskeys`).
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kPrimaryAccount, SecurityDomainId::kPasskeys, cb.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.EnrollOutcome.HwProtected",
+        TrustedVaultEnrollOutcomeForUMA::kUnsupportedSecurityDomain,
+        /*expected_bucket_count=*/1);
   }
 
   // Persistent auth error present.
@@ -2222,20 +2285,32 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       kPrimaryAccount, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                            kPersistentAuthError);
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.EnrollOutcome.ChromeSync",
+        TrustedVaultEnrollOutcomeForUMA::kPersistentAuthError,
+        /*expected_bucket_count=*/1);
   }
 
   // Enrollment handler reports failure.
   SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
   ASSERT_THAT(GetEnrollmentHandler(SecurityDomainId::kChromeSync), NotNull());
   EXPECT_CALL(*GetEnrollmentHandler(SecurityDomainId::kChromeSync), Enroll)
-      .WillOnce(base::test::RunOnceCallback<0>(std::vector<uint8_t>(), -1));
+      .WillOnce(base::test::RunOnceCallback<0>(
+          std::vector<uint8_t>(), -1,
+          TrustedVaultEnrollOutcomeForUMA::kKeyRotationFailed));
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.EnrollOutcome.ChromeSync",
+        TrustedVaultEnrollOutcomeForUMA::kKeyRotationFailed,
+        /*expected_bucket_count=*/1);
   }
   EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
                                       SecurityDomainId::kChromeSync),
@@ -2248,9 +2323,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ResetBackend(/*connection=*/nullptr);
   SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
   {
+    base::HistogramTester histogram_tester;
     base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
     EXPECT_CALL(cb, Run(IsEmpty(), -1));
     backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+    histogram_tester.ExpectTotalCount("TrustedVault.EnrollOutcome.ChromeSync",
+                                      0);
   }
 }
 
@@ -2264,6 +2342,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::WeakPtr<MockEnrollmentHandler> handler1 =
       GetEnrollmentHandler(SecurityDomainId::kChromeSync)->GetWeakPtr();
 
+  base::HistogramTester histogram_tester;
   EnrollmentHandler::EnrollCallback handler_cb;
   EXPECT_CALL(*handler1, Enroll).WillOnce(MoveArg<0>(&handler_cb));
   base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> enroll_cb;
@@ -2277,10 +2356,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // afterwards, it must be dropped.
   std::move(handler_cb)
       .Run(/*new_shared_key=*/{1, 2, 3, 4},
-           /*new_key_version=*/1);
+           /*new_key_version=*/1, TrustedVaultEnrollOutcomeForUMA::kSuccess);
   EXPECT_THAT(storage()->GetVaultKeys(kAccountInfo2.gaia,
                                       SecurityDomainId::kChromeSync),
               IsEmpty());
+  histogram_tester.ExpectTotalCount("TrustedVault.EnrollOutcome.ChromeSync", 0);
 }
 
 }  // namespace

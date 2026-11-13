@@ -19,6 +19,8 @@
 namespace trusted_vault {
 
 class KeyStorage;
+enum class TrustedVaultCanEnrollOutcomeForUMA;
+enum class TrustedVaultEnrollOutcomeForUMA;
 
 // Handles enrollment into the `kChromeSync` security domain using the user's
 // Gaia password public key as recovery factor.
@@ -38,6 +40,13 @@ class ChromeSyncEnrollmentHandler : public EnrollmentHandler {
   void Enroll(EnrollCallback callback) override;
 
  private:
+  // Represents why local key storage state does not allow non-interactive
+  // enrollment into the `kChromeSync` security domain.
+  enum class LocalIneligibility {
+    kAlreadyEnrolled,
+    kNoLocalKeys,
+  };
+
   // Encapsulates the state for an in-flight `CanEnroll()` request and allows
   // concurrent requests to be coalesced. Destroying this cancels the ongoing
   // request via RAII without invoking `callbacks`.
@@ -69,11 +78,22 @@ class ChromeSyncEnrollmentHandler : public EnrollmentHandler {
     bool has_retried_key_rotation = false;
   };
 
-  bool SatisfiesLocalPrerequisites() const;
+  static TrustedVaultCanEnrollOutcomeForUMA
+  GetCanEnrollOutcomeForUMAFromLocalIneligibility(
+      LocalIneligibility local_ineligibility);
+  static TrustedVaultEnrollOutcomeForUMA
+  GetEnrollOutcomeForUMAFromLocalIneligibility(
+      LocalIneligibility local_ineligibility);
+
+  // Returns why local key storage does not allow enrollment, or `std::nullopt`
+  // if local prerequisites are met.
+  std::optional<LocalIneligibility> GetLocalIneligibility() const;
 
   void OnGaiaPasswordPublicKeyDownloadedForCanEnroll(
       TrustedVaultDownloadPasswordPublicKeyStatus status,
       const std::vector<uint8_t>& public_key);
+  void FulfillOngoingCanEnrollWithFailure(
+      TrustedVaultCanEnrollOutcomeForUMA outcome);
 
   void OnGaiaPasswordPublicKeyDownloadedForEnroll(
       TrustedVaultDownloadPasswordPublicKeyStatus status,
@@ -84,8 +104,7 @@ class ChromeSyncEnrollmentHandler : public EnrollmentHandler {
   void OnKeyRotatedForEnroll(const std::vector<uint8_t>& new_shared_key,
                              TrustedVaultKeyRotationStatus status,
                              int new_key_version);
-  void FulfillOngoingEnroll(const std::vector<uint8_t>& new_shared_key,
-                            int new_key_version);
+  void FulfillOngoingEnrollWithFailure(TrustedVaultEnrollOutcomeForUMA outcome);
 
   const CoreAccountInfo primary_account_;
   const raw_ref<KeyStorage> storage_;
