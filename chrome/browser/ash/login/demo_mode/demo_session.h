@@ -215,7 +215,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // DemoModeIdleHandler::Observer:
   void OnLocalFilesCleanupCompleted() override;
 
-  void OnDemoAppComponentLoaded();
+  void OnDemoAppComponentLoaded(const AccountId& account_id);
 
   // Installs resources for Demo Mode from the offline demo mode resources, such
   // as photos and other media, into `account_id`'s Downloads folder.
@@ -235,7 +235,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   void SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
       std::optional<double> keyboard_brightness_percentage);
 
-  void RestoreDefaultLocaleForNextSession();
+  void RestoreDefaultLocaleForNextSession(const AccountId& account_id);
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;

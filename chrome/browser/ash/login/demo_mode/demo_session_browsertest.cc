@@ -43,6 +43,7 @@
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -800,10 +801,12 @@ IN_PROC_BROWSER_TEST_F(DemoModeIdleHandlerBrowserTest, CloseAllBrowsers) {
   demo_mode::SetDoNothingWhenPowerIdle();
   DemoSessionMetricsRecorder metrics_recorder;
   base::test::TestFuture<void> launch_demo_app_future;
+  const AccountId& account_id =
+      CHECK_DEREF(AnnotatedAccountId::Get(GetProfile()));
   DemoModeWindowCloser window_closer(
-      launch_demo_app_future.GetRepeatingCallback());
+      account_id, launch_demo_app_future.GetRepeatingCallback());
   DemoModeIdleHandler idle_handler(
-      &window_closer,
+      account_id, &window_closer,
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   idle_handler.SetIdleTimeoutForTest(base::Milliseconds(1));
 

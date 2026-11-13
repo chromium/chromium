@@ -16,6 +16,7 @@
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -44,9 +45,10 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -65,6 +67,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/synthetic_trials.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -144,16 +147,14 @@ std::string GetSwitchOrDefault(std::string_view switch_string,
 }
 
 // Returns the list of locales (and related info) supported by demo mode.
-std::vector<LocaleInfo> GetSupportedLocales() {
+std::vector<LocaleInfo> GetSupportedLocales(
+    const std::string& current_locale_iso_code) {
   const base::flat_set<std::string> kSupportedLocales(
       {"da", "de", "en-GB", "en-US", "es", "fi", "fr", "fr-CA", "it", "ja",
        "nb", "nl", "sv"});
 
   const std::vector<std::string>& available_locales =
       l10n_util::GetUserFacingUILocaleList();
-  const std::string current_locale_iso_code =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
-          language::prefs::kApplicationLocale);
   std::vector<LocaleInfo> supported_locales;
   for (const std::string& locale : available_locales) {
     if (!kSupportedLocales.contains(locale))
@@ -199,13 +200,15 @@ GURL GetDemoDemoAppUrl(const growth::Payload* model) {
   return net::AppendQueryParameter(url, kDemoModeAppModelParam, payload_string);
 }
 
-void LaunchDemoSystemWebApp(const growth::Payload* model) {
-  // SystemWebAppManager won't run this callback if the profile is destroyed,
-  // so we don't need to worry about there being no active user profile
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+void LaunchDemoSystemWebApp(const AccountId& account_id,
+                            const growth::Payload* model) {
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  CHECK(browser_context);
   ash::SystemAppLaunchParams params;
   params.url = GetDemoDemoAppUrl(model);
-  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE, params);
+  LaunchSystemWebAppAsync(Profile::FromBrowserContext(browser_context),
+                          SystemWebAppType::DEMO_MODE, params);
 }
 
 const growth::Payload* GetDemoModeAppPayload() {
@@ -223,15 +226,17 @@ const growth::Payload* GetDemoModeAppPayload() {
   return payload;
 }
 
-void TriggerLaunchDemoModeApp() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile);
+void TriggerLaunchDemoModeApp(const AccountId& account_id) {
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  CHECK(browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
     auto* model = (features::IsGrowthCampaignsInDemoModeEnabled()
                        ? GetDemoModeAppPayload()
                        : nullptr);
     swa_manager->on_apps_synchronized().Post(
-        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp, model));
+        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp, account_id, model));
   }
 }
 
@@ -404,8 +409,15 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
   if (!g_demo_session->started()) {
     return false;
   }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile);
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  CHECK(browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Check if the app has been installed by checking `app_registry_cache_`.
   std::vector<std::string> app_ids = apps_util::GetAppIdsFromPolicyId(
@@ -498,11 +510,16 @@ base::OneShotTimer* DemoSession::GetTimerForTesting() {
 }
 
 void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
-  const base::RepeatingClosure hide_web_store_icon = base::BindRepeating([]() {
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-        policy::policy_prefs::kHideWebStoreIcon, true);
-  });
-  active_user->AddProfileCreatedObserver(hide_web_store_icon);
+  active_user->AddProfileCreatedObserver(base::BindOnce(
+      [](const AccountId& account_id) {
+        PrefService* prefs =
+            CHECK_DEREF(
+                user_manager::UserManager::Get()->FindUserAndModify(account_id))
+                .GetProfilePrefs();
+        CHECK(prefs);
+        prefs->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, true);
+      },
+      active_user->GetAccountId()));
 }
 
 DemoSession::DemoSession(
@@ -579,25 +596,35 @@ void DemoSession::OnSessionStateChanged() {
           base::BindOnce(&DemoSession::ConfigureAndStartSplashScreen,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
-    case session_manager::SessionState::ACTIVE:
+    case session_manager::SessionState::ACTIVE: {
+      const AccountId account_id =
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetActiveSession())
+              .account_id();
+      PrefService* prefs =
+          CHECK_DEREF(
+              user_manager::UserManager::Get()->FindUserAndModify(account_id))
+              .GetProfilePrefs();
+      CHECK(prefs);
+
       // SystemTrayClientImpl may not exist in unit tests.
       if (SystemTrayClientImpl::Get()) {
         const std::string current_locale_iso_code =
-            ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
-                language::prefs::kApplicationLocale);
-        SystemTrayClientImpl::Get()->SetLocaleList(GetSupportedLocales(),
-                                                   current_locale_iso_code);
+            prefs->GetString(language::prefs::kApplicationLocale);
+        SystemTrayClientImpl::Get()->SetLocaleList(
+            GetSupportedLocales(current_locale_iso_code),
+            current_locale_iso_code);
         SYSLOG(INFO) << "Demo mode session current locale: "
                      << current_locale_iso_code;
       }
 
       if (features::IsDemoModeSecondaryGoogleAccountSigninAllowedFalse()) {
         // Prevent users from signing in with their own account.
-        ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+        prefs->SetBoolean(
             policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, false);
       }
 
-      RestoreDefaultLocaleForNextSession();
+      RestoreDefaultLocaleForNextSession(account_id);
 
       if (chromeos::PowerManagerClient::Get()) {
         chromeos::PowerManagerClient::Get()->GetKeyboardBrightnessPercent(
@@ -616,7 +643,8 @@ void DemoSession::OnSessionStateChanged() {
 
       // Create the window closer.
       window_closer_ = std::make_unique<DemoModeWindowCloser>(
-          base::BindRepeating(&TriggerLaunchDemoModeApp));
+          account_id,
+          base::BindRepeating(&TriggerLaunchDemoModeApp, account_id));
 
       if (features::IsGrowthCampaignsInDemoModeEnabled()) {
         auto* campaigns_manager = growth::CampaignsManager::Get();
@@ -627,7 +655,7 @@ void DemoSession::OnSessionStateChanged() {
         // component before launching the Demo Mode app.
         base::OnceClosure load_callback =
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
-                           weak_ptr_factory_.GetWeakPtr());
+                           weak_ptr_factory_.GetWeakPtr(), account_id);
 
         base::RepeatingClosure barrier_closure =
             base::BarrierClosure(2, std::move(load_callback));
@@ -636,20 +664,19 @@ void DemoSession::OnSessionStateChanged() {
       } else {
         components_->LoadAppComponent(
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(), account_id));
       }
 
-      EnsureResourcesLoaded(base::BindOnce(
-          &DemoSession::InstallDemoResources, weak_ptr_factory_.GetWeakPtr(),
-          CHECK_DEREF(
-              session_manager::SessionManager::Get()->GetActiveSession())
-              .account_id()));
+      EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           account_id));
 
       // When the session successfully starts, we record the action
       // DemoMode.DemoSessionStarts.
       base::RecordAction(base::UserMetricsAction("DemoMode.DemoSessionStarts"));
 
       break;
+    }
     default:
       break;
   }
@@ -681,7 +708,7 @@ void DemoSession::OnLocalFilesCleanupCompleted() {
           .account_id());
 }
 
-void DemoSession::OnDemoAppComponentLoaded() {
+void DemoSession::OnDemoAppComponentLoaded(const AccountId& account_id) {
   const auto& app_component_version = components_->app_component_version();
   SYSLOG(INFO) << "Demo mode app component version: "
                << (app_component_version.has_value()
@@ -696,12 +723,12 @@ void DemoSession::OnDemoAppComponentLoaded() {
     return;
   }
 
-  TriggerLaunchDemoModeApp();
+  TriggerLaunchDemoModeApp(account_id);
 
   if (demo_mode::IsDemoAccountSignInEnabled()) {
     CHECK(window_closer_);
     idle_handler_ = std::make_unique<DemoModeIdleHandler>(
-        window_closer_.get(), blocking_task_runner_);
+        account_id, window_closer_.get(), blocking_task_runner_);
     idle_handler_observation_.Observe(idle_handler_.get());
   }
 }
@@ -762,22 +789,14 @@ void DemoSession::RemoveSplashScreen() {
 // user changes the locale to fr-fr from the system tray, when the demo session
 // restarts, the system doesn't revert to the default locale en-us, but instead,
 // goes to fr-fr as specified.
-void DemoSession::RestoreDefaultLocaleForNextSession() {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  // Tests may not have an active user.
-  if (!user) {
-    return;
-  }
-  if (!user->is_profile_created()) {
-    user->AddProfileCreatedObserver(
-        base::BindOnce(&DemoSession::RestoreDefaultLocaleForNextSession,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile, base::NotFatalUntil::M160);
+void DemoSession::RestoreDefaultLocaleForNextSession(
+    const AccountId& account_id) {
+  user_manager::User& user = CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUserAndModify(account_id));
+  const PrefService* prefs = user.GetProfilePrefs();
+  CHECK(prefs);
   const std::string current_locale =
-      profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+      prefs->GetString(language::prefs::kApplicationLocale);
   if (current_locale.empty()) {
     LOG(WARNING) << "Current locale read from kApplicationLocale is empty!";
     return;
@@ -794,8 +813,12 @@ void DemoSession::RestoreDefaultLocaleForNextSession() {
   if (current_locale != default_locale) {
     // If the user has changed the locale, request to change it back (which will
     // take effect when the session restarts).
-    profile->ChangeAppLocale(
-        default_locale, Profile::APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT);
+    content::BrowserContext* browser_context =
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+    CHECK(browser_context);
+    Profile::FromBrowserContext(browser_context)
+        ->ChangeAppLocale(default_locale,
+                          Profile::APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT);
   }
 }
 

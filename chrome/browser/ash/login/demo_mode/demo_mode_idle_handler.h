@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
+#include "components/account_id/account_id.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -35,6 +36,7 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   };
 
   DemoModeIdleHandler(
+      const AccountId& account_id,
       DemoModeWindowCloser* window_closer,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
   DemoModeIdleHandler(const DemoModeIdleHandler&) = delete;
@@ -66,6 +68,8 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   // Populates demo files after cleanup.
   void OnLocalFilesCleanupCompleted(
       const std::optional<std::string>& error_message);
+
+  const AccountId account_id_;
 
   // True when the device is not idle.
   bool is_user_active_ = false;

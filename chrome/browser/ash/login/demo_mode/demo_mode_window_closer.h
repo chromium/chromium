@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/views/widget/widget_observer.h"
@@ -20,7 +21,8 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
  public:
   using LaunchDemoAppCallback = base::RepeatingCallback<void()>;
 
-  explicit DemoModeWindowCloser(LaunchDemoAppCallback launch_demo_app_callback);
+  DemoModeWindowCloser(const AccountId& account_id,
+                       LaunchDemoAppCallback launch_demo_app_callback);
   DemoModeWindowCloser(const DemoModeWindowCloser&) = delete;
   DemoModeWindowCloser& operator=(const DemoModeWindowCloser&) = delete;
   ~DemoModeWindowCloser() override;
@@ -41,6 +43,8 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
   bool CloseGMSCoreWindowIfPresent(const apps::InstanceUpdate& update);
 
   void StartClosingWidgets();
+
+  const AccountId account_id_;
 
   // `True` when start closing browsers triggered by `StartClosingApps` and flip
   // to `false` when all browsers are closed.

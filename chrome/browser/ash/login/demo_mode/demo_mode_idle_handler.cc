@@ -17,6 +17,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -26,13 +28,15 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -57,23 +61,10 @@ const char* const kPrefsPrefixToReset[] = {
     "settings.audio", prefs::kPowerAcScreenBrightnessPercent,
     prefs::kPowerBatteryScreenBrightnessPercent};
 
-void ResetWallpaper() {
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager) {
-    // This can happen in tests or shutdown.
-    return;
-  }
-
-  const auto* primary_user = user_manager->GetPrimaryUser();
-  WallpaperController::Get()->SetDefaultWallpaper(primary_user->GetAccountId(),
-                                                  /*show_wallpaper=*/true,
-                                                  base::DoNothing());
-}
-
-void ResetPrefs() {
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile);
-  auto* prefs = profile->GetPrefs();
+void ResetPrefs(const AccountId& account_id) {
+  auto* prefs = CHECK_DEREF(user_manager::UserManager::Get()->FindUserAndModify(
+                                account_id))
+                    .GetProfilePrefs();
   CHECK(prefs);
 
   for (auto* const pref : kPrefsPrefixToReset) {
@@ -95,10 +86,14 @@ void DeleteAllFilesUnderPath(const base::FilePath& directory_path) {
 
 // Deletes all user created files in DriveFS.
 void CleanUpDriveFs(
+    const AccountId& account_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  CHECK(browser_context);
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetActiveUserProfile());
+          Profile::FromBrowserContext(browser_context));
 
   // In managed guest session demo mode, there's no DriveFS.
   if (!integration_service) {
@@ -122,9 +117,11 @@ void LogoutCurrentSession() {
 }  // namespace
 
 DemoModeIdleHandler::DemoModeIdleHandler(
+    const AccountId& account_id,
     DemoModeWindowCloser* window_closer,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-    : window_closer_(window_closer),
+    : account_id_(account_id),
+      window_closer_(window_closer),
       blocking_task_runner_(blocking_task_runner),
       file_cleaner_(blocking_task_runner) {
   user_activity_observer_.Observe(ui::UserActivityDetector::Get());
@@ -258,15 +255,17 @@ void DemoModeIdleHandler::OnIdle() {
   if (features::IsDemoModeSignInFileCleanupEnabled()) {
     // The IO tasks will be executed from non-UI thread by  `file_cleaner_`.
     CleanupLocalFiles();
-    CleanUpDriveFs(blocking_task_runner_);
+    CleanUpDriveFs(account_id_, blocking_task_runner_);
   }
 
   window_closer_->StartClosingApps();
-  ResetPrefs();
+  ResetPrefs(account_id_);
 
   // Explicitly call to set default wallpaper. Clear wallpaper prefs doesn't
   // change the UI.
-  ResetWallpaper();
+  WallpaperController::Get()->SetDefaultWallpaper(account_id_,
+                                                  /*show_wallpaper=*/true,
+                                                  base::DoNothing());
 
   // TODO(crbug.com/382360715): Restore network if changed by user.
 }
@@ -279,6 +278,7 @@ void DemoModeIdleHandler::CleanupLocalFiles() {
   // Note this won't work for emulator since "MyFiles" is not mounted from user
   // data directory.
   file_cleaner_.Cleanup(
+      account_id_,
       base::BindOnce(&DemoModeIdleHandler::OnLocalFilesCleanupCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

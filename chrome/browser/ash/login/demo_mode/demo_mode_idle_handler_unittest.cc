@@ -105,13 +105,14 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
     window_closer_ = std::make_unique<DemoModeWindowCloser>(
+        kAccountId,
         base::BindRepeating(&DemoModeIdleHandlerTestBase::MockLaunchDemoModeApp,
                             base::Unretained(this)));
 
     // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
     // is the same as the tests.
     demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
-        window_closer_.get(),
+        kAccountId, window_closer_.get(),
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   }
 

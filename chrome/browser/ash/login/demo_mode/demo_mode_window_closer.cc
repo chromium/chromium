@@ -10,22 +10,30 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 constexpr char kAndroidGMSCorePackage[] = "com.google.android.gms";
 
-std::string GetPackageNameFromAppId(const std::string& app_id) {
+std::string GetPackageNameFromAppId(const AccountId& account_id,
+                                    const std::string& app_id) {
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+      Profile::FromBrowserContext(browser_context));
 
   std::string publisher_id;
   proxy->AppRegistryCache().ForOneApp(app_id,
@@ -35,9 +43,14 @@ std::string GetPackageNameFromAppId(const std::string& app_id) {
   return publisher_id;
 }
 
-void CloseWidgetWithInstanceId(const base::UnguessableToken& instance_id) {
+void CloseWidgetWithInstanceId(const AccountId& account_id,
+                               const base::UnguessableToken& instance_id) {
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+      Profile::FromBrowserContext(browser_context));
   proxy->InstanceRegistry().ForOneInstance(
       instance_id, [](const apps::InstanceUpdate& update) {
         auto* widget = views::Widget::GetWidgetForNativeWindow(update.Window());
@@ -69,9 +82,15 @@ void ClearAndCloseClipboard() {
 }  // namespace
 
 DemoModeWindowCloser::DemoModeWindowCloser(
+    const AccountId& account_id,
     LaunchDemoAppCallback launch_demo_app_callback)
-    : launch_demo_app_callback_(launch_demo_app_callback) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
+    : account_id_(account_id),
+      launch_demo_app_callback_(launch_demo_app_callback) {
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id_);
+  CHECK(browser_context);
+  auto* profile = Profile::FromBrowserContext(browser_context);
   browser_observation_.Observe(ash::BrowserController::GetInstance());
 
   // Some test profiles will not have AppServiceProxy.
@@ -98,7 +117,8 @@ void DemoModeWindowCloser::OnInstanceUpdate(
 
   const bool is_arc_app = ash::IsArcWindow(update.Window());
   const std::string app_id_or_package =
-      is_arc_app ? GetPackageNameFromAppId(update.AppId()) : update.AppId();
+      is_arc_app ? GetPackageNameFromAppId(account_id_, update.AppId())
+                 : update.AppId();
   const auto instance_id = update.InstanceId();
   auto* metric_recorder = ash::DemoSessionMetricsRecorder::Get();
   CHECK(metric_recorder);
@@ -162,7 +182,7 @@ bool DemoModeWindowCloser::CloseGMSCoreWindowIfPresent(
     if (update.AppId() != gms_core_app_id_) {
       return false;
     }
-  } else if (GetPackageNameFromAppId(update.AppId()) !=
+  } else if (GetPackageNameFromAppId(account_id_, update.AppId()) !=
              kAndroidGMSCorePackage) {
     return false;
   }
@@ -173,8 +193,8 @@ bool DemoModeWindowCloser::CloseGMSCoreWindowIfPresent(
   if (update.IsCreation()) {
     base::UmaHistogramBoolean("DemoMode.GMSCoreDialogShown", true);
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseWidgetWithInstanceId, update.InstanceId()));
+        FROM_HERE, base::BindOnce(&CloseWidgetWithInstanceId, account_id_,
+                                  update.InstanceId()));
   }
   return true;
 }
@@ -189,7 +209,8 @@ void DemoModeWindowCloser::StartClosingWidgets() {
   // app. Demo app has no widget for its window.
   for (const auto& app : opened_apps_copies) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CloseWidgetWithInstanceId, app));
+        FROM_HERE,
+        base::BindOnce(&CloseWidgetWithInstanceId, account_id_, app));
   }
 
   // Since all browsers are closed, it's safe to re-luanch demo app.
