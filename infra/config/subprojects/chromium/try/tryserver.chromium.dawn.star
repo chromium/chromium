@@ -157,7 +157,8 @@ shared_gpu.try_.mac_optional_builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Dawn Mac x64 DEPS Builder",
-        "ci/Dawn Mac x64 DEPS Release (AMD)",
+        # Temporarily removed for PAO-EM25 (SFO36) power shutdown (b/577217410).
+        # "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
     gn_args = "ci/Dawn Mac x64 DEPS Builder",

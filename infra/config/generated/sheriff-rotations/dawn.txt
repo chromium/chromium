@@ -25,7 +25,6 @@ ci/Dawn Mac arm64 Experimental Release (Apple M2)
 ci/Dawn Mac arm64 Release (Apple M2)
 ci/Dawn Mac x64 Builder
 ci/Dawn Mac x64 DEPS Builder
-ci/Dawn Mac x64 DEPS Release (AMD)
 ci/Dawn Mac x64 DEPS Release (Intel)
 ci/Dawn Mac x64 Experimental Release (AMD)
 ci/Dawn Mac x64 Experimental Release (Intel)

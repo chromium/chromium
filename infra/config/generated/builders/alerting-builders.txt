@@ -53,7 +53,6 @@ ci/Dawn Mac arm64 Experimental Release (Apple M2)
 ci/Dawn Mac arm64 Release (Apple M2)
 ci/Dawn Mac x64 Builder
 ci/Dawn Mac x64 DEPS Builder
-ci/Dawn Mac x64 DEPS Release (AMD)
 ci/Dawn Mac x64 DEPS Release (Intel)
 ci/Dawn Mac x64 Experimental Release (AMD)
 ci/Dawn Mac x64 Experimental Release (Intel)
@@ -168,13 +167,11 @@ ci/Mac FYI Release (Apple M1)
 ci/Mac FYI Release (Intel)
 ci/Mac FYI Retina Debug (AMD)
 ci/Mac FYI Retina Release (AMD Radeon Pro 555X)
-ci/Mac FYI Retina Release (AMD)
 ci/Mac FYI Retina Release (Apple M2)
 ci/Mac FYI Retina Release (Apple M3)
 ci/Mac FYI Retina Release ASAN (Apple M2)
 ci/Mac Release (Intel)
 ci/Mac Retina Debug (AMD)
-ci/Mac Retina Release (AMD)
 ci/Mac Retina Release (Apple M2)
 ci/Mac13 Tests
 ci/Network Service Linux

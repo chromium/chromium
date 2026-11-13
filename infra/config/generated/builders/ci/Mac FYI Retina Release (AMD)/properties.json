@@ -69,10 +69,6 @@
         {
           "builder": "gpu-fyi-try-mac-amd-retina-rel",
           "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_optional_gpu_tests_rel",
-          "group": "tryserver.chromium.mac"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/ci/Mac FYI Retina Release (AMD)/targets"
@@ -86,12 +82,6 @@
     ]
   },
   "builder_group": "chromium.gpu.fyi",
-  "gardener_rotations": [
-    "chromium.gpu"
-  ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium.gpu"
-  ]
+  "recipe": "chromium"
 }
