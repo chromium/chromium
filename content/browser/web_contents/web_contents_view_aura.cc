@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -782,7 +783,8 @@ void WebContentsViewAura::PrepareDropData(
 
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-    DragOperation op) {
+    DragOperation op,
+    bool drag_started) {
   drag_security_info_.OnDragEnded();
   drag_drop_client_owner_.reset();
 
@@ -792,42 +794,44 @@ void WebContentsViewAura::EndDrag(
   // It is OK for source_rwh to be null.
   RenderWidgetHost* source_rwh = source_rwh_weak_ptr.get();
 
-  aura::Window* window = GetContentNativeView();
-  CHECK(window);
+  std::optional<gfx::PointF> client_loc;
+  std::optional<gfx::PointF> screen_loc;
+  if (drag_started) {
+    aura::Window* window = GetContentNativeView();
+    CHECK(window);
 
-  gfx::PointF screen_loc =
-      gfx::PointF(display::Screen::Get()->GetCursorScreenPoint());
-  gfx::PointF client_loc = screen_loc;
-  aura::client::ScreenPositionClient* screen_position_client =
-      aura::client::GetScreenPositionClient(window->GetRootWindow());
-  if (screen_position_client)
-    screen_position_client->ConvertPointFromScreen(window, &client_loc);
+    screen_loc = gfx::PointF(display::Screen::Get()->GetCursorScreenPoint());
+    gfx::PointF client_point = *screen_loc;
+    aura::client::ScreenPositionClient* screen_position_client =
+        aura::client::GetScreenPositionClient(window->GetRootWindow());
+    if (screen_position_client) {
+      screen_position_client->ConvertPointFromScreen(window, &client_point);
+    }
 
-  // |client_loc| is in the root coordinate space, for non-root
-  // RenderWidgetHosts it needs to be transformed.
-  gfx::PointF transformed_point = client_loc;
-  if (source_rwh && web_contents_->GetRenderWidgetHostView() &&
-      source_rwh->GetView() != web_contents_->GetRenderWidgetHostView()) {
-    static_cast<RenderWidgetHostViewBase*>(
-        web_contents_->GetRenderWidgetHostView())
-        ->TransformPointToCoordSpaceForView(
-            client_loc,
-            static_cast<RenderWidgetHostViewBase*>(source_rwh->GetView()),
-            &transformed_point);
+    // `client_point` is in the root coordinate space, for non-root
+    // RenderWidgetHosts it needs to be transformed.
+    client_loc = client_point;
+    if (source_rwh && web_contents_->GetRenderWidgetHostView() &&
+        source_rwh->GetView() != web_contents_->GetRenderWidgetHostView()) {
+      static_cast<RenderWidgetHostViewBase*>(
+          web_contents_->GetRenderWidgetHostView())
+          ->TransformPointToCoordSpaceForView(
+              client_point,
+              static_cast<RenderWidgetHostViewBase*>(source_rwh->GetView()),
+              &*client_loc);
+    }
+
+    if (op != DragOperation::kNone) {
+      // TODO(crbug.com/467379870): Implement in non-aura platforms.
+      base::UmaHistogramEnumeration(
+          "Event.DragDrop.Surface",
+          (dropped_in_this_web_contents_
+               ? DragAndDropSurface::kDragBrowserDropSamePage
+               : DragAndDropSurface::kDragBrowserDropOutOfPage));
+    }
   }
 
-  if (op != DragOperation::kNone) {
-    // TODO(crbug.com/467379870): Implement in non-aura platforms.
-    base::UmaHistogramEnumeration(
-        "Event.DragDrop.Surface",
-        (dropped_in_this_web_contents_
-             ? DragAndDropSurface::kDragBrowserDropSamePage
-             : DragAndDropSurface::kDragBrowserDropOutOfPage));
-  }
-
-  web_contents_->DragSourceEndedAt(transformed_point.x(), transformed_point.y(),
-                                   screen_loc.x(), screen_loc.y(), op,
-                                   source_rwh);
+  web_contents_->DragSourceEndedAt(client_loc, screen_loc, op, source_rwh);
 
   web_contents_->SystemDragEnded(source_rwh);
 }
@@ -836,13 +840,13 @@ void WebContentsViewAura::EndDragAfterNativeLoop(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
   if (!drag_in_progress_) {
-    EndDrag(std::move(source_rwh_weak_ptr), op);
+    EndDrag(std::move(source_rwh_weak_ptr), op, /*drag_started=*/true);
     return;
   }
 
   end_drag_runner_.ReplaceClosure(base::BindOnce(
       &WebContentsViewAura::EndDrag, weak_ptr_factory_.GetWeakPtr(),
-      std::move(source_rwh_weak_ptr), op));
+      std::move(source_rwh_weak_ptr), op, /*drag_started=*/true));
   end_drag_runner_session_id_ = drag_session_id_;
 }
 
@@ -1289,7 +1293,8 @@ void WebContentsViewAura::StartDragging(
       std::optional<gfx::Point> touch_location =
           env->ConsumeTouchForDrag(content_native_view);
       if (!touch_location) {
-        EndDrag(std::move(source_rwh_weak_ptr), result_op);
+        EndDrag(std::move(source_rwh_weak_ptr), result_op,
+                /*drag_started=*/false);
         return;
       }
       trusted_location = *touch_location;
@@ -1301,7 +1306,8 @@ void WebContentsViewAura::StartDragging(
       // check.
       if (event_info.source == ui::mojom::DragEventSource::kMouse &&
           !env->ConsumeLeftMousePressForDrag(content_native_view)) {
-        EndDrag(std::move(source_rwh_weak_ptr), result_op);
+        EndDrag(std::move(source_rwh_weak_ptr), result_op,
+                /*drag_started=*/false);
         return;
       }
       trusted_location = env->last_mouse_location();
@@ -1310,7 +1316,8 @@ void WebContentsViewAura::StartDragging(
     // visible.
     if (!content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
         !content_native_view->IsVisible()) {
-      EndDrag(std::move(source_rwh_weak_ptr), result_op);
+      EndDrag(std::move(source_rwh_weak_ptr), result_op,
+              /*drag_started=*/false);
       return;
     }
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;

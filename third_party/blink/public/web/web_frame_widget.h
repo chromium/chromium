@@ -33,6 +33,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -47,6 +48,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/ca_layer_result.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace base {
@@ -64,7 +66,6 @@ struct ScreenInfos;
 }  // namespace display
 
 namespace gfx {
-class PointF;
 class RectF;
 }  // namespace gfx
 
@@ -137,11 +138,14 @@ class WebFrameWidget : public WebWidget {
                               uint32_t key_modifiers,
                               base::OnceClosure callback) = 0;
 
-  // Notifies the WebFrameWidget that a drag has terminated.
-  virtual void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
-                                 const gfx::PointF& screen_point,
-                                 ui::mojom::DragOperation,
-                                 base::OnceClosure callback) = 0;
+  // Notifies the WebFrameWidget that a drag has terminated. `point_in_viewport`
+  // and `screen_point` must either both be set or both be omitted (when the
+  // drag was rejected before starting a system drag session).
+  virtual void DragSourceEndedAt(
+      const std::optional<gfx::PointF>& point_in_viewport,
+      const std::optional<gfx::PointF>& screen_point,
+      ui::mojom::DragOperation,
+      base::OnceClosure callback) = 0;
 
   // Notifies the WebFrameWidget that the system drag and drop operation has
   // ended.

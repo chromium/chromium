@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -91,6 +92,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/drag_state.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -2503,17 +2505,30 @@ bool EventHandler::DefaultTabEventHandler(KeyboardEvent* event) {
 }
 
 void EventHandler::DragSourceEndedAt(
-    const WebMouseEvent& event,
+    const std::optional<WebMouseEvent>& event,
     ui::mojom::blink::DragOperation operation) {
-  // Asides from routing the event to the correct frame, the hit test is also an
-  // opportunity for Layer to update the :hover and :active pseudoclasses.
-  HitTestRequest request(HitTestRequest::kRelease);
-  MouseEventWithHitTestResults mev =
-      event_handling_util::PerformMouseEventHitTest(frame_, request, event);
+  if (event) {
+    // Asides from routing the event to the correct frame, the hit test is also
+    // an opportunity for Layer to update the :hover and :active pseudoclasses.
+    HitTestRequest request(HitTestRequest::kRelease);
+    MouseEventWithHitTestResults mev =
+        event_handling_util::PerformMouseEventHitTest(frame_, request, *event);
 
-  if (auto* target_frame = LocalFrameFromTargetNode(mev.InnerNode())) {
-    target_frame->GetEventHandler().DragSourceEndedAt(event, operation);
-    return;
+    if (auto* target_frame = LocalFrameFromTargetNode(mev.InnerNode())) {
+      target_frame->GetEventHandler().DragSourceEndedAt(event, operation);
+      return;
+    }
+  } else if (frame_->GetPage()) {
+    if (LocalDOMWindow* initiator =
+            frame_->GetPage()->GetDragController().drag_initiator()) {
+      if (LocalFrame* initiator_frame = initiator->GetFrame();
+          initiator_frame && initiator_frame != frame_ &&
+          initiator_frame->Tree().IsDescendantOf(frame_)) {
+        initiator_frame->GetEventHandler().DragSourceEndedAt(std::nullopt,
+                                                             operation);
+        return;
+      }
+    }
   }
 
   mouse_event_manager_->DragSourceEndedAt(event, operation);

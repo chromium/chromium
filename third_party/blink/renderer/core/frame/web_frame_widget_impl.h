@@ -533,8 +533,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetViewportIntersection(
       mojom::blink::ViewportIntersectionStatePtr intersection_state,
       const std::optional<VisualProperties>& visual_properties) override;
-  void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
-                         const gfx::PointF& screen_point,
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& point_in_viewport,
+                         const std::optional<gfx::PointF>& screen_point,
                          ui::mojom::blink::DragOperation,
                          base::OnceClosure callback) override;
   void OnStartStylusWriting(

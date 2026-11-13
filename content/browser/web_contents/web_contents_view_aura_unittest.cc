@@ -1906,7 +1906,8 @@ class MockWebContentsViewAura : public WebContentsViewAura {
   // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView` which will
   // result NOTREACHED being called.
   void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-               ui::mojom::DragOperation op) override {}
+               ui::mojom::DragOperation op,
+               bool drag_started) override {}
 };
 
 TEST_F(WebContentsViewAuraTest, StartDragBlockedByPolicy) {
@@ -2047,11 +2048,13 @@ class TestDragEndedFrameWidget : public FakeFrameWidget {
     std::move(callback).Run();
   }
 
-  void DragSourceEndedAt(const gfx::PointF& client_point,
-                         const gfx::PointF& screen_point,
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& client_point,
+                         const std::optional<gfx::PointF>& screen_point,
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {
     drag_source_ended_at_called_ = true;
+    last_drag_source_ended_client_point_ = client_point;
+    last_drag_source_ended_screen_point_ = screen_point;
     operation_ = operation;
     std::move(callback).Run();
   }
@@ -2068,6 +2071,14 @@ class TestDragEndedFrameWidget : public FakeFrameWidget {
   }
   bool drag_source_ended_at_called() const {
     return drag_source_ended_at_called_;
+  }
+  const std::optional<gfx::PointF>& last_drag_source_ended_client_point()
+      const {
+    return last_drag_source_ended_client_point_;
+  }
+  const std::optional<gfx::PointF>& last_drag_source_ended_screen_point()
+      const {
+    return last_drag_source_ended_screen_point_;
   }
   bool system_drag_ended_called() const { return system_drag_ended_called_; }
   bool drag_target_drag_over_called() const {
@@ -2089,6 +2100,8 @@ class TestDragEndedFrameWidget : public FakeFrameWidget {
 
  private:
   bool drag_source_ended_at_called_ = false;
+  std::optional<gfx::PointF> last_drag_source_ended_client_point_;
+  std::optional<gfx::PointF> last_drag_source_ended_screen_point_;
   bool system_drag_ended_called_ = false;
   bool drag_target_drag_over_called_ = false;
   bool delay_next_drag_target_drag_over_ = false;
@@ -2100,7 +2113,7 @@ class TestDragEndedFrameWidget : public FakeFrameWidget {
 
 // Tests that if the user releases the mouse before WebContentsViewAura::
 // StartDragging is called, the drag is aborted and WebContents is notified via
-// SystemDragEnded and DragSourceEndedAt.
+// SystemDragEnded and DragSourceEndedAt without leaking cursor coordinates.
 TEST_F(WebContentsViewAuraTest, StartDraggingMouseReleasedEndsDrag) {
   const char kGoogleUrl[] = "https://google.com/";
   NavigateAndCommit(GURL(kGoogleUrl));
@@ -2138,6 +2151,146 @@ TEST_F(WebContentsViewAuraTest, StartDraggingMouseReleasedEndsDrag) {
 
   run_loop.Run();
   EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_client_point());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_screen_point());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, frame_widget.operation());
+  EXPECT_TRUE(frame_widget.system_drag_ended_called());
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Tests that if StartDragging is called for a touch drag without an active
+// touch press on the web contents, the drag is aborted and DragSourceEndedAt
+// is sent without cursor coordinates.
+TEST_F(WebContentsViewAuraTest,
+       StartDraggingTouchNotPressedEndsDragWithoutCoordinates) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client(root_window());
+
+  TestDragEndedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  base::RunLoop run_loop;
+  frame_widget.set_quit_closure(run_loop.QuitClosure());
+
+  WebContentsViewAura* view = GetView();
+
+  DropData drop_data;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
+
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(
+                          gfx::Point(), ui::mojom::DragEventSource::kTouch));
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+  EXPECT_TRUE(delegate.handle_drag_ended_called());
+
+  run_loop.Run();
+  EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_client_point());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_screen_point());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, frame_widget.operation());
+  EXPECT_TRUE(frame_widget.system_drag_ended_called());
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Tests that if StartDragging is called while the view is hidden, the drag is
+// aborted and DragSourceEndedAt is sent without cursor coordinates.
+TEST_F(WebContentsViewAuraTest,
+       StartDraggingHiddenViewEndsDragWithoutCoordinates) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client(root_window());
+
+  TestDragEndedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  base::RunLoop run_loop;
+  frame_widget.set_quit_closure(run_loop.QuitClosure());
+
+  WebContentsViewAura* view = GetView();
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
+  UpdateLeftMouseState(view->GetContentNativeView(),
+                       ui::EventType::kMousePressed);
+  view->GetContentNativeView()->Hide();
+
+  DropData drop_data;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
+
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(
+                          gfx::Point(), ui::mojom::DragEventSource::kMouse));
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+  EXPECT_TRUE(delegate.handle_drag_ended_called());
+
+  run_loop.Run();
+  EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_client_point());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_screen_point());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, frame_widget.operation());
+  EXPECT_TRUE(frame_widget.system_drag_ended_called());
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Tests that if StartDragging is called when the trusted pointer location is
+// outside the view bounds, the drag is aborted and DragSourceEndedAt is sent
+// without cursor coordinates.
+TEST_F(WebContentsViewAuraTest,
+       StartDraggingOutsideBoundsEndsDragWithoutCoordinates) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client(root_window());
+
+  TestDragEndedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  base::RunLoop run_loop;
+  frame_widget.set_quit_closure(run_loop.QuitClosure());
+
+  WebContentsViewAura* view = GetView();
+  const gfx::Rect bounds = view->GetContentNativeView()->GetBoundsInScreen();
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      gfx::Point(bounds.right() + 50, bounds.bottom() + 50));
+  UpdateLeftMouseState(view->GetContentNativeView(),
+                       ui::EventType::kMousePressed);
+
+  DropData drop_data;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
+
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(
+                          gfx::Point(), ui::mojom::DragEventSource::kMouse));
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+  EXPECT_TRUE(delegate.handle_drag_ended_called());
+
+  run_loop.Run();
+  EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_client_point());
+  EXPECT_EQ(std::nullopt, frame_widget.last_drag_source_ended_screen_point());
   EXPECT_EQ(ui::mojom::DragOperation::kNone, frame_widget.operation());
   EXPECT_TRUE(frame_widget.system_drag_ended_called());
 
@@ -2173,6 +2326,8 @@ TEST_F(WebContentsViewAuraSessionIdTest,
   EXPECT_FALSE(view->drag_security_info_.did_initiate());
   EXPECT_TRUE(delegate.handle_drag_ended_called());
   EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_TRUE(frame_widget.last_drag_source_ended_client_point().has_value());
+  EXPECT_TRUE(frame_widget.last_drag_source_ended_screen_point().has_value());
   EXPECT_TRUE(frame_widget.system_drag_ended_called());
 
   view->end_drag_runner_.RunAndReset();

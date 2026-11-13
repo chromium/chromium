@@ -7622,17 +7622,16 @@ blink::RendererPreferences* WebContentsImpl::GetMutableRendererPrefs() {
   return &renderer_preferences_;
 }
 
-void WebContentsImpl::DragSourceEndedAt(float client_x,
-                                        float client_y,
-                                        float screen_x,
-                                        float screen_y,
-                                        ui::mojom::DragOperation operation,
-                                        RenderWidgetHost* source_rwh) {
+void WebContentsImpl::DragSourceEndedAt(
+    const std::optional<gfx::PointF>& client_point,
+    const std::optional<gfx::PointF>& screen_point,
+    ui::mojom::DragOperation operation,
+    RenderWidgetHost* source_rwh) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::DragSourceEndedAt");
+  CHECK_EQ(client_point.has_value(), screen_point.has_value());
   if (source_rwh) {
-    source_rwh->DragSourceEndedAt(gfx::PointF(client_x, client_y),
-                                  gfx::PointF(screen_x, screen_y), operation,
+    source_rwh->DragSourceEndedAt(client_point, screen_point, operation,
                                   base::DoNothing());
   }
 }

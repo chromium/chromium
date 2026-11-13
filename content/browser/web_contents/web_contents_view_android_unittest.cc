@@ -247,8 +247,8 @@ class DragTrackingFrameWidget : public FakeFrameWidget {
     std::move(callback).Run();
   }
 
-  void DragSourceEndedAt(const gfx::PointF& client_point,
-                         const gfx::PointF& screen_point,
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& client_point,
+                         const std::optional<gfx::PointF>& screen_point,
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {
     // Mirror `WebFrameWidgetImpl::DragSourceEndedAt`, which ends with

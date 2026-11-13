@@ -142,6 +142,7 @@ class CORE_EXPORT DragController final
 
   std::optional<PointerId> drag_pointer_id() const { return drag_pointer_id_; }
   bool did_initiate_drag() const { return did_initiate_drag_; }
+  LocalDOMWindow* drag_initiator() const { return drag_initiator_.Get(); }
 
  private:
   DispatchEventResult DispatchTextInputEventFor(LocalFrame*,

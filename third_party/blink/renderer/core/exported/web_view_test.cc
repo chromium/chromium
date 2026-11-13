@@ -39,6 +39,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -136,6 +138,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
+#include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/drag_state.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -4879,6 +4882,179 @@ TEST_F(WebViewTest, TouchDragContextMenuConditions) {
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
+}
+
+TEST_F(WebViewTest, DragSourceEndedAtWithoutCoordinatesAfterMouseDrag) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  web_view->MainFrameImpl()->ExecuteScript(WebScriptSource(
+      "document.getElementById('target').addEventListener('dragend', "
+      "function(e) { document.title = 'dragend:' + e.clientX + ',' + e.clientY "
+      "+ ':' + e.screenX + ',' + e.screenY; });"));
+
+  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown, gfx::PointF(250, 8),
+                           gfx::PointF(350, 108),
+                           WebPointerProperties::Button::kLeft, 1,
+                           WebInputEvent::Modifiers::kLeftButtonDown,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+  WebMouseEvent mouse_move(WebInputEvent::Type::kMouseMove,
+                           gfx::PointF(280, 12), gfx::PointF(380, 112),
+                           WebPointerProperties::Button::kLeft, 1,
+                           WebInputEvent::Modifiers::kLeftButtonDown,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
+
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_TRUE(web_view->GetPage()->GetDragController().did_initiate_drag());
+
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      std::nullopt, std::nullopt, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+
+  EXPECT_EQ("dragend:280,12:380,112",
+            web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_FALSE(web_view->GetPage()->GetDragController().did_initiate_drag());
+  EXPECT_EQ(std::nullopt,
+            web_view->GetPage()->GetDragController().drag_pointer_id());
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+}
+
+TEST_F(WebViewTest, DragSourceEndedAtWithoutCoordinatesAfterTouchDrag) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  web_view->MainFrameImpl()->ExecuteScript(WebScriptSource(
+      "document.getElementById('target').addEventListener('dragend', "
+      "function(e) { document.title = 'dragend:' + e.clientX + ',' + e.clientY "
+      "+ ':' + e.screenX + ',' + e.screenY; });"));
+
+  Element* target_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById("target");
+  const gfx::PointF center = GetElementCenterPoint(target_element);
+  const gfx::PointF screen_pos = center + gfx::Vector2dF(100, 100);
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(center);
+  pointer_down.SetPositionInScreen(screen_pos);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  WebGestureEvent long_press(WebInputEvent::Type::kGestureLongPress,
+                             WebInputEvent::kNoModifiers,
+                             WebInputEvent::GetStaticTimeStampForTests(),
+                             WebGestureDevice::kTouchscreen);
+  long_press.primary_pointer_type = WebPointerProperties::PointerType::kTouch;
+  long_press.SetPositionInWidget(center);
+  long_press.SetPositionInScreen(screen_pos);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(long_press, ui::LatencyInfo()));
+  RunPendingTasks();
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_TRUE(web_view->GetPage()->GetDragController().did_initiate_drag());
+
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      std::nullopt, std::nullopt, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+
+  EXPECT_EQ(WebString::FromUtf8(
+                base::StringPrintf("dragend:%g,%g:%g,%g", center.x(),
+                                   center.y(), screen_pos.x(), screen_pos.y())),
+            web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_FALSE(web_view->GetPage()->GetDragController().did_initiate_drag());
+  EXPECT_EQ(std::nullopt,
+            web_view->GetPage()->GetDragController().drag_pointer_id());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+}
+
+TEST_F(WebViewTest, DragSourceEndedAtWithoutCoordinatesAfterSubframeMouseDrag) {
+  base::HistogramTester histogram_tester;
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<body style='margin: 0'>"
+      "<iframe style='margin-left: 50px; margin-top: 40px; width: 300px; "
+      "height: 200px; border: 0'></iframe></body>",
+      url_test_helpers::ToKURL("http://example.com/"));
+
+  WebLocalFrameImpl* subframe =
+      To<WebLocalFrameImpl>(web_view->MainFrame()->FirstChild());
+  frame_test_helpers::LoadHTMLString(
+      subframe,
+      "<body style='margin: 0'>"
+      "<div id='target' draggable='true' style='width: 100px; height: 100px'>"
+      "drag</div>"
+      "<script>"
+      "  var target = document.getElementById('target');"
+      "  target.addEventListener('dragstart', function(e) {"
+      "    document.title = 'subframe-dragstart';"
+      "    e.dataTransfer.setData('text', 'hello');"
+      "  });"
+      "  target.addEventListener('dragend', function(e) {"
+      "    document.title = 'subframe-dragend:' + e.clientX + ',' + e.clientY +"
+      "        ':' + e.screenX + ',' + e.screenY;"
+      "  });"
+      "</script></body>",
+      url_test_helpers::ToKURL("http://example.com/iframe.html"));
+
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown, gfx::PointF(80, 70),
+                           gfx::PointF(180, 170),
+                           WebPointerProperties::Button::kLeft, 1,
+                           WebInputEvent::Modifiers::kLeftButtonDown,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+  WebMouseEvent mouse_move(WebInputEvent::Type::kMouseMove,
+                           gfx::PointF(100, 85), gfx::PointF(200, 185),
+                           WebPointerProperties::Button::kLeft, 1,
+                           WebInputEvent::Modifiers::kLeftButtonDown,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
+
+  EXPECT_EQ("subframe-dragstart", subframe->GetDocument().Title());
+  EXPECT_TRUE(web_view->GetPage()->GetDragController().did_initiate_drag());
+
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      std::nullopt, std::nullopt, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+
+  EXPECT_EQ("subframe-dragend:50,45:200,185", subframe->GetDocument().Title());
+  EXPECT_FALSE(web_view->GetPage()->GetDragController().did_initiate_drag());
+  EXPECT_EQ(std::nullopt,
+            web_view->GetPage()->GetDragController().drag_pointer_id());
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
 }
 
 TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,

@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 
+#include <optional>
+
 #include "third_party/blink/public/common/input/pointer_id.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -52,7 +55,7 @@ class CORE_EXPORT GestureManager final
       const GestureEventWithHitTestResults&);
   bool GestureContextMenuDeferred() const;
 
-  void HandleTouchDragEnd(const WebMouseEvent&,
+  void HandleTouchDragEnd(const std::optional<WebMouseEvent>&,
                           ui::mojom::blink::DragOperation);
 
   // Dispatches contextmenu event for drag-ends that haven't really dragged

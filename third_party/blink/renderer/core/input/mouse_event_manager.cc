@@ -1189,12 +1189,40 @@ void MouseEventManager::ClearDragDataTransfer() {
 }
 
 void MouseEventManager::DragSourceEndedAt(
-    const WebMouseEvent& event,
+    const std::optional<WebMouseEvent>& event,
     ui::mojom::blink::DragOperation operation) {
   if (GetDragState().drag_src_) {
     GetDragState().drag_data_transfer_->SetDestinationOperation(operation);
+    WebMouseEvent drag_end_event = [&]() {
+      if (event) {
+        return *event;
+      }
+      gfx::PointF position_in_root_frame = mouse_down_.PositionInRootFrame();
+      gfx::PointF screen_position = mouse_down_.PositionInScreen();
+      if (!is_mouse_position_unknown_ &&
+          drag_initiator_ != DragAndDropToolType::kFinger &&
+          drag_initiator_ != DragAndDropToolType::kStylusViaGesture &&
+          frame_->GetPage()) {
+        position_in_root_frame =
+            frame_->GetEventHandler().LastKnownMousePositionInRootFrame();
+        screen_position = last_known_mouse_screen_position_;
+      }
+      PointerId pointer_id = WebMouseEvent::kMousePointerId;
+      if (frame_->GetPage()) {
+        pointer_id =
+            frame_->GetPage()->GetDragController().drag_pointer_id().value_or(
+                WebMouseEvent::kMousePointerId);
+      }
+      WebMouseEvent fallback_event(
+          WebInputEvent::Type::kMouseMove, position_in_root_frame,
+          screen_position, WebPointerProperties::Button::kLeft, 0,
+          WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+          ui::mojom::blink::MenuSourceType::kNone, pointer_id);
+      fallback_event.SetFrameScale(1);
+      return fallback_event;
+    }();
     // The return value is ignored because dragend is not cancelable.
-    DispatchDragSrcEvent(event_type_names::kDragend, event);
+    DispatchDragSrcEvent(event_type_names::kDragend, drag_end_event);
   }
   ReportDragEnd();
   ClearDragDataTransfer();

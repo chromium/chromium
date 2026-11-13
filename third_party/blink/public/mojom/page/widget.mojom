@@ -115,9 +115,11 @@ interface FrameWidget {
                  uint32 key_modifiers) => ();
 
   // Notifies the Widget that a drag it started has terminated, regardless of
-  // where the drop happened or if it had any effect.
-  DragSourceEndedAt(gfx.mojom.PointF point_in_viewport,
-                    gfx.mojom.PointF screen_point,
+  // where the drop happened or if it had any effect. `point_in_viewport` and
+  // `screen_point` must either both be set or both be omitted (when the drag
+  // was rejected before starting a system drag session).
+  DragSourceEndedAt(gfx.mojom.PointF? point_in_viewport,
+                    gfx.mojom.PointF? screen_point,
                     ui.mojom.DragOperation drag_operation) => ();
 
   // Notifies the Widget that the system drag and drop operation has ended.

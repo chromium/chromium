@@ -76,6 +76,7 @@
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/latency/latency_info.h"
 #include "url/origin.h"
@@ -342,8 +343,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                       const gfx::PointF& screen_point,
                       int key_modifiers,
                       base::OnceClosure callback) override;
-  void DragSourceEndedAt(const gfx::PointF& client_pt,
-                         const gfx::PointF& screen_pt,
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& client_pt,
+                         const std::optional<gfx::PointF>& screen_pt,
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;

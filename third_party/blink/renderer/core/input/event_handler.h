@@ -32,6 +32,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/text_event_input_type.h"
@@ -244,7 +245,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                             TextEventInputType = kTextEventInputKeyboard);
   void DefaultTextInputEventHandler(TextEvent*);
 
-  void DragSourceEndedAt(const WebMouseEvent&, ui::mojom::blink::DragOperation);
+  void DragSourceEndedAt(const std::optional<WebMouseEvent>&,
+                         ui::mojom::blink::DragOperation);
 
   void CapsLockStateMayHaveChanged();  // Only called by FrameSelection
 

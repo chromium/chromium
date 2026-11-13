@@ -217,6 +217,14 @@ class CONTENT_EXPORT WebContentsViewAura
                            EndDragIsCalledAfterAsyncDrop);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            StartDraggingMouseReleasedEndsDrag);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      StartDraggingTouchNotPressedEndsDragWithoutCoordinates);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           StartDraggingHiddenViewEndsDragWithoutCoordinates);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      StartDraggingOutsideBoundsEndsDragWithoutCoordinates);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
                            DragEnterCallbackAfterExitEndsSourceDrag);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
@@ -239,7 +247,8 @@ class CONTENT_EXPORT WebContentsViewAura
                                                 const DropData& drop_data);
 
   virtual void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-                       ui::mojom::DragOperation op);
+                       ui::mojom::DragOperation op,
+                       bool drag_started);
 
   void EndDragAfterNativeLoop(
       base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,

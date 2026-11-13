@@ -26,6 +26,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen_infos.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -334,9 +335,11 @@ class CONTENT_EXPORT RenderWidgetHost {
                               base::OnceClosure callback) {}
 
   // Notifies the renderer that a drag operation that it started has ended,
-  // either in a drop or by being cancelled.
-  virtual void DragSourceEndedAt(const gfx::PointF& client_pt,
-                                 const gfx::PointF& screen_pt,
+  // either in a drop or by being cancelled. `client_pt` and `screen_pt` must
+  // either both be set or both be omitted (when the drag was rejected before
+  // starting a system drag session).
+  virtual void DragSourceEndedAt(const std::optional<gfx::PointF>& client_pt,
+                                 const std::optional<gfx::PointF>& screen_pt,
                                  ui::mojom::DragOperation operation,
                                  base::OnceClosure callback) {}
 

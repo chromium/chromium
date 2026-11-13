@@ -99,6 +99,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_source_observer.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/origin.h"
@@ -281,11 +282,11 @@ class CONTENT_EXPORT WebContentsImpl
   void CancelActiveAndPendingDialogs();
 
   // Informs the render view host and the BrowserPluginEmbedder, if present, of
-  // a Drag Source End.
-  void DragSourceEndedAt(float client_x,
-                         float client_y,
-                         float screen_x,
-                         float screen_y,
+  // a Drag Source End. `client_point` and `screen_point` must either both be
+  // set or both be omitted (when the drag was rejected before starting a system
+  // drag session).
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& client_point,
+                         const std::optional<gfx::PointF>& screen_point,
                          ui::mojom::DragOperation operation,
                          RenderWidgetHost* source_rwh);
 

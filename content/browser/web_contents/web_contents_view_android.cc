@@ -1113,9 +1113,8 @@ void WebContentsViewAndroid::EndSourceDrag(
   if (!source_rwh) {
     return;
   }
-  web_contents_->DragSourceEndedAt(location.x(), location.y(),
-                                   screen_location.x(), screen_location.y(),
-                                   operation, source_rwh.get());
+  web_contents_->DragSourceEndedAt(location, screen_location, operation,
+                                   source_rwh.get());
   OnSystemDragEnded(source_rwh.get());
 }
 

@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -770,10 +771,14 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   }
 }
 
-void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
-                                           const gfx::PointF& screen_point,
-                                           DragOperation operation,
-                                           base::OnceClosure callback) {
+void WebFrameWidgetImpl::DragSourceEndedAt(
+    const std::optional<gfx::PointF>& point_in_viewport,
+    const std::optional<gfx::PointF>& screen_point,
+    DragOperation operation,
+    base::OnceClosure callback) {
+  // If the drag ended at a point in the viewport, then the screen point
+  // should also be set.
+  CHECK_EQ(point_in_viewport.has_value(), screen_point.has_value());
   base::ScopedClosureRunner callback_runner(std::move(callback));
   base::ScopedClosureRunner runner(
       BindOnce(&WebFrameWidgetImpl::DragSourceSystemDragEnded,
@@ -783,19 +788,21 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
     return;
   }
 
-  WebMouseEvent fake_mouse_move(
-      WebInputEvent::Type::kMouseMove,
-      GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport),
-      screen_point, WebPointerProperties::Button::kLeft, 0,
-      WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
-      ui::mojom::blink::MenuSourceType::kNone,
-      local_root_->GetFrame()
-          ->GetPage()
-          ->GetDragController()
-          .drag_pointer_id()
-          .value_or(WebMouseEvent::kMousePointerId));
-
-  fake_mouse_move.SetFrameScale(1);
+  std::optional<WebMouseEvent> fake_mouse_move;
+  if (point_in_viewport) {
+    fake_mouse_move.emplace(
+        WebInputEvent::Type::kMouseMove,
+        GetPage()->GetVisualViewport().ViewportToRootFrame(*point_in_viewport),
+        *screen_point, WebPointerProperties::Button::kLeft, 0,
+        WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+        ui::mojom::blink::MenuSourceType::kNone,
+        local_root_->GetFrame()
+            ->GetPage()
+            ->GetDragController()
+            .drag_pointer_id()
+            .value_or(WebMouseEvent::kMousePointerId));
+    fake_mouse_move->SetFrameScale(1);
+  }
   local_root_->GetFrame()->GetEventHandler().DragSourceEndedAt(fake_mouse_move,
                                                                operation);
 }

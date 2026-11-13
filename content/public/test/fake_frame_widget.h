@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_FAKE_FRAME_WIDGET_H_
 #define CONTENT_PUBLIC_TEST_FAKE_FRAME_WIDGET_H_
 
+#include <optional>
+
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/point_f.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/mojom/attributed_string.mojom.h"
@@ -59,8 +62,8 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                       const gfx::PointF& screen_point,
                       uint32_t key_modifiers,
                       base::OnceClosure callback) override {}
-  void DragSourceEndedAt(const gfx::PointF& client_point,
-                         const gfx::PointF& screen_point,
+  void DragSourceEndedAt(const std::optional<gfx::PointF>& client_point,
+                         const std::optional<gfx::PointF>& screen_point,
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}

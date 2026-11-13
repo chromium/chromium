@@ -586,14 +586,18 @@ WebInputEventResult GestureManager::HandleGestureTwoFingerTap(
 }
 
 void GestureManager::HandleTouchDragEnd(
-    const WebMouseEvent& event,
+    const std::optional<WebMouseEvent>& event,
     ui::mojom::blink::DragOperation operation) {
   if (!drag_in_progress_) {
     return;
   }
   drag_in_progress_ = false;
   if (DragEndOpensContextMenu()) {
-    SendContextMenuEventTouchDragEnd(event, operation);
+    if (event) {
+      SendContextMenuEventTouchDragEnd(*event, operation);
+    } else {
+      ResetLongTapContextMenuStates();
+    }
   }
 }
 

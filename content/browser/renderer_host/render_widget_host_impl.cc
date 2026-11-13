@@ -15,6 +15,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -2209,17 +2210,21 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
   }
 }
 
-void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
-                                             const gfx::PointF& screen_point,
-                                             ui::mojom::DragOperation operation,
-                                             base::OnceClosure callback) {
+void RenderWidgetHostImpl::DragSourceEndedAt(
+    const std::optional<gfx::PointF>& client_point,
+    const std::optional<gfx::PointF>& screen_point,
+    ui::mojom::DragOperation operation,
+    base::OnceClosure callback) {
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (!blink_frame_widget_) {
     return;
   }
-  blink_frame_widget_->DragSourceEndedAt(
-      ConvertWindowPointToViewport(client_point), screen_point, operation,
-      std::move(callback));
+  std::optional<gfx::PointF> viewport_point;
+  if (client_point) {
+    viewport_point = ConvertWindowPointToViewport(*client_point);
+  }
+  blink_frame_widget_->DragSourceEndedAt(viewport_point, screen_point,
+                                         operation, std::move(callback));
   if (frame_tree_) {
     devtools_instrumentation::DragEnded(*frame_tree_->root());
   }
