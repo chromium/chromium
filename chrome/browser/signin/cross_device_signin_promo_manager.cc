@@ -573,3 +573,8 @@ RegisterCrossDeviceSigninPromoBubbleStateCallback(
   CHECK(profile);
   return QrBubbleState::Get(profile)->AddObserver(std::move(callback));
 }
+
+std::string_view GetEntryPointHistogramSuffixForTesting(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  return GetEntryPointHistogramSuffix(entry_point);
+}

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_CROSS_DEVICE_SIGNIN_PROMO_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_CROSS_DEVICE_SIGNIN_PROMO_MANAGER_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 
@@ -100,5 +102,9 @@ base::CallbackListSubscription
 RegisterCrossDeviceSigninPromoBubbleStateCallback(
     Profile* profile,
     base::RepeatingCallback<void(bool)> callback);
+
+// Returns the histogram suffix for `entry_point`.
+std::string_view GetEntryPointHistogramSuffixForTesting(
+    CrossDeviceSigninPromoEntryPoint entry_point);
 
 #endif  // CHROME_BROWSER_SIGNIN_CROSS_DEVICE_SIGNIN_PROMO_MANAGER_H_

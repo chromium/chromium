@@ -6,8 +6,11 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -136,34 +139,101 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoFeatureFlagDisabled) {
+// Runs the eligibility checks that are shared by all entry points.
+class CrossDeviceSigninPromoManagerEntryPointTest
+    : public CrossDeviceSigninPromoManagerTest,
+      public testing::WithParamInterface<CrossDeviceSigninPromoEntryPoint> {
+ public:
+  CrossDeviceSigninPromoEntryPoint entry_point() const { return GetParam(); }
+
+  std::string GetShouldShowResultHistogramName() const {
+    return base::StrCat(
+        {"Signin.CrossDeviceSigninPromo.ShouldShowResult.",
+         GetEntryPointHistogramSuffixForTesting(entry_point())});
+  }
+
+  void EnableEntryPointDataTypeRequirement() {
+    // Disable all data types by default (`syncer::TestSyncService` enables them
+    // all upon creation) and only enable the one required by `entry_point()`.
+    SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+    switch (entry_point()) {
+      case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+        SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
+        break;
+      case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
+        SetTabsSyncingPreference(/*enable_sync=*/true);
+        break;
+      case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+      case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
+        break;
+    }
+  }
+};
+
+static_assert(CrossDeviceSigninPromoEntryPoint::kMaxValue ==
+                  CrossDeviceSigninPromoEntryPoint::kForeignTabs,
+              "Add new entry points to the list below.");
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CrossDeviceSigninPromoManagerEntryPointTest,
+    testing::Values(CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                    CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                    CrossDeviceSigninPromoEntryPoint::kSendTabToSelf,
+                    CrossDeviceSigninPromoEntryPoint::kWhatsNewPage,
+                    CrossDeviceSigninPromoEntryPoint::kForeignTabs),
+    [](const testing::TestParamInfo<CrossDeviceSigninPromoEntryPoint>& info) {
+      return std::string(GetEntryPointHistogramSuffixForTesting(info.param));
+    });
+
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest,
+       ShouldShowPromo_FeatureFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kCrossDeviceSigninFromDesktop);
 
-  // Setup: Signed in, only local device, history sync enabled.
+  // Setup: Signed in, only local device, required data types enabled.
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   AddDevice("local_device_guid", /*is_local=*/true);
-  SetHistoryAndTabsSyncingPreference(true);
+  EnableEntryPointDataTypeRequirement();
 
-  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  // By default, eligibility is still logged when the feature flag is disabled
+  // so that study arms can be compared.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
+    histogram_tester.ExpectUniqueSample(
+        GetShouldShowResultHistogramName(),
+        CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+  }
+
+  // When the eligibility logging kill switch is disabled, nothing is logged.
+  {
+    base::test::ScopedFeatureList kill_switch;
+    kill_switch.InitAndDisableFeature(
+        switches::kCrossDeviceSigninPromoEligibilityLogging);
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
+    histogram_tester.ExpectTotalCount(GetShouldShowResultHistogramName(), 0);
+  }
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoSignedOut) {
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest, ShouldShowPromo_SignedOut) {
   base::HistogramTester histogram_tester;
   // Setup: User is signed out.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
-  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  EXPECT_FALSE(
+      ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
   histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      GetShouldShowResultHistogramName(),
       CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoAuthError) {
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest, ShouldShowPromo_AuthError) {
   base::HistogramTester histogram_tester;
   // Setup: User is signed in but has a persistent error.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -172,15 +242,18 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoAuthError) {
       account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+  AddDevice("local_device_guid", /*is_local=*/true);
+  EnableEntryPointDataTypeRequirement();
 
-  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  EXPECT_FALSE(
+      ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
   histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      GetShouldShowResultHistogramName(),
       CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHasMobileDevice) {
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest,
+       ShouldShowPromo_HasMobileDevice) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote device added.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -188,17 +261,27 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHasMobileDevice) {
   AddDevice("local_device_guid", /*is_local=*/true);
   AddDevice("remote_device_guid", /*is_local=*/false,
             syncer::DeviceInfo::OsType::kAndroid);
-  SetHistoryAndTabsSyncingPreference(true);
+  EnableEntryPointDataTypeRequirement();
 
-  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  // The What's New page always shows a QR code, so signed-in users get the
+  // account-bound one even if they already have a phone.
+  if (entry_point() == CrossDeviceSigninPromoEntryPoint::kWhatsNewPage) {
+    EXPECT_TRUE(
+        ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
+    histogram_tester.ExpectUniqueSample(
+        GetShouldShowResultHistogramName(),
+        CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+    return;
+  }
+  EXPECT_FALSE(
+      ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
   histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      GetShouldShowResultHistogramName(),
       CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest,
-       ShouldShowPromoHasMobileDeviceNotSignedInToChrome) {
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest,
+       ShouldShowPromo_HasMobileDeviceNotSignedInToChrome) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote mobile device added that is
   // not signed in to Chrome (only signed in to the device).
@@ -207,17 +290,17 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   AddDevice("local_device_guid", /*is_local=*/true);
   AddDevice("remote_device_guid", /*is_local=*/false,
             syncer::DeviceInfo::OsType::kAndroid, /*chrome_version=*/"");
-  SetHistoryAndTabsSyncingPreference(true);
+  EnableEntryPointDataTypeRequirement();
 
-  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  EXPECT_TRUE(
+      ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
   histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      GetShouldShowResultHistogramName(),
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest,
-       ShouldShowPromoHasOtherDesktopDevices) {
+TEST_P(CrossDeviceSigninPromoManagerEntryPointTest,
+       ShouldShowPromo_HasOtherDesktopDevices) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote desktop device added.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -225,12 +308,12 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   AddDevice("local_device_guid", /*is_local=*/true);
   AddDevice("remote_desktop_guid", /*is_local=*/false,
             syncer::DeviceInfo::OsType::kWindows);
-  SetHistoryAndTabsSyncingPreference(true);
+  EnableEntryPointDataTypeRequirement();
 
-  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  EXPECT_TRUE(
+      ShouldStartShowingCrossDeviceSigninPromo(entry_point(), profile()));
   histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      GetShouldShowResultHistogramName(),
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
@@ -675,34 +758,6 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 10);
-}
-
-TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoRequiresSignIn) {
-  base::HistogramTester histogram_tester;
-  AddDevice("local_device_guid", /*is_local=*/true);
-
-  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
-  histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
-      CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
-}
-
-TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoIgnoresMobileDevice) {
-  base::HistogramTester histogram_tester;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "user@gmail.com", signin::ConsentLevel::kSignin);
-  AddDevice("local_device_guid", /*is_local=*/true);
-  AddDevice("phone_guid", /*is_local=*/false,
-            syncer::DeviceInfo::OsType::kAndroid);
-
-  // The What's New page always shows a QR code, so signed-in users get the
-  // account-bound one even if they already have a phone.
-  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
-      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
-  histogram_tester.ExpectUniqueSample(
-      "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
-      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoRespectsFeatureFlag) {
