@@ -41,7 +41,6 @@ class FormAutofillHistoryTest : public testing::Test {
     FormFieldData field = test::CreateTestFormField(label, name, value, type);
     field.set_is_autofilled_according_to_renderer(
         is_autofilled_according_to_renderer);
-    filled_fields_.push_back(field);
     AutofillField autofill_field(field);
     autofill_field.SetTypeTo(AutofillType(field_type),
                              AutofillPredictionSource::kHeuristics);
@@ -61,7 +60,6 @@ class FormAutofillHistoryTest : public testing::Test {
         autofill_fields, emptied_field_ids, FillingProduct::kNone, is_refill);
   }
 
-  std::vector<FormFieldData> filled_fields_;
   std::vector<AutofillField> filled_autofill_fields_;
   FormAutofillHistory form_autofill_history_;
 
@@ -153,7 +151,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_Refill) {
   AddFormFilling(/*is_refill=*/false);
 
   // Modify the first name filling to simulate a refill.
-  filled_fields_[0].set_value(u"some-other-first-name");
+  filled_autofill_fields_[0].set_value(u"some-other-first-name");
   FieldGlobalId last_name_id =
       AddNewFieldFilling("last name", "last name", "some-other-last-name",
                          FormControlType::kInputText, NAME_LAST,
@@ -208,7 +206,6 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_HistoryLimit) {
   }
 
   // Adding an extra entry that will make the history size exceed the limit.
-  filled_fields_.clear();
   filled_autofill_fields_.clear();
   FieldGlobalId extra_field_id = AddNewFieldFilling(
       "extra-label", "extra-name", "", FormControlType::kInputText,
@@ -234,7 +231,6 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_FormBiggerThanLimit) {
                        /*is_autofilled_according_to_renderer=*/false,
                        /*modifiers=*/{});
     AddFormFilling(/*is_refill=*/false);
-    filled_fields_.clear();
     filled_autofill_fields_.clear();
   }
   EXPECT_EQ(form_autofill_history_.size(), 5u);
@@ -283,7 +279,6 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_RefillOnEmptyHistory) {
   AddFormFilling(/*is_refill=*/false);
   EXPECT_TRUE(form_autofill_history_.empty());
 
-  filled_fields_.clear();
   filled_autofill_fields_.clear();
   FieldGlobalId field_id = AddNewFieldFilling(
       "label", "name", "", FormControlType::kInputText, UNKNOWN_TYPE,
