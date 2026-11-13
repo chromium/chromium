@@ -234,8 +234,12 @@ bool BaseRenderingContext2D::HasSharedImageBacking() const {
 }
 
 void BaseRenderingContext2D::SetResourceRecyclingEnabled(bool value) {
-  if (shared_image_provider_) {
-    shared_image_provider_->SetResourceRecyclingEnabled(value);
+  if (!shared_image_provider_) {
+    return;
+  }
+  resource_recycling_enabled_ = value;
+  if (!resource_recycling_enabled_) {
+    ClearUnusedResources();
   }
 }
 
@@ -292,14 +296,21 @@ void BaseRenderingContext2D::ResetSharedImageBacking() {
   shared_image_provider_.reset();
   resource_.reset();
   is_accelerated_ = false;
+  resource_recycling_enabled_ = true;
   num_inflight_resources_ = 0;
   max_inflight_resources_ = 0;
 }
 
+void BaseRenderingContext2D::ClearUnusedResources() {
+  if (shared_image_provider_) {
+    shared_image_provider_->image_pool_->Clear();
+  }
+}
+
 void BaseRenderingContext2D::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage> resource) {
-  if (!resource->IsLost() && resource->HasOneRef() && shared_image_provider_ &&
-      shared_image_provider_->resource_recycling_enabled_) {
+  if (!resource->IsLost() && resource->HasOneRef() &&
+      resource_recycling_enabled_ && shared_image_provider_) {
     shared_image_provider_->image_pool_->ReleaseImage(std::move(resource));
   }
 }
@@ -761,9 +772,7 @@ size_t BaseRenderingContext2D::GetSize() const {
 }
 
 void BaseRenderingContext2D::OnContextDestroyed() {
-  if (shared_image_provider_) {
-    shared_image_provider_->ClearUnusedResources();
-  }
+  ClearUnusedResources();
   canvas_image_provider_ = nullptr;
 }
 
@@ -771,7 +780,7 @@ void BaseRenderingContext2D::OnContextLost() {
   if (!shared_image_provider_ || notified_context_lost_) {
     return;
   }
-  shared_image_provider_->ClearUnusedResources();
+  ClearUnusedResources();
   notified_context_lost_ = true;
   // Notify the host that the GPU context was lost. The call is done in a
   // separate task, so that the host can reset the backing if needed.

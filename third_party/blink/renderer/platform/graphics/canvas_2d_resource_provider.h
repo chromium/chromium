@@ -45,18 +45,10 @@ class PLATFORM_EXPORT Canvas2DResourceProvider {
 
   ~Canvas2DResourceProvider();
 
-  void SetResourceRecyclingEnabled(bool value);
-
  private:
   friend class BaseRenderingContext2D;
 
-  void ClearUnusedResources();
-
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
-
-  bool resource_recycling_enabled_ = true;
 };
 
 }  // namespace blink

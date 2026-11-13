@@ -58,13 +58,6 @@
 
 namespace blink {
 
-void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
-  resource_recycling_enabled_ = value;
-  if (!resource_recycling_enabled_) {
-    ClearUnusedResources();
-  }
-}
-
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool)
     : image_pool_(std::move(image_pool)) {
@@ -72,11 +65,5 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() = default;
-
-void Canvas2DResourceProvider::ClearUnusedResources() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
 
 }  // namespace blink

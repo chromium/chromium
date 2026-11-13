@@ -456,6 +456,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void OnGpuChannelLost() override;
 
   void ResetSharedImageBacking();
+  void ClearUnusedResources();
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
@@ -481,6 +482,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   scoped_refptr<CanvasResourceSharedImage> resource_;
   bool is_accelerated_ = false;
+  bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   sk_sp<SkSurface> surface_;
