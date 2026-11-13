@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/enum_set.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
@@ -123,6 +124,25 @@ template <typename T>
 class OrderedScopeTree;
 using StyleContainmentScopeTree = OrderedScopeTree<LayoutQuote>;
 using ScrollTargetGroupScopeTree = OrderedScopeTree<HTMLAnchorElement>;
+
+// Flags used when processing changes to active RuleSets.
+enum class RuleSetFlag {
+  kFontFaceRules,
+  kKeyframesRules,
+  kPropertyRules,
+  kCounterStyleRules,
+  kLayerRules,
+  kFontPaletteValuesRules,
+  kPositionTryRules,
+  kFontFeatureValuesRules,
+  kViewTransitionRules,
+  kFunctionRules,
+  kFullRecalcRules,
+};
+
+using RuleSetFlags = base::EnumSet<RuleSetFlag,
+                                   RuleSetFlag::kFontFaceRules,
+                                   RuleSetFlag::kFullRecalcRules>;
 
 enum class InvalidationScope { kCurrentScope, kAllScopes };
 
@@ -561,7 +581,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                             SelectorFilter&,
                                             StyleScopeFrame&,
                                             const HeapHashSet<Member<RuleSet>>&,
-                                            unsigned changed_rule_flags,
+                                            RuleSetFlags changed_rule_flags,
                                             InvalidationScope);
   void ApplyRuleSetInvalidationForSubtree(
       TreeScope&,
@@ -569,7 +589,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       SelectorFilter&,
       StyleRecalcContext& parent_style_recalc_context,
       const HeapHashSet<Member<RuleSet>>&,
-      unsigned changed_rule_flags,
+      RuleSetFlags changed_rule_flags,
       InvalidationScope,
       bool invalidate_slotted,
       bool invalidate_part);
@@ -907,14 +927,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       SelectorFilter& selector_filter,
       StyleRecalcContext& style_recalc_context,
       const HeapHashSet<Member<RuleSet>>& rule_sets,
-      unsigned changed_rule_flags,
+      RuleSetFlags changed_rule_flags,
       bool is_shadow_host);
   void InvalidateSlottedElements(HTMLSlotElement&,
                                  const StyleChangeReasonForTracing&);
   void InvalidateForRuleSetChanges(
       TreeScope& tree_scope,
       const HeapHashSet<Member<RuleSet>>& changed_rule_sets,
-      unsigned changed_rule_flags,
+      RuleSetFlags changed_rule_flags,
       InvalidationScope invalidation_scope);
   void InvalidateInitialData();
 
