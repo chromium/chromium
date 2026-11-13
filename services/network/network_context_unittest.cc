@@ -12738,6 +12738,114 @@ TEST_F(NetworkContextTest, ClearNetworkRestrictionsTest) {
   }
 }
 
+TEST_F(NetworkContextTest, ClearNetworkRestrictionsRetainedURLLoaderFactory) {
+  base::test::ScopedFeatureList feature_list{
+      network::features::kConnectionAllowlists};
+
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const GURL allowed_url = test_server.GetURL("/echo");
+  const GURL denied_url = test_server.GetURL("/defaultresponse");
+
+  auto allowlist_entry = mojom::IdAndAllowlistedPatterns::New();
+  allowlist_entry->network_restrictions_id = nonce;
+  allowlist_entry->allowlists.response_url = allowed_url;
+  network::ConnectionAllowlist enforced;
+  enforced.allowlist.push_back(allowed_url.spec());
+  allowlist_entry->allowlists.enforced = std::move(enforced);
+
+  std::vector<mojom::IdAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(allowlist_entry));
+  base::test::TestFuture<void> revoked;
+  network_context->RestrictNetworkForIds(std::move(nonces_to_urls),
+                                         revoked.GetCallback());
+  EXPECT_TRUE(revoked.Wait());
+
+  auto make_factory_params = [&]() {
+    auto params = mojom::URLLoaderFactoryParams::New();
+    params->process_id = OriginatingProcessId::browser();
+    params->is_orb_enabled = false;
+    params->network_restrictions_id = nonce;
+    params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther,
+        url::Origin::Create(GURL(kTopFrameOriginForFetchRequest)),
+        url::Origin::Create(GURL(kFrameOriginForFetchRequest)),
+        net::SiteForCookies());
+    return params;
+  };
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), make_factory_params());
+
+  mojo::Remote<mojom::URLLoaderFactory> second_factory;
+  network_context->CreateURLLoaderFactory(
+      second_factory.BindNewPipeAndPassReceiver(), make_factory_params());
+
+  mojo::Remote<mojom::URLLoaderFactory> cloned_factory;
+  loader_factory->Clone(cloned_factory.BindNewPipeAndPassReceiver());
+  loader_factory.FlushForTesting();
+
+  const size_t count_with_two_factories =
+      network_context->num_url_loader_factories_for_testing();
+  ASSERT_GE(count_with_two_factories, 2u);
+
+  // Clear network restrictions while both `CorsURLLoaderFactory` instances and
+  // `cloned_factory` are still alive (per-ID factory count is 2). The
+  // restriction must remain active until all factories using `nonce` are
+  // destroyed.
+  network_context->ClearNetworkRestrictions({nonce});
+  EXPECT_EQ(allowed_url,
+            network_context->GetNetworkRestrictionResponseUrlForTesting(nonce));
+  EXPECT_FALSE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, denied_url, kNak_));
+  EXPECT_TRUE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, allowed_url, kNak_));
+
+  // Destroy `second_factory` first to exercise the 2 -> 1 transition under
+  // `pending_clear`, then reset `loader_factory` leaving `cloned_factory`
+  // connected on the remaining factory.
+  second_factory.reset();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return network_context->num_url_loader_factories_for_testing() ==
+           count_with_two_factories - 1;
+  }));
+  EXPECT_EQ(allowed_url,
+            network_context->GetNetworkRestrictionResponseUrlForTesting(nonce));
+  loader_factory.reset();
+
+  auto fetch_via_factory = [&](const GURL& url) {
+    ResourceRequest request = CreateResourceRequest("GET", url);
+    TestURLLoaderClient client;
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    cloned_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+        mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    client.RunUntilComplete();
+    return client.completion_status().error_code;
+  };
+
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED, fetch_via_factory(denied_url));
+  EXPECT_EQ(net::OK, fetch_via_factory(allowed_url));
+
+  // Once the remaining cloned factory disconnects, the deferred restriction
+  // cleanup should complete and remove `nonce`.
+  cloned_factory.reset();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return network_context->GetNetworkRestrictionResponseUrlForTesting(nonce)
+        .is_empty();
+  }));
+  EXPECT_TRUE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      nonce, denied_url, kNak_));
+}
+
 // Verify that the Prefetch() method triggers a network request.
 TEST_F(NetworkContextTest, Prefetch) {
   base::test::ScopedFeatureList feature_list;

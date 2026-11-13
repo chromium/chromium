@@ -56,10 +56,12 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_report.h"
@@ -76,6 +78,8 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -1326,6 +1330,88 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
       fetch($1).then(() => 'allowed').catch(() => 'blocked');
     )",
                                                                denied_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    RetainedURLLoaderFactoryRemainsRestrictedAfterDocumentCleanup) {
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse("/replacement.html",
+                   ResponseEntry("<html><body>Replacement</body></html>", {}));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL replacement_url =
+      embedded_https_test_server().GetURL("a.test", "/replacement.html");
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
+  storage_partition->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  const url::Origin initiator_origin = rfh->GetLastCommittedOrigin();
+
+  mojo::Remote<network::mojom::URLLoaderFactory> default_factory;
+  rfh->CreateNetworkServiceDefaultFactory(
+      default_factory.BindNewPipeAndPassReceiver());
+  mojo::Remote<network::mojom::URLLoaderFactory> retained_factory;
+  default_factory->Clone(retained_factory.BindNewPipeAndPassReceiver());
+  default_factory.FlushForTesting();
+  default_factory.reset();
+
+  auto fetch_with_retained_factory = [&](const GURL& url) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.method = "GET";
+    request.mode = network::mojom::RequestMode::kNoCors;
+    request.credentials_mode = network::mojom::CredentialsMode::kOmit;
+    request.request_initiator = initiator_origin;
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader;
+    retained_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+        network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    client.RunUntilComplete();
+    return client.completion_status().error_code;
+  };
+
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            fetch_with_retained_factory(denied_url));
+  EXPECT_EQ(net::OK, fetch_with_retained_factory(allowed_url));
+
+  base::test::TestFuture<void> restrictions_cleared;
+  storage_partition->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), restrictions_cleared.GetRepeatingCallback());
+
+  // Navigate to a replacement document and flush the BackForwardCache so the
+  // initial document is destroyed and its network restriction cleanup runs.
+  EXPECT_TRUE(NavigateToURL(shell(), replacement_url));
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  EXPECT_TRUE(restrictions_cleared.Wait());
+  storage_partition->FlushNetworkInterfaceForTesting();
+
+  // The retained factory from the previous document must still enforce the
+  // initial document's Connection-Allowlist restrictions.
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            fetch_with_retained_factory(denied_url));
+  EXPECT_EQ(net::OK, fetch_with_retained_factory(allowed_url));
 }
 
 // SpeculationRules API allows specifying the rules in a JSON using the response

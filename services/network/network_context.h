@@ -86,6 +86,7 @@
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -705,6 +706,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // no open pipes.
   void DestroyURLLoaderFactory(
       PrefetchMatchingURLLoaderFactory* url_loader_factory);
+
+  // Tracks active CorsURLLoaderFactory instances associated with a given
+  // `network_restrictions_id` so that `ClearNetworkRestrictions` defers
+  // removing a restriction entry until all factories referencing that ID have
+  // been destroyed.
+  void OnURLLoaderFactoryCreatedWithNetworkRestrictionsId(
+      const base::UnguessableToken& network_restrictions_id);
+  void OnURLLoaderFactoryDestroyedWithNetworkRestrictionsId(
+      const base::UnguessableToken& network_restrictions_id);
 
   // Removes |transport| and destroys it.
   void Remove(WebTransport* transport);
@@ -1335,9 +1345,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
         ConnectionAllowlist::RedirectBehavior::kBlock;
     GURL response_url;
     std::optional<base::UnguessableToken> reporting_source;
+    bool pending_clear = false;
   };
   std::map<base::UnguessableToken, NetworkRestriction>
       network_restrictions_ids_;
+  absl::flat_hash_map<base::UnguessableToken, size_t>
+      url_loader_factory_count_per_network_restrictions_id_;
 
   // An LRU cache for in-progress prefetches. Created on first use.
   std::unique_ptr<PrefetchCache> prefetch_cache_;

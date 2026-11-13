@@ -1468,6 +1468,33 @@ void NetworkContext::DestroyURLLoaderFactory(
   url_loader_factories_.erase(it);
 }
 
+void NetworkContext::OnURLLoaderFactoryCreatedWithNetworkRestrictionsId(
+    const base::UnguessableToken& network_restrictions_id) {
+  ++url_loader_factory_count_per_network_restrictions_id_
+      [network_restrictions_id];
+}
+
+void NetworkContext::OnURLLoaderFactoryDestroyedWithNetworkRestrictionsId(
+    const base::UnguessableToken& network_restrictions_id) {
+  if (is_destructing_) {
+    return;
+  }
+  auto it = url_loader_factory_count_per_network_restrictions_id_.find(
+      network_restrictions_id);
+  CHECK(it != url_loader_factory_count_per_network_restrictions_id_.end());
+  CHECK_GT(it->second, 0u);
+  if (--it->second > 0u) {
+    return;
+  }
+  url_loader_factory_count_per_network_restrictions_id_.erase(it);
+
+  auto restriction_it = network_restrictions_ids_.find(network_restrictions_id);
+  if (restriction_it != network_restrictions_ids_.end() &&
+      restriction_it->second.pending_clear) {
+    network_restrictions_ids_.erase(restriction_it);
+  }
+}
+
 void NetworkContext::Remove(WebTransport* transport) {
   auto it = web_transports_.find(transport);
   if (it != web_transports_.end()) {
@@ -4340,6 +4367,7 @@ void NetworkContext::RestrictNetworkForIds(
     // revocation.
     NetworkRestriction& restriction =
         network_restrictions_ids_[network_restrictions_id];
+    restriction.pending_clear = false;
     restriction.response_url = std::move(entry->allowlists.response_url);
     restriction.reporting_source = entry->allowlists.reporting_source;
 
@@ -4361,7 +4389,16 @@ void NetworkContext::RestrictNetworkForIds(
 void NetworkContext::ClearNetworkRestrictions(
     const std::vector<base::UnguessableToken>& network_restrictions_ids) {
   for (const auto& network_restrictions_id : network_restrictions_ids) {
-    network_restrictions_ids_.erase(network_restrictions_id);
+    auto it = network_restrictions_ids_.find(network_restrictions_id);
+    if (it == network_restrictions_ids_.end()) {
+      continue;
+    }
+    if (url_loader_factory_count_per_network_restrictions_id_.contains(
+            network_restrictions_id)) {
+      it->second.pending_clear = true;
+      continue;
+    }
+    network_restrictions_ids_.erase(it);
   }
 }
 

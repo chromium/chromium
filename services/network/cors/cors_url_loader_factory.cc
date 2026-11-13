@@ -309,6 +309,11 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
   } else {
     network_loader_factory_ = std::move(network_loader_factory);
   }
+
+  if (network_restrictions_id_.has_value()) {
+    context_->OnURLLoaderFactoryCreatedWithNetworkRestrictionsId(
+        *network_restrictions_id_);
+  }
 }
 
 CorsURLLoaderFactory::~CorsURLLoaderFactory() {
@@ -325,6 +330,11 @@ CorsURLLoaderFactory::~CorsURLLoaderFactory() {
   // Same as above for CorsURLLoaders.
   while (!cors_url_loaders_.empty()) {
     cors_url_loaders_.erase(cors_url_loaders_.begin());
+  }
+
+  if (network_restrictions_id_.has_value()) {
+    context_->OnURLLoaderFactoryDestroyedWithNetworkRestrictionsId(
+        *network_restrictions_id_);
   }
 }
 
