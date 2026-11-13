@@ -29,6 +29,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -226,6 +229,18 @@ public class InAppUpdateController {
     /** Supplier for {@link SnackbarManager}, used when showing in-app update snackbars. */
     private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
 
+    /**
+     * Whether a startup promo was shown in this activity session. Supplies null until the startup
+     * promo flow has run.
+     */
+    private final Supplier<@Nullable Boolean> mPromoShownSupplier;
+
+    /** Supplier for the {@link BottomSheetController}, used to avoid showing over a sheet. */
+    private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
+
+    /** Supplier for the {@link ModalDialogManager}, used to avoid showing behind a dialog. */
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+
     /** Lazily created Play Core manager instance. */
     private @Nullable AppUpdateManager mAppUpdateManager;
 
@@ -270,11 +285,23 @@ public class InAppUpdateController {
      * @param activity The host {@link Activity}.
      * @param snackbarManagerSupplier Supplier for the {@link SnackbarManager} to display UI
      *     prompts.
+     * @param promoShownSupplier Whether a startup promo was shown in this activity session, or null
+     *     if the startup promo flow has not run yet.
+     * @param bottomSheetControllerSupplier Supplier for the activity's {@link
+     *     BottomSheetController}.
+     * @param modalDialogManagerSupplier Supplier for the activity's {@link ModalDialogManager}.
      */
     public InAppUpdateController(
-            Activity activity, Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
+            Activity activity,
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
+            Supplier<@Nullable Boolean> promoShownSupplier,
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mActivity = activity;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mPromoShownSupplier = promoShownSupplier;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     /**
@@ -470,7 +497,8 @@ public class InAppUpdateController {
      * <p>If the user accepts the snackbar action ("Update"), {@link #startFlow(AppUpdateInfo, int)}
      * is invoked to launch the Play Core consent dialog. If dismissed without action, {@link
      * InAppUpdateSnackbarController} internally records a discovery decline via {@link
-     * InAppUpdatePolicy#recordUpdateDeclined()}.
+     * InAppUpdatePolicy#recordUpdateDeclined()}. Not shown while other UI is competing for
+     * attention; see {@link #getDiscoverySkipReason}.
      *
      * @param appUpdateInfo Current update metadata from Play Core.
      */
@@ -484,6 +512,13 @@ public class InAppUpdateController {
 
         SnackbarManager snackbarManager = getSnackbarManager();
         if (snackbarManager == null) {
+            return;
+        }
+
+        Integer skipReason = getDiscoverySkipReason();
+        if (skipReason != null) {
+            Log.i(TAG, "Skipping discovery snackbar (reason=%d).", skipReason);
+            InAppUpdateSnackbarController.recordDiscoverySkipped(skipReason);
             return;
         }
 
@@ -503,6 +538,42 @@ public class InAppUpdateController {
         if (mDiscoverySnackbarController != null) {
             recordDiscoveryStaleness(appUpdateInfo.clientVersionStalenessDays());
         }
+    }
+
+    /**
+     * Returns why the discovery snackbar should yield to other UI, or null if it can be shown.
+     *
+     * <p>The discovery snackbar isn't urgent and is offered again on the next cold start, so it
+     * gives way to a startup promo and to any dialog or bottom sheet already on screen, where it
+     * would be easy to miss. A skip records no cooldown and no impression.
+     *
+     * <p>Another snackbar on screen is not a reason to skip: {@link SnackbarManager} queues this
+     * one behind it and starts its timeout once it becomes visible.
+     *
+     * @return An {@link InAppUpdateSnackbarEvent} {@code SKIPPED_*} value, or null.
+     */
+    private @InAppUpdateSnackbarEvent @Nullable Integer getDiscoverySkipReason() {
+        // The flag is null until the startup promo flow has run. Nothing orders that flow before
+        // this check, so in rare cases a promo can still appear after the snackbar is shown; if
+        // the snackbar then times out it counts as a decline and starts the discovery backoff.
+        // Treating null as "no promo" accepts that gap rather than delaying the snackbar.
+        if (Boolean.TRUE.equals(mPromoShownSupplier.get())) {
+            return InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO;
+        }
+        if (mModalDialogManagerSupplier.get().isShowing()) {
+            return InAppUpdateSnackbarEvent.SKIPPED_MODAL_DIALOG;
+        }
+        // Any state other than hidden counts, including PEEK and SCROLLING: the sheet occupies the
+        // bottom edge where the snackbar appears. isSheetOpen() isn't used because it excludes a
+        // peeking sheet. NONE means no sheet content has been requested yet.
+        BottomSheetController bottomSheetController = mBottomSheetControllerSupplier.get();
+        if (bottomSheetController != null) {
+            int sheetState = bottomSheetController.getSheetState();
+            if (sheetState != SheetState.NONE && sheetState != SheetState.HIDDEN) {
+                return InAppUpdateSnackbarEvent.SKIPPED_BOTTOM_SHEET;
+            }
+        }
+        return null;
     }
 
     /**

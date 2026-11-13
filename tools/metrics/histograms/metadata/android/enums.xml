@@ -1730,6 +1730,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Action Tapped"/>
   <int value="2" label="Dismissed No Action"/>
   <int value="3" label="Dismissed By Lifecycle"/>
+  <int value="4" label="Skipped: Startup promo shown"/>
+  <int value="5" label="Skipped: Modal dialog showing"/>
+  <int value="6" label="Skipped: Bottom sheet visible"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarEvent.java:InAppUpdateSnackbarEvent) -->

@@ -23,7 +23,10 @@ import java.lang.annotation.RetentionPolicy;
     InAppUpdateSnackbarEvent.IMPRESSION,
     InAppUpdateSnackbarEvent.ACTION_TAPPED,
     InAppUpdateSnackbarEvent.DISMISSED_NO_ACTION,
-    InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE
+    InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE,
+    InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO,
+    InAppUpdateSnackbarEvent.SKIPPED_MODAL_DIALOG,
+    InAppUpdateSnackbarEvent.SKIPPED_BOTTOM_SHEET
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface InAppUpdateSnackbarEvent {
@@ -31,6 +34,11 @@ public @interface InAppUpdateSnackbarEvent {
     int ACTION_TAPPED = 1;
     int DISMISSED_NO_ACTION = 2;
     int DISMISSED_BY_LIFECYCLE = 3;
-    int COUNT = 4;
+    // The SKIPPED_* values record that the snackbar was not shown because other UI was competing
+    // for the user's attention. Only recorded for the discovery snackbar.
+    int SKIPPED_STARTUP_PROMO = 4;
+    int SKIPPED_MODAL_DIALOG = 5;
+    int SKIPPED_BOTTOM_SHEET = 6;
+    int COUNT = 7;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InAppUpdateSnackbarEvent)

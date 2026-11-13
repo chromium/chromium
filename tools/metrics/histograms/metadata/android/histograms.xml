@@ -2922,7 +2922,11 @@ chromium-metrics-reviews@google.com.
     Snackbar in Chrome for Android, tracking whether the snackbar was shown,
     tapped by the user to start a flexible download, dismissed without action,
     or dismissed by lifecycle interruption. Note: Impression is recorded when
-    the snackbar is enqueued with SnackbarManager.
+    the snackbar is enqueued with SnackbarManager. The Skipped buckets record
+    that the snackbar was eligible but not shown because a startup promo had
+    been shown in this session or a modal dialog or bottom sheet was on screen;
+    a skip starts no cooldown, so the snackbar is offered again on the next cold
+    start.
   </summary>
 </histogram>
 
@@ -2952,7 +2956,9 @@ chromium-metrics-reviews@google.com.
     background update finished downloading, tapped by the user to restart
     Chrome, dismissed without action, or dismissed by lifecycle interruption.
     Note: Impression is recorded when the snackbar is enqueued with
-    SnackbarManager.
+    SnackbarManager. This histogram shares its enum with
+    Android.InAppUpdate.DiscoverySnackbar.Event. The Skipped values are recorded
+    only there and are always zero here.
   </summary>
 </histogram>
 

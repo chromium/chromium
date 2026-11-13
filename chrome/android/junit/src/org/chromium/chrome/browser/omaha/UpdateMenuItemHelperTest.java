@@ -46,6 +46,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.VariationsAssociatedData;
 import org.chromium.components.variations.VariationsAssociatedDataJni;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link UpdateMenuItemHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +56,7 @@ public class UpdateMenuItemHelperTest {
     @Mock private VariationsAssociatedData.Natives mMockVariations;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     private FakeAppUpdateManager mFakeAppUpdateManager;
 
@@ -79,7 +81,8 @@ public class UpdateMenuItemHelperTest {
         mFakeAppUpdateManager = new FakeAppUpdateManager(activity);
         mFakeAppUpdateManager.setUpdateAvailable(2);
         InAppUpdateController.setAppUpdateManagerForTesting(mFakeAppUpdateManager);
-        return new InAppUpdateController(activity, () -> null);
+        return new InAppUpdateController(
+                activity, () -> null, () -> null, () -> null, () -> mModalDialogManager);
     }
 
     @Test

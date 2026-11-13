@@ -66,7 +66,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -87,12 +90,17 @@ public class InAppUpdateControllerTest {
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private InAppUpdateRestartScheduler mMockRestartScheduler;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Captor private ArgumentCaptor<OnSuccessListener<AppUpdateInfo>> mUpdateInfoSuccessCaptor;
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private FakeAppUpdateManager mFakeAppUpdateManager;
+
+    /** Value returned by the startup promo supplier; null means the promo flow hasn't run. */
+    private Boolean mPromoShown;
 
     @Before
     public void setUp() {
@@ -104,6 +112,7 @@ public class InAppUpdateControllerTest {
         ChromiumPlayServicesAvailability.setIsAvailableForTesting(true);
         InAppUpdatePolicy.setIsOfficialBuildForTesting(true);
         lenient().when(mSnackbarManager.canShowSnackbar()).thenReturn(true);
+        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
 
         mFakeAppUpdateManager = new FakeAppUpdateManager(mActivity);
         InAppUpdateController.setAppUpdateManagerForTesting(mFakeAppUpdateManager);
@@ -125,7 +134,12 @@ public class InAppUpdateControllerTest {
     }
 
     private InAppUpdateController createController(Activity activity) {
-        return new InAppUpdateController(activity, () -> mSnackbarManager);
+        return new InAppUpdateController(
+                activity,
+                () -> mSnackbarManager,
+                () -> mPromoShown,
+                () -> mBottomSheetController,
+                () -> mModalDialogManager);
     }
 
     private void setupUpdateAvailable() {
@@ -254,7 +268,9 @@ public class InAppUpdateControllerTest {
     public void testCheckAndStartUpdateFlow_nullSnackbarManager_doesNothing() {
         setupUpdateAvailable();
 
-        InAppUpdateController controller = new InAppUpdateController(mActivity, () -> null);
+        InAppUpdateController controller =
+                new InAppUpdateController(
+                        mActivity, () -> null, () -> null, () -> null, () -> mModalDialogManager);
         controller.checkAndStartUpdateFlow();
         ShadowLooper.idleMainLooper();
 
@@ -273,6 +289,109 @@ public class InAppUpdateControllerTest {
 
         verify(mSnackbarManager, never()).showSnackbar(any());
         assertNull(mFakeAppUpdateManager.getTypeForUpdateInProgress());
+    }
+
+    /**
+     * Runs the startup check and asserts that the discovery snackbar yielded to other UI. A skip
+     * records only the reason: no impression, no staleness sample and no cooldown, so the snackbar
+     * is offered again on the next cold start.
+     */
+    private void checkAndAssertDiscoverySkipped(@InAppUpdateSnackbarEvent int reason) {
+        setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                                reason)
+                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
+                        .build();
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertNull(controller.getDiscoverySnackbarControllerForTesting());
+        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_startupPromoShown_skipsDiscovery() {
+        mPromoShown = true;
+        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_modalDialogShowing_skipsDiscovery() {
+        when(mModalDialogManager.isShowing()).thenReturn(true);
+        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_MODAL_DIALOG);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_bottomSheetPeeking_skipsDiscovery() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_BOTTOM_SHEET);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_severalReasons_recordsFirstOnly() {
+        // Only one bucket is recorded per skip so that the bucket total counts skipped prompts.
+        // The dialog and sheet stubs are lenient because those checks aren't reached once the
+        // promo check matches.
+        mPromoShown = true;
+        lenient().when(mModalDialogManager.isShowing()).thenReturn(true);
+        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_noPromoAndNoSheetContent_showsDiscovery() {
+        // A promo flow that ran without showing a promo, and a sheet that was never used (NONE),
+        // leave nothing on screen to compete with.
+        mPromoShown = false;
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.NONE);
+        setupUpdateAvailable();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                        InAppUpdateSnackbarEvent.IMPRESSION);
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_downloadedWithOtherUiShowing_showsRestart() {
+        // The guard covers only the discovery snackbar. The restart snackbar may be replaced by
+        // background install, so it keeps its existing behavior. The stubs are lenient because
+        // the restart path doesn't consult them.
+        mPromoShown = true;
+        lenient().when(mModalDialogManager.isShowing()).thenReturn(true);
+        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        setupUpdateDownloaded();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
+                        InAppUpdateSnackbarEvent.IMPRESSION);
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        assertNotNull(controller.getRestartSnackbarControllerForTesting());
     }
 
     @Test

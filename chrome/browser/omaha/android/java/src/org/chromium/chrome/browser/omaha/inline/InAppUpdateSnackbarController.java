@@ -116,6 +116,16 @@ final class InAppUpdateSnackbarController implements SnackbarController {
                 onDismiss);
     }
 
+    /**
+     * Records that the discovery snackbar was not shown because other UI was on screen.
+     *
+     * @param reason One of the {@code SKIPPED_*} values of {@link InAppUpdateSnackbarEvent}.
+     */
+    static void recordDiscoverySkipped(@InAppUpdateSnackbarEvent int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_DISCOVERY_SNACKBAR_EVENT, reason, InAppUpdateSnackbarEvent.COUNT);
+    }
+
     private static @Nullable InAppUpdateSnackbarController show(
             Activity activity,
             SnackbarManager snackbarManager,
