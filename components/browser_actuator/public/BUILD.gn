@@ -18,6 +18,8 @@ source_set("public") {
   sources = [
     "browser_actuator_service.cc",
     "browser_actuator_service.h",
+    "browser_actuator_task_client.cc",
+    "browser_actuator_task_client.h",
   ]
 
   deps = [ "//base" ]
