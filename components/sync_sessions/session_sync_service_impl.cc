@@ -12,6 +12,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync_sessions/features.h"
 #include "components/sync_sessions/session_sync_bridge.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -29,6 +30,14 @@ SessionSyncServiceImpl::SessionSyncServiceImpl(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SESSIONS,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)));
+
+  if (SessionSyncPrefs::IsDeviceTabVisibilityEnabled()) {
+    session_visibility_subscription_ =
+        sessions_client_->GetSessionSyncPrefs()
+            ->SubscribeToSessionVisibilityChanged(base::BindRepeating(
+                &SessionSyncServiceImpl::NotifyForeignSessionUpdated,
+                base::Unretained(this)));
+  }
 }
 
 SessionSyncServiceImpl::~SessionSyncServiceImpl() = default;

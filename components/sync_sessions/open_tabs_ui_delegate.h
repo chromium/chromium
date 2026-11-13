@@ -23,10 +23,13 @@ class OpenTabsUIDelegate {
  public:
   // Controls which foreign sessions are returned by `GetAllForeignSessions()`.
   enum class ForeignSessionFilter {
-    // Includes only foreign sessions with at least one syncable tab.
+    // Includes only visible presentable foreign sessions (with at least one
+    // syncable tab, and excluding sessions hidden via `SessionSyncPrefs` when
+    // `kDeviceTabVisibilitySettings` is enabled).
     kPresentable,
     // Includes all tracked foreign sessions, regardless of whether they have
-    // any presentable tabs (maps to `SyncedSessionTracker::RAW`).
+    // any presentable tabs or are hidden via `SessionSyncPrefs` (maps to
+    // `SyncedSessionTracker::RAW`).
     kAll,
   };
 

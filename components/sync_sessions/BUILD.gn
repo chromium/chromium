@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "open_tabs_ui_delegate_impl_unittest.cc",
     "session_store_unittest.cc",
     "session_sync_bridge_unittest.cc",
+    "session_sync_prefs_unittest.cc",
     "sessions_global_id_mapper_unittest.cc",
     "synced_session_tracker_unittest.cc",
     "synced_session_unittest.cc",

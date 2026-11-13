@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/settings/device_tab_visibility_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -138,6 +140,15 @@ class DeviceTabVisibilityHandlerTest : public Test {
           return std::make_unique<NiceMock<MockSessionSyncService>>();
         }));
     profile_ = builder.Build();
+    session_sync_prefs_.emplace(profile_->GetPrefs());
+    // TODO(crbug.com/570417844): Introduce a `FakeSessionSyncService` that
+    // forwards `SessionSyncPrefs` visibility changes and replace
+    // `MockSessionSyncService` here.
+    session_visibility_subscription_ =
+        session_sync_prefs_->SubscribeToSessionVisibilityChanged(
+            base::BindRepeating(
+                &DeviceTabVisibilityHandlerTest::NotifyForeignSessionsChanged,
+                base::Unretained(this)));
 
     ON_CALL(mock_session_sync_service(), GetOpenTabsUIDelegate())
         .WillByDefault(Return(&fake_open_tabs_ui_delegate_));
@@ -182,15 +193,18 @@ class DeviceTabVisibilityHandlerTest : public Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfile> profile_;
+  std::optional<SessionSyncPrefs> session_sync_prefs_;
+  base::CallbackListSubscription session_visibility_subscription_;
   FakeOpenTabsUIDelegate fake_open_tabs_ui_delegate_;
   base::RepeatingClosureList foreign_sessions_changed_callbacks_;
-  std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   raw_ptr<DeviceTabVisibilityHandler> handler_ = nullptr;
 };
 
 // Verifies that `getDeviceTabVisibilityList` resolves with an empty list when
-// `OpenTabsUIDelegate` is null or when `GetAllForeignSessions` returns false.
+// `OpenTabsUIDelegate` is null or when `GetAllForeignSessions()` returns an
+// empty list.
 TEST_F(DeviceTabVisibilityHandlerTest, GetListWhenDelegateUnavailable) {
   // Simulate tab sync being disabled (`GetOpenTabsUIDelegate()` returns null).
   ON_CALL(mock_session_sync_service(), GetOpenTabsUIDelegate())
@@ -198,7 +212,7 @@ TEST_F(DeviceTabVisibilityHandlerTest, GetListWhenDelegateUnavailable) {
   SendGetListMessage();
 
   // Restore the delegate with no foreign sessions added, so
-  // `GetAllForeignSessions()` returns false.
+  // `GetAllForeignSessions()` returns an empty list.
   ON_CALL(mock_session_sync_service(), GetOpenTabsUIDelegate())
       .WillByDefault(Return(&fake_open_tabs_ui_delegate()));
   SendGetListMessage();

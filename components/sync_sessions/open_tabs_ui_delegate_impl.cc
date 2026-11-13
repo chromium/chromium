@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 
@@ -33,7 +34,7 @@ bool GetForeignSessionsWithLookup(
 }  // namespace
 
 OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
-    const SyncSessionsClient* sessions_client,
+    SyncSessionsClient* sessions_client,
     const SyncedSessionTracker* session_tracker,
     const DeleteForeignSessionCallback& delete_foreign_session_cb)
     : sessions_client_(sessions_client),
@@ -45,11 +46,22 @@ OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
     ForeignSessionFilter filter) {
-  return GetForeignSessionsWithLookup(
+  GetForeignSessionsWithLookup(
       *session_tracker_,
       filter == ForeignSessionFilter::kAll ? SyncedSessionTracker::RAW
                                            : SyncedSessionTracker::PRESENTABLE,
       sessions);
+  // Filter out sessions that the user has hidden via `SessionSyncPrefs` when
+  // per-device tab visibility settings are enabled and presentable sessions
+  // are requested.
+  if (filter == ForeignSessionFilter::kPresentable &&
+      SessionSyncPrefs::IsDeviceTabVisibilityEnabled()) {
+    std::erase_if(*sessions, [this](const SyncedSession* session) {
+      return sessions_client_->GetSessionSyncPrefs()->GetSessionVisibility(
+                 session->GetSessionTag()) == SessionVisibility::kHidden;
+    });
+  }
+  return !sessions->empty();
 }
 
 bool OpenTabsUIDelegateImpl::GetAllRawForeignSessions(

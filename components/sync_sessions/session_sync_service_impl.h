@@ -48,6 +48,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
   std::unique_ptr<SessionSyncBridge> bridge_;
 
   base::RepeatingClosureList foreign_sessions_changed_closure_list_;
+  base::CallbackListSubscription session_visibility_subscription_;
 };
 
 }  // namespace sync_sessions

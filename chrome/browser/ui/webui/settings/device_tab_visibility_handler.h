@@ -50,7 +50,6 @@ class DeviceTabVisibilityHandler : public SettingsPageUIHandler {
 
   const raw_ref<Profile> profile_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
-  base::CallbackListSubscription session_visibility_changed_subscription_;
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };
 

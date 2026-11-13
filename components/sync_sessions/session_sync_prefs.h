@@ -31,6 +31,9 @@ class SessionSyncPrefs {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Returns whether the per-device tab visibility settings feature is enabled.
+  static bool IsDeviceTabVisibilityEnabled();
+
   explicit SessionSyncPrefs(PrefService* pref_service);
 
   SessionSyncPrefs(const SessionSyncPrefs&) = delete;
@@ -62,7 +65,8 @@ class SessionSyncPrefs {
                             SessionVisibility visibility);
 
   // Removes hidden session entries from preferences that are not present in
-  // `tracked_session_tags`.
+  // `tracked_session_tags` without triggering
+  // `SubscribeToSessionVisibilityChanged()` notifications.
   void GarbageCollectUnknownHiddenSessions(
       const std::set<std::string>& tracked_session_tags);
 
@@ -76,6 +80,7 @@ class SessionSyncPrefs {
 
   const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  bool is_garbage_collecting_ = false;
   base::RepeatingClosureList session_visibility_changed_closure_list_;
 };
 

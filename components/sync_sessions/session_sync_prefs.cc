@@ -8,12 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/base/features.h"
 
 namespace sync_sessions {
 namespace {
@@ -36,6 +40,15 @@ constexpr char kDeviceTabVisibilityHiddenSessions[] =
 void SessionSyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLocalDataOutOfSync, false);
   registry->RegisterDictionaryPref(kDeviceTabVisibilityHiddenSessions);
+}
+
+// static
+bool SessionSyncPrefs::IsDeviceTabVisibilityEnabled() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(syncer::kDeviceTabVisibilitySettings);
+#else
+  return false;
+#endif
 }
 
 SessionSyncPrefs::SessionSyncPrefs(PrefService* pref_service)
@@ -101,6 +114,11 @@ void SessionSyncPrefs::GarbageCollectUnknownHiddenSessions(
     return;
   }
 
+  // Suppress preference-change notifications while pruning untracked session
+  // tags so `SessionSyncBridge::DoGarbageCollection()` does not fire a
+  // duplicate foreign-session update notification before committing the
+  // `SessionStore::WriteBatch`.
+  base::AutoReset<bool> is_garbage_collecting(&is_garbage_collecting_, true);
   ScopedDictPrefUpdate update(pref_service_,
                               kDeviceTabVisibilityHiddenSessions);
   for (const std::string& tag : unknown_tags) {
@@ -115,6 +133,9 @@ SessionSyncPrefs::SubscribeToSessionVisibilityChanged(
 }
 
 void SessionSyncPrefs::NotifySessionVisibilityChanged() {
+  if (is_garbage_collecting_) {
+    return;
+  }
   session_visibility_changed_closure_list_.Notify();
 }
 
