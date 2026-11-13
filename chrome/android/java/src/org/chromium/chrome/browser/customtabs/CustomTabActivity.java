@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinat
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -287,10 +288,21 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
         WindowFeatures requestedWindowFeatures = intentDataProvider.getRequestedWindowFeatures();
         Tab popupTab = getActivityTabProvider().get();
-        if (requestedWindowFeatures == null || popupTab == null) return;
+        DesktopWindowStateManager desktopWindowStateManager =
+                mRootUiCoordinator.getDesktopWindowStateManager();
+        View popupRootView = findViewById(R.id.desktop_popup_root_view);
+        if (requestedWindowFeatures == null
+                || popupTab == null
+                || desktopWindowStateManager == null
+                || popupRootView == null) {
+            return;
+        }
         mPopupBoundsAdjuster =
-                new PopupBoundsAdjuster(windowAndroid, TabWindowManagerSingleton.getInstance());
-        mPopupBoundsAdjuster.adjust(requestedWindowFeatures, popupTab);
+                new PopupBoundsAdjuster(
+                        windowAndroid,
+                        TabWindowManagerSingleton.getInstance(),
+                        desktopWindowStateManager);
+        mPopupBoundsAdjuster.adjust(popupRootView, requestedWindowFeatures, popupTab);
     }
 
     @Override
@@ -365,7 +377,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     protected void onDestroyInternal() {
         mAuxiliarySearchController = null;
-        mPopupBoundsAdjuster = null;
+        if (mPopupBoundsAdjuster != null) {
+            mPopupBoundsAdjuster.destroy();
+            mPopupBoundsAdjuster = null;
+        }
         if (mTimeoutHandler != null) mTimeoutHandler.onDestroy();
         super.onDestroyInternal();
     }
