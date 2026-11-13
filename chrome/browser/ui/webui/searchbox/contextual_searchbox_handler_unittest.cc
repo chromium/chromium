@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -4958,6 +4959,49 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileContextToPage_ForwardsToPage) {
 
   handler().AddFileContextToPage(token, std::move(file_info));
   mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       InitializeInputStateModel_TopChromeWebUIWithoutActiveTab) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_profile;
+  auto top_chrome_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          webui::GetTopChromeWebUIProfile(), /*instance=*/nullptr);
+  webui::SetBrowserWindowInterface(top_chrome_web_contents.get(),
+                                   browser_window_interface());
+
+  testing::NiceMock<MockSearchboxPage> local_page;
+  FakeContextualSearchboxHandler top_chrome_handler(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), profile(), top_chrome_web_contents.get(),
+      std::make_unique<TestOmniboxClient>(), base::BindLambdaForTesting([&]() {
+        return contextual_session_handle_.get();
+      }));
+
+  // With no active tab, the handler must not fall back to the
+  // `TopChromeWebUIProfile` host `WebContents`.
+  EXPECT_EQ(top_chrome_handler.input_state_model(), nullptr);
+  EXPECT_EQ(
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          top_chrome_web_contents.get()),
+      nullptr);
+
+  // Once a tab is active, `OnActiveTabChanged()` initializes the model and
+  // attaches it to the active tab's `WebContents`.
+  tabs::TabInterface* active_tab = AddTab(GURL("https://example.com"));
+  top_chrome_handler.OnActiveTabChanged(*tab_list(), active_tab);
+  EXPECT_NE(top_chrome_handler.input_state_model(), nullptr);
+  EXPECT_NE(
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          active_tab->GetContents()),
+      nullptr);
+  EXPECT_EQ(
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          top_chrome_web_contents.get()),
+      nullptr);
+
+  webui::SetBrowserWindowInterface(top_chrome_web_contents.get(),
+                                   /*browser_window_interface=*/nullptr);
 }
 #else
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_AndroidAlwaysFails) {

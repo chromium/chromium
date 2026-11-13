@@ -252,6 +252,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/drive_picker_host",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/contextual_search/internal:test_support",
       "//components/contextual_tasks/public",

@@ -99,6 +99,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
@@ -206,6 +207,9 @@ omnibox::InputType GetInputType(const std::string& type,
 
 content::WebContents* GetActiveTabWebContents(
     content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
   if (browser_window_interface) {
@@ -215,11 +219,15 @@ content::WebContents* GetActiveTabWebContents(
       }
     }
   }
-  // The WebUI omnibox popup in TopChromeWebUIProfile, which is shared by the
-  // windows of all profiles, has no services or prefs of a user, so it can't
-  // hold the state of a tab.
+  // Top Chrome searchboxes (WebUI toolbar and omnibox popup) are shared across
+  // tabs and may run in `TopChromeWebUIProfile`, which has no services or prefs
+  // of a user, so they can't hold the state of a tab.
+  const GURL& url = web_contents->GetLastCommittedURL();
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->IsTopChromeWebUIProfile()) {
+          ->IsTopChromeWebUIProfile() ||
+      (url.SchemeIs(content::kChromeUIScheme) &&
+       (url.host() == chrome::kChromeUIWebUIToolbarHost ||
+        url.host() == chrome::kChromeUIOmniboxPopupHost))) {
     return nullptr;
   }
   return web_contents;
@@ -717,9 +725,13 @@ void ContextualSearchboxHandler::OnActiveTabNavigated() {
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
   composebox_drive_signin_promo_controller_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
-  contextual_tasks::ContextualTasksWebContentsUserData::
-      UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
-                                    input_state_model_.get());
+  if (!input_state_model_) {
+    InitializeInputStateModel();
+  } else {
+    contextual_tasks::ContextualTasksWebContentsUserData::
+        UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                      input_state_model_.get());
+  }
   page_->OnTabStripChanged();
 }
 
