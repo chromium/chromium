@@ -239,12 +239,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
       (overlay_rect.size().Area64() > outermost_main_frame_size.Area64() *
                                           kLargeAdSizeToViewportSizeThreshold);
 
-  bool has_gesture =
-      LocalFrame::HasTransientUserActivation(outermost_main_frame);
   bool is_ad = element->IsAdRelated();
 
-  if (!has_gesture && is_large && (!popup_detected_ || is_ad) &&
-      IsOverlayCandidate(element)) {
+  if (is_large && (!popup_detected_ || is_ad) && IsOverlayCandidate(element)) {
     // The prestitial conditions are about the state of the page when the
     // overlay appears, so evaluate them now rather than at dismissal time.
     bool is_prestitial = IsPrestitialAd(outermost_main_frame);

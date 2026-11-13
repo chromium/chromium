@@ -69,10 +69,10 @@ promise_test(async function(t) {
   // the overlay candidate's dismissal.
   await forceLayoutUpdate();
 
-  // Expect no OverlayPopupAd UseCounter as the popup was created with user
-  // gesture.
-  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
-}, "Test overlay-popup-ad when the frame itself has a fixed position and it's created with user gesture. In this case, we expect no use counter for kOverlayPopupAd.");
+  // Expect the kOverlayPopupAd UseCounter: the user gesture doesn't exempt the
+  // overlay ad from being a pop-up ad.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test overlay-popup-ad when the frame itself has a fixed position and it's created with user gesture. In this case, we expect a use counter for kOverlayPopupAd.");
 
 </script>
 </body>

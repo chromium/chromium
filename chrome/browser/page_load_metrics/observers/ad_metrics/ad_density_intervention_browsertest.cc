@@ -93,12 +93,17 @@ IN_PROC_BROWSER_TEST_F(
   page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
                                                            waiter.get());
 
-  int document_width =
-      EvalJs(web_contents, "document.body.scrollWidth").ExtractInt();
   int document_height = GetDocumentHeight(web_contents);
 
-  // Set to document width so ad density is 100%.
-  int frame_width = document_width;
+  // Ad density by height is independent of frame width, so use the same narrow
+  // frame as ad_density_intervention_android_browsertest.cc. The frame must not
+  // cover the center of the viewport: a large fixed-position ad covering the
+  // viewport center is detected as an overlay pop-up ad, a separate ads
+  // violation that triggers the intervention on its own. As the test page isn't
+  // scrollable, that detection happens as soon as the ad appears rather than
+  // when it's dismissed.
+  int frame_width = 100;
+  // Set to document height so ad density by height is 100%.
   int frame_height = document_height;
 
   page_load_metrics::CreateAndWaitForIframeAtRect(

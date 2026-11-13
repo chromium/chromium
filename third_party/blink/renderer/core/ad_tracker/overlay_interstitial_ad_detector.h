@@ -32,7 +32,6 @@ class LocalFrame;
 // pop-up candidate if the following conditions are met:
 // 1) It's immobile to scrolling (e.g. position:fixed).
 // 2) The size is large.
-// 3) It's created without user gesture.
 //
 // The candidate will be actually counted as an overlay pop-up instance after we
 // have checked some status at its dismissal time. On dismissal, if the main
@@ -51,11 +50,10 @@ class LocalFrame;
 // Besides, we explicitly prevent mid-roll ads (during a video play) from being
 // categorized as pop-ups.
 //
-// We could potentially miss some true positive cases: the user could click at
-// an empty space which activates the user gesture, and coincidentally the
-// pop-up automatically shows up; the user could make some scrolling
-// before closing the pop-up; etc. However, we accept the trade-off exchanging a
-// lower rate of false positive for an increase in the rate of false negatives.
+// We could potentially miss some true positive cases: e.g. the user could make
+// some scrolling before closing the pop-up. However, we accept the trade-off
+// exchanging a lower rate of false positive for an increase in the rate of
+// false negatives.
 class CORE_EXPORT OverlayInterstitialAdDetector {
  public:
   // A pop-up ad appearing later than this after the first contentful paint is
@@ -107,10 +105,10 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
   // overlay pop-up. We compare any potential candidate with the last
   // unqualified element and skip it if they are equal.
   //
-  // It allows us to exclude some false positive cases. e.g. an
-  // overlay was excluded from the initial consideration because it was created
-  // with a gesture. After 5 seconds the gesture would be gone, but we still
-  // want to exclude it as it was originally created with a gesture.
+  // It allows us to exclude some false positive cases. e.g. an overlay was
+  // excluded from the initial consideration because the viewport size had
+  // just changed. We still want to exclude it at later detections, rather than
+  // considering it as a candidate that has just appeared.
   //
   // Another advantage is this saves some computation cost. e.g. if an ad was
   // unqualified because it didn't have a viewport constraint position, then we

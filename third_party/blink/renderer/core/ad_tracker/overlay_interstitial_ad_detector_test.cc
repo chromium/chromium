@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -196,16 +197,34 @@ TEST_F(OverlayInterstitialAdDetectorTest,
   EXPECT_FALSE(ad->IsPrestitialAd());
 }
 
+// A pop-up ad is counted as such even if it appeared with a user gesture. The
+// gesture is a user interaction though, so the pop-up ad is not a prestitial.
+TEST_F(OverlayInterstitialAdDetectorTest, PopupAdCreatedWithGesture) {
+  Element* ad =
+      SetUpPageWithOverlayAd(/*scrollable=*/false, /*ad_hidden=*/false);
+  SimulateFirstContentfulPaint();
+
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopup));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
+  EXPECT_TRUE(ad->IsOverlayPopupAd());
+}
+
 // A pop-up ad appearing after the user has interacted with the page is not a
-// prestitial, even once the transient activation that would have disqualified
-// it as a pop-up altogether has expired.
+// prestitial, even once the transient activation has expired.
 TEST_F(OverlayInterstitialAdDetectorTest,
        NoPrestitialAdAfterStickyUserActivation) {
   SetUpPageWithOverlayAd(/*scrollable=*/false, /*ad_hidden=*/false);
   SimulateFirstContentfulPaint();
 
-  // Sticky activation only: transient activation would make the overlay
-  // unqualified as a pop-up in the first place.
+  // Sticky activation only, as a few seconds after a gesture.
   GetDocument().GetFrame()->SetStickyUserActivationState();
   ASSERT_FALSE(
       LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
