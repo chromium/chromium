@@ -5,10 +5,12 @@
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
 #include <algorithm>
+#include <optional>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -19,12 +21,9 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/media_router/common/pref_names.h"
@@ -33,6 +32,7 @@
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -437,18 +437,21 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
 
-  // A TabStripModelObserver that quits the MessageLoop whenever the
-  // UI's model is sent an event that might change the indicator status.
-  class IndicatorChangeObserver : public TabStripModelObserver {
+  // A helper that quits the MessageLoop whenever the UI's model is sent an
+  // event that changes the indicator status.
+  class IndicatorChangeObserver {
    public:
-    explicit IndicatorChangeObserver(BrowserWindowInterface* browser)
-        : browser_(browser) {
-      browser_->GetTabStripModel()->AddObserver(this);
+    explicit IndicatorChangeObserver(tabs::TabInterface* tab) {
+      alert_subscription_ =
+          tabs::TabAlertController::From(tab)->AddAlertToShowChangedCallback(
+              base::BindRepeating(&IndicatorChangeObserver::OnAlertChanged,
+                                  base::Unretained(this)));
     }
 
-    void OnTabChangedAt(tabs::TabInterface* tab,
-                        TabChangeType change_type) override {
-      std::move(on_tab_changed_).Run();
+    void OnAlertChanged(std::optional<tabs::TabAlert> alert) {
+      if (on_tab_changed_) {
+        std::move(on_tab_changed_).Run();
+      }
     }
 
     void WaitForTabChange() {
@@ -458,11 +461,12 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
     }
 
    private:
-    const raw_ptr<BrowserWindowInterface> browser_;
     base::OnceClosure on_tab_changed_;
+    base::CallbackListSubscription alert_subscription_;
   };
 
-  IndicatorChangeObserver observer(browser());
+  IndicatorChangeObserver observer(
+      tabs::TabInterface::GetFromContents(contents));
   ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
   StartTabMirroring();
 

@@ -6,8 +6,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +29,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -58,11 +59,9 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -436,24 +435,25 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
-// TODO(crbug.com/427298135): Port this to BrowserWindowInterface after
-// TabListInterfaceObserver supports TabChangedAt().
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   content::WebContents* const contents = GetActiveWebContents();
   ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
 
-  // A TabStripModelObserver that quits the MessageLoop whenever the
-  // UI's model is sent an event that might change the indicator status.
-  class IndicatorChangeObserver : public TabStripModelObserver {
+  // A helper that quits the MessageLoop whenever the UI's model is sent an
+  // event that changes the indicator status.
+  class IndicatorChangeObserver {
    public:
-    explicit IndicatorChangeObserver(BrowserWindowInterface* browser)
-        : browser_(browser) {
-      browser_->GetTabStripModel()->AddObserver(this);
+    explicit IndicatorChangeObserver(tabs::TabInterface* tab) {
+      alert_subscription_ =
+          tabs::TabAlertController::From(tab)->AddAlertToShowChangedCallback(
+              base::BindRepeating(&IndicatorChangeObserver::OnAlertChanged,
+                                  base::Unretained(this)));
     }
 
-    void OnTabChangedAt(tabs::TabInterface* tab,
-                        TabChangeType change_type) override {
-      std::move(on_tab_changed_).Run();
+    void OnAlertChanged(std::optional<tabs::TabAlert> alert) {
+      if (on_tab_changed_) {
+        std::move(on_tab_changed_).Run();
+      }
     }
 
     void WaitForTabChange() {
@@ -463,8 +463,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     }
 
    private:
-    const raw_ptr<BrowserWindowInterface> browser_;
     base::OnceClosure on_tab_changed_;
+    base::CallbackListSubscription alert_subscription_;
   };
 
   ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
@@ -478,7 +478,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
 
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  IndicatorChangeObserver observer(browser());
+  IndicatorChangeObserver observer(
+      tabs::TabInterface::GetFromContents(contents));
   while (!std::ranges::contains(GetTabAlertStatesForContents(contents),
                                 tabs::TabAlert::kTabCapturing)) {
     if (base::TimeTicks::Now() - start_time >
