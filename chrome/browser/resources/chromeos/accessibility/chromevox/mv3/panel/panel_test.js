@@ -141,8 +141,8 @@ AX_TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
       .replay();
 });
 
-// TODO(crbug.com/1088438): flaky crashes.
-AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
+AX_TEST_F('ChromeVoxPanelTest', 'Gestures', async function() {
+  const mockFeedback = this.createMockFeedback();
   const doGestureAsync = async gesture => {
     doGesture(gesture)();
   };
@@ -150,12 +150,11 @@ AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
   doGestureAsync(Gesture.TAP4);
   await this.waitForMenu('panel_search_menu');
 
-  // GestureCommandHandler behaves in special ways only with range over
-  // the panel. Fake this out by setting range there.
-  const desktop = root.parent.root;
-  const panelNode = desktop.find(
-      {role: 'rootWebArea', attributes: {name: 'ChromeVox Panel'}});
-  ChromeVoxRange.set(CursorRange.fromNode(panelNode));
+  // Wait for focus on the search bar to update ChromeVoxRange into the
+  // panel menu item before sending menu swipe gestures.
+  await mockFeedback
+      .expectSpeech('Search the menus', /Type to search the menus/)
+      .replay();
 
   doGestureAsync(Gesture.SWIPE_RIGHT1);
   await this.waitForMenu('panel_menu_jump');
