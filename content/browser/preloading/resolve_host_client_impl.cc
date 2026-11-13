@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +43,6 @@ ResolveHostClientImpl::ResolveHostClientImpl(
       network::mojom::ResolveHostParameters::Purpose::kPreconnect;
   parameters->network_restrictions_id =
       network_restrictions_id.CopyAsOptional();
-  resolve_host_start_time_ = base::TimeTicks::Now();
   // Intentionally using a SchemeHostPort. Resolving http:// scheme host will
   // fail when a HTTPS resource record exists due to DNS-based scheme upgrade
   // functionality.
@@ -62,9 +62,6 @@ void ResolveHostClientImpl::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const net::AddressList& resolved_addresses,
     const net::HostResolverEndpointResults& alternative_endpoints) {
-  UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ResolveHostLatency",
-                      base::TimeTicks::Now() - resolve_host_start_time_);
-
   auto* task = base::TaskAnnotator::CurrentTaskForThread();
   if (!task) {
     // The `task` can be null in base::ScopedMockTimeMessageLoopTaskRunner scope

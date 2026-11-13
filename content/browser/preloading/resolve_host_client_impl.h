@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
@@ -61,7 +60,6 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   void OnConnectionError();
 
  private:
-  base::TimeTicks resolve_host_start_time_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback callback_;
 };
