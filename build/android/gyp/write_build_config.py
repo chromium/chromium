@@ -113,14 +113,12 @@ class _TransitiveValues:
             'all_input_jars_paths',
             'direct_input_jars_paths',
             'direct_interface_jars',
-            'direct_unprocessed_jars',
             'proguard_configs',
         ]
     )
 
     def __init__(self):
         # Direct classpath:
-        self.direct_unprocessed_jars = OrderedSet()
         self.direct_interface_jars = OrderedSet()
         self.direct_input_jars_paths = OrderedSet()
         # Jar files
@@ -148,7 +146,6 @@ class _TransitiveValues:
         retain_processed_jars=False,
         retain_unprocessed_jars=False,
         retain_resource_zips=False,
-        retain_extra_package_names=False,
         retain_android_manifests=False,
     ):
         """Removes all values from |other| from this instance."""
@@ -164,7 +161,6 @@ class _TransitiveValues:
                     retain_resource_zips
                     and key in ('dependency_zips', 'dependency_zip_overlays')
                 )
-                or (retain_extra_package_names and key == 'extra_package_names')
                 or (retain_android_manifests and key == 'android_manifests')
             ):
                 other_val = getattr(other, key, None)
@@ -215,14 +211,18 @@ class _TransitiveValuesBuilder:
             self._CollectManifests(all_deps_without_under_test)
         if params.collects_resources():
             self._CollectResources(all_deps_without_under_test)
-        self._CollectExtraPackageNames(direct_deps, all_deps)
+        if params.compiles_resources():
+            self._CollectExtraPackageNames(all_deps)
 
-        self._ret.proguard_configs.update(params.get('proguard_configs', []))
-        self._ret.proguard_configs.update(
-            (
-                direct_deps if params.get('direct_deps_only') else all_deps
-            ).collect('proguard_configs', flatten=True)
-        )
+        if params.get('proguard_enabled') or params.type == 'dist_aar':
+            self._ret.proguard_configs.update(
+                params.get('proguard_configs', [])
+            )
+            self._ret.proguard_configs.update(
+                (
+                    direct_deps if params.get('direct_deps_only') else all_deps
+                ).collect('proguard_configs', flatten=True)
+            )
 
         if params.is_bundle_module() and self._remove_parent_module_overlap:
             self._RemoveParentModuleOverlap()
@@ -246,9 +246,6 @@ class _TransitiveValuesBuilder:
         # match the java naming scheme that identifies them as libraries.
         # TODO(agrieve): Recognize bundle module names as java_library targets so
         #     that they contribute to classpath.
-        ret.direct_unprocessed_jars.update(
-            direct_deps.collect('unprocessed_jar_path')
-        )
         ret.direct_interface_jars.update(
             direct_deps.collect('interface_jar_path')
         )
@@ -286,9 +283,6 @@ class _TransitiveValuesBuilder:
     def _AddBaseModuleToClasspath(self):
         base_module = self._params.base_module()
         # Adding base module to classpath to compile against its R.java file
-        self._ret.direct_unprocessed_jars.add(
-            base_module['unprocessed_jar_path']
-        )
         self._ret.all_unprocessed_jars.add(base_module['unprocessed_jar_path'])
         self._ret.direct_interface_jars.add(base_module['interface_jar_path'])
         self._ret.all_interface_jars.add(base_module['interface_jar_path'])
@@ -346,14 +340,8 @@ class _TransitiveValuesBuilder:
             all_deps_without_under_test.collect('java_resources_jar_path')
         )
 
-    def _CollectExtraPackageNames(self, direct_deps, all_deps):
-        # Needed by java_library targets.
-        if self._params.is_library():
-            # TODO(agrieve): We would ideally move away from being able to use R.java
-            # from package_names other than the library's own.
-            resource_deps = direct_deps.of_type('android_resources')
-        else:
-            resource_deps = all_deps.recursive_resource_deps()
+    def _CollectExtraPackageNames(self, all_deps):
+        resource_deps = all_deps.recursive_resource_deps()
         self._ret.extra_package_names.update(
             resource_deps.collect('package_name')
         )
@@ -381,10 +369,6 @@ class _TransitiveValuesBuilder:
         self._ret.RemoveSubtree(
             dist_jar_tvs,
             retain_resource_zips=True,
-            retain_extra_package_names=True,
-        )
-        self._ret.direct_unprocessed_jars.difference_update(
-            dist_jar_tvs.direct_unprocessed_jars
         )
         self._ret.direct_interface_jars.difference_update(
             dist_jar_tvs.direct_interface_jars
