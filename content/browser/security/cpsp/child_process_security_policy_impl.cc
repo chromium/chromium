@@ -282,6 +282,20 @@ std::string AccessTypeToString(AccessType access_type) {
   }
 }
 
+// Returns `origin`'s URL, or its precursor tuple's URL if `origin` is opaque
+// (or `std::nullopt` if `origin` is an opaque origin without a valid precursor
+// tuple).
+std::optional<GURL> GetUrlOrPrecursorUrlIfOpaque(const url::Origin& origin) {
+  if (!origin.opaque()) {
+    return origin.GetURL();
+  }
+  auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
+  if (!precursor_tuple.IsValid()) {
+    return std::nullopt;
+  }
+  return precursor_tuple.GetURL();
+}
+
 base::debug::CrashKeyString* GetRequestedOriginCrashKey() {
   static auto* requested_origin_key = base::debug::AllocateCrashKeyString(
       "requested_origin", base::debug::CrashKeySize::Size256);
@@ -2683,23 +2697,16 @@ bool ChildProcessSecurityPolicyImpl::HasProcessState(ChildProcessId child_id) {
 bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
                                                      const url::Origin& origin,
                                                      AccessType access_type) {
-  GURL url_to_check;
-  if (origin.opaque()) {
-    auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (!precursor_tuple.IsValid()) {
-      // Allow opaque origins w/o precursors (if the process state exists).
-      // TODO(acolwell): Investigate all cases that trigger this path (e.g.,
-      // browser-initiated navigations to data: URLs) and fix them so we have
-      // precursor information (or the process lock is compatible with a missing
-      // precursor). Remove this logic once that has been completed.
-      return HasProcessState(child_id);
-    } else {
-      url_to_check = precursor_tuple.GetURL();
-    }
-  } else {
-    url_to_check = origin.GetURL();
+  std::optional<GURL> url_to_check = GetUrlOrPrecursorUrlIfOpaque(origin);
+  if (!url_to_check.has_value()) {
+    // Allow opaque origins w/o precursors (if the process state exists).
+    // TODO(acolwell): Investigate all cases that trigger this path (e.g.,
+    // browser-initiated navigations to data: URLs) and fix them so we have
+    // precursor information (or the process lock is compatible with a missing
+    // precursor). Remove this logic once that has been completed.
+    return HasProcessState(child_id);
   }
-  bool success = CanAccessMaybeOpaqueOrigin(child_id, url_to_check,
+  bool success = CanAccessMaybeOpaqueOrigin(child_id, *url_to_check,
                                             origin.opaque(), access_type);
   if (success) {
     return true;
@@ -2717,26 +2724,17 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
 bool ChildProcessSecurityPolicyImpl::CanCommitNewOrigin(
     ChildProcessId child_id,
     const url::Origin& origin) {
-  // TODO(crbug.com/522872468): Move the blocks duplicated between
-  // CanAccessOrigin() and CanCommitNewOrigin() into helper functions.
-  GURL url_to_check;
-  if (origin.opaque()) {
-    auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (!precursor_tuple.IsValid()) {
-      // Allow opaque origins w/o precursors (if the process state exists).
-      // TODO(acolwell): Investigate all cases that trigger this path (e.g.,
-      // browser-initiated navigations to data: URLs) and fix them so we have
-      // precursor information (or the process lock is compatible with a missing
-      // precursor). Remove this logic once that has been completed.
-      return HasProcessState(child_id);
-    } else {
-      url_to_check = precursor_tuple.GetURL();
-    }
-  } else {
-    url_to_check = origin.GetURL();
+  std::optional<GURL> url_to_check = GetUrlOrPrecursorUrlIfOpaque(origin);
+  if (!url_to_check.has_value()) {
+    // Allow opaque origins w/o precursors (if the process state exists).
+    // TODO(acolwell): Investigate all cases that trigger this path (e.g.,
+    // browser-initiated navigations to data: URLs) and fix them so we have
+    // precursor information (or the process lock is compatible with a missing
+    // precursor). Remove this logic once that has been completed.
+    return HasProcessState(child_id);
   }
   bool success =
-      CanCommitMaybeOpaqueNewOrigin(child_id, url_to_check, origin.opaque());
+      CanCommitMaybeOpaqueNewOrigin(child_id, *url_to_check, origin.opaque());
   if (success) {
     return true;
   }
