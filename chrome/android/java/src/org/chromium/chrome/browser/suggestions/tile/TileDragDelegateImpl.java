@@ -11,6 +11,7 @@ import android.widget.HorizontalScrollView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -71,10 +72,10 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
     }
 
     // "Start duration": Delay (in ms) for triggering PREPARE -> START change.
-    private static final long START_DURATION_MS = 300;
+    @VisibleForTesting static final long START_DURATION_MS = 300;
 
     // Relative "dominate threshold": Multiplied by tile width to get "dominate threshold".
-    private static final float DOMINATE_TRESHOLD_RATIO = 0.4f;
+    @VisibleForTesting static final float DOMINATE_TRESHOLD_RATIO = 0.4f;
 
     // Parent container for dragged tiles.
     private final MostVisitedTilesLayout mMvTilesLayout;

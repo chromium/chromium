@@ -49,7 +49,7 @@ public class SuggestionsTileView extends TileView {
     // TileView override.
     @Override
     public boolean isDraggable() {
-        return mData.isCustomLink() || mData.isAiMode();
+        return getData().isCustomLink() || getData().isAiMode();
     }
 
     /**
