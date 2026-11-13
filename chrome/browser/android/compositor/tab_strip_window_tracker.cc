@@ -5,6 +5,7 @@
 #include "chrome/browser/android/compositor/tab_strip_window_tracker.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +18,21 @@ namespace android {
 namespace {
 
 const void* const kWindowCountUserDataKey = &kWindowCountUserDataKey;
+
+std::string_view GetExistingWindowVariant(bool had_existing_window) {
+  return had_existing_window ? "WithExistingWindow" : "WithoutExistingWindow";
+}
+
+void RecordWebUiStartupPhase(std::string_view phase,
+                             base::TimeDelta duration,
+                             bool had_existing_window) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Android.TabStrip.NewTabButton.WebUI.", phase}), duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Android.TabStrip.NewTabButton.WebUI.",
+                    GetExistingWindowVariant(had_existing_window), ".", phase}),
+      duration);
+}
 
 struct WindowCount : public base::SupportsUserData::Data {
   int count = 0;
@@ -54,11 +70,24 @@ void RecordNewTabButtonActivityCreationToFirstPaint(base::TimeDelta duration,
   base::UmaHistogramMediumTimes(
       "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint", duration);
   base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"Android.TabStrip.NewTabButton.",
-           had_existing_window ? "WithExistingWindow" : "WithoutExistingWindow",
-           ".ActivityCreationToFirstPaint"}),
+      base::StrCat({"Android.TabStrip.NewTabButton.",
+                    GetExistingWindowVariant(had_existing_window),
+                    ".ActivityCreationToFirstPaint"}),
       duration);
+}
+
+void RecordNewTabButtonWebUiStartupPhases(
+    base::TimeDelta navigation_start_to_commit,
+    base::TimeDelta commit_to_dom_content_loaded,
+    base::TimeDelta dom_content_loaded_to_first_paint,
+    bool had_existing_window) {
+  RecordWebUiStartupPhase("NavigationStartToCommit", navigation_start_to_commit,
+                          had_existing_window);
+  RecordWebUiStartupPhase("CommitToDOMContentLoaded",
+                          commit_to_dom_content_loaded, had_existing_window);
+  RecordWebUiStartupPhase("DOMContentLoadedToFirstPaint",
+                          dom_content_loaded_to_first_paint,
+                          had_existing_window);
 }
 
 }  // namespace android

@@ -75,6 +75,9 @@ class TabStripNtbWebUiHost
                               content::RenderFrameHost* new_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void OnFirstContentfulPaintInPrimaryMainFrame(
       base::TimeTicks presentation_time) override;
 
@@ -109,6 +112,12 @@ class TabStripNtbWebUiHost
   // `kCrashRecoverResetInterval` has passed without a crash.
   uint32_t crash_count_ = 0;
   base::TimeTicks last_crash_time_;
+  // Milestones of the load that produces the first paint, used to record the
+  // startup phase histograms at first paint. Cleared if the renderer exits
+  // before first paint, so that the reload is measured instead.
+  base::TimeTicks navigation_start_time_;
+  base::TimeTicks commit_time_;
+  base::TimeTicks dom_content_loaded_time_;
   base::android::ScopedJavaGlobalRef<jobject> java_coordinator_;
   // Declared before |web_contents_| so that it is destroyed after it. Null
   // once |tab_model_| is destroyed.

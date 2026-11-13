@@ -24,6 +24,7 @@
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
@@ -224,6 +225,13 @@ void TabStripNtbWebUiHost::RenderFrameHostChanged(
 
 void TabStripNtbWebUiHost::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
+  // Measure the reload instead, so that the startup phases describe the load
+  // that produces the first paint.
+  if (!recorded_first_paint_) {
+    navigation_start_time_ = base::TimeTicks();
+    commit_time_ = base::TimeTicks();
+    dom_content_loaded_time_ = base::TimeTicks();
+  }
   // Reload on all termination statuses, including
   // TERMINATION_STATUS_NORMAL_TERMINATION, which Android reports when the OS
   // kills a renderer while Chrome is in the background or holds a waived
@@ -245,6 +253,28 @@ void TabStripNtbWebUiHost::PrimaryMainFrameRenderProcessGone(
   }
 }
 
+void TabStripNtbWebUiHost::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!commit_time_.is_null() || !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  navigation_start_time_ = navigation_handle->NavigationStart();
+  commit_time_ = base::TimeTicks::Now();
+  TRACE_EVENT_INSTANT("ui", "TabStripNtbWebUi.Commit", commit_time_);
+}
+
+void TabStripNtbWebUiHost::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  if (commit_time_.is_null() || !dom_content_loaded_time_.is_null() ||
+      !render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  dom_content_loaded_time_ = base::TimeTicks::Now();
+  TRACE_EVENT_INSTANT("ui", "TabStripNtbWebUi.DOMContentLoaded",
+                      dom_content_loaded_time_);
+}
+
 void TabStripNtbWebUiHost::OnFirstContentfulPaintInPrimaryMainFrame(
     base::TimeTicks presentation_time) {
   if (recorded_first_paint_ || activity_creation_time_.is_null()) {
@@ -258,6 +288,18 @@ void TabStripNtbWebUiHost::OnFirstContentfulPaintInPrimaryMainFrame(
     CHECK(window_tracker_);
     RecordNewTabButtonActivityCreationToFirstPaint(
         presentation_time - activity_creation_time_,
+        window_tracker_->had_existing_window());
+  }
+  if (!navigation_start_time_.is_null() &&
+      !dom_content_loaded_time_.is_null() &&
+      navigation_start_time_ <= commit_time_ &&
+      commit_time_ <= dom_content_loaded_time_ &&
+      dom_content_loaded_time_ <= presentation_time) {
+    CHECK(window_tracker_);
+    RecordNewTabButtonWebUiStartupPhases(
+        commit_time_ - navigation_start_time_,
+        dom_content_loaded_time_ - commit_time_,
+        presentation_time - dom_content_loaded_time_,
         window_tracker_->had_existing_window());
   }
 }

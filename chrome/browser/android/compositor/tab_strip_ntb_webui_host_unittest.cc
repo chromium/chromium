@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <tuple>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -24,9 +25,11 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android {
@@ -40,6 +43,21 @@ constexpr char kWithExistingWindowHistogram[] =
 constexpr char kWithoutExistingWindowHistogram[] =
     "Android.TabStrip.NewTabButton.WithoutExistingWindow."
     "ActivityCreationToFirstPaint";
+constexpr char kNavigationStartToCommitHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.NavigationStartToCommit";
+constexpr char kCommitToDOMContentLoadedHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.CommitToDOMContentLoaded";
+constexpr char kDOMContentLoadedToFirstPaintHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.DOMContentLoadedToFirstPaint";
+constexpr char kWithExistingWindowNavigationStartToCommitHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.WithExistingWindow."
+    "NavigationStartToCommit";
+constexpr char kWithExistingWindowCommitToDOMContentLoadedHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.WithExistingWindow."
+    "CommitToDOMContentLoaded";
+constexpr char kWithExistingWindowDOMContentLoadedToFirstPaintHistogram[] =
+    "Android.TabStrip.NewTabButton.WebUI.WithExistingWindow."
+    "DOMContentLoadedToFirstPaint";
 
 class FakePage : public tabstrip_ntb::mojom::Page {
  public:
@@ -62,6 +80,24 @@ class TabStripNtbWebUiHostTest : public ChromeRenderViewHostTestHarness {
   TabStripNtbWebUiHostTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  // Simulates the commit of the first navigation of `host`, started at
+  // `navigation_start`, at the current (mock) time.
+  void SimulateCommit(TabStripNtbWebUiHost& host,
+                      base::TimeTicks navigation_start) {
+    testing::NiceMock<content::MockNavigationHandle> handle(
+        host.GetWebContents());
+    handle.set_is_in_primary_main_frame(true);
+    handle.set_has_committed(true);
+    ON_CALL(handle, NavigationStart())
+        .WillByDefault(testing::Return(navigation_start));
+    host.DidFinishNavigation(&handle);
+  }
+
+  void SimulateDOMContentLoaded(TabStripNtbWebUiHost& host) {
+    host.DOMContentLoaded(host.GetWebContents()->GetPrimaryMainFrame());
+  }
 };
 
 TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
@@ -202,17 +238,37 @@ TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
                                                 base::Milliseconds(250));
   histogram_tester.ExpectTotalCount(kFirstPaintHistogram, 1);
   histogram_tester.ExpectTotalCount(kWithoutExistingWindowHistogram, 1);
+  // Without commit and DOMContentLoaded, no startup phases are recorded.
+  histogram_tester.ExpectTotalCount(kNavigationStartToCommitHistogram, 0);
 
   // A second host for the same profile records the WithExistingWindow
-  // partition while the first one is alive.
+  // partition while the first one is alive, along with its startup phases.
+  const base::TimeTicks navigation_start = base::TimeTicks::Now();
   TabStripNtbWebUiHost second(profile(), activity_creation_time,
                               /*java_coordinator=*/nullptr);
-  second.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
-                                                  base::Milliseconds(40));
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+  SimulateCommit(second, navigation_start);
+  task_environment()->FastForwardBy(base::Milliseconds(30));
+  SimulateDOMContentLoaded(second);
+  second.OnFirstContentfulPaintInPrimaryMainFrame(base::TimeTicks::Now() +
+                                                  base::Milliseconds(10));
   histogram_tester.ExpectTotalCount(kFirstPaintHistogram, 2);
   histogram_tester.ExpectTotalCount(kWithoutExistingWindowHistogram, 1);
-  histogram_tester.ExpectUniqueTimeSample(kWithExistingWindowHistogram,
-                                          base::Milliseconds(40), 1);
+  histogram_tester.ExpectTotalCount(kWithExistingWindowHistogram, 1);
+  for (const auto& [histogram, with_existing_window_histogram, expected] :
+       {std::tuple(kNavigationStartToCommitHistogram,
+                   kWithExistingWindowNavigationStartToCommitHistogram,
+                   base::Milliseconds(20)),
+        std::tuple(kCommitToDOMContentLoadedHistogram,
+                   kWithExistingWindowCommitToDOMContentLoadedHistogram,
+                   base::Milliseconds(30)),
+        std::tuple(kDOMContentLoadedToFirstPaintHistogram,
+                   kWithExistingWindowDOMContentLoadedToFirstPaintHistogram,
+                   base::Milliseconds(10))}) {
+    histogram_tester.ExpectUniqueTimeSample(histogram, expected, 1);
+    histogram_tester.ExpectUniqueTimeSample(with_existing_window_histogram,
+                                            expected, 1);
+  }
 }
 
 TEST_F(TabStripNtbWebUiHostTest, ResetHostNoLongerCounts) {
@@ -241,7 +297,9 @@ TEST_F(TabStripNtbWebUiHostTest, ResetHostNoLongerCounts) {
 TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
   base::test::ScopedFeatureList feature_list(
       chrome::android::kAndroidNewTabButtonTabstripWebUI);
-  TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
+  base::HistogramTester histogram_tester;
+  const base::TimeTicks activity_creation_time = base::TimeTicks::Now();
+  TabStripNtbWebUiHost host(profile(), activity_creation_time,
                             /*java_coordinator=*/nullptr);
   host.StartLoad();
   content::WebContents* web_contents = host.GetWebContents();
@@ -249,6 +307,11 @@ TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
   ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
 
   host.SetButtonVisible(false);
+
+  // The first load commits and reaches DOMContentLoaded, but the renderer dies
+  // before the first paint.
+  SimulateCommit(host, activity_creation_time);
+  SimulateDOMContentLoaded(host);
 
   // Simulate an unexpected renderer crash.
   auto* rph = static_cast<content::MockRenderProcessHost*>(
@@ -275,6 +338,23 @@ TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return page.last_visible().has_value(); }));
   EXPECT_EQ(false, page.last_visible());
+
+  // The renderer exited before the first paint, so the startup phases measure
+  // the reload, which produces the first paint.
+  const base::TimeTicks reload_start = base::TimeTicks::Now();
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+  SimulateCommit(host, reload_start);
+  task_environment()->FastForwardBy(base::Milliseconds(30));
+  SimulateDOMContentLoaded(host);
+  host.OnFirstContentfulPaintInPrimaryMainFrame(base::TimeTicks::Now() +
+                                                base::Milliseconds(10));
+  histogram_tester.ExpectTotalCount(kFirstPaintHistogram, 1);
+  histogram_tester.ExpectUniqueTimeSample(kNavigationStartToCommitHistogram,
+                                          base::Milliseconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(kCommitToDOMContentLoadedHistogram,
+                                          base::Milliseconds(30), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kDOMContentLoadedToFirstPaintHistogram, base::Milliseconds(10), 1);
 }
 
 TEST_F(TabStripNtbWebUiHostTest, RateLimitsRepeatedRendererCrashes) {

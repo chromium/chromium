@@ -222,6 +222,20 @@ chromium-metrics-reviews@google.com.
       summary="no other tab strip window of the same profile was open"/>
 </variants>
 
+<variants name="NewTabButtonWebUIStartupPhase">
+  <variant name="CommitToDOMContentLoaded"
+      summary="the commit of the WebUI navigation to its DOMContentLoaded
+               event, which covers parsing the HTML and fetching, compiling
+               and evaluating its scripts"/>
+  <variant name="DOMContentLoadedToFirstPaint"
+      summary="the DOMContentLoaded event of the WebUI to the presentation of
+               its first contentful paint, which covers style, layout,
+               raster, GPU channel setup and frame presentation"/>
+  <variant name="NavigationStartToCommit"
+      summary="the start of the WebUI navigation to its commit, which covers
+               the navigation and waiting for the renderer process to start"/>
+</variants>
+
 <variants name="PageContentProvider_Consumer">
   <variant name="" summary="an external app"/>
   <variant name=".Aga" summary="the Google App (AGA)"/>
@@ -6649,6 +6663,34 @@ chromium-metrics-reviews@google.com.
     to when the new tab is added to the TabModel. Recorded each time a tab is
     opened via the button.
   </summary>
+</histogram>
+
+<histogram name="Android.TabStrip.NewTabButton.WebUI.{ExistingWindow}.{Phase}"
+    units="ms" expires_after="2027-04-05">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Duration from {Phase} during the load of the tab strip WebUI New Tab Button
+    that produces its first paint, recorded when {ExistingWindow}. If the WebUI
+    renderer exits before the first paint, this measures the reload. Recorded at
+    most once per activity, together with
+    Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint.
+  </summary>
+  <token key="ExistingWindow" variants="NewTabButtonExistingWindow"/>
+  <token key="Phase" variants="NewTabButtonWebUIStartupPhase"/>
+</histogram>
+
+<histogram name="Android.TabStrip.NewTabButton.WebUI.{Phase}" units="ms"
+    expires_after="2027-04-05">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Duration from {Phase} during the load of the tab strip WebUI New Tab Button
+    that produces its first paint. If the WebUI renderer exits before the first
+    paint, this measures the reload. Recorded at most once per activity,
+    together with Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint.
+  </summary>
+  <token key="Phase" variants="NewTabButtonWebUIStartupPhase"/>
 </histogram>
 
 <histogram

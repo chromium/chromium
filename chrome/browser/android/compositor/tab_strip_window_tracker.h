@@ -38,6 +38,15 @@ class TabStripWindowTracker {
 void RecordNewTabButtonActivityCreationToFirstPaint(base::TimeDelta duration,
                                                     bool had_existing_window);
 
+// Records the Android.TabStrip.NewTabButton.WebUI.{Phase} startup phase
+// histograms of the WebUI new tab button and their With/WithoutExistingWindow
+// partition.
+void RecordNewTabButtonWebUiStartupPhases(
+    base::TimeDelta navigation_start_to_commit,
+    base::TimeDelta commit_to_dom_content_loaded,
+    base::TimeDelta dom_content_loaded_to_first_paint,
+    bool had_existing_window);
+
 }  // namespace android
 
 #endif  // CHROME_BROWSER_ANDROID_COMPOSITOR_TAB_STRIP_WINDOW_TRACKER_H_
