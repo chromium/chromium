@@ -432,5 +432,10 @@ try_.builder(
     cores = 2,
     os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-test-infra-mx@google.com",
+    experiments = {
+        # Like the CQ builders, so the test IDs match their LUCI Analysis
+        # history, e.g. to exonerate known flaky failures.
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
 )
