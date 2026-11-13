@@ -436,6 +436,11 @@ Animation::Animation(ExecutionContext* execution_context,
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->setEffect(nullptr);
+      content_->SetIgnoreCssTimingProperties();
+      if (KeyframeEffect* keyframe_effect =
+              DynamicTo<KeyframeEffect>(content_.Get())) {
+        keyframe_effect->SetIgnoreCSSKeyframes();
+      }
     }
     content_->Attach(this);
   }
