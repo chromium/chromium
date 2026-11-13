@@ -7,7 +7,6 @@
 #include <cinttypes>
 
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/profiler/module_cache.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/stringprintf.h"
@@ -103,7 +102,7 @@ Response MemoryHandler::SimulatePressureNotification(
   }
 
   // Simulate memory pressure notification in the browser process.
-  base::MemoryPressureListener::SimulatePressureNotification(parsed_level);
+  base::MemoryPressureSource::SimulatePressureNotification(parsed_level);
   return Response::Success();
 }
 
