@@ -19471,10 +19471,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledV2",
                     "enable_features": [
                         "ColorIdCssStyleSheetOptimization",
-                        "ThemeChangeOptimization"
+                        "ThemeChangeOptimization",
+                        "ThemeChangeOptimizationV2"
                     ]
                 }
             ]
