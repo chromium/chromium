@@ -55,6 +55,8 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA_OLD, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT,
+                 R.drawable.googlepay_with_gradient)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_PILL, R.drawable.googlepay_pill)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_PILL_WITH_GRADIENT,
                  R.drawable.googlepay_pill_with_gradient)
