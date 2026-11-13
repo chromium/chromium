@@ -54,6 +54,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
@@ -80,6 +81,7 @@
 #include "components/ttc/app/public/tool_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -90,9 +92,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2580,8 +2585,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   // Focus has moved to the other window's tab, so the captured page is gone.
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response,
-                    actor::mojom::ActionResultCode::kScreenshotCaptureFailed);
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
 
   SetBrowser(other_browser);
 }
@@ -2620,8 +2625,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   allow_safety_check.Signal();
 
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response,
-                    actor::mojom::ActionResultCode::kScreenshotCaptureFailed);
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
@@ -3080,16 +3085,57 @@ class ToolControllerGetPointerBrowserTest : public ToolControllerBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(kTtcGetPointer);
   }
 
+ protected:
+  // Starts a session and waits for it to be focused on the active tab, which
+  // is when it starts to track the pointer there, then goes to `url`. Returns
+  // null if any of that fails, for the caller to assert on.
+  SessionControllerImpl* StartSessionAt(const GURL& url) {
+    ttc_service().StartSession();
+    auto* controller =
+        static_cast<SessionControllerImpl*>(ttc_service().session_controller());
+    if (!controller || !base::test::RunUntil([&]() {
+          return controller->GetVoiceFocusedWebContents() == web_contents();
+        }) ||
+        !content::NavigateToURL(web_contents(), url)) {
+      return nullptr;
+    }
+    content::WaitForCopyableViewInWebContents(web_contents());
+    return controller;
+  }
+
+  // Presses the mouse at `point` on the page and waits for the press to have
+  // reached the renderer, by when the session has recorded it.
+  void PressAt(const gfx::Point& point) {
+    content::InputEventAckWaiter ack_waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseDown);
+    content::SimulateMouseEvent(web_contents(),
+                                blink::WebInputEvent::Type::kMouseDown, point);
+    ack_waiter.Wait();
+  }
+
+  // Starts a get_pointer call, whose response `future` gets.
+  void CallGetPointer(SessionControllerImpl& controller,
+                      base::test::TestFuture<ToolResponse>& future) {
+    ToolRequest tool_request;
+    tool_request.name = "get_pointer";
+    controller.ProcessToolCall(std::move(tool_request), future.GetCallback());
+  }
+
+  GURL PageWithText() {
+    return embedded_https_test_server().GetURL("example.com", "/title1.html");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, GetPointer) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
+                       ShowsAndDescribesWhereTheUserPointed) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
 
-  std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
+  std::vector<ToolDefinition> tools = controller->GetToolDefinitions();
   auto get_pointer =
       std::ranges::find(tools, "get_pointer", &ToolDefinition::name);
   ASSERT_NE(get_pointer, tools.end());
@@ -3099,17 +3145,88 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, GetPointer) {
             ToolDefinition::Verbalization::kStandard);
   EXPECT_TRUE(get_pointer->parameters_json_schema.empty());
 
-  // TODO(b/571268337): Nothing tracks the pointer yet, so the user is never
-  // pointing.
+  // A button over the whole viewport, so that it is what is pointed at
+  // however the page is laid out and scaled.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.body.innerHTML = \"<button style='position: fixed; left: 0; "
+      "top: 0; width: 100%; height: 100%'>Buy</button>\";"));
+  PressAt(gfx::Point(30, 18));
   base::test::TestFuture<ToolResponse> future;
-  ToolRequest tool_request;
-  tool_request.name = "get_pointer";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  const base::DictValue& result = response.GetResult();
+  EXPECT_THAT(result.FindString("status"), testing::Pointee(std::string("ok")));
+  const base::ListValue* points = result.FindList("points");
+  ASSERT_TRUE(points);
+  ASSERT_EQ(points->size(), 1u);
+  const base::DictValue& point = points->front().GetDict();
+  EXPECT_EQ(point.FindInt("x"), 30);
+  EXPECT_EQ(point.FindInt("y"), 18);
+  EXPECT_THAT(point.FindString("kind"), testing::Pointee(std::string("press")));
+  const base::DictValue* node = point.FindDict("node");
+  ASSERT_TRUE(node);
+  EXPECT_THAT(node->FindString("text"), testing::Pointee(std::string("Buy")));
+  EXPECT_FALSE(node->contains("dom_node_id"));
+
+  ASSERT_TRUE(response.visual_content());
+  EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
+  EXPECT_FALSE(
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
+}
+
+// A user whose pointer the session has not seen is not pointing.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, NoActivePointer) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  // The machine's own pointer may be over the window, and so have been seen.
+  controller->pointer_tracker()->Clear();
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
   ToolResponse response = future.Take();
   ASSERT_TRUE(response.Ok());
   EXPECT_EQ(response.GetResult(),
             base::DictValue().Set("status", "no_active_pointer"));
+  EXPECT_FALSE(response.visual_content());
+}
+
+// Like get_screenshot, get_pointer does not capture pages that TTC may not
+// read.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, DisallowedUrl) {
+  SessionControllerImpl* controller = StartSessionAt(GURL("chrome://version"));
+  ASSERT_TRUE(controller);
+  PressAt(gfx::Point(30, 18));
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+// A capture that the page changes under is not reported, whether the capture
+// fails for it or completes first.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
+                       PageChangedDuringCapture) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  PressAt(gfx::Point(30, 18));
+
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  content::TestNavigationManager nav_manager(web_contents(), target_url);
+  web_contents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(target_url));
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  nav_manager.ResumeNavigation();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
 }
 
 // The session's actor task is started with the session and stopped when it
