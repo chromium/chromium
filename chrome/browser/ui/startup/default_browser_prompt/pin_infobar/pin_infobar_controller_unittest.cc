@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -76,6 +78,11 @@ class PinInfoBarControllerTest : public testing::Test {
             std::make_unique<TabStripModel>(delegate_.get(), profile())),
         browser_window_interface_(
             std::make_unique<MockBrowserWindowInterface>()) {
+    // Exercises the legacy path.
+    // TODO(crbug.com/567121669): Remove once the legacy delegate is deleted.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedPinInfoBar.name, "false"}});
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
     ON_CALL(*browser_window_interface_, GetProfile())
@@ -120,6 +127,7 @@ class PinInfoBarControllerTest : public testing::Test {
 
  private:
   // Must be the first member.
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

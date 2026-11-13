@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,12 +23,11 @@ class PinInfoBarInteractiveUiTest : public InteractiveBrowserTest,
                                     public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (GetParam()) {
-      enabled_features.push_back(
-          {infobars::kCentralizedInfoBarFramework, {{"pin_infobar", "true"}}});
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    // TODO(crbug.com/567121669): Remove the legacy variant once the legacy
+    // delegate is deleted.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedPinInfoBar.name, GetParam() ? "true" : "false"}});
     InteractiveBrowserTest::SetUp();
   }
 

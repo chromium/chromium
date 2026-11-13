@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
@@ -32,6 +34,11 @@ class PinInfoBarControllerCrashTest : public testing::Test {
             std::make_unique<TabStripModel>(delegate_.get(), profile_.get())),
         browser_window_interface_(
             std::make_unique<MockBrowserWindowInterface>()) {
+    // Exercises the legacy path.
+    // TODO(crbug.com/567121669): Remove once the legacy delegate is deleted.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedPinInfoBar.name, "false"}});
 
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
@@ -57,6 +64,7 @@ class PinInfoBarControllerCrashTest : public testing::Test {
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ChromeLayoutProvider layout_provider_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
