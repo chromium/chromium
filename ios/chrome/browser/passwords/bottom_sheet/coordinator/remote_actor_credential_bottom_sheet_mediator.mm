@@ -77,6 +77,10 @@ using password_manager::RemoteActorCredentialSharingResult;
 
   // Remote actor request forwarded to the sharing controller on start.
   remote_actor::proto::RemoteActorPasswordUploadRequest _request;
+
+  // Whether the controller found no saved passwords for the request. The
+  // result is held back until the user leaves the bottom sheet.
+  BOOL _noPasswordsFound;
 }
 
 - (instancetype)
@@ -199,9 +203,13 @@ using password_manager::RemoteActorCredentialSharingResult;
             RemoteActorCredentialSharingResult::kUserCancelledDialog));
     return;
   }
-  [self.delegate mediator:self
-      didFinishWithResult:RemoteActorCredentialSharingResult::
-                              kUserCancelledDialog];
+  // Leaving the no saved passwords sheet reports why the flow couldn't
+  // continue rather than a user cancellation.
+  RemoteActorCredentialSharingResult result =
+      _noPasswordsFound
+          ? RemoteActorCredentialSharingResult::kNoPasswordsFound
+          : RemoteActorCredentialSharingResult::kUserCancelledDialog;
+  [self.delegate mediator:self didFinishWithResult:result];
 }
 
 #pragma mark - Private
@@ -245,6 +253,14 @@ using password_manager::RemoteActorCredentialSharingResult;
 
 // Handles the final sharing `result` from the controller.
 - (void)handleSharingResult:(RemoteActorCredentialSharingResult)result {
+  // Keeps the sheet open so the user learns why the remote actor can't sign
+  // in, until they go back to it. Nothing was shared, so there is no loading
+  // state to end.
+  if (result == RemoteActorCredentialSharingResult::kNoPasswordsFound) {
+    _noPasswordsFound = YES;
+    [_consumer showNoSavedPasswords];
+    return;
+  }
   [_consumer setLoading:NO];
   [self.delegate mediator:self didFinishWithResult:result];
 }
