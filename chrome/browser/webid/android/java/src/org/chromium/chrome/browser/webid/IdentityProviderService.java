@@ -18,7 +18,10 @@ import android.os.RemoteException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -30,6 +33,9 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("content::webid")
 @NullMarked
 public class IdentityProviderService extends Handler implements ServiceConnection {
+    @JniType("::content::webid::IdentityProviderService")
+    interface NativeIdentityProviderService extends JniTypeToken {}
+
     private static final String TAG = "FedCMBoundService";
 
     // TODO(crbug.com/465181345): decide if we should use AIDL or not here,
@@ -48,17 +54,19 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     static final int MSG_FEDCM_REQUEST = 1;
     static final int MSG_FEDCM_RESPONSE = 2;
 
-    private long mNativeIdentityProviderService;
+    private @Nullable JniRawPtr<NativeIdentityProviderService> mNativeIdentityProviderService;
     private boolean mIsBound;
     private @Nullable IBinder mService;
 
-    private IdentityProviderService(long nativeIdentityProviderService) {
+    private IdentityProviderService(
+            JniRawPtr<NativeIdentityProviderService> nativeIdentityProviderService) {
         super(Looper.getMainLooper());
         mNativeIdentityProviderService = nativeIdentityProviderService;
     }
 
     @CalledByNative
-    private static IdentityProviderService create(long nativeIdentityProviderService) {
+    static IdentityProviderService create(
+            JniRawPtr<NativeIdentityProviderService> nativeIdentityProviderService) {
         return new IdentityProviderService(nativeIdentityProviderService);
     }
 
@@ -68,7 +76,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
             @JniType("std::string") String serviceName) {
         if (mIsBound) {
             Log.d(TAG, "Already bound");
-            if (mNativeIdentityProviderService != 0) {
+            if (mNativeIdentityProviderService != null) {
                 IdentityProviderServiceJni.get().onConnected(mNativeIdentityProviderService, true);
             }
             return;
@@ -84,7 +92,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
 
         if (!binding) {
             Log.d(TAG, "Binding failed");
-            if (mNativeIdentityProviderService != 0) {
+            if (mNativeIdentityProviderService != null) {
                 IdentityProviderServiceJni.get().onConnected(mNativeIdentityProviderService, false);
             }
         }
@@ -94,7 +102,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     public void onBindingDied(ComponentName name) {
         Log.d(TAG, "onBindingDied");
         mIsBound = false;
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onDisconnected(mNativeIdentityProviderService);
         }
     }
@@ -103,7 +111,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     public void onNullBinding(ComponentName name) {
         Log.d(TAG, "onNullBinding");
         mIsBound = false;
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onDisconnected(mNativeIdentityProviderService);
         }
     }
@@ -113,7 +121,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
         Log.d(TAG, "Connected");
         mService = service;
         mIsBound = true;
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onConnected(mNativeIdentityProviderService, mIsBound);
         }
     }
@@ -122,7 +130,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     public void onServiceDisconnected(ComponentName name) {
         Log.d(TAG, "Disconnected");
         mIsBound = false;
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onDisconnected(mNativeIdentityProviderService);
         }
     }
@@ -134,7 +142,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
             @JniType("std::vector<std::string>") String[] headerKeys,
             @JniType("std::vector<std::string>") String[] headerValues) {
         if (!mIsBound) {
-            if (mNativeIdentityProviderService != 0) {
+            if (mNativeIdentityProviderService != null) {
                 IdentityProviderServiceJni.get()
                         .onDataFetched(mNativeIdentityProviderService, null);
             }
@@ -162,7 +170,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
             serviceMessenger.send(msg);
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException while fetching: %s", e);
-            if (mNativeIdentityProviderService != 0) {
+            if (mNativeIdentityProviderService != null) {
                 IdentityProviderServiceJni.get()
                         .onDataFetched(mNativeIdentityProviderService, null);
             }
@@ -173,7 +181,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     public void handleMessage(Message msg) {
         Log.d(TAG, "Got message back");
         if (msg.what != MSG_FEDCM_RESPONSE) {
-            if (mNativeIdentityProviderService != 0) {
+            if (mNativeIdentityProviderService != null) {
                 IdentityProviderServiceJni.get()
                         .onDataFetched(mNativeIdentityProviderService, null);
             }
@@ -181,7 +189,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
         }
 
         String reply = msg.getData().getString(FEDCM_BOUND_SERVICE_INTENT_REPLY);
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onDataFetched(mNativeIdentityProviderService, reply);
         }
     }
@@ -194,24 +202,27 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
             mIsBound = false;
         }
 
-        if (mNativeIdentityProviderService != 0) {
+        if (mNativeIdentityProviderService != null) {
             IdentityProviderServiceJni.get().onDisconnected(mNativeIdentityProviderService);
         }
     }
 
     @CalledByNative
     private void destroy() {
-        mNativeIdentityProviderService = 0;
+        if (mNativeIdentityProviderService != null) {
+            mNativeIdentityProviderService.release();
+            mNativeIdentityProviderService = null;
+        }
     }
 
     @NativeMethods
     interface Natives {
         void onDataFetched(
-                long nativeIdentityProviderService,
+                JniPtr<NativeIdentityProviderService> self,
                 @JniType("std::optional<std::string>") @Nullable String data);
 
-        void onConnected(long nativeIdentityProviderService, boolean success);
+        void onConnected(JniPtr<NativeIdentityProviderService> self, boolean success);
 
-        void onDisconnected(long nativeIdentityProviderService);
+        void onDisconnected(JniPtr<NativeIdentityProviderService> self);
     }
 }

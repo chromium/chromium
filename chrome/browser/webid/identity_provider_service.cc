@@ -9,14 +9,17 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/webid/jni_headers/IdentityProviderService_jni.h"
 
 namespace content::webid {
 
 IdentityProviderService::IdentityProviderService() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(Java_IdentityProviderService_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_obj_.Reset(
+      Java_IdentityProviderService_create(env, jni_zero::MakeRaw(this)));
 }
 
 IdentityProviderService::~IdentityProviderService() {
