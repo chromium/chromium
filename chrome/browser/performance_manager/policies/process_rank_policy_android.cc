@@ -177,6 +177,7 @@ void ProcessRankPolicyAndroid::OnTakenFromGraph(Graph* graph) {
 void ProcessRankPolicyAndroid::OnPageNodeAdded(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
+  UpdateVisibilityTimer(page_node);
   UpdateProcessRank(page_node);
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -205,31 +206,7 @@ void ProcessRankPolicyAndroid::OnIsFocusedChanged(const PageNode* page_node) {
 }
 
 void ProcessRankPolicyAndroid::OnIsVisibleChanged(const PageNode* page_node) {
-  if (IsProtectRecentlyVisibleTabEnabled()) {
-    if (page_node->IsVisible()) {
-      visibility_timers_.erase(page_node);
-    } else {
-      // If the page becomes invisible, start a timer to update the rank after
-      // `minimum_time_in_background`.
-      base::TimeDelta minimum_time_in_background = base::Seconds(
-          chrome::android::kProtectRecentlyVisibleTabDuration.Get());
-
-      // If `minimum_time_in_background` is zero, we can skip the timer since
-      // the rank calculated via the call to `UpdateProcessRank` won't need to
-      // be downgraded.
-      if (!minimum_time_in_background.is_zero()) {
-        auto& timer = visibility_timers_[page_node];
-        if (!timer) {
-          timer = std::make_unique<base::OneShotTimer>();
-        }
-        timer->Start(
-            FROM_HERE, minimum_time_in_background,
-            base::BindOnce(
-                &ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer,
-                base::Unretained(this), page_node));
-      }
-    }
-  }
+  UpdateVisibilityTimer(page_node);
   UpdateProcessRank(page_node);
 }
 
@@ -343,6 +320,37 @@ void ProcessRankPolicyAndroid::OnIsGlicPinnedToVisibleInstanceChanged(
 void ProcessRankPolicyAndroid::OnUpdatedTitleOrFaviconInBackgroundChanged(
     const PageNode* page_node) {
   UpdateProcessRank(page_node);
+}
+
+void ProcessRankPolicyAndroid::UpdateVisibilityTimer(
+    const PageNode* page_node) {
+  if (!IsProtectRecentlyVisibleTabEnabled()) {
+    return;
+  }
+  if (page_node->IsVisible()) {
+    visibility_timers_.erase(page_node);
+    return;
+  }
+
+  // If the page is invisible, start a timer to update the rank after
+  // `minimum_time_in_background`.
+  base::TimeDelta minimum_time_in_background = base::Seconds(
+      chrome::android::kProtectRecentlyVisibleTabDuration.Get());
+
+  // If `minimum_time_in_background` is zero, we can skip the timer since
+  // the rank calculated via the call to `UpdateProcessRank` won't need to
+  // be downgraded.
+  if (!minimum_time_in_background.is_zero()) {
+    auto& timer = visibility_timers_[page_node];
+    if (!timer) {
+      timer = std::make_unique<base::OneShotTimer>();
+    }
+    timer->Start(
+        FROM_HERE, minimum_time_in_background,
+        base::BindOnce(
+            &ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer,
+            base::Unretained(this), page_node));
+  }
 }
 
 void ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer(

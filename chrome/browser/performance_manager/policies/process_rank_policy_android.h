@@ -120,6 +120,7 @@ class ProcessRankPolicyAndroid
 #endif
 
   const bool is_not_perceptible_importance_supported_;
+  void UpdateVisibilityTimer(const PageNode* page_node);
   void UpdateProcessRank(const PageNode* page_node);
   void UpdateProcessRankAndClearTimer(const PageNode* page_node);
   content::ChildProcessImportance CalculateRank(const PageNode* page_node);

@@ -761,6 +761,36 @@ TEST_F(ProcessRankPolicyAndroidTest, ProtectRecentlyVisibleTab) {
             content::ChildProcessImportance::NORMAL);
 }
 
+TEST_F(ProcessRankPolicyAndroidTest,
+       ProtectRecentlyVisibleTab_CreatedInBackground) {
+  if (!content::IsNotPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "NOT_PERCEPTIBLE importance is not supported.";
+  }
+  const base::TimeDelta kDuration = base::Seconds(10);
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          {chrome::android::kProtectRecentlyVisibleTab,
+           {{"duration_in_seconds", base::ToString(kDuration.InSeconds())}}},
+      },
+      /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  // A newly created non-visible page is initially protected.
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::NOT_PERCEPTIBLE);
+
+  // Advance time by the protection duration.
+  task_environment()->FastForwardBy(kDuration);
+
+  // The page should no longer be protected even though OnIsVisibleChanged() was
+  // never called.
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::NORMAL);
+}
+
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 TEST_F(ProcessRankPolicyAndroidTest,
        WebViewPageInWebUiInheritsVisibilityFromEmbedder) {
