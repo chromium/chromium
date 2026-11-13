@@ -286,8 +286,8 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
     @VisibleForTesting
     public static class RecordingDelegate {
         /**
-         * @return metrics service name that the Recorder will attempt connecting to it to record
-         *         metrics.
+         * Returns the metrics service name that the Recorder will attempt connecting to to record
+         * metrics.
          */
         public String getServiceName() {
             return ServiceNames.METRICS_BRIDGE_SERVICE;

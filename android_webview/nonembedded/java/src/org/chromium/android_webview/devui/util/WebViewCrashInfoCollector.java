@@ -33,9 +33,7 @@ public class WebViewCrashInfoCollector {
 
     /** Funcational interface to implement special filters to crashes. */
     public interface Filter {
-        /**
-         * @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out.
-         */
+        /** Returns {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out. */
         boolean test(CrashInfo c);
     }
 

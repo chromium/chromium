@@ -19,8 +19,8 @@ public class PersistentErrorView {
     private final ViewGroup mViewGroup;
 
     /**
-     * @param context The Activity where this View is shon.
-     * @param type View type.
+     * @param context The Activity where this View is shown.
+     * @param errorViewId The resource ID of the error view.
      */
     public PersistentErrorView(Activity context, @IdRes int errorViewId) {
         mViewGroup = (ViewGroup) context.findViewById(errorViewId);

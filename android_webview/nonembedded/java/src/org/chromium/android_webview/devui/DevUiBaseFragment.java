@@ -22,9 +22,7 @@ public abstract class DevUiBaseFragment extends Fragment {
     private boolean mShouldRequestFocus;
     private final boolean mIsTV = DeviceInfo.isTV();
 
-    /**
-     * @return true if the device is an Android TV.
-     */
+    /** Returns true if the device is an Android TV. */
     public boolean isTV() {
         return mIsTV;
     }
@@ -64,9 +62,7 @@ public abstract class DevUiBaseFragment extends Fragment {
         mShouldRequestFocus = shouldRequestFocus;
     }
 
-    /**
-     * @return true if the fragment should request focus.
-     */
+    /** Returns true if the fragment should request focus. */
     protected boolean shouldRequestFocus() {
         assert isTV() : "Focus can only be requested for TV devices";
         return mShouldRequestFocus;

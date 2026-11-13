@@ -39,14 +39,14 @@ public class CrashInfo {
     public long captureTime = -1;
 
     /**
-     * ID the crash collecting servers responded with after the crash report is uploaded.
-     * Only valid when |uploadState| == Uploaded.
+     * ID the crash collecting servers responded with after the crash report is uploaded. Only valid
+     * when {@code uploadState} == Uploaded.
      */
     @Nullable public String uploadId;
 
     /**
-     * The time when the crash report is uploaded in millisecs since epoch.
-     * Only valid when |uploadState| == Uploaded.
+     * The time when the crash report is uploaded in millisecs since epoch. Only valid when {@code
+     * uploadState} == Uploaded.
      */
     public long uploadTime = -1;
 

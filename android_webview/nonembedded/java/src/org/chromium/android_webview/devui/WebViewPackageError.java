@@ -48,7 +48,7 @@ public class WebViewPackageError {
 
     /**
      * @param context The {@link Activity} where the error is yield.
-     * @param linearLayout the linearLayout to show error message at it's top.
+     * @param errorView The {@link PersistentErrorView} used to show the error message.
      */
     public WebViewPackageError(Activity context, PersistentErrorView errorView) {
         mContext = context;

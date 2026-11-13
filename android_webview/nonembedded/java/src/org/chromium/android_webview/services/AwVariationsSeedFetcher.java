@@ -222,12 +222,12 @@ public class AwVariationsSeedFetcher extends JobService {
 
     /**
      * There are two types of calls made to this scheduler - SafeMode and regular seed fetches.
-     * Normal seed fetches are made via bound IPC through {@link VariationsSeedServer}.
-     * SafeMode seed fetches are made through {@link NonEmbeddedFastVariationsSeedSafeModeAction}.
+     * Normal seed fetches are made via bound IPC through {@link VariationsSeedServer}. SafeMode
+     * seed fetches are made through {@link NonEmbeddedFastVariationsSeedSafeModeAction}.
      *
-     * @param fastVariationsSeed Indicates whether the request is for a SafeMode seed fetch,
-     * which requires a higher priority and less restricted seed fetch job, or a regular seed fetch
-     * job.
+     * @param requireFastMode Indicates whether the request is for a SafeMode seed fetch, which
+     *     requires a higher priority and less restricted seed fetch job, or a regular seed fetch
+     *     job.
      */
     public static void scheduleIfNeeded(boolean requireFastMode) {
         JobScheduler scheduler = getScheduler();

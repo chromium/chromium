@@ -18,7 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class UploadedCrashesInfoLoader extends CrashInfoLoader {
     private final File mLogFile;
 
-    /** @param logsFile upload log file to parse. */
+    /**
+     * @param logFile Upload log file to parse.
+     */
     public UploadedCrashesInfoLoader(File logFile) {
         mLogFile = logFile;
     }
