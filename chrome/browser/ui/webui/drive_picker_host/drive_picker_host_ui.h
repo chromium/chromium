@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -104,6 +105,11 @@ class DrivePickerHostUI
   void OnHideErrorDialog() override;
   base::WeakPtr<DrivePickerUntrustedHostUI::Delegate> GetWeakPtr() override;
 
+  // Overrides the controller used to verify Drive consent with the Footprints
+  // backend.
+  void SetDriveDisclaimerControllerForTesting(
+      std::unique_ptr<drive_picker::DriveDisclaimerController> controller);
+
  private:
   // Callback for the access token fetcher.
   void OnAccessTokenFetched(
@@ -121,6 +127,18 @@ class DrivePickerHostUI
   void ShowConsentKitDialog(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler);
+
+  void HandlePrivacyFlowResult(
+      const identity_consent::PrivacyFlowResult& result);
+
+  // Lazily creates the controller that queries the Footprints backend for the
+  // authoritative Drive consent status. Returns nullptr if unavailable.
+  drive_picker::DriveDisclaimerController* GetDriveDisclaimerController();
+
+  // Called with the backend status after the untrusted renderer reported that
+  // ConsentKit granted consent.
+  void OnConsentVerified(
+      drive_picker::DriveDisclaimerController::DisclaimerStatus status);
 
   // Both RenderFrameCreated and DidFinishNavigation are necessary to establish
   // the bridge as early as possible. RenderFrameCreated is the earliest signal,
@@ -154,10 +172,15 @@ class DrivePickerHostUI
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  base::WeakPtrFactory<DrivePickerHostUI> weak_ptr_factory_{this};
+  std::unique_ptr<drive_picker::DriveDisclaimerController>
+      drive_disclaimer_controller_;
 
-  void HandlePrivacyFlowResult(
-      const identity_consent::PrivacyFlowResult& result);
+  // Scoped to a single in-flight `CheckDisclaimerStatusAsync()` call so that
+  // cancelling or restarting the consent flow invalidates any pending backend
+  // reply, and `HasWeakPtrs()` indicates whether verification is in flight.
+  base::WeakPtrFactory<DrivePickerHostUI> consent_verification_weak_factory_{
+      this};
+  base::WeakPtrFactory<DrivePickerHostUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

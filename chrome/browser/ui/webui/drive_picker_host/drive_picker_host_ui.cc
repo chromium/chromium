@@ -14,6 +14,7 @@
 #include "components/contextual_search/consent_kit/consent_kit_result_parser.h"
 #include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
 #include "components/contextual_search/consent_kit/proto/iframe_interface.pb.h"
+#include "components/contextual_search/footprints/public/fpop_service.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/google_api_keys.h"
@@ -188,6 +190,7 @@ void DrivePickerHostUI::SetBridge(
                             kMojoDisconnected);
         }
         if (self->consent_result_handler_) {
+          self->consent_verification_weak_factory_.InvalidateWeakPtrs();
           self->consent_result_handler_->OnError(
               drive_picker_host::mojom::DrivePickerError::kMojoDisconnected);
           self->consent_result_handler_.reset();
@@ -304,7 +307,12 @@ void DrivePickerHostUI::OnConsentKitIframeMessage(
       HandlePrivacyFlowResult(message->privacy_flow_result());
     }
   } else if (message->event() == identity_consent::Event::TERMINATE_EVENT) {
-    if (consent_result_handler_) {
+    // ConsentKit unconditionally sends `TERMINATE_EVENT` right after
+    // `DECISION_RESPONSE_EVENT` once its telemetry flushes. Ignore it while
+    // backend verification of a granted decision is in flight so it does not
+    // cancel the pending transition to the picker.
+    if (consent_result_handler_ &&
+        !consent_verification_weak_factory_.HasWeakPtrs()) {
       consent_result_handler_->OnCancel();
       consent_result_handler_.reset();
     }
@@ -327,6 +335,7 @@ void DrivePickerHostUI::OnConsentKitPrivacyFlowResult(
 
 void DrivePickerHostUI::OnConsentKitError(const std::string& error_message) {
   DLOG(ERROR) << "ConsentKit error: " << error_message;
+  consent_verification_weak_factory_.InvalidateWeakPtrs();
   if (consent_result_handler_) {
     consent_result_handler_->OnError(
         drive_picker_host::mojom::DrivePickerError::kUnknown);
@@ -353,9 +362,9 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
       << result.has_flow_completed()
       << ", flow_not_completed: " << result.has_flow_not_completed()
       << ", decisions: " << result.decision_size();
-  if (!consent_result_handler_.is_bound()) {
-    DLOG(WARNING)
-        << "PrivacyFlowResult received with no outstanding consent flow";
+  if (!consent_result_handler_.is_bound() ||
+      consent_verification_weak_factory_.HasWeakPtrs()) {
+    DLOG(WARNING) << "PrivacyFlowResult received with no awaiting consent flow";
     return;
   }
 
@@ -367,27 +376,80 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
   }
 
   if (drive::HasGrantedDriveConsent(result)) {
-    VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
-               "Transitioning to Picker.";
-    Profile* profile = Profile::FromWebUI(web_ui());
-    profile->GetPrefs()->SetInteger(
-        contextual_search::kDriveConsentState,
-        static_cast<int>(contextual_search::DriveConsentState::kConsent));
-
-    if (delegate_) {
-      delegate_->OnTransitionToPicker();
+    // `PrivacyFlowResult` originates from the untrusted renderer, which can
+    // forge it: the expected `flow_id` is a public constant and the
+    // `consent.google.com` origin check only runs in untrusted JS. Confirm with
+    // the Footprints backend (the source of truth for this consent) before
+    // recording consent or minting an OAuth token.
+    drive_picker::DriveDisclaimerController* controller =
+        GetDriveDisclaimerController();
+    if (!controller) {
+      OnConsentKitError("Unable to verify Drive consent");
+      return;
     }
-
-    // Transition straight to the Drive Picker UI.
-    if (consent_result_handler_) {
-      FetchTokenAndShowPicker(consent_result_handler_.Unbind());
-    }
+    controller->CheckDisclaimerStatusAsync(
+        base::BindOnce(&DrivePickerHostUI::OnConsentVerified,
+                       consent_verification_weak_factory_.GetWeakPtr()));
   } else {
     if (consent_result_handler_) {
       consent_result_handler_->OnCancel();
       consent_result_handler_.reset();
     }
   }
+}
+
+void DrivePickerHostUI::OnConsentVerified(
+    drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+  consent_verification_weak_factory_.InvalidateWeakPtrs();
+
+  // The flow was cancelled or errored while verification was outstanding.
+  if (!consent_result_handler_.is_bound()) {
+    return;
+  }
+
+  if (status !=
+      drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted) {
+    OnConsentKitError("Drive consent not confirmed by backend");
+    return;
+  }
+
+  VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
+             "Transitioning to Picker.";
+  Profile* profile = Profile::FromWebUI(web_ui());
+  profile->GetPrefs()->SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  if (delegate_) {
+    delegate_->OnTransitionToPicker();
+  }
+
+  // Transition straight to the Drive Picker UI.
+  FetchTokenAndShowPicker(consent_result_handler_.Unbind());
+}
+
+drive_picker::DriveDisclaimerController*
+DrivePickerHostUI::GetDriveDisclaimerController() {
+  if (!drive_disclaimer_controller_) {
+    Profile* profile = Profile::FromWebUI(web_ui());
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager) {
+      return nullptr;
+    }
+    drive_disclaimer_controller_ =
+        std::make_unique<drive_picker::DriveDisclaimerController>(
+            contextual_search::FpopService::Create(
+                identity_manager,
+                profile->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()));
+  }
+  return drive_disclaimer_controller_.get();
+}
+
+void DrivePickerHostUI::SetDriveDisclaimerControllerForTesting(
+    std::unique_ptr<drive_picker::DriveDisclaimerController> controller) {
+  drive_disclaimer_controller_ = std::move(controller);
 }
 
 void DrivePickerHostUI::ShowConsentKitDialog(
@@ -418,8 +480,18 @@ void DrivePickerHostUI::ShowConsentKitDialog(
   builder.SetDarkMode(is_dark);
 
   GURL consent_kit_url = builder.Build();
+  consent_verification_weak_factory_.InvalidateWeakPtrs();
   consent_result_handler_.reset();
   consent_result_handler_.Bind(std::move(result_handler));
+  consent_result_handler_.set_disconnect_handler(base::BindOnce(
+      [](base::WeakPtr<DrivePickerHostUI> self) {
+        if (!self) {
+          return;
+        }
+        self->consent_verification_weak_factory_.InvalidateWeakPtrs();
+        self->consent_result_handler_.reset();
+      },
+      weak_ptr_factory_.GetWeakPtr()));
   LoadConsentKitUrl(consent_kit_url);
 }
 
