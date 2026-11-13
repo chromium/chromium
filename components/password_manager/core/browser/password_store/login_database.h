@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -171,6 +172,10 @@ class LoginDatabase : public EncryptDecryptInterface {
   // Gets the list of auto-sign-inable credentials.
   [[nodiscard]] bool GetAutoSignInLogins(
       std::vector<StoredCredential>* credentials);
+
+  // Returns the stored `skip_zero_click` value for the credential matching
+  // `cred`'s unique key, or `std::nullopt` if no matching credential exists.
+  std::optional<bool> GetSkipZeroClick(const StoredCredential& cred) const;
 
   // Deletes the login database file on disk, and creates a new, empty database.
   // This can be used after migrating passwords to some other store, to ensure
@@ -410,6 +415,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   std::string created_statement_;
   std::string blocklisted_statement_;
   std::string id_and_password_statement_;
+  std::string skip_zero_click_statement_;
 };
 
 #if BUILDFLAG(IS_IOS)

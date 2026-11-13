@@ -11,11 +11,13 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -1710,6 +1712,22 @@ bool LoginDatabase::DisableAutoSignInForOrigin(const GURL& origin) {
   return s.Run();
 }
 
+std::optional<bool> LoginDatabase::GetSkipZeroClick(
+    const StoredCredential& cred) const {
+  CHECK(!skip_zero_click_statement_.empty());
+  sql::Statement s(
+      db_.GetCachedStatement(SQL_FROM_HERE, skip_zero_click_statement_));
+  s.BindString(0, cred.url.is_valid() ? cred.url.spec() : std::string_view());
+  s.BindString16(1, cred.username_element);
+  s.BindString16(2, cred.username_value);
+  s.BindString16(3, cred.password_element);
+  s.BindString(4, cred.signon_realm);
+  if (s.Step()) {
+    return s.ColumnInt(0) > 0;
+  }
+  return std::nullopt;
+}
+
 StoredCredential LoginDatabase::GetFormWithoutPasswordFromStatement(
     sql::Statement& s) const {
   StoredCredential cred;
@@ -2344,6 +2362,9 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   id_and_password_statement_ =
       "SELECT id, password_value, keychain_identifier FROM logins WHERE " +
       all_unique_key_column_names;
+  CHECK(skip_zero_click_statement_.empty());
+  skip_zero_click_statement_ =
+      "SELECT skip_zero_click FROM logins WHERE " + all_unique_key_column_names;
 }
 
 base::flat_map<InsecureType, InsecurityMetadata>

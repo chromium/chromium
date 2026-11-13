@@ -365,8 +365,7 @@ StoredCredential StoredCredentialFromSpecifics(
       password_data.sharing_notification_displayed();
 
   // Enforce auto-signin mitigation for shared credentials on secondary devices.
-  if (cred.type == PasswordForm::Type::kReceivedViaSharing &&
-      !cred.sharing_notification_displayed) {
+  if (cred.type == PasswordForm::Type::kReceivedViaSharing) {
     cred.skip_zero_click = true;
   }
 
@@ -377,6 +376,15 @@ StoredCredential StoredCredentialFromSpecifics(
     cred.actor_login_approved = password_data.actor_login_approved();
   }
   return cred;
+}
+
+bool MergeLocalSkipZeroClick(const StoredCredential& credential,
+                             bool local_skip_zero_click) {
+  if (credential.type == PasswordForm::Type::kReceivedViaSharing &&
+      !credential.sharing_notification_displayed) {
+    return true;
+  }
+  return local_skip_zero_click;
 }
 
 std::string GetClientTag(const sync_pb::PasswordSpecificsData& password_data) {

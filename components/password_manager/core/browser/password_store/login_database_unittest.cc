@@ -39,9 +39,11 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -1546,6 +1548,76 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(ToPasswordForm(cred)),
                              /*should_PSL_matching_apply=*/true, &result));
   EXPECT_THAT(std::move(result), ElementsAre(HasPrimaryKeyAndEquals(cred)));
+}
+
+TEST_F(LoginDatabaseTest, UpdateCredentialSyncPreservesLocalSkipZeroClick) {
+  auto sync_db = std::make_unique<LoginDatabase>(
+      temp_dir_.GetPath().AppendASCII("sync_test.db"), IsAccountStore(false));
+  LoginDatabaseAsyncHelper helper(
+      std::move(sync_db), base::SequencedTaskRunner::GetCurrentDefault(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  ASSERT_TRUE(helper.Initialize(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+      CreateEncryptor()));
+  PasswordStoreSync& store_sync = helper;
+
+  StoredCredential cred;
+  cred.url = GURL("https://example.com/login");
+  cred.signon_realm = "https://example.com/";
+  cred.username_value = u"my_username";
+  cred.password_value = password_manager::PasswordString(u"my_password");
+  cred.type = PasswordForm::Type::kReceivedViaSharing;
+  cred.sharing_notification_displayed = false;
+
+  sync_pb::PasswordSpecificsData specifics =
+      SpecificsDataFromStoredCredential(cred);
+  PasswordStoreChangeList changes = store_sync.AddCredentialSync(specifics);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_TRUE(changes[0].credential().skip_zero_click);
+
+  // Dismissing the shared-password notice on another device flips
+  // `sharing_notification_displayed` to true; `UpdateCredentialSync` must
+  // preserve the local `skip_zero_click = true`.
+  specifics.set_sharing_notification_displayed(true);
+  changes = store_sync.UpdateCredentialSync(specifics);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_TRUE(changes[0].credential().skip_zero_click);
+
+  // Local Account Chooser selection clears `skip_zero_click`, and a subsequent
+  // remote sync update preserves `false` once notified.
+  cred.sharing_notification_displayed = true;
+  cred.skip_zero_click = false;
+  ASSERT_TRUE(helper.UpdateLogin(cred).has_value());
+  specifics.set_times_used(2);
+  changes = store_sync.UpdateCredentialSync(specifics);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_FALSE(changes[0].credential().skip_zero_click);
+
+  // If a shared password update resets `sharing_notification_displayed` back to
+  // false, `skip_zero_click` is re-armed to true.
+  specifics.set_sharing_notification_displayed(false);
+  specifics.set_password_value("new_password");
+  changes = store_sync.UpdateCredentialSync(specifics);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_TRUE(changes[0].credential().skip_zero_click);
+
+  // Regular credentials with local `skip_zero_click = true` (e.g., from
+  // `preventSilentAccess()`) also preserve `true` across remote sync updates.
+  StoredCredential regular_cred;
+  regular_cred.url = GURL("https://regular.example.com/login");
+  regular_cred.signon_realm = "https://regular.example.com/";
+  regular_cred.username_value = u"user";
+  regular_cred.password_value = password_manager::PasswordString(u"pass");
+  regular_cred.skip_zero_click = true;
+  ASSERT_TRUE(helper.AddLogin(CloneStoredCredential(regular_cred)).has_value());
+  sync_pb::PasswordSpecificsData regular_specifics =
+      SpecificsDataFromStoredCredential(regular_cred);
+  regular_specifics.set_times_used(3);
+  changes = store_sync.UpdateCredentialSync(regular_specifics);
+  ASSERT_EQ(1U, changes.size());
+  EXPECT_TRUE(changes[0].credential().skip_zero_click);
 }
 
 TEST_F(LoginDatabaseTest, RemoveWrongForm) {

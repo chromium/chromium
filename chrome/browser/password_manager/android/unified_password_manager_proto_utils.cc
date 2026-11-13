@@ -127,12 +127,8 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
   if (!form_data.has_value()) {
     return;
   }
-  if (credential.type == PasswordForm::Type::kReceivedViaSharing &&
-      !credential.sharing_notification_displayed) {
-    credential.skip_zero_click = true;
-  } else {
-    credential.skip_zero_click = *skip_zero_click;
-  }
+  credential.skip_zero_click =
+      MergeLocalSkipZeroClick(credential, *skip_zero_click);
   credential.form_data = std::move(form_data.value());
 }
 

@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -354,7 +355,15 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateCredentialSync(
     const sync_pb::PasswordSpecificsData& password,
     UpdateCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpdateLoginImpl(StoredCredentialFromSpecifics(password), error);
+  StoredCredential cred = StoredCredentialFromSpecifics(password);
+  if (login_db_) {
+    if (std::optional<bool> local_skip_zero_click =
+            login_db_->GetSkipZeroClick(cred)) {
+      cred.skip_zero_click =
+          MergeLocalSkipZeroClick(cred, *local_skip_zero_click);
+    }
+  }
+  return UpdateLoginImpl(cred, error);
 }
 
 void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(

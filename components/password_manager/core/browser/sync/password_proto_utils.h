@@ -66,6 +66,12 @@ sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
 StoredCredential StoredCredentialFromSpecifics(
     const sync_pb::PasswordSpecificsData& password_data);
 
+// Merges a locally persisted `local_skip_zero_click` flag onto a synced
+// `credential`, preserving the local flag unless `credential` is an unnotified
+// shared credential (which enforces `skip_zero_click = true`).
+bool MergeLocalSkipZeroClick(const StoredCredential& credential,
+                             bool local_skip_zero_click);
+
 // Returns a copy of |password_specifics_data| with cleared supported fields
 // that don't need to be preserved in EntityMetadata cache.
 sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(

@@ -388,7 +388,7 @@ TEST_P(PasswordProtoUtilsTest,
 
 TEST_P(
     PasswordProtoUtilsTest,
-    StoredCredentialFromSpecificsDoesNotEnforceSkipZeroClickIfNotificationDisplayed) {
+    StoredCredentialFromSpecificsEnforcesSkipZeroClickIfNotificationDisplayed) {
   sync_pb::PasswordSpecificsData specifics =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
@@ -400,7 +400,22 @@ TEST_P(
 
   StoredCredential credential = StoredCredentialFromSpecifics(specifics);
 
-  EXPECT_FALSE(credential.skip_zero_click);
+  EXPECT_TRUE(credential.skip_zero_click);
+}
+
+TEST_P(PasswordProtoUtilsTest, MergeLocalSkipZeroClick) {
+  StoredCredential cred;
+  cred.type = PasswordForm::Type::kFormSubmission;
+  EXPECT_TRUE(MergeLocalSkipZeroClick(cred, /*local_skip_zero_click=*/true));
+  EXPECT_FALSE(MergeLocalSkipZeroClick(cred, /*local_skip_zero_click=*/false));
+
+  cred.type = PasswordForm::Type::kReceivedViaSharing;
+  cred.sharing_notification_displayed = false;
+  EXPECT_TRUE(MergeLocalSkipZeroClick(cred, /*local_skip_zero_click=*/false));
+
+  cred.sharing_notification_displayed = true;
+  EXPECT_TRUE(MergeLocalSkipZeroClick(cred, /*local_skip_zero_click=*/true));
+  EXPECT_FALSE(MergeLocalSkipZeroClick(cred, /*local_skip_zero_click=*/false));
 }
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordProtoUtilsTest);
 }  // namespace password_manager
