@@ -79,7 +79,9 @@ NotificationChannel CreatePendingChannel(const std::string& origin_string,
 
 std::string GetOriginStringFromPattern(const ContentSettingsPattern& pattern) {
   url::Origin origin = url::Origin::Create(GURL(pattern.ToString()));
-  CHECK(!origin.opaque(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/584778331): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!origin.opaque());
   return origin.Serialize();
 }
 
