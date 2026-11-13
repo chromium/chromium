@@ -1754,6 +1754,25 @@ TEST_P(BrowserAutofillManagerTrustedVaultTest,
       Contains(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
 }
 
+// Tests that passkey and Trusted Vault footer merges are skipped when
+// `trigger_source` does not include `FillingProduct::kPasskey` or
+// `FillingProduct::kPassword`, both when `kAutofillNewSuggestionGeneration` is
+// enabled and disabled.
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       PasskeyAndTrustedVaultSkippedForUnrelatedTriggerSource) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(password_delegate(), GetWebauthnInlineQrCodeSuggestion).Times(0);
+  EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .Times(0);
+  EXPECT_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion).Times(0);
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
+}
+
 TEST_F(BrowserAutofillManagerTest,
        WebauthnInlineQrAndSignInWithAnotherDeviceSuggestion) {
   FormData form = CreateTestHybridSignUpFormData();
