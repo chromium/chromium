@@ -874,21 +874,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.CodeCacheTime.{CodeCacheType}" units="ms"
-    expires_after="2023-06-15">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures how long it takes to fetch from the code cache. Logged every time
-    the code cache is fetched for the navigation body or a resource.
-  </summary>
-  <token key="CodeCacheType">
-    <variant name="MainFrame"/>
-    <variant name="Resource"/>
-    <variant name="Subframe"/>
-  </token>
-</histogram>
-
 <histogram
     name="Navigation.CommitNavigationWithParams.Time.IsStandardLoadType.IsHTTPOrHTTPS"
     units="microseconds" expires_after="2027-04-01">
