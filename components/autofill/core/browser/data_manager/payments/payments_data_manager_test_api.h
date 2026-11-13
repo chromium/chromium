@@ -54,6 +54,10 @@ class PaymentsDataManagerTestApi {
 
   bool ShouldSuggestServerPaymentMethods();
 
+  bool AreIbansSupported() const {
+    return payments_data_manager_->AreIbansSupported();
+  }
+
   bool AreBnplIssuersSupported() const {
     return payments_data_manager_->AreBnplIssuersSupported();
   }

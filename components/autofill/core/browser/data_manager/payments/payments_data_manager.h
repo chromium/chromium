@@ -722,6 +722,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
         return true;
       }) const;
 
+  // Whether IBANs are supported for the platform OS.
+  bool AreIbansSupported() const;
+
   // Whether MaskedBankAccounts are supported for the platform OS.
   bool AreBankAccountsSupported() const;
 

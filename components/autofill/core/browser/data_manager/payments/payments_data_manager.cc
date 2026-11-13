@@ -305,7 +305,9 @@ PaymentsDataManager::PaymentsDataManager(
 
 PaymentsDataManager::~PaymentsDataManager() {
   CancelPendingLocalQuery(&pending_creditcards_query_);
-  CancelPendingLocalQuery(&pending_local_ibans_query_);
+  if (AreIbansSupported()) {
+    CancelPendingLocalQuery(&pending_local_ibans_query_);
+  }
   CancelPendingLocalQuery(&pending_offer_data_query_);
   CancelPendingServerQueries();
 }
@@ -341,8 +343,10 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     } else if (h == pending_server_creditcard_cloud_token_data_query_) {
       pending_server_creditcard_cloud_token_data_query_ = 0;
     } else if (h == pending_local_ibans_query_) {
+      CHECK(AreIbansSupported());
       pending_local_ibans_query_ = 0;
     } else if (h == pending_server_ibans_query_) {
+      CHECK(AreIbansSupported());
       pending_server_ibans_query_ = 0;
     } else if (h == pending_customer_data_query_) {
       pending_customer_data_query_ = 0;
@@ -385,6 +389,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
             &server_credit_card_cloud_token_data_);
         break;
       case AUTOFILL_IBANS_RESULT:
+        CHECK(AreIbansSupported());
         if (h == pending_local_ibans_query_) {
           ReceiveLoadedDbValues(h, result.get(), &pending_local_ibans_query_,
                                 &local_ibans_);
@@ -567,7 +572,9 @@ void PaymentsDataManager::OnIdentityManagerShutdown(
 void PaymentsDataManager::Refresh() {
   LoadCreditCards();
   LoadCreditCardCloudTokenData();
-  LoadIbans();
+  if (AreIbansSupported()) {
+    LoadIbans();
+  }
   if (AreBankAccountsSupported()) {
     LoadMaskedBankAccounts();
   }
@@ -1419,7 +1426,7 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
 std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   // IBAN shares the same pref with payment methods enablement toggle.
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!AreIbansSupported() || !IsAutofillPaymentMethodsEnabled()) {
     return std::string();
   }
 
@@ -1459,7 +1466,7 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
 }
 
 std::string PaymentsDataManager::UpdateIban(const Iban& iban) {
-  if (!GetProfileDatabase()) {
+  if (!AreIbansSupported() || !GetProfileDatabase()) {
     return std::string();
   }
 
@@ -1774,6 +1781,9 @@ void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
 }
 
 void PaymentsDataManager::RecordUseOfIban(Iban& iban) {
+  if (!AreIbansSupported()) {
+    return;
+  }
   iban.RecordAndLogUse();
 
   if (iban.record_type() == Iban::RecordType::kServerIban) {
@@ -1804,7 +1814,9 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_server_creditcards_query_);
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
-  CancelPendingServerQuery(&pending_server_ibans_query_);
+  if (AreIbansSupported()) {
+    CancelPendingServerQuery(&pending_server_ibans_query_);
+  }
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
   CancelPendingServerQuery(&pending_credit_card_benefit_query_);
   if (AreBankAccountsSupported()) {
@@ -1879,6 +1891,7 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
 }
 
 void PaymentsDataManager::LoadIbans() {
+  CHECK(AreIbansSupported());
   if (!database_helper_->GetProfileDatabase()) {
     NOTREACHED();
   }
@@ -2021,8 +2034,10 @@ void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,
       GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
-  autofill_metrics::LogStoredIbanMetrics(local_ibans_, server_ibans_,
-                                         kDisusedDataModelTimeDelta);
+  if (AreIbansSupported()) {
+    autofill_metrics::LogStoredIbanMetrics(local_ibans_, server_ibans_,
+                                           kDisusedDataModelTimeDelta);
+  }
   autofill_metrics::LogStoredVirtualCardUsageCount(
       autofill_virtual_card_usage_data_.size());
   LogBnplIssuersSyncedCountAtStartup(GetBnplIssuers().size());
@@ -2140,12 +2155,21 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||
          pending_virtual_card_usage_data_query_ != 0 ||
          pending_credit_card_benefit_query_ != 0 ||
-         pending_local_ibans_query_ != 0 || pending_server_ibans_query_ != 0 ||
+         (AreIbansSupported() && (pending_local_ibans_query_ != 0 ||
+                                  pending_server_ibans_query_ != 0)) ||
          (AreBankAccountsSupported() &&
           pending_masked_bank_accounts_query_ != 0) ||
          (ArePaymentInstrumentsSupported() &&
           pending_payment_instruments_query_ != 0) ||
          pending_payment_instrument_creation_options_query_ != 0;
+}
+
+bool PaymentsDataManager::AreIbansSupported() const {
+#if BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 bool PaymentsDataManager::AreBankAccountsSupported() const {

@@ -340,6 +340,31 @@ INSTANTIATE_TEST_SUITE_P(,
                                              : "SyncFeatureEnabled";
                          });
 
+#if BUILDFLAG(IS_IOS)
+// Tests that IBANs are neither loaded, saved, nor logged on iOS.
+TEST_P(PaymentsDataManagerServerTest, IbansNotSupportedOnIos) {
+  payments_data_manager().SetSyncingForTest(true);
+
+  Iban local_iban = test::GetLocalIban();
+  ASSERT_TRUE(profile_autofill_table_->AddLocalIban(local_iban));
+  GetServerDataTable()->SetServerIbansForTesting({test::GetServerIban()});
+
+  Iban unsaved_iban;
+  unsaved_iban.set_value(std::u16string(test::kIbanValue16));
+  EXPECT_TRUE(payments_data_manager().AddAsLocalIban(unsaved_iban).empty());
+  EXPECT_FALSE(payments_data_manager().IsAutofillHasSeenIbanPrefEnabled());
+
+  base::HistogramTester histogram_tester;
+  ResetPaymentsDataManager(UseSyncTransportMode());
+
+  EXPECT_FALSE(test_api(payments_data_manager()).AreIbansSupported());
+  EXPECT_TRUE(payments_data_manager().GetLocalIbans().empty());
+  EXPECT_TRUE(payments_data_manager().GetServerIbans().empty());
+  EXPECT_TRUE(payments_data_manager().GetIbans().empty());
+  EXPECT_TRUE(payments_data_manager().GetOrderedIbansToSuggest().empty());
+  histogram_tester.ExpectTotalCount("Autofill.StoredIbanCount", 0);
+}
+#else
 // Test that server IBANs can be added and automatically loaded/cached.
 TEST_P(PaymentsDataManagerServerTest, AddAndReloadServerIbans) {
   Iban server_iban1 = test::GetServerIban();
@@ -353,10 +378,13 @@ TEST_P(PaymentsDataManagerServerTest, AddAndReloadServerIbans) {
 
   // Reset the PaymentsDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
+  base::HistogramTester histogram_tester;
   ResetPaymentsDataManager(UseSyncTransportMode());
 
   // Verify that we've reloaded the IBANs from the web database.
+  EXPECT_TRUE(test_api(payments_data_manager()).AreIbansSupported());
   ExpectSameElements(expected_ibans, payments_data_manager().GetServerIbans());
+  histogram_tester.ExpectUniqueSample("Autofill.StoredIbanCount", 2, 1);
 }
 
 // Test that all (local and server) IBANs can be returned.
@@ -381,6 +409,7 @@ TEST_P(PaymentsDataManagerServerTest, GetIbans) {
                                         &server_iban1, &server_iban2};
   ExpectSameElements(all_ibans, payments_data_manager().GetIbans());
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 // Tests that OnPaymentsDataLoaded is called after syncing.
 TEST_F(PaymentsDataManagerTest, OnPaymentsDataLoaded) {
@@ -433,6 +462,7 @@ TEST_F(PaymentsDataManagerTest, OnAutofillChangedBySync_AutofillValuable) {
   EXPECT_EQ(payments_data_manager().GetAutofillOffers().size(), 1u);
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Test that a local IBAN is removed from suggestions when it has a matching
 // prefix and suffix (either equal or starting with) and the same length as a
 // server IBAN.
@@ -643,6 +673,7 @@ TEST_P(PaymentsDataManagerServerTest, RecordIbanUsage_ServerIban) {
   EXPECT_EQ(server_iban.usage_history().use_date(), kSomeLaterTime);
   EXPECT_EQ(server_iban.usage_history().modification_date(), kArbitraryTime);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -3627,6 +3658,7 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {
   EXPECT_EQ(results[0]->GetRawInfo(CREDIT_CARD_NAME_FULL), u"B. Small");
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Ensure that new IBANs can be updated and saved via
 // `OnAcceptedLocalIbanSave()`.
 TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
@@ -3691,6 +3723,7 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
   ResetPaymentsDataManager();
   ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
   // Add a masked server card.
