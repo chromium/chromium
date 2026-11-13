@@ -6,7 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_CHANNEL_ENUM_H_
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 #include <utility>
 
 namespace cast_channel {
@@ -23,6 +23,7 @@ enum class ReadyState {
   CONNECTING,
   OPEN,
   CLOSED,
+  kMaxValue = CLOSED,
 };
 
 enum class ChannelError {
@@ -37,6 +38,7 @@ enum class ChannelError {
   CONNECT_TIMEOUT,
   PING_TIMEOUT,
   UNKNOWN,
+  kMaxValue = UNKNOWN,
 };
 
 enum class ChannelEvent {
@@ -137,8 +139,8 @@ enum class WriteState {
   IDLE,
 };
 
-std::string ReadyStateToString(ReadyState ready_state);
-std::string ChannelErrorToString(ChannelError channel_error);
+std::string_view ReadyStateToString(ReadyState ready_state);
+std::string_view ChannelErrorToString(ChannelError channel_error);
 
 constexpr int kNumCastChannelFlags = 9;
 

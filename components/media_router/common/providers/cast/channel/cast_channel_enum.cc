@@ -4,44 +4,63 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 
-#include <ostream>
-
 #include "base/notreached.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
+
+namespace cast_util {
+
+using cast_channel::ChannelError;
+using cast_channel::ReadyState;
+
+template <>
+const EnumTable<ReadyState>& EnumTable<ReadyState>::GetInstance() {
+  static constexpr EnumTable<ReadyState>::Entry kEntries[] = {
+      {ReadyState::NONE, "ReadyState::NONE"},
+      {ReadyState::CONNECTING, "ReadyState::CONNECTING"},
+      {ReadyState::OPEN, "ReadyState::OPEN"},
+      {ReadyState::CLOSED, "ReadyState::CLOSED"},
+  };
+  static const EnumTable<ReadyState> kInstance(kEntries, ReadyState::kMaxValue);
+  return kInstance;
+}
+
+template <>
+const EnumTable<ChannelError>& EnumTable<ChannelError>::GetInstance() {
+  static constexpr EnumTable<ChannelError>::Entry kEntries[] = {
+      {ChannelError::NONE, "ChannelError::NONE"},
+      {ChannelError::CHANNEL_NOT_OPEN, "ChannelError::CHANNEL_NOT_OPEN"},
+      {ChannelError::AUTHENTICATION_ERROR,
+       "ChannelError::AUTHENTICATION_ERROR"},
+      {ChannelError::CONNECT_ERROR, "ChannelError::CONNECT_ERROR"},
+      {ChannelError::CAST_SOCKET_ERROR, "ChannelError::CAST_SOCKET_ERROR"},
+      {ChannelError::TRANSPORT_ERROR, "ChannelError::TRANSPORT_ERROR"},
+      {ChannelError::INVALID_MESSAGE, "ChannelError::INVALID_MESSAGE"},
+      {ChannelError::INVALID_CHANNEL_ID, "ChannelError::INVALID_CHANNEL_ID"},
+      {ChannelError::CONNECT_TIMEOUT, "ChannelError::CONNECT_TIMEOUT"},
+      {ChannelError::PING_TIMEOUT, "ChannelError::PING_TIMEOUT"},
+      {ChannelError::UNKNOWN, "ChannelError::UNKNOWN"},
+  };
+  static const EnumTable<ChannelError> kInstance(kEntries,
+                                                 ChannelError::kMaxValue);
+  return kInstance;
+}
+
+}  // namespace cast_util
 
 namespace cast_channel {
 
-#define CAST_CHANNEL_TYPE_TO_STRING(enum) \
-  case enum:                              \
-    return #enum
-
-// TODO(crbug.com/1291730): Replace with EnumTable.
-std::string ReadyStateToString(ReadyState ready_state) {
-  switch (ready_state) {
-    CAST_CHANNEL_TYPE_TO_STRING(ReadyState::NONE);
-    CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CONNECTING);
-    CAST_CHANNEL_TYPE_TO_STRING(ReadyState::OPEN);
-    CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CLOSED);
+std::string_view ReadyStateToString(ReadyState ready_state) {
+  if (auto name = cast_util::EnumToString(ready_state)) {
+    return *name;
   }
-  NOTREACHED() << "Unknown ready_state " << ReadyStateToString(ready_state);
+  NOTREACHED() << "Unknown ready_state " << AsInteger(ready_state);
 }
 
-// TODO(crbug.com/1291730): Replace with EnumTable.
-std::string ChannelErrorToString(ChannelError channel_error) {
-  switch (channel_error) {
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::NONE);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::CHANNEL_NOT_OPEN);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::AUTHENTICATION_ERROR);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::CONNECT_ERROR);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::CAST_SOCKET_ERROR);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::TRANSPORT_ERROR);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::INVALID_MESSAGE);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::INVALID_CHANNEL_ID);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::CONNECT_TIMEOUT);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::PING_TIMEOUT);
-    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::UNKNOWN);
+std::string_view ChannelErrorToString(ChannelError channel_error) {
+  if (auto name = cast_util::EnumToString(channel_error)) {
+    return *name;
   }
-  NOTREACHED() << "Unknown channel_error "
-               << ChannelErrorToString(channel_error);
+  NOTREACHED() << "Unknown channel_error " << AsInteger(channel_error);
 }
 
 }  // namespace cast_channel
