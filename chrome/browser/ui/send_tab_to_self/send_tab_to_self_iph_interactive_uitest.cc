@@ -723,8 +723,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       CheckHelpBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_BODY));
 }
 
+// TODO(crbug.com/585041396): Flaky on Linux (context menu item never shows).
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive \
+  DISABLED_TutorialFlowCompletesWhenNonFirstTabIsActive
+#else
+#define MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive \
+  TutorialFlowCompletesWhenNonFirstTabIsActive
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       TutorialFlowCompletesWhenNonFirstTabIsActive) {
+                       MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
