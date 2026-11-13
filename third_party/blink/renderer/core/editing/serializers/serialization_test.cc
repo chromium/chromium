@@ -4,19 +4,29 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include <optional>
 #include <string>
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/editing/serializers/markup_accumulator.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -733,6 +743,219 @@ TEST_F(SerializationTest, ReplaceChildrenWithFragment) {
       EXPECT_FALSE(container->hasChildren());
     }
   }
+}
+
+struct SerializationUrlTestCase {
+  const char* value;
+  const char* resolved_value;
+  bool potentially_dangling_markup;
+};
+
+class SerializationUrlTest
+    : public SerializationTest,
+      public testing::WithParamInterface<SerializationUrlTestCase> {
+ protected:
+  void SetUp() override {
+    SerializationTest::SetUp();
+    GetDocument().SetURL(KURL("https://example.com/dir/page.html"));
+    SetBodyContent("<img id='image'>");
+    Element* image = GetElementById("image");
+    image->setAttribute(html_names::kSrcAttr, AtomicString(GetParam().value));
+    image->setAttribute(html_names::kTitleAttr, AtomicString(GetParam().value));
+    UpdateAllLifecyclePhasesForTest();
+
+    const KURL url = GetDocument().CompleteURL(GetParam().value);
+    ASSERT_TRUE(url.IsValid());
+    ASSERT_EQ(GetParam().resolved_value, url.GetString());
+    ASSERT_EQ(GetParam().potentially_dangling_markup,
+              url.PotentiallyDanglingMarkup());
+  }
+
+  String ExpectedResolvedValue() const {
+    return GetParam().potentially_dangling_markup ? GetParam().value
+                                                  : GetParam().resolved_value;
+  }
+
+  DocumentFragment* ParseHTMLFragment(const String& markup) {
+    auto* fragment = DocumentFragment::Create(GetDocument());
+    fragment->ParseHTML(markup, GetDocument().body(), nullptr);
+    return fragment;
+  }
+
+  void ExpectImageURL(const DocumentFragment& fragment,
+                      String expected_value,
+                      SerializationType type = SerializationType::kHtml) {
+    const auto* image = DynamicTo<Element>(fragment.firstChild());
+    ASSERT_TRUE(image);
+    String expected_title(GetParam().value);
+    if (type == SerializationType::kHtml) {
+      // HTML normalizes literal CR to LF; XML preserves CR via a reference.
+      expected_value.Replace('\r', '\n');
+      expected_title.Replace('\r', '\n');
+    }
+    EXPECT_EQ(expected_value, image->getAttribute(html_names::kSrcAttr));
+    EXPECT_EQ(expected_title, image->getAttribute(html_names::kTitleAttr));
+
+    const KURL url =
+        GetDocument().CompleteURL(image->getAttribute(html_names::kSrcAttr));
+    EXPECT_EQ(GetParam().potentially_dangling_markup,
+              url.PotentiallyDanglingMarkup());
+    ResourceRequest request(url);
+    request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
+    request.SetRequestorOrigin(
+        GetDocument().GetExecutionContext()->GetSecurityOrigin());
+    const auto blocked_reason = GetDocument().Fetcher()->Context().CanRequest(
+        ResourceType::kImage, request, url, ResourceLoaderOptions(nullptr),
+        ReportingDisposition::kSuppressReporting, std::nullopt);
+    if (GetParam().potentially_dangling_markup) {
+      EXPECT_EQ(ResourceRequestBlockedReason::kOther, blocked_reason);
+    } else {
+      EXPECT_EQ(std::nullopt, blocked_reason);
+    }
+  }
+};
+
+TEST_P(SerializationUrlTest, SerializeURLAttributes) {
+  for (SerializationType type :
+       {SerializationType::kHtml, SerializationType::kXml}) {
+    for (ResolveUrls resolve :
+         {ResolveUrls::kNone, ResolveUrls::kAll, ResolveUrls::kNonLocal}) {
+      SCOPED_TRACE(testing::Message()
+                   << "type=" << static_cast<int>(type)
+                   << " resolve=" << static_cast<int>(resolve));
+      MarkupAccumulator accumulator(resolve, type, ShadowRootInclusion());
+      const String markup = accumulator.SerializeNodes<EditingStrategy>(
+          *GetElementById("image"), kIncludeNode);
+      DocumentFragment* fragment;
+      if (type == SerializationType::kHtml) {
+        fragment = ParseHTMLFragment(markup);
+      } else {
+        fragment = DocumentFragment::Create(GetDocument());
+        DummyExceptionStateForTesting exception_state;
+        ASSERT_TRUE(
+            fragment->ParseXML(markup, GetDocument().body(), exception_state));
+        ASSERT_FALSE(exception_state.HadException());
+      }
+      ASSERT_TRUE(fragment);
+      ExpectImageURL(*fragment,
+                     resolve == ResolveUrls::kNone ? String(GetParam().value)
+                                                   : ExpectedResolvedValue(),
+                     type);
+    }
+  }
+}
+
+TEST_P(SerializationUrlTest, SerializeStyledURLAttributes) {
+  const String markup(SerializeToHtmlText(*GetElementById("image")));
+  DocumentFragment* fragment = ParseHTMLFragment(markup);
+  ASSERT_TRUE(fragment);
+  ExpectImageURL(*fragment, ExpectedResolvedValue());
+}
+
+TEST_P(SerializationUrlTest, StrictlyProcessedFragmentURLAttributes) {
+  const String markup = CreateMarkup(GetElementById("image"));
+  DocumentFragment* fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), markup, 0, markup.length(),
+          "https://example.com/dir/source.html");
+  ASSERT_TRUE(fragment);
+  ExpectImageURL(*fragment, ExpectedResolvedValue());
+}
+
+TEST_P(SerializationUrlTest, StrictlyProcessedMarkupURLAttributes) {
+  const String markup = CreateMarkup(GetElementById("image"));
+  const String processed_markup = CreateStrictlyProcessedMarkupWithContext(
+      GetDocument(), markup, 0, markup.length(),
+      "https://example.com/dir/source.html", kIncludeNode, ResolveUrls::kAll);
+  ASSERT_FALSE(processed_markup.IsNull());
+  DocumentFragment* fragment = ParseHTMLFragment(processed_markup);
+  ASSERT_TRUE(fragment);
+  ExpectImageURL(*fragment, ExpectedResolvedValue());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    URLAttributes,
+    SerializationUrlTest,
+    testing::Values(
+        SerializationUrlTestCase{"image.png",
+                                 "https://example.com/dir/image.png", false},
+        SerializationUrlTestCase{"image.png?q=a\nb",
+                                 "https://example.com/dir/image.png?q=ab",
+                                 false},
+        SerializationUrlTestCase{
+            "image.png?q=<secret",
+            "https://example.com/dir/image.png?q=%3Csecret", false},
+        SerializationUrlTestCase{
+            "image.png?q=%3C\nsecret",
+            "https://example.com/dir/image.png?q=%3Csecret", false},
+        SerializationUrlTestCase{
+            "image.png?q=%0A<secret",
+            "https://example.com/dir/image.png?q=%0A%3Csecret", false},
+        SerializationUrlTestCase{
+            "image.png?q=\n<secret",
+            "https://example.com/dir/image.png?q=%3Csecret", true},
+        SerializationUrlTestCase{
+            "image.png?q=\r<secret",
+            "https://example.com/dir/image.png?q=%3Csecret", true},
+        SerializationUrlTestCase{
+            "image.png?q=\t<secret",
+            "https://example.com/dir/image.png?q=%3Csecret", true},
+        SerializationUrlTestCase{"https://other.example/image.png?q=\n<secret",
+                                 "https://other.example/image.png?q=%3Csecret",
+                                 true},
+        SerializationUrlTestCase{"https://other.example/image.png?q=\r<secret",
+                                 "https://other.example/image.png?q=%3Csecret",
+                                 true},
+        SerializationUrlTestCase{"https://other.example/image.png?q=\t<secret",
+                                 "https://other.example/image.png?q=%3Csecret",
+                                 true},
+        SerializationUrlTestCase{"//other.example/image.png?q=\n<secret",
+                                 "https://other.example/image.png?q=%3Csecret",
+                                 true},
+        SerializationUrlTestCase{"/image.png?q=\n<secret",
+                                 "https://example.com/image.png?q=%3Csecret",
+                                 true},
+        SerializationUrlTestCase{"image.png#\n<secret",
+                                 "https://example.com/dir/image.png#%3Csecret",
+                                 true}));
+
+TEST_F(SerializationTest, ResolveNonLocalURLsPreservesFileURLAttributes) {
+  GetDocument().SetURL(KURL("file:///dir/page.html"));
+  SetBodyContent(
+      "<a id='link' href='image.png'>link</a>"
+      "<img id='image' src='image.png?q=&#10;&lt;secret'>");
+  for (const char* id : {"link", "image"}) {
+    const Element* element = GetElementById(id);
+    EXPECT_EQ(CreateMarkup(element),
+              CreateMarkup(element, kIncludeNode, ResolveUrls::kNonLocal));
+  }
+  EXPECT_NE(kNotFound, CreateMarkup(GetElementById("link"), kIncludeNode,
+                                    ResolveUrls::kAll)
+                           .find("href=\"file:///dir/image.png\""));
+  EXPECT_EQ(
+      CreateMarkup(GetElementById("image")),
+      CreateMarkup(GetElementById("image"), kIncludeNode, ResolveUrls::kAll));
+}
+
+TEST_F(SerializationTest, CompleteURLsPreservesDanglingBaseURLAttributes) {
+  const String base_url = "https://example.com/dir/\n<secret/";
+  ASSERT_TRUE(KURL(base_url).PotentiallyDanglingMarkup());
+  const String markup =
+      "<a href='image.png'>link</a>"
+      "<img src='https://other.example/image.png?q=a&#10;b'>";
+  DocumentFragment* fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), markup, 0, markup.length(), base_url);
+  ASSERT_TRUE(fragment);
+  const auto* anchor = DynamicTo<Element>(fragment->firstChild());
+  ASSERT_TRUE(anchor);
+  EXPECT_EQ("image.png", anchor->getAttribute(html_names::kHrefAttr));
+  EXPECT_TRUE(KURL(KURL(base_url), anchor->getAttribute(html_names::kHrefAttr))
+                  .PotentiallyDanglingMarkup());
+  const auto* image = DynamicTo<Element>(anchor->nextSibling());
+  ASSERT_TRUE(image);
+  EXPECT_EQ("https://other.example/image.png?q=ab",
+            image->getAttribute(html_names::kSrcAttr));
 }
 
 }  // namespace blink

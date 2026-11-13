@@ -174,7 +174,9 @@ void CompleteUrls(DocumentFragment& fragment, const String& base_url) {
         // "javascript:" URL. Not reachable from current callers, since the
         // parser strips such attributes when scripting content is disallowed.
         KURL completed_url(parsed_base_url, attribute.Value());
-        if (completed_url.ProtocolIsJavaScript()) {
+        // Keep the raw spelling so reparsing retains dangling-markup detection.
+        if (completed_url.ProtocolIsJavaScript() ||
+            completed_url.PotentiallyDanglingMarkup()) {
           continue;
         }
         changes.push_back(AttributeChange(&element, attribute.GetName(),
