@@ -83,10 +83,10 @@ enum class WarningType;
 
 // Connects the receiver to the main, inactive and incognito browsers of
 // `provider`: they back the UI created in `-start`, and the receiver handles
-// their scene-level commands (`SceneCommands`, `SceneSignInCommands`,
-// `SettingsCommands` and `GeminiCommands`). Must be called once, before the
-// coordinators of those browsers are started, as they resolve these handlers
-// when starting.
+// their scene-level commands (`SceneCommands`, `SettingsCommands` and
+// `GeminiCommands`, and `SceneSignInCommands` through its sign-in modal host).
+// Must be called once, before the coordinators of those browsers are started,
+// as they resolve these handlers when starting.
 - (void)connectBrowsersFromProvider:(id<BrowserProviderInterface>)provider;
 
 // Connects the receiver to `incognitoBrowser`, created after the incognito

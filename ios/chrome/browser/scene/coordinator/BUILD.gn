@@ -8,6 +8,9 @@ source_set("coordinator") {
     "scene_coordinator.mm",
     "scene_mediator.h",
     "scene_mediator.mm",
+    "signin_modal_host.h",
+    "signin_modal_host.mm",
+    "signin_modal_host_delegate.h",
   ]
   deps = [
     "//base",
@@ -106,6 +109,7 @@ source_set("unit_tests") {
   sources = [
     "scene_coordinator_unittest.mm",
     "scene_mediator_unittest.mm",
+    "signin_modal_host_unittest.mm",
   ]
   deps = [
     ":coordinator",

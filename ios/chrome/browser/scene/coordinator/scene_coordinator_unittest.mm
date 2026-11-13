@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
+#import "ios/chrome/browser/scene/coordinator/signin_modal_host.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -74,11 +75,10 @@ namespace {
 // Returns whether `coordinator` handles the scene-level commands sent through
 // `browser`'s dispatcher.
 bool HandlesSceneCommands(SceneCoordinator* coordinator, Browser* browser) {
-  // One required selector of each of `SceneCommands`, `SceneSignInCommands`,
-  // `SettingsCommands` and `GeminiCommands`.
+  // One required selector of each of `SceneCommands`, `SettingsCommands` and
+  // `GeminiCommands`.
   const SEL selectors[] = {
     @selector(dismissModalDialogsWithCompletion:),
-    @selector(stopSigninCoordinatorWithCompletionAnimated:),
     @selector(showGeminiSettings),
     @selector(dismissGeminiFlowWithCompletion:),
   };
@@ -89,6 +89,17 @@ bool HandlesSceneCommands(SceneCoordinator* coordinator, Browser* browser) {
     }
   }
   return true;
+}
+
+// Returns whether the `SceneSignInCommands` sent through `browser`'s dispatcher
+// are handled by the sign-in modal host of `coordinator`, rather than by
+// `coordinator`.
+bool SigninModalHostHandlesSceneSignInCommands(SceneCoordinator* coordinator,
+                                               Browser* browser) {
+  id target = [browser->GetCommandDispatcher()
+      forwardingTargetForSelector:
+          @selector(stopSigninCoordinatorWithCompletionAnimated:)];
+  return [target isKindOfClass:[SigninModalHost class]];
 }
 
 class SceneCoordinatorTest : public PlatformTest {
@@ -254,11 +265,23 @@ TEST_F(SceneCoordinatorTest, HandlesSceneCommandsOfAllBrowsers) {
   EXPECT_TRUE(HandlesSceneCommands(coordinator_, regular_browser));
   EXPECT_TRUE(HandlesSceneCommands(coordinator_, inactive_browser));
   EXPECT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+  EXPECT_TRUE(
+      SigninModalHostHandlesSceneSignInCommands(coordinator_, regular_browser));
+  EXPECT_TRUE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                        inactive_browser));
+  EXPECT_TRUE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                        incognito_browser));
 
   [coordinator_ stop];
   EXPECT_FALSE(HandlesSceneCommands(coordinator_, regular_browser));
   EXPECT_FALSE(HandlesSceneCommands(coordinator_, inactive_browser));
   EXPECT_FALSE(HandlesSceneCommands(coordinator_, incognito_browser));
+  EXPECT_FALSE(
+      SigninModalHostHandlesSceneSignInCommands(coordinator_, regular_browser));
+  EXPECT_FALSE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                         inactive_browser));
+  EXPECT_FALSE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                         incognito_browser));
 }
 
 // Tests that disconnecting and connecting the incognito browser stops and
@@ -267,12 +290,18 @@ TEST_F(SceneCoordinatorTest, ConnectIncognitoBrowserHandlesSceneCommands) {
   Browser* incognito_browser =
       scene_state_.browserProviderInterface.incognitoBrowser;
   ASSERT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+  ASSERT_TRUE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                        incognito_browser));
 
   [coordinator_ disconnectIncognitoBrowser];
   EXPECT_FALSE(HandlesSceneCommands(coordinator_, incognito_browser));
+  EXPECT_FALSE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                         incognito_browser));
 
   [coordinator_ connectIncognitoBrowser:incognito_browser];
   EXPECT_TRUE(HandlesSceneCommands(coordinator_, incognito_browser));
+  EXPECT_TRUE(SigninModalHostHandlesSceneSignInCommands(coordinator_,
+                                                        incognito_browser));
 
   // Propagating the incognito browser does not register the handlers again.
   [coordinator_ propagateIncognitoBrowser];
