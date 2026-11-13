@@ -291,6 +291,36 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
+    public void testVerticalScrollOffsetIsZeroWhenNoScreenIsShown() {
+        // Before any screen is shown, there is no current screen.
+        runOnUiThreadBlocking(() -> assertThat(mView.getVerticalScrollOffset(), is(0)));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Hiding the sheet clears the current screen while the sheet is still animating closed.
+        // The bottom sheet may still query the scroll offset during that animation, which must
+        // not throw.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE_STATE, HIDDEN);
+                    assertThat(mBottomSheetController.getSheetState(), is(not(SheetState.HIDDEN)));
+                    assertThat(mView.getVerticalScrollOffset(), is(0));
+                });
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+    }
+
+    @Test
+    @MediumTest
     public void testBankAccountShown() {
         runOnUiThreadBlocking(
                 () -> {
