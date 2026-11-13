@@ -34,6 +34,8 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   // `blink::mojom::AILanguageModel` implementation.
   void Prompt(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
               on_device_model::mojom::ResponseConstraintPtr constraint,
+              std::optional<blink::mojom::AILanguageModelThinkingEffort>
+                  thinking_effort,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Append(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,

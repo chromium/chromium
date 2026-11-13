@@ -225,8 +225,8 @@ bool HasMultimodalInputCapabilities(
 }
 
 // Checks if the expected outputs contain any invalid types.
-// Models can generate text and tool calls, but not images, audio, or tool
-// responses.
+// Models can generate text, thoughts and tool calls, but not images, audio, or
+// tool responses.
 bool HasInvalidOutputTypes(
     base::optional_ref<
         const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
@@ -238,6 +238,7 @@ bool HasInvalidOutputTypes(
     switch (expected_entry->type) {
       case blink::mojom::AILanguageModelPromptType::kText:
       case blink::mojom::AILanguageModelPromptType::kToolCall:
+      case blink::mojom::AILanguageModelPromptType::kThought:
         // Valid output types.
         break;
       case blink::mojom::AILanguageModelPromptType::kImage:
@@ -250,6 +251,29 @@ bool HasInvalidOutputTypes(
   return false;
 }
 
+// Returns whether `expected` includes thoughts.
+bool HasThoughtType(
+    base::optional_ref<
+        const std::vector<blink::mojom::AILanguageModelExpectedPtr>> expected) {
+  return expected.has_value() &&
+         std::ranges::any_of(expected.value(), [](const auto& entry) {
+           return entry->type ==
+                  blink::mojom::AILanguageModelPromptType::kThought;
+         });
+}
+
+// Returns whether `options` use Thinking Mode, by setting a thinking effort
+// other than none or by expecting thought inputs or outputs.
+bool UsesThinkingMode(
+    const blink::mojom::AILanguageModelCreateOptions& options) {
+  const bool sets_effort =
+      options.thinking_effort.has_value() &&
+      *options.thinking_effort !=
+          blink::mojom::AILanguageModelThinkingEffort::kNone;
+  return sets_effort || HasThoughtType(options.expected_inputs) ||
+         HasThoughtType(options.expected_outputs);
+}
+
 on_device_model::Capabilities GetExpectedInputCapabilities(
     base::optional_ref<
         const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
@@ -259,7 +283,8 @@ on_device_model::Capabilities GetExpectedInputCapabilities(
     for (const auto& expected_entry : expected_inputs.value()) {
       switch (expected_entry->type) {
         case blink::mojom::AILanguageModelPromptType::kText:
-          // Text capabilities are included by default.
+        case blink::mojom::AILanguageModelPromptType::kThought:
+          // Text and thought capabilities are included by default.
           break;
         case blink::mojom::AILanguageModelPromptType::kImage:
           capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
@@ -858,8 +883,8 @@ void AIManager::CanCreateLanguageModel(
   if (options) {
     input_capabilities = GetExpectedInputCapabilities(options->expected_inputs);
     // Check if outputs request invalid types (image/audio/tool response).
-    // Models can generate text and tool calls, but not multimodal content or
-    // tool responses.
+    // Models can generate text, thoughts and tool calls, but not multimodal
+    // content or tool responses.
     if (HasInvalidOutputTypes(options->expected_outputs)) {
       std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                   kUnavailableModelAdaptationNotAvailable);
@@ -882,6 +907,12 @@ void AIManager::CanCreateLanguageModel(
         return;
       }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
+    }
+    // TODO(crbug.com/546151578): Support Thinking Mode in browser AI.
+    if (UsesThinkingMode(*options)) {
+      std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableModelAdaptationNotAvailable);
+      return;
     }
   }
 
@@ -1072,10 +1103,19 @@ void AIManager::CreateLanguageModelInternal(
     params->capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
   }
   // Check if outputs request invalid types (image/audio/tool response).
-  // Models can generate text and tool calls, but not multimodal content or
-  // tool responses.
+  // Models can generate text, thoughts and tool calls, but not multimodal
+  // content or tool responses.
   if (HasInvalidOutputTypes(options->expected_outputs)) {
     receivers_.ReportBadMessage("Invalid output types");
+    return;
+  }
+  // TODO(crbug.com/546151578): Support Thinking Mode in browser AI.
+  if (UsesThinkingMode(*options)) {
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote(std::move(client));
+    on_device_ai::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
   if (!params->capabilities.empty()) {

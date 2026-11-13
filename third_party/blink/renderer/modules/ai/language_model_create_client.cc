@@ -503,7 +503,8 @@ void LanguageModelCreateClient::OnInitialPromptsResolved(
       mojom::blink::AILanguageModelCreateOptions::New(
           resolved_sampling_params_.Clone(), std::move(initial_prompts),
           std::move(expected_inputs), std::move(expected_outputs),
-          std::move(converted_tools_), sampling_mode_),
+          std::move(converted_tools_), sampling_mode_,
+          /*thinking_effort=*/std::nullopt),
       BindMonitorRemote());
 }
 

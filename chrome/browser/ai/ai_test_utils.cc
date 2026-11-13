@@ -123,6 +123,11 @@ void AITestUtils::TestStreamingResponder::OnStreaming(const std::string& text) {
   responses_.push_back(text);
 }
 
+void AITestUtils::TestStreamingResponder::OnStreamingThought(
+    const std::string& text) {
+  thoughts_.push_back(text);
+}
+
 void AITestUtils::TestStreamingResponder::OnCompletion(
     blink::mojom::ModelExecutionContextInfoPtr context_info) {
   if (context_info) {

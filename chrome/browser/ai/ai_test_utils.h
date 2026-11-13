@@ -63,6 +63,7 @@ class AITestUtils {
     }
 
     const std::vector<std::string> responses() const { return responses_; }
+    const std::vector<std::string>& thoughts() const { return thoughts_; }
     const std::vector<std::string> responses_without_last() const {
       EXPECT_TRUE(responses_.size() > 1);
       EXPECT_EQ(responses_.back(), "");
@@ -80,6 +81,7 @@ class AITestUtils {
     void OnError(blink::mojom::ModelStreamingResponseStatus status,
                  blink::mojom::QuotaErrorInfoPtr quota_error_info) override;
     void OnStreaming(const std::string& text) override;
+    void OnStreamingThought(const std::string& text) override;
     void OnCompletion(
         blink::mojom::ModelExecutionContextInfoPtr context_info) override;
     void OnToolCalls(
@@ -89,6 +91,7 @@ class AITestUtils {
     std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;
     blink::mojom::QuotaErrorInfoPtr quota_error_info_;
     std::vector<std::string> responses_;
+    std::vector<std::string> thoughts_;
     std::vector<blink::mojom::ToolCallPtr> tool_calls_;
     uint64_t current_tokens_ = 0;
     base::RunLoop run_loop_;

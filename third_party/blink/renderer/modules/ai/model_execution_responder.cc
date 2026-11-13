@@ -138,6 +138,10 @@ class Responder final : public GarbageCollected<Responder>,
     response_ = StrCat({response_, text});
   }
 
+  void OnStreamingThought(const String& text) override {
+    // TODO(crbug.com/546151578): Return thoughts to script when requested.
+  }
+
   void OnCompletion(
       mojom::blink::ModelExecutionContextInfoPtr context_info) override {
     RecordResponseStatusMetrics(
@@ -333,6 +337,10 @@ class StreamingResponder final
     response_size_ += static_cast<int>(text.length());
     v8::HandleScope handle_scope(script_state_->GetIsolate());
     Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
+  }
+
+  void OnStreamingThought(const String& text) override {
+    // TODO(crbug.com/546151578): Return thoughts to script when requested.
   }
 
   void OnCompletion(

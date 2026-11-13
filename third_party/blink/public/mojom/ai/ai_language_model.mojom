@@ -25,6 +25,15 @@ struct AILanguageModelSamplingParams {
   float temperature;
 };
 
+// Categorical thinking effort levels for reasoning control.
+// See LanguageModelThinkingEffort in IDL.
+enum AILanguageModelThinkingEffort {
+  kNone = 0,
+  kLow = 1,
+  kMedium = 2,
+  kHigh = 3,
+};
+
 // This struct contains the information describing the default and max
 // sampling params for session creation.
 struct AILanguageModelParams {
@@ -58,6 +67,9 @@ struct AILanguageModelInstanceInfo {
 
   // The sampling mode provided by the caller when creating the instance.
   AILanguageModelSamplingMode? sampling_mode;
+
+  // The thinking effort configured when creating the instance.
+  AILanguageModelThinkingEffort? thinking_effort;
 };
 
 // The role for a given prompt. See LanguageModelPromptRole in IDL.
@@ -74,6 +86,7 @@ enum AILanguageModelPromptType {
   kAudio = 2,
   kToolCall = 3,
   kToolResponse = 4,
+  kThought = 5,
 };
 
 // Categorical sampling modes for ongoing parameter control explorations.
@@ -118,6 +131,9 @@ union AILanguageModelPromptContent {
   // Success format: {"callId": "...", "name": "...", "result": [...]}
   // Error format: {"callId": "...", "name": "...", "errorMessage": "..."}
   mojo_base.mojom.DictionaryValue tool_response;
+
+  // Thought/reasoning content provided as input.
+  string thought;
 };
 
 // A prompt includes a role and content. See LanguageModelMessage in IDL.
@@ -147,6 +163,9 @@ struct AILanguageModelCreateOptions {
   array<AILanguageModelExpected>? expected_outputs;
   array<AILanguageModelToolDeclaration>? tools;
   AILanguageModelSamplingMode? sampling_mode;
+  // The default thinking effort for prompts. Thoughts are only streamed to the
+  // client if `expected_outputs` includes kThought.
+  AILanguageModelThinkingEffort? thinking_effort;
 };
 
 // The client interface that receives an AILanguageModel or errors from an
@@ -170,9 +189,11 @@ interface AILanguageModel {
   // Prompts the model with arbitrary content provided via the JavaScript API.
   // An optional JSON schema or regex can be provided to define structured
   // output requirements for the response. Note that only one of the JSON schema
-  // or regex should be provided.
+  // or regex should be provided. An optional `thinking_effort` overrides the
+  // session's thinking effort for this prompt.
   Prompt(array<AILanguageModelPrompt> prompts,
          on_device_model.mojom.ResponseConstraint? constraint,
+         AILanguageModelThinkingEffort? thinking_effort,
          pending_remote<ModelStreamingResponder> pending_responder);
 
   // Appends the prompts to the context, but they won't be processed yet until

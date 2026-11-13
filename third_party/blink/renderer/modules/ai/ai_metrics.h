@@ -40,7 +40,8 @@ class MODULES_EXPORT AIMetrics {
     kAudio = 2,
     kToolCall = 3,
     kToolResponse = 4,
-    kMaxValue = kToolResponse,
+    kThought = 5,
+    kMaxValue = kThought,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelInputType)
 

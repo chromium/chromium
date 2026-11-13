@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/language_model.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,6 +54,8 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
 
   void Prompt(Vector<mojom::blink::AILanguageModelPromptPtr> prompt,
               on_device_model::mojom::blink::ResponseConstraintPtr constraint,
+              std::optional<mojom::blink::AILanguageModelThinkingEffort>
+                  thinking_effort,
               mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
                   pending_responder) override {
     last_prompts_ = std::move(prompt);

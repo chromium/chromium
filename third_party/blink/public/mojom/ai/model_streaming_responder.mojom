@@ -111,6 +111,10 @@ interface ModelStreamingResponder {
   // Called when there is a new chunk of data available for streaming.
   OnStreaming(string text);
 
+  // Called when there is a new chunk of thought data available for streaming.
+  // Used by Prompt API only, when the session expects thought outputs.
+  OnStreamingThought(string text);
+
   // Called when the model requests tool execution.
   // Clients should validate and then execute or surface calls to JS API client.
   // Model sessions typically expect a tool result or error input thereafter.

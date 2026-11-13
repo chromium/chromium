@@ -128,6 +128,8 @@ AIMetrics::LanguageModelInputType AIMetrics::ToLanguageModelInputType(
       return MetricsEnum::kToolCall;
     case MojoEnum::kToolResponse:
       return MetricsEnum::kToolResponse;
+    case MojoEnum::kThought:
+      return MetricsEnum::kThought;
   }
   NOTREACHED();
 }

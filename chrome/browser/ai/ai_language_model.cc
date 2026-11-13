@@ -132,6 +132,9 @@ on_device_model::mojom::InputPtr ConvertToInput(
         case blink::mojom::AILanguageModelPromptContent::Tag::kText:
           input->pieces.push_back(InputPiece::NewText(content->get_text()));
           break;
+        case blink::mojom::AILanguageModelPromptContent::Tag::kThought:
+          // TODO(crbug.com/546151578): Handle thought inputs in browser AI.
+          return nullptr;
         case blink::mojom::AILanguageModelPromptContent::Tag::kBitmap:
           if (!capabilities.Has(
                   on_device_model::CapabilityFlags::kImageInput)) {
@@ -775,11 +778,13 @@ void AILanguageModel::Initialize(
 void AILanguageModel::Prompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     on_device_model::mojom::ResponseConstraintPtr constraint,
+    std::optional<blink::mojom::AILanguageModelThinkingEffort> thinking_effort,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  AddToQueue(base::BindOnce(
-      &AILanguageModel::PromptInternal, weak_ptr_factory_.GetWeakPtr(),
-      std::move(prompts), std::move(constraint), std::move(pending_responder)));
+  AddToQueue(base::BindOnce(&AILanguageModel::PromptInternal,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(prompts),
+                            std::move(constraint), thinking_effort,
+                            std::move(pending_responder)));
 }
 
 void AILanguageModel::Append(
@@ -866,7 +871,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
           session_params_->top_k, session_params_->temperature),
       std::move(input_types).extract(), std::move(output_types).extract(),
       audio_sample_rate_hz, audio_channel_count,
-      /*sampling_mode=*/std::nullopt);
+      /*sampling_mode=*/std::nullopt, /*thinking_effort=*/std::nullopt);
 }
 
 mojo::PendingRemote<blink::mojom::AILanguageModel>
@@ -996,6 +1001,7 @@ void AILanguageModel::ForkInternal(
 void AILanguageModel::PromptInternal(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     on_device_model::mojom::ResponseConstraintPtr constraint,
+    std::optional<blink::mojom::AILanguageModelThinkingEffort> thinking_effort,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder,
     base::OnceClosure on_complete) {
@@ -1013,7 +1019,11 @@ void AILanguageModel::PromptInternal(
           optimization_guide::mojom::OnDeviceFeature::kPromptApi,
           model_client_->base_model());
   auto input = ConvertToInputForExecute(prompts, session_params_->capabilities);
-  if (!input) {
+  // TODO(crbug.com/546151578): Support per prompt thinking effort.
+  bool has_unsupported_thinking_effort =
+      thinking_effort.has_value() &&
+      *thinking_effort != blink::mojom::AILanguageModelThinkingEffort::kNone;
+  if (!input || has_unsupported_thinking_effort) {
     logger->set_result(optimization_guide::OnDeviceRequestTelemetryLogger::
                            Result::kFailedConstructingMessage);
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(

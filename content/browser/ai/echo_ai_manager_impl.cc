@@ -115,8 +115,12 @@ bool HasUnsupportedType(
                 blink::features::kAIPromptAPIToolUse)) {
           continue;
         }
-        // Allow other types (multimodal) when multimodal feature is enabled.
-        if (base::FeatureList::IsEnabled(
+        // Allow multimodal types when multimodal feature is enabled.
+        if ((expected_input->type ==
+                 blink::mojom::AILanguageModelPromptType::kImage ||
+             expected_input->type ==
+                 blink::mojom::AILanguageModelPromptType::kAudio) &&
+            base::FeatureList::IsEnabled(
                 blink::features::kAIPromptAPIMultimodalInput)) {
           continue;
         }
@@ -143,6 +147,11 @@ bool HasUnsupportedType(
         has_unsupported_type = true;
         break;
       }
+    }
+    if (options->thinking_effort.has_value() &&
+        *options->thinking_effort !=
+            blink::mojom::AILanguageModelThinkingEffort::kNone) {
+      has_unsupported_type = true;
     }
   }
   return has_unsupported_type;
@@ -572,7 +581,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
               enabled_output_types.begin(), enabled_output_types.end()),
           /*audio_sample_rate_hz=*/std::nullopt,
           /*audio_channel_count=*/std::nullopt,
-          /*sampling_mode=*/std::nullopt));
+          /*sampling_mode=*/std::nullopt, /*thinking_effort=*/std::nullopt));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

@@ -371,6 +371,10 @@ class AppendClient : public GarbageCollected<AppendClient>,
     NOTREACHED() << "Append() should not invoke `OnStreaming()`";
   }
 
+  void OnStreamingThought(const String& text) override {
+    NOTREACHED() << "Append() should not invoke `OnStreamingThought()`";
+  }
+
   void OnToolCalls(Vector<mojom::blink::ToolCallPtr> tool_calls) override {
     NOTREACHED() << "Append() should not invoke `OnToolCalls()`";
   }
@@ -658,7 +662,7 @@ void LanguageModel::ExecuteAvailability(
       mojom::blink::AILanguageModelCreateOptions::New(
           std::move(resolved_sampling_params), std::move(initial_prompts),
           std::move(expected_in), std::move(expected_out), std::move(tools),
-          sampling_mode),
+          sampling_mode, /*thinking_effort=*/std::nullopt),
       std::move(callback));
 }
 
@@ -816,6 +820,7 @@ void LanguageModel::ExecutePrompt(
     return;
   }
   language_model_remote_->Prompt(std::move(prompts), std::move(constraint),
+                                 /*thinking_effort=*/std::nullopt,
                                  std::move(pending_responder));
 }
 
