@@ -134,7 +134,6 @@ SqliteResultCode Statement::StepInternal() {
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
 
   auto elapsed = timer.Elapsed();
-  ref_->database()->RecordTimingHistogram("Sql.Statement.StepTime.", elapsed);
   *time_spent_stepping_ += elapsed;
 
   return CheckSqliteResultCode(sqlite_result_code);

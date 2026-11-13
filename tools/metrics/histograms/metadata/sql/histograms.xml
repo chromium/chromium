@@ -415,19 +415,6 @@ chromium-metrics-reviews@google.com.
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
-<histogram name="Sql.Statement.StepTime.{DatabaseTag}" units="microseconds"
-    expires_after="2027-04-04">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    Reports the time of a single step of a statement running against
-    {DatabaseTag}, in microseconds. Recorded every time `Step` is called.
-
-    Only reported for clients with high-resolution clocks.
-  </summary>
-  <token key="DatabaseTag" variants="DatabaseTag"/>
-</histogram>
-
 <histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
     expires_after="2027-04-11">
   <owner>etienneb@chromium.org</owner>
