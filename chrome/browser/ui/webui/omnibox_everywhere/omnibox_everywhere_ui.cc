@@ -136,60 +136,15 @@ class OmniboxEverywhereMostVisitedPrefObserver
 };
 
 void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
+  source->AddLocalizedStrings(MostVisitedHandler::GetWebUIDataSourceDict());
+
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
                      omnibox::kOmniboxEverywhereMostVisitedParam.Get());
   source->AddBoolean(
       "omniboxEverywhereMostVisitedHideTitle",
       !omnibox::kOmniboxEverywhereMostVisitedShowTitleParam.Get());
+  source->AddLocalizedString("close", IDS_ACCNAME_CLOSE);
 
-  static constexpr webui::LocalizedString kMostVisitedStrings[] = {
-      {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
-      {"close", IDS_ACCNAME_CLOSE},
-      {"editLinkTitle", IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT},
-      {"viewLinkTitle", IDS_NTP_CUSTOM_LINKS_SHORTCUT_DETAILS_TITLE},
-      {"invalidUrl", IDS_NTP_CUSTOM_LINKS_INVALID_URL},
-      {"linkAddedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_ADDED},
-      {"linkCancel", IDS_NTP_CUSTOM_LINKS_CANCEL},
-      {"linkCantCreate", IDS_NTP_CUSTOM_LINKS_CANT_CREATE},
-      {"linkCantEdit", IDS_NTP_CUSTOM_LINKS_CANT_EDIT},
-      {"viewLink", IDS_NTP_CUSTOM_LINKS_DETAILS},
-      {"linkDone", IDS_NTP_CUSTOM_LINKS_DONE},
-      {"linkEditedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_EDITED},
-      {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
-      {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
-      {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
-      {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},
-      {"enterpriseShortcutSubtitle", IDS_NTP_ENTERPRISE_SHORTCUT_SUBTITLE},
-      {"nameField", IDS_NTP_CUSTOM_LINKS_NAME},
-      {"restoreDefaultLinks", IDS_NTP_CONFIRM_MSG_RESTORE_DEFAULTS},
-      {"restoreDefaultEnterpriseShortcuts",
-       IDS_NTP_CONFIRM_MSG_RESTORE_ENTERPRISE_DEFAULTS},
-      {"restoreThumbnailsShort", IDS_NEW_TAB_RESTORE_THUMBNAILS_SHORT_LINK},
-      {"shortcutAlreadyExists", IDS_NTP_CUSTOM_LINKS_ALREADY_EXISTS},
-      {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
-      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
-      {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
-      {"shortcutsInactivityRemovalMsg",
-       IDS_NTP_MOST_VISITED_SHORTCUTS_INACTIVITY_REMOVAL},
-      {"moduleInactivityRemovalMsg", IDS_NTP_MODULE_INACTIVITY_REMOVAL},
-      {"modulesInactivityRemovalMsg", IDS_NTP_MODULES_INACTIVITY_REMOVAL},
-      {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
-  };
-  source->AddLocalizedStrings(kMostVisitedStrings);
-
-  ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
-  source->AddString("undoDescription", l10n_util::GetStringFUTF16(
-                                           IDS_UNDO_DESCRIPTION,
-                                           undo_accelerator.GetShortcutText()));
-
-  source->AddInteger("maxTilesInCollapsedState",
-                     ntp_features::GetMaxTilesInCollapsedState());
-  source->AddInteger("maxShortcutsInExpandedState",
-                     ntp_features::GetMaxShortcutsInExpandedState());
-  source->AddInteger("maxMostVisitedTilesInExpandedState",
-                     ntp_features::GetMaxMostVisitedTilesInExpandedState());
-  source->AddInteger("maxEnterpriseShortcuts",
-                     ntp_features::GetMaxEnterpriseShortcuts());
   source->AddInteger("preconnectStartTimeThreshold", 0);
   source->AddInteger("prefetchStartTimeThreshold", 0);
   source->AddBoolean("prefetchTriggerEnabled", false);
