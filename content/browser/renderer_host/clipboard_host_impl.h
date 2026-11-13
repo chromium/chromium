@@ -34,6 +34,7 @@ class StorageKey;
 namespace ui {
 class ScopedClipboardWriter;
 struct ClipboardMetadata;
+struct ClipboardUrlInfo;
 }  // namespace ui
 
 namespace content {
@@ -199,6 +200,10 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
                            WriteBookmark_InvalidUrl_DoesNotCrash);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteBookmark_EmptyUrl);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteBookmark_FileUrl);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
+                           WriteBookmark_AskedOfPolicy);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
+                           WriteBookmark_DroppedUrlNotAskedOfPolicy);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteBitmap);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteBitmap_Empty);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
@@ -215,6 +220,11 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteHtml);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteTextAndHtml);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, ConcurrentWrites);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteBookmark);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest,
+                           WriteBookmark_PolicyReplaced);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest,
+                           WriteBookmark_PolicyBlocked);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest, AddClipboardListener);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
                            ClipboardListenerDisconnect);
@@ -252,6 +262,18 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   // This method can be called asynchronously.
   virtual void OnCopyHtmlAllowedResult(
       const GURL& source_url,
+      const ui::ClipboardFormatType& data_type,
+      const ClipboardPasteData& data,
+      std::optional<std::u16string> replacement_data);
+
+  // Does the same thing as the previous functions for the bookmark given to
+  // `WriteBookmark()`. `ClipboardPasteData` has no field for a bookmark, so
+  // `url_info` carries it and `data` only its text form, which is empty when
+  // the policy blocked the copy without a replacement.
+  //
+  // This method can be called asynchronously.
+  virtual void OnCopyBookmarkAllowedResult(
+      const ui::ClipboardUrlInfo& url_info,
       const ui::ClipboardFormatType& data_type,
       const ClipboardPasteData& data,
       std::optional<std::u16string> replacement_data);

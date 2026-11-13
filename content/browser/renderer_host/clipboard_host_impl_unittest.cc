@@ -56,7 +56,9 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -608,9 +610,81 @@ TEST_F(ClipboardHostImplWriteTest, WriteBookmark_ValidUrl) {
   // ClipboardWin::ReadURL does not round-trip the title.
   EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
 #endif
-  // ValidateClipboardSource() is intentionally not called: WriteBookmark does
-  // not go through IsClipboardCopyAllowedByPolicy, so no SourceRFHToken is
-  // pickled into the clipboard.
+  ValidateClipboardSource();
+}
+
+// Records what the copy policy check is asked, and allows the copy.
+class CopyPolicyRecordingBrowserClient : public TestContentBrowserClient {
+ public:
+  CopyPolicyRecordingBrowserClient() = default;
+  ~CopyPolicyRecordingBrowserClient() override = default;
+
+  void IsClipboardCopyAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ui::ClipboardMetadata& metadata,
+      const ClipboardPasteData& data,
+      IsClipboardCopyAllowedCallback callback) override {
+    ++call_count_;
+    metadata_ = metadata;
+    data_ = data;
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+  }
+
+  int call_count() const { return call_count_; }
+  const ui::ClipboardMetadata& metadata() const { return metadata_; }
+  const ClipboardPasteData& data() const { return data_; }
+
+ private:
+  int call_count_ = 0;
+  ui::ClipboardMetadata metadata_;
+  ClipboardPasteData data_;
+};
+
+// Regression test for crbug.com/497734581: a bookmark goes through the same
+// copy policy check as every other write, which is shown its URL and title as
+// plain text.
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_AskedOfPolicy) {
+  CopyPolicyRecordingBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  const std::string kUrl = "https://example.com/page";
+  const std::u16string kTitle = u"Example Page";
+  clipboard_host_impl()->WriteBookmark(kUrl, kTitle);
+  clipboard_host_impl()->CommitWrite();
+
+  ASSERT_EQ(1, browser_client.call_count());
+  EXPECT_EQ(ui::ClipboardFormatType::PlainTextType(),
+            browser_client.metadata().format_type);
+  const std::u16string kExpectedText =
+      u"https://example.com/page\nExample Page";
+  EXPECT_EQ(kExpectedText, browser_client.data().text);
+  EXPECT_EQ(kExpectedText.size() * sizeof(char16_t),
+            browser_client.metadata().size);
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_EQ(kUrl, url);
+  ValidateClipboardSource();
+}
+
+// A URL that WriteBookmark() drops is not put to the policy, which could
+// otherwise report or warn about a copy that never happens.
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_DroppedUrlNotAskedOfPolicy) {
+  CopyPolicyRecordingBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  clipboard_host_impl()->WriteBookmark("http://[", u"some title");
+  clipboard_host_impl()->WriteBookmark("file:///etc/passwd", u"some title");
+  clipboard_host_impl()->CommitWrite();
+
+  EXPECT_EQ(0, browser_client.call_count());
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
 }
 
 // Regression test for crbug.com/495504337: "http://[" canonicalizes to
@@ -772,6 +846,22 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
       } else {
         ClipboardHostImpl::OnCopyHtmlAllowedResult(source_url, data_type, data,
                                                    std::move(replacement_data));
+      }
+    }
+
+    void OnCopyBookmarkAllowedResult(
+        const ui::ClipboardUrlInfo& url_info,
+        const ui::ClipboardFormatType& data_type,
+        const ClipboardPasteData& data,
+        std::optional<std::u16string> replacement_data) override {
+      if (delay_) {
+        delayed_on_copy_allowed_results_.push(
+            base::BindOnce(&ClipboardHostImpl::OnCopyBookmarkAllowedResult,
+                           base::Unretained(this), url_info, data_type, data,
+                           std::move(replacement_data)));
+      } else {
+        ClipboardHostImpl::OnCopyBookmarkAllowedResult(
+            url_info, data_type, data, std::move(replacement_data));
       }
     }
 
@@ -1207,6 +1297,110 @@ TEST_F(ClipboardHostImplAsyncWriteTest,
   remote()->ReadUnsanitizedCustomFormat(format, future.GetCallback());
 
   EXPECT_EQ(0u, future.Get().size());
+}
+
+// Regression test for crbug.com/497734581: a bookmark reaches the clipboard
+// only once the copy policy check has allowed it, like every other write.
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteBookmark) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::string kUrl = "https://example.com/page";
+  const std::u16string kTitle = u"Example Page";
+  async_write_clipboard_host_impl()->WriteBookmark(kUrl, kTitle);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, the bookmark shouldn't be on the
+  // clipboard as we don't know yet if it's allowed or not.
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  ui::clipboard_test_util::ReadBookmark(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_EQ(kUrl, url);
+#if !BUILDFLAG(IS_WIN)
+  EXPECT_EQ(kTitle, title);
+#else
+  // ClipboardWin::ReadURL does not round-trip the title.
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+#endif
+}
+
+// When the policy replaces a bookmark, only the replacement text reaches the
+// clipboard.
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteBookmark_PolicyReplaced) {
+  PolicyBlockBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  async_write_clipboard_host_impl()->WriteBookmark("https://example.com/page",
+                                                   u"Example Page");
+  async_write_clipboard_host_impl()->CommitWrite();
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+
+  base::test::TestFuture<std::u16string> clipboard_text_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_text_future.GetCallback());
+  EXPECT_EQ(u"Policy Blocked", clipboard_text_future.Get());
+}
+
+// ContentBrowserClient that blocks a copy outright, with nothing to put on the
+// clipboard in its place.
+class PolicyBlockWithoutReplacementBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  PolicyBlockWithoutReplacementBrowserClient() = default;
+  ~PolicyBlockWithoutReplacementBrowserClient() override = default;
+
+  void IsClipboardCopyAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ui::ClipboardMetadata& metadata,
+      const ClipboardPasteData& data,
+      IsClipboardCopyAllowedCallback callback) override {
+    std::move(callback).Run(metadata.format_type, ClipboardPasteData(),
+                            /*replacement_data=*/std::nullopt);
+  }
+};
+
+// When the policy blocks a bookmark without a replacement, nothing reaches the
+// clipboard.
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteBookmark_PolicyBlocked) {
+  PolicyBlockWithoutReplacementBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  async_write_clipboard_host_impl()->WriteBookmark("https://example.com/page",
+                                                   u"Example Page");
+  async_write_clipboard_host_impl()->CommitWrite();
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+
+  base::test::TestFuture<std::u16string> clipboard_text_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_text_future.GetCallback());
+  EXPECT_TRUE(clipboard_text_future.Get().empty());
 }
 
 class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {

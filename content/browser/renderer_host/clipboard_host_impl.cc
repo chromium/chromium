@@ -59,6 +59,7 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -972,14 +973,38 @@ void ClipboardHostImpl::WriteBookmark(const std::string& url,
   }
 
   GURL gurl(url);
+  // An invalid URL is never written, and spec() below CHECKs on one
+  // (crbug.com/495504337).
+  if (!gurl.is_valid()) {
+    return;
+  }
   // Drop file:// URLs so a renderer cannot place a local path on the clipboard
   // via WriteBookmark and read it back via ReadFiles().
   if (gurl.SchemeIsFile()) {
     return;
   }
 
-  clipboard_writer_->WriteURL(
-      ui::ClipboardUrlInfo{.url = std::move(gurl), .title = title});
+  // ClipboardPasteData has no field for a bookmark, so the policy check,
+  // content scanning and reporting see the URL and title as the plain text
+  // they amount to. The bookmark itself is bound to the result callback, which
+  // writes it only if the policy allows it.
+  ClipboardPasteData data;
+  data.text = base::UTF8ToUTF16(gurl.spec());
+  if (!title.empty()) {
+    data.text = base::StrCat({data.text, u"\n", title});
+  }
+  ++pending_writes_;
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      context_->CreateClipboardEndpoint(),
+      {
+          .size = data.size(),
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      data,
+      base::BindOnce(
+          &ClipboardHostImpl::OnCopyBookmarkAllowedResult,
+          weak_ptr_factory_.GetWeakPtr(),
+          ui::ClipboardUrlInfo{.url = std::move(gurl), .title = title}));
 }
 
 void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
@@ -1249,6 +1274,28 @@ void ClipboardHostImpl::OnCopyHtmlAllowedResult(
     clipboard_writer_->WriteText(std::move(*replacement_data));
   } else {
     clipboard_writer_->WriteHTML(data.html, source_url.spec());
+  }
+  if (pending_commit_write_) {
+    CommitWrite();
+  }
+}
+
+void ClipboardHostImpl::OnCopyBookmarkAllowedResult(
+    const ui::ClipboardUrlInfo& url_info,
+    const ui::ClipboardFormatType& data_type,
+    const ClipboardPasteData& data,
+    std::optional<std::u16string> replacement_data) {
+  CHECK_GT(pending_writes_, 0);
+  --pending_writes_;
+
+  context_->AddSourceDataToClipboardWriter(*clipboard_writer_);
+
+  if (replacement_data) {
+    clipboard_writer_->WriteText(std::move(*replacement_data));
+  } else if (!data.empty()) {
+    // The policy hands back the data it was given when it allows the copy, and
+    // none when it blocks the copy without a replacement.
+    clipboard_writer_->WriteURL(url_info);
   }
   if (pending_commit_write_) {
     CommitWrite();
