@@ -62,6 +62,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Test that the screenshot was successfully taken when navigating as expected. */
@@ -99,6 +100,10 @@ public class ScreenshotCaptureTest {
                             + "<body style='height:100000px;'>"
                             + "</body>"
                             + "</html>");
+
+    // Screenshot readback after navigating to chrome://gpu can take 5-6s on device, exceeding
+    // CallbackHelper's default 5s timeout.
+    private static final long SCREENSHOT_READ_BACK_TIMEOUT_SECONDS = 15;
 
     private EmbeddedTestServer mTestServer;
     private Bitmap mCapturedBitmap;
@@ -221,7 +226,6 @@ public class ScreenshotCaptureTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/578542537")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingAwayFromNtpToWebUiPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
@@ -254,7 +258,10 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(UrlConstants.GPU_URL);
 
-        callbackHelper.waitForOnly();
+        callbackHelper.waitForOnly(
+                "Timed out waiting for NTP screenshot readback.",
+                SCREENSHOT_READ_BACK_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS);
         mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_away_from_ntp_to_webui_page");
     }
 
