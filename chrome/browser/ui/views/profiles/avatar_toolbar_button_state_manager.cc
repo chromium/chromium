@@ -78,6 +78,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1381,10 +1382,10 @@ class PromoStateProvider : public StateProvider {
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Observes passkey unlock manager to see if the passkeys are locked and the
-// error UI needs to be shown. If passkeys are locked, but could be unlocked, it
-// updates the profile avatar. It also updates the profile avatar after
-// unlocking passkeys.
+// Legacy provider for `ButtonState::kPasskeysLockedError`, selected when
+// `device::kPasskeyUnlockErrorUi` is enabled and
+// `device::kPasskeyUnlockIdentityErrorUi` is disabled. Observes
+// `PasskeyUnlockManager` to show or hide the passkey error pill.
 class PasskeyStateProvider : public StateProvider,
                              public webauthn::PasskeyUnlockManager::Observer {
  public:
@@ -1485,10 +1486,8 @@ class AvatarToolbarButtonPasskeyStateChangeReporter
 
 // This provider observes sync errors (including transport mode). It can be
 // configured to listen to a specific error with `sync_error_type`, or to all
-// errors by passing nullopt. That way specific implementations of
-// `SyncErrorBaseStateProvider`s can handle a specific sync error, while an
-// implementation passing `std::nullopt` with lower priority can handle the
-// remaining errors.
+// remaining errors (excluding `kPasskeysLocked`, which is handled by
+// `PasskeysLockedSyncErrorStateProvider`) by passing `std::nullopt`.
 class SyncErrorBaseStateProvider : public StateProvider,
                                    public syncer::SyncServiceObserver {
  public:
@@ -1500,7 +1499,7 @@ class SyncErrorBaseStateProvider : public StateProvider,
     friend bool operator==(const AvatarError&, const AvatarError&) = default;
   };
 
-  explicit SyncErrorBaseStateProvider(
+  SyncErrorBaseStateProvider(
       Profile* profile,
       StateObserver* state_observer,
       std::optional<syncer::SyncService::UserActionableError> sync_error_type,
@@ -1602,22 +1601,24 @@ class SyncErrorBaseStateProvider : public StateProvider,
   }
 
   // Returns true if `avatar_sync_error` has a value and the value matches
-  // `sync_error_type_`. If `sync_error_type_` is std::nullopt then any
-  // non-nullopt `avatar_sync_error` is a match.
+  // `sync_error_type_`. If `sync_error_type_` is `std::nullopt`, matches any
+  // non-nullopt `avatar_sync_error` except `kPasskeysLocked` (which is handled
+  // by `PasskeysLockedSyncErrorStateProvider`, ranked below `kSyncError` in
+  // `AvatarToolbarButtonState`).
   bool HasError(const std::optional<AvatarError>& avatar_sync_error) const {
     if (!avatar_sync_error) {
       return false;  // No sync error.
     }
 
-    if (sync_error_type_.has_value() &&
-        avatar_sync_error->avatar_error != sync_error_type_) {
-      return false;  // Error has the wrong type.
+    if (sync_error_type_.has_value()) {
+      return avatar_sync_error->avatar_error == sync_error_type_;
     }
 
-    return true;
+    return avatar_sync_error->avatar_error !=
+           syncer::SyncService::UserActionableError::kPasskeysLocked;
   }
 
-  // std::nullopt to be active on all errors.
+  // `std::nullopt` to be active on all errors except `kPasskeysLocked`.
   const std::optional<syncer::SyncService::UserActionableError>
       sync_error_type_;
 
@@ -1698,6 +1699,37 @@ class BookmarksLimitExceededStateProvider : public SyncErrorBaseStateProvider {
   }
 };
 
+// Provider for `ButtonState::kPasskeysLockedError`, selected when
+// `device::kPasskeyUnlockIdentityErrorUi` is enabled.
+class PasskeysLockedSyncErrorStateProvider : public SyncErrorBaseStateProvider {
+ public:
+  PasskeysLockedSyncErrorStateProvider(Profile* profile,
+                                       StateObserver* state_observer)
+      : SyncErrorBaseStateProvider(
+            profile,
+            state_observer,
+            syncer::SyncService::UserActionableError::kPasskeysLocked) {}
+
+  ~PasskeysLockedSyncErrorStateProvider() override = default;
+
+  // StateProvider:
+  std::u16string GetText() const override {
+    return webauthn::GetPasskeyErrorProfilePillTitle();
+  }
+
+  std::optional<SkColor> GetHighlightColor(
+      const ui::ColorProvider& color_provider) const override {
+    return color_provider.GetColor(kColorAvatarButtonHighlightPasskeysLocked);
+  }
+};
+
+// Catch-all provider for `ButtonState::kSyncError`. Ignores
+// `UserActionableError::kPasskeysLocked` (via `SyncErrorBaseStateProvider` when
+// `sync_error_type` is `std::nullopt`) so
+// `PasskeysLockedSyncErrorStateProvider` (`ButtonState::kPasskeysLockedError`)
+// becomes active when `SyncService::GetUserActionableError()` returns
+// `kPasskeysLocked`, even though `kSyncError` precedes `kPasskeysLockedError`
+// in `AvatarToolbarButtonState`.
 class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {
  public:
   explicit GenericSyncErrorStateProvider(Profile* profile,
@@ -2283,8 +2315,14 @@ void AvatarToolbarButtonStateManager::HandleButtonPressed(
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
-  if (browser_ &&
-      webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+  if (base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi)) {
+    if (GetActiveState() == ButtonState::kPasskeysLockedError) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::
+              kAvatarButtonPressed);
+    }
+  } else if (browser_ &&
+             webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
     webauthn::PasskeyUnlockManager* passkey_unlock_manager =
         webauthn::PasskeyUnlockManagerFactory::GetForProfile(
             browser_->GetProfile());
@@ -2467,10 +2505,21 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
                                                      &avatar_control_.get());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-    if (webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+    // TODO(crbug.com/470338958): Remove `PasskeyStateProvider` once
+    // `kPasskeyUnlockIdentityErrorUi` launches.
+    std::unique_ptr<StateProvider> passkeys_locked_provider;
+    if (base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi)) {
+      passkeys_locked_provider =
+          std::make_unique<PasskeysLockedSyncErrorStateProvider>(
+              profile, /*state_observer=*/this);
+    } else if (webauthn::PasskeyUnlockManager::
+                   IsPasskeyUnlockErrorUiEnabled()) {
+      passkeys_locked_provider = std::make_unique<PasskeyStateProvider>(
+          profile, /*state_observer=*/this);
+    }
+    if (passkeys_locked_provider) {
       states_[ButtonState::kPasskeysLockedError] =
-          std::make_unique<PasskeyStateProvider>(profile,
-                                                 /*state_observer=*/this);
+          std::move(passkeys_locked_provider);
       RegisterObserver(static_cast<Observer*>(
           &AvatarToolbarButtonPasskeyStateChangeReporter::GetOrCreateForProfile(
               *profile)));

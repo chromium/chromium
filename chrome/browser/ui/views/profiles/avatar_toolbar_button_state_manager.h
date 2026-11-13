@@ -43,12 +43,21 @@ enum class AvatarToolbarButtonState {
   kOnSignin,
   kShowIdentityName,
   kSigninPending,
+  // Sync error states (`kSyncPaused` through `kSyncError`, plus
+  // `kPasskeysLockedError` when `device::kPasskeyUnlockIdentityErrorUi` is
+  // enabled): `SyncService::GetUserActionableError()` returns at most one error
+  // at a time and determines relative priority among Sync errors
+  // (`GenericSyncErrorStateProvider` ignores `kPasskeysLocked`).
+  // TODO(crbug.com/470338958): Refactor Sync error state priority so
+  // `AvatarToolbarButtonState` does not appear to rank specific Sync errors
+  // (such as `kBookmarksLimitExceeded`) above `kSyncError`.
   kSyncPaused,
   kUpgradeClientError,
   kPassphraseError,
   kBookmarksLimitExceeded,
   // Catch-all for remaining errors in sync-the-feature or sync-the-transport
-  // (this includes Trusted Vault locked Sync error).
+  // (this includes Trusted Vault locked Sync error, and excludes
+  // `kPasskeysLocked`).
   kSyncError,
   kPasskeysLockedError,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

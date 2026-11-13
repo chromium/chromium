@@ -89,8 +89,10 @@ class PasskeyUnlockManager : public KeyedService,
       BrowserWindowInterface* browser,
       trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
-  // Returns true if the passkey unlock error UI is enabled, depending on the
-  // feature flags.
+  // Returns true if the standalone passkey unlock error UI is enabled
+  // (`device::kPasskeyUnlockErrorUi` is enabled and
+  // `device::kPasskeyUnlockIdentityErrorUi` is disabled; the two UIs are
+  // mutually exclusive).
   static bool IsPasskeyUnlockErrorUiEnabled();
 
   // Used in tests to notify observers.

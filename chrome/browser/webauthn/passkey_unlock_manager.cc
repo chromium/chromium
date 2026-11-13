@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -178,7 +179,8 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
 
 // static
 bool PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled() {
-  return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi);
+  return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
+         !base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi);
 }
 
 void PasskeyUnlockManager::NotifyObserversForTesting() {

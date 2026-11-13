@@ -327,6 +327,7 @@ source_set("unit_tests") {
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/sync",
+    "//chrome/browser/webauthn",
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
     "//chrome/test:test_support",

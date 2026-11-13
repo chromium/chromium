@@ -619,6 +619,39 @@ TEST_F(PasskeyUnlockManagerTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(PasskeyUnlockManagerTest, IsPasskeyUnlockErrorUiEnabled) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
+        /*disabled_features=*/{device::kPasskeyUnlockIdentityErrorUi});
+    EXPECT_TRUE(PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
+                              device::kPasskeyUnlockIdentityErrorUi},
+        /*disabled_features=*/{});
+    EXPECT_FALSE(PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{device::kPasskeyUnlockErrorUi,
+                               device::kPasskeyUnlockIdentityErrorUi});
+    EXPECT_FALSE(PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockIdentityErrorUi},
+        /*disabled_features=*/{device::kPasskeyUnlockErrorUi});
+    EXPECT_FALSE(PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled());
+  }
+}
+
 TEST_F(PasskeyUnlockManagerTest, DoesNotReportPasskeysLockedWhenFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(

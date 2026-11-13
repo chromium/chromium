@@ -31,6 +31,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/webauthn/passkey_unlock_error_strings.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "content/public/browser/navigation_handle.h"
 #endif
@@ -306,8 +307,7 @@ std::u16string GetAvatarSyncErrorDescription(
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION);
     case syncer::SyncService::UserActionableError::kPasskeysLocked:
-      // TODO(crbug.com/470338958): Return the passkey unlock error description.
-      return std::u16string();
+      return webauthn::GetPasskeyErrorProfileMenuDetails();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

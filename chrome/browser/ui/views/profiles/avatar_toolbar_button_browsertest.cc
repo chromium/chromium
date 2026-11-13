@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -77,6 +78,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/webauthn/passkey_unlock_error_strings.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -130,6 +132,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
@@ -179,6 +182,8 @@ constexpr std::u16string_view kTestGivenName = u"TestName";
 std::u16string test_given_name() {
   return std::u16string(kTestGivenName);
 }
+constexpr char kPasskeyUnlockErrorUiEventHistogram[] =
+    "WebAuthentication.PasskeyUnlock.ErrorUi.Event";
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr std::u16string_view kWorkBadge(u"Custom Label");
@@ -704,6 +709,20 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
     ASSERT_NE(
         GetTestSyncService()->GetUserActionableError(),
         syncer::SyncService::UserActionableError::kBookmarksLimitExceeded);
+  }
+
+  void SimulatePasskeysLockedError() {
+    GetTestSyncService()->SetPasskeysLocked(true);
+    GetTestSyncService()->FireStateChanged();
+    ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kPasskeysLocked);
+  }
+
+  void ClearPasskeysLockedError() {
+    GetTestSyncService()->SetPasskeysLocked(false);
+    GetTestSyncService()->FireStateChanged();
+    ASSERT_NE(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kPasskeysLocked);
   }
 
   // Waits for `time`.
@@ -4249,7 +4268,7 @@ class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
   MOCK_METHOD(bool, ShouldDisplayErrorUi, (), (const, override));
 };
 
-class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
+class AvatarToolbarButtonPasskeyUnlockBrowserTestBase
     : public AvatarToolbarButtonBrowserTest {
  public:
   void SetUpBrowserContextKeyedServices(
@@ -4258,7 +4277,7 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
     webauthn::PasskeyUnlockManagerFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             context, base::BindRepeating(
-                         &AvatarToolbarButtonPasskeyUnlockErrorBrowserTest::
+                         &AvatarToolbarButtonPasskeyUnlockBrowserTestBase::
                              CreateMockPasskeyUnlockManager,
                          base::Unretained(this)));
   }
@@ -4273,9 +4292,6 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
     return mock_passkey_unlock_manager_;
   }
 
-  static constexpr const char kPasskeyUnlockErrorUiEventHistogram[] =
-      "WebAuthentication.PasskeyUnlock.ErrorUi.Event";
-
  private:
   std::unique_ptr<KeyedService> CreateMockPasskeyUnlockManager(
       content::BrowserContext* context) {
@@ -4288,8 +4304,19 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
   }
 
   raw_ptr<MockPasskeyUnlockManager> mock_passkey_unlock_manager_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kPasskeyUnlockErrorUi};
+};
+
+class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
+    : public AvatarToolbarButtonPasskeyUnlockBrowserTestBase {
+ public:
+  AvatarToolbarButtonPasskeyUnlockErrorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
+        /*disabled_features=*/{device::kPasskeyUnlockIdentityErrorUi});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
@@ -4297,10 +4324,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
   AvatarToolbarButtonInterface* avatar =
       GetAvatarToolbarButtonInterface(browser());
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
-  ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
-    InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-    return !manager || !manager->IsInitialWebUIPending();
-  }));
+  WaitForInitialWebUIToolbar(browser());
   SigninWithImageAndClearGreeting(browser(), avatar, u"test@gmail.com");
 
   base::HistogramTester histogram_tester;
@@ -4354,6 +4378,210 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
                          testing::Bool());
+
+class AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest
+    : public AvatarToolbarButtonPasskeyUnlockBrowserTestBase {
+ public:
+  AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
+                              device::kPasskeyUnlockIdentityErrorUi},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  AvatarToolbarButtonTestAccessor SetupTestAccount() {
+    AvatarToolbarButtonInterface* avatar =
+        GetAvatarToolbarButtonInterface(browser());
+    WaitForInitialWebUIToolbar(browser());
+    SigninWithImageAndClearGreeting(browser(), avatar, u"test@gmail.com");
+    return AvatarToolbarButtonTestAccessor(browser());
+  }
+
+  void ExpectPasskeyErrorState(
+      AvatarToolbarButtonTestAccessor& avatar_accessor,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    EXPECT_TRUE(avatar_accessor.WaitForState(
+        AvatarToolbarButtonState::kPasskeysLockedError));
+    EXPECT_TRUE(avatar_accessor.WaitForText(
+        l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY)));
+    EXPECT_TRUE(avatar_accessor.WaitForAccessibilityDescription(
+        l10n_util::GetStringFUTF16(
+            IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP, u"account_name",
+            webauthn::GetPasskeyErrorProfileMenuDetails())));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+                       PasskeyUnlockError) {
+  AvatarToolbarButtonTestAccessor avatar_accessor = SetupTestAccount();
+
+  base::HistogramTester histogram_tester;
+  // Clicking before any passkey error is shown should not record the button
+  // press metric.
+  avatar_accessor.Click();
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarButtonPressed,
+      0);
+
+  SimulatePasskeysLockedError();
+
+  ExpectPasskeyErrorState(avatar_accessor);
+  // TODO(crbug.com/506022005): We use `EXPECT_GE()` instead of
+  // `EXPECT_EQ(..., 1)` because `InitialWebUI` instantiates a second UI
+  // frontend (the WebUI toolbar) with its own state manager, leading to
+  // doubled counts in tests.
+  EXPECT_GE(
+      histogram_tester.GetBucketCount(
+          kPasskeyUnlockErrorUiEventHistogram,
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIDisplayed),
+      1);
+
+  avatar_accessor.Click();
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarButtonPressed,
+      1);
+
+  ClearPasskeysLockedError();
+
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+  // TODO(crbug.com/506022005): Same as above; `InitialWebUI` instantiates a
+  // second UI frontend.
+  EXPECT_GE(
+      histogram_tester.GetBucketCount(
+          kPasskeyUnlockErrorUiEventHistogram,
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+                       HigherPrioritySyncErrorTakesPrecedence) {
+  AvatarToolbarButtonTestAccessor avatar_accessor = SetupTestAccount();
+
+  SimulatePasskeysLockedError();
+  ExpectPasskeyErrorState(avatar_accessor);
+
+  // A higher-priority Sync error (e.g. passphrase required) supersedes
+  // `kPasskeysLocked`.
+  SimulatePassphraseError();
+  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringUTF16(
+      IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE)));
+
+  // Clicking while a higher-priority error is showing must not record a passkey
+  // error button press, even though `passkeys_locked()` is still true.
+  base::HistogramTester histogram_tester;
+  avatar_accessor.Click();
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarButtonPressed,
+      0);
+
+  // Clearing the passphrase error falls back to `kPasskeysLocked`.
+  ClearPassphraseError();
+  ExpectPasskeyErrorState(avatar_accessor);
+
+  ClearPasskeysLockedError();
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+                       TrustedVaultKeyErrorTakesPrecedenceOverPasskeysLocked) {
+  AvatarToolbarButtonTestAccessor avatar_accessor = SetupTestAccount();
+
+  SimulatePasskeysLockedError();
+  ExpectPasskeyErrorState(avatar_accessor);
+
+  // `kNeedsTrustedVaultKeyForPasswords` ranks above `kPasskeysLocked` in
+  // `SyncService::GetUserActionableError()` and maps to the generic
+  // `kSyncError` pill.
+  SimulateSyncError();
+  ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::
+                kNeedsTrustedVaultKeyForPasswords);
+  EXPECT_TRUE(
+      avatar_accessor.WaitForState(AvatarToolbarButtonState::kSyncError));
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
+
+  // Clearing the trusted-vault-key error falls back to `kPasskeysLocked`.
+  ClearSyncError();
+  ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kPasskeysLocked);
+  ExpectPasskeyErrorState(avatar_accessor);
+
+  ClearPasskeysLockedError();
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+                       PasskeysLockedOverRecoverabilityDegradedThenFallsBack) {
+  AvatarToolbarButtonTestAccessor avatar_accessor = SetupTestAccount();
+
+  GetTestSyncService()->SetTrustedVaultRecoverabilityDegraded(true);
+  GetTestSyncService()->FireStateChanged();
+  ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::
+                kTrustedVaultRecoverabilityDegradedForPasswords);
+  EXPECT_TRUE(
+      avatar_accessor.WaitForState(AvatarToolbarButtonState::kSyncError));
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
+
+  // `kPasskeysLocked` ranks above recoverability degraded in
+  // `SyncService::GetUserActionableError()`, and
+  // `GenericSyncErrorStateProvider` ignores `kPasskeysLocked` so
+  // `kPasskeysLockedError` becomes active even though `kSyncError` precedes it
+  // in `AvatarToolbarButtonState`.
+  SimulatePasskeysLockedError();
+  ExpectPasskeyErrorState(avatar_accessor);
+
+  // Clearing `kPasskeysLocked` while recoverability degraded is still active
+  // must fall back to the generic `kSyncError` pill rather than clearing the
+  // button.
+  ClearPasskeysLockedError();
+  ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::
+                kTrustedVaultRecoverabilityDegradedForPasswords);
+  EXPECT_TRUE(
+      avatar_accessor.WaitForState(AvatarToolbarButtonState::kSyncError));
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
+
+  GetTestSyncService()->SetTrustedVaultRecoverabilityDegraded(false);
+  GetTestSyncService()->FireStateChanged();
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+                       IdentityFlagIgnoresPasskeyUnlockManagerState) {
+  AvatarToolbarButtonTestAccessor avatar_accessor = SetupTestAccount();
+
+  base::HistogramTester histogram_tester;
+  // With `kPasskeyUnlockIdentityErrorUi` enabled, `PasskeyUnlockManager`'s
+  // direct `ShouldDisplayErrorUi()` state must not show the pill or record
+  // metrics when Sync reports no `kPasskeysLocked` error.
+  ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillByDefault(testing::Return(true));
+  passkey_unlock_manager()->NotifyObserversForTesting();
+
+  EXPECT_EQ(avatar_accessor.GetState(), AvatarToolbarButtonState::kNormal);
+  EXPECT_EQ(avatar_accessor.GetText(), std::u16string());
+  histogram_tester.ExpectTotalCount(kPasskeyUnlockErrorUiEventHistogram, 0);
+
+  SimulatePasskeysLockedError();
+  ExpectPasskeyErrorState(avatar_accessor);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AvatarToolbarButtonPasskeyUnlockIdentityErrorBrowserTest,
+    testing::Bool());
 
 class AvatarToolbarButtonGradientRingBrowserTest
     : public AvatarToolbarButtonBrowserTestBase,
