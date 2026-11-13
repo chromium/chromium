@@ -546,10 +546,13 @@ void WebAXObject::Selection(bool& is_selection_backward,
   }
 }
 
-bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
-                               int anchor_offset,
-                               const WebAXObject& focus_object,
-                               int focus_offset) const {
+bool WebAXObject::SetSelection(
+    const WebAXObject& anchor_object,
+    int anchor_offset,
+    std::optional<ax::mojom::blink::OffsetType> anchor_offset_type,
+    const WebAXObject& focus_object,
+    int focus_offset,
+    std::optional<ax::mojom::blink::OffsetType> focus_offset_type) const {
   if (IsDetached() || anchor_object.IsDetached() || focus_object.IsDetached()) {
     return false;
   }
@@ -571,6 +574,9 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
       return true;
     }
   }
+  // TODO(crbug.com/527726308): Add an Android-only CHECK that
+  // `anchor_offset_type` and `focus_offset_type` are not `std::nullopt`, and
+  // use them when constructing `ax_anchor` and `ax_focus`.
   AXPosition ax_anchor, ax_focus;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
       static_cast<const AXObject*>(anchor_object)->IsAtomicTextField()) {

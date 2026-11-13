@@ -125,10 +125,15 @@ gfx::Point PdfAXActionTarget::MaximumScrollOffset() const {
 
 void PdfAXActionTarget::SetScrollOffset(const gfx::Point& point) const {}
 
-bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
-                                     int anchor_offset,
-                                     const ui::AXActionTarget* focus_object,
-                                     int focus_offset) const {
+bool PdfAXActionTarget::SetSelection(
+    const ui::AXActionTarget* anchor_object,
+    int anchor_offset,
+    std::optional<ax::mojom::OffsetType> anchor_offset_type,
+    const ui::AXActionTarget* focus_object,
+    int focus_offset,
+    std::optional<ax::mojom::OffsetType> focus_offset_type) const {
+  // `anchor_offset_type` and `focus_offset_type` are unused here because PDF
+  // selection only operates on character offsets via `FindCharacterOffset()`.
   const PdfAXActionTarget* pdf_anchor_object =
       FromAXActionTarget(anchor_object);
   const PdfAXActionTarget* pdf_focus_object = FromAXActionTarget(focus_object);

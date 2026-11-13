@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,9 @@
 #endif
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_common.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
@@ -93,6 +96,22 @@ ui::BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
                                                  delegate);
 #endif
 }
+
+// Records the last action passed to `AccessibilityPerformAction()`.
+class RecordingAXPlatformTreeManagerDelegate
+    : public ui::TestAXPlatformTreeManagerDelegate {
+ public:
+  void AccessibilityPerformAction(const ui::AXActionData& data) override {
+    last_action_data_ = data;
+  }
+
+  const std::optional<ui::AXActionData>& last_action_data() const {
+    return last_action_data_;
+  }
+
+ private:
+  std::optional<ui::AXActionData> last_action_data_;
+};
 
 }  // anonymous namespace
 
@@ -1723,5 +1742,50 @@ TEST_F(BrowserAccessibilityManagerTest,
             range->focus.offset_type);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Verifies that `SetSelection(AXRange)` sends the kind of each endpoint to the
+// renderer in `AXActionData`, so that it does not have to infer whether each
+// offset is a character offset or a child index.
+TEST_F(BrowserAccessibilityManagerTest, SetSelectionSendsOffsetTypes) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 3};
+
+  ui::AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("Hello");
+
+  ui::AXNodeData image;
+  image.id = 3;
+  image.role = ax::mojom::Role::kImage;
+
+  RecordingAXPlatformTreeManagerDelegate delegate;
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          MakeAXTreeUpdateForTesting(root, static_text, image),
+          node_id_delegate_, &delegate));
+
+  const ui::AXNode* root_node = manager->GetFromID(root.id)->node();
+  const ui::AXNode* text_node = manager->GetFromID(static_text.id)->node();
+
+  // Anchor: character offset 1 in "Hello". Focus: after the image, i.e. child
+  // index 2 in the root.
+  manager->SetSelection(ui::BrowserAccessibility::AXRange(
+      ui::AXNodePosition::CreateTextPosition(
+          *text_node, 1, ax::mojom::TextAffinity::kDownstream),
+      ui::AXNodePosition::CreateTreePosition(*root_node, 2)));
+
+  ASSERT_TRUE(delegate.last_action_data().has_value());
+  const ui::AXActionData& action_data = *delegate.last_action_data();
+  EXPECT_EQ(ax::mojom::Action::kSetSelection, action_data.action);
+  EXPECT_EQ(static_text.id, action_data.anchor_node_id);
+  EXPECT_EQ(1, action_data.anchor_offset);
+  EXPECT_EQ(ax::mojom::OffsetType::kText, action_data.anchor_offset_type);
+  EXPECT_EQ(root.id, action_data.focus_node_id);
+  EXPECT_EQ(2, action_data.focus_offset);
+  EXPECT_EQ(ax::mojom::OffsetType::kChild, action_data.focus_offset_type);
+}
 
 }  // namespace content

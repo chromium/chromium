@@ -5,6 +5,7 @@
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <utility>
@@ -920,8 +921,12 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   // Setting selection requires layout to be clean.
   GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
+  // TODO(crbug.com/527726308): Pass `ax::mojom::OffsetType::kText` instead of
+  // `std::nullopt` on Android once `WebAXObject::SetSelection()` enforces
+  // non-nullopt offset types on Android.
   EXPECT_TRUE(text_one_action_target->SetSelection(
-      text_one_action_target.get(), 3, text_two_action_target.get(), 4));
+      text_one_action_target.get(), 3, std::nullopt,
+      text_two_action_target.get(), 4, std::nullopt));
   bool is_selection_backward;
   blink::WebAXObject anchor_object;
   int anchor_offset;

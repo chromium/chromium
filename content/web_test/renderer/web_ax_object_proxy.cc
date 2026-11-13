@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/strings/stringprintf.h"
@@ -1515,8 +1516,8 @@ void WebAXObjectProxy::SetSelectedTextRange(int selection_start, int length) {
     return;
   }
   accessibility_object_.SetSelection(accessibility_object_, selection_start,
-                                     accessibility_object_,
-                                     selection_start + length);
+                                     std::nullopt, accessibility_object_,
+                                     selection_start + length, std::nullopt);
 }
 
 bool WebAXObjectProxy::SetSelection(v8::Isolate* isolate,
@@ -1547,8 +1548,8 @@ bool WebAXObjectProxy::SetSelection(v8::Isolate* isolate,
 
   UpdateLayout();
   return accessibility_object_.SetSelection(
-      web_ax_anchor->accessibility_object_, anchor_offset,
-      web_ax_focus->accessibility_object_, focus_offset);
+      web_ax_anchor->accessibility_object_, anchor_offset, std::nullopt,
+      web_ax_focus->accessibility_object_, focus_offset, std::nullopt);
 }
 
 bool WebAXObjectProxy::IsAttributeSettable(const std::string& attribute) {

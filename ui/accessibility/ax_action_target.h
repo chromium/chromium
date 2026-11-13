@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_TARGET_H_
 #define UI_ACCESSIBILITY_AX_ACTION_TARGET_H_
 
+#include <optional>
+
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -30,10 +32,13 @@ class AXActionTarget {
   virtual gfx::Point MinimumScrollOffset() const = 0;
   virtual gfx::Point MaximumScrollOffset() const = 0;
   virtual void SetScrollOffset(const gfx::Point& point) const = 0;
-  virtual bool SetSelection(const AXActionTarget* anchor_object,
-                            int anchor_offset,
-                            const AXActionTarget* focus_object,
-                            int focus_offset) const = 0;
+  virtual bool SetSelection(
+      const AXActionTarget* anchor_object,
+      int anchor_offset,
+      std::optional<ax::mojom::OffsetType> anchor_offset_type,
+      const AXActionTarget* focus_object,
+      int focus_offset,
+      std::optional<ax::mojom::OffsetType> focus_offset_type) const = 0;
   // Make this object visible by scrolling as many nested scrollable views as
   // needed.
   virtual bool ScrollToMakeVisible(

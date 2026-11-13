@@ -66,10 +66,13 @@ void BlinkAXActionTarget::SetScrollOffset(const gfx::Point& point) const {
   web_ax_object_.SetScrollOffset(point);
 }
 
-bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
-                                       int anchor_offset,
-                                       const ui::AXActionTarget* focus_object,
-                                       int focus_offset) const {
+bool BlinkAXActionTarget::SetSelection(
+    const ui::AXActionTarget* anchor_object,
+    int anchor_offset,
+    std::optional<ax::mojom::OffsetType> anchor_offset_type,
+    const ui::AXActionTarget* focus_object,
+    int focus_offset,
+    std::optional<ax::mojom::OffsetType> focus_offset_type) const {
   const BlinkAXActionTarget* blink_anchor_object =
       BlinkAXActionTarget::FromAXActionTarget(anchor_object);
   const BlinkAXActionTarget* blink_focus_object =
@@ -78,8 +81,8 @@ bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
     return false;
 
   return web_ax_object_.SetSelection(
-      blink_anchor_object->WebAXObject(), anchor_offset,
-      blink_focus_object->WebAXObject(), focus_offset);
+      blink_anchor_object->WebAXObject(), anchor_offset, anchor_offset_type,
+      blink_focus_object->WebAXObject(), focus_offset, focus_offset_type);
 }
 
 bool BlinkAXActionTarget::ScrollToMakeVisible(

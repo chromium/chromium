@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_OBJECT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_OBJECT_H_
 
+#include <optional>
 #include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
@@ -211,14 +212,21 @@ class BLINK_EXPORT WebAXObject {
 
   // Actions. Return true if handled.
   //
-  // OLD: the od way is that we had separate APIs for every individual
+  // OLD: the old way is that we had separate APIs for every individual
   // action. We're migrating to use PerformAction() for everything.
-  // To clear the selection, use an anchor_offset of
-  // kNoSelectionOffset.
-  bool SetSelection(const WebAXObject& anchor_object,
-                    int anchor_offset,
-                    const WebAXObject& focus_object,
-                    int focus_offset) const;
+  //
+  // To clear the selection, use an `anchor_offset` of `kNoSelectionOffset`.
+  // `anchor_offset_type` and `focus_offset_type` specify whether each offset is
+  // a child index or a character offset; they are `std::nullopt` when clearing
+  // selection with `kNoSelectionOffset` or when called from callers that do not
+  // specify offset types.
+  bool SetSelection(
+      const WebAXObject& anchor_object,
+      int anchor_offset,
+      std::optional<ax::mojom::OffsetType> anchor_offset_type,
+      const WebAXObject& focus_object,
+      int focus_offset,
+      std::optional<ax::mojom::OffsetType> focus_offset_type) const;
   // Make this object visible by scrolling as many nested scrollable views as
   // needed. Horizontal and vertical scroll alignments specify where in the
   // content area to scroll the object.

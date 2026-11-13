@@ -9,6 +9,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -12525,7 +12526,8 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
           inline_text_nodes2[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_TRUE(pdf_anchor_action_target->SetSelection(
-      pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 5));
+      pdf_anchor_action_target.get(), 1, std::nullopt,
+      pdf_focus_action_target.get(), 5, std::nullopt));
 
   chrome_pdf::AccessibilityActionData pdf_action_data =
       action_handler_.received_action_data();
@@ -12552,7 +12554,8 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
       inline_text_nodes2[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_TRUE(pdf_anchor_action_target->SetSelection(
-      pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 4));
+      pdf_anchor_action_target.get(), 1, std::nullopt,
+      pdf_focus_action_target.get(), 4, std::nullopt));
 
   pdf_action_data = action_handler_.received_action_data();
   EXPECT_EQ(chrome_pdf::AccessibilityAction::kSetSelection,
@@ -12570,7 +12573,8 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
       pdf_accessibility_tree_->CreateActionTarget(para_nodes[1]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_FALSE(pdf_anchor_action_target->SetSelection(
-      pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 5));
+      pdf_anchor_action_target.get(), 1, std::nullopt,
+      pdf_focus_action_target.get(), 5, std::nullopt));
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {

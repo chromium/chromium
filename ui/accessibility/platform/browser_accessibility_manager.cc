@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <utility>
 
@@ -1340,6 +1341,23 @@ void BrowserAccessibilityManager::SetValue(const BrowserAccessibility& node,
   AXPlatform::GetInstance().OnActionFromAssistiveTech();
 }
 
+namespace {
+
+// Converts the kind of an `AXPosition` to the offset type sent to the renderer
+// in `AXActionData`. Null positions have no offset type.
+std::optional<ax::mojom::OffsetType> ToOffsetType(AXPositionKind kind) {
+  switch (kind) {
+    case AXPositionKind::NULL_POSITION:
+      return std::nullopt;
+    case AXPositionKind::TREE_POSITION:
+      return ax::mojom::OffsetType::kChild;
+    case AXPositionKind::TEXT_POSITION:
+      return ax::mojom::OffsetType::kText;
+  }
+}
+
+}  // namespace
+
 void BrowserAccessibilityManager::SetSelection(
     const AXActionData& action_data) {
   if (!delegate_)
@@ -1353,17 +1371,19 @@ void BrowserAccessibilityManager::SetSelection(
   if (!delegate_ || range.IsNull())
     return;
 
-  // TODO(crbug.com/527726308): Add position types and affinity to AXActionData
-  // and pass them to blink to avoid ambiguity.
+  // TODO(crbug.com/527726308): Add affinity to AXActionData and pass it to
+  // blink to avoid ambiguity.
   AXActionData action_data;
   action_data.anchor_node_id = range.anchor()->anchor_id();
   action_data.anchor_offset = range.anchor()->IsTextPosition()
                                   ? range.anchor()->text_offset()
                                   : range.anchor()->child_index();
+  action_data.anchor_offset_type = ToOffsetType(range.anchor()->kind());
   action_data.focus_node_id = range.focus()->anchor_id();
   action_data.focus_offset = range.focus()->IsTextPosition()
                                  ? range.focus()->text_offset()
                                  : range.focus()->child_index();
+  action_data.focus_offset_type = ToOffsetType(range.focus()->kind());
   action_data.action = ax::mojom::Action::kSetSelection;
   delegate_->AccessibilityPerformAction(action_data);
   AXPlatform::GetInstance().OnActionFromAssistiveTech();

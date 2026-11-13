@@ -2445,7 +2445,11 @@ TEST_F(AccessibilityTest,
   EXPECT_TRUE(cache.serialize_immediately_after_current_serialization_);
 
   WebAXObject web_text(text);
-  EXPECT_TRUE(web_text.SetSelection(web_text, 0, web_text, 1));
+  // TODO(crbug.com/527726308): Pass `ax::mojom::OffsetType::kText` instead of
+  // `std::nullopt` once `WebAXObject::SetSelection()` enforces non-nullopt
+  // offset types on Android.
+  EXPECT_TRUE(web_text.SetSelection(web_text, 0, std::nullopt, web_text, 1,
+                                    std::nullopt));
   EXPECT_TRUE(cache.serialize_immediately_for_action_);
 
   // When the visual frame for painting the selection runs while the
@@ -2548,7 +2552,12 @@ TEST_F(AccessibilityTest, WebAXObjectClearSelectionAnnotatesAction) {
   ASSERT_NE(nullptr, text);
 
   WebAXObject web_text(text);
-  ASSERT_TRUE(web_text.SetSelection(web_text, 0, web_text, 2));
+  // TODO(crbug.com/527726308): Pass `ax::mojom::OffsetType::kText` instead of
+  // `std::nullopt` once `WebAXObject::SetSelection()` enforces non-nullopt
+  // offset types on Android (while keeping `std::nullopt` for the
+  // `kNoSelectionOffset` clear call below).
+  ASSERT_TRUE(web_text.SetSelection(web_text, 0, std::nullopt, web_text, 2,
+                                    std::nullopt));
 
   ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
   {
@@ -2565,8 +2574,9 @@ TEST_F(AccessibilityTest, WebAXObjectClearSelectionAnnotatesAction) {
   cache.ResetLifecycleForTesting();
 
   WebAXObject web_root(cache.Root());
-  EXPECT_TRUE(web_root.SetSelection(web_root, ax::mojom::kNoSelectionOffset,
-                                    web_root, ax::mojom::kNoSelectionOffset));
+  EXPECT_TRUE(web_root.SetSelection(
+      web_root, ax::mojom::kNoSelectionOffset, std::nullopt, web_root,
+      ax::mojom::kNoSelectionOffset, std::nullopt));
 
   ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
   std::vector<ui::AXTreeUpdate> updates;

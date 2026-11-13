@@ -365,8 +365,9 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       OnLoadInlineTextBoxes(target.get());
       break;
     case ax::mojom::Action::kSetSelection:
-      anchor->SetSelection(anchor.get(), data.anchor_offset, focus.get(),
-                           data.focus_offset);
+      anchor->SetSelection(anchor.get(), data.anchor_offset,
+                           data.anchor_offset_type, focus.get(),
+                           data.focus_offset, data.focus_offset_type);
       break;
     case ax::mojom::Action::kScrollToMakeVisible:
       if (data.target_rect) {

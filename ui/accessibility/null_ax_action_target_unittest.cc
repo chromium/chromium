@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/null_ax_action_target.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -22,7 +24,8 @@ TEST(NullAXActionTargetTest, TestMethods) {
   EXPECT_EQ(gfx::Point(), action_target->GetScrollOffset());
   EXPECT_EQ(gfx::Point(), action_target->MinimumScrollOffset());
   EXPECT_EQ(gfx::Point(), action_target->MaximumScrollOffset());
-  EXPECT_FALSE(action_target->SetSelection(nullptr, 0, nullptr, 0));
+  EXPECT_FALSE(action_target->SetSelection(nullptr, 0, std::nullopt, nullptr, 0,
+                                           std::nullopt));
   EXPECT_FALSE(action_target->ScrollToMakeVisible(
       ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
       ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
