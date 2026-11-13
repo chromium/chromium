@@ -772,6 +772,148 @@ TEST_P(InstallStaticUtilTest, GetOldElevatorIids) {
   EXPECT_THAT(GetOldElevatorIids(), Not(Contains(GUID_NULL)));
 }
 
+TEST_P(InstallStaticUtilTest, GetTracingServiceClsid) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The Tracing Service CLSIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceClsids = std::to_array<CLSID>({
+      {0x70457024,
+       0xd309,
+       0x462c,
+       {0xb2, 0xe0, 0x49, 0xa7, 0x71, 0x48, 0x7e, 0x46}},  // Google Chrome.
+      {0xe64e8e46,
+       0x6756,
+       0x467e,
+       {0x9f, 0x61, 0x86, 0x16, 0xac, 0x13, 0xd1,
+        0xef}},  // Google Chrome Beta.
+      {0x48c5c553,
+       0x20f9,
+       0x4cdc,
+       {0x83, 0x40, 0x85, 0x29, 0xab, 0x83, 0xc5, 0x52}},  // Google Chrome Dev.
+      {0x93010ef4,
+       0x940e,
+       0x4b87,
+       {0x8d, 0x42, 0x40, 0x6b, 0xb1, 0xc8, 0x78,
+        0xaf}},  // Google Chrome SxS (Canary).
+  });
+
+  // The string representation of the CLSIDs above.
+  static constexpr auto kTracingServiceClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{70457024-D309-462C-B2E0-49A771487E46}",  // Google Chrome.
+          L"{E64E8E46-6756-467E-9F61-8616AC13D1EF}",  // Google Chrome Beta.
+          L"{48C5C553-20F9-4CDC-8340-8529AB83C552}",  // Google Chrome Dev.
+          L"{93010EF4-940E-4B87-8D42-406BB1C878AF}",  // Google Chrome SxS
+                                                      // (Canary).
+      });
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The Tracing Service CLSIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceClsids = std::to_array<CLSID>({
+      GUID_NULL,  // Google Chrome for Testing.
+  });
+
+  // The string representation of the CLSIDs above.
+  static constexpr auto kTracingServiceClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{00000000-0000-0000-0000-000000000000}",  // Google Chrome for
+                                                      // Testing.
+      });
+#else
+  // The Tracing Service CLSIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceClsids = std::to_array<CLSID>({
+      {0x83f69367,
+       0x442d,
+       0x447f,
+       {0x8b, 0xcc, 0x0e, 0x3f, 0x97, 0xbe, 0x9c, 0xf2}},  // Chromium.
+  });
+
+  // The string representation of the CLSIDs above.
+  static constexpr auto kTracingServiceClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{83F69367-442D-447F-8BCC-0E3F97BE9CF2}",  // Chromium.
+      });
+#endif
+  static_assert(std::size(kTracingServiceClsids) == NUM_INSTALL_MODES,
+                "kTracingServiceClsids needs to be updated for any new modes.");
+
+  EXPECT_EQ(GetTracingServiceClsid(),
+            kTracingServiceClsids[std::get<0>(GetParam())]);
+
+  auto clsid_str = base::win::WStringFromGUID(GetTracingServiceClsid());
+  EXPECT_THAT(clsid_str.c_str(),
+              StrCaseEq(kTracingServiceClsidsString[std::get<0>(GetParam())]));
+}
+
+TEST_P(InstallStaticUtilTest, GetTracingServiceIid) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The Tracing Service IIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceIids = std::to_array<IID>({
+      {0xa780c41e,
+       0x1d88,
+       0x4e7c,
+       {0x98, 0xf9, 0xb0, 0x68, 0x96, 0x68, 0x05, 0x5c}},  // Google Chrome.
+      {0x14f7041d,
+       0x19e4,
+       0x4f7f,
+       {0xab, 0x6c, 0x85, 0x8e, 0x09, 0xde, 0x9f,
+        0x97}},  // Google Chrome Beta.
+      {0xaefb2e52,
+       0xd121,
+       0x4617,
+       {0xa3, 0x66, 0xdd, 0x78, 0x22, 0x46, 0xfb, 0x4b}},  // Google Chrome Dev.
+      {0x4a5732f2,
+       0xdc92,
+       0x4ee4,
+       {0xb8, 0xf4, 0xa3, 0x21, 0x69, 0x67, 0x31,
+        0x2a}},  // Google Chrome SxS (Canary).
+  });
+
+  // The string representation of the IIDs above.
+  static constexpr auto kTracingServiceIidsString =
+      std::to_array<const wchar_t*>({
+          L"{A780C41E-1D88-4E7C-98F9-B0689668055C}",  // Google Chrome.
+          L"{14F7041D-19E4-4F7F-AB6C-858E09DE9F97}",  // Google Chrome Beta.
+          L"{AEFB2E52-D121-4617-A366-DD782246FB4B}",  // Google Chrome Dev.
+          L"{4A5732F2-DC92-4EE4-B8F4-A3216967312A}",  // Google Chrome SxS
+                                                      // (Canary).
+      });
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The Tracing Service IIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceIids = std::to_array<IID>({
+      GUID_NULL,  // Google Chrome for Testing.
+  });
+
+  // The string representation of the IIDs above.
+  static constexpr auto kTracingServiceIidsString =
+      std::to_array<const wchar_t*>({
+          L"{00000000-0000-0000-0000-000000000000}",  // Google Chrome for
+                                                      // Testing.
+      });
+#else
+  // The Tracing Service IIDs, one for each of the kInstallModes.
+  static constexpr auto kTracingServiceIids = std::to_array<IID>({
+      {0xe0b03e2d,
+       0x7682,
+       0x4d83,
+       {0xb9, 0xff, 0x45, 0x74, 0xaf, 0x72, 0x05, 0x00}},  // Chromium.
+  });
+
+  // The string representation of the IIDs above.
+  static constexpr auto kTracingServiceIidsString =
+      std::to_array<const wchar_t*>({
+          L"{E0B03E2D-7682-4D83-B9FF-4574AF720500}",  // Chromium.
+      });
+#endif
+  static_assert(std::size(kTracingServiceIids) == NUM_INSTALL_MODES,
+                "kTracingServiceIids needs to be updated for any new modes.");
+
+  EXPECT_EQ(GetTracingServiceIid(),
+            kTracingServiceIids[std::get<0>(GetParam())]);
+
+  auto iid_str = base::win::WStringFromGUID(GetTracingServiceIid());
+  EXPECT_THAT(iid_str.c_str(),
+              StrCaseEq(kTracingServiceIidsString[std::get<0>(GetParam())]));
+}
+
 TEST_P(InstallStaticUtilTest, GetOldTracingServiceIids) {
   EXPECT_THAT(GetOldTracingServiceIids(),
               Not(Contains(GetTracingServiceIid())));

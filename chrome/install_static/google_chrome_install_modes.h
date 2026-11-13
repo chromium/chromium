@@ -329,11 +329,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                           0xa}},  // IElevator IID and TypeLib
         // {FF672E9F-0994-4322-81E5-3A5A9746140A}.
         .old_elevator_iids = {},
-        .tracing_service_clsid = {0x48c5c553,
-                                  0x20f9,
-                                  0x4cdc,
-                                  {0x83, 0x40, 0x85, 0x29, 0xab, 0x83, 0xc5,
-                                   0x52}},  // SystemTraceSession CLSID.
+        .tracing_service_clsid = {0x93010ef4,
+                                  0x940e,
+                                  0x4b87,
+                                  {0x8d, 0x42, 0x40, 0x6b, 0xb1, 0xc8, 0x78,
+                                   0xaf}},  // SystemTraceSession CLSID.
+        // {93010EF4-940E-4B87-8D42-406BB1C878AF}.
         .tracing_service_iid = {0x4a5732f2,
                                 0xdc92,
                                 0x4ee4,

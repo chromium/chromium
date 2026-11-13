@@ -12,6 +12,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/install_static/buildflags.h"
+#include "chrome/install_static/install_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,6 +115,30 @@ TEST(InstallModes, VerifyModes) {
 
     // Every mode must have an elevator IID.
     ASSERT_THAT(mode.elevator_iid, Ne(CLSID_NULL));
+
+    // Tracing service CLSID and IID must either both be set or both be null,
+    // and must be set if system-level installs are supported.
+    ASSERT_EQ(mode.tracing_service_clsid == CLSID_NULL,
+              mode.tracing_service_iid == CLSID_NULL);
+    if (mode.supports_system_level) {
+      ASSERT_THAT(mode.tracing_service_clsid, Ne(CLSID_NULL));
+      ASSERT_THAT(mode.tracing_service_iid, Ne(CLSID_NULL));
+    }
+
+    // COM CLSIDs and IIDs must be unique across modes.
+    for (size_t j = 0; j < i; ++j) {
+      const InstallConstants& prior_mode = kInstallModes[j];
+      ASSERT_THAT(mode.toast_activator_clsid,
+                  Ne(prior_mode.toast_activator_clsid));
+      ASSERT_THAT(mode.elevator_clsid, Ne(prior_mode.elevator_clsid));
+      ASSERT_THAT(mode.elevator_iid, Ne(prior_mode.elevator_iid));
+      if (mode.tracing_service_clsid != CLSID_NULL) {
+        ASSERT_THAT(mode.tracing_service_clsid,
+                    Ne(prior_mode.tracing_service_clsid));
+        ASSERT_THAT(mode.tracing_service_iid,
+                    Ne(prior_mode.tracing_service_iid));
+      }
+    }
 
     // Assert that html_doc_icon_resource_index is set.
     ASSERT_THAT(mode.html_doc_icon_resource_index, Ne(0));
