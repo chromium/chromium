@@ -223,12 +223,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   CHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";
 
-  if (!is_audio_) {
-    // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-    TRACE_EVENT_INSTANT("cast_perf_test", "VideoFrameEncoded", "rtp_timestamp",
-                        encoded_frame->rtp_timestamp.lower_32_bits());
-  }
-
   if (send_target_playout_delay_) {
     encoded_frame->new_playout_delay = target_playout_delay_;
   }

@@ -221,8 +221,6 @@ dropped frames (instead of using the "Record Trace" button mentioned above),
 ensure you capture the following specific categories:
 
 * `media.cast`: High-level media encoding and pipeline states.
-* `cast_perf_test`: Instant trace events for specific frame lifecycle milestones
-  (e.g., when a frame is received from capture, encoded, and sent).
 * `openscreen`: Network-level packetization, RTP/RTCP events, and pacing from
   the underlying Open Screen library.
 * `media` and `gpu`: To investigate issues with hardware encoding or video

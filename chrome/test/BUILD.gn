@@ -1511,7 +1511,6 @@ if (!is_android) {
       "//chrome:browser_tests_pak",
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
-      "//chrome/test/data/cast:generate_test_files",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:browser_tests_filters",

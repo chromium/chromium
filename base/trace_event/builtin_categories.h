@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 
 PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
-                                       "cast_perf_test",
                                        "foo",
                                        "test",
                                        "test_gpu",

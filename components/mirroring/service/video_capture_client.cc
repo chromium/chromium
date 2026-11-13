@@ -9,7 +9,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "media/base/video_frame.h"
@@ -201,11 +200,6 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
   if (buffer->info->timestamp.is_zero()) {
     buffer->info->timestamp = reference_time - first_frame_ref_time_;
   }
-
-  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT("cast_perf_test", "OnBufferReceived", "timestamp",
-                      (reference_time - base::TimeTicks()).InMicroseconds(),
-                      "time_delta", buffer->info->timestamp.InMicroseconds());
 
   const auto& buffer_iter = client_buffers_.find(buffer->buffer_id);
   if (buffer_iter == client_buffers_.end()) {

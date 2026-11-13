@@ -213,7 +213,7 @@ void MediaRouterInternalsWebUIMessageHandler::HandleStartTracing(
   // such as "base" and "toplevel" are omitted: with "record-until-full" they
   // fill the buffer within seconds and truncate the trace.
   const base::trace_event::TraceConfig trace_config(
-      "cast.stream,cast_perf_test,openscreen,media,gpu", "record-until-full");
+      "cast.stream,openscreen,media,gpu", "record-until-full");
 
   tracing_session_ =
       perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);

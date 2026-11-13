@@ -84,8 +84,6 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   friend class CastMirroringServiceHostBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CastMirroringServiceHostTest,
                            TestGetClampedResolution);
-  friend class CastV2PerformanceTest;
-  FRIEND_TEST_ALL_PREFIXES(CastV2PerformanceTest, Performance);
   friend class CastMirroringServiceHostFactory;
 
   static content::DesktopMediaID BuildMediaIdForWebContents(

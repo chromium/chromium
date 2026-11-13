@@ -31,7 +31,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/token.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -1221,13 +1220,6 @@ void VideoCaptureImpl::OnBufferReady(
   // requestVideoFrameCallback.
   if (!buffer->info->metadata.capture_begin_time)
     buffer->info->metadata.capture_begin_time = reference_time;
-
-  // TODO(qiangchen): Change the metric name to "reference_time" and
-  // "timestamp", so that we have consistent naming everywhere.
-  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT("cast_perf_test", "OnBufferReceived", "timestamp",
-                      (reference_time - base::TimeTicks()).InMicroseconds(),
-                      "time_delta", buffer->info->timestamp.InMicroseconds());
 
   const int buffer_id = buffer->buffer_id;
   // Process the `buffer` to convert it into a media::VideoFrame directly or via

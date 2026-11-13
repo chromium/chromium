@@ -256,11 +256,6 @@ void VideoSender::InsertRawVideoFrame(
   LogVideoCaptureTimestamps(cast_environment_.get(), *video_frame,
                             rtp_timestamp);
 
-  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT("cast_perf_test", "InsertRawVideoFrame", "timestamp",
-                      (reference_time - base::TimeTicks()).InMicroseconds(),
-                      "rtp_timestamp", rtp_timestamp.lower_32_bits());
-
   {
     const bool new_low_latency_mode =
         video_frame->metadata().interactive_content;
