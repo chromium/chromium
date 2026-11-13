@@ -35,11 +35,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.feature_engagement.TestTracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -300,7 +302,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         // Start the activity by opening about:blank. This URL is ideal because it is not synced as
         // a typed URL. If another URL is used, it could interfere with test data.
         final Statement blankCTATabStatement = mBlankCTATabRule.apply(superStatement, desc);
-        return mSigninTestRule.apply(blankCTATabStatement, desc);
+        return mSigninTestRule.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        // ChromeActivityTestRule disables IPH only after the activity starts.
+                        TrackerFactory.setTrackerForTests(new TestTracker());
+                        blankCTATabStatement.evaluate();
+                    }
+                },
+                desc);
     }
 
     @Override
