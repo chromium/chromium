@@ -1778,8 +1778,9 @@ class AXPosition {
     }
 
     CHECK_GE(copy->child_index_, 0, base::NotFatalUntil::M163);
-    CHECK_LT(copy->child_index_, copy->AnchorChildCount(),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/584263468): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LT(copy->child_index_, copy->AnchorChildCount());
     int new_offset = 0;
     for (int i = 0; i <= child_index_; ++i) {
       AXPositionInstance child = copy->CreateChildPositionAt(i);
