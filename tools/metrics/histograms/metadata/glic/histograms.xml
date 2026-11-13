@@ -2288,6 +2288,28 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram
+    name="Glic{GlicProvider}.ExperimentalTriggering.TerminalUpdateSendResult"
+    enum="SharingSendMessageResult" expires_after="2027-08-01">
+  <owner>praneethsn@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the SharingSendMessageResult of sending an async terminal TaskUpdate
+    (COMPLETE, STOPPED, or FAILED) back to the server at the end of a Glic
+    experimental triggering session (Sharing route only; the browser_actuator
+    transport route uses SendUpstreamMessage() and is not covered here).
+    Recorded once per session that ends with an async terminal update when the
+    server send callback completes (including after message-handler teardown).
+    Synchronous terminal replies (such as refusals or StopActuationRequest's
+    synchronous STOPPED response) are returned directly in the Sharing response
+    message and are not recorded, nor are non-terminal TaskUpdates or
+    non-TaskUpdate responses (opt-in, screenshot, confirmation, direct action
+    results). Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
     name="Glic{GlicProvider}.ExperimentalTriggering.UpdatesHandlerDestroyed"
     enum="GlicExperimentalTriggeringHandlerDestroyReason" expires_after="M162">
   <owner>praneethsn@google.com</owner>

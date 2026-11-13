@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_send_message_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -392,6 +394,120 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
 
   auto [server_channel, received_message] = update_future.Take();
   EXPECT_EQ(server_channel.configuration(), "config_2");
+}
+
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       TerminalUpdateSendResult_RecordsOnlyForTerminalTaskUpdates) {
+  auto mock_coordinator =
+      std::make_unique<MockGlicExperimentalTriggeringCoordinator>(profile_);
+  raw_ptr<MockGlicExperimentalTriggeringCoordinator> raw_coordinator =
+      mock_coordinator.get();
+  handler_ = std::make_unique<TestGlicExperimentalTriggeringMessageHandler>(
+      profile_, &mock_sharing_message_sender_, std::move(mock_coordinator));
+
+  GlicExperimentalTriggeringUpdateCallback update_callback;
+  EXPECT_CALL(*raw_coordinator, OnRequest(testing::_, testing::_, testing::_,
+                                          testing::_, testing::_))
+      .WillOnce([&](const std::string& context_id,
+                    const ExperimentalTriggeringRequest& request,
+                    ScopedIncomingMessageResultLogger result_logger,
+                    GlicExperimentalTriggeringUpdateCallback cb,
+                    tabs::TabInterface* prepared_tab) {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+        update_callback = std::move(cb);
+        return std::nullopt;
+      });
+
+  auto message = CreateTriggeringMessage(1);
+  message.mutable_glic_experimental_triggering()->set_context_id("ctx_send");
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+  handler_->OnMessage(std::move(message), base::DoNothing());
+  ASSERT_TRUE(update_callback);
+
+  std::vector<SharingMessageSender::ResponseCallback> pending_send_callbacks;
+  EXPECT_CALL(
+      mock_sharing_message_sender_,
+      SendMessageToServerTarget(testing::_, testing::_, testing::_, testing::_))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta, components_sharing_message::SharingMessage,
+              SharingMessageSender::ResponseCallback callback) {
+            pending_send_callbacks.push_back(std::move(callback));
+            return base::OnceClosure();
+          });
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Non-terminal TaskUpdates (RUNNING, YIELD, PAUSED, RESUMED) and
+  // non-TaskUpdate responses do not record TerminalUpdateSendResult.
+  for (TaskUpdate::State non_terminal_state :
+       {TaskUpdate::State::kStarting, TaskUpdate::State::kRunning,
+        TaskUpdate::State::kYield, TaskUpdate::State::kPaused,
+        TaskUpdate::State::kResumed}) {
+    ExperimentalTriggeringResponse resp;
+    resp.context_id = "ctx_send";
+    resp.task_update = TaskUpdate{.state = non_terminal_state};
+    update_callback.Run(std::move(resp));
+  }
+  ExperimentalTriggeringResponse opt_in_resp;
+  opt_in_resp.context_id = "ctx_send";
+  opt_in_resp.device_opt_in_result = DeviceOptInResult::kAccepted;
+  update_callback.Run(std::move(opt_in_resp));
+
+  ExperimentalTriggeringResponse screenshot_resp;
+  screenshot_resp.context_id = "ctx_send";
+  screenshot_resp.screenshot_result =
+      ScreenshotResult{.status = ScreenshotResult::Status::kSuccess};
+  update_callback.Run(std::move(screenshot_resp));
+
+  for (auto& cb : pending_send_callbacks) {
+    std::move(cb).Run(SharingSendMessageResult::kSuccessful, nullptr);
+  }
+  pending_send_callbacks.clear();
+
+  for (const char* name :
+       {"Glic.ExperimentalTriggering.TerminalUpdateSendResult",
+        "Glic.Consumer.ExperimentalTriggering.TerminalUpdateSendResult"}) {
+    histogram_tester.ExpectTotalCount(name, 0);
+  }
+
+  // 2. Terminal TaskUpdates (COMPLETE, STOPPED, FAILED) record the send result,
+  // including when the callback runs after the message handler is destroyed.
+  for (TaskUpdate::State terminal_state :
+       {TaskUpdate::State::kComplete, TaskUpdate::State::kStopped,
+        TaskUpdate::State::kFailed}) {
+    ExperimentalTriggeringResponse resp;
+    resp.context_id = "ctx_send";
+    resp.task_update = TaskUpdate{.state = terminal_state};
+    update_callback.Run(std::move(resp));
+  }
+  ASSERT_EQ(pending_send_callbacks.size(), 3u);
+
+  std::move(pending_send_callbacks[0])
+      .Run(SharingSendMessageResult::kSuccessful, nullptr);
+  std::move(pending_send_callbacks[1])
+      .Run(SharingSendMessageResult::kNetworkError, nullptr);
+
+  // Destroy handler before the third in-flight send callback completes.
+  raw_coordinator = nullptr;
+  handler_.reset();
+  std::move(pending_send_callbacks[2])
+      .Run(SharingSendMessageResult::kAckTimeout, nullptr);
+
+  for (const char* name :
+       {"Glic.ExperimentalTriggering.TerminalUpdateSendResult",
+        "Glic.Consumer.ExperimentalTriggering.TerminalUpdateSendResult"}) {
+    histogram_tester.ExpectBucketCount(
+        name, SharingSendMessageResult::kSuccessful, 1);
+    histogram_tester.ExpectBucketCount(
+        name, SharingSendMessageResult::kNetworkError, 1);
+    histogram_tester.ExpectBucketCount(
+        name, SharingSendMessageResult::kAckTimeout, 1);
+    histogram_tester.ExpectTotalCount(name, 3);
+  }
 }
 
 }  // namespace

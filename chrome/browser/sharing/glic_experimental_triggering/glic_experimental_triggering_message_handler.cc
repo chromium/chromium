@@ -289,20 +289,33 @@ GlicExperimentalTriggeringMessageHandler::GetUpdateCallback(
               outgoing_message.glic_experimental_triggering());
         }
         if (weak_message_handler->message_sender_) {
+          std::optional<glic::GlicMetricReporter> terminal_metric_reporter;
+          if (response.task_update.has_value() &&
+              response.task_update->IsTerminal()) {
+            terminal_metric_reporter.emplace(weak_message_handler->profile_);
+          }
           weak_message_handler->message_sender_->SendMessageToServerTarget(
               server_channel, kUpdateMessageTimeout,
               std::move(outgoing_message),
               base::BindOnce(
-                  [](SharingSendMessageResult result,
+                  [](std::optional<glic::GlicMetricReporter>
+                         terminal_metric_reporter,
+                     SharingSendMessageResult result,
                      std::unique_ptr<
                          components_sharing_message::ResponseMessage> unused) {
+                    if (terminal_metric_reporter.has_value()) {
+                      terminal_metric_reporter->RecordEnumeration(
+                          "ExperimentalTriggering.TerminalUpdateSendResult",
+                          result);
+                    }
                     if (result != SharingSendMessageResult::kSuccessful) {
                       DLOG(ERROR)
                           << "Failed to send experimental triggering update "
                              "to server: "
                           << static_cast<int>(result);
                     }
-                  }));
+                  },
+                  std::move(terminal_metric_reporter)));
         }
       },
       weak_ptr_factory_.GetWeakPtr(),
