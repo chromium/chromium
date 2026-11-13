@@ -16,6 +16,18 @@ import orchestrate_runner
 class OrchestrateRunnerTest(unittest.TestCase):
     """Unittests for orchestrate_runner.py."""
 
+    def test_orchestrate_configs_error_on_test_failure(self) -> None:
+        for arch in ('x64', 'arm64'):
+            config_path = os.path.join(
+                orchestrate_runner.SCRIPT_DIR, f'orchestrate_{arch}.json'
+            )
+            with open(config_path, encoding='utf-8') as f:
+                config = json.load(f)
+            self.assertIn(
+                'orchestrate-error-on-test-failure',
+                config.get('experiments', []),
+            )
+
     def test_support_orchestrate(self) -> None:
         self.assertTrue(
             orchestrate_runner.support_orchestrate('base_unittests')

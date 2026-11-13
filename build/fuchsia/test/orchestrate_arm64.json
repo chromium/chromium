@@ -8,5 +8,8 @@
     },
     "ffx_path": "../../third_party/fuchsia-sdk/sdk/tools/arm64/ffx",
     "local_pb": "../../third_party/fuchsia-sdk/images/terminal/qemu-arm64/"
-  }
+  },
+  "experiments": [
+    "orchestrate-error-on-test-failure"
+  ]
 }
