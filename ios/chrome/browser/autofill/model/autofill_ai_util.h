@@ -14,8 +14,6 @@ class ProfileIOS;
 
 namespace autofill {
 
-class AutofillClient;
-
 // Returns the country code from the variations service.
 // If the variations service is not available, an empty string is returned.
 const std::string GetCountryCodeFromVariations();
@@ -38,13 +36,6 @@ bool IsAmbientAutofillFeatureEnabled();
 
 // Returns whether Autofill order and shipment entities are supported.
 bool IsAutofillShoppingEnabled();
-
-// Returns whether Autofill AI (AtMemory) is enabled.
-bool IsAutofillAtMemoryEnabled();
-
-// Returns whether Autofill AI (AtMemory) Search UI is enabled for the given
-// client.
-bool IsAutofillAtMemorySearchUIEnabled(const AutofillClient* client);
 
 // Returns whether Enhanced Autofill is enabled.
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile);

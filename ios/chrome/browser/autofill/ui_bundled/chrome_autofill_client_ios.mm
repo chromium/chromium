@@ -21,7 +21,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/account_settings/account_setting_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/autofill_server_prediction.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -62,7 +61,6 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
@@ -381,22 +379,6 @@ AutofillAiModelExecutor* ChromeAutofillClientIOS::GetAutofillAiModelExecutor() {
 optimization_guide::RemoteModelExecutor*
 ChromeAutofillClientIOS::GetRemoteModelExecutor() {
   return OptimizationGuideServiceFactory::GetForProfile(profile_);
-}
-
-AtMemoryManager* ChromeAutofillClientIOS::GetAtMemoryManager() {
-  if (!IsAutofillAtMemorySearchUIEnabled(this)) {
-    return nullptr;
-  }
-  if (!at_memory_manager_) {
-    at_memory_manager_ = std::make_unique<AtMemoryManager>(
-        this, ios::HistoryServiceFactory::GetForProfile(profile_));
-  }
-  return at_memory_manager_.get();
-}
-
-autofill::AtMemoryQueryService*
-ChromeAutofillClientIOS::GetAtMemoryQueryService() {
-  return IOSAtMemoryQueryServiceFactory::GetForProfile(profile_);
 }
 
 PersonalContextEligibilityState

@@ -40,7 +40,6 @@ source_set("coordinator") {
     "//components/variations/service",
     "//google_apis",
     "//ios/chrome/browser/affiliations/model",
-    "//ios/chrome/browser/autofill/atmemory/model",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
     "//ios/chrome/browser/autofill/bnpl/ui",

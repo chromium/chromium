@@ -6,10 +6,8 @@
 
 #import "base/strings/string_util.h"
 #import "components/account_settings/account_setting_service.h"
-#import "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
-#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -124,24 +122,6 @@ bool IsAmbientAutofillFeatureEnabled() {
 bool IsAutofillShoppingEnabled() {
   return IsAmbientAutofillFeatureEnabled() ||
          base::FeatureList::IsEnabled(features::kAutofillAiWalletShopping);
-}
-
-bool IsAutofillAtMemoryEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
-}
-
-bool IsAutofillAtMemorySearchUIEnabled(const AutofillClient* client) {
-  if (!client || !IsAutofillAtMemoryEnabled()) {
-    return false;
-  }
-
-  // Check Gemini First Run state before any pcontext features.
-  const PrefService* prefs = client->GetPrefs();
-  if (!prefs || !gemini::DidUserConsentToGemini(prefs)) {
-    return false;
-  }
-
-  return MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client);
 }
 
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile) {
