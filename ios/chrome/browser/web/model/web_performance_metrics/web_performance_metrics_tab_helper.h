@@ -8,6 +8,7 @@
 #include <limits>
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -16,10 +17,12 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
+#include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
 namespace web {
+class WebFrame;
 class WebState;
 }
 
@@ -29,6 +32,7 @@ class WebState;
 // the metrics it has caputered into UMA.
 class WebPerformanceMetricsTabHelper
     : public web::WebStateObserver,
+      public web::WebFramesManager::Observer,
       public web::WebStateUserData<WebPerformanceMetricsTabHelper> {
  public:
   WebPerformanceMetricsTabHelper(const WebPerformanceMetricsTabHelper&) =
@@ -80,12 +84,17 @@ class WebPerformanceMetricsTabHelper
       int interaction_count,
       bool is_main_frame);
 
-  // Flushes the latest Interaction to Next Paint metrics to UMA if any have
-  // been recorded for the current page load.
+  // Flushes the Interaction to Next Paint metrics to UMA for all pages that
+  // have pending data. Must only be called when no more messages can arrive
+  // for this WebState.
   void FlushInteractionToNextPaintMetrics();
 
  private:
   friend class web::WebStateUserData<WebPerformanceMetricsTabHelper>;
+
+  // Interaction data reported by each frame of a page, keyed by frame id.
+  using PageInteractions =
+      std::map<std::string, web_performance_metrics::FrameInteractionData>;
 
   explicit WebPerformanceMetricsTabHelper(web::WebState* web_state);
 
@@ -98,9 +107,25 @@ class WebPerformanceMetricsTabHelper
                            web::NavigationContext* navigation_context) override;
   void WasHidden(web::WebState* web_state) override;
 
+  // WebFramesManager::Observer::
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+
+  // Logs the Interaction to Next Paint metrics of a single page to UMA.
+  void LogPageInteractionToNextPaint(const PageInteractions& page_interactions);
+
+  // Assigns `frame_id` to the current page.
+  void AddFrameToCurrentPage(std::string frame_id);
+
   // Manages the tab helper's connection to the WebState
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // Observes frames in the feature's content world so frame IDs match those
+  // reported by its script.
+  base::ScopedObservation<web::WebFramesManager,
+                          web::WebFramesManager::Observer>
+      web_frames_manager_observation_{this};
 
   // Stores the earliest absolute First Contentful Paint across a web page's
   // main and subframes.
@@ -117,10 +142,15 @@ class WebPerformanceMetricsTabHelper
 
   base::ObserverList<Observer> observers_;
 
-  // Stores the frame interaction data for the current page load.
-  // INP metric will be calculated from this data when it needs to be logged.
-  std::map<std::string, web_performance_metrics::FrameInteractionData>
-      frame_interactions_;
+  // Buffers interaction data for the current and previous pages to attribute
+  // late messages arriving after cross-site navigations commit.
+  PageInteractions current_page_interactions_;
+  PageInteractions previous_page_interactions_;
+
+  // Frame IDs for the current and previous pages. Messages from other frames
+  // are dropped.
+  std::set<std::string> current_frame_ids_;
+  std::set<std::string> previous_frame_ids_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_TAB_HELPER_H_

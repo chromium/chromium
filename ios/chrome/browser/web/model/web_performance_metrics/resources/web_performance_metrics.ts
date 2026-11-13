@@ -65,10 +65,9 @@ function processINPEvents(eventEntries: PerformanceObserverEntryList): void {
   }
 }
 
-// Sends INP data for the frame upon page unload/hide.
-// Note that the INP metric will be calculated later when the WebState is
-// destroyed or the page is navigated away from. This only sends to the browser
-// the data needed to calculate the metric.
+// Sends INP data for the frame.
+// Note that the INP metric will be calculated later in the browser.
+// This only sends the data needed to calculate the metric.
 function sendINPData(): void {
   if (!isWebPerformanceMetricsINPEnabled()) {
     return;
@@ -123,16 +122,21 @@ function processPageShowEvent(pageshow: PageTransitionEvent): void {
   }
 }
 
-// Unregisters passive event listeners and flushes metrics on pagehide.
+// Unregisters passive event listeners on pagehide.
 function processPageHideEvent(): void {
-  // Sends the INP data for the frame on pagehide, so we don't
-  // send the data on every interaction.
-  sendINPData();
-
   EVENT_TYPES.forEach((type) => {
     window.removeEventListener(type, processInputEvent, { capture: true });
   });
   loadedFromCache = false;
+}
+
+// Sends INP data when the page visibility changes to hidden
+// (navigation, switching tabs, app backgrounding).
+function processVisibilityChangeEvent(): void {
+  if (document.visibilityState !== 'hidden') {
+    return;
+  }
+  sendINPData();
 }
 
 // Register PerformanceObserver to observe 'paint' events
@@ -170,8 +174,8 @@ function registerInputEventListeners(): void {
   });
 }
 
-// Registers passive event listeners for the pageshow
-// and pagehide events
+// Registers passive event listeners for the pageshow,
+// pagehide and visibilitychange events
 function registerPageCacheListeners(): void {
   window.addEventListener('pageshow',
                            processPageShowEvent,
@@ -181,6 +185,10 @@ function registerPageCacheListeners(): void {
   window.addEventListener('pagehide',
                            processPageHideEvent,
                            { capture: true, passive: true});
+
+  document.addEventListener(
+      'visibilitychange', processVisibilityChangeEvent,
+      {capture: true, passive: true});
 }
 
 registerPerformanceObserver();
