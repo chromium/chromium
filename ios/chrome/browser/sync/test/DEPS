@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+components/sync_tab_context",
+  "+ios/chrome/browser/sync/model",
+  # keep-sorted end
+]
