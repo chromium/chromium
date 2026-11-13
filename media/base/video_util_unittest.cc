@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 
@@ -16,6 +17,7 @@
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
@@ -342,6 +344,71 @@ TEST_P(VideoUtilRotationTest, Rotate) {
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoUtilRotationTest,
                          testing::ValuesIn(kVideoRotationTestData));
+
+TEST_F(VideoUtilTest, RotateVideoFrameToI420) {
+  constexpr gfx::Size kSize(16, 8);
+  constexpr gfx::Rect kRect(4, 2, 8, 4);
+  constexpr std::array<VideoFrame::Plane, 3> kPlanes = {
+      VideoFrame::Plane::kY, VideoFrame::Plane::kU, VideoFrame::Plane::kV};
+
+  for (VideoPixelFormat format : {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12}) {
+    SCOPED_TRACE(VideoPixelFormatToString(format));
+    auto src_frame = VideoFrame::CreateZeroInitializedFrame(
+        format, kSize, kRect, kRect.size(), base::TimeDelta());
+    for (size_t i = 0; i < std::size(kPlanes); ++i) {
+      const bool interleaved = format == PIXEL_FORMAT_NV12 && i > 0;
+      const size_t plane = interleaved ? VideoFrame::Plane::kUV : kPlanes[i];
+      const gfx::Size size =
+          VideoFrame::PlaneSize(PIXEL_FORMAT_I420, kPlanes[i], kRect.size());
+      auto data = src_frame->GetWritableVisiblePlaneData(plane);
+      for (int y = 0; y < size.height(); ++y) {
+        for (int x = 0; x < size.width(); ++x) {
+          data[y * src_frame->stride(plane) +
+               (interleaved ? 2 * x + i - 1 : x)] =
+              i * 100 + y * size.width() + x;
+        }
+      }
+    }
+
+    for (VideoRotation rotation :
+         {VIDEO_ROTATION_90, VIDEO_ROTATION_180, VIDEO_ROTATION_270}) {
+      SCOPED_TRACE(rotation);
+      const gfx::Size dest_size = IsOrthogonal(rotation)
+                                      ? gfx::TransposeSize(kRect.size())
+                                      : kRect.size();
+      auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+          PIXEL_FORMAT_I420, dest_size, gfx::Rect(dest_size), dest_size,
+          base::TimeDelta());
+      ASSERT_TRUE(
+          RotateVideoFrameToI420(*src_frame, rotation, *dest_frame).is_ok());
+      for (size_t i = 0; i < std::size(kPlanes); ++i) {
+        const gfx::Size size =
+            VideoFrame::PlaneSize(PIXEL_FORMAT_I420, kPlanes[i], kRect.size());
+        auto data = dest_frame->GetVisiblePlaneData(kPlanes[i]);
+        for (int y = 0; y < size.height(); ++y) {
+          for (int x = 0; x < size.width(); ++x) {
+            gfx::Point dest(size.width() - 1 - x, size.height() - 1 - y);
+            if (rotation == VIDEO_ROTATION_90) {
+              dest = gfx::Point(size.height() - 1 - y, x);
+            } else if (rotation == VIDEO_ROTATION_270) {
+              dest = gfx::Point(y, size.width() - 1 - x);
+            }
+            ASSERT_EQ(
+                i * 100 + y * size.width() + x,
+                data[dest.y() * dest_frame->stride(kPlanes[i]) + dest.x()]);
+          }
+        }
+      }
+    }
+
+    auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+        PIXEL_FORMAT_I420, kRect.size(), gfx::Rect(kRect.size()), kRect.size(),
+        base::TimeDelta());
+    EXPECT_FALSE(
+        RotateVideoFrameToI420(*src_frame, VIDEO_ROTATION_90, *dest_frame)
+            .is_ok());
+  }
+}
 
 // Tests the ComputeLetterboxRegion function.  Also, because of shared code
 // internally, this also tests ScaleSizeToFitWithinTarget().

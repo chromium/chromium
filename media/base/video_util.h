@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
+#include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -75,6 +76,16 @@ MEDIA_EXPORT void RotatePlaneByPixels(const uint8_t* src,
                                       int rotation,  // Clockwise.
                                       bool flip_vert,
                                       bool flip_horiz);
+
+// Copies the visible pixels of `src_frame` into `dest_frame`, rotated
+// clockwise by `rotation`. No scaling is applied, so the visible size of
+// `dest_frame` must be the rotated visible size of `src_frame`.
+//
+// Input formats: PIXEL_FORMAT_I420, PIXEL_FORMAT_I420A (alpha is dropped) and
+// PIXEL_FORMAT_NV12. Output format: PIXEL_FORMAT_I420.
+MEDIA_EXPORT EncoderStatus RotateVideoFrameToI420(const VideoFrame& src_frame,
+                                                  VideoRotation rotation,
+                                                  VideoFrame& dest_frame);
 
 // Return the largest centered rectangle with the same aspect ratio of |content|
 // that fits entirely inside of |bounds|.  If |content| is empty, its aspect

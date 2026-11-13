@@ -101,7 +101,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
     raw_ptr<WebRtcVideoTrackSource> parent_ GUARDED_BY(lock_);
   };
 
-  void SendFeedback();
+  void SendFeedback(bool require_mapped_frame);
 
   FrameAdaptationParams ComputeAdaptationParams(int width,
                                                 int height,

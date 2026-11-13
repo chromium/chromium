@@ -26,6 +26,8 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_metadata.h"
+#include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -137,7 +139,9 @@ class WebRtcVideoTrackSourceTest
   void SendTestFrameWithMappableSharedImage(
       const FrameParameters& frame_parameters,
       base::TimeDelta timestamp,
-      bool premapped) {
+      bool premapped,
+      media::VideoRotation rotation = media::VIDEO_ROTATION_0,
+      const media::VideoFrameMetadata& metadata = {}) {
     std::optional<viz::SharedImageFormat> si_format =
         media::VideoPixelFormatToSharedImageFormat(
             frame_parameters.pixel_format);
@@ -160,6 +164,10 @@ class WebRtcVideoTrackSourceTest
         std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
         base::NullCallback(), frame_parameters.visible_rect,
         frame_parameters.natural_size, timestamp);
+    frame->metadata() = metadata;
+    if (rotation != media::VIDEO_ROTATION_0) {
+      frame->metadata().transformation = media::VideoTransformation(rotation);
+    }
 
     track_source_->OnFrameCaptured(frame);
   }
@@ -269,6 +277,169 @@ std::vector<WebRtcVideoTrackSourceTest::ParamType> TestParams() {
   return test_params;
 }
 }  // namespace
+
+TEST_F(WebRtcVideoTrackSourceTest, AppliesRotationToNativeFrames) {
+  const gfx::Size kSize(8, 4);
+  track_source_->SetCustomFrameAdaptationParamsForTesting(
+      FrameAdaptation_KeepAsIs(kSize));
+  webrtc::VideoSinkWants wants;
+  wants.rotation_applied = true;
+  track_source_->AddOrUpdateSink(&mock_sink_, wants);
+
+  for (media::VideoPixelFormat format :
+       {media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_I420A}) {
+    SCOPED_TRACE(media::VideoPixelFormatToString(format));
+    int counter = 0;
+    media::VideoRotation previous_rotation = media::VIDEO_ROTATION_0;
+    for (media::VideoRotation rotation :
+         {media::VIDEO_ROTATION_0, media::VIDEO_ROTATION_90,
+          media::VIDEO_ROTATION_180, media::VIDEO_ROTATION_0,
+          media::VIDEO_ROTATION_270, media::VIDEO_ROTATION_0,
+          media::VIDEO_ROTATION_0}) {
+      SCOPED_TRACE(static_cast<int>(rotation));
+      auto input = media::VideoFrame::CreateZeroInitializedFrame(
+          format, kSize, gfx::Rect(kSize), kSize, base::Seconds(++counter));
+      ASSERT_TRUE(input);
+      input->metadata().transformation = media::VideoTransformation(rotation);
+      input->metadata().capture.counter = counter;
+      input->metadata().capture.update_rect = gfx::Rect();
+      input->metadata().maximum_composition_delay_in_frames = 3;
+      input->metadata().read_lock_fences_enabled = true;
+      auto input_y =
+          input->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kY);
+      const size_t input_stride = input->stride(media::VideoFrame::Plane::kY);
+      for (int y = 0; y < kSize.height(); ++y) {
+        for (int x = 0; x < kSize.width(); ++x) {
+          input_y[y * input_stride + x] = 32 + y * kSize.width() + x;
+        }
+      }
+      EXPECT_CALL(mock_sink_, OnFrame(_))
+          .WillOnce([&](const webrtc::VideoFrame& frame) {
+            EXPECT_EQ(webrtc::kVideoRotation_0, frame.rotation());
+            const bool transpose = rotation == media::VIDEO_ROTATION_90 ||
+                                   rotation == media::VIDEO_ROTATION_270;
+            ASSERT_EQ(transpose ? kSize.height() : kSize.width(),
+                      frame.width());
+            ASSERT_EQ(transpose ? kSize.width() : kSize.height(),
+                      frame.height());
+            ASSERT_EQ(webrtc::VideoFrameBuffer::Type::kNative,
+                      frame.video_frame_buffer()->type());
+            auto* adapter = static_cast<WebRtcVideoFrameAdapterInterface*>(
+                frame.video_frame_buffer().get());
+            auto output = adapter->getMediaVideoFrame();
+            EXPECT_EQ(3,
+                      output->metadata().maximum_composition_delay_in_frames);
+            if (rotation != media::VIDEO_ROTATION_0) {
+              EXPECT_FALSE(output->metadata().read_lock_fences_enabled);
+              EXPECT_FALSE(output->metadata().capture.update_rect.has_value());
+            }
+            auto output_y =
+                output->GetVisiblePlaneData(media::VideoFrame::Plane::kY);
+            const size_t stride = output->stride(media::VideoFrame::Plane::kY);
+            // Check pixel positions independently of the rotation helper.
+            for (int y = 0; y < kSize.height(); ++y) {
+              for (int x = 0; x < kSize.width(); ++x) {
+                int output_x = x;
+                int output_y_index = y;
+                switch (rotation) {
+                  case media::VIDEO_ROTATION_90:
+                    output_x = kSize.height() - 1 - y;
+                    output_y_index = x;
+                    break;
+                  case media::VIDEO_ROTATION_180:
+                    output_x = kSize.width() - 1 - x;
+                    output_y_index = kSize.height() - 1 - y;
+                    break;
+                  case media::VIDEO_ROTATION_270:
+                    output_x = y;
+                    output_y_index = kSize.width() - 1 - x;
+                    break;
+                  case media::VIDEO_ROTATION_0:
+                    break;
+                }
+                EXPECT_EQ(32 + y * kSize.width() + x,
+                          output_y[output_y_index * stride + output_x]);
+              }
+            }
+            const bool refresh = counter == 1 ||
+                                 rotation != media::VIDEO_ROTATION_0 ||
+                                 previous_rotation != media::VIDEO_ROTATION_0;
+            ExpectUpdateRectEquals(
+                refresh ? gfx::Rect(frame.width(), frame.height())
+                        : gfx::Rect(),
+                frame.update_rect());
+          });
+      track_source_->OnFrameCaptured(input);
+      EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_sink_));
+      EXPECT_EQ(rotation != media::VIDEO_ROTATION_0,
+                feedback_.require_mapped_frame);
+      EXPECT_EQ(rotation, input->metadata().transformation->rotation);
+      EXPECT_EQ(32, input_y[0]);
+      EXPECT_TRUE(input->metadata().read_lock_fences_enabled);
+      previous_rotation = rotation;
+    }
+  }
+}
+
+TEST_F(WebRtcVideoTrackSourceTest, MapsRotatedFramesWithoutEncoderFeedback) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const gfx::Size kSize(8, 4);
+  track_source_->SetCustomFrameAdaptationParamsForTesting(
+      FrameAdaptation_KeepAsIs(kSize));
+  webrtc::VideoSinkWants wants;
+  wants.rotation_applied = true;
+  track_source_->AddOrUpdateSink(&mock_sink_, wants);
+  FrameParameters parameters = {
+      .coded_size = kSize,
+      .visible_rect = gfx::Rect(kSize),
+      .natural_size = kSize,
+      .storage_type = media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+      .pixel_format = media::PIXEL_FORMAT_NV12};
+  media::VideoFrameMetadata metadata;
+  metadata.reference_time = base::TimeTicks() + base::Seconds(1);
+  metadata.capture.version = {3, 7};
+  metadata.maximum_composition_delay_in_frames = 4;
+  metadata.read_lock_fences_enabled = true;
+  metadata.capture.counter = 42;
+  metadata.capture.update_rect = gfx::Rect();
+  for (bool success : {true, false}) {
+    SCOPED_TRACE(success);
+    SetRequireMappedFrame(false);
+    EXPECT_CALL(mock_sink_, OnFrame(_)).Times(0);
+    SendTestFrameWithMappableSharedImage(
+        parameters, base::Seconds(success ? 1 : 2),
+        /*premapped=*/false, media::VIDEO_ROTATION_90, metadata);
+    EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_sink_));
+    EXPECT_TRUE(feedback_.require_mapped_frame);
+    ASSERT_EQ(1u, map_callbacks_.size());
+    EXPECT_CALL(mock_sink_, OnFrame(_))
+        .WillOnce([&](const webrtc::VideoFrame& frame) {
+          EXPECT_EQ(webrtc::kVideoRotation_0, frame.rotation());
+          ASSERT_EQ(4, frame.width());
+          ASSERT_EQ(8, frame.height());
+          EXPECT_FALSE(frame.has_update_rect());
+          ASSERT_EQ(webrtc::VideoFrameBuffer::Type::kNative,
+                    frame.video_frame_buffer()->type());
+          auto* adapter = static_cast<WebRtcVideoFrameAdapterInterface*>(
+              frame.video_frame_buffer().get());
+          auto output = adapter->getMediaVideoFrame();
+          EXPECT_TRUE(output->HasDirectCpuAccess());
+          EXPECT_EQ(metadata.reference_time, output->metadata().reference_time);
+          EXPECT_EQ(metadata.capture.version,
+                    output->metadata().capture.version);
+          EXPECT_EQ(metadata.maximum_composition_delay_in_frames,
+                    output->metadata().maximum_composition_delay_in_frames);
+          EXPECT_FALSE(output->metadata().read_lock_fences_enabled);
+          EXPECT_FALSE(output->metadata().capture.update_rect.has_value());
+          EXPECT_EQ(success ? metadata.capture.counter : std::nullopt,
+                    output->metadata().capture.counter);
+        });
+    auto callback = std::move(map_callbacks_.front());
+    map_callbacks_.pop_front();
+    std::move(callback).Run(success);
+    EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_sink_));
+  }
+}
 
 // Tests that the two generated test frames are received in sequence and have
 // correct |capture_time_identifier| set in webrtc::VideoFrame.

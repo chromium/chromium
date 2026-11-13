@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -23,6 +24,14 @@ GetPixelFormatsMappableToWebRtcVideoFrameBuffer();
 PLATFORM_EXPORT webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 ConvertToWebRtcVideoFrameBuffer(
     scoped_refptr<media::VideoFrame> video_frame,
+    scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources);
+
+// Returns an I420 copy of `video_frame` with its cropping and scaling applied
+// and its pixels rotated clockwise by `rotation`, or nullptr on failure.
+PLATFORM_EXPORT scoped_refptr<media::VideoFrame>
+ConvertToRotatedAndScaledVideoFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    media::VideoRotation rotation,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources);
 
 PLATFORM_EXPORT scoped_refptr<media::VideoFrame>

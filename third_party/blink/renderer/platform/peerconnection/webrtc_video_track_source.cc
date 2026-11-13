@@ -196,7 +196,7 @@ void WebRtcVideoTrackSource::RequestRefreshFrame() {
   request_refresh_frame_callback_.Run();
 }
 
-void WebRtcVideoTrackSource::SendFeedback() {
+void WebRtcVideoTrackSource::SendFeedback(bool require_mapped_frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (feedback_callback_.is_null()) {
     return;
@@ -205,6 +205,7 @@ void WebRtcVideoTrackSource::SendFeedback() {
   feedback.max_pixels = video_adapter()->GetTargetPixels();
   feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
   feedback.Combine(adapter_resources_->GetFeedback());
+  feedback.RequireMapped(feedback.require_mapped_frame || require_mapped_frame);
   feedback_callback_.Run(feedback);
 }
 
@@ -223,7 +224,10 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     return;
   }
 
-  SendFeedback();
+  const bool will_apply_rotation =
+      apply_rotation() &&
+      GetFrameRotation(frame.get()) != webrtc::kVideoRotation_0;
+  SendFeedback(will_apply_rotation);
 
   if (pending_frames_.size() > kMaxPendingFrames) {
     OnFrameDropped();
@@ -234,11 +238,13 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
                                          .id = next_frame_id_++,
                                          .can_be_delivered = false});
   auto& current_frame = pending_frames_.back().frame;
+  const bool require_mapped_frame =
+      adapter_resources_->GetFeedback().require_mapped_frame ||
+      will_apply_rotation;
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webrtc"), "MappingParams",
-              "require_mapped_frame",
-              adapter_resources_->GetFeedback().require_mapped_frame,
-              "HasMappableGmb", current_frame->HasMappableSharedImage(),
+              "require_mapped_frame", require_mapped_frame, "HasMappableGmb",
+              current_frame->HasMappableSharedImage(),
               "AsyncMappingIsNonBlocking",
               current_frame->HasMappableSharedImage() &&
                   current_frame->AsyncMappingIsNonBlocking());
@@ -247,7 +253,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // premapped. Otherwise it moves the mapping out of the encode operation,
   // thus not inflating the encode time metrics.
   if (base::FeatureList::IsEnabled(kWebrtcVideoTrackSourcePremap) &&
-      adapter_resources_->GetFeedback().require_mapped_frame) {
+      require_mapped_frame) {
     if (current_frame->HasMappableSharedImage() &&
         current_frame->AsyncMappingIsNonBlocking()) {
       using CallbackWithFrame =
@@ -502,6 +508,13 @@ void WebRtcVideoTrackSource::ProcessMappedFrame(
         << "Async mapping of frame failed. Producing black frame instead.";
     mapped_frame = media::VideoFrame::CreateColorFrame(
         it->frame->natural_size(), 0u, 0x80, 0x80, it->frame->timestamp());
+    if (mapped_frame) {
+      auto& metadata = mapped_frame->metadata();
+      metadata = it->frame->metadata();
+      metadata.ClearTextureFrameMetadata();
+      metadata.capture.update_rect.reset();
+      metadata.capture.counter.reset();
+    }
   }
 
   it->can_be_delivered = true;
@@ -544,6 +557,39 @@ void WebRtcVideoTrackSource::DeliverFrame(
     update_rect = std::nullopt;
   }
 
+  webrtc::VideoRotation rotation = GetFrameRotation(frame.get());
+  if (apply_rotation() && rotation != webrtc::kVideoRotation_0) {
+    // Without CVO, restore upright pixels with no pending rotation.
+    const media::VideoRotation media_rotation =
+        frame->metadata().transformation->rotation;
+    auto rotated_frame = ConvertToRotatedAndScaledVideoFrame(
+        frame, media_rotation, adapter_resources_);
+    if (!rotated_frame) {
+      LOG(ERROR)
+          << "Rotating frame failed. Producing black frame instead. Frame: "
+          << frame->AsHumanReadableString();
+      const gfx::Size rotated_size =
+          media::IsOrthogonal(media_rotation)
+              ? gfx::TransposeSize(frame->natural_size())
+              : frame->natural_size();
+      rotated_frame = media::VideoFrame::CreateColorFrame(
+          rotated_size, 0u, 0x80, 0x80, frame->timestamp());
+    }
+    auto& metadata = rotated_frame->metadata();
+    metadata = frame->metadata();
+    metadata.ClearTextureFrameMetadata();
+    metadata.transformation = media::VideoTransformation();
+    metadata.capture.update_rect.reset();
+    rotated_frame->set_color_space(
+        media::VideoFrameConverter::GetDestinationColorSpace(*frame));
+    frame = std::move(rotated_frame);
+    // JS can add rotation to captured frames while preserving their damage
+    // metadata. Refresh now and invalidate the next frame's damage history.
+    update_rect = std::nullopt;
+    previous_capture_counter_.reset();
+    rotation = webrtc::kVideoRotation_0;
+  }
+
   webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, adapter_resources_));
@@ -551,7 +597,7 @@ void WebRtcVideoTrackSource::DeliverFrame(
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(frame_adapter)
-          .set_rotation(GetFrameRotation(frame.get()))
+          .set_rotation(rotation)
           .set_timestamp_us(timestamp_us)
           .set_presentation_timestamp(presentation_timestamp)
           .set_reference_time(reference_time);

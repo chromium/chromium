@@ -429,6 +429,58 @@ void RotatePlaneByPixels(const uint8_t* src,
   }
 }
 
+EncoderStatus RotateVideoFrameToI420(const VideoFrame& src_frame,
+                                     VideoRotation rotation,
+                                     VideoFrame& dest_frame) {
+  const gfx::Size src_size = src_frame.visible_rect().size();
+  const gfx::Size rotated_size =
+      IsOrthogonal(rotation) ? gfx::TransposeSize(src_size) : src_size;
+  const bool is_nv12 = src_frame.format() == PIXEL_FORMAT_NV12;
+  if ((!is_nv12 && src_frame.format() != PIXEL_FORMAT_I420 &&
+       src_frame.format() != PIXEL_FORMAT_I420A) ||
+      dest_frame.format() != PIXEL_FORMAT_I420 ||
+      dest_frame.visible_rect().size() != rotated_size) {
+    return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
+        .WithData("src", src_frame.AsHumanReadableString())
+        .WithData("dst", dest_frame.AsHumanReadableString());
+  }
+
+  dest_frame.set_color_space(src_frame.ColorSpace());
+  dest_frame.set_hdr_metadata(src_frame.hdr_metadata());
+
+  const auto mode = static_cast<libyuv::RotationMode>(rotation);
+  uint8_t* const dest_y =
+      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY);
+  uint8_t* const dest_u =
+      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU);
+  uint8_t* const dest_v =
+      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV);
+  const int dest_stride_y = dest_frame.stride(VideoFrame::Plane::kY);
+  const int dest_stride_u = dest_frame.stride(VideoFrame::Plane::kU);
+  const int dest_stride_v = dest_frame.stride(VideoFrame::Plane::kV);
+  const int result =
+      is_nv12 ? libyuv::NV12ToI420Rotate(
+                    src_frame.visible_data(VideoFrame::Plane::kY),
+                    src_frame.stride(VideoFrame::Plane::kY),
+                    src_frame.visible_data(VideoFrame::Plane::kUV),
+                    src_frame.stride(VideoFrame::Plane::kUV), dest_y,
+                    dest_stride_y, dest_u, dest_stride_u, dest_v, dest_stride_v,
+                    src_size.width(), src_size.height(), mode)
+              : libyuv::I420Rotate(
+                    src_frame.visible_data(VideoFrame::Plane::kY),
+                    src_frame.stride(VideoFrame::Plane::kY),
+                    src_frame.visible_data(VideoFrame::Plane::kU),
+                    src_frame.stride(VideoFrame::Plane::kU),
+                    src_frame.visible_data(VideoFrame::Plane::kV),
+                    src_frame.stride(VideoFrame::Plane::kV), dest_y,
+                    dest_stride_y, dest_u, dest_stride_u, dest_v, dest_stride_v,
+                    src_size.width(), src_size.height(), mode);
+  if (result != 0) {
+    return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+  }
+  return OkStatus();
+}
+
 // Helper function to return |a| divided by |b|, rounded to the nearest integer.
 static int RoundedDivision(int64_t a, int b) {
   DCHECK_GE(a, 0);

@@ -257,6 +257,30 @@ scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
                               std::move(shared_resources), source_is_nv12);
 }
 
+// Returns a mapped I420, I420A or NV12 frame with the cropping and scaling of
+// `video_frame` applied, or nullptr on failure.
+scoped_refptr<media::VideoFrame> MapAndScaleFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+        shared_resources) {
+  if (video_frame->HasMappableSharedImage()) {
+    video_frame = shared_resources
+                      ? shared_resources->ConstructVideoFrameFromGpu(
+                            std::move(video_frame))
+                      : nullptr;
+  } else if (video_frame->HasSharedImage()) {
+    video_frame = shared_resources
+                      ? shared_resources->ConstructVideoFrameFromTexture(
+                            std::move(video_frame))
+                      : nullptr;
+    DLOG_IF(ERROR, !video_frame) << "Texture backed frame cannot be accessed.";
+  }
+  // If scaling is required, hard-apply both the cropping and scaling before we
+  // hand the frame over to WebRTC.
+  return MaybeConvertAndScaleFrame(std::move(video_frame),
+                                   std::move(shared_resources));
+}
+
 }  // anonymous namespace
 
 namespace blink {
@@ -291,46 +315,40 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       << "Can not create WebRTC frame buffer for frame "
       << video_frame->AsHumanReadableString();
 
-  auto create_placeholder_frame = [](const media::VideoFrame& frame) {
+  auto converted_frame = MapAndScaleFrame(video_frame, shared_resources);
+  if (!converted_frame) {
     LOG(ERROR)
         << "Mapping frame failed. Generating black frame instead. Frame: "
-        << frame.AsHumanReadableString();
-    return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
-        frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
-  };
-
-  if (video_frame->HasMappableSharedImage()) {
-    auto converted_frame =
-        shared_resources
-            ? shared_resources->ConstructVideoFrameFromGpu(video_frame)
-            : nullptr;
-    converted_frame =
-        MaybeConvertAndScaleFrame(converted_frame, shared_resources);
-    if (!converted_frame) {
-      return create_placeholder_frame(*video_frame);
-    }
-    return MakeFrameAdapter(std::move(converted_frame));
-  } else if (video_frame->HasSharedImage()) {
-    auto converted_frame =
-        shared_resources
-            ? shared_resources->ConstructVideoFrameFromTexture(video_frame)
-            : nullptr;
-    converted_frame =
-        MaybeConvertAndScaleFrame(converted_frame, shared_resources);
-    if (!converted_frame) {
-      DLOG(ERROR) << "Texture backed frame cannot be accessed.";
-      return create_placeholder_frame(*video_frame);
-    }
-    return MakeFrameAdapter(std::move(converted_frame));
+        << video_frame->AsHumanReadableString();
+    converted_frame = media::VideoFrame::CreateColorFrame(
+        video_frame->natural_size(), 0u, 0x80, 0x80, video_frame->timestamp());
   }
+  return MakeFrameAdapter(std::move(converted_frame));
+}
 
-  // Since scaling is required, hard-apply both the cropping and scaling
-  // before we hand the frame over to WebRTC.
-  auto scaled_frame = MaybeConvertAndScaleFrame(video_frame, shared_resources);
-  if (!scaled_frame) {
-    return create_placeholder_frame(*video_frame);
+scoped_refptr<media::VideoFrame> ConvertToRotatedAndScaledVideoFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    media::VideoRotation rotation,
+    scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources) {
+  DCHECK(CanConvertToWebRtcVideoFrameBuffer(video_frame.get()));
+  auto mapped_frame =
+      MapAndScaleFrame(std::move(video_frame), shared_resources);
+  if (!mapped_frame) {
+    return nullptr;
   }
-  return MakeFrameAdapter(std::move(scaled_frame));
+  const gfx::Size rotated_size =
+      media::IsOrthogonal(rotation)
+          ? gfx::TransposeSize(mapped_frame->natural_size())
+          : mapped_frame->natural_size();
+  auto rotated_frame = shared_resources->CreateFrame(
+      media::PIXEL_FORMAT_I420, rotated_size, gfx::Rect(rotated_size),
+      rotated_size, mapped_frame->timestamp());
+  if (!rotated_frame ||
+      !media::RotateVideoFrameToI420(*mapped_frame, rotation, *rotated_frame)
+           .is_ok()) {
+    return nullptr;
+  }
+  return rotated_frame;
 }
 
 scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
