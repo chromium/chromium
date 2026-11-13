@@ -6,14 +6,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/perks_discovery_screen_handler.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 namespace {
@@ -200,11 +202,12 @@ bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  const user_manager::UserManager* user_manager =
-      user_manager::UserManager::Get();
-  bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
-  bool is_child_account = user_manager->IsLoggedInAsChildUser();
+  const user_manager::User& user = CHECK_DEREF(context.onboarding_user.get());
+  // The policy status is unset only if the cached user policy failed to
+  // load. Treat the user as unmanaged then, as the policy connector did.
+  // TODO(crbug.com/583357783): Skip the screen in that case.
+  bool is_managed_account = user.is_managed().value_or(false);
+  bool is_child_account = user.IsChild();
   if (is_managed_account || is_child_account) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
