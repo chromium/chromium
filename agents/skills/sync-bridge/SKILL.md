@@ -46,21 +46,38 @@ clients.
 
 1. **Atomic data and metadata writes**: Commit domain data and sync metadata
    (`MetadataChangeList`) in the same storage transaction (one
-   `DataTypeStore::CommitWriteBatch()` call or one `sql::Transaction`). When
-   using `DataTypeStore`, pass the existing `MetadataChangeList` to
-   `store_->CreateWriteBatch(std::move(metadata_change_list))`, or for local
-   writes pass `batch->GetMetadataChangeList()` to `change_processor()->Put()` /
-   `Delete()` (do not call the deprecated zero-argument `CreateWriteBatch()`).
+   `DataTypeStore::CommitWriteBatch()` call or one `sql::Transaction`).
+   - When using `DataTypeStore`, pass the existing `MetadataChangeList` to
+     `store_->CreateWriteBatch(std::move(metadata_change_list))`, or for local
+     writes pass `batch->GetMetadataChangeList()` to `change_processor()->Put()`
+     / `Delete()` (do not call the deprecated zero-argument
+     `CreateWriteBatch()`).
+   - When using custom SQL storage, never persist sync metadata in a separate
+     transaction before `MergeFullSyncData()`, `ApplyIncrementalSyncChanges()`,
+     or `ApplyDisableSyncChanges()` updates model data. Because the processor
+     populates the `MetadataChangeList` returned by `CreateMetadataChangeList()`
+     *before* invoking those callbacks, returning a direct-writing
+     `SyncMetadataStoreChangeList` from `CreateMetadataChangeList()` commits
+     metadata prematurely; keep the default
+     `DataTypeSyncBridge::CreateMetadataChangeList()` (which returns an
+     `InMemoryMetadataChangeList`) and flush it inside the `sql::Transaction`
+     via
+     `metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list)`.
 2. **Startup ordering**: Load persisted metadata and call
    `change_processor()->ModelReadyToSync(std::move(metadata_batch))` before any
    `Put()` / `Delete()`. The bridge must be able to handle `MergeFullSyncData()`
    or `ApplyIncrementalSyncChanges()` synchronously right after that call. On
    startup errors, call `change_processor()->ReportError()` **instead of**
    `ModelReadyToSync()`.
-3. **Gate local changes on `IsTrackingMetadata()`**: Never gate `Put()` /
+3. **Uninitialized `DataTypeStore` guard**: Because `DataTypeStore` initializes
+   asynchronously and remains `nullptr` while creation/loading is pending or
+   after startup fails (`ReportError()`), public model mutation and query
+   methods must guard against `store_ == nullptr` (or check a readiness
+   predicate) before dereferencing `store_`.
+4. **Gate local changes on `IsTrackingMetadata()`**: Never gate `Put()` /
    `Delete()` on whether sync is active or connected. `IsTrackingMetadata()` is
    true (and local changes must be recorded) even while disconnected or paused.
-4. **Identifiers**: `GetClientTag()` must depend only on immutable fields.
+5. **Identifiers**: `GetClientTag()` must depend only on immutable fields.
    `GetStorageKey()` must return a stable, non-empty local key; if keys are only
    assigned on insertion (`SupportsGetStorageKey()` returns false), new remote
    entities arrive with an empty storage key and the bridge must call
@@ -103,7 +120,10 @@ clients.
    `FOO_UNSPECIFIED` enums, or unrecognized `oneof` variants (`NOT_SET`). Do not
    reject unknown `oneof` subtypes in `IsEntityDataValid()` (returning `false`
    drops the update without tracking its sync metadata), and do not locally
-   modify entities whose `oneof` variant was `NOT_SET`.
+   modify entities whose `oneof` variant was `NOT_SET`. Rejecting unknown
+   `oneof` subtypes in `IsEntityDataValid()` is only okay for download-only
+   full-sync data types (`SupportsIncrementalUpdates() == false`) that do not
+   cache unknown fields.
 2. **`TrimAllSupportedFieldsFromRemoteSpecifics()`**: It returns a copy of the
    passed specifics with every field the current binary supports cleared; the
    processor caches the result as `possibly_trimmed_base_specifics`.

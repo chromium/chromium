@@ -12,14 +12,23 @@ mappings, boilerplate trimming helpers, or premature base::Feature flags for
 protobuf fields and entity types unsupported in Chrome. Define cross-platform
 fields in the shared .proto definition with comments documenting that they are
 unused in Chrome, and handle unsupported types directly as intentional no-ops
-(e.g. break;) or invalid/ignored cases (e.g. returning false in entity
-validation) accompanied by explanatory comments.
+(e.g. `break;`) accompanied by explanatory comments. Only reject unrecognized
+`oneof` variants in `IsEntityDataValid()` (returning `false`) in download-only
+full-sync bridges (`SupportsIncrementalUpdates() == false`) that do not cache
+unknown fields; incremental bridges must accept entities with valid identity in
+`IsEntityDataValid()` and ignore unrecognized variants when updating the local
+model.
 
 **Why.** Sync protocol buffers are shared across multiple platforms (such as
 Android, Google Wallet, and Chrome). Adding attribute mappings, dead trimming
 helpers, or premature feature flags for types unsupported in Chrome adds dead
 code, increases flag maintenance overhead, and risks mismanaging remote
-specifics that should simply be ignored or preserved without processing.
+specifics that should simply be ignored or preserved without processing. In
+incremental bridges, however, returning `false` from `IsEntityDataValid()` drops
+the remote update before tracking `EntityMetadata` or caching
+`possibly_trimmed_base_specifics`, breaking forward-compatibility caching across
+browser upgrades and making it hard to detect after an upgrade that the dropped
+data needs to be redownloaded.
 
 ## Examples
 
@@ -59,10 +68,17 @@ case AutofillValuableSpecifics::kEventTicket: {
   break;
 }
 
-// In valuable_sync_bridge.cc: ignore unsupported entry types directly:
+// In an incremental sync bridge: accept entities with valid identity in
+// IsEntityDataValid() so metadata and unknown fields are tracked:
 case sync_pb::AutofillValuableSpecifics::kEventTicket:
 case sync_pb::AutofillValuableSpecifics::kTransitPass:
 case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
-  // Ignore new entry types that the client doesn't know about.
-  return false;
+  return !autofill_valuable.id().empty();
+
+// And ignore unsupported/unknown variants when updating the local model:
+case sync_pb::AutofillValuableSpecifics::kEventTicket:
+case sync_pb::AutofillValuableSpecifics::kTransitPass:
+case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
+  // Ignore entry types that Chrome does not support yet.
+  break;
 ```

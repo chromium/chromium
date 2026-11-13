@@ -20,7 +20,7 @@ that single entity to the server without re-indexing or re-uploading neighboring
 entities (reducing server traffic and conflict risk).
 
 Design document (use when citing guidelines in reviews):
-[Chrome Sync Unique Position API](https://chromium.googlesource.com/chromium/src/+/main/docs/website/site/developers/design-documents/sync/unique-positions/index.md)
+[Chrome Sync Unique Position API](https://www.chromium.org/developers/design-documents/sync/unique-positions/)
 
 ______________________________________________________________________
 
