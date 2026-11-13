@@ -4,8 +4,14 @@
 
 package org.chromium.components.component_updater;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -20,9 +26,12 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 @JNINamespace("component_updater")
 @NullMarked
 public class UpdateScheduler {
+    @JniType("::component_updater::BackgroundTaskUpdateScheduler")
+    interface NativeBackgroundTaskUpdateScheduler extends JniTypeToken {}
+
     private static @Nullable UpdateScheduler sInstance;
     private @Nullable TaskFinishedCallback mTaskFinishedCallback;
-    private long mNativeScheduler;
+    private @Nullable JniRawPtr<NativeBackgroundTaskUpdateScheduler> mNativeScheduler;
     private long mDelayMs;
 
     @CalledByNative
@@ -38,12 +47,12 @@ public class UpdateScheduler {
     }
 
     /* package */ void onStartTaskWithNative() {
-        assert mNativeScheduler != 0;
-        UpdateSchedulerJni.get().onStartTask(mNativeScheduler);
+        assert mNativeScheduler != null;
+        UpdateSchedulerJni.get().onStartTask(assumeNonNull(mNativeScheduler));
     }
 
     /* package */ void onStopTask() {
-        if (mNativeScheduler != 0) {
+        if (mNativeScheduler != null) {
             UpdateSchedulerJni.get().onStopTask(mNativeScheduler);
         }
         mTaskFinishedCallback = null;
@@ -85,7 +94,11 @@ public class UpdateScheduler {
     }
 
     @CalledByNative
-    private void setNativeScheduler(long nativeScheduler) {
+    void setNativeScheduler(
+            @Nullable JniRawPtr<NativeBackgroundTaskUpdateScheduler> nativeScheduler) {
+        if (mNativeScheduler != null) {
+            mNativeScheduler.release();
+        }
         mNativeScheduler = nativeScheduler;
     }
 
@@ -97,8 +110,8 @@ public class UpdateScheduler {
 
     @NativeMethods
     interface Natives {
-        void onStartTask(long nativeBackgroundTaskUpdateScheduler);
+        void onStartTask(JniPtr<NativeBackgroundTaskUpdateScheduler> self);
 
-        void onStopTask(long nativeBackgroundTaskUpdateScheduler);
+        void onStopTask(JniPtr<NativeBackgroundTaskUpdateScheduler> self);
     }
 }

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/component_updater/android/background_task_update_scheduler_jni_headers/UpdateScheduler_jni.h"
@@ -27,10 +28,13 @@ BackgroundTaskUpdateScheduler::BackgroundTaskUpdateScheduler() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   j_update_scheduler_.Reset(Java_UpdateScheduler_getInstance(env));
   Java_UpdateScheduler_setNativeScheduler(env, j_update_scheduler_,
-                                          reinterpret_cast<intptr_t>(this));
+                                          jni_zero::MakeRaw(this));
 }
 
-BackgroundTaskUpdateScheduler::~BackgroundTaskUpdateScheduler() = default;
+BackgroundTaskUpdateScheduler::~BackgroundTaskUpdateScheduler() {
+  Java_UpdateScheduler_setNativeScheduler(jni_zero::AttachCurrentThread(),
+                                          j_update_scheduler_, nullptr);
+}
 
 void BackgroundTaskUpdateScheduler::Schedule(
     base::TimeDelta initial_delay,
