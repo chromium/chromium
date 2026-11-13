@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc:unit_tests",
     "//chrome/browser/ash/attestation:unit_tests",
     "//chrome/browser/ash/audio:unit_tests",
+    "//chrome/browser/ash/auth:unit_tests",
     "//chrome/browser/ash/bluetooth:unit_tests",
     "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/boca/babelorca:unit_tests",

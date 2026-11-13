@@ -37,3 +37,22 @@ static_library("auth") {
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "active_session_fingerprint_client_impl_unittest.cc" ]
+
+  deps = [
+    ":auth",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/account_id",
+    "//testing/gtest",
+  ]
+}

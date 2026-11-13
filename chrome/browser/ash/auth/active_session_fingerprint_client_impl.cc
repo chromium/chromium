@@ -160,15 +160,16 @@ void ActiveSessionFingerprintClientImpl::OnPrepareFingerprintAuth(
   if (auth_error.has_value()) {
     LOG(ERROR) << "PrepareFingerprintAuth failed.";
     on_scan_callback_.Reset();
+  } else {
+    fingerprint_observation_.Observe(UserDataAuthClient::Get());
   }
-  UserDataAuthClient::Get()->AddFingerprintAuthObserver(this);
   std::move(auth_ready_callback).Run(std::move(user_context), auth_error);
 }
 
 void ActiveSessionFingerprintClientImpl::TerminateFingerprintAuth(
     std::unique_ptr<UserContext> user_context,
     AuthOperationCallback callback) {
-  UserDataAuthClient::Get()->RemoveFingerprintAuthObserver(this);
+  fingerprint_observation_.Reset();
   on_scan_callback_.Reset();
   auth_performer_.TerminateAuthFactor(
       std::move(user_context), cryptohome::AuthFactorType::kLegacyFingerprint,

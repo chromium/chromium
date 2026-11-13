@@ -73,6 +73,9 @@ class ActiveSessionFingerprintClientImpl
 
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};
+  base::ScopedObservation<UserDataAuthClient,
+                          UserDataAuthClient::FingerprintAuthObserver>
+      fingerprint_observation_{this};
 
   base::WeakPtrFactory<ActiveSessionFingerprintClientImpl> weak_factory_{this};
 };
