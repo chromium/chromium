@@ -9,9 +9,9 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/android/compositor/tab_strip_window_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -92,6 +92,7 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
       java_coordinator_(java_coordinator) {
   TRACE_EVENT("ui", "TabStripNtbWebUiHost::TabStripNtbWebUiHost");
   CHECK(profile);
+  window_tracker_ = std::make_unique<TabStripWindowTracker>(profile);
   profile_observation_.Observe(profile);
   const GURL url(chrome::kChromeUITabStripNtbURL);
   web_contents_ = CreateWebContents(profile, url);
@@ -166,6 +167,7 @@ void TabStripNtbWebUiHost::Reset() {
     TabModelList::RemoveObserver(this, profile_observation_.GetSource());
   }
   profile_observation_.Reset();
+  window_tracker_.reset();
   input_event_observation_.Reset();
   java_coordinator_.Reset();
   Observe(nullptr);
@@ -252,9 +254,11 @@ void TabStripNtbWebUiHost::OnFirstContentfulPaintInPrimaryMainFrame(
   if (presentation_time >= activity_creation_time_) {
     TRACE_EVENT_INSTANT("ui", "TabStripNewTabButtonFirstPaint",
                         presentation_time);
-    base::UmaHistogramMediumTimes(
-        "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
-        presentation_time - activity_creation_time_);
+    // Created in the constructor and only reset together with the WebContents.
+    CHECK(window_tracker_);
+    RecordNewTabButtonActivityCreationToFirstPaint(
+        presentation_time - activity_creation_time_,
+        window_tracker_->had_existing_window());
   }
 }
 

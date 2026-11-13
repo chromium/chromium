@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
@@ -22,6 +22,8 @@
 #include "chrome/browser/android/compositor/layer/group_indicator_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "chrome/browser/android/compositor/tab_strip_window_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -56,6 +58,12 @@ class TabStripRootLayer : public cc::slim::Layer {
     activity_creation_time_ = activity_creation_time;
   }
 
+  void SetProfile(Profile* profile) {
+    if (!window_tracker_) {
+      window_tracker_ = std::make_unique<TabStripWindowTracker>(profile);
+    }
+  }
+
   void OnNewTabButtonVisible() {
     ntb_first_paint_ready_ = true;
     MaybeRequestFirstPaintPresentationTime();
@@ -75,25 +83,31 @@ class TabStripRootLayer : public cc::slim::Layer {
       return;
     }
     recorded_ntb_first_paint_ = true;
+    // SetProfile() is called from StripLayoutHelperManager#setTabModelSelector
+    // whenever the native new tab button is used, which happens before this
+    // layer can be attached to a LayerTree.
+    CHECK(window_tracker_);
     layer_tree()->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-        [](base::TimeTicks activity_creation_time,
+        [](base::TimeTicks activity_creation_time, bool had_existing_window,
            const viz::FrameTimingDetails& details) {
           base::TimeTicks presentation_time =
               details.presentation_feedback.timestamp;
           if (presentation_time >= activity_creation_time) {
             TRACE_EVENT_INSTANT("ui", "TabStripNewTabButtonFirstPaint",
                                 presentation_time);
-            base::UmaHistogramMediumTimes(
-                "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
-                presentation_time - activity_creation_time);
+            RecordNewTabButtonActivityCreationToFirstPaint(
+                presentation_time - activity_creation_time,
+                had_existing_window);
           }
         },
-        activity_creation_time_));
+        activity_creation_time_, window_tracker_->had_existing_window()));
   }
 
   base::TimeTicks activity_creation_time_;
   bool ntb_first_paint_ready_ = false;
   bool recorded_ntb_first_paint_ = false;
+  // Registers this window with the per-profile window count.
+  std::unique_ptr<TabStripWindowTracker> window_tracker_;
 };
 
 }  // namespace
@@ -276,6 +290,11 @@ void TabStripSceneLayer::SetConstants(int32_t reorder_background_top_margin,
         ->SetActivityCreationTime(
             base::TimeTicks::FromUptimeMillis(activity_creation_uptime_ms));
   }
+}
+
+void TabStripSceneLayer::SetProfile(Profile* profile) {
+  CHECK(profile);
+  static_cast<TabStripRootLayer*>(layer().get())->SetProfile(profile);
 }
 
 void TabStripSceneLayer::SetContentTree(JNIEnv* env,

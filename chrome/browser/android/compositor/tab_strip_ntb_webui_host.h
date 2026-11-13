@@ -33,6 +33,8 @@ class TabStripService;
 
 namespace android {
 
+class TabStripWindowTracker;
+
 // Native counterpart of the Java NtbWebUiCoordinator. Owns the
 // TabStripService and the WebContents that renders
 // chrome://tabstrip-ntb.top-chrome/, and exposes its compositor layer so that
@@ -99,6 +101,9 @@ class TabStripNtbWebUiHost
   // or after Reset().
   raw_ptr<TabModel> tab_model_ = nullptr;
   base::TimeTicks activity_creation_time_;
+  // Registers this window with the per-profile window count. Null after
+  // Reset(), so that a host without a WebContents no longer counts.
+  std::unique_ptr<TabStripWindowTracker> window_tracker_;
   bool recorded_first_paint_ = false;
   // How many times the NTB WebUI renderer has exited. Cleared after
   // `kCrashRecoverResetInterval` has passed without a crash.

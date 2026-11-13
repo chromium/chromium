@@ -1634,6 +1634,13 @@ public class StripLayoutHelperManager
         // overlap with the rest of the tab strip initialization.
         maybeCreateNtbWebUiCoordinator();
 
+        if (getNtbWebUiNativePtr() == null) {
+            // The current model (and its Profile) is already initialized by
+            // TabModelSelectorImpl#onNativeLibraryReady before #setTabModelSelector is called.
+            mTabStripTreeProvider.setProfile(
+                    assertNonNull(mTabModelSelector.getCurrentModel().getProfile()));
+        }
+
         updateTitleCacheForInit();
 
         if (mTabModelSelector.isTabStateInitialized()) {

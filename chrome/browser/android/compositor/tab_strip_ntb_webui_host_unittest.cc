@@ -32,6 +32,15 @@
 namespace android {
 namespace {
 
+constexpr char kFirstPaintHistogram[] =
+    "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint";
+constexpr char kWithExistingWindowHistogram[] =
+    "Android.TabStrip.NewTabButton.WithExistingWindow."
+    "ActivityCreationToFirstPaint";
+constexpr char kWithoutExistingWindowHistogram[] =
+    "Android.TabStrip.NewTabButton.WithoutExistingWindow."
+    "ActivityCreationToFirstPaint";
+
 class FakePage : public tabstrip_ntb::mojom::Page {
  public:
   void SetButtonVisible(bool visible) override { last_visible_ = visible; }
@@ -182,15 +191,51 @@ TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
                             /*java_coordinator=*/nullptr);
   host.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
                                                 base::Milliseconds(125));
-  histogram_tester.ExpectUniqueTimeSample(
-      "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
-      base::Milliseconds(125), 1);
+  histogram_tester.ExpectUniqueTimeSample(kFirstPaintHistogram,
+                                          base::Milliseconds(125), 1);
+  histogram_tester.ExpectUniqueTimeSample(kWithoutExistingWindowHistogram,
+                                          base::Milliseconds(125), 1);
+  histogram_tester.ExpectTotalCount(kWithExistingWindowHistogram, 0);
 
   // Subsequent FCP notifications do not record a second sample.
   host.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
                                                 base::Milliseconds(250));
-  histogram_tester.ExpectTotalCount(
-      "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint", 1);
+  histogram_tester.ExpectTotalCount(kFirstPaintHistogram, 1);
+  histogram_tester.ExpectTotalCount(kWithoutExistingWindowHistogram, 1);
+
+  // A second host for the same profile records the WithExistingWindow
+  // partition while the first one is alive.
+  TabStripNtbWebUiHost second(profile(), activity_creation_time,
+                              /*java_coordinator=*/nullptr);
+  second.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
+                                                  base::Milliseconds(40));
+  histogram_tester.ExpectTotalCount(kFirstPaintHistogram, 2);
+  histogram_tester.ExpectTotalCount(kWithoutExistingWindowHistogram, 1);
+  histogram_tester.ExpectUniqueTimeSample(kWithExistingWindowHistogram,
+                                          base::Milliseconds(40), 1);
+}
+
+TEST_F(TabStripNtbWebUiHostTest, ResetHostNoLongerCounts) {
+  base::HistogramTester histogram_tester;
+  const base::TimeTicks activity_creation_time =
+      base::TimeTicks() + base::Seconds(10);
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto otr_tab_model = std::make_unique<OwningTestTabModel>(otr_profile);
+
+  TabStripNtbWebUiHost first(otr_profile, activity_creation_time,
+                             /*java_coordinator=*/nullptr);
+  first.SetTabModel(otr_tab_model.get());
+  // Removing the TabModel resets the host, which unregisters its window.
+  otr_tab_model.reset();
+  ASSERT_EQ(nullptr, first.GetWebContents());
+
+  TabStripNtbWebUiHost second(otr_profile, activity_creation_time,
+                              /*java_coordinator=*/nullptr);
+  second.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
+                                                  base::Milliseconds(100));
+  histogram_tester.ExpectUniqueTimeSample(kWithoutExistingWindowHistogram,
+                                          base::Milliseconds(100), 1);
 }
 
 TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {

@@ -1623,6 +1623,29 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    public void testSetProfileOnSceneLayer_NativeNewTabButton() {
+        // initializeTest() in beforeTest() already set the TabModelSelector with the WebUI new tab
+        // button disabled.
+        assertNull(mStripLayoutHelperManager.getNtbWebUiNativePtr());
+        verify(mTabStripTreeProvider).setProfile(mProfile);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
+    public void testSetProfileOnSceneLayer_NotCalledWithNtbWebUi() {
+        mStripLayoutHelperManager.destroy();
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        clearInvocations(mTabStripTreeProvider);
+        initializeTest();
+
+        assertEquals(mNtbWebUiNativePtr, mStripLayoutHelperManager.getNtbWebUiNativePtr());
+        verify(mTabStripTreeProvider, never()).setProfile(any());
+    }
+
+    @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI,
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW

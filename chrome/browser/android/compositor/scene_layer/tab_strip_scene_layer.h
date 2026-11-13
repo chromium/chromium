@@ -16,6 +16,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/resource_manager.h"
 
+class Profile;
+
 namespace cc::slim {
 class Layer;
 class NinePatchLayer;
@@ -50,6 +52,11 @@ class TabStripSceneLayer : public SceneLayer {
                     float tab_underline_corner_radius,
                     float tab_underline_bottom_margin,
                     int64_t activity_creation_uptime_ms);
+
+  // Registers this window with the per-profile window count used to partition
+  // the new tab button first-paint metric. Only called when the native new tab
+  // button is used.
+  void SetProfile(Profile* profile);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);

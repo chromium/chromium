@@ -206,6 +206,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:MessageIdentifier) -->
 
+<variants name="NewTabButtonExistingWindow">
+  <variant name="WithExistingWindow"
+      summary="another tab strip window of the same profile was already open"/>
+  <variant name="WithoutExistingWindow"
+      summary="no other tab strip window of the same profile was open"/>
+</variants>
+
 <variants name="PageContentProvider_Consumer">
   <variant name="" summary="an external app"/>
   <variant name=".Aga" summary="the Google App (AGA)"/>
@@ -6566,6 +6573,19 @@ chromium-metrics-reviews@google.com.
     to when the new tab is added to the TabModel. Recorded each time a tab is
     opened via the button.
   </summary>
+</histogram>
+
+<histogram
+    name="Android.TabStrip.NewTabButton.{ExistingWindow}.ActivityCreationToFirstPaint"
+    units="ms" expires_after="2027-04-05">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Duration from ChromeActivity creation to the first presentation timestamp of
+    the tab strip New Tab Button, recorded when {ExistingWindow}. Covers both
+    the WebUI and the native new tab button. Recorded at most once per activity.
+  </summary>
+  <token key="ExistingWindow" variants="NewTabButtonExistingWindow"/>
 </histogram>
 
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
