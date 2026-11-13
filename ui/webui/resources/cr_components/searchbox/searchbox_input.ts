@@ -489,7 +489,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (inputSelection === this.lastInput_.inline &&
         inputValue === lastInputValue &&
         this.lastInput_.inline[0]!.toLocaleLowerCase() ===
-            e.key.toLocaleLowerCase()) {
+            e.key.toLocaleLowerCase() &&
+        !e.ctrlKey && !e.altKey && !e.metaKey) {
       const text = this.lastInput_.text + e.key;
       assert(text);
       this.updateInput_({
