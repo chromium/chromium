@@ -37,8 +37,8 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
     private static int sLastFacilityId = 1000;
     private final int mId = ++sLastFacilityId;
 
-    // Until setHostStation() this is null, but this field is accessed very often and asserting
-    // doesn't add much value.
+    // Until setParent() this is null, but this field is accessed very often and asserting doesn't
+    // add much value.
     @SuppressWarnings("NullAway")
     protected HostStationT mHostStation;
 
@@ -66,11 +66,15 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
         mCustomName = name;
     }
 
+    /** Set the host {@link Station}, the parent of this Facility. */
     @SuppressWarnings("unchecked")
-    void setHostStation(Station station) {
-        assert mHostStation == null
-                : "Facility " + this + " already added to a station. Tried to add it to " + station;
-        mHostStation = (HostStationT) station;
+    @Override
+    void setParent(ConditionalState parent) {
+        assert parent instanceof Station<?>
+                : String.format(
+                        "The parent of Facility %s must be a Station, not %s", this, parent);
+        super.setParent(parent);
+        mHostStation = (HostStationT) parent;
     }
 
     /** Get the host {@link Station} this facility is scoped to. */
@@ -85,11 +89,6 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
                 mHostStation == null ? "-unset" : mHostStation.getId(),
                 mId,
                 mCustomName != null ? mCustomName : getClass().getSimpleName());
-    }
-
-    @Override
-    @Nullable ActivityElement<?> determineActivityElement() {
-        return mHostStation.determineActivityElement();
     }
 
     @Override

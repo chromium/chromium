@@ -22,6 +22,8 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class representing a state with conditions for entering and exiting.
@@ -53,6 +55,9 @@ public abstract class ConditionalState {
     private final Elements mConsolidatedElements = new Elements(this);
     protected final Elements.Builder mElements = mConsolidatedElements.newBuilder();
     private boolean mAreElementsConsolidated;
+    private @Nullable ConditionalState mParent;
+    // Children that are not FINISHED yet.
+    private final List<ConditionalState> mChildren = new ArrayList<>();
 
     /** Lifecycle phases of ConditionalState. */
     @IntDef({
@@ -120,6 +125,7 @@ public abstract class ConditionalState {
         assertInPhase(Phase.TRANSITIONING_FROM);
         mLifecyclePhase = Phase.FINISHED;
         onTransitionFromFinished();
+        removeFromParent();
     }
 
     /** Hook to run code after a transition from the ConditionalState. */
@@ -196,27 +202,86 @@ public abstract class ConditionalState {
     }
 
     /**
-     * Move to FINISHED from any phase, running the transition hooks that would normally run.
+     * Move this ConditionalState and its descendants to FINISHED from any phase, running the
+     * transition hooks that would normally run.
      *
-     * <p>Should be used only by {@link TrafficControl#hopOffPublicTransit()}, which abandons
-     * Stations it does not trust: a Station left in TRANSITIONING_FROM by a failed Transition must
-     * not make the next hop off fail too.
+     * <p>Used when Public Transit abandons states it does not trust anymore, e.g. {@link
+     * TrafficControl#hopOffPublicTransit()}: a Station left in TRANSITIONING_FROM by a failed
+     * Transition must not make the next hop off fail too. Finishing the descendants too ensures
+     * their Elements fail loudly if read afterwards, instead of returning stale values.
+     *
+     * <p>Like in a regular Transition, all of them move to TRANSITIONING_FROM before any moves to
+     * FINISHED, parents before children.
      */
     void setStateFinishedForcibly() {
-        if (mLifecyclePhase == Phase.FINISHED) return;
-        if (mLifecyclePhase != Phase.TRANSITIONING_FROM) {
-            if (mLifecyclePhase != Phase.ACTIVE) {
-                Log.w(
-                        TAG,
-                        "Forcibly finishing %s from phase %s",
-                        this,
-                        phaseToString(mLifecyclePhase));
-            }
-            mLifecyclePhase = Phase.TRANSITIONING_FROM;
-            onTransitionFromStarted();
+        // Collect the states first: transition hooks must not be able to change which states are
+        // finished by adding children.
+        List<ConditionalState> states = new ArrayList<>();
+        collectUnfinishedDescendants(states);
+        for (ConditionalState state : states) {
+            state.setStateTransitioningFromForcibly();
         }
-        mLifecyclePhase = Phase.FINISHED;
-        onTransitionFromFinished();
+        for (ConditionalState state : states) {
+            state.setStateFinished();
+        }
+    }
+
+    private void collectUnfinishedDescendants(List<ConditionalState> states) {
+        if (mLifecyclePhase == Phase.FINISHED) return;
+        states.add(this);
+        for (ConditionalState child : mChildren) {
+            child.collectUnfinishedDescendants(states);
+        }
+    }
+
+    private void setStateTransitioningFromForcibly() {
+        if (mLifecyclePhase == Phase.TRANSITIONING_FROM) return;
+        if (mLifecyclePhase != Phase.ACTIVE) {
+            Log.w(TAG, "Forcibly finishing %s from phase %s", this, phaseToString(mLifecyclePhase));
+        }
+        mLifecyclePhase = Phase.TRANSITIONING_FROM;
+        onTransitionFromStarted();
+    }
+
+    /**
+     * Set the parent of this ConditionalState, e.g. the host {@link Station} of a {@link Facility}.
+     *
+     * <p>Exiting the parent also exits its ACTIVE children in the same Transition, and forcibly
+     * finishing the parent also finishes them.
+     */
+    void setParent(ConditionalState parent) {
+        assertInPhase(Phase.NEW);
+        assert parent != this : String.format("%s cannot be its own parent", this);
+        assert mParent == null
+                : String.format("%s already has parent %s, cannot set %s", this, mParent, parent);
+        assert parent.getPhase() != Phase.TRANSITIONING_FROM && parent.getPhase() != Phase.FINISHED
+                : String.format(
+                        "Cannot set %s in %s as the parent of %s",
+                        parent, phaseToString(parent.getPhase()), this);
+        mParent = parent;
+        parent.mChildren.add(this);
+    }
+
+    /** Returns the parent of this ConditionalState, if any. */
+    @Nullable ConditionalState getParent() {
+        return mParent;
+    }
+
+    /** Returns the children of this ConditionalState that are ACTIVE. */
+    List<ConditionalState> getActiveChildren() {
+        List<ConditionalState> children = new ArrayList<>();
+        for (ConditionalState child : mChildren) {
+            if (child.getPhase() == Phase.ACTIVE) {
+                children.add(child);
+            }
+        }
+        return children;
+    }
+
+    private void removeFromParent() {
+        if (mParent != null) {
+            mParent.mChildren.remove(this);
+        }
     }
 
     /**
@@ -448,8 +513,13 @@ public abstract class ConditionalState {
         return Triggers.pressBackTo().withContext(this);
     }
 
-    /** Returns which ActivityElement any ViewElements declare should be expected to be in. */
-    abstract @Nullable ActivityElement<?> determineActivityElement();
+    /**
+     * Returns which ActivityElement any ViewElements declare should be expected to be in. By
+     * default, the parent's.
+     */
+    @Nullable ActivityElement<?> determineActivityElement() {
+        return mParent != null ? mParent.determineActivityElement() : null;
+    }
 
     /** Called when a {@link ActivityElement} is declared. */
     abstract <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element);

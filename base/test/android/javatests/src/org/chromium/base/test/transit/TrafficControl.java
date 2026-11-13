@@ -43,7 +43,7 @@ public class TrafficControl {
             // Happens when test is batched, but the Activity is not kept between tests; Public
             // Transit's Station/Facility state need to reflect that and start from a new
             // {@link EntryPointSentinelStation}.
-            station.finishForcibly();
+            station.setStateFinishedForcibly();
         }
         sActiveStations.clear();
     }
@@ -82,7 +82,7 @@ public class TrafficControl {
      */
     public static void hopOffPublicTransit() {
         for (Station<?> station : sActiveStations) {
-            station.finishForcibly();
+            station.setStateFinishedForcibly();
         }
         sActiveStations.clear();
         for (Runnable listener : sHopOffListeners) {

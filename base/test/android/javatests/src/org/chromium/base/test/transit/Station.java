@@ -38,9 +38,6 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
     private static int sLastStationId;
 
     private final int mId;
-    // All facilities that have ever been entered. Exited ones remain so that the history is can
-    // be queried.
-    private final List<Facility<?>> mFacilities = new ArrayList<>();
     private final List<Facility<?>> mDefaultFacilities = new ArrayList<>();
     private final String mName;
     private final @Nullable Class<HostActivityT> mActivityClass;
@@ -62,37 +59,6 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         if (mActivityClass != null) {
             mElements.declareActivity(mActivityClass);
         }
-    }
-
-    protected List<Facility<?>> getFacilitiesWithPhase(@Phase int phase) {
-        List<Facility<?>> facilities = new ArrayList<>();
-        for (Facility<?> facility : mFacilities) {
-            if (facility.getPhase() == phase) {
-                facilities.add(facility);
-            }
-        }
-        return facilities;
-    }
-
-    /**
-     * Forcibly finish this Station and all its Facilities that are not FINISHED yet.
-     *
-     * <p>Used when Public Transit abandons a Station it does not trust anymore, e.g. {@link
-     * TrafficControl#hopOffPublicTransit()}. Finishing the Facilities too ensures their Elements
-     * fail loudly if read afterwards, instead of returning stale values.
-     */
-    void finishForcibly() {
-        // Iterate over a copy: finishing a Facility runs its transition hooks, which must not be
-        // able to invalidate the iteration by registering or removing Facilities.
-        for (Facility<?> facility : new ArrayList<>(mFacilities)) {
-            facility.setStateFinishedForcibly();
-        }
-        setStateFinishedForcibly();
-    }
-
-    void registerFacility(Facility<?> facility) {
-        facility.setHostStation(this);
-        mFacilities.add(facility);
     }
 
     /**
