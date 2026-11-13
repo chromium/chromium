@@ -1142,71 +1142,45 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
     case CSSPropertyID::kOutlineStyle:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             (value_id >= CSSValueID::kInset &&
-              value_id <= CSSValueID::kDouble);
+      if (value_id == CSSValueID::kAuto) {
+        return true;
+      }
+      if (value_id == CSSValueID::kHidden) {
+        return false;
+      }
+      break;
     case CSSPropertyID::kOverflowBlock:
     case CSSPropertyID::kOverflowInline:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kScroll || value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOverlay || value_id == CSSValueID::kClip;
+      return IsValidCSSPropertyKeyword(CSSPropertyID::kOverflowX, value_id);
     case CSSPropertyID::kResize:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
-             value_id == CSSValueID::kHorizontal ||
-             value_id == CSSValueID::kVertical ||
-             value_id == CSSValueID::kBlock ||
-             value_id == CSSValueID::kInline ||
-             value_id == CSSValueID::kInternalTextareaAuto ||
-             (RuntimeEnabledFeatures::CSSResizeAutoEnabled() &&
-              value_id == CSSValueID::kAuto);
-    case CSSPropertyID::kTextAlign:
-      if (RuntimeEnabledFeatures::CSSTextAlignMatchParentEnabled()) {
-        return (value_id >= CSSValueID::kWebkitAuto &&
-                value_id <= CSSValueID::kInternalCenter) ||
-               value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd;
+      if (value_id == CSSValueID::kInternalTextareaAuto) {
+        return true;
       }
-      return (value_id >= CSSValueID::kWebkitAuto &&
-              value_id <= CSSValueID::kInternalCenter &&
-              value_id != CSSValueID::kMatchParent) ||
-             value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd;
+      break;
+    case CSSPropertyID::kTextAlign:
+      if (value_id == CSSValueID::kWebkitAuto ||
+          value_id == CSSValueID::kWebkitMatchParent ||
+          value_id == CSSValueID::kInternalCenter) {
+        return true;
+      }
+      break;
     case CSSPropertyID::kUnicodeBidi:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kEmbed ||
-             value_id == CSSValueID::kBidiOverride ||
-             value_id == CSSValueID::kWebkitIsolate ||
-             value_id == CSSValueID::kWebkitIsolateOverride ||
-             value_id == CSSValueID::kWebkitPlaintext ||
-             value_id == CSSValueID::kIsolate ||
-             value_id == CSSValueID::kIsolateOverride ||
-             value_id == CSSValueID::kPlaintext;
+      if (value_id == CSSValueID::kWebkitIsolate ||
+          value_id == CSSValueID::kWebkitIsolateOverride ||
+          value_id == CSSValueID::kWebkitPlaintext) {
+        return true;
+      }
+      break;
     case CSSPropertyID::kWindowDrag:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kMove;
+      if (value_id == CSSValueID::kNoDrag) {
+        return false;
+      }
+      break;
     case CSSPropertyID::kAppearance:
-      return (value_id == CSSValueID::kCheckbox ||
-              value_id == CSSValueID::kRadio ||
-              value_id == CSSValueID::kButton ||
-              value_id == CSSValueID::kListbox ||
-              value_id == CSSValueID::kInternalMediaControl ||
-              value_id == CSSValueID::kMenulist ||
-              value_id == CSSValueID::kMenulistButton ||
-              value_id == CSSValueID::kMeter ||
-              value_id == CSSValueID::kProgressBar ||
-              value_id == CSSValueID::kSearchfield ||
-              value_id == CSSValueID::kTextfield ||
-              value_id == CSSValueID::kTextarea ||
-              value_id == CSSValueID::kBaseSelect) ||
-             (RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
-              value_id == CSSValueID::kBase) ||
-             (RuntimeEnabledFeatures::
-                  NonStandardAppearanceValueSliderVerticalEnabled() &&
-              value_id == CSSValueID::kSliderVertical) ||
-             value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kWebkitBoxOrient:
-      return value_id == CSSValueID::kHorizontal ||
-             value_id == CSSValueID::kVertical ||
-             value_id == CSSValueID::kInlineAxis ||
-             value_id == CSSValueID::kBlockAxis;
+      if (value_id == CSSValueID::kInternalMediaControl) {
+        return true;
+      }
+      break;
     case CSSPropertyID::kAlignContent:
       // FIXME: Per CSS alignment, this property should accept an optional
       // <overflow-position>. We should share this parsing code with
@@ -1235,12 +1209,14 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBaseline ||
              value_id == CSSValueID::kStretch;
     case CSSPropertyID::kHyphens:
+      if (value_id == CSSValueID::kAuto) {
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kManual;
+        return true;
 #else
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kManual;
+        return false;
 #endif
+      }
+      break;
     case CSSPropertyID::kJustifyContent:
       // FIXME: Per CSS alignment, this property should accept an optional
       // <overflow-position>. We should share this parsing code with
@@ -1251,24 +1227,21 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kSpaceBetween ||
              value_id == CSSValueID::kSpaceAround;
     case CSSPropertyID::kLineBreak:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
-             value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kStrict ||
-             value_id == CSSValueID::kAnywhere;
+      if (value_id == CSSValueID::kAfterWhiteSpace) {
+        return false;
+      }
+      break;
     case CSSPropertyID::kWritingMode:
-      return value_id == CSSValueID::kHorizontalTb ||
-             value_id == CSSValueID::kVerticalRl ||
-             value_id == CSSValueID::kVerticalLr ||
-             value_id == CSSValueID::kSidewaysRl ||
-             value_id == CSSValueID::kSidewaysLr ||
-             value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
-             value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
-             value_id == CSSValueID::kRl || value_id == CSSValueID::kTb;
+      if (value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
+          value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
+          value_id == CSSValueID::kRl || value_id == CSSValueID::kTb) {
+        return true;
+      }
+      break;
     case CSSPropertyID::kOverscrollBehaviorInline:
     case CSSPropertyID::kOverscrollBehaviorBlock:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kContain ||
-             value_id == CSSValueID::kNone || value_id == CSSValueID::kChain;
+      return IsValidCSSPropertyKeyword(CSSPropertyID::kOverscrollBehaviorX,
+                                       value_id);
     default:
       break;
   }

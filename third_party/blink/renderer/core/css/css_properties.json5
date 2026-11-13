@@ -7244,7 +7244,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["horizontal", "vertical"],
+      keywords: ["horizontal", "vertical", "inline-axis", "block-axis"],
       default_value: "horizontal",
       invalidate: ["layout", "paint"],
     },
