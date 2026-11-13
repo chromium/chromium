@@ -215,16 +215,6 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
   return item;
 }
 
-void TrayDetailedView::CreateZeroStateView(
-    std::unique_ptr<ZeroStateView> view) {
-  CHECK(!zero_state_view_);
-  CHECK(scroller());
-  zero_state_view_ =
-      AddChildViewAt(std::move(view), GetIndexOf(scroller_).value());
-  box_layout()->SetFlexForView(zero_state_view_, 1);
-  zero_state_view_->SetVisible(false);
-}
-
 HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
     views::View* container,
     const gfx::VectorIcon& icon,
@@ -247,7 +237,6 @@ void TrayDetailedView::Reset() {
   progress_bar_ = nullptr;
   back_button_ = nullptr;
   tri_view_ = nullptr;
-  zero_state_view_ = nullptr;
 }
 
 void TrayDetailedView::ShowProgress(double value, bool visible) {
@@ -269,12 +258,6 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
   progress_bar_->SetValue(value);
   progress_bar_->SetVisible(visible);
   children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
-}
-
-void TrayDetailedView::SetZeroStateViewVisibility(bool visible) {
-  CHECK(zero_state_view_);
-  zero_state_view_->SetVisible(visible);
-  scroller_->SetVisible(!visible);
 }
 
 views::Button* TrayDetailedView::CreateInfoButton(

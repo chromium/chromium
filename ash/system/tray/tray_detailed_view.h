@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "ash/system/tray/zero_state_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -57,7 +56,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   void OverrideProgressBarAccessibleName(const std::u16string& name);
 
   views::ScrollView* scroll_view_for_testing() { return scroller_; }
-  ZeroStateView* zero_state_view_for_testing() { return zero_state_view_; }
 
   // Adds a targetable row to `container` containing `icon`, `text`, and a
   // checkbox. `checked` determines whether the checkbox is checked or not.
@@ -82,9 +80,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // any other view between the list and the footer row at the bottom.
   void CreateScrollableList();
 
-  // Creates a zero state view.
-  void CreateZeroStateView(std::unique_ptr<ZeroStateView> view);
-
   // Adds a targetable row to `container` containing `icon` and `text`.
   // The `container` should be a RoundedContainer.
   HoverHighlightView* AddScrollListItem(views::View* container,
@@ -98,9 +93,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // space as the created placeholder. If `progress_bar_` doesn't already exist
   // it will be created.
   void ShowProgress(double value, bool visible);
-
-  // Sets the visibility of the zero state view.
-  void SetZeroStateViewVisibility(bool visible);
 
   // Helper functions which create and return the settings and help buttons,
   // respectively, used in the material design top-most header row. The caller
@@ -119,11 +111,8 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   TriView* tri_view() { return tri_view_; }
   views::ScrollView* scroller() const { return scroller_; }
   views::View* scroll_content() const { return scroll_content_; }
-  views::View* zero_state_view() const { return zero_state_view_; }
 
  private:
-  friend class TrayDetailedViewTest;
-
   // Overridden to handle clicks on subclass-specific views.
   virtual void HandleViewClicked(views::View* view);
 
@@ -143,7 +132,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   raw_ptr<views::ScrollView, DanglingUntriaged> scroller_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> scroll_content_ = nullptr;
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
-  raw_ptr<ZeroStateView> zero_state_view_ = nullptr;
 
   // The container view for the top-most title row. Owned by views hierarchy.
   raw_ptr<TriView, DanglingUntriaged> tri_view_ = nullptr;
