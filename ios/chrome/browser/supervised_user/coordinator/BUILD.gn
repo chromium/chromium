@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//ios/components/ui_util",
     "//ios/web/public",
     "//ios/web/public/navigation",
+    "//ios/web/public/ui",
     "//ui/base",
     "//url",
   ]
@@ -52,10 +53,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/ui",
     "//ios/chrome/browser/web/model/font_size",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/public/ui",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+  frameworks = [ "UIKit.framework" ]
 }

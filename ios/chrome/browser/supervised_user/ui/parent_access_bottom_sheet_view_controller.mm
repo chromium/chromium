@@ -65,6 +65,7 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kParentAccessViewAccessibilityIdentifier;
+  self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -89,7 +90,14 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
   _webView.hidden = _webViewHidden;
   [self.view addSubview:_webView];
-  AddSameConstraints(_webView, self.view);
+  // Constrain the web view above `keyboardLayoutGuide` so UIKit shrinks it only
+  // when a docked keyboard overlaps the sheet, while keeping full height when
+  // the sheet sits above the keyboard.
+  AddSameConstraintsToSides(_webView, self.view,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
+  [_webView.bottomAnchor
+      constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
+      .active = YES;
   [self addCloseButton];
 }
 

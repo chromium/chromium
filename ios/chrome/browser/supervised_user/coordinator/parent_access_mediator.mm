@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "base/timer/timer.h"
@@ -13,6 +15,8 @@
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
 
@@ -48,6 +52,16 @@
   _consumer = consumer;
 
   _webState->SetWebUsageEnabled(true);
+  // Disable scroll bounce and `WKWebView`'s automatic keyboard bottom inset
+  // (`obscuredContentInsets`) so `keyboardLayoutGuide` on the bottom sheet is
+  // the sole authority for keyboard avoidance while preserving UIKit safe-area
+  // scroll insets on overflow.
+  id<CRWWebViewProxy> webViewProxy = _webState->GetWebViewProxy();
+  webViewProxy.scrollViewProxy.bounces = NO;
+  if (@available(iOS 26.0, *)) {
+    webViewProxy.obscuredContentInsets = UIEdgeInsetsZero;
+  }
+
   web::NavigationManager::WebLoadParams webParams =
       web::NavigationManager::WebLoadParams(_parentAccessURL);
   _webState->GetNavigationManager()->LoadURLWithParams(webParams);

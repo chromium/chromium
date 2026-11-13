@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
@@ -14,11 +16,15 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -28,6 +34,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
+
+constexpr CGFloat kTestBottomSafeAreaInset = 34.0;
+constexpr CGFloat kInitialObscuredBottomInset = 100.0;
 
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
@@ -118,9 +127,9 @@ class ParentAccessMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Initializes the ParentAccessMediator with a WebState and its dependencies.
-  // Returns a pointer to the WebState owned by the mediator.
-  void SetUpWebStateAndMediator() {
+  // Initializes `ParentAccessMediator` with `consumer` and its dependencies.
+  // Returns a pointer to the `WebState` owned by the mediator.
+  web::WebState* SetUpWebStateAndMediator(id<ParentAccessConsumer> consumer) {
     CHECK(server_.Start());
 
     profile_ = TestProfileIOS::Builder().Build();
@@ -135,6 +144,10 @@ class ParentAccessMediatorTest : public PlatformTest {
         {FontSizeJavaScriptFeature::GetInstance()});
 
     web::WebState* web_state_ptr = web_state.get();
+    if (@available(iOS 26.0, *)) {
+      web_state_ptr->GetWebViewProxy().obscuredContentInsets =
+          UIEdgeInsetsMake(0, 0, kInitialObscuredBottomInset, 0);
+    }
 
     const GURL parent_access_url = server_.GetURL("/parentaccess");
     mediator_ =
@@ -157,15 +170,10 @@ class ParentAccessMediatorTest : public PlatformTest {
     delegate_ = [[TestParentAccessMediatorDelegate alloc]
         initWithCompletion:std::move(completion_callback)];
     mediator_.delegate = delegate_;
+    mediator_.consumer = consumer;
 
-    // Set up the consumer, which starts navigation.
-    consumer_ = [[TestParentAccessConsumer alloc] init];
-    mediator_.consumer = consumer_;
-
-    // Initially, the bottom sheet is visible with its WebView hidden.
-    CHECK(consumer_.isWebViewSet);
-    CHECK(consumer_.isWebViewHidden);
     CHECK(!delegate_.isBottomSheetDismissed);
+    return web_state_ptr;
   }
 
   base::HistogramTester histogram_tester_;
@@ -183,7 +191,11 @@ class ParentAccessMediatorTest : public PlatformTest {
 // Verifies that the bottom sheet is automatically dismissed when the WebState
 // fails to load within the defined timeout.
 TEST_F(ParentAccessMediatorTest, TestBottomSheetDismissedOnTimeout) {
-  SetUpWebStateAndMediator();
+  consumer_ = [[TestParentAccessConsumer alloc] init];
+  SetUpWebStateAndMediator(consumer_);
+  ASSERT_TRUE(consumer_.isWebViewSet);
+  ASSERT_TRUE(consumer_.isWebViewHidden);
+
   task_environment_.FastForwardBy(base::Milliseconds(
       supervised_user::kLocalWebApprovalBottomSheetLoadTimeoutMs.Get()));
   EXPECT_TRUE(delegate_.isBottomSheetDismissed);
@@ -205,7 +217,10 @@ TEST_F(ParentAccessMediatorTest, TestBottomSheetDismissedOnTimeout) {
 // Verifies that the bottom sheet is displayed and the WebView is visible when
 // the WebState loads successfully before the timeout.
 TEST_F(ParentAccessMediatorTest, TestBottomSheetDisplayedOnSuccessfulLoad) {
-  SetUpWebStateAndMediator();
+  consumer_ = [[TestParentAccessConsumer alloc] init];
+  SetUpWebStateAndMediator(consumer_);
+  ASSERT_TRUE(consumer_.isWebViewSet);
+  ASSERT_TRUE(consumer_.isWebViewHidden);
 
   // Wait for the WebState loaded, which unhides the WebView.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -223,4 +238,32 @@ TEST_F(ParentAccessMediatorTest, TestBottomSheetDisplayedOnSuccessfulLoad) {
       supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
   histogram_tester_.ExpectTotalCount(
       supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
+}
+
+// Tests that attaching `ParentAccessBottomSheetViewController` disables scroll
+// bounce, resets `obscuredContentInsets`, and fills the sheet ignoring bottom
+// safe area when no keyboard overlaps.
+TEST_F(ParentAccessMediatorTest,
+       TestWebViewAndBottomSheetConfiguredForKeyboard) {
+  ScopedKeyWindow scoped_key_window;
+  UIWindow* window = scoped_key_window.Get();
+  ParentAccessBottomSheetViewController* view_controller =
+      [[ParentAccessBottomSheetViewController alloc] init];
+  view_controller.additionalSafeAreaInsets =
+      UIEdgeInsetsMake(0, 0, kTestBottomSafeAreaInset, 0);
+  window.rootViewController = view_controller;
+
+  web::WebState* web_state = SetUpWebStateAndMediator(view_controller);
+  [window layoutIfNeeded];
+
+  UIView* sheet_view = view_controller.view;
+  id<CRWWebViewProxy> web_view_proxy = web_state->GetWebViewProxy();
+  EXPECT_FALSE(sheet_view.keyboardLayoutGuide.usesBottomSafeArea);
+  ASSERT_FALSE(CGRectIsEmpty(sheet_view.bounds));
+  EXPECT_TRUE(CGRectEqualToRect(web_state->GetView().frame, sheet_view.bounds));
+  EXPECT_FALSE(web_view_proxy.scrollViewProxy.bounces);
+  if (@available(iOS 26.0, *)) {
+    EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+        web_view_proxy.obscuredContentInsets, UIEdgeInsetsZero));
+  }
 }
