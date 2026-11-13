@@ -8,7 +8,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -177,12 +177,20 @@ class CustomTestContentAutofillClient
 
 }  // namespace
 
-class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
+class PasswordChangeDelegateImplTest : public base::test::WithFeatureOverride,
+                                       public ChromeRenderViewHostTestHarness {
  public:
   PasswordChangeDelegateImplTest()
-      : ChromeRenderViewHostTestHarness(
+      : base::test::WithFeatureOverride(
+            password_change::features::
+                kPasswordChangeWithPrivateInferenceLoginCheck),
+        ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PasswordChangeDelegateImplTest() override = default;
+
+  bool IsPrivateInferenceLoginCheckEnabled() const {
+    return IsParamFeatureEnabled();
+  }
 
   void FastForwardBy(base::TimeDelta delta) {
     task_environment()->FastForwardBy(delta);
@@ -196,6 +204,16 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
                 optimization_guide::UserVisibleFeatureKey::
                     kPasswordChangeSubmission))
         .WillByDefault(Return(enabled));
+  }
+
+  void SetPrivacyNoticeAcknowledged(bool acknowledged) {
+    SetOptimizationFeatureEnabled(acknowledged);
+    if (IsPrivateInferenceLoginCheckEnabled()) {
+      prefs()->SetBoolean(
+          password_manager::prefs::
+              kPasswordChangeWithPrivateInferenceNoticeAgreement,
+          acknowledged);
+    }
   }
 
   void SetUp() override {
@@ -252,6 +270,27 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
+  void CreateDelegateAndOffer() {
+    CreateDelegate();
+    if (IsPrivateInferenceLoginCheckEnabled()) {
+      delegate()->login_checker()->RespondWithLoginStatus(
+          LoginCheckResult::Status::kLoggedIn);
+    }
+  }
+
+  void CreateDelegateAndStartFlow() {
+    CreateDelegateAndOffer();
+    EXPECT_CALL(*actuator(), Start());
+    delegate()->StartPasswordChangeFlow();
+    if (IsPrivateInferenceLoginCheckEnabled()) {
+      delegate()->OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm);
+    } else {
+      delegate()->login_checker()->RespondWithLoginStatus(
+          LoginCheckResult::Status::kLoggedIn);
+    }
+  }
+
   void ResetDelegate() {
     actuator_.reset();
     delegate_.reset();
@@ -288,7 +327,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
@@ -303,14 +341,14 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
       autofill_client_injector_;
 };
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        GeneratedPasswordWithoutActuatorIsEmpty) {
   CreateDelegate(/*inject_actuator=*/false);
 
   EXPECT_TRUE(delegate()->GetGeneratedPassword().empty());
 }
 
-TEST_F(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
+TEST_P(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
   CreateDelegate();
   const password_manager::PasswordString password(u"generated_password");
   EXPECT_CALL(*actuator(), GetGeneratedPassword()).WillOnce(Return(password));
@@ -322,7 +360,7 @@ TEST_F(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
   EXPECT_EQ(generated_password, password);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, ProvidesOldPassword) {
+TEST_P(PasswordChangeDelegateImplTest, ProvidesOldPassword) {
   CreateDelegate();
 
   EXPECT_THAT(delegate()->GetOldPassword(),
@@ -330,7 +368,7 @@ TEST_F(PasswordChangeDelegateImplTest, ProvidesOldPassword) {
                   std::u16string(kPassword))));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OldPasswordFailsWithoutActuator) {
+TEST_P(PasswordChangeDelegateImplTest, OldPasswordFailsWithoutActuator) {
   CreateDelegate(/*inject_actuator=*/false);
 
   EXPECT_THAT(delegate()->GetOldPassword(),
@@ -338,7 +376,7 @@ TEST_F(PasswordChangeDelegateImplTest, OldPasswordFailsWithoutActuator) {
                   PasswordChangeDelegateImpl::Error::kNoPasswordChangeFlow));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, ProvidesActuatorGeneratedPassword) {
+TEST_P(PasswordChangeDelegateImplTest, ProvidesActuatorGeneratedPassword) {
   CreateDelegate();
   FormManagerForTesting form_manager;
   const password_manager::PasswordString password(u"generated_password");
@@ -348,7 +386,7 @@ TEST_F(PasswordChangeDelegateImplTest, ProvidesActuatorGeneratedPassword) {
               base::test::ValueIs(password));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, NewPasswordFailsIfNotGenerated) {
+TEST_P(PasswordChangeDelegateImplTest, NewPasswordFailsIfNotGenerated) {
   CreateDelegate();
   FormManagerForTesting form_manager;
   EXPECT_CALL(*actuator(), GetGeneratedPassword())
@@ -359,7 +397,7 @@ TEST_F(PasswordChangeDelegateImplTest, NewPasswordFailsIfNotGenerated) {
                   PasswordChangeDelegateImpl::Error::kGenerationFailed));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, NewPasswordFailsWithoutActuator) {
+TEST_P(PasswordChangeDelegateImplTest, NewPasswordFailsWithoutActuator) {
   CreateDelegate(/*inject_actuator=*/false);
   FormManagerForTesting form_manager;
 
@@ -368,27 +406,42 @@ TEST_F(PasswordChangeDelegateImplTest, NewPasswordFailsWithoutActuator) {
                   PasswordChangeDelegateImpl::Error::kNoPasswordChangeFlow));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
+TEST_P(PasswordChangeDelegateImplTest, WaitingForAgreement) {
   base::HistogramTester histogram_tester;
-  CreateDelegate();
+  CreateDelegateAndOffer();
   EXPECT_EQ(
       prefs()->GetInteger(optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::
               kPasswordChangeSubmission)),
       static_cast<int>(
           optimization_guide::prefs::FeatureOptInState::kNotInitialized));
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    EXPECT_FALSE(prefs()->GetBoolean(
+        password_manager::prefs::
+            kPasswordChangeWithPrivateInferenceNoticeAgreement));
+  }
 
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    EXPECT_CALL(*actuator(), Start());
+  }
   delegate()->OnPrivacyNoticeAccepted();
-  SetOptimizationFeatureEnabled(true);
+  SetPrivacyNoticeAcknowledged(true);
   // Both pref and state reflect acceptance.
   EXPECT_EQ(
       prefs()->GetInteger(optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::
               kPasswordChangeSubmission)),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    EXPECT_TRUE(prefs()->GetBoolean(
+        password_manager::prefs::
+            kPasswordChangeWithPrivateInferenceNoticeAgreement));
+    delegate()->OnActuationStateChanged(
+        PasswordChangeActuator::State::kWaitingForChangePasswordForm);
+  }
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
   ResetDelegate();
@@ -397,17 +450,12 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
       PasswordChangeDelegateImpl::kPasswordChangeTimeOverallHistogram, 1);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
+TEST_P(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
+  SetPrivacyNoticeAcknowledged(true);
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  EXPECT_CALL(*actuator(), Start());
-
-  delegate()->StartPasswordChangeFlow();
-  delegate()->login_checker()->RespondWithLoginStatus(
-      LoginCheckResult::Status::kLoggedIn);
+  CreateDelegateAndStartFlow();
 
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
@@ -437,9 +485,9 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
                            CoarseFinalPasswordChangeState::kFormNotDetected));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
+TEST_P(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
+  SetPrivacyNoticeAcknowledged(true);
+  CreateDelegateAndOffer();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -459,10 +507,10 @@ TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
                            CoarseFinalPasswordChangeState::kOffered));
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        MetricsReportedFlowCanceledInPrivacyNotice) {
-  SetOptimizationFeatureEnabled(false);
-  CreateDelegate();
+  SetPrivacyNoticeAcknowledged(false);
+  CreateDelegateAndOffer();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -482,8 +530,12 @@ TEST_F(PasswordChangeDelegateImplTest,
                            CoarseFinalPasswordChangeState::kOffered));
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        MetricsReportedFlowCanceledDuringSignInCheck) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Login check is performed before flow starts when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
   base::HistogramTester histogram_tester;
@@ -506,8 +558,12 @@ TEST_F(PasswordChangeDelegateImplTest,
                            CoarseFinalPasswordChangeState::kCanceled));
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        PasswordChangeFlowCanceledDuringSignInCheck) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Login check is performed before flow starts when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
   delegate()->StartPasswordChangeFlow();
@@ -527,17 +583,12 @@ TEST_F(PasswordChangeDelegateImplTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
+TEST_P(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
+  SetPrivacyNoticeAcknowledged(true);
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  EXPECT_CALL(*actuator(), Start());
-
-  delegate()->StartPasswordChangeFlow();
-  delegate()->login_checker()->RespondWithLoginStatus(
-      LoginCheckResult::Status::kLoggedIn);
+  CreateDelegateAndStartFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 
@@ -561,8 +612,8 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
                            CoarseFinalPasswordChangeState::kCanceled));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
-  CreateDelegate();
+TEST_P(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
+  CreateDelegateAndOffer();
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
@@ -570,7 +621,7 @@ TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
   delegate()->OnPasswordChangeDeclined();
 }
 
-TEST_F(PasswordChangeDelegateImplTest, ActuationStateChangedUpdatesUI) {
+TEST_P(PasswordChangeDelegateImplTest, ActuationStateChangedUpdatesUI) {
   CreateDelegate();
 
   const std::vector<
@@ -595,15 +646,9 @@ TEST_F(PasswordChangeDelegateImplTest, ActuationStateChangedUpdatesUI) {
   }
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        LoginCheck_LoggedIn_StartsActuatorAndRecordsQuality) {
-  CreateDelegate();
-  delegate()->StartPasswordChangeFlow();
-
-  EXPECT_CALL(*actuator(), Start());
-
-  delegate()->login_checker()->RespondWithLoginStatus(
-      LoginCheckResult::Status::kLoggedIn);
+  CreateDelegateAndStartFlow();
 
   optimization_guide::proto::PasswordChangeQuality quality =
       delegate()
@@ -614,8 +659,12 @@ TEST_F(PasswordChangeDelegateImplTest,
   EXPECT_TRUE(quality.has_logged_in_check());
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        LoginCheck_LoggedOut_TransitionsToLoginFormDetected_AndRetry) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Login check is performed before flow starts when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   CreateDelegate();
   delegate()->StartPasswordChangeFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),
@@ -631,8 +680,12 @@ TEST_F(PasswordChangeDelegateImplTest,
             PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        LoginCheck_Error_TransitionsToFormNotFound) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Login check is performed before flow starts when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   CreateDelegate();
   delegate()->StartPasswordChangeFlow();
   ASSERT_TRUE(delegate()->login_checker());
@@ -644,14 +697,10 @@ TEST_F(PasswordChangeDelegateImplTest,
   EXPECT_FALSE(delegate()->login_checker());
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        OnTabWillDetach_DeleteReason_CancelsActuatorAndStopsFlow) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
-
-  delegate()->StartPasswordChangeFlow();
-  delegate()->login_checker()->RespondWithLoginStatus(
-      LoginCheckResult::Status::kLoggedIn);
+  SetPrivacyNoticeAcknowledged(true);
+  CreateDelegateAndStartFlow();
 
   EXPECT_CALL(*actuator(), Cancel());
   EXPECT_CALL(completion_callback(), Run());
@@ -664,7 +713,7 @@ TEST_F(PasswordChangeDelegateImplTest,
       PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm, 1);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OnTabWillDetach_OtherReason_Ignored) {
+TEST_P(PasswordChangeDelegateImplTest, OnTabWillDetach_OtherReason_Ignored) {
   CreateDelegate();
 
   EXPECT_CALL(*actuator(), Cancel()).Times(0);
@@ -674,10 +723,10 @@ TEST_F(PasswordChangeDelegateImplTest, OnTabWillDetach_OtherReason_Ignored) {
       tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+TEST_P(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
+  if (!IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Private Inference login check is disabled.";
+  }
   SetOptimizationFeatureEnabled(true);
 
   CreateDelegate();
@@ -744,10 +793,10 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
             PasswordChangeUIDelegate::State::kOfferingPasswordChange);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+TEST_P(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
+  if (!IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Private Inference login check is disabled.";
+  }
 
   CreateDelegate();
   EXPECT_EQ(delegate()->GetCurrentState(),
@@ -761,14 +810,13 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
       LoginCheckResult::Status::kError, /*logging_data=*/nullptr,
       LoginCheckResult::LoginCheckError::kTimeout);
   EXPECT_FALSE(delegate()->logs_uploader());
-
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        PrivateInferenceLoginCheck_ServerError_ShowsLeakWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+  if (!IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Private Inference login check is disabled.";
+  }
 
   CreateDelegate();
   EXPECT_EQ(delegate()->GetCurrentState(),
@@ -787,15 +835,14 @@ TEST_F(PasswordChangeDelegateImplTest,
 // Verifies there is no crash and no UI notification (and hence no
 // credential leak dialog) if the originator tab is closed while the login
 // check is still in flight.
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        PrivateInferenceLoginCheck_OriginatorDestroyed_NoNotification) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+  if (!IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "Private Inference login check is disabled.";
+  }
 
   CreateDelegate();
   ASSERT_TRUE(delegate()->login_checker());
-
 
   // Closing the tab stops the flow and destroys the login checker, so a late
   // server error can no longer reach the delegate.
@@ -805,10 +852,9 @@ TEST_F(PasswordChangeDelegateImplTest,
   SimulateTabWillDetach(tabs::TabInterface::DetachReason::kDelete);
 
   EXPECT_FALSE(delegate()->login_checker());
-
 }
 
-TEST_F(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
+TEST_P(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
   CreateDelegate();
 
   std::unique_ptr<content::WebContents> test_executor =
@@ -821,7 +867,7 @@ TEST_F(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
   EXPECT_FALSE(delegate()->IsPasswordChangeOngoing(nullptr));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
+TEST_P(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
   CreateDelegate();
 
   EXPECT_CALL(*actuator(), OpenPasswordChangeTab(web_contents()));
@@ -829,7 +875,7 @@ TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
   delegate()->OpenPasswordChangeTab();
 }
 
-TEST_F(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
+TEST_P(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
   CreateDelegate();
 
   const std::u16string kNewPassword = u"NewSecurePassword";
@@ -842,16 +888,15 @@ TEST_F(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
   EXPECT_EQ(delegate()->GetGeneratedPassword().value(), kNewPassword);
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OnUiDismissedStopsFlow) {
+TEST_P(PasswordChangeDelegateImplTest, OnUiDismissedStopsFlow) {
   CreateDelegate();
 
   EXPECT_CALL(completion_callback(), Run());
   delegate()->OnUiDismissed();
 }
 
-TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
-  CreateDelegate();
-  delegate()->StartPasswordChangeFlow();
+TEST_P(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
+  CreateDelegateAndStartFlow();
   optimization_guide::proto::PasswordChangeQuality quality =
       delegate()
           ->logs_uploader()
@@ -861,16 +906,24 @@ TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
   EXPECT_TRUE(quality.has_login_form_data());
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        RecordsOtpPresentInMainTabHistogram_NoOtpPresent) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "OTP check is skipped when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   base::HistogramTester histogram_tester;
   CreateDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kOtpPresentInMainTabHistogram, false, 1);
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
+TEST_P(PasswordChangeDelegateImplTest,
        RecordsOtpPresentInMainTabHistogram_OtpPresent) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "OTP check is skipped when "
+                    "PasswordChangeWithPrivateInferenceLoginCheck is enabled.";
+  }
   base::HistogramTester histogram_tester;
   const autofill::FormGlobalId form_id = autofill::test::MakeFormGlobalId();
   autofill_client()->GetOtpFieldDetector()->AddFormAndNotifyIfNecessary(
@@ -887,3 +940,5 @@ TEST_F(PasswordChangeDelegateImplTest,
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordChangeDelegateImplTest);
