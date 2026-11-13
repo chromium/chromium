@@ -16,8 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
@@ -113,7 +116,9 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
-            @BrandedColorScheme int brandedColorScheme) {}
+            @BrandedColorScheme int brandedColorScheme) {
+        updateTint(activityFocusTint);
+    }
 
     @Override
     public void onIncognitoStateChanged(boolean isIncognito) {
@@ -155,6 +160,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
             mIncognitoIndicator.setOnClickListener(this);
             mIncognitoIndicator.setOnLongClickListener(this);
             mIncognitoIndicator.setOnContextClickListener(this);
+            updateTint(mTopUiThemeColorProvider.getActivityFocusTint());
         }
 
         if (mIncognitoIndicator != null) {
@@ -163,6 +169,14 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                 triggerIPH();
             }
         }
+    }
+
+    private void updateTint(@Nullable ColorStateList activityFocusTint) {
+        if (mIncognitoIndicator == null || activityFocusTint == null) return;
+        ImageView icon = mIncognitoIndicator.findViewById(R.id.incognito_indicator_icon);
+        ImageViewCompat.setImageTintList(icon, activityFocusTint);
+        TextView text = mIncognitoIndicator.findViewById(R.id.incognito_indicator_text);
+        text.setTextColor(activityFocusTint);
     }
 
     @Override

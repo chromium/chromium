@@ -16,8 +16,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.widget.ImageViewCompat;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -294,5 +300,32 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 mUserActionTester.getActions().contains("MobileIncognitoIndicatorCloseAllWindows"));
         assertFalse(popup.isShowing());
         assertNull(mCoordinator.getMenuWindowForTesting());
+    }
+
+    @Test
+    public void testOnTintChanged_UpdatesIconAndTextTint() {
+        ColorStateList focusedTint = ColorStateList.valueOf(Color.WHITE);
+        ColorStateList unfocusedTint = ColorStateList.valueOf(Color.GRAY);
+        when(mThemeColorProvider.getActivityFocusTint()).thenReturn(focusedTint);
+
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        mCoordinator.setVisibility(/* visible= */ true);
+        View indicator = mCoordinator.getIncognitoIndicatorView();
+        assertNotNull(indicator);
+
+        ImageView icon = indicator.findViewById(R.id.incognito_indicator_icon);
+        TextView text = indicator.findViewById(R.id.incognito_indicator_text);
+        assertNotNull(icon);
+        assertNotNull(text);
+        assertEquals(focusedTint, ImageViewCompat.getImageTintList(icon));
+        assertEquals(focusedTint, text.getTextColors());
+
+        mCoordinator.onTintChanged(focusedTint, unfocusedTint, BrandedColorScheme.INCOGNITO);
+        assertEquals(unfocusedTint, ImageViewCompat.getImageTintList(icon));
+        assertEquals(unfocusedTint, text.getTextColors());
+
+        mCoordinator.onTintChanged(focusedTint, focusedTint, BrandedColorScheme.INCOGNITO);
+        assertEquals(focusedTint, ImageViewCompat.getImageTintList(icon));
+        assertEquals(focusedTint, text.getTextColors());
     }
 }

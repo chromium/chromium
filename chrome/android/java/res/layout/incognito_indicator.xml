@@ -24,11 +24,13 @@ found in the LICENSE file.
       android:duplicateParentState="true"
       tools:ignore="UselessParent">
     <ImageView
+        android:id="@+id/incognito_indicator_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/accessibility_incognito_badge"
         android:src="@drawable/ic_incognito" />
     <TextView
+        android:id="@+id/incognito_indicator_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/incognito_indicator_text_lateral_start_margin"
