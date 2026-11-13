@@ -112,7 +112,8 @@ class TabAndroid : public tabs::TabInterface,
   static std::unique_ptr<TabAndroid> CreateForTesting(
       Profile* profile,
       int tab_id,
-      std::unique_ptr<content::WebContents> web_contents);
+      std::unique_ptr<content::WebContents> web_contents,
+      std::optional<int> launch_type_at_creation = std::nullopt);
 
   // TabAndroidDataProvider
   SessionID GetWindowId() const override;

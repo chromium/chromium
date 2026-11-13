@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -51,5 +53,31 @@ public class TabWebContentsDelegateAndroidImplUnitTest {
 
         verify(mObserver1).onBeforeUnloadFired(mTab, false);
         verify(mObserver2).onBeforeUnloadFired(mTab, false);
+    }
+
+    @Test
+    public void testCloseContents_Detached() {
+        when(mTab.isDetachedFromActivity()).thenReturn(true);
+
+        mDelegate.closeContents();
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mTab).setDidCloseWhileDetached();
+        verify(mObserver1).onCloseContents(mTab);
+        verify(mObserver2).onCloseContents(mTab);
+        verify(mWrappedDelegate).closeContents();
+    }
+
+    @Test
+    public void testCloseContents_Attached() {
+        when(mTab.isDetachedFromActivity()).thenReturn(false);
+
+        mDelegate.closeContents();
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mTab, never()).setDidCloseWhileDetached();
+        verify(mObserver1).onCloseContents(mTab);
+        verify(mObserver2).onCloseContents(mTab);
+        verify(mWrappedDelegate).closeContents();
     }
 }

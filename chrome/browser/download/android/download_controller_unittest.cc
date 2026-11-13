@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -470,4 +472,85 @@ TEST_F(DownloadControllerTest,
 
   DownloadController::ScheduleRemoveDownloadItem(&unattached_item);
   EXPECT_TRUE(remove_future.Wait());
+}
+
+TEST_F(DownloadControllerTest, CloseTabIfEmpty_ClosesSingleTabInMultiWindow) {
+  content::RenderViewHostTestEnabler rvh_enabler;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ASSERT_TRUE(web_contents->GetController().IsInitialNavigation());
+
+  NiceMock<MockClosingWebContentsDelegate> delegate;
+  web_contents->SetDelegate(&delegate);
+
+  // Detached WebContents without a TabAndroid should not close.
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(0);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  // Detached tab (not in any TabModel, e.g. while being reparented to a new
+  // window) with a valid TabAndroid should close.
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile(), /*tab_id=*/1, /*web_contents=*/nullptr);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       tab.get());
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(1);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  TestTabModel tab_model(profile());
+  tab_model.SetWebContentsList({web_contents.get()});
+  TabModelList::AddTabModel(&tab_model);
+
+  // Should not close the last tab in the sole window.
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(0);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  // Empty, headless, and non-tabbed (e.g. Custom Tab) models should not count
+  // as a second live tabbed window.
+  TestTabModel empty_tab_model(profile());
+  TabModelList::AddTabModel(&empty_tab_model);
+
+  TestTabModel headless_tab_model(profile(),
+                                  chrome::android::ActivityType::kTabbed,
+                                  TabModel::TabModelType::kHeadless);
+  headless_tab_model.SetTabCount(1);
+  TabModelList::AddTabModel(&headless_tab_model);
+
+  TestTabModel custom_tab_model(profile(),
+                                chrome::android::ActivityType::kCustomTab,
+                                TabModel::TabModelType::kStandard);
+  custom_tab_model.SetTabCount(1);
+  TabModelList::AddTabModel(&custom_tab_model);
+
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(0);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  // If the sole tab in the sole live window was created with
+  // FROM_LINK_CREATING_NEW_WINDOW, it should still close.
+  std::unique_ptr<TabAndroid> new_window_tab = TabAndroid::CreateForTesting(
+      profile(), /*tab_id=*/2, /*web_contents=*/nullptr,
+      static_cast<int>(TabModel::TabLaunchType::FROM_LINK_CREATING_NEW_WINDOW));
+  web_contents->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       new_window_tab.get());
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(1);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  // Restore non-new-window tab and verify that when another window's live
+  // standard tabbed TabModel has a tab, CloseTabIfEmpty closes the sole tab.
+  web_contents->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       tab.get());
+  TestTabModel second_window_tab_model(profile());
+  second_window_tab_model.SetTabCount(1);
+  TabModelList::AddTabModel(&second_window_tab_model);
+
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(1);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), /*download=*/nullptr);
+
+  web_contents->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+  TabModelList::RemoveTabModel(&second_window_tab_model);
+  TabModelList::RemoveTabModel(&custom_tab_model);
+  TabModelList::RemoveTabModel(&headless_tab_model);
+  TabModelList::RemoveTabModel(&empty_tab_model);
+  TabModelList::RemoveTabModel(&tab_model);
 }

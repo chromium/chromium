@@ -103,6 +103,14 @@ using content::WebContents;
 
 namespace {
 
+struct LaunchTypeAtCreationForTesting : public base::SupportsUserData::Data {
+  explicit LaunchTypeAtCreationForTesting(int value) : value(value) {}
+  int value;
+};
+
+const void* const kLaunchTypeAtCreationForTestingKey =
+    &kLaunchTypeAtCreationForTestingKey;
+
 BrowserWindowInterface* FindBrowserWindowInterface(SessionID window_id) {
   if (!window_id.is_valid()) {
     return nullptr;
@@ -175,13 +183,19 @@ TabAndroid::~TabAndroid() {
 std::unique_ptr<TabAndroid> TabAndroid::CreateForTesting(
     Profile* profile,
     int tab_id,
-    std::unique_ptr<content::WebContents> web_contents) {
+    std::unique_ptr<content::WebContents> web_contents,
+    std::optional<int> launch_type_at_creation) {
   if (web_contents) {
     night_mode::WebContentsThemeClient::CreateForWebContents(
         web_contents.get());
   }
   auto tab = base::WrapUnique(new TabAndroid(profile, tab_id));
   tab->web_contents_ = std::move(web_contents);
+  if (launch_type_at_creation.has_value()) {
+    tab->SetUserData(kLaunchTypeAtCreationForTestingKey,
+                     std::make_unique<LaunchTypeAtCreationForTesting>(
+                         *launch_type_at_creation));
+  }
   if (tab->web_contents_) {
     tabs::TabLookupFromWebContents::CreateForWebContents(
         tab->web_contents_.get(), tab.get());
@@ -330,7 +344,16 @@ base::Time TabAndroid::GetLastShownTimestamp() const {
 
 int TabAndroid::GetTabLaunchTypeAtCreation() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_getTabLaunchTypeAtCreation(env, GetJavaObject(env));
+  ScopedJavaLocalRef<jobject> j_tab = GetJavaObject(env);
+  if (!j_tab) {
+    CHECK_IS_TEST();
+    if (const auto* data = static_cast<const LaunchTypeAtCreationForTesting*>(
+            GetUserData(kLaunchTypeAtCreationForTestingKey))) {
+      return data->value;
+    }
+    return static_cast<int>(TabModel::TabLaunchType::UNSET);
+  }
+  return Java_TabImpl_getTabLaunchTypeAtCreation(env, j_tab);
 }
 
 int TabAndroid::GetParentId() const {

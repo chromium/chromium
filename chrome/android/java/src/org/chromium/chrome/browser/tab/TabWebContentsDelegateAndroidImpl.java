@@ -72,6 +72,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mDelegate = delegate;
         mCloseContentsRunnable =
                 () -> {
+                    if (mTab.isDetachedFromActivity()) {
+                        mTab.setDidCloseWhileDetached();
+                    }
                     for (TabObserver observer : mTab.getTabObservers()) {
                         observer.onCloseContents(mTab);
                     }

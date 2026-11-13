@@ -234,6 +234,19 @@ ui::WindowAndroid* GetCurrentWindow(const Profile* profile) {
   return window;
 }
 
+bool HasMultipleLiveTabbedModels(const Profile* profile) {
+  int count = 0;
+  TabModelList::ForEach(profile, [&count](TabModel* model) {
+    if (model->GetTabModelType() == TabModel::TabModelType::kStandard &&
+        model->activity_type() == chrome::android::ActivityType::kTabbed &&
+        model->GetTabCount() > 0) {
+      return ++count < 2;
+    }
+    return true;
+  });
+  return count > 1;
+}
+
 }  // namespace
 
 // static
@@ -364,9 +377,25 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
     return;
   }
 
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
-  if (!tab_model || tab_model->GetTabCount() == 1) {
-    return;
+  if (!tab_model) {
+    // Allow closing if the tab is temporarily detached from its TabModel (e.g.
+    // while being reparented to a new window).
+    if (!tab) {
+      return;
+    }
+  } else if (tab_model->GetTabCount() == 1) {
+    // Don't close the last tab in the sole window unless the tab was
+    // specifically created to open a link in a new window.
+    bool is_new_window_link =
+        tab && tab->GetTabLaunchTypeAtCreation() ==
+                   static_cast<int>(
+                       TabModel::TabLaunchType::FROM_LINK_CREATING_NEW_WINDOW);
+    if (!is_new_window_link &&
+        !HasMultipleLiveTabbedModels(tab_model->GetProfile())) {
+      return;
+    }
   }
 
   if (!download) {
