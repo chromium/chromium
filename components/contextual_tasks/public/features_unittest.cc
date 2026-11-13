@@ -307,21 +307,25 @@ TEST(FeaturesTest, ContextualTasksEntryPoints_DefaultsAndParams) {
     EXPECT_TRUE(kContextualTasksEntryPointsImageContextMenu.Get());
     EXPECT_TRUE(kContextualTasksEntryPointsToolbarButton.Get());
     EXPECT_TRUE(kContextualTasksEntryPointsOmnibox.Get());
+    EXPECT_FALSE(kContextualTasksEntryPointsOmniboxContextualSuggestions.Get());
   }
 
   {
     base::test::ScopedFeatureList scoped_features;
     scoped_features.InitAndEnableFeatureWithParameters(
-        kContextualTasksEntryPoints, {{"page_context_menu", "false"},
-                                      {"app_menu", "true"},
-                                      {"image_context_menu", "false"},
-                                      {"toolbar_button", "true"},
-                                      {"omnibox", "false"}});
+        kContextualTasksEntryPoints,
+        {{"page_context_menu", "false"},
+         {"app_menu", "true"},
+         {"image_context_menu", "false"},
+         {"toolbar_button", "true"},
+         {"omnibox", "false"},
+         {"omnibox_contextual_suggestions", "true"}});
     EXPECT_FALSE(kContextualTasksEntryPointsPageContextMenu.Get());
     EXPECT_TRUE(kContextualTasksEntryPointsAppMenu.Get());
     EXPECT_FALSE(kContextualTasksEntryPointsImageContextMenu.Get());
     EXPECT_TRUE(kContextualTasksEntryPointsToolbarButton.Get());
     EXPECT_FALSE(kContextualTasksEntryPointsOmnibox.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsOmniboxContextualSuggestions.Get());
   }
 }
 

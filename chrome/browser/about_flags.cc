@@ -4752,6 +4752,14 @@ const FeatureEntry::FeatureVariation
          kContextualTasksUpdatedEntryPointsOmniboxRouting, nullptr},
         {"with submenu", kContextualTasksUpdatedEntryPointsSubmenu, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kContextualTasksEntryPointsWithOmniboxContextualSuggestions[] = {
+        {"omnibox_contextual_suggestions", "true"}};
+
+const FeatureEntry::FeatureVariation kContextualTasksEntryPointsVariations[] = {
+    {"with omnibox contextual suggestions",
+     kContextualTasksEntryPointsWithOmniboxContextualSuggestions, nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
     {"fps_cap", "30"}};
@@ -12145,7 +12153,10 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::
          kContextualTasksEntryPointsDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksEntryPoints)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEntryPoints,
+         kContextualTasksEntryPointsVariations,
+         "ContextualTasksEntryPoints")},
 
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,

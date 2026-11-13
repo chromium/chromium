@@ -286,6 +286,7 @@ source_set("ui") {
   if (is_android) {
     sources += [
       "android/contextual_tasks_bridge.h",
+      "android/contextual_tasks_omnibox_query_helper.h",
       "android/contextual_tasks_panel_host_android.h",
       "android/contextual_tasks_panel_host_desktop_android.h",
       "android/contextual_tasks_toast.h",
@@ -543,6 +544,7 @@ source_set("ui_impl") {
     sources += [
       "android/contextual_tasks_control_coordinator_android.cc",
       "android/contextual_tasks_control_coordinator_android.h",
+      "android/contextual_tasks_omnibox_query_helper.cc",
       "android/contextual_tasks_panel_host_android.cc",
       "android/contextual_tasks_panel_host_desktop_android.cc",
       "android/contextual_tasks_toast.cc",
@@ -826,7 +828,10 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/contextual_tasks_bridge_unittest.cc" ]
+    sources += [
+      "android/contextual_tasks_bridge_unittest.cc",
+      "android/contextual_tasks_omnibox_query_helper_unittest.cc",
+    ]
   } else {
     sources += [
       "contextual_tasks_onboarding_tooltip_controller_unittest.cc",
