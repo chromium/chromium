@@ -38,6 +38,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -456,10 +457,8 @@ public class PopupMultiwindowPTTest {
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
 
-        final CctPageStation popup =
-                page.clickOpenPopup().inNewTask().arriveAt(SIMPLE_POPUP_BUILDER.build());
-
-        page.bringWindowToFront();
+        final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
+        openPopupAndRefocusOpener(page, page.clickOpenPopup(), popup);
 
         popup.getActivityElement().expectActivityDestroyed();
         page.clickClosePopup().withContext(popup).reachLastStop();
@@ -478,10 +477,8 @@ public class PopupMultiwindowPTTest {
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
 
-        final CctPageStation popup =
-                page.clickOpenPopup().inNewTask().arriveAt(SIMPLE_POPUP_BUILDER.build());
-
-        page.bringWindowToFront();
+        final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
+        openPopupAndRefocusOpener(page, page.clickOpenPopup(), popup);
 
         final CctPageStation focusedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         focusedPopup.declareEnterCondition(
@@ -509,9 +506,7 @@ public class PopupMultiwindowPTTest {
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
         popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
         popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
-
-        page.bringWindowToFront();
+        openPopupAndRefocusOpener(page, page.clickOpenPopupWithBounds(), popup);
 
         final CctPageStation movedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         movedPopup.declareEnterCondition(new WindowPositionCondition(movedPopup, 75, 75));
@@ -541,9 +536,7 @@ public class PopupMultiwindowPTTest {
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
         popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
         popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
-
-        page.bringWindowToFront();
+        openPopupAndRefocusOpener(page, page.clickOpenPopupWithBounds(), popup);
 
         final CctPageStation movedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         movedPopup.declareEnterCondition(new WindowPositionCondition(movedPopup, 130, 80));
@@ -573,9 +566,7 @@ public class PopupMultiwindowPTTest {
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
         popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
         popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
-
-        page.bringWindowToFront();
+        openPopupAndRefocusOpener(page, page.clickOpenPopupWithBounds(), popup);
 
         final CctPageStation resizedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         resizedPopup.declareEnterCondition(new WindowPositionCondition(resizedPopup, 100, 100));
@@ -616,9 +607,7 @@ public class PopupMultiwindowPTTest {
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
         popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
         popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
-
-        page.bringWindowToFront();
+        openPopupAndRefocusOpener(page, page.clickOpenPopupWithBounds(), popup);
 
         final CctPageStation resizedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         resizedPopup.declareEnterCondition(new WindowPositionCondition(resizedPopup, 100, 100));
@@ -655,9 +644,7 @@ public class PopupMultiwindowPTTest {
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
         popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
         popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
-
-        page.bringWindowToFront();
+        openPopupAndRefocusOpener(page, page.clickOpenPopupWithBounds(), popup);
 
         // Resizes the pop-up by (-15, 35). These deltas are duplicated in popup_launcher.html.
         final Rect initialWindowBoundsDp =
@@ -688,6 +675,25 @@ public class PopupMultiwindowPTTest {
 
     private static void forceUnflaggedLaunchPath() {
         PopupCreatorImpl.setSetMovableTaskRequiredForPopupsForTesting(false);
+    }
+
+    /**
+     * Opens {@code popup} in a new task, waits for window focus to move to it, then brings {@code
+     * opener} back to the front so the test can keep interacting with it.
+     *
+     * <p>In desktop windowing the opener stays RESUMED after the popup opens, so the popup's
+     * lifecycle and page Conditions say nothing about which window has focus. Without waiting for
+     * focus to move, the opener may still report window focus, and {@link
+     * org.chromium.base.test.transit.Station#bringWindowToFront()} would find its Condition already
+     * fulfilled before running its trigger.
+     */
+    private static void openPopupAndRefocusOpener(
+            PopupLauncherPageStation opener, TripBuilder openPopupTrigger, CctPageStation popup) {
+        popup.declareEnterCondition(new ActivityFocusedCondition<>(popup.getActivityElement()));
+        popup.declareEnterCondition(new ActivityNotFocusedCondition<>(opener.getActivityElement()));
+        openPopupTrigger.inNewTask().arriveAt(popup);
+
+        opener.bringWindowToFront();
     }
 
     private static void assertPopupHasOpener(CctPageStation popup) throws TimeoutException {
@@ -909,6 +915,29 @@ public class PopupMultiwindowPTTest {
         @Override
         public String buildDescription() {
             return "Activity window is focused";
+        }
+    }
+
+    private static class ActivityNotFocusedCondition<ActivityT extends Activity> extends Condition {
+        private final Supplier<ActivityT> mActivitySupplier;
+
+        private ActivityNotFocusedCondition(Supplier<ActivityT> activitySupplier) {
+            super(/* isRunOnUiThread= */ true);
+            mActivitySupplier = dependOnSupplier(activitySupplier, "Activity");
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            if (mActivitySupplier.get().getWindow().getDecorView().hasWindowFocus()) {
+                return notFulfilled("Activity window is focused");
+            }
+
+            return fulfilled("Activity window is not focused");
+        }
+
+        @Override
+        public String buildDescription() {
+            return "Activity window is not focused";
         }
     }
 
