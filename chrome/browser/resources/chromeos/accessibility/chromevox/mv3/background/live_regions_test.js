@@ -287,11 +287,11 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', async function() {
   await mockFeedback.replay();
 });
 
-// Flaky: https://crbug.com/40619839
 AX_TEST_F(
-    'ChromeVoxLiveRegionsTest', 'DISABLED_LiveStatusOff', async function() {
+    'ChromeVoxLiveRegionsTest', 'LiveStatusOff', async function() {
       const mockFeedback = this.createMockFeedback();
-      const rootNode = await this.runWithLoadedTree(`
+      const root = await this.runWithLoadedTree(`
+    <p>start</p>
     <div><input aria-live="off" type="text"></input></div>
     <script>
       let input = document.querySelector('input');
@@ -313,8 +313,13 @@ AX_TEST_F(
   `);
       const input = root.find({role: RoleType.TEXT_FIELD});
       const clickInput = input.parent.doDefault.bind(input.parent);
-      mockFeedback.call(input.focus.bind(input))
-          .call(clickInput)
+      mockFeedback
+          .call(() => {
+            this.listenOnce(
+                input, EventType.VALUE_IN_TEXT_FIELD_CHANGED,
+                () => input.focus());
+            clickInput();
+          })
           .expectSpeech('bb')
           .clearPendingOutput()
           .call(clickInput)
