@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">ລາຍຊື່ URL ທີ່ຈຳກັດໄວ້ຂອງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງເຊິ່ງໃຊ້ເຫດການເທັກໂນໂລຢີແບບເກົ່າ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{ຈະແບ່ງປັນ 1 ແຖບ}other{ຈະແບ່ງປັນ {NUM_TABS} ແຖບ}}</translation>
 <translation id="2357481397660644965">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" /> ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">ເບິ່ງຄຳຕອບຈາກການຊອກຫາດ້ວຍ Google AI ຂອງທ່ານໃນແຖບນີ້</translation>
 <translation id="2359629602545592467">ຫຼາຍສະກຸນເງິນ</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="236000571258713023">ພາຫະນະ</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">ບັນທຶກປີ້ເຂົ້າງານໃສ່ Wallet</translation>
 <translation id="2925454999967523701">ປຸ່ມສ້າງເອກະສານ, ເປີດນຳໃຊ້ເພື່ອສ້າງ Google Doc ໃໝ່ຢ່າງວ່ອງໄວ</translation>
 <translation id="2925673989565098301">ວິທີການຈັດສົ່ງ</translation>
+<translation id="2927328994673424423">2 ອາທິດກ່ອນ</translation>
 <translation id="2928426578619531300">ຜູ້ໃຊ້ທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ທີ່ຢູ່}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ທີ່ຢູ່}}</translation>
 <translation id="2930531075747147366">ແຖບຈາກອຸປະກອນອື່ນຂອງທ່ານ</translation>

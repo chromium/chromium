@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="2022431790688770637">Gérer les suggestions de Gemini</translation>
+<translation id="2023265063803387188">Gemini n'est pas disponible en mode navigation privée</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

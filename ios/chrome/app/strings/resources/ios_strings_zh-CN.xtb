@@ -460,7 +460,7 @@
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="2350463587705616331">深褐色背景颜色</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
-<translation id="2353784052777482798">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}。}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}。}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}}</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{您可将 {DOMAIN_ONE} 的登录密码保存到您的 Google 账号 {EMAIL}。}=2{您可将 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的登录密码保存到您的 Google 账号 {EMAIL}。}=3{您可将 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的登录密码保存到您的 Google 账号 {EMAIL}。}other{您可将 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的登录密码保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="2353953000228441783">默认网站视图</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359043044084662842">翻译</translation>
@@ -852,7 +852,7 @@
 <translation id="3631443864840848029">请确保您保存的是此网站当前的密码。</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3642060527569456384">标签页分组会自动保存并在您的所有设备上更新。</translation>
-<translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}}</translation>
 <translation id="3657176844107584515"><ph name="EMAIL" />，Google 会员。</translation>
 <translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3662966164093827811">{count,plural, =1{已选择 1 个}other{已选择 # 个}}</translation>
@@ -867,7 +867,7 @@
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3700134753671613714">登录帐号即可将您的书签同步到您的所有设备上。</translation>
 <translation id="3701167022068948696">立即修正</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="3709621342136814217">在此处选择字体、字号等</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="372115889256123713">缓存文件</translation>
@@ -1020,7 +1020,7 @@
 <translation id="4183350924949589798">想提升安全性？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="4196758674971560031">您创建的标签页分组会保存在“标签页分组”部分，并在您的所有设备上更新。</translation>
-<translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4207873326995387292">浏览器信息</translation>
 <translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
 <translation id="4224534474590365556">要关闭超过 99 个闲置标签页吗？</translation>

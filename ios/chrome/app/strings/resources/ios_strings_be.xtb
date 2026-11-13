@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Спыніць спампоўванне?</translation>
 <translation id="4796496140132859135">Група ўкладак. Згорнута.</translation>
 <translation id="4800912004582762296">Націсканне</translation>
+<translation id="4800930308997591052">Пераключыцеся на ўліковы запіс <ph name="EMAIL" />, каб лёгка абагульваць укладкі паміж прыладамі і атрымліваць доступ да пароляў, закладак і іншага змесціва з вашага Уліковага запісу Google.</translation>
 <translation id="4802185666270672526">Схаваць пункт "Запытаць сайт для ПК"</translation>
 <translation id="4803185665210547709">Пад кіраваннем вашай арганізацыі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -2149,6 +2150,7 @@
 <translation id="7618220760967055820">Выберыце, якая кнопка будзе паказвацца на панэлі інструментаў</translation>
 <translation id="7620522820075868385">Скасаваць</translation>
 <translation id="762078666799342162">Ранейшыя спампоўкі можна паглядзець у <ph name="BEGIN_LINK" />Файлах<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Працягвайце з таго месца, дзе спыніліся на камп’ютары</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Раскрытыя паролі}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="7640669552036055091">Укладкі з Android</translation>

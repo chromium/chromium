@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="201759455285471444">ຂະຫຍາຍກຸ່ມແຖບ.</translation>
 <translation id="2022431790688770637">ຈັດການຄຳແນະນຳຂອງ Gemini</translation>
+<translation id="2023265063803387188">Gemini ບໍ່ພ້ອມນຳໃຊ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2031515492007104071">ເລື່ອນລະດັບ</translation>
 <translation id="2044394949148788042">ເປີດຕາຕະລາງຂອງແຖບ</translation>
 <translation id="2044681667265133332">ບັນຊີ <ph name="USER_EMAIL" /> ໄດ້ຮັບການຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ເຊິ່ງອາດຈະສາມາດເບິ່ງຂໍ້ມູນບາງສ່ວນໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

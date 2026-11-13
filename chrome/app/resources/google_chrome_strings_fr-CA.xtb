@@ -158,7 +158,9 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2301513536169703857">Pour obtenir vos mots de passe, vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="2307973900865360088">Garder dans le Dock</translation>
 <translation id="2309047409763057870">Cette installation de Google Chrome est secondaire. Celui-ci ne peut donc pas servir de navigateur par défaut.</translation>
+<translation id="2330059234841117265">Ouvrir Recherche Google dans Chrome</translation>
 <translation id="2345992953227471816">Chrome a constaté que ces extensions contiennent un logiciel malveillant :</translation>
+<translation id="2350411688004301551">Passer à Gemini Enterprise</translation>
 <translation id="2358140144860869442">Pour obtenir votre liste de lecture et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2403703063067034158">Erreur de démarrage : une autre instance de configuration est actuellement en cours d'exécution, veuillez réessayer plus tard.</translation>
@@ -169,6 +171,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2482846200327569645">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous obtiendrez également vos favoris et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2513154137948333830">Redémarrage nécessaire : <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">votre organisation</translation>
 <translation id="2521391734665471391">Fermer le mode IA de Recherche Google</translation>
 <translation id="2523492931736391680">Votre travail sécurisé sur Chrome</translation>
 <translation id="2534365042754120737">Pour protéger vos données, laissez Chrome retirer les autorisations des sites que vous n'avez pas visités récemment. Cela n'arrêtera pas les notifications.</translation>
@@ -218,6 +221,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2888126860611144412">À propos de Google Chrome</translation>
+<translation id="2898830646167954300">Revenir à votre assistant Gemini non géré</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
 <translation id="2926952073016206995">Chrome requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
@@ -257,6 +261,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3140883423282498090">Vos modifications seront appliquées au prochain redémarrage de Google Chrome.</translation>
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
+<translation id="3183555099201190073">Accéder à Recherche à partir de n'importe quel onglet</translation>
 <translation id="318555301233810762">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous obtiendrez également vos favoris et plus encore sur tous vos appareils.</translation>
 <translation id="319199214552513804">Pour obtenir cette extension et plus sur tous vos ordinateurs, connectez-vous à Chrome</translation>
 <translation id="3196187562065225381">Chrome a bloqué ce téléchargement, car le fichier est dangereux</translation>
@@ -351,6 +356,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
 <translation id="408393047846373801">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
 <translation id="4102173024714616627">Les extensions sont des modules complémentaires qui vous permettent de personnaliser Chrome. Qu'il s'agisse de rester organisé ou de simplifier les tâches quotidiennes, les extensions vous aident à personnaliser Chrome.</translation>
+<translation id="4103543596018881622">Recherche Google dans Chrome épinglé à la barre d'outils!</translation>
 <translation id="4110895483821904099">Configurer votre nouveau profil Chrome</translation>
 <translation id="4111566860456076004">Chrome ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="4147555960264124640">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
@@ -474,6 +480,7 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 <translation id="5321325624576443340">Lentille Google n'est pas disponible. Réessayez plus tard.</translation>
 <translation id="5334309298019785904">Chrome OS n'a pas pu synchroniser vos données parce que cette fonctionnalité n'est pas offerte pour votre domaine.</translation>
 <translation id="5334487786912937552">Chrome requiert l'autorisation d'accéder à l'espace de stockage pour télécharger des fichiers</translation>
+<translation id="5336664042114176802">Vous pouvez passer à l'assistant Gemini initialement associé à votre compte Google et non géré par <ph name="DOMAIN" />. Les réponses ne seront plus ancrées dans les fichiers ni les services gérés par <ph name="DOMAIN" />, et votre historique des clavardages ne sera pas transféré. Son utilisation pourrait ne pas convenir à un contexte professionnel. Le changement nécessite de relancer Chrome.</translation>
 <translation id="5337648990166757586">Facultatif : aidez-nous à améliorer les fonctionnalités ainsi que la performance de Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
 <translation id="5346389065299425353">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils</translation>
 <translation id="5353252989841766347">Exporter les mots de passe à partir de Chrome</translation>
@@ -591,6 +598,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6334815226785304306">Faire de Google Chrome le navigateur par défaut et l'épingler à la barre des tâches</translation>
 <translation id="6339888439788291743">Nouvelle icône, même raccourci : cliquez pour poser des questions pendant que vous naviguez avec le mode IA de Recherche Google.</translation>
+<translation id="6349304688246983183">Posez facilement des questions pendant que vous naviguez avec Recherche Google</translation>
 <translation id="63540178978900677">Chrome n'est plus votre navigateur par défaut. Faire de Chrome le navigateur par défaut?</translation>
 <translation id="6357670763064300993">Gemini Enterprise dans Chrome</translation>
 <translation id="6360449101159168105">Pendant que cet onglet était inactif, de la mémoire a été libérée pour maintenir la rapidité de Chrome Vous pouvez choisir de toujours exclure ce site de l'inactivité.</translation>
@@ -605,6 +613,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6438015621983209660">Étendez la navigation sécurisée améliorée avec Chrome sur votre téléphone</translation>
 <translation id="6442774133615368941">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo sur l'appli Chrome iOS</translation>
 <translation id="6446105560007692480">pour effectuer une recherche avec Chrome ou pour personnaliser l'option dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Ce navigateur géré peut utiliser un assistant Gemini configuré pour le travail par <ph name="DOMAIN" />. Il peut trouver des informations et fournir des réponses ancrées dans les fichiers et les services approuvés de l'organisation. Son utilisation avec un profil personnel n'est peut-être pas recommandée. L'historique des clavardages ne sera pas transféré. Le changement nécessite de relancer Chrome.</translation>
 <translation id="6448835208126432197">Pour sélectionner une partie de l'écran dans Gemini dans Chrome, utilisez un raccourci-clavier.</translation>
 <translation id="6473905796280459355">Accéder à la page À propos de Chrome</translation>
 <translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et à d'autres fins</translation>
@@ -799,6 +808,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8064965390968184078">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous.
 2. Cliquez sur <ph name="BUTTON_2" /> dans vos paramètres Windows.
 3. Cliquez sur <ph name="BUTTON_3" /> dans la notification Windows pour épingler Chrome à votre barre des tâches pour un accès rapide.</translation>
+<translation id="8066474819446975249">Relancer Chrome pour changer de version</translation>
 <translation id="8069447462453318634">Sélectionnez « Épingler à la barre d'outils ».</translation>
 <translation id="8074398340364918139">Pour rechercher une fonctionnalité ou une extension Chrome en particulier, entrez son raccourci dans la barre d'adresse, suivi de la touche de clavier que vous avez sélectionnée</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>

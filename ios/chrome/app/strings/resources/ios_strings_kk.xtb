@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Құпия сөздерді көру үшін алдымен құрылғыға тексеру кодын орнатуыңыз керек.</translation>
 <translation id="201759455285471444">Қойындылар тобын жаю.</translation>
 <translation id="2022431790688770637">Gemini ұсыныстарын басқару</translation>
+<translation id="2023265063803387188">Gemini инкогнито режимінде қолжетімді емес.</translation>
 <translation id="2031515492007104071">Деңгейді көтеру</translation>
 <translation id="2044394949148788042">Қойынды торын ашу</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> аккаунтыңызды <ph name="HOSTED_DOMAIN" /> басқарады. Ол кейбір ақпаратты көреді. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Жүктеп алу процесін тоқтату керек пе?</translation>
 <translation id="4796496140132859135">Қойындылар тобы. Жиылды.</translation>
 <translation id="4800912004582762296">Басып жатыр</translation>
+<translation id="4800930308997591052">Құрылғыларыңыз арасында қойындыларды оңай бөлісу және Google аккаунтыңыздан құпия сөздерді, бетбелгілерді және т.б. алу үшін <ph name="EMAIL" /> аккаунтына ауысыңыз.</translation>
 <translation id="4802185666270672526">"Компьютерге арналған сайтты сұрау" опциясын жасыру</translation>
 <translation id="4803185665210547709">Ұйымыңыз басқарады.
 <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -2148,6 +2150,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7618220760967055820">Құралдар тақтасында қандай түйме көрсетілетінін таңдаңыз</translation>
 <translation id="7620522820075868385">Бас тарту</translation>
 <translation id="762078666799342162">Бұрын жүктеп алынғандарды <ph name="BEGIN_LINK" />Файлдар<ph name="END_LINK" /> бөлімінен көруге болады</translation>
+<translation id="7636034359405891151">Компьютерде тоқтаған жеріңізден жалғастырыңыз</translation>
 <translation id="7638584964844754484">Құпия фраза дұрыс емес</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ұрланған құпия сөздер}=1{{COUNT} құпия сөз ұрланған}other{{COUNT} құпия сөз ұрланған}}</translation>
 <translation id="7640669552036055091">Android қойындылары</translation>

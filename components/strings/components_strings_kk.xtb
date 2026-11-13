@@ -3,7 +3,7 @@
 <translationbundle lang="kk">
 <translation id="1008557486741366299">Қазір емес</translation>
 <translation id="100957008357583611">Геодерегіңізді пайдалану керек пе?</translation>
-<translation id="1010148478459329879">Google аккаунтыңызда <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайындағы <ph name="BEGIN_LINK_GAA" />Gemini тарихы<ph name="END_LINK_GAA" /> сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін.</translation>
+<translation id="1010148478459329879">Google аккаунтыңызда <ph name="BEGIN_LINK_GAA" />Gemini тарихы<ph name="END_LINK_GAA" /> сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін. Ол <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> бетінде орналасқан.</translation>
 <translation id="1010200102790553230">Бетті кейінірек жүктеу</translation>
 <translation id="1010225406377140704">Жіберушіге хабарласып, жаңа сілтеме сұраңыз.</translation>
 <translation id="1011206368273183593">Файлдар дайындалуда</translation>
@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Бұрынғы технология оқиғалары орын алатын сіз кіретін беттердің URL мекенжайларының шектеулі тізімі.</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 қойынды ортақ қолданылады}other{{NUM_TABS} қойынды ортақ қолданылады}}</translation>
 <translation id="2357481397660644965">Құрылғыңызды <ph name="DEVICE_MANAGER" />, ал аккаунтыңызды <ph name="ACCOUNT_MANAGER" /> басқарады.</translation>
+<translation id="2358479643736965923">Осы қойындыда Google AI іздеу функциясының жауабын көріңіз.</translation>
 <translation id="2359629602545592467">Бірнеше</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="236000571258713023">Көліктер</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Іс-шара билетін Wallet-ке сақтау</translation>
 <translation id="2925454999967523701">"Құжат жасау" түймесі, жаңа Google құжатын жылдам жасау үшін белсендіріңіз</translation>
 <translation id="2925673989565098301">Жеткізу әдісі</translation>
+<translation id="2927328994673424423">2 апта бұрын</translation>
 <translation id="2928426578619531300">Үлестес пайдаланушы</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Қойынды басқа құрылғыдан жіберілді</translation>
@@ -4974,7 +4976,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" бағдарламалық құралын жойып не өшіріп көріңіз&lt;/li&gt;
     &lt;li&gt;Басқа желіге қосылып көріңіз&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="992501626255096403">Google аккаунтыңызда <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайындағы <ph name="BEGIN_LINK_GAA" />Gemini тарихындағы<ph name="END_LINK_GAA" /> автоматты түрде шолу сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін.</translation>
+<translation id="992501626255096403">Google аккаунтыңызда <ph name="BEGIN_LINK_GAA" />Gemini тарихындағы<ph name="END_LINK_GAA" /> автоматты түрде шолу сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін. Ол <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> бетінде орналасқан.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN нөмірін қосу</translation>
 <translation id="995782501881226248">YouTube</translation>

@@ -129,6 +129,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1460751212339734034">Jimatkan masa, kurangkan menaip</translation>
 <translation id="146522654774760805">Kata laluan dan autolengkap</translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
+<translation id="1473344277210704336">Gemini dan item penting anda pada bar alat bawah yang baharu</translation>
 <translation id="1477626028522505441">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh masalah pelayan.</translation>
 <translation id="147982357559798527">Diubah</translation>
 <translation id="1480287803138246127">Sesetengah sejarah anda mungkin tidak dipaparkan di sini. Untuk melihat semua sejarah Chrome anda, buka sejarah Chrome penuh.</translation>
@@ -907,6 +908,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4537987892902330164">Anda kekal log masuk sebagai <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Keahlian <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Log masuk ke akaun terurus</translation>
 <translation id="4577115723294378384">Isih mengikut A hingga Z</translation>
 <translation id="4578289292431526768">Mari mulakan</translation>
@@ -914,6 +916,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4585751637295612750">Buka tab baharu untuk menambahkan imej pada soalan anda</translation>
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4587589328781138893">Tapak</translation>
+<translation id="4587590257937792551">Chrome mengandungi bar alat bawah baharu, yang dibina untuk kemudahan. Anda boleh bertukar kembali pada bila-bila masa dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Halaman luar talian ini dari <ph name="CREATION_TIME" /> dan mungkin berbeza daripada versi dalam talian.</translation>
 <translation id="4595237294768457124">Buka halaman Tab baharu</translation>
 <translation id="4595276580892809760">Lampirkan imej daripada galeri</translation>
@@ -1448,6 +1451,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6633067410344541938">Buka kunci Inkognito</translation>
 <translation id="6636623428211296678">Terokai lebih banyak tetapan di bawah atau selesaikan sekarang</translation>
 <translation id="6637100877383020115">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_UMA_LINK" />Urus<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Item penting anda, terus pada bar alat bawah. Anda boleh bertukar kembali pada bila-bila masa dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Lampirkan tab</translation>
 <translation id="6647441008198474441">URL yang anda lawati dihantar kepada Google untuk meramal laman yang mungkin anda lawati seterusnya</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}}</translation>
@@ -1646,6 +1650,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Tab Perkongsian Yang Tersemat Dan Dipilih</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7314734791127433392">Tidak dapat menyemak kata laluan</translation>
+<translation id="7324177883197548771">Chrome berpenampilan baharu, yang dibina untuk kemudahan. Anda boleh bertukar kembali pada bila-bila masa dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Hantar permintaan "Do Not Track"</translation>
 <translation id="7333041109965360609">Nyahlanggan daripada pemberitahuan</translation>
 <translation id="7335766481146072567">Tekan teruskan</translation>
@@ -1748,6 +1753,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7697383401610880082">Pemegang seret</translation>
 <translation id="7698359219371678927">Buat e-mel dalam <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Helaian bawah aktiviti baru-baru ini dibuka pada ketinggian penuh</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Keahlian <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Gunakan data mudah alih</translation>
 <translation id="7708994397325774423">Dapatkan akses kepada semua kata laluan anda</translation>
 <translation id="7714077993070342304">Buka Menu Chrome</translation>

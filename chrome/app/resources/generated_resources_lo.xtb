@@ -110,6 +110,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ແຖບ}other{<ph name="GROUP_TITLE" /> - # ແຖບ}}</translation>
 <translation id="1082214733466244292">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກຄຸນສົມບັດບາງຢ່າງສຳລັບອຸປະກອນນີ້ໄວ້</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ຕ້ອງ​ການ​ກູ້​ຄືນ​ການ​ຕັ້ງ​ຄ່າ Chrome ຂອງ​ທ່ານ​ເປັນ​ຄ່າເລີ່ມຕົ້ນເດີ​ມ​ຂອງ​ພວກ​ມັນ. ອັນນີ້ຈະຕັ້ງຄ່າໜ້າຫຼັກ, ໜ້າແຖບໃໝ່ ແລະ ໂປຣແກຣມຄົ້ນຫາຂອງທ່ານຄືນໃໝ່, ປິດໃຊ້ງານສ່ວນຂະຫຍາຍຂອງທ່ານ ແລະຖອນປັກໝຸກທຸກແຖບ. ມັນຍັງຈະລຶບຂໍ້ມູນຊົ່ວຄາວ ແລະຂໍ້ມູນທີ່ແຄຊ໌ໄວ້ອື່ນນຳອີກ ເຊັ່ນ ຄຸກກີ້, ເນື້ອໃນ ແລະ ຂໍ້ມູນເວັບໄຊທ໌.</translation>
+<translation id="1082423423253606499">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອເພີ່ມ ຫຼື ຈັດການ <ph name="BEGIN_LINK_PAYMENT_METHODS" />ວິທີການຈ່າຍເງິນ<ph name="END_LINK_PAYMENT_METHODS" /> ແລະ <ph name="BEGIN_LINK_PASSES" />ບັດຮວມ<ph name="END_LINK_PASSES" /></translation>
 <translation id="1082725763867769612">ໄຟລ໌ອອບລາຍ</translation>
 <translation id="1083050113196701330">ກວດສອບການອັບເດດສຳເລັດແລ້ວ. ບໍ່ມີອັບເດດ</translation>
 <translation id="1083980330680874079">ແຜງ Chrome</translation>
@@ -275,6 +276,7 @@
 <translation id="121586831132481915">ປິດແຖບທີ່ຂະຫຍາຍອັດຕະໂນມັດ</translation>
 <translation id="1216542092748365687">ລຶບລາຍນິ້ວມືອອກ</translation>
 <translation id="1216628023580643945">ຕັ້ງຊື່ໃຫ້ທັກສະຂອງທ່ານ</translation>
+<translation id="1216649545251458081">ທ່ານສາມາດສືບຕໍ່ໃຊ້ Gemini ໃນ Chrome ໄດ້, ແຕ່ Chrome ຈະບໍ່ຊອກຫາ ຫຼື ອ້າງອີງຂໍ້ມູນທີ່ອົງກອນຂອງທ່ານຈັດການອີກຕໍ່ໄປ. ປະຫວັດການສົນທະນາອາດບໍ່ໂອນຍ້າຍໄປນຳ.</translation>
 <translation id="1216891999012841486">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການແກ້ໄຂຂໍ້ຜິດພາດໃນການອັບເດດ</translation>
 <translation id="1217117837721346030">ດາວໂຫຼດໄຟລ໌ທີ່ໜ້າສົງໄສ</translation>
 <translation id="1217437913373100941">ແຖບໃໝ່ໃນ <ph name="GROUP_NAME" /></translation>
@@ -345,6 +347,7 @@
 <translation id="1274721046703404848">ຈັດການການເຊື່ອມຕໍ່ລະຫວ່າງບໍລິການຊອກຫາ ແລະ ແອັບ Google Workspace ເຊັ່ນ: Google Drive</translation>
 <translation id="1274997165432133392">ສະແດງຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌ອື່ນ...</translation>
 <translation id="1277020343994096713">ສ້າງ PIN ໃໝ່ທີ່ແຕກຕ່າງຈາກ PIN ປັດຈຸບັນຂອງທ່ານ</translation>
+<translation id="1277738741297162935">ເບິ່ງໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="1279024913354609713">ບໍ່ອະນຸຍາດ</translation>
 <translation id="127946606521051357">ອຸປະກອນໃກ້ຄຽງກຳລັງແບ່ງປັນຢູ່</translation>
 <translation id="1280332775949918163">ຍ້າຍໜ້າຈໍ</translation>
@@ -1012,6 +1015,7 @@
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ຂອງທ່ານໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="1872846000961079826">ໃນລະຫວ່າງການປ່ຽນລະຫັດຜ່ານ, ລະບົບຈະສົ່ງເນື້ອຫາຈາກໜ້າທີ່ມີລະຫັດຜ່ານ ແລະ ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງໃຫ້ Google ແລະ ຈະໄດ້ຮັບການກວດສອບໂດຍທີມງານເພື່ອປັບປຸງຄຸນນະພາບຂອງຄຸນສົມບັດນີ້</translation>
 <translation id="1873513359268939357">Outlook ປະຕິທິນ</translation>
+<translation id="1873841881061248761">ອົງກອນຂອງທ່ານໄດ້ອັບເດດນະໂຍບາຍ ແລະ ກຳນົດໃຫ້ທ່ານຕ້ອງເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອສືບຕໍ່ໃຊ້ Gemini Enterprise ໃນ Chrome</translation>
 <translation id="1873920700418191231">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງໂຄສະນາຕ່າງໆ</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}other{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
@@ -1543,6 +1547,7 @@
 <translation id="2327920026543055248">ລະບຸຕົວອັກສອນ <ph name="CHARACTER" /> ຈາກທັງໝົດ <ph name="TOTAL" /></translation>
 <translation id="2328474416100889417">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />” ທັນທີ ແລະ ລະບົບຈະປິດລິ້ງຄຳເຊີນທັງໝົດ</translation>
 <translation id="2328773543844041445">ຂະຫຍາຍແຖບອັດຕະໂນມັດເມື່ອເລື່ອນເມົ້າໄປໃສ່</translation>
+<translation id="232936259653692697">ຖາມ Gemini ໄດ້ທຸກເລື່ອງໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ ແລະ ຮັບຄຳຕອບທີ່ມີແຫຼ່ງຂໍ້ມູນຮອງຮັບຈາກໄຟລ໌ ແລະ ບໍລິການຕ່າງໆໃນທົ່ວອົງກອນຂອງທ່ານ, ໂດຍທັງໝົດນີ້ມາພ້ອມກັບການປົກປ້ອງລະດັບອົງກອນ</translation>
 <translation id="2330182457402792918">ເລືອກໄຟລ໌ທີ່ເວັບໄຊນີ້ສາມາດອ່ານໄດ້</translation>
 <translation id="2332115969598251205">ບໍ່ສາມາດໂຫຼດອຸປະກອນທີ່ບັນທຶກໄວ້ໃນ <ph name="PRIMARY_EMAIL" /> ໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="2332131598580221120">ເບິ່ງ​ຢູ່​ໃນ​ຮ້ານ</translation>
@@ -1799,6 +1804,7 @@
 <translation id="2546302722632337735">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="2548347166720081527">ອະນຸຍາດ <ph name="PERMISSION" /> ແລ້ວ</translation>
 <translation id="2548545707296594436">ຣີເຊັດແຄສໂປຣໄຟລ໌ eSIM</translation>
+<translation id="2549960622681003635">{COUNT,plural, =1{ເບິ່ງອີກ 1 ແຖບ}other{ເບິ່ງອີກ # ແຖບ}}</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
 <translation id="2550212893339833758">ສັບປ່ຽນຄວາມຈຳແລ້ວ</translation>
 <translation id="2550596535588364872">ອະນຸຍາດໃຫ້ <ph name="EXTENSION_NAME" /> ເປີດ <ph name="FILE_NAME" /> ບໍ?</translation>
@@ -1900,6 +1906,7 @@
 <translation id="2642206811783203764">ເປີດຕະຫຼອດຢູ່ <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">ຫາກ Chromium ພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນສາທາລະນະ, Chrome ສາມາດສະເໜີໃຫ້ທ່ານປ່ຽນລະຫັດຜ່ານຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2643698698624765890">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູໜ້າຕ່າງ.</translation>
+<translation id="2643831649507982404"><ph name="BEGIN_BOLD" />ລະບົບຈະແບ່ງປັນແຖບເພື່ອໃຫ້ໄດ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ.<ph name="END_BOLD" /> Google ຈະໃຊ້ເນື້ອຫາ ແລະ URL ຂອງແຖບທີ່ແບ່ງປັນ. ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໃນການສົນທະນາໃໝ່. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="2643967675101729581">ວັນທີສິ້ນສຸດ:</translation>
 <translation id="2645047101481282803">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">ກຳລັງສົ່ງສັນຍານແຖບນີ້ຫາ <ph name="DEVICE_NAME" /></translation>
@@ -2083,6 +2090,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">ຕົກລົງ</translation>
+<translation id="2790090628764536480">ລະບົບຈະແບ່ງປັນແຖບເພື່ອໃຫ້ໄດ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ. Google ຈະໃຊ້ເນື້ອຫາ ແລະ URL ຂອງແຖບທີ່ແບ່ງປັນ. ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໃນການສົນທະນາໃໝ່. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ. ຂໍ້ມູນຂອງອົງກອນຂອງທ່ານຈະປອດໄພ ແລະ ເປັນສ່ວນຕົວ. ລະບົບຈະບໍ່ນຳຂໍ້ມູນດັ່ງກ່າວໄປໃຊ້ເພື່ອປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="2790112944253231361">ປ່ຽນແປງແຖບນີ້ແລ້ວ</translation>
 <translation id="2791529110887957050">ລຶບ Linux ອອກ</translation>
 <translation id="2792465461386711506">ເປີດ Chrome Sync ເພື່ອເບິ່ງແຖບ Chrome ຫຼ້າາສຸດຈາກໂທລະສັບຂອງທ່ານ</translation>
@@ -2287,6 +2295,7 @@
 <translation id="2965227184985674128">ເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນບໍ?</translation>
 <translation id="2966705348606485669">ຕົວເລືອກເພີ່ມເຕີມສຳລັບໂຟນເດີບຸກມາກ <ph name="FOLDER_TITLE" /></translation>
 <translation id="2967926928600500959">URL ທີ່ກົງກັບກົດລະບຽບເຫຼົ່ານີ້ຈະຖືກບັງຄັບໃຫ້ເປີດໃນໂປຣແກຣມທ່ອງເວັບສະເພາະ.</translation>
+<translation id="2968862786921219863"><ph name="CONTEXT" /> - <ph name="VALUE" /></translation>
 <translation id="2969411787010981955">ສົ່ງຂໍ້ມູນອອກໄປໃສ່ສະຖານທີ່ທີ່ເລືອກໄວ້ແລ້ວ</translation>
 <translation id="2970766364519518369">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ເລືອກສາມາດແບ່ງປັນກັບທ່ານໄດ້ເມື່ອເຂົາເຈົ້າຢູ່ໃກ້ຄຽງ. ທ່ານຈະຖືກຖາມໃຫ້ອະນຸມັດຄຳຮ້ອງຂໍເຫຼົ່ານີ້. ທ່ານບໍ່ຈຳເປັນຕ້ອງອະນຸມັດການແບ່ງປັນລະຫວ່າງອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບຫາ <ph name="USER_EMAIL" />.</translation>
 <translation id="2970982365449313350">Chrome ກັບບັນຊີ Google ນີ້</translation>
@@ -2480,6 +2489,7 @@
 <translation id="3127862849166875294">ການປັບຂະໜາດດິສໃນ Linux</translation>
 <translation id="3129150892373332590">ການດຳເນີນການນີ້ຈະປິດໃຊ້ການແບ່ງປັນອຸປະກອນ USB ກັບຜູ້ຢ້ຽມຢາມໄດ້ຢ່າງຕໍ່ເນື່ອງ, ຮວມທັງຈະຣີເຊັດການແບ່ງປັນທັງໝົດນຳ. ທ່ານແນ່ໃຈບໍ?</translation>
 <translation id="3129173833825111527">ຂອບ​ເບື້ອງຊ້າຍ</translation>
+<translation id="3130976918283115695">ບັດປະຈຳຕົວ, ໜັງສືຜ່ານແດນ ແລະ ໃບອະນຸຍາດຂັບຂີ່</translation>
 <translation id="313205617302240621">ລືມ​ລະ​ຫັດ​ຜ່ານ​ບໍ?</translation>
 <translation id="3132277757485842847">ພວກເຮົາບໍ່ສາມາດຮັກສາການເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານໄດ້. ກວດໃຫ້ແນ່ໃຈວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້, ປົດລັອກ ແລະ ເປີດ Bluetooth ແລະ Wi-Fi ແລ້ວ.</translation>
 <translation id="3132896062549112541">ກົດ​ລະ​ບຽບ</translation>
@@ -2521,6 +2531,7 @@
 <translation id="3163085718713826852">ໃສ່ລະຫັດຜ່ານໃບຮັບຮອງ</translation>
 <translation id="3163201441334626963">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ​ຜູ້​ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="3164329792803560526">ກຳລັງແບ່ງປັນແຖບນີ້ກັບ <ph name="APP_NAME" /></translation>
+<translation id="3164924738522238507">ເຮືອນ, ບ່ອນເຮັດວຽກ ແລະ ອື່ນໆ</translation>
 <translation id="3165390001037658081">ບາງຜູ້ໃຫ້ບໍລິການອາດຈະບລັອກຄຸນສົມບັດນີ້ໄວ້.</translation>
 <translation id="316542773973815724">ການນໍາ​ທາງ</translation>
 <translation id="3165734944977250074">ບໍ່ສາມາດຍ້າຍໄຟລ໌ໄດ້ ເນື່ອງຈາກບໍ່ມີໄຟລ໌ຢູ່ອີກຕໍ່ໄປ</translation>
@@ -2592,6 +2603,7 @@
 <translation id="3223531857777746191">ປຸ່ມຣີເຊັດ</translation>
 <translation id="3224803532980286809">Google ຈະເຫັນສະເພາະສິ່ງທີ່ທ່ານເຫັນເທົ່ານັ້ນ</translation>
 <translation id="3225084153129302039">ຮູບແທນຕົວສີມ່ວງຕາມຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />ລະບົບຈະແບ່ງປັນແຖບເພື່ອໃຫ້ໄດ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ.<ph name="END_BOLD_1" /> Google ຈະໃຊ້ເນື້ອຫາ ແລະ URL ຂອງແຖບທີ່ແບ່ງປັນ. ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໃນການສົນທະນາໃໝ່. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ. <ph name="BEGIN_BOLD_2" />ຂໍ້ມູນຂອງອົງກອນຂອງທ່ານຈະປອດໄພ ແລະ ເປັນສ່ວນຕົວ.<ph name="END_BOLD_2" /> ລະບົບຈະບໍ່ນຳຂໍ້ມູນດັ່ງກ່າວໄປໃຊ້ເພື່ອປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="3226249862705569834">ເຊັນເຊີທີ່ກຳລັງນຳໃຊ້</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3227701057281907159">ກຳລັງແພດຊ໌</translation>
@@ -2600,6 +2612,7 @@
 <translation id="3229254977651514276">ກວດສອບວັນທີ</translation>
 <translation id="3230539834943294477">ເບິ່ງບົດຄວາມຊ່ວຍເຫຼືອ ຫຼື ຊອກຫາການຊ່ວຍເຫຼືອອຸປະກອນ</translation>
 <translation id="3232168089952388105">ແບ່ງປັນຂໍ້ມູນກ່ຽວກັບອຸປະກອນຂອງທ່ານບໍ?</translation>
+<translation id="3232217591415188687">ປັດຈຸບັນ Gemini Enterprise ຍັງບໍ່ຮອງຮັບ Gallery ທັກສະຂອງ Chrome. ທ່ານຍັງຄົງສາມາດສ້າງທັກສະ ແລະ ສຳຫຼວດທັກສະທີ່ອົງກອນຂອງທ່ານຈັດການໄດ້ໃນແອັບ Gemini Enterprise.</translation>
 <translation id="323251815203765852">ສ້າງສັນ</translation>
 <translation id="323262942975422760">ຕົວເລືອກເພີ່ມເຕີມໃນການແກ້ໄຂ ຫຼື ລຶບ <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">ແອັບຂອງເວັບ</translation>
@@ -2798,6 +2811,7 @@
 <translation id="3402255108239926910">ເລືອກຮູບແທນຕົວ</translation>
 <translation id="3402276740728396499">ສະແດງແບບວາງຊ້ອນກັນ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3402919263942402995">ປັດຈຸບັນ Gemini Enterprise ຍັງບໍ່ຮອງຮັບ Gallery ທັກສະຂອງ Chrome. ທ່ານຍັງຄົງສາມາດສ້າງທັກສະ ແລະ ສຳຫຼວດທັກສະທີ່ອົງກອນຂອງທ່ານຈັດການໄດ້ໃນ<ph name="BEGIN_LINK" />ແອັບ Gemini Enterprise<ph name="END_LINK" />.</translation>
 <translation id="3404065873681873169">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3405664148539009465">ກໍານົດຟອນເອົາເອງ</translation>
 <translation id="3405763860805964263">...</translation>
@@ -2953,6 +2967,7 @@
 <translation id="3526034519184079374">ບໍ່ສາມາດອ່ານ ຫຼື ປ່ຽນຂໍ້ມູນເວັບໄຊໄດ້</translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
 <translation id="3527473647192919613">ໜ້າຈໍແຍກໃໝ່</translation>
+<translation id="3527740693434122323">ບັດເຄຣດິດ ແລະ ບັດເດບິດ, IBAN ແລະ ບັດສະມາຊິກ</translation>
 <translation id="3528498924003805721">ເປົ້າ​ຫມາຍ​ທາງລັດ</translation>
 <translation id="35296112145429559">ປັກໝຸດປຸ່ມເລື່ອນ</translation>
 <translation id="3530919970074558307">ຍົກເລີກການສົນທະນາກຸ່ມ</translation>
@@ -3080,6 +3095,7 @@
 <translation id="3627588569887975815">ເປີດລິ້ງຢູ່ໃນໜ້າ​ຕ່າງ​ທີ່ບໍ່ເປີດເຜີຍຕົນຕົວ</translation>
 <translation id="3627671146180677314">ເວລາຕໍ່ໃບຢັ້ງຢືນ Netscape ໃໝ່</translation>
 <translation id="3628275722731025472">ປິດ Bluetooth</translation>
+<translation id="3628853654317797767">ກຳລັງດຶງຂໍ້ມູນເນື້ອຫາຂອງໜ້າເວັບ</translation>
 <translation id="3629630597033136279">ປິດ • ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ເຜີຍແຜ່ຂໍ້ປະຕິບັດຄວາມເປັນສ່ວນຕົວ, ເຊັ່ນ: ວິທີທີ່ມັນຮວບຮວມ ແລະ ໃຊ້ຂໍ້ມູນ</translation>
 <translation id="3629657562876345602">ກວດສອບຂໍ້ມູນສຳຄັນ</translation>
 <translation id="3629664892718440872">ຈື່ການເລືອກນີ້ໄວ້</translation>
@@ -3378,6 +3394,7 @@
 <translation id="3850989673553106152">ປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="3851428669031642514">ໂຫຼດ​ໜັງ​ສື​ຂຽນ​ທີ່​ບໍ່​ປອດ​ໄພ</translation>
 <translation id="3851464569313827017"><ph name="SITE_ETLD_PLUS_ONE" /> ຝັງເນື້ອຫາຈາກ <ph name="IFRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="385245682397782972">ຊອກຫາກຸ່ມແຖບທັງໝົດຂອງທ່ານໃນປຸ່ມຊອກຫາແຖບໃນລາຍແຖບລວງຕັ້ງ</translation>
 <translation id="3853549894831560772">ເປີດ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="3854348409770521214">ຮູບແຕ້ມສີນ້ຳມັນ</translation>
 <translation id="3854967233147778866">ສະເໜີໃຫ້ການແປເວັບໄຊເປັນພາສາອື່ນ</translation>
@@ -3779,6 +3796,7 @@
 <translation id="4232376164796433044">ລະຫັດຜ່ານ ແລະ ການຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="4233739489690259993">Chromebook ຂອງທ່ານບໍ່ໄດ້ຮັບການອັບເດດຄວາມປອດໄພ ແລະ ຊອບແວອີກຕໍ່ໄປ. ອັບເກຣດອຸປະກອນຂອງທ່ານເພື່ອຮັບການຮັກສາຄວາມປອດໄພ ແລະ ຄຸນສົມບັດໃໝ່ຫຼ້າສຸດ. ໂດຍເປັນໄປຕາມຂໍ້ກຳນົດຂອງຂໍ້ສະເໜີ.</translation>
 <translation id="4235200303672858594">ທັງ​ຫມົດຫນ້າ​ຈໍ​</translation>
+<translation id="4235638340861052804">ຊອກຫາກຸ່ມແຖບທັງໝົດຂອງທ່ານໃນການຊອກຫາແຖບໄດ້ບ່ອນນີ້</translation>
 <translation id="4236163961381003811">ຄົ້ນພົບສ່ວນຂະຫຍາຍເພີ່ມເຕີມ</translation>
 <translation id="4241140145060464825">ເນື້ອຫາແອັບ</translation>
 <translation id="4242245038391716252">ດາວໂຫຼດໂດຍສ່ວນຂະຫຍາຍ: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4066,6 +4084,7 @@
 <translation id="4481467543947557978">ພະນັກງານບໍລິການ</translation>
 <translation id="4482990632723642375">ແຖບທີ່ປິດຫຼ້າສຸດ</translation>
 <translation id="4486333480498805415">ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່</translation>
+<translation id="4487416356987296988">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອຄວບຄຸມ <ph name="BEGIN_LINK1" />ຄ່າກຳນົດຂໍ້ມູນ ແລະ ຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ຫຼື ຈັດການ <ph name="BEGIN_LINK2" />ວິທີການຈ່າຍເງິນ<ph name="END_LINK2" /> ແລະ <ph name="BEGIN_LINK3" />ບັດຮວມ<ph name="END_LINK3" /></translation>
 <translation id="4488257340342212116">ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ກ້ອງຂອງທ່ານ</translation>
 <translation id="4490798467014431984">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍຢູ່ເວັບໄຊນີ້</translation>
 <translation id="449126573531210296">ເຂົ້າລະຫັດລະຫັດຜ່ານທີ່ຊິ້ງຂໍ້ມູນໄວ້ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
@@ -4610,6 +4629,7 @@
 <translation id="4949898053053527676">ເບິ່ງຄືວ່າຈະບໍ່ມີຜົນການຊອກຫາໃດໆສຳລັບການຊອກຫາຂອງທ່ານ</translation>
 <translation id="4949954144207118092">ເປີດໃນແຖບ <ph name="APP_NAME" /> ທີ່ມີຢູ່</translation>
 <translation id="4950100687509657457">ສ້າງໂປຣໄຟລ໌</translation>
+<translation id="4951243490849567729">ຈັດການທັກສະໃນແອັບ Gemini Enterprise</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4951966678293618079">ບໍ່ບັນທຶກລະຫັດຜ່ານສຳລັບເວັບໄຊນີ້ເດັດຂາດ</translation>
@@ -5902,6 +5922,7 @@
 <translation id="6135826623269483856">ບໍ່ອະນຸຍາດໃຫ້ຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
 <translation id="6136287496450963112">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ໄດ້ຮັບການປົກປ້ອງດ້ວຍ PIN. ເພື່ອຈັດການລາຍນິ້ວມື, ໃຫ້ສ້າງ PIN ກ່ອນ.</translation>
 <translation id="6136637346277431354">ເພີ່ມແຖບ ແລະ ອື່ນໆ</translation>
+<translation id="6138948698908944955">Gemini Enterprise ໃນ Chrome ບໍ່ພ້ອມນຳໃຊ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ.</translation>
 <translation id="6140948187512243695">ສະແດງລາຍລະອຽດ</translation>
 <translation id="6141988275892716286">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6142784636114866877">ຂະຫຍາຍແຖບ (<ph name="KEYBOARD_SHORTCUT" />)</translation>
@@ -6852,6 +6873,7 @@
 <translation id="6938606182859551396">ເພື່ອຮັບການແຈ້ງເຕືອນຈາກໂທລະສັບຂອງທ່ານໃນ <ph name="DEVICE_TYPE" /> ທ່ານ, ກະລຸນາປະຕິບັດຕາມຄຳແນະນຳໃນໂທລະສັບຂອງທ່ານເພື່ອໃຫ້ສິດເຂົ້າເຖິງການແຈ້ງເຕືອນແກ່ບໍລິການ Google Play.</translation>
 <translation id="6941514251635934269">ຖາມກ່ຽວກັບເອກະສານນີ້</translation>
 <translation id="694168622559714949">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງພາສາເລີ່ມຕົ້ນໄວ້ແລ້ວເຊິ່ງບໍ່ສາມາດແກ້ໄຂໄດ້.</translation>
+<translation id="6941953303876950920">ຕ້ອງເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອສືບຕໍ່ການທ່ອງເວັບດ້ວຍ Gemini</translation>
 <translation id="6943060957016121200">ເປີດການນຳໃຊ້ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="6943939122536910181">ຕັດການເຊື່ອມຕໍ່ຈາກ <ph name="DEVICE" /> ແລ້ວ</translation>
 <translation id="6944750221184785444">ບໍ່ສາມາດຕິດຕັ້ງໂປຣໄຟລ໌ນີ້ໄດ້. ສຳລັບການຊ່ວຍເຫຼືອທາງເທັກນິກ, ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
@@ -6948,6 +6970,7 @@
 <translation id="7015135594296285641">ອະນຸຍາດສ່ວນຂະຫຍາຍ</translation>
 <translation id="7017219178341817193">ເພີ່ມໜ້າໃໝ່</translation>
 <translation id="7017354871202642555">ບໍ່ສາມາດຕັ້ງໂໝດໄດ້ຫຼັງຈາກຕັ້ງໜ້າຕ່າງແລ້ວ.</translation>
+<translation id="7020606255631609371">ການສະຫຼັບຈະຕ້ອງເລີ່ມເປີດໃຊ້ Chrome ໃໝ່.</translation>
 <translation id="7020810150082302220">ມີການປ່ຽນແປງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="7020961208013161090">ສ່ວນຂະຫຍາຍ ແລະ ທັກສະ</translation>
 <translation id="7021524108486027008">ໃຊ້ເຄື່ອງມື, ຕົວແກ້ໄຂ ແລະ IDE ໃນສະພາບແວດລ້ອມທີ່ຈັດການໂດຍອົງກອນຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
@@ -7107,6 +7130,7 @@
 <translation id="7171000599584840888">ເພີ່ມໂປຣໄຟລ໌່...</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="7173114856073700355">ເປີດການຕັ້ງຄ່າ</translation>
+<translation id="7174348311127742156">ຂໍ້ມູນຖ້ຽວບິນ, ໝາຍເລກປະຈຳຕົວຜູ້ເດີນທາງທີ່ກວດສອບແລ້ວ ແລະ ໝາຍເລກແກ້ໄຂບັນຫາຜູ້ເດີນທາງ, ພາຫະນະ</translation>
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7175353351958621980">ໂຫຼດ​ຈາກ​:</translation>
 <translation id="7176515069119047423">{NUM_TABS,plural, =1{ກົດ <ph name="SHORTCUT_TEXT" /> ອີກຄັ້ງເພື່ອປິດແຖບທີ່ປັກໝຸດແລ້ວ}other{ກົດ <ph name="SHORTCUT_TEXT" /> ອີກຄັ້ງເພື່ອປິດແຖບທີ່ປັກໝຸດແລ້ວ}}</translation>
@@ -7228,6 +7252,7 @@
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ຈົນ​ກ່​ວາ​ຈະ​ເຕັມ</translation>
 <translation id="7275950084263610253">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
+<translation id="7277103236771772124">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອເລີ່ມການທ່ອງເວັບດ້ວຍ Gemini Enterprise</translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
 <translation id="7280265656690268844">ການເພີ່ມປະສິດທິພາບ JavaScript ປິດຢູ່</translation>
 <translation id="7280683802406059877">ປັບແຕ່ງຄີລັດ</translation>
@@ -7917,6 +7942,7 @@
 <translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7877212753140190672">ຖາມກ່ຽວກັບຮູບນີ້</translation>
 <translation id="7877451762676714207">ການຜິດພາດຂອງເຊີບເວີທີ່ບໍ່ຮູ້ຈັກ. ກະລຸນາລອງໃໝ່ອີກ, ຫຼືຕິດຕໍ່ຫາຜູ້ຄວບຄຸມເຊີບເວີ.</translation>
+<translation id="7878848322697986074">Gemini Enterprise ບໍ່ພ້ອມນຳໃຊ້ສຳລັບ Gemini ໃນ Chrome</translation>
 <translation id="7879172417209159252">ບໍ່ສາມາດໃຊ້ສ່ວນຂະຫຍາຍໄດ້</translation>
 <translation id="7879631849810108578">ທາງລັດທີ່ຕັ້ງຄ່າ: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">ຂໍ້ມູນພາຍໃນເຄື່ອງຈະຖືກລຶບເມື່ອທ່ານປິດເປີດຄືນໃໝ່</translation>
@@ -8043,6 +8069,7 @@
 <translation id="797394244396603170">ເລືອກອຸປະກອນທີ່ທ່ານຕ້ອງການແບ່ງປັນໄຟລ໌ກັບ</translation>
 <translation id="7974713334845253259">ສີເລີ່ມຕົ້ນ</translation>
 <translation id="7977029776654598145">ເມື່ອໃຊ້</translation>
+<translation id="7978100757563451333">ລະບົບຈະແບ່ງປັນແຖບເພື່ອໃຫ້ໄດ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ. Google ຈະໃຊ້ເນື້ອຫາ ແລະ URL ຂອງແຖບທີ່ແບ່ງປັນ. ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໃນການສົນທະນາໃໝ່. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7978450511781612192">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ບຸກມາກ, ປະຫວັດ ແລະ ອື່ນໆອີກຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນອີກຕໍ່ໄປ.</translation>
 <translation id="7980066177668669492">ASCII ທີ່ເຂົ້າລະຫັດຖານ 64, ໃບຮັບຮອງຫຼາຍໃບ</translation>
@@ -8143,6 +8170,7 @@
 <translation id="8050191834453426339">ຢັ້ງຢືນອີກຄັ້ງ</translation>
 <translation id="8051193500142930381">ຄຸນສົມບັດທີ່ຈໍາເປັນຕ້ອງໃຊ້ກ້ອງຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8052218774860457016">ຈັດການການຊິ້ງໂປຣແກຣມທ່ອງເວັບ</translation>
+<translation id="8052486280100280398"><ph name="DESCRIPTION" /> <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ປະກາດຄວາມເປັນສ່ວນຕົວແອັບ Gemini<ph name="END_LINK2" /> ຈະມີຜົນບັງຄັບໃຊ້.</translation>
 <translation id="8052898407431791827">ສຳເນົາໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="8052944601017749068">ນຳເຂົ້າໄປໃສ່ <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">​ໂຫຼດ​ຫນ້າ​ນີ້ຄືນອີກ</translation>
@@ -8838,6 +8866,7 @@
         <ph name="BREAK" />
         ທ່ານສາມາດຈັດການການຕັ້ງຄ່າຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນປັບແຕ່ງ Chrome.</translation>
 <translation id="8661290697478713397">ເປີດລິ້ງຢູ່ໃນໜ້າ​ຕ່າງທີ່ບໍ່ເຜີຍຕົນຕົວ</translation>
+<translation id="8661971538508849701"><ph name="TITLE" />: <ph name="DESCRIPTION" /></translation>
 <translation id="8662474268934425487">ເຂົ້າສູ່ລະບົບ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">ເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">ຜູ້ຄົນ</translation>
@@ -8926,6 +8955,7 @@
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8725178340343806893">ລາຍການທີ່ມັກ/ບຸກມາກ</translation>
 <translation id="87254326763805752">ຢືນຢັນກະແຈຜ່ານ</translation>
+<translation id="8725492688185786791">ຖາມ Gemini ໄດ້ທຸກເລື່ອງໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ ແລະ ຮັບຄຳຕອບທີ່ມີແຫຼ່ງຂໍ້ມູນຮອງຮັບຈາກໄຟລ໌ ແລະ ບໍລິການຕ່າງໆໃນທົ່ວອົງກອນຂອງທ່ານ</translation>
 <translation id="8727751378406387165">ສົ່ງ <ph name="BEGIN_LINK1" />ເມຕາເດຕາທີ່ເປັນການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (ຂໍ້ມູນທີ່ທ່ານຕື່ມອັດຕະໂນມັດຈະບໍ່ຖືກແບ່ງປັນ)</translation>
@@ -9563,6 +9593,7 @@
 <translation id="988320949174893488">ກະຕຸກເປັນບາງເທື່ອ</translation>
 <translation id="988978206646512040">ບໍ່ອະນຸຍາດໃຫ້ວະລີຜ່ານຫວ່າງເປົ່າ</translation>
 <translation id="989111665033316622">ປິດ (ປິດການນຳໃຊ້ໂຟກັສເສັ້ນ)</translation>
+<translation id="989803194494387374">ໄຮໄລ້ຂໍ້ຄວາມທີ່ທ່ານຕ້ອງການແປພາສາ</translation>
 <translation id="992032470292211616">ສ່ວນຂະຫຍາຍ, ແອັບ, ແລະເທມສາມາດທໍາລາຍອຸປະກອນຂອງທ່ານໄດ້. ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="992256792861109788">ສີບົວ</translation>
 <translation id="994289308992179865">ຫ່ວງ</translation>

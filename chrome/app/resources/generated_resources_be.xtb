@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Збой самадыягностыкі</translation>
 <translation id="1257336506558170607">Экспартаваць выбраны сертыфікат</translation>
 <translation id="1258491128795710625">Што новага</translation>
+<translation id="1259453023447377372">Захаваная група ўкладак</translation>
 <translation id="1260451001046713751">Заўсёды дазваляць выплыўныя вокны і перанакіраванні ад <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Заўсёды дазваляць сайтам выкарыстоўваць аптымізацыю JavaScript</translation>
 <translation id="1262564987698748643">Сайты могуць запытваць дазвол на перавызначэнне ўводу з клавіятуры</translation>
@@ -1842,6 +1843,7 @@
 <translation id="2610780100389066815">Падпісванне даверанага спіса Microsoft</translation>
 <translation id="261114180663074524">Увайдзіце ва ўліковы запіс Microsoft і паўтарыце спробу</translation>
 <translation id="2611885296070244383">Мікрафон (унутраны)</translation>
+<translation id="2612346259364350954">Выкарыстоўваць змесціва старонкі, каб растлумачыць вылучаны тэкст</translation>
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="261305050785128654">Укажыце для вэб-сайтаў, якімі мовамі вы валодаеце. Вэб-сайты будуць па магчымасці паказваць змесціва на гэтых мовах.</translation>
 <translation id="2613210758071148851">Не дазваляць ніякіх пашырэнняў на сайце <ph name="RESTRICTED_SITE" /></translation>
@@ -2144,6 +2146,7 @@
 <translation id="284884486564166077">Пошук па відарысе з дапамогай Аб’ектыва</translation>
 <translation id="2849035674501872372">Знайсці</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Іншыя варыянты для групы ўкладак "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="285033512555869047">Закрытая</translation>
 <translation id="2851291081585704741">Вы па-за сеткай</translation>
 <translation id="285237063405807022">(загружаецца)</translation>
@@ -2215,6 +2218,7 @@
     Паведамленне сервера: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Адкрываць файлы Word, Excel і PowerPoint</translation>
 <translation id="2908162660801918428">Дадаванне мультымедыйнай галерэі па каталозе</translation>
+<translation id="2909334296570021569">Адкрыць групу ўкладак</translation>
 <translation id="2909487040556589351">Усталюйце Chrome на мабільнай прыладзе</translation>
 <translation id="2910318910161511225">Падключыцеся да сеткі і паўтарыце спробу</translation>
 <translation id="2910678330803525229">Цяпер можна праглядаць старонкі</translation>
@@ -2381,6 +2385,7 @@
 <translation id="3042097545107738107">Змяніць стратэгію аптымізаванай зарадкі.</translation>
 <translation id="3043016484125065343">Каб пабачыць закладкі, увайдзіце ва ўліковы запіс</translation>
 <translation id="3043581297103810752">Крыніца: <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Параметры раздзела "<ph name="SECTION_NAME" />"</translation>
 <translation id="3044066905368192931">Палепшыць з дапамогай штучнага інтэлекту</translation>
 <translation id="3045447014237878114">Гэты сайт спампаваў некалькі файлаў аўтаматычна</translation>
 <translation id="304644035656848980">Перадпрагляд аўдыяплыні мікрафона</translation>
@@ -3234,6 +3239,7 @@
 <translation id="3748424433435232460">Пароль для гэтага ўліковага запісу ўжо захаваны на дадзенай прыладзе</translation>
 <translation id="3748466028423001972">Памяняць месцамі з ніжнім экранам</translation>
 <translation id="3748706263662799310">Паведаміць пра памылку</translation>
+<translation id="3750406842345107892">Змесціва і URL-адрас старонкі, на якой вы знаходзіцеся, а таксама вылучаны тэкст адпраўляюцца ў Google для стварэння тлумачэння</translation>
 <translation id="3752115502500640407">Абагульванне копіі пароля для ўваходу на вэб-сайт <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Адкрыць бакавую панэль</translation>
 <translation id="3753585830134123417">Памер вокнаў зменены ў кірунку ўлева</translation>
@@ -4130,6 +4136,7 @@
 <translation id="4550926046134589611">Некаторыя спасылкі, якія падтрымліваюцца, па-ранейшаму будуць адкрывацца ў праграме "<ph name="APP_NAME" />".</translation>
 <translation id="4551379727767354516">Вашы нядаўнія тэмы, створаныя AI</translation>
 <translation id="4551763574344810652">Каб адрабіць, націсніце <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
+<translation id="4552721860956824254">Гук выключаны</translation>
 <translation id="4553526521109675518">Каб змяніць мову прылады, трэба перазапусціць Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Патрабуецца новая версія гэтай праграмы</translation>
 <translation id="4555769855065597957">Цень</translation>
@@ -5077,6 +5084,7 @@
 <translation id="5379140238605961210">Працягваць блакіраваць доступ да мікрафона</translation>
 <translation id="5382591305415226340">Кіраваць спасылкамі, якія падтрымліваюцца</translation>
 <translation id="5384401776498845256">Хто можа абагульваць змесціва з вамі</translation>
+<translation id="5386856927586721327">Задайце пытанне пра тое, што бачыце на экране, з дапамогай <ph name="LENS_ICON" />Google Аб’ектыва</translation>
 <translation id="5387116558048951800">Змяніць: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Карпаратыўная палітыка змянілася. Кнопка эксперыментаў дададзена на панэль інструментаў. Націсніце на яе, каб адкрыць дыялогавае акно для ўключэння эксперыментаў.</translation>
 <translation id="5388436023007579456">Камеру могуць выкарыстоўваць праграмы і вэб-сайты, якія маюць на гэта дазвол, а таксама сістэмныя службы. Для выкарыстання камеры, магчыма, трэба будзе перазапусціць праграму або абнавіць старонку.</translation>
@@ -7387,6 +7395,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> будзе запускацца пры запуску сістэмы і будзе працягваць працаваць у фоне, нават калі вы закрылі ўсе іншыя вокны <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Наладзіць сінхранізацыю</translation>
 <translation id="7399616692258236448">Запыты геаданых аўтаматычна блакіруюцца для ўсіх сайтаў, акрамя тых, якім вы далі дазвол</translation>
+<translation id="7399746352569282594">Закрыць падзелены прагляд: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Праверка бяспекі</translation>
 <translation id="7400059772197434086">забаронена выкарыстоўваць інфармацыю пра вас тут:</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
@@ -8027,6 +8036,7 @@
 <translation id="7953955868932471628">Кіраваць ярлыкамі</translation>
 <translation id="7955105108888461311">Спытаць асабіста</translation>
 <translation id="7955177647836564772">Калі Smart Lock уключаны і тэлефон разблакіраваны, уводзіць пароль або PIN-код не трэба</translation>
+<translation id="7955672267519272700">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7956373551960864128">Вашы захаваныя прынтары</translation>
 <translation id="7956918070009672177">На прыладзе адсутнічаюць галасы для чытання ўслых на наступнай мове: <ph name="LANGUAGE" />. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="7957074856830851026">Прагляд звестак пра прыладу (напрыклад, серыйнага нумара або ідэнтыфікатара аб’екта ўласнасці)</translation>

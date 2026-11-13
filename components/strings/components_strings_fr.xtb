@@ -823,6 +823,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2356941001189392209">Liste limitée des URL des pages que vous consultez sur lesquelles ont lieu des événements technologiques anciens</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 onglet sera partagé}one{{NUM_TABS} onglet sera partagé}other{{NUM_TABS} onglets seront partagés}}</translation>
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte par <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Consultez dans cet onglet la réponse générée par l'IA de Google concernant votre recherche</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="236000571258713023">Véhicules</translation>
@@ -1141,6 +1142,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2925032407415783182">Enregistrer le billet pour un événement dans Wallet</translation>
 <translation id="2925454999967523701">Bouton "Créer un document" à activer pour créer rapidement un document Google Docs</translation>
 <translation id="2925673989565098301">Mode de livraison</translation>
+<translation id="2927328994673424423">Il y a 2 semaines</translation>
 <translation id="2928426578619531300">Utilisateur affilié</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres}}</translation>
 <translation id="2930531075747147366">Onglets d'un autre appareil</translation>

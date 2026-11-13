@@ -823,6 +823,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2356941001189392209">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú udalosti využívajúce starú technológiu</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Bude sa zdieľať 1 karta}few{Budú sa zdieľať {NUM_TABS} karty}many{Will share {NUM_TABS} tabs}other{Bude sa zdieľať {NUM_TABS} kariet}}</translation>
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Pozrite si odpoveď z Vyhľadávania pomocou umelej inteligencie od Googlu na tejto karte</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="236000571258713023">Vozidlá</translation>
@@ -1141,6 +1142,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2925032407415783182">Uložte si vstupenku na podujatie do Peňaženky</translation>
 <translation id="2925454999967523701">Tlačidlo Vytvoriť dokument, ktorého aktivovaním rýchlo vytvoríte nový dokument Google</translation>
 <translation id="2925673989565098301">Spôsob doručenia</translation>
+<translation id="2927328994673424423">Pred 2 týždňami</translation>
 <translation id="2928426578619531300">Používateľ bol pridružený</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšia}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšie}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšej}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalších}}</translation>
 <translation id="2930531075747147366">Karta z vášho druhého zariadenia</translation>
