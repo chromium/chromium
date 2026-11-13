@@ -206,11 +206,14 @@ void TabGroupUnfocusButton::UpdateCollapsedState() {
 void TabGroupUnfocusButton::UpdateTextAndIcon() {
   if (is_collapsed_) {
     SetText(std::u16string());
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon,
                                                  GetTextColor(), kIconSize));
   } else {
     SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
+    SetTooltipText(std::u16string());
     SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
   }
   // SetText() resets the accessible name, so re-apply it.

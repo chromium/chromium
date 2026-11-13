@@ -1059,22 +1059,26 @@ TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedState) {
       tabs::kVerticalTabStripCollapsedWidth -
       2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
-  // Expanded width: shows text and no icon.
+  // Expanded width: shows text, no icon, and no tooltip.
   button->SetBounds(0, 0, collapsed_width + 20, 24);
   EXPECT_EQ(button->GetText(), expected_text);
+  EXPECT_TRUE(button->GetTooltipText().empty());
   EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
 
-  // Collapsed width: clears text, shows icon, and preserves accessible name.
+  // Collapsed width: clears text, shows icon, sets tooltip, and preserves
+  // accessible name.
   button->SetBounds(0, 0, collapsed_width, 24);
   EXPECT_TRUE(button->GetText().empty());
+  EXPECT_EQ(button->GetTooltipText(), expected_text);
   ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
   EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
 
-  // Expanding again restores text and clears icon.
+  // Expanding again restores text, clears icon, and clears tooltip.
   button->SetBounds(0, 0, collapsed_width + 20, 24);
   EXPECT_EQ(button->GetText(), expected_text);
+  EXPECT_TRUE(button->GetTooltipText().empty());
   ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
   EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
