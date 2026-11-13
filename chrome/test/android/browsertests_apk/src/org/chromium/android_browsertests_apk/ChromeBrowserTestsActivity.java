@@ -7,6 +7,7 @@ package org.chromium.android_browsertests_apk;
 import android.content.Intent;
 import android.os.Build;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -74,6 +75,11 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         // Delay layout inflation until the C++ test harness has initialized FeatureList and
         // LocalState (including any test fixture overrides in SetUpLocalStatePrefService()).
         // Also avoids inflating the UI entirely when only listing tests (--gtest_list_tests).
+        // Keep the window non-focusable until the layout is inflated so WindowManager does not
+        // dispatch FocusEvent(hasFocus=true) and trigger a 5s input-dispatch ANR while the UI
+        // thread is blocked in pre-inflation setup or in ChromeRenderViewTest tests (which run
+        // on the UI thread without completing BrowserStartupController startup).
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         BrowserStartupController.getInstance()
                 .startBrowserProcessesAsync(
                         LibraryProcessType.PROCESS_BROWSER,
@@ -84,6 +90,8 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
                             @Override
                             public void onSuccess(@Nullable StartupMetrics metrics) {
                                 if (isActivityFinishingOrDestroyed()) return;
+                                getWindow()
+                                        .clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
                                 ChromeBrowserTestsActivity.super.doLayoutInflation();
                             }
 

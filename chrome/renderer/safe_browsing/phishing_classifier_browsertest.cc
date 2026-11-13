@@ -381,9 +381,7 @@ TEST_F(PhishingClassifierTest, CancelImageEmbeddingWhenNotReady) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/575133385): Flaky on Android.
-TEST_F(PhishingClassifierTest,
-       DISABLED_TestImageEmbeddingMatchPopulatesEmbedding) {
+TEST_F(PhishingClassifierTest, TestImageEmbeddingMatchPopulatesEmbedding) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
