@@ -778,7 +778,7 @@
       "msisov@igalia.com",
       "rdevlin.cronin@chromium.org"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 174
   },
   {
     "name": "app-background-refresh-ios",
