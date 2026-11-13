@@ -44,8 +44,6 @@ import org.chromium.ui.util.MotionEventUtils;
 /** Unit tests for {@link ContentUiEventHandler} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContentUiEventHandlerTest {
-    private static final long NATIVE_WEB_CONTENTS_ANDROID = 1;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private NavigationController mNavigationController;
@@ -64,8 +62,7 @@ public class ContentUiEventHandlerTest {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         ContentUiEventHandlerJni.setInstanceForTesting(mContentUiEventHandlerJniMock);
 
-        mWebContentsImpl =
-                spy(WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
+        mWebContentsImpl = spy(WebContentsImpl.createForTesting(mNavigationController));
         mWebContentsImpl.initializeForTesting();
 
         when(mGamepad.onGenericMotionEvent(any())).thenReturn(false);

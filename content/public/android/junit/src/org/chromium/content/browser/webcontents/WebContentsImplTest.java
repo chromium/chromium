@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Parcel;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +42,8 @@ public class WebContentsImplTest {
     @Mock private StylusWritingHandler mStylusWritingHandler;
 
     private WebContentsImpl mWebContentsImpl;
-    private final long mNativeWebContentsAndroid = 1;
+    private final JniRawPtr<WebContentsImpl.NativeWebContentsAndroid> mNativeWebContentsAndroid =
+            JniRawPtr.createForTesting(1);
 
     @Before
     public void setUp() {
@@ -119,7 +121,7 @@ public class WebContentsImplTest {
         mWebContentsImpl.clearNativePtr();
         // A new peer at the same native address must not be returned for the old parcel.
         WebContentsImpl recreated =
-                WebContentsImpl.create(mNativeWebContentsAndroid, mNavigationController);
+                WebContentsImpl.create(JniRawPtr.createForTesting(1), mNavigationController);
         assertNull(WebContentsImpl.CREATOR.createFromParcel(parcel));
         parcel.recycle();
         recreated.destroy();

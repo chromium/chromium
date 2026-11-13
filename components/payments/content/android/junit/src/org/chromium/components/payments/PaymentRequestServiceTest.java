@@ -59,7 +59,6 @@ import java.util.Set;
     PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS
 })
 public class PaymentRequestServiceTest implements PaymentRequestClient {
-    private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private BrowserPaymentRequest mBrowserPaymentRequest;
     private List<PaymentApp> mNotifiedPendingApps;
@@ -97,9 +96,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Before
     public void setUp() {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
-        mWebContentsImpl =
-                Mockito.spy(
-                        WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
+        mWebContentsImpl = Mockito.spy(WebContentsImpl.createForTesting(mNavigationController));
         // We don't mock the WebContentsObserverProxy, so mock the observer behaviour.
         Mockito.doNothing().when(mWebContentsImpl).addObserver(Mockito.any());
         mWebContentsImpl.initializeForTesting();

@@ -63,7 +63,6 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaymentRequestIntegrationTest {
-    private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";
     private final ArgumentCaptor<InstrumentDetailsCallback> mPaymentAppCallbackCaptor =
             ArgumentCaptor.forClass(InstrumentDetailsCallback.class);
@@ -91,9 +90,7 @@ public class PaymentRequestIntegrationTest {
     @Before
     public void setUp() {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
-        mWebContentsImpl =
-                Mockito.spy(
-                        WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
+        mWebContentsImpl = Mockito.spy(WebContentsImpl.createForTesting(mNavigationController));
         // We don't mock the WebContentsObserverProxy, so mock the observer behaviour.
         Mockito.doNothing().when(mWebContentsImpl).addObserver(Mockito.any());
         mWebContentsImpl.initializeForTesting();
