@@ -1493,10 +1493,13 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
 
-  // Ensure the compositor thread is aware of the wheel listener.
+  // Ensure the compositor thread is aware of the wheel listener and the input
+  // router is active (not dropping input events during paint-holding).
   content::MainThreadFrameObserver synchronize_threads(
       web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
   synchronize_threads.Wait();
+  content::ReadyForInputObserver ready_for_input_observer(web_contents);
+  ready_for_input_observer.Wait();
 
   ExtensionTestMessageListener synthetic_wheel_listener("Seen wheel event");
 
