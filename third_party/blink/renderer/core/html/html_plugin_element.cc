@@ -956,8 +956,11 @@ const ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
     if (!image_loader_) {
       image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
     }
-    image_loader_->UpdateFromElement(ImageLoader::kUpdateNormal,
-                                     /* force_blocking */ true);
+    image_loader_->UpdateFromElement(
+        RuntimeEnabledFeatures::HTMLPlugInDeferStyleRecalcImageLoadEnabled()
+            ? ImageLoader::kUpdateFromTask
+            : ImageLoader::kUpdateNormal,
+        /* force_blocking */ true);
   }
   return style;
 }

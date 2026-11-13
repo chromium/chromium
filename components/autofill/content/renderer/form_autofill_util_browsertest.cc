@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/optional_util.h"
@@ -1304,8 +1305,10 @@ TEST_F(FormAutofillUtilsTest,
     obj.offsetTop;
     // Switch `obj` to an invalid image data URL while it has no LayoutObject,
     // then mark it display:block without forcing layout. The next layout
-    // (triggered by BoundsInWidget()) will invoke CustomStyleForLayoutObject ->
-    // HTMLImageLoader -> RenderFallbackContent -> DisconnectContentFrame.
+    // (triggered by BoundsInWidget()) will invoke CustomStyleForLayoutObject,
+    // which schedules an image load task (crbug.com/575053155) that
+    // subsequently invokes HTMLImageLoader -> RenderFallbackContent ->
+    // DisconnectContentFrame.
     obj.data = 'data:image/png;base64,invalid';
     obj.style.display = 'block';
   )");
@@ -1315,7 +1318,7 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_NE(child_doc.GetFrame(), nullptr);
 
   EXPECT_NE(FindFormAndFieldForFormControlElement(input), std::nullopt);
-  EXPECT_EQ(child_doc.GetFrame(), nullptr);
+  EXPECT_TRUE(base::test::RunUntil([&] { return !child_doc.GetFrame(); }));
 }
 
 // Tests that Autofill form ownership follows Blink form's association, which,
