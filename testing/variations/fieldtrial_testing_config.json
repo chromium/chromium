@@ -9612,23 +9612,6 @@
             ]
         }
     ],
-    "GlicExperimentalTriggerAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicAndroidOffscreenRendering",
-                        "GlicBackgroundTriggering",
-                        "GlicExperimentalTriggering"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicExperimentalTriggering": [
         {
             "platforms": [
