@@ -37,15 +37,19 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
@@ -86,6 +90,17 @@ class ActionAppMenuManagerTest : public ActionAppMenuTestBase {
       }
     }
     return nullptr;
+  }
+
+  signin::IdentityManager* SignIn(
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin,
+      Profile* profile = nullptr) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile ? profile
+                                                      : profile_.get());
+    signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                        consent_level);
+    return identity_manager;
   }
 };
 
@@ -178,10 +193,7 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(profile1));
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile1);
-  signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
-                                      signin::ConsentLevel::kSignin);
+  SignIn(signin::ConsentLevel::kSignin, profile1);
 
   ActionAppMenuManager menu_manager(&mock_window_interface_,
                                     &mock_drag_and_drop_host_);
@@ -1113,6 +1125,7 @@ TEST_F(ActionAppMenuManagerTest,
 
 TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuPlacement) {
   base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  SignIn();
 
   ActionAppMenuManager menu_manager(&mock_window_interface_,
                                     &mock_drag_and_drop_host_);
@@ -1162,12 +1175,7 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuPlacement) {
 TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(syncer::kCrossDeviceTabsInAppMenu);
-
-  actions::ActionItem* other_device_tabs_action =
-      actions::ActionManager::Get().FindAction(kActionOtherDeviceTabsSubmenu,
-                                               nullptr);
-  ASSERT_NE(other_device_tabs_action, nullptr);
-  other_device_tabs_action->SetVisible(false);
+  SignIn();
 
   ActionAppMenuManager menu_manager(&mock_window_interface_,
                                     &mock_drag_and_drop_host_);
@@ -1178,12 +1186,8 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
   actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
   ASSERT_NE(your_chrome_section, nullptr);
 
-  actions::BaseAction* other_device_tabs =
-      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
-  ASSERT_NE(other_device_tabs, nullptr);
-  EXPECT_FALSE(other_device_tabs->GetActionItem()->GetVisible());
-  EXPECT_FALSE(other_device_tabs->HasPopulateChildActionsCallback());
-  EXPECT_TRUE(other_device_tabs->GetChildren().children().empty());
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
 
   const auto& children = your_chrome_section->GetChildren().children();
   auto recent_tabs_it =
@@ -1192,24 +1196,18 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
                kActionRecentTabsSubmenu;
       });
   ASSERT_NE(recent_tabs_it, children.end());
-  auto other_device_tabs_it =
-      std::find_if(children.begin(), children.end(), [](const auto& child) {
-        return child->GetActionItem()->GetActionId() ==
-               kActionOtherDeviceTabsSubmenu;
-      });
-  ASSERT_NE(other_device_tabs_it, children.end());
   auto downloads_it =
       std::find_if(children.begin(), children.end(), [](const auto& child) {
         return child->GetActionItem()->GetActionId() ==
                kActionShowDownloadsPage;
       });
   ASSERT_NE(downloads_it, children.end());
-  EXPECT_EQ(recent_tabs_it + 1, other_device_tabs_it);
-  EXPECT_EQ(other_device_tabs_it + 1, downloads_it);
+  EXPECT_EQ(recent_tabs_it + 1, downloads_it);
 }
 
 TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuIncognito) {
   base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  SignIn();
 
   Profile* otr_profile =
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -1229,6 +1227,152 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuIncognito) {
             nullptr);
   EXPECT_EQ(FindBaseAction(your_chrome_section, kActionRecentTabsSubmenu),
             nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuHiddenWhenSignedOut) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
+
+  // Web-only signed-in state also hides the top-level row.
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_.get()), "web@example.com");
+  root->ResetActionList();
+  menu_manager.CreateMenuHierarchy();
+  your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       OtherDeviceTabsSubmenuHiddenWhenHistorySavingDisabled) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  SignIn();
+  profile_->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled, true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       OtherDeviceTabsSubmenuHiddenWhenSyncDisabledByPolicy) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  SignIn();
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_NE(sync_service, nullptr);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  auto rebuild_and_find = [&]() {
+    root->ResetActionList();
+    menu_manager.CreateMenuHierarchy();
+    actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+    EXPECT_NE(your_chrome_section, nullptr);
+    return FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
+  };
+
+  sync_service->SetAllowedByEnterprisePolicy(false);
+  EXPECT_EQ(rebuild_and_find(), nullptr);
+
+  sync_service->SetAllowedByEnterprisePolicy(true);
+  EXPECT_NE(rebuild_and_find(), nullptr);
+
+  sync_service->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, true);
+  EXPECT_EQ(rebuild_and_find(), nullptr);
+
+  sync_service->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, false);
+  sync_service->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kHistory, true);
+  EXPECT_EQ(rebuild_and_find(), nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       OtherDeviceTabsSubmenuShownWhenUserDisablesTabOrHistorySync) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  SignIn();
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_NE(sync_service, nullptr);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  actions::BaseAction* other_device_tabs =
+      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
+  ASSERT_NE(other_device_tabs, nullptr);
+  EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSignInPending) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  signin::IdentityManager* identity_manager = SignIn();
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  actions::BaseAction* other_device_tabs =
+      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
+  ASSERT_NE(other_device_tabs, nullptr);
+  EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSyncPaused) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+  signin::IdentityManager* identity_manager =
+      SignIn(signin::ConsentLevel::kSync);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+  actions::BaseAction* other_device_tabs =
+      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
+  ASSERT_NE(other_device_tabs, nullptr);
+  EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
 }
 
 }  // namespace

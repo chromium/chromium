@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -19,8 +20,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/history/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -92,6 +96,42 @@ bool ShouldShowTabsFromOtherDevices(Profile* profile) {
       break;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  return true;
+}
+
+bool ShouldShowOtherDeviceTabsMenuItem(Profile* profile) {
+  // Off-the-record profiles do not sync tabs.
+  if (!profile || profile->IsOffTheRecord() ||
+      !base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu)) {
+    return false;
+  }
+
+  // Cross-device tabs are part of browsing history.
+  if (profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
+    return false;
+  }
+
+  switch (signin_util::GetSignedInState(
+      IdentityManagerFactory::GetForProfile(profile))) {
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      // Hide when no primary account is signed in to Chrome.
+      return false;
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSignInPending:
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSyncPaused:
+      break;
+  }
+
+  // Respect enterprise policies disabling sync or tabs/history sync.
+  if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+          SyncServiceFactory::GetForProfile(profile),
+          {syncer::UserSelectableType::kTabs,
+           syncer::UserSelectableType::kHistory})) {
+    return false;
+  }
+
   return true;
 }
 

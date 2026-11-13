@@ -22,6 +22,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -42,6 +43,8 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -357,8 +360,11 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
   AppMenuOtherDeviceTabsInteractiveTest()
       : AppMenuOtherDeviceTabsInteractiveTest(/*glow_up=*/false) {}
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+  // Signs in and starts session sync so foreign sessions can be injected.
+  void SignInAndStartSessionSync() {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+        "test@gmail.com", signin::ConsentLevel::kSignin);
     sync_sessions::SessionSyncService* session_sync_service =
         SessionSyncServiceFactory::GetForProfile(browser()->GetProfile());
     syncer::DataTypeActivationRequest activation_request;
@@ -377,6 +383,9 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
   // The first one always overflows; with 4 devices, the others are just above,
   // at and below the cap of 3.
   void SyncDevices(int num_devices) {
+    if (!sync_processor_) {
+      SignInAndStartSessionSync();
+    }
     struct Device {
       std::string_view name;
       syncer::DeviceInfo::FormFactor form_factor;
@@ -436,6 +445,21 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
     sync_processor_->OnUpdateReceived(data_type_state, std::move(updates),
                                       /*gc_directive=*/std::nullopt);
     base::RunLoop().RunUntilIdle();
+  }
+
+  // Opens the top-level app menu while signed out, verifies "Other device
+  // tabs" is absent, and screenshots the menu.
+  auto ShowAppMenuSignedOutAndScreenshot() {
+    return Steps(
+        MoveMouseTo(kToolbarAppMenuButtonElementId),
+        PressButton(kToolbarAppMenuButtonElementId),
+        WaitForShow(AppMenuModel::kHistoryMenuItem),
+        WaitForShow(AppMenuModel::kDownloadsMenuItem),
+        EnsureNotPresent(AppMenuModel::kOtherDeviceTabsMenuItem),
+        SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                kSkipPixelTestsReason),
+        ScreenshotSurface(AppMenuModel::kHistoryMenuItem, "app_menu_signed_out",
+                          kSignedOutBaselineCl));
   }
 
   // Opens the submenu, where the laptop shows `max_inline_tabs` of its tabs
@@ -535,6 +559,7 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
   static constexpr char kSkipPixelTestsReason[] =
       "Should only run in pixel_tests.";
   static constexpr char kBaselineCl[] = "8712703";
+  static constexpr char kSignedOutBaselineCl[] = "8795809";
   // Unlike keyboard input, opens submenus without later selecting their first
   // item, which keeps screenshots stable.
   static constexpr auto kMouse =
@@ -580,6 +605,11 @@ IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsInteractiveTest,
                        ShowSubmenuWithEmptyDevice) {
   SyncLaptopAndEmptyTablet();
   RunTestSequence(ShowSubmenuWithEmptyDeviceAndScreenshot());
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsInteractiveTest,
+                       HidesMenuItemWhenSignedOut) {
+  RunTestSequence(ShowAppMenuSignedOutAndScreenshot());
 }
 
 // Like inline tabs, a Ctrl/Cmd-clicked flyout tab opens without closing the
@@ -638,4 +668,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsGlowUpInteractiveTest,
                        ShowSubmenuWithEmptyDevice) {
   SyncLaptopAndEmptyTablet();
   RunTestSequence(ShowSubmenuWithEmptyDeviceAndScreenshot());
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsGlowUpInteractiveTest,
+                       HidesMenuItemWhenSignedOut) {
+  RunTestSequence(ShowAppMenuSignedOutAndScreenshot());
 }

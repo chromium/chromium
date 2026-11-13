@@ -21,6 +21,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -42,6 +43,11 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -124,6 +130,25 @@ std::unique_ptr<AppMenuModel> CreateAppMenuModel(
   auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, target_browser);
   app_menu_model->Init();
   return app_menu_model;
+}
+
+[[nodiscard]] testing::AssertionResult VerifyAppMenuRowVisible(
+    BrowserWindowInterface* target_browser,
+    bool expected_visible) {
+  std::unique_ptr<AppMenuModel> app_menu_model =
+      CreateAppMenuModel(target_browser);
+  const bool is_present =
+      app_menu_model
+          ->GetIndexOfCommandId(AppMenuModel::kOtherDeviceTabsMenuPlaceholder)
+          .has_value();
+  const bool is_enabled = app_menu_model->IsCommandIdEnabled(
+      AppMenuModel::kOtherDeviceTabsMenuPlaceholder);
+  if (is_present != expected_visible || is_enabled != expected_visible) {
+    return testing::AssertionFailure()
+           << "is_present=" << is_present << ", is_enabled=" << is_enabled
+           << ", expected=" << expected_visible;
+  }
+  return testing::AssertionSuccess();
 }
 
 class TestMenuModelDelegate : public ui::MenuModelDelegate {
@@ -369,6 +394,8 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelFlagOffTest, NoAppMenuRow) {
       app_menu_model
           ->GetIndexOfCommandId(AppMenuModel::kOtherDeviceTabsMenuPlaceholder)
           .has_value());
+  EXPECT_FALSE(app_menu_model->IsCommandIdEnabled(
+      AppMenuModel::kOtherDeviceTabsMenuPlaceholder));
   EXPECT_FALSE(app_menu_model->IsCommandIdEnabled(IDC_OTHER_DEVICE_TABS_MENU));
 
   // History submenu still omits 0-tab devices when the flag is disabled.
@@ -380,28 +407,136 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelFlagOffTest, NoAppMenuRow) {
 
 // --- Non-eligible state -----------------------------------------------------
 
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       AppMenuRowHiddenWhenSignedOut) {
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
+
+  // Web-only signed-in state also hides the entry point.
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+      "web@gmail.com");
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
+
+  // Signing in with sync allowed reveals the top-level row.
+  SetUpSignedInWithTabSync();
+  RegisterDevices({1});
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  EXPECT_EQ(2u, CreateModel()->GetItemCount());
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       AppMenuRowShownWhenSignInPending) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({1});
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+
+  signin::SetInvalidRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       AppMenuRowShownWhenSyncPaused) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+      "test@gmail.com", signin::ConsentLevel::kSync);
+  StartSessionSync();
+  RegisterDevices({1});
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+
+  signin::SetInvalidRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+}
+
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, EmptyWhenNotEligible) {
   SetUpSignedInWithTabSync();
   RegisterDevices({3});
   ASSERT_EQ(4u, CreateModel()->GetItemCount());
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
 
   PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   pref_service->SetBoolean(prefs::kSavingBrowserHistoryDisabled, true);
   EXPECT_EQ(0u, CreateModel()->GetItemCount());
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
   pref_service->SetBoolean(prefs::kSavingBrowserHistoryDisabled, false);
   ASSERT_EQ(4u, CreateModel()->GetItemCount());
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // ShouldShowTabsFromOtherDevices() doesn't check sync settings on ChromeOS.
+  // User-disabled tab or history sync keeps the top-level row eligible.
+  syncer::SyncUserSettings* user_settings =
+      SyncServiceFactory::GetForProfile(browser()->GetProfile())
+          ->GetUserSettings();
   SetTabSyncSelected(false);
-  EXPECT_EQ(0u, CreateModel()->GetItemCount());
+  user_settings->SetSelectedType(syncer::UserSelectableType::kHistory, false);
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  EXPECT_EQ(4u, CreateModel()->GetItemCount());
   SetTabSyncSelected(true);
+  user_settings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
   ASSERT_EQ(4u, CreateModel()->GetItemCount());
 
   // Equivalent of the SyncDisabled enterprise policy.
   pref_service->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
   EXPECT_EQ(0u, CreateModel()->GetItemCount());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+}
+
+class OtherDeviceTabsSubMenuModelPolicyTest
+    : public OtherDeviceTabsSubMenuModelTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    OtherDeviceTabsSubMenuModelTest::SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelPolicyTest,
+                       AppMenuRowHiddenWhenDisabledByPolicy) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({1});
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  ASSERT_EQ(2u, CreateModel()->GetItemCount());
+
+  auto update_disabled_types = [&](std::optional<std::string> disabled_type) {
+    policy::PolicyMap policies;
+    if (disabled_type.has_value()) {
+      policies.Set(
+          policy::key::kSyncTypesListDisabled, policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+          base::Value(base::ListValue().Append(*disabled_type)), nullptr);
+    }
+    provider_.UpdateChromePolicy(policies);
+  };
+
+  update_disabled_types("tabs");
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
+
+  update_disabled_types(std::nullopt);
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  EXPECT_EQ(2u, CreateModel()->GetItemCount());
+
+  // "typedUrls" corresponds to UserSelectableType::kHistory.
+  update_disabled_types("typedUrls");
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
+
+  policy::PolicyMap sync_disabled_policies;
+  sync_disabled_policies.Set(
+      policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD, base::Value(true),
+      nullptr);
+  provider_.UpdateChromePolicy(sync_disabled_policies);
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
 }
 
 // --- Active: inline device headers and tabs --------------------------------

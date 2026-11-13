@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -784,14 +785,19 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
               /*build_submenu=*/std::nullopt,
               {.element_id = AppMenuModel::kHistoryMenuItem});
 
-          section.AddDynamicSubmenu(
-              kActionOtherDeviceTabsSubmenu,
-              base::BindRepeating(
-                  &RecentTabsDynamicMenu::BuildOtherDeviceTabsActions,
-                  recent_tabs_menu_->GetWeakPtr()),
-              /*build_submenu=*/std::nullopt,
-              {.element_id = AppMenuModel::kOtherDeviceTabsMenuItem,
-               .is_submenu = true});
+          // Omit the entry when ineligible so it is hidden rather than shown
+          // empty/disabled.
+          if (remote_tabs_menu_util::ShouldShowOtherDeviceTabsMenuItem(
+                  profile)) {
+            section.AddDynamicSubmenu(
+                kActionOtherDeviceTabsSubmenu,
+                base::BindRepeating(
+                    &RecentTabsDynamicMenu::BuildOtherDeviceTabsActions,
+                    recent_tabs_menu_->GetWeakPtr()),
+                /*build_submenu=*/std::nullopt,
+                {.element_id = AppMenuModel::kOtherDeviceTabsMenuItem,
+                 .is_submenu = true});
+          }
         }
 
         section.AddAction(kActionShowDownloadsPage,

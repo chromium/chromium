@@ -559,9 +559,9 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
 std::vector<RecentTabItem> RecentTabsBuilder::BuildOtherDeviceTabs(
     Profile* profile) {
   std::vector<RecentTabItem> items;
-  if (!profile || profile->IsOffTheRecord() ||
-      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled) ||
-      !remote_tabs_menu_util::ShouldShowTabsFromOtherDevices(profile)) {
+  // Re-check eligibility in case profile state changed after menu creation, or
+  // when called outside the app menu.
+  if (!remote_tabs_menu_util::ShouldShowOtherDeviceTabsMenuItem(profile)) {
     return items;
   }
 

@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -51,9 +52,15 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/history/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -261,6 +268,15 @@ class ActionAppMenuBrowserTest : public InProcessBrowserTest {
                                                                 : browser())
         ->toolbar_button_provider()
         ->GetAppMenuControl();
+  }
+
+  void SignIn() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      signin::MakePrimaryAccountAvailable(identity_manager, "test@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    }
   }
 
  private:
@@ -677,6 +693,7 @@ class ActionAppMenuWithOtherDeviceTabsBrowserTest
   }
 
   std::unique_ptr<syncer::DataTypeProcessor> StartSessionSync() {
+    SignIn();
     sync_sessions::SessionSyncService* session_sync_service =
         SessionSyncServiceFactory::GetForProfile(browser()->GetProfile());
     syncer::DataTypeActivationRequest activation_request;
@@ -1057,6 +1074,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenuIncognito) {
+  SignIn();
   AppMenuControl* menu_control = GetMenuControl(CreateIncognitoBrowser());
   ASSERT_TRUE(menu_control);
 
@@ -1071,8 +1089,59 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   menu_control->CloseMenu();
 }
 
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuHiddenWhenSignedOut) {
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  EXPECT_EQ(nullptr, action_menu->root_menu_item_for_testing()->GetMenuItemByID(
+                         kActionOtherDeviceTabsSubmenu));
+  menu_control->CloseMenu();
+
+  SignIn();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  EXPECT_NE(nullptr, action_menu->root_menu_item_for_testing()->GetMenuItemByID(
+                         kActionOtherDeviceTabsSubmenu));
+  menu_control->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuHiddenWhenNotEligible) {
+  SignIn();
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_NE(nullptr, menu_control->GetActionAppMenuForTesting()
+                         ->root_menu_item_for_testing()
+                         ->GetMenuItemByID(kActionOtherDeviceTabsSubmenu));
+  menu_control->CloseMenu();
+
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
+  pref_service->SetBoolean(prefs::kSavingBrowserHistoryDisabled, true);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_EQ(nullptr, menu_control->GetActionAppMenuForTesting()
+                         ->root_menu_item_for_testing()
+                         ->GetMenuItemByID(kActionOtherDeviceTabsSubmenu));
+  menu_control->CloseMenu();
+
+  pref_service->SetBoolean(prefs::kSavingBrowserHistoryDisabled, false);
+  pref_service->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_EQ(nullptr, menu_control->GetActionAppMenuForTesting()
+                         ->root_menu_item_for_testing()
+                         ->GetMenuItemByID(kActionOtherDeviceTabsSubmenu));
+  menu_control->CloseMenu();
+}
+
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithoutOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenuFlagOff) {
+  SignIn();
   AppMenuControl* menu_control = GetMenuControl();
   ASSERT_TRUE(menu_control);
 
