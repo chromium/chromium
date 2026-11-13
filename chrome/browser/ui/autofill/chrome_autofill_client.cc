@@ -853,6 +853,15 @@ void ChromeAutofillClient::ShowAutofillSettings(
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
       case SuggestionType::kManageLoyaltyCard:
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillEnableOffersAndLoyaltyCardsSettings)) {
+          base::UmaHistogramEnumeration(
+              "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+              autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
+          chrome::ShowSettingsSubPage(browser,
+                                      chrome::kOffersAndLoyaltyCardsSubPage);
+          return;
+        }
         static constexpr std::string_view kValuableManagementUrl =
             "https://wallet.google.com/"
             "wallet?p=loyalty&utm_source=chrome&utm_medium=redirect&utm_"
