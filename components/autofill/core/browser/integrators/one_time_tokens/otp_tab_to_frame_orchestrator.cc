@@ -145,15 +145,6 @@ void OtpTabToFrameOrchestrator::OnBeforeFocusOnNonFormField(
   }
 }
 
-void OtpTabToFrameOrchestrator::OnAfterTextFieldValueChanged(
-    AutofillManager& manager,
-    FormGlobalId form_id,
-    FieldGlobalId field_id) {
-  if (owner_->driver().IsActive()) {
-    coordinator_->OnTextFieldValueChanged();
-  }
-}
-
 void OtpTabToFrameOrchestrator::OnSuggestionsShown(
     AutofillManager& manager,
     base::span<const Suggestion> suggestions) {

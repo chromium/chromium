@@ -55,7 +55,6 @@ class OtpDeliveryPolicy {
     bool frame_active = false;
     bool has_non_otp_focus_anywhere = true;
     bool any_otp_field_has_typed_input = true;
-    bool typed_in_any_field_after_detection = true;
     bool is_android = true;
     bool is_otp_field_focused = false;
     bool is_keyboard_visible = false;

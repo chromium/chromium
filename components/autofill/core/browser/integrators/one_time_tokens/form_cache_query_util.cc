@@ -106,7 +106,8 @@ bool AnyOtpFieldContainsTypedInput(AutofillManager& manager) {
         }
         has_typed_input = std::ranges::any_of(
             form.fields(), [&manager, &form](const auto& field) {
-              return field->all_modifiers().contains(FieldModifier::kUser) &&
+              return !field->value().empty() &&
+                     field->all_modifiers().contains(FieldModifier::kUser) &&
                      OtpFieldDetector::IsOtpField(form, *field) &&
                      IsHostFrameActive(manager, field->host_frame());
             });

@@ -54,9 +54,6 @@ class OtpCoordinatorTestApi {
   explicit OtpCoordinatorTestApi(OtpCoordinator& coordinator)
       : coordinator_(coordinator) {}
 
-  OtpTargetFieldIdentifier& target_field_identifier() {
-    return coordinator_->target_field_identifier_;
-  }
   const base::flat_map<FieldGlobalId, OtpDelivery>& deliveries() const {
     return coordinator_->deliveries_;
   }
@@ -329,24 +326,18 @@ TEST_F(OtpCoordinatorTest, UnregisteringOneObserverKeepsSharedManagerEligible) {
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
 }
 
-TEST_F(OtpCoordinatorTest,
-       RenewsSmsSubscriptionAfterErrorAndPreservesTypingState) {
+TEST_F(OtpCoordinatorTest, RenewsSmsSubscriptionAfterError) {
   const std::vector<OtpTarget> targets = AddOtpForm(2);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
-  coordinator_->OnTextFieldValueChanged();
-  EXPECT_TRUE(test_api_coordinator()
-                  .target_field_identifier()
-                  .TypedInAnyFieldAfterOtpDetection());
 
   sms_otp_service_->SimulateOtpArrived(
       base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendTimeout));
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
+  // A backend error ends the SMS subscription but keeps the OTP deliveries.
+  EXPECT_EQ(test_api_coordinator().deliveries().size(), 2u);
 
   coordinator_->StartListeningForOtp(targets[0]);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
-  EXPECT_TRUE(test_api_coordinator()
-                  .target_field_identifier()
-                  .TypedInAnyFieldAfterOtpDetection());
 }
 
 TEST_F(OtpCoordinatorTest,
@@ -731,18 +722,6 @@ TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
               ElementsAre(new_target.field));
 }
 
-TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerAfterUserTyping) {
-  const OtpTarget target = AddOtpForm()[0];
-  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
-                               target.field);
-  coordinator_->OnTextFieldValueChanged();
-
-  SendGmailOtp("901234", base::Time::Now());
-  phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("901234"));
-  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
-}
-
 TEST_F(OtpCoordinatorTest,
        SuppressesProactiveTriggerWhenOtpFieldContainsUserTypedInput) {
   const OtpTarget typed_target =
@@ -756,6 +735,19 @@ TEST_F(OtpCoordinatorTest,
   EXPECT_THAT(coordinator_->GetAvailableTokens(typed_target),
               HasValue("956789"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
+  // If the user clears the OTP field, a newly arriving OTP triggers
+  // proactively even though `FieldModifier::kUser` remains on the field.
+  test_api(autofill_manager())
+      .FindCachedFormById(typed_target.form)
+      ->field(0)
+      ->set_value(u"");
+  SendGmailOtp("956790", base::Time::Now() + base::Seconds(10));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(typed_target),
+              HasValue("956790"));
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(typed_target.field));
 }
 
 TEST_F(OtpCoordinatorTest,

@@ -39,7 +39,6 @@ class OtpSecurityGateway {
     bool is_keyboard_visible = true;
     bool has_non_otp_focus_anywhere = true;
     bool any_otp_field_has_typed_input = true;
-    bool typed_in_any_field_after_detection = true;
   };
 
   explicit OtpSecurityGateway(AutofillClient& client);

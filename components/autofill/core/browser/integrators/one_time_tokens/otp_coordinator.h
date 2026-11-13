@@ -103,10 +103,6 @@ class OtpCoordinator : public OtpSource::Observer {
   // the window becomes focused while the tab is visible.
   void OnWindowFocusChanged(bool is_focused);
 
-  // Records that the user typed in a text field after OTP detection,
-  // suppressing subsequent proactive dropdown triggers for the current session.
-  void OnTextFieldValueChanged();
-
   // Records that an OTP suggestion with `shown_value` was displayed on `field`
   // so proactive triggers do not re-open the dropdown for the same token on
   // that form.

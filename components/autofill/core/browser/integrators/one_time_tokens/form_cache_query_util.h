@@ -40,7 +40,8 @@ AutofillManager::FormAndField FirstEligibleOtpField(AutofillManager& manager);
 
 // Returns true if `manager`'s frame is active and non-embedded and any OTP
 // field hosted in an active, non-embedded frame within `manager`'s cached OTP
-// forms already contains user-typed input (`FieldModifier::kUser`).
+// forms already contains non-empty user-typed input (`FieldModifier::kUser` and
+// a non-empty value).
 bool AnyOtpFieldContainsTypedInput(AutofillManager& manager);
 
 // Returns true if `manager` has at least one cached OTP form.

@@ -59,21 +59,6 @@ void OtpTargetFieldIdentifier::OnFocusChanged(
   }
 }
 
-void OtpTargetFieldIdentifier::OnOtpFieldsDetected() {
-  has_detected_otp_field_ = true;
-}
-
-void OtpTargetFieldIdentifier::OnOtpFieldsCleared() {
-  has_detected_otp_field_ = false;
-  typed_in_any_field_after_otp_detection_ = false;
-}
-
-void OtpTargetFieldIdentifier::OnTextFieldValueChanged() {
-  if (has_detected_otp_field_) {
-    typed_in_any_field_after_otp_detection_ = true;
-  }
-}
-
 std::optional<OtpTarget> OtpTargetFieldIdentifier::GetTarget() const {
   if (focused_field_.has_value()) {
     auto it = std::ranges::find_if(
@@ -127,10 +112,6 @@ bool OtpTargetFieldIdentifier::AnyOtpFieldContainsTypedInput() const {
   return std::ranges::any_of(managers_, [](BrowserAutofillManager* manager) {
     return autofill::AnyOtpFieldContainsTypedInput(*manager);
   });
-}
-
-bool OtpTargetFieldIdentifier::TypedInAnyFieldAfterOtpDetection() const {
-  return typed_in_any_field_after_otp_detection_;
 }
 
 bool OtpTargetFieldIdentifier::IsFieldFocused(FieldGlobalId field_id) const {
