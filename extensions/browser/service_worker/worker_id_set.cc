@@ -4,9 +4,9 @@
 
 #include "extensions/browser/service_worker/worker_id_set.h"
 
-#include <algorithm>
 #include <iterator>
-#include <memory>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace extensions {
@@ -81,11 +82,19 @@ void WorkerIdSet::Add(const WorkerId& worker_id,
   CHECK(!Contains(worker_id));
   CHECK(worker_id.start_token.has_value());
 
-  std::vector<WorkerId> previous_worker_ids =
-      GetAllForExtension(worker_id.extension_id);
+  size_t previous_count = 0;
+  auto first_previous_worker = workers_.end();
+  for (auto it = workers_.lower_bound(LowestKeyFor(worker_id.extension_id));
+       it != workers_.end() && it->extension_id == worker_id.extension_id;
+       ++it) {
+    if (previous_count == 0) {
+      first_previous_worker = it;
+    }
+    ++previous_count;
+  }
 
   workers_.insert(worker_id);
-  size_t new_size = previous_worker_ids.size() + 1;
+  size_t new_size = previous_count + 1;
   base::UmaHistogramExactLinear(
       "Extensions.ServiceWorkerBackground.WorkerCountAfterAdd", new_size,
       kMaxWorkerCountToReport);
@@ -105,7 +114,7 @@ void WorkerIdSet::Add(const WorkerId& worker_id,
         "Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus.NewWorker",
         worker_id, context);
     // new_size == 2 guarantees that a previous WorkerId will be present.
-    const WorkerId& previous_worker_id = previous_worker_ids.front();
+    const WorkerId& previous_worker_id = *first_previous_worker;
     EmitMultiWorkerMetrics(
         "Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus."
         "PreviousWorker",
@@ -120,21 +129,56 @@ bool WorkerIdSet::Remove(const WorkerId& worker_id) {
   bool erased = workers_.erase(worker_id);
   base::UmaHistogramExactLinear(
       "Extensions.ServiceWorkerBackground.WorkerCountAfterRemove",
-      GetAllForExtension(worker_id.extension_id).size(),
-      kMaxWorkerCountToReport);
+      CountForExtension(worker_id.extension_id), kMaxWorkerCountToReport);
   return erased;
+}
+
+bool WorkerIdSet::ContainsForExtension(const ExtensionId& extension_id) const {
+  auto it = workers_.lower_bound(LowestKeyFor(extension_id));
+  return it != workers_.end() && it->extension_id == extension_id;
+}
+
+bool WorkerIdSet::ContainsForExtension(const ExtensionId& extension_id,
+                                       int64_t worker_version_id,
+                                       int worker_thread_id) const {
+  for (auto it = workers_.lower_bound(LowestKeyFor(extension_id));
+       it != workers_.end() && it->extension_id == extension_id; ++it) {
+    if (it->version_id == worker_version_id &&
+        it->thread_id == worker_thread_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+size_t WorkerIdSet::CountForExtension(const ExtensionId& extension_id) const {
+  size_t count = 0;
+  for (auto it = workers_.lower_bound(LowestKeyFor(extension_id));
+       it != workers_.end() && it->extension_id == extension_id; ++it) {
+    ++count;
+  }
+  return count;
+}
+
+std::optional<WorkerId> WorkerIdSet::FindForExtension(
+    const ExtensionId& extension_id,
+    int64_t worker_version_id,
+    const blink::ServiceWorkerToken& start_token) const {
+  for (auto it = workers_.lower_bound(LowestKeyFor(extension_id));
+       it != workers_.end() && it->extension_id == extension_id; ++it) {
+    if (it->version_id == worker_version_id && it->start_token == start_token) {
+      return *it;
+    }
+  }
+  return std::nullopt;
 }
 
 std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
     const ExtensionId& extension_id) const {
   // Construct a key that is guaranteed to be smaller than any key given a
   // |render_process_id|. This facilitates the usage of lower_bound to achieve
-  // lg(n) runtime.
-  WorkerId lowest_id{
-      extension_id,
-      content::ChildProcessId::FromUnsafeValue(kSmallestRenderProcessId),
-      kSmallestVersionId, kSmallestThreadId};
-  auto begin_range = workers_.lower_bound(lowest_id);
+  // lg(n) runtime without heap-allocating an ExtensionId copy.
+  auto begin_range = workers_.lower_bound(LowestKeyFor(extension_id));
   if (begin_range == workers_.end() ||
       begin_range->extension_id != extension_id) {
     return {};  // No entries.
@@ -150,10 +194,10 @@ std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
     const ExtensionId& extension_id,
     int64_t worker_version_id) const {
   std::vector<WorkerId> worker_ids;
-  for (const auto& worker_id : workers_) {
-    if (worker_id.version_id == worker_version_id &&
-        worker_id.extension_id == extension_id) {
-      worker_ids.push_back(worker_id);
+  for (auto it = workers_.lower_bound(LowestKeyFor(extension_id));
+       it != workers_.end() && it->extension_id == extension_id; ++it) {
+    if (it->version_id == worker_version_id) {
+      worker_ids.push_back(*it);
     }
   }
   return worker_ids;
@@ -166,11 +210,11 @@ bool WorkerIdSet::Contains(const WorkerId& worker_id) const {
 std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
     const ExtensionId& extension_id,
     content::ChildProcessId render_process_id) const {
-  // See other GetAllForExtension's notes for |id| construction.
-  WorkerId id{extension_id, render_process_id, kSmallestVersionId,
-              kSmallestThreadId};
+  // See other GetAllForExtension's notes for key construction.
+  const LookupKey lowest_key{extension_id, render_process_id,
+                             kSmallestVersionId, kSmallestThreadId};
 
-  auto begin_range = workers_.lower_bound(id);
+  auto begin_range = workers_.lower_bound(lowest_key);
   if (begin_range == workers_.end() ||
       begin_range->extension_id > extension_id ||
       begin_range->render_process_id > render_process_id) {
@@ -196,6 +240,15 @@ std::vector<WorkerId> WorkerIdSet::GetAllForTesting() const {
 base::AutoReset<bool>
 WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting() {
   return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
+}
+
+// static
+WorkerIdSet::LookupKey WorkerIdSet::LowestKeyFor(
+    std::string_view extension_id) {
+  return LookupKey{
+      extension_id,
+      content::ChildProcessId::FromUnsafeValue(kSmallestRenderProcessId),
+      kSmallestVersionId, kSmallestThreadId};
 }
 
 }  // namespace extensions

@@ -163,7 +163,7 @@ void InspectableViewsFinder::GetViewsForExtensionForProfile(
         false, api::developer_private::ViewType::kExtensionBackgroundPage));
   }
   if (BackgroundInfo::IsServiceWorkerBased(&extension) &&
-      process_manager->GetServiceWorkersForExtension(extension.id()).empty()) {
+      !process_manager->HasServiceWorkerForExtension(extension.id())) {
     result->push_back(ConstructView(
         BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension), -1, -1,
         is_incognito, false,

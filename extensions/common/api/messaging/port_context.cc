@@ -12,6 +12,9 @@ namespace extensions {
 PortContext::PortContext() = default;
 PortContext::~PortContext() = default;
 PortContext::PortContext(const PortContext& other) = default;
+PortContext::PortContext(PortContext&& other) noexcept = default;
+PortContext& PortContext::operator=(const PortContext& other) = default;
+PortContext& PortContext::operator=(PortContext&& other) noexcept = default;
 
 PortContext::FrameContext::FrameContext(int routing_id)
     : routing_id(routing_id) {}

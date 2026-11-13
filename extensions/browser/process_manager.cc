@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -415,7 +416,7 @@ bool ProcessManager::WakeEventPage(const ExtensionId& extension_id,
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(extension_id);
   if ((extension && BackgroundInfo::IsServiceWorkerBased(extension) &&
-       !GetServiceWorkersForExtension(extension_id).empty()) ||
+       HasServiceWorkerForExtension(extension_id)) ||
       GetBackgroundHostForExtension(extension_id)) {
     // The extension is already awake.
     return false;
@@ -988,8 +989,7 @@ void ProcessManager::UnregisterExtension(const ExtensionId& extension_id) {
   }
 #if DCHECK_IS_ON()
   // Sanity check: No worker entry should exist for |extension_id|.
-  DCHECK(
-      all_running_extension_workers_.GetAllForExtension(extension_id).empty());
+  DCHECK(!HasServiceWorkerForExtension(extension_id));
 #endif
 }
 
@@ -1059,9 +1059,9 @@ void ProcessManager::UntrackRenderProcessForWorkers(
 #if DCHECK_IS_ON()
   // Sanity check: No worker entry should exist for any |extension_id| running
   // inside the RenderProcessHost that died.
-  for (const ExtensionId& extension_id : iter->second)
-    DCHECK(all_running_extension_workers_.GetAllForExtension(extension_id)
-               .empty());
+  for (const ExtensionId& extension_id : iter->second) {
+    DCHECK(!HasServiceWorkerForExtension(extension_id));
+  }
 #endif
   worker_process_to_extension_ids_.erase(iter);
 }
@@ -1117,21 +1117,30 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
   // re-activated before StopTrackingServiceWorkerRunningInstance() is called.
   // In that case we might try to stop tracking the new version instance of the
   // running worker if we don't check the version id.
-  std::vector<WorkerId> worker_ids_for_extension =
-      all_running_extension_workers_.GetAllForExtension(extension_id,
-                                                        worker_version_id);
-
   // TODO(crbug.com/40936639): After the fix releases there should only be one
   // worker instance tracked for each extension at any time.
-  for (const WorkerId& worker_id : worker_ids_for_extension) {
-    if (worker_id.start_token == service_worker_token) {
-      StopTrackingServiceWorkerRunningInstance(worker_id);
-    }
+  if (std::optional<WorkerId> worker_id =
+          all_running_extension_workers_.FindForExtension(
+              extension_id, worker_version_id, service_worker_token)) {
+    StopTrackingServiceWorkerRunningInstance(*worker_id);
   }
 }
 
 bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
   return all_running_extension_workers_.Contains(worker_id);
+}
+
+bool ProcessManager::HasServiceWorkerForExtension(
+    const ExtensionId& extension_id) const {
+  return all_running_extension_workers_.ContainsForExtension(extension_id);
+}
+
+bool ProcessManager::HasServiceWorkerForExtension(
+    const ExtensionId& extension_id,
+    int64_t worker_version_id,
+    int worker_thread_id) const {
+  return all_running_extension_workers_.ContainsForExtension(
+      extension_id, worker_version_id, worker_thread_id);
 }
 
 std::vector<WorkerId> ProcessManager::GetServiceWorkersForExtension(

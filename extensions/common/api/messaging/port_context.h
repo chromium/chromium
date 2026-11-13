@@ -25,6 +25,9 @@ struct PortContext {
 
   ~PortContext();
   PortContext(const PortContext& other);
+  PortContext(PortContext&& other) noexcept;
+  PortContext& operator=(const PortContext& other);
+  PortContext& operator=(PortContext&& other) noexcept;
 
   struct FrameContext {
     FrameContext();

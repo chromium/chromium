@@ -268,15 +268,9 @@ void VerifyLazyContextActive(
   ProcessManager* process_manager =
       ProcessManager::Get(context_info.browser_context);
   if (BackgroundInfo::IsServiceWorkerBased(extension)) {
-    std::vector<WorkerId> service_workers =
-        process_manager->GetServiceWorkersForExtension(extension->id());
-    CHECK(!service_workers.empty());
-    CHECK(std::ranges::find_if(
-              service_workers, [&context_info](const WorkerId& worker_id) {
-                return worker_id.version_id ==
-                           context_info.service_worker_version_id &&
-                       worker_id.thread_id == context_info.worker_thread_id;
-              }) != service_workers.end());
+    CHECK(process_manager->HasServiceWorkerForExtension(
+        extension->id(), context_info.service_worker_version_id,
+        context_info.worker_thread_id));
   } else {
     CHECK(BackgroundInfo::HasLazyBackgroundPage(extension));
     CHECK(process_manager->GetBackgroundHostForExtension(extension->id()));
@@ -555,9 +549,8 @@ void MessageService::OpenChannelToExtension(
   // Worker specific open channel metrics tracking.
   std::string worker_status_metric_suffix;
   if (BackgroundInfo::IsServiceWorkerBased(target_extension)) {
-    if (!ProcessManager::Get(context)
-             ->GetServiceWorkersForExtension(target_extension_id)
-             .empty()) {
+    if (ProcessManager::Get(context)->HasServiceWorkerForExtension(
+            target_extension_id)) {
       worker_status_metric_suffix = "WithActiveWorker";
     } else {
       worker_status_metric_suffix = "WithIdleWorker";

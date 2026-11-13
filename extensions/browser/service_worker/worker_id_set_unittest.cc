@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace extensions {
 
@@ -251,6 +253,72 @@ TEST_F(WorkerIdSetTest, ExtensiveCases) {
         impl->GetAllForExtension(w.extension_id, w.render_process_id)));
     EXPECT_EQ(test_impl.Contains(w), impl->Contains(w));
   }
+}
+
+TEST_F(WorkerIdSetTest, ContainsCountAndFindForExtension) {
+  const blink::ServiceWorkerToken token_a1;
+  const blink::ServiceWorkerToken token_a2;
+  const blink::ServiceWorkerToken token_a3;
+  const blink::ServiceWorkerToken token_b1;
+  const blink::ServiceWorkerToken token_missing;
+
+  auto workers = std::make_unique<WorkerIdSet>();
+  EXPECT_EQ(0u, workers->CountForExtension(kIdA));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdA));
+
+  const WorkerId worker_a1(kIdA, Id(1), /*version_id=*/100, /*thread_id=*/1,
+                           token_a1);
+  const WorkerId worker_a2(kIdA, Id(2), /*version_id=*/101, /*thread_id=*/2,
+                           token_a2);
+  const WorkerId worker_a3(kIdA, Id(3), /*version_id=*/100, /*thread_id=*/3,
+                           token_a3);
+  const WorkerId worker_b1(kIdB, Id(4), /*version_id=*/100, /*thread_id=*/1,
+                           token_b1);
+
+  workers->Add(worker_a1, browser_context());
+  EXPECT_EQ(1u, workers->CountForExtension(kIdA));
+
+  workers->Add(worker_a2, browser_context());
+  EXPECT_EQ(2u, workers->CountForExtension(kIdA));
+
+  workers->Add(worker_a3, browser_context());
+  workers->Add(worker_b1, browser_context());
+
+  EXPECT_EQ(3u, workers->CountForExtension(kIdA));
+  EXPECT_EQ(1u, workers->CountForExtension(kIdB));
+  EXPECT_EQ(0u, workers->CountForExtension(kIdC));
+  EXPECT_EQ(0u, workers->CountForExtension(kIdX));
+
+  EXPECT_TRUE(workers->ContainsForExtension(kIdA));
+  EXPECT_TRUE(workers->ContainsForExtension(kIdB));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdC));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdX));
+
+  EXPECT_TRUE(workers->ContainsForExtension(kIdA, 100, 1));
+  EXPECT_TRUE(workers->ContainsForExtension(kIdA, 101, 2));
+  EXPECT_TRUE(workers->ContainsForExtension(kIdA, 100, 3));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdA, 100, 2));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdA, 100, 99));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdA, 999, 1));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdC, 100, 1));
+
+  EXPECT_EQ(worker_a1, workers->FindForExtension(kIdA, 100, token_a1));
+  EXPECT_EQ(worker_a2, workers->FindForExtension(kIdA, 101, token_a2));
+  EXPECT_EQ(worker_a3, workers->FindForExtension(kIdA, 100, token_a3));
+  EXPECT_EQ(worker_b1, workers->FindForExtension(kIdB, 100, token_b1));
+  EXPECT_EQ(std::nullopt, workers->FindForExtension(kIdA, 100, token_missing));
+  EXPECT_EQ(std::nullopt, workers->FindForExtension(kIdA, 101, token_a1));
+  EXPECT_EQ(std::nullopt, workers->FindForExtension(kIdC, 100, token_a1));
+
+  EXPECT_TRUE(AreWorkerIdsEqual({worker_a1, worker_a3},
+                                workers->GetAllForExtension(kIdA, 100)));
+  EXPECT_TRUE(
+      AreWorkerIdsEqual({worker_a2}, workers->GetAllForExtension(kIdA, 101)));
+  EXPECT_TRUE(workers->GetAllForExtension(kIdA, 999).empty());
+
+  EXPECT_TRUE(workers->Remove(worker_b1));
+  EXPECT_EQ(0u, workers->CountForExtension(kIdB));
+  EXPECT_FALSE(workers->ContainsForExtension(kIdB));
 }
 
 }  // namespace extensions
