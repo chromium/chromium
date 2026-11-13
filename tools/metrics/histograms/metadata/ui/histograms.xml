@@ -1476,6 +1476,19 @@ features through Chrome Labs. -->
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>
 
+<histogram name="WebUI.Dino.ImpressionSource" enum="DinoImpressionSource"
+    expires_after="2027-05-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>amyhwang@chromium.org</owner>
+  <owner>yeroshkin@chromium.org</owner>
+  <summary>
+    Records the impression source (the reason the user saw the Chrome Dino game
+    page) when a primary main-frame navigation commits for chrome://dino or for
+    an offline network error page (ERR_INTERNET_DISCONNECTED), regardless of
+    whether the user starts playing the game.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.Settings.ActiveDuration" units="ms"
     expires_after="2027-08-31">
   <owner>mickeyburks@google.com</owner>
