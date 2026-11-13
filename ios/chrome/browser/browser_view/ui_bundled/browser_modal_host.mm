@@ -482,7 +482,6 @@ const char kContextPanelDismissedHistogram[] =
   _passwordBreachCoordinator = nil;
 }
 
-
 // Stops the reminder notifications coordinator.
 - (void)stopReminderNotificationsCoordinator {
   [_reminderNotificationsCoordinator stop];
@@ -1052,6 +1051,11 @@ const char kContextPanelDismissedHistogram[] =
 - (void)dismissAutofillProgressDialog {
   [_autofillProgressDialogCoordinator stop];
   _autofillProgressDialogCoordinator = nil;
+}
+
+- (void)showSaveEntityDialogOnWebState:(web::WebState*)webState {
+  // TODO(crbug.com/578817847): Prompt restoration UI is wired up in a follow-up
+  // CL.
 }
 
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {

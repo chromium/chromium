@@ -27,6 +27,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/personal_context/first_run/test_personal_context_first_run_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -90,11 +91,21 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 @property(nonatomic, assign) BOOL showAmbientAutofillNoticeCalled;
 @property(nonatomic, assign) int dismissEditAddressBottomSheetCallCount;
 @property(nonatomic, assign) BOOL showPaymentsBottomSheetCalled;
+@property(nonatomic, assign) BOOL showSaveEntityDialogCalled;
+@property(nonatomic, assign) BOOL dismissSaveEntityDialogCalled;
 @end
 
 @implementation FakeAutofillCommandsForBottomSheet
 - (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params {
   _showAmbientAutofillNoticeCalled = YES;
+}
+
+- (void)showSaveEntityDialogOnWebState:(web::WebState*)webState {
+  _showSaveEntityDialogCalled = YES;
+}
+
+- (void)dismissSaveEntityDialog {
+  _dismissSaveEntityDialogCalled = YES;
 }
 
 - (void)dismissEditAddressBottomSheet {
@@ -109,6 +120,16 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 // Test fixture to test AutofillBottomSheetTabHelper class.
 class AutofillBottomSheetTabHelperTest : public PlatformTest {
  public:
+  std::unique_ptr<AutofillAiSaveEntityPromptModel> CreateTestEntityModel() {
+    return std::make_unique<AutofillAiSaveEntityPromptModel>(
+        autofill::SaveEntityParams(autofill::test::GetPassportEntityInstance(),
+                                   /*old_entity=*/std::nullopt,
+                                   /*user_email=*/u"test@example.com",
+                                   /*save_is_synchronous=*/true,
+                                   base::DoNothing(),
+                                   /*public_passes_notice=*/{},
+                                   /*show_explicit_decline_button=*/false));
+  }
   // Returns a valid form message body to trigger the proactive password
   // generation bottom sheet.
   std::unique_ptr<base::Value> ValidFormMessageBody(std::string frame_id) {
@@ -1031,4 +1052,66 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   histogram_tester.ExpectUniqueSample(
       kPaymentsBottomSheetUserGestureStatusHistogram,
       PaymentsBottomSheetUserGestureStatus::kValidGesture, 1);
+}
+
+// Tests that `ShowAutofillAiSaveEntityBottomSheet` stages the model and
+// notifies the commands handler.
+TEST_F(AutofillBottomSheetTabHelperTest, ShowAutofillAiSaveEntityBottomSheet) {
+  FakeAutofillCommandsForBottomSheet* autofill_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)autofill_handler);
+
+  helper_->ShowAutofillAiSaveEntityBottomSheet(CreateTestEntityModel());
+
+  EXPECT_TRUE(autofill_handler.showSaveEntityDialogCalled);
+  EXPECT_NE(helper_->GetAutofillAiSaveEntityPromptModel(), nullptr);
+
+  std::unique_ptr<AutofillAiSaveEntityPromptModel> taken =
+      helper_->TakeAutofillAiSaveEntityPromptModel();
+  EXPECT_NE(taken, nullptr);
+  EXPECT_EQ(helper_->GetAutofillAiSaveEntityPromptModel(), nullptr);
+}
+
+// Tests that `WasShown` forwards to the pending prompt manager and re-shows
+// the dialog.
+TEST_F(AutofillBottomSheetTabHelperTest, WasShownRestoresPendingPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+
+  FakeAutofillCommandsForBottomSheet* autofill_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)autofill_handler);
+
+  helper_->ShowAutofillAiSaveEntityBottomSheet(CreateTestEntityModel());
+  EXPECT_TRUE(autofill_handler.showSaveEntityDialogCalled);
+
+  // Reset the flag and trigger WasShown.
+  autofill_handler.showSaveEntityDialogCalled = NO;
+  helper_->WasShown(web_state_.get());
+  EXPECT_TRUE(autofill_handler.showSaveEntityDialogCalled);
+}
+
+// Tests that `DidFinishNavigation` clears the staged prompt on committed
+// document navigation.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       DidFinishNavigationClearsPendingPrompt) {
+  FakeAutofillCommandsForBottomSheet* autofill_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)autofill_handler);
+
+  helper_->ShowAutofillAiSaveEntityBottomSheet(CreateTestEntityModel());
+  EXPECT_NE(helper_->GetAutofillAiSaveEntityPromptModel(), nullptr);
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  context.SetHasUserGesture(true);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  helper_->DidFinishNavigation(web_state_.get(), &context);
+
+  EXPECT_EQ(helper_->GetAutofillAiSaveEntityPromptModel(), nullptr);
+  EXPECT_TRUE(autofill_handler.dismissSaveEntityDialogCalled);
 }

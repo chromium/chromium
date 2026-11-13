@@ -88,6 +88,9 @@ class WebState;
 - (void)dismissAutofillProgressDialog;
 
 // Commands to manage the Autofill save entity dialog.
+// Requests displaying or restoring the save entity prompt for `webState` when
+// the tab is reshown.
+- (void)showSaveEntityDialogOnWebState:(web::WebState*)webState;
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params;
 - (void)dismissSaveEntityDialog;
 

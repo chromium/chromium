@@ -38,8 +38,10 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_pending_prompt_manager.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
@@ -199,10 +201,31 @@ AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
       AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state));
   web_state->AddObserver(this);
+  pending_prompt_manager_ = std::make_unique<AutofillPendingPromptManager>(
+      web_state, commands_handler_);
 }
 
 // Public methods
 
+void AutofillBottomSheetTabHelper::ShowAutofillAiSaveEntityBottomSheet(
+    std::unique_ptr<AutofillAiSaveEntityPromptModel> model) {
+  pending_prompt_manager_->ShowSaveEntityPrompt(std::move(model));
+}
+
+const AutofillAiSaveEntityPromptModel*
+AutofillBottomSheetTabHelper::GetAutofillAiSaveEntityPromptModel() const {
+  return pending_prompt_manager_->GetSaveEntityPromptModel();
+}
+
+AutofillAiSaveEntityPromptModel*
+AutofillBottomSheetTabHelper::GetAutofillAiSaveEntityPromptModel() {
+  return pending_prompt_manager_->GetSaveEntityPromptModel();
+}
+
+std::unique_ptr<AutofillAiSaveEntityPromptModel>
+AutofillBottomSheetTabHelper::TakeAutofillAiSaveEntityPromptModel() {
+  return pending_prompt_manager_->TakeSaveEntityPromptModel();
+}
 void AutofillBottomSheetTabHelper::ShowCardUnmaskAuthenticationSelection(
     std::unique_ptr<
         autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
@@ -238,6 +261,7 @@ void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     [commands_handler_ dismissEditAddressBottomSheet];
   }
   commands_handler_ = commands_handler;
+  pending_prompt_manager_->SetAutofillBottomSheetHandler(commands_handler_);
 }
 
 void AutofillBottomSheetTabHelper::SetPasswordGenerationProvider(
@@ -671,6 +695,10 @@ void AutofillBottomSheetTabHelper::CancelPendingSuggestionRequests() {
 
 // WebStateObserver:
 
+void AutofillBottomSheetTabHelper::WasShown(web::WebState* web_state) {
+  pending_prompt_manager_->WasShown(web_state);
+}
+
 void AutofillBottomSheetTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -686,6 +714,7 @@ void AutofillBottomSheetTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   CHECK(navigation_context);
+  pending_prompt_manager_->DidFinishNavigation(web_state, navigation_context);
   if (navigation_context->IsSameDocument() ||
       !navigation_context->HasCommitted()) {
     return;
@@ -711,6 +740,7 @@ void AutofillBottomSheetTabHelper::RenderProcessGone(web::WebState* web_state) {
 }
 
 void AutofillBottomSheetTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  pending_prompt_manager_->WebStateDestroyed(web_state);
   CancelPendingSuggestionRequests();
   web_state->RemoveObserver(this);
   frames_manager_observation_.Reset();

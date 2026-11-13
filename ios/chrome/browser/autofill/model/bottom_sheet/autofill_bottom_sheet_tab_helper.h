@@ -22,6 +22,9 @@
 #import "ios/web/public/web_state_user_data.h"
 #import "url/origin.h"
 
+class AutofillAiSaveEntityPromptModel;
+class AutofillPendingPromptManager;
+
 namespace autofill {
 class AutofillBottomSheetObserver;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
@@ -98,6 +101,23 @@ class AutofillBottomSheetTabHelper
           autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
           model_controller);
 
+  // Shows the Autofill AI Save Entity bottom sheet prompt.
+  void ShowAutofillAiSaveEntityBottomSheet(
+      std::unique_ptr<AutofillAiSaveEntityPromptModel> model);
+
+  // Returns a non-owning pointer to the pending Autofill AI Save Entity prompt
+  // model, if one exists on this tab. Used by the coordinator and mediator to
+  // inspect parameters and bind to the active prompt without consuming it.
+  const AutofillAiSaveEntityPromptModel* GetAutofillAiSaveEntityPromptModel()
+      const;
+  AutofillAiSaveEntityPromptModel* GetAutofillAiSaveEntityPromptModel();
+
+  // Takes and transfers ownership of the pending Autofill AI Save Entity
+  // prompt model from the tab helper. Used by the mediator when the user
+  // makes a terminal decision (accept, cancel, dismiss) to report the outcome
+  // and clear the pending state.
+  std::unique_ptr<AutofillAiSaveEntityPromptModel>
+  TakeAutofillAiSaveEntityPromptModel();
   // Send a command to show save card bottomsheet.
   void ShowSaveCardBottomSheet(
       std::unique_ptr<autofill::SaveCardBottomSheetModel> model);
@@ -168,6 +188,7 @@ class AutofillBottomSheetTabHelper
   void RefocusElementIfNeeded(const std::string& frame_id);
 
   // WebStateObserver:
+  void WasShown(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
@@ -347,6 +368,9 @@ class AutofillBottomSheetTabHelper
   // Callbacks to be run when the virtual card enrollment bottom sheet UI has
   // completed.
   autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
+
+  // Coordinates lifecycle of staged pending prompts across tab switches.
+  std::unique_ptr<AutofillPendingPromptManager> pending_prompt_manager_;
 
   // Weak pointers handed out to pending suggestion retrieval callbacks. Kept
   // separate from `weak_factory_` because `CancelPendingSuggestionRequests()`

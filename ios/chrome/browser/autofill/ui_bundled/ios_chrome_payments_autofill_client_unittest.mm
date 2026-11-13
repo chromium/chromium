@@ -173,6 +173,9 @@
 - (void)dismissAutofillProgressDialog {
 }
 
+- (void)showSaveEntityDialogOnWebState:(web::WebState*)webState {
+  // No-op.
+}
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
   std::move(params.callback)
       .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown,
@@ -218,8 +221,7 @@ class TestChromeAutofillClient
       : WithFakedFromWebState<ChromeAutofillClientIOS>(profile,
                                                        web_state,
                                                        infobar_manager,
-                                                       autofill_agent) {
-  }
+                                                       autofill_agent) {}
 
   void RemoveAutofillSaveCardInfoBar() override {
     removed_save_card_infobar_ = true;
