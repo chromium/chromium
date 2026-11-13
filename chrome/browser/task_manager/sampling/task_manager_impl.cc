@@ -492,7 +492,9 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
       }
     }
 
-    CHECK_EQ(num_tasks, sorted_task_ids_.size(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/581956254): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(num_tasks, sorted_task_ids_.size());
   }
 
   return sorted_task_ids_;
