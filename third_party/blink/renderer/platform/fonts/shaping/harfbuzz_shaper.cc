@@ -1092,8 +1092,7 @@ void HarfBuzzShaper::ShapeSegment(
         result->AddUnsafeToBreak(han_kerning.UnsafeToBreakBefore());
         han_kerning.ClearUnsafeToBreakBefore();
       }
-      if (!range_data->reshape_queue.empty() &&
-          RuntimeEnabledFeatures::TextSpacingTrimFallbackEnabled()) {
+      if (!range_data->reshape_queue.empty()) {
         han_kerning.PrepareFallback(text_);
       }
     }

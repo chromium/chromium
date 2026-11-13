@@ -171,7 +171,6 @@ HanKerning::CharType HanKerning::GetCharTypeWithCache(const String& text,
                                                       wtf_size_t index,
                                                       const FontData& font_data,
                                                       Priority priority) {
-  DCHECK(RuntimeEnabledFeatures::TextSpacingTrimFallbackEnabled());
   DCHECK(!char_types_.empty());
   const CharType cached_type = char_types_[index];
   if (priority == Priority::kCache && cached_type != CharType::kInvalid) {
@@ -337,7 +336,6 @@ bool HanKerning::AppendFontFeatures(const String& text,
 }
 
 void HanKerning::PrepareFallback(const String& text) {
-  DCHECK(RuntimeEnabledFeatures::TextSpacingTrimFallbackEnabled());
   if (char_types_.empty()) {
     char_types_.Grow(text.length());
     char_types_.Fill(CharType::kInvalid);

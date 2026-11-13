@@ -7019,19 +7019,12 @@
     },
     {
       // crbug.com/431660829
-      name: "TextSpacingTrimFallback",
-      status: "stable",
-    },
-    {
-      // crbug.com/431660829
       name: "TextSpacingTrimFallback2",
-      depends_on: ["TextSpacingTrimFallback"],
       status: "test",
     },
     {
       // crbug.com/440947112
       name: "TextSpacingTrimFallbackChws",
-      depends_on: ["TextSpacingTrimFallback"],
       status: "stable",
     },
     {
