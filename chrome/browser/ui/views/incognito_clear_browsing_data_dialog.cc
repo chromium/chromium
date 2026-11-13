@@ -7,11 +7,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -49,13 +51,21 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Header art
-  // TODO(b:559535312): Add Enterprise Mode Isolated Profile header art
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
-      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK),
-      background_color());
-  AddChildView(std::move(image_view));
+  if (incognito_profile_->IsEnterpriseIsolatedModeProfile()) {
+    // Isolated Mode always uses the light color mode, so a single image is
+    // enough.
+    auto image_view = std::make_unique<NonAccessibleImageView>();
+    image_view->SetImage(ui::ImageModel::FromImageSkia(
+        *bundle.GetImageSkiaNamed(IDR_ISOLATED_DATA_NOT_SAVED_HEADER)));
+    AddChildView(std::move(image_view));
+  } else {
+    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+        *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
+        *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK),
+        background_color());
+    AddChildView(std::move(image_view));
+  }
 
   // Set bubble regarding to the type.
   if (type == kHistoryDisclaimerBubble) {
