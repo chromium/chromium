@@ -64,9 +64,15 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#include "ui/wm/core/window_util.h"
+#endif
+
 namespace {
 
-// Defines `sb` (<omnibox-popup-searchbox>), `wrapper` (#inputWrapper),
+// Defines `sb` (<omnibox-popup-searchbox>), `wrapper` (the unbounded
+// #inputWrapper),
 // `crInput` and `input` (the native <input>) for scripts run in the popup
 // WebContents. Scripts passed through `content::JsReplace` must not use
 // `${...}` template literals (JsReplace strips `$` + next char).
@@ -78,8 +84,10 @@ constexpr char kPrelude[] = R"(
   const input = crInput.inputElement;
 )";
 
-constexpr char kDropdownOpen[] = "sb.dropdownIsVisible";
-constexpr char kDropdownClosed[] = "!sb.dropdownIsVisible";
+constexpr char kDropdownOpen[] =
+    "sb.dropdownIsVisible && wrapper.matches(':unbounded')";
+constexpr char kDropdownClosed[] =
+    "!sb.dropdownIsVisible && !wrapper.matches(':unbounded')";
 // The native <input> is the focused element of a focused document.
 constexpr char kInputFocused[] =
     "document.hasFocus() && sb.shadowRoot.activeElement === crInput && "
@@ -444,7 +452,8 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
 };
 
 // The WebView is a child of (and fills) LocationBarView, paints above its
-// siblings, and starts with the dropdown closed.
+// siblings, and starts with the dropdown closed: unbounded wrapper filling the
+// WebView.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
                        CreatesViewAndFillsLocationBar) {
   ASSERT_TRUE(omnibox::ShouldHostUnboundedOmniboxInLocationBar());
@@ -457,7 +466,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   EXPECT_EQ(GURL(chrome::kChromeUIOmniboxPopupURL),
             contents->GetLastCommittedURL());
   EXPECT_EQ(OmniboxPopupState::kFull, popup_state());
-  EXPECT_EQ(true, Eval(std::string("return ") + kDropdownClosed + ";"));
+  EXPECT_EQ(true, Eval(std::string(R"(
+    const rect = wrapper.getBoundingClientRect();
+    return sb.hasAttribute('unbounded-supported_') &&
+           wrapper.hasAttribute('unbounded') && rect.x === 0 &&
+           rect.y === 0 && rect.width === window.innerWidth &&
+           rect.height === window.innerHeight && )") +
+                       kDropdownClosed + ";"));
 }
 
 // The content reports itself presented once the compositor presents a frame
@@ -472,9 +487,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   EXPECT_TRUE(web_view()->popup_presented_for_testing());
 }
 
-// Typing reaches the edit model and opens the page's dropdown, while the
-// WebView itself keeps filling LocationBarView.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest, TypingOpensDropdown) {
+// Typing reaches the edit model and pops the dropdown out into an unbounded
+// window, while the WebView itself stays inside LocationBarView.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       TypingOpensUnboundedDropdown) {
   NavigateTo("/title1.html");
   FocusAndWaitForPopup();
   TypeAndWaitForDropdown("chrome://version");
@@ -483,6 +499,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest, TypingOpensDropdown) {
   EXPECT_FALSE(controller()->autocomplete_controller()->result().empty());
   EXPECT_EQ(location_bar()->GetLocalBounds(), web_view()->bounds());
   EXPECT_EQ(web_view(), location_bar()->children().back());
+
+#if defined(USE_AURA)
+  aura::Window* owner =
+      popup_contents()->GetRenderWidgetHostView()->GetNativeView();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !wm::GetTransientChildren(owner).empty(); }));
+  aura::Window* unbounded_window = wm::GetTransientChildren(owner).back();
+  EXPECT_TRUE(unbounded_window->IsVisible());
+  EXPECT_GT(unbounded_window->GetBoundsInScreen().height(),
+            location_bar()->GetBoundsInScreen().height());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
@@ -576,6 +603,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   TypeAndWaitForDropdown("title");
 
   PressKey(ui::DomKey::ESCAPE, ui::DomCode::ESCAPE, ui::VKEY_ESCAPE);
+  EXPECT_TRUE(WaitForJs(kDropdownClosed));
+}
+
+// Closing the unbounded element, as light dismiss (a real Escape or an outside
+// click) does, closes the dropdown through its `beforetoggle` event.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
+                       HidingUnboundedElementClosesDropdown) {
+  NavigateTo("/title1.html");
+  FocusAndWaitForPopup();
+  TypeAndWaitForDropdown("title");
+
+  // A programmatic hide fires `beforetoggle` like light dismiss does.
+  ASSERT_EQ(true, Eval("await wrapper.hideUnboundedElement(); return true;"));
   EXPECT_TRUE(WaitForJs(kDropdownClosed));
 }
 
@@ -806,9 +846,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   EXPECT_EQ(0, starts.count());
 }
 
-// With kOmniboxFullWebUIShadow, the location bar's page still draws no shadow,
-// since it fills the location bar: `ShouldDrawFullPopupShadowInWebUI()` is
-// false while every Full popup is hosted in the location bar.
+// With kOmniboxFullWebUIShadow, `ShouldDrawFullPopupShadowInWebUI()` stays
+// false while every Full popup is hosted in the location bar, so
+// `webui-shadow-enabled_` is omitted and `omnibox_popup_document_style.css`
+// suppresses the outer shadow padding (while `#inputWrapper[unbounded]` in
+// `omnibox_popup_searchbox.css` still draws `--omnibox-webui-shadow` when
+// open).
 class OmniboxPopupLocationBarHostShadowTest
     : public OmniboxPopupLocationBarHostTest {
  public:
@@ -821,7 +864,7 @@ class OmniboxPopupLocationBarHostShadowTest
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostShadowTest,
-                       PageDrawsNoShadow) {
+                       DocumentOmitsOuterShadowPadding) {
   ASSERT_FALSE(omnibox::ShouldDrawFullPopupShadowInWebUI());
   FocusAndWaitForPopup();
   EXPECT_EQ(true, Eval(R"(

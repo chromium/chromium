@@ -79,6 +79,11 @@ export interface AimButtonConfig {
   icon: string;
 }
 
+interface UnboundedElement extends HTMLElement {
+  showUnboundedElement(): Promise<void>;
+  hideUnboundedElement(): Promise<void>;
+}
+
 export interface OmniboxPopupSearchboxElement {
   $: {
     composeButton: SearchboxComposeButtonElement,
@@ -241,6 +246,10 @@ export class OmniboxPopupSearchboxElement extends
       textInputType_: {
         type: String,
       },
+      unboundedSupported_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -290,6 +299,9 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxDynamicAnimation');
   protected accessor hasUserInput_: boolean = false;
   protected accessor aimButtonVisible_: boolean = false;
+  protected accessor unboundedSupported_: boolean =
+      loadTimeData.getBoolean('useUnbounded') &&
+      'showUnboundedElement' in HTMLElement.prototype;
   protected accessor aimButtonConfig_: AimButtonConfig = {
     text: '',
     title: '',
@@ -659,6 +671,10 @@ export class OmniboxPopupSearchboxElement extends
         changedProperties.has('result') ||
         changedPrivateProperties.has('aimButtonVisible_')) {
       this.updateAimButtonCollapse_();
+    }
+
+    if (changedProperties.has('dropdownIsVisible')) {
+      this.updateUnboundedWindow_();
     }
   }
 
@@ -2055,19 +2071,55 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   /**
-   * Executes deferred focus (`FOCUS` / `FOCUS_AND_SELECT`) when the tab
-   * transitions from hidden to visible (`document.visibilityState ===
-   * 'visible'`).
+   * Re-applies the unbounded window state and executes deferred focus (`FOCUS`
+   * / `FOCUS_AND_SELECT`) once the tab transitions from hidden to visible
+   * (`document.visibilityState === 'visible'`).
    */
   private onVisibilityChange_() {
-    if (document.visibilityState === 'visible' &&
-        this.deferredFocusAction_ !== null) {
+    if (document.visibilityState !== 'visible') {
+      return;
+    }
+    // Re-apply the dropdown state that was skipped while hidden.
+    this.updateUnboundedWindow_();
+    if (this.deferredFocusAction_ !== null) {
       const action = this.deferredFocusAction_;
       this.deferredFocusAction_ = null;
       this.$.input.focus();
       if (action === DeferredFocusAction.FOCUS_AND_SELECT) {
         this.getInputElement().select();
       }
+    }
+  }
+
+  // Pops #inputWrapper out of the WebView while the dropdown is visible.
+  private updateUnboundedWindow_() {
+    if (!this.unboundedSupported_) {
+      return;
+    }
+    const wrapper = this.$.inputWrapper as UnboundedElement;
+    if (this.dropdownIsVisible === wrapper.matches(':unbounded')) {
+      return;
+    }
+    // showUnboundedElement() rejects while the document is hidden (its
+    // lifecycle is throttled). Don't call it; visibilitychange re-applies.
+    if (this.dropdownIsVisible && document.visibilityState !== 'visible') {
+      return;
+    }
+    (this.dropdownIsVisible ? wrapper.showUnboundedElement() :
+                              wrapper.hideUnboundedElement())
+        .catch(err => {
+          // AbortError: the dropdown toggled again before this finished.
+          if (!(err instanceof DOMException && err.name === 'AbortError')) {
+            console.warn(err);
+          }
+        });
+  }
+
+  protected onInputWrapperBeforetoggle_(e: ToggleEvent) {
+    // Light dismiss (Escape, outside click, deactivation) clears matches and
+    // closes the dropdown; programmatic hides already cleared them.
+    if (e.newState === 'closed' && this.dropdownIsVisible) {
+      this.clearAutocompleteMatches();
     }
   }
 

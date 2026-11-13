@@ -185,6 +185,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::ShouldDrawAimShadowInWebUI());
   source->AddBoolean("omniboxFullWebUIShadowEnabled",
                      omnibox::ShouldDrawFullPopupShadowInWebUI());
+  source->AddBoolean("useUnbounded",
+                     omnibox::ShouldHostUnboundedOmniboxInLocationBar());
   source->AddBoolean("searchboxMultiline",
                      omnibox::internal::IsWebUIOmniboxFullPopupEnabled() &&
                          omnibox::kWebUIOmniboxFullPopupMultiline.Get());

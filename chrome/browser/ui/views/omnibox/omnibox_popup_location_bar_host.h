@@ -27,11 +27,12 @@ struct PresentationFeedback;
 
 // An `OmniboxPopupHost` that hosts `OmniboxFullPopupWebUIContent` (the same
 // content view the popup widget uses) directly inside `LocationBarView`,
-// without a popup widget. The content fills the location bar, so the page's
-// suggestions dropdown is clipped to the location bar.
-// `OmniboxPopupViewFullWebUI` keeps the input sync, tab state and focus
-// handling; this host shows, hides, sizes and focuses the content. Gated
-// behind `omnibox::ShouldHostUnboundedOmniboxInLocationBar()`.
+// without a popup widget. The content fills the location bar, while
+// `#inputWrapper` in the page pops the suggestions dropdown out of it with the
+// Blink Unbounded Element API. `OmniboxPopupViewFullWebUI` keeps the input
+// sync, tab state and focus handling; this host shows, hides, sizes and
+// focuses the content. Gated behind
+// `omnibox::ShouldHostUnboundedOmniboxInLocationBar()`.
 class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
                                     public OmniboxPopupContentDelegate,
                                     public views::ViewObserver {
