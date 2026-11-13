@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,6 +81,7 @@ public class PageZoomManagerUnitTest {
                         eq(mWebContentsMock),
                         doubleThat(closeTo(1.56, 0.01)),
                         doubleThat(closeTo(1.56, 0.01)));
+        verify(mPageZoomManagerDelegateMock).notifyPageZoomUsed();
     }
 
     @Test
@@ -106,6 +108,7 @@ public class PageZoomManagerUnitTest {
                         eq(mWebContentsMock),
                         doubleThat(closeTo(3.07, 0.01)),
                         doubleThat(closeTo(3.07, 0.01)));
+        verify(mPageZoomManagerDelegateMock).notifyPageZoomUsed();
     }
 
     @Test
@@ -269,5 +272,18 @@ public class PageZoomManagerUnitTest {
                         eq(mWebContentsMock),
                         doubleThat(closeTo(1.56, 0.01)),
                         doubleThat(closeTo(1.56, 0.01)));
+        verify(mPageZoomManagerDelegateMock).notifyPageZoomUsed();
+    }
+
+    @Test
+    public void testSetZoomLevel_DoesNotNotifyPageZoomUsed() {
+        mManager.setZoomLevel(1.56);
+
+        verify(mHostZoomMapMock, times(1))
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(1.56, 0.01)),
+                        doubleThat(closeTo(1.56, 0.01)));
+        verify(mPageZoomManagerDelegateMock, never()).notifyPageZoomUsed();
     }
 }

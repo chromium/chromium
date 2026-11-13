@@ -139,6 +139,7 @@ public class PageZoomIndicatorCoordinator {
             resetDismissalTimer();
         }
 
+        mManager.notifyPageZoomUsed();
         PageZoomUma.logZoomIndicatorClicked();
     }
 

@@ -93,4 +93,7 @@ public interface AccessibilitySettingsDelegate {
     default @Nullable String getCaretBrowsingPreferenceKey() {
         return null;
     }
+
+    /** Notifies feature engagement that the user interacted with Page Zoom in settings. */
+    default void notifyPageZoomUsed() {}
 }

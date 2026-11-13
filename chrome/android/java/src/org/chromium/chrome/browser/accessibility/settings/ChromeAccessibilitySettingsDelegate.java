@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -161,5 +163,11 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public String getCaretBrowsingPreferenceKey() {
         return Pref.CARET_BROWSING_ENABLED;
+    }
+
+    @Override
+    public void notifyPageZoomUsed() {
+        TrackerFactory.getTrackerForProfile(mProfile.getOriginalProfile())
+                .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
     }
 }

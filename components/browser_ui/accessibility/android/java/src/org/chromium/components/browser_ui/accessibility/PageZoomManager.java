@@ -44,6 +44,7 @@ public class PageZoomManager {
 
         if (index >= 0) {
             snapToIndex(index);
+            notifyPageZoomUsed();
         }
         return index;
     }
@@ -63,6 +64,7 @@ public class PageZoomManager {
 
         if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
             snapToIndex(index);
+            notifyPageZoomUsed();
         }
         return index;
     }
@@ -70,6 +72,12 @@ public class PageZoomManager {
     /** Resets the zoom level of the current WebContents to the default zoom level. */
     void resetZoomLevel() {
         setZoomLevel(getDefaultZoomLevel());
+        notifyPageZoomUsed();
+    }
+
+    /** Notifies the delegate that the user interacted with Page Zoom. */
+    void notifyPageZoomUsed() {
+        mDelegate.notifyPageZoomUsed();
     }
 
     /** Returns the zoom level of the current WebContents. */

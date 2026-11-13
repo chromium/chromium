@@ -88,6 +88,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
     public void testShow_FromOmniboxIconClick_DoesNotStartDismissalTimer() {
         mCoordinator.show();
         assertTrue(mCoordinator.isPopupWindowShowing());
+        verify(mManager).notifyPageZoomUsed();
 
         // Advance looper past the 2-second timeout
         ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
@@ -202,6 +203,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
     public void testShow_PhoneFormFactor_DoesNotShowPopup() {
         mCoordinator.show();
         assertFalse(mCoordinator.isPopupWindowShowing());
+        verify(mManager, never()).notifyPageZoomUsed();
     }
 
     @Test
@@ -209,6 +211,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
         when(mManager.isPageZoomSupported()).thenReturn(false);
         mCoordinator.show();
         assertFalse(mCoordinator.isPopupWindowShowing());
+        verify(mManager, never()).notifyPageZoomUsed();
     }
 
     @Test

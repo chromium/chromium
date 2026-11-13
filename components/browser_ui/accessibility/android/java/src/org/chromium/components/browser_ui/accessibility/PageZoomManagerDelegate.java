@@ -50,4 +50,7 @@ public interface PageZoomManagerDelegate {
      * tab is not a native page, and the overflow menu is not showing.
      */
     boolean canShowPopupWindow();
+
+    /** Notifies feature engagement that the user interacted with Page Zoom. */
+    default void notifyPageZoomUsed() {}
 }

@@ -585,13 +585,10 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void contentsZoomChange(boolean zoomIn) {
-        WebContents wc = mTab.getWebContents();
-        if (wc != null) {
-            if (zoomIn) {
-                ZoomController.zoomIn(wc);
-            } else {
-                ZoomController.zoomOut(wc);
-            }
+        if (zoomIn) {
+            ZoomController.zoomInPage(mTab);
+        } else {
+            ZoomController.zoomOutPage(mTab);
         }
     }
 

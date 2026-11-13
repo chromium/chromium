@@ -258,6 +258,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             PageZoomUma.logSettingsDefaultZoomLevelChangedHistogram();
             PageZoomUma.logSettingsDefaultZoomLevelValueHistogram(
                     mPageZoomLatestDefaultZoomPrefValue);
+            if (mDelegate != null) {
+                mDelegate.notifyPageZoomUsed();
+            }
         }
 
         super.onStop();
@@ -289,6 +292,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     mDelegate.getBrowserContextHandle(), (Integer) newValue);
         } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);
+            mDelegate.notifyPageZoomUsed();
         } else if (PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT.equals(preference.getKey())) {
             // TODO(mschillaci): Implement the override behavior for OS level.
         } else if (PREF_CARET_BROWSING.equals(preference.getKey())) {

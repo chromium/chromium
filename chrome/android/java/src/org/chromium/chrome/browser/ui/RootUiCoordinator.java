@@ -812,6 +812,16 @@ public class RootUiCoordinator
                                                 .getAppMenuHandler()
                                                 .isAppMenuShowing();
                             }
+
+                            @Override
+                            public void notifyPageZoomUsed() {
+                                Profile profile = mProfileSupplier.get();
+                                if (profile != null) {
+                                    TrackerFactory.getTrackerForProfile(
+                                                    profile.getOriginalProfile())
+                                            .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
+                                }
+                            }
                         });
 
         mPageZoomBarCoordinator =
