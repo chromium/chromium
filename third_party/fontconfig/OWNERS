@@ -1,3 +1,6 @@
 spang@chromium.org
 dnicoara@chromium.org
 thomasanderson@chromium.org
+
+# For Fontations crate updates in `fc_fontations`.
+per-file BUILD.gn=file://third_party/rust/skrifa/OWNERS
