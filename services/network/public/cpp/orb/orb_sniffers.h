@@ -15,12 +15,12 @@ namespace network::orb {
 
 // Three conclusions are possible from sniffing a byte sequence:
 //  - No: meaning that the data definitively doesn't match the indicated type.
-//  - Yes: meaning that the data definitive does match the indicated type.
+//  - Yes: meaning that the data definitively does match the indicated type.
 //  - Maybe: meaning that if more bytes are appended to the stream, it's
 //    possible to get a Yes result. For example, if we are sniffing for a tag
 //    like "<html", a kMaybe result would occur if the data contains just
 //    "<ht".
-enum SniffingResult {
+enum class SniffingResult {
   kNo,
   kMaybe,
   kYes,

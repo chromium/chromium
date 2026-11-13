@@ -4,75 +4,52 @@
 
 #include "services/network/public/cpp/orb/orb_sniffers.h"
 
-#include <stddef.h>
-
-#include <algorithm>
-#include <set>
-#include <string>
+#include <array>
+#include <cstddef>
+#include <optional>
 #include <string_view>
-#include <unordered_set>
-#include <vector>
 
-#include "base/check_op.h"
-#include "base/command_line.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/check.h"
 #include "base/containers/span.h"
-#include "base/lazy_instance.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "net/base/mime_sniffer.h"
+#include "base/strings/whitespace_constants.h"
 
 namespace network::orb {
 
 namespace {
 
-void AdvancePastUtf8Bom(std::string_view* data) {
-  // https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8
-  const std::string_view kUtf8Bom("\xEF\xBB\xBF");
-
-  if (data->starts_with(kUtf8Bom)) {
-    data->remove_prefix(kUtf8Bom.size());
-  }
+[[nodiscard]] std::string_view StripUtf8Bom(std::string_view data) {
+  return base::RemovePrefix(data, base::kUtf8ByteOrderMark).value_or(data);
 }
 
 // Based on https://infra.spec.whatwg.org/#ascii-whitespace
-const std::string_view kWhitespaceChars = "\t\n\f\r ";
+constexpr std::string_view kWhitespaceChars = "\t\n\f\r ";
 
-void AdvancePastWhitespace(std::string_view* data) {
-  size_t offset = data->find_first_not_of(kWhitespaceChars);
-  if (offset == std::string_view::npos) {
-    // |data| was entirely whitespace.
-    *data = std::string_view();
-  } else {
-    data->remove_prefix(offset);
-  }
+[[nodiscard]] std::string_view TrimLeadingWhitespace(std::string_view data) {
+  return base::TrimString(data, kWhitespaceChars, base::TRIM_LEADING);
 }
 
-// Returns kYes if |data| starts with one of the string patterns in
-// |signatures|, kMaybe if |data| is a prefix of one of the patterns in
-// |signatures|, and kNo otherwise.
-//
-// When kYes is returned, the matching prefix is erased from |data|.
-SniffingResult MatchesSignature(std::string_view* data,
+// Returns `kYes` if `data` starts with one of the string patterns in
+// `signatures`, `kMaybe` if `data` is a prefix of one of the patterns in
+// `signatures`, and `kNo` otherwise.
+SniffingResult MatchesSignature(std::string_view data,
                                 base::span<const std::string_view> signatures,
                                 base::CompareCase compare_case) {
-  for (const auto& signature : signatures) {
-    if (signature.length() <= data->length()) {
-      if (base::StartsWith(*data, signature, compare_case)) {
-        // When |signatures[i]| is a prefix of |data|, it constitutes a match.
-        // Strip the matching characters, and return.
-        data->remove_prefix(signature.length());
-        return kYes;
+  for (std::string_view signature : signatures) {
+    if (signature.length() <= data.length()) {
+      if (base::StartsWith(data, signature, compare_case)) {
+        // When `signature` is a prefix of `data`, it constitutes a match.
+        return SniffingResult::kYes;
       }
     } else {
-      if (base::StartsWith(signature, *data, compare_case)) {
+      if (base::StartsWith(signature, data, compare_case)) {
         // When `data` is a prefix of `signature`, that means that
         // subsequent bytes in the stream could cause a match to occur.
-        return kMaybe;
+        return SniffingResult::kMaybe;
       }
     }
   }
-  return kNo;
+  return SniffingResult::kNo;
 }
 
 size_t FindFirstJavascriptLineTerminator(std::string_view hay, size_t pos) {
@@ -97,8 +74,7 @@ size_t FindFirstJavascriptLineTerminator(std::string_view hay, size_t pos) {
     // TODO(lukasza): Prevent matching 3 bytes that span/straddle 2 UTF8
     // characters.
     std::string_view substr = hay.substr(pos);
-    if (base::StartsWith(substr, "\u2028") ||
-        base::StartsWith(substr, "\u2029")) {
+    if (substr.starts_with("\u2028") || substr.starts_with("\u2029")) {
       break;
     }
 
@@ -107,110 +83,104 @@ size_t FindFirstJavascriptLineTerminator(std::string_view hay, size_t pos) {
   return pos;
 }
 
-// Checks if |data| starts with an HTML comment (i.e. with "<!-- ... -->").
-// - If there is a valid, terminated comment then returns kYes.
+// Checks if `data` starts with an HTML comment (i.e. with "<!-- ... -->").
+// - If there is a valid, terminated comment then returns `kYes`.
 // - If there is a start of a comment, but the comment is not completed (e.g.
-//   |data| == "<!-" or |data| == "<!-- not terminated yet") then returns
-//   kMaybe.
-// - Returns kNo otherwise.
+//   `data` == "<!-" or `data` == "<!-- not terminated yet") then returns
+//   `kMaybe`.
+// - Returns `kNo` otherwise.
 //
-// Mutates |data| to advance past the comment when returning kYes.  Note that
-// SingleLineHTMLCloseComment ECMAscript rule is taken into account which means
+// Mutates `data` to advance past the comment when returning `kYes`. Note that
+// SingleLineHTMLCloseComment ECMAScript rule is taken into account which means
 // that characters following an HTML comment are consumed up to the nearest line
 // terminating character.
-SniffingResult MaybeSkipHtmlComment(std::string_view* data) {
+SniffingResult MaybeSkipHtmlComment(std::string_view& data) {
   constexpr std::string_view kStartString = "<!--";
-  if (!base::StartsWith(*data, kStartString)) {
-    if (base::StartsWith(kStartString, *data)) {
-      return kMaybe;
+  if (!data.starts_with(kStartString)) {
+    if (kStartString.starts_with(data)) {
+      return SniffingResult::kMaybe;
     }
-    return kNo;
+    return SniffingResult::kNo;
   }
 
   constexpr std::string_view kEndString = "-->";
-  size_t end_of_html_comment = data->find(kEndString, kStartString.length());
+  size_t end_of_html_comment = data.find(kEndString, kStartString.length());
   if (end_of_html_comment == std::string_view::npos) {
-    return kMaybe;
+    return SniffingResult::kMaybe;
   }
   end_of_html_comment += kEndString.length();
 
-  // Skipping until the first line terminating character.  See
+  // Skipping until the first line terminating character. See
   // https://crbug.com/839945 for the motivation behind this.
   size_t end_of_line =
-      FindFirstJavascriptLineTerminator(*data, end_of_html_comment);
+      FindFirstJavascriptLineTerminator(data, end_of_html_comment);
   if (end_of_line == std::string_view::npos) {
-    return kMaybe;
+    return SniffingResult::kMaybe;
   }
 
   // Found real end of the combined HTML/JS comment.
-  data->remove_prefix(end_of_line);
-  return kYes;
+  data.remove_prefix(end_of_line);
+  return SniffingResult::kYes;
 }
 
-}  // anonymous namespace
+}  // namespace
 
-// This function is a slight modification of |net::SniffForHTML|.
+// This function is a slight modification of `net::SniffForHTML`.
 SniffingResult SniffForHTML(std::string_view data) {
   // The content sniffers used by Chrome and Firefox are using "<!--" as one of
   // the HTML signatures, but it also appears in valid JavaScript, considered as
-  // well-formed JS by the browser.  Since we do not want to block any JS, we
-  // exclude it from our HTML signatures. This can weaken our CORB policy,
-  // but we can break less websites.
+  // well-formed JS by the browser. Since we do not want to block any JS, we
+  // exclude it from our HTML signatures. This can weaken our ORB policy,
+  // but we can break fewer websites.
   //
   // Note that <body> and <br> are not included below, since <b is a prefix of
   // them.
   //
-  // TODO(dsjang): parameterize |net::SniffForHTML| with an option that decides
+  // TODO(dsjang): parameterize `net::SniffForHTML` with an option that decides
   // whether to include <!-- or not, so that we can remove this function.
-  // TODO(dsjang): Once CrossOriginReadBlocking is moved into the browser
-  // process, we should do single-thread checking here for the static
-  // initializer.
-  static constexpr std::string_view kHtmlSignatures[] = {
-      std::string_view("<!doctype html"),  // HTML5 spec
-      std::string_view("<script"),         // HTML5 spec, Mozilla
-      std::string_view("<html"),           // HTML5 spec, Mozilla
-      std::string_view("<head"),           // HTML5 spec, Mozilla
-      std::string_view("<iframe"),         // Mozilla
-      std::string_view("<h1"),             // Mozilla
-      std::string_view("<div"),            // Mozilla
-      std::string_view("<font"),           // Mozilla
-      std::string_view("<table"),          // Mozilla
-      std::string_view("<a"),              // Mozilla
-      std::string_view("<style"),          // Mozilla
-      std::string_view("<title"),          // Mozilla
-      std::string_view("<b"),  // Mozilla (note: subsumes <body>, <br>)
-      std::string_view("<p")   // Mozilla
-  };
+  static constexpr auto kHtmlSignatures = std::to_array<std::string_view>({
+      "<!doctype html",  // HTML5 spec
+      "<script",         // HTML5 spec, Mozilla
+      "<html",           // HTML5 spec, Mozilla
+      "<head",           // HTML5 spec, Mozilla
+      "<iframe",         // Mozilla
+      "<h1",             // Mozilla
+      "<div",            // Mozilla
+      "<font",           // Mozilla
+      "<table",          // Mozilla
+      "<a",              // Mozilla
+      "<style",          // Mozilla
+      "<title",          // Mozilla
+      "<b",              // Mozilla (note: subsumes <body>, <br>)
+      "<p",              // Mozilla
+  });
 
-  AdvancePastUtf8Bom(&data);
-  while (data.length() > 0) {
-    AdvancePastWhitespace(&data);
+  data = StripUtf8Bom(data);
+  while (!data.empty()) {
+    data = TrimLeadingWhitespace(data);
 
     SniffingResult signature_match = MatchesSignature(
-        &data, kHtmlSignatures, base::CompareCase::INSENSITIVE_ASCII);
-    if (signature_match != kNo) {
+        data, kHtmlSignatures, base::CompareCase::INSENSITIVE_ASCII);
+    if (signature_match != SniffingResult::kNo) {
       return signature_match;
     }
 
-    SniffingResult comment_match = MaybeSkipHtmlComment(&data);
-    if (comment_match != kYes) {
+    SniffingResult comment_match = MaybeSkipHtmlComment(data);
+    if (comment_match != SniffingResult::kYes) {
       return comment_match;
     }
   }
 
-  // All of |data| was consumed, without a clear determination.
-  return kMaybe;
+  // All of `data` was consumed, without a clear determination.
+  return SniffingResult::kMaybe;
 }
 
 SniffingResult SniffForXML(std::string_view data) {
-  // TODO(dsjang): Once CrossOriginReadBlocking is moved into the browser
-  // process, we should do single-thread checking here for the static
-  // initializer.
-  AdvancePastUtf8Bom(&data);
-  AdvancePastWhitespace(&data);
-  static constexpr std::string_view kXmlSignatures[] = {
-      std::string_view("<?xml")};
-  return MatchesSignature(&data, kXmlSignatures, base::CompareCase::SENSITIVE);
+  data = StripUtf8Bom(data);
+  data = TrimLeadingWhitespace(data);
+  static constexpr auto kXmlSignatures =
+      std::to_array<std::string_view>({"<?xml"});
+  return MatchesSignature(data, kXmlSignatures, base::CompareCase::SENSITIVE);
 }
 
 SniffingResult SniffForJSON(std::string_view data) {
@@ -223,18 +193,17 @@ SniffingResult SniffForJSON(std::string_view data) {
   // TODO(nick): We have to come up with a better way to sniff JSON. The
   // following are known limitations of this function:
   // https://crbug.com/795470/ Support non-dictionary values (e.g. lists)
-  enum {
-    kStartState,
-    kLeftBraceState,
-    kLeftQuoteState,
-    kEscapeState,
-    kRightQuoteState,
-  } state = kStartState;
+  enum class State {
+    kStart,
+    kLeftBrace,
+    kLeftQuote,
+    kEscape,
+    kRightQuote,
+  } state = State::kStart;
 
-  AdvancePastUtf8Bom(&data);
-  for (size_t i = 0; i < data.length(); ++i) {
-    const char c = data[i];
-    if (state != kLeftQuoteState && state != kEscapeState) {
+  data = StripUtf8Bom(data);
+  for (char c : data) {
+    if (state != State::kLeftQuote && state != State::kEscape) {
       // Whitespace is ignored (outside of string literals)
       if (kWhitespaceChars.contains(c)) {
         continue;
@@ -242,39 +211,39 @@ SniffingResult SniffForJSON(std::string_view data) {
     }
 
     switch (state) {
-      case kStartState:
+      case State::kStart:
         if (c == '{') {
-          state = kLeftBraceState;
+          state = State::kLeftBrace;
         } else {
-          return kNo;
+          return SniffingResult::kNo;
         }
         break;
-      case kLeftBraceState:
+      case State::kLeftBrace:
         if (c == '"') {
-          state = kLeftQuoteState;
+          state = State::kLeftQuote;
         } else {
-          return kNo;
+          return SniffingResult::kNo;
         }
         break;
-      case kLeftQuoteState:
+      case State::kLeftQuote:
         if (c == '"') {
-          state = kRightQuoteState;
+          state = State::kRightQuote;
         } else if (c == '\\') {
-          state = kEscapeState;
+          state = State::kEscape;
         }
         break;
-      case kEscapeState:
+      case State::kEscape:
         // Simplification: don't bother rejecting hex escapes.
-        state = kLeftQuoteState;
+        state = State::kLeftQuote;
         break;
-      case kRightQuoteState:
+      case State::kRightQuote:
         if (c == ':') {
-          return kYes;
+          return SniffingResult::kYes;
         }
-        return kNo;
+        return SniffingResult::kNo;
     }
   }
-  return kMaybe;
+  return SniffingResult::kMaybe;
 }
 
 SniffingResult SniffForFetchOnlyResource(std::string_view data) {
@@ -289,34 +258,37 @@ SniffingResult SniffForFetchOnlyResource(std::string_view data) {
   // infinite loop. In either case, the prefix must create a guarantee that no
   // matter what bytes follow it, the entire response would be worthless to
   // execute as a <script>.
-  static constexpr std::string_view kScriptBreakingPrefixes[] = {
-      // Parser breaker prefix.
-      //
-      // Built into angular.js (followed by a comma and a newline):
-      //   https://docs.angularjs.org/api/ng/service/$http
-      //
-      // Built into the Java Spring framework (followed by a comma and a space):
-      //   https://goo.gl/xP7FWn
-      //
-      // Observed on google.com (without a comma, followed by a newline).
-      std::string_view(")]}'"),
+  static constexpr auto kScriptBreakingPrefixes =
+      std::to_array<std::string_view>({
+          // Parser breaker prefix.
+          //
+          // Built into angular.js (followed by a comma and a newline):
+          //   https://docs.angularjs.org/api/ng/service/$http
+          //
+          // Built into the Java Spring framework (followed by a comma and a
+          // space):
+          //   https://goo.gl/xP7FWn
+          //
+          // Observed on google.com (without a comma, followed by a newline).
+          ")]}'",
 
-      // Apache struts: https://struts.apache.org/plugins/json/#prefix
-      std::string_view("{}&&"),
+          // Apache struts: https://struts.apache.org/plugins/json/#prefix
+          "{}&&",
 
-      // Spring framework (historically): https://goo.gl/JYPFAv
-      std::string_view("{} &&"),
+          // Spring framework (historically): https://goo.gl/JYPFAv
+          "{} &&",
 
-      // Infinite loops.
-      std::string_view("for(;;);"),  // observed on facebook.com
-      std::string_view("while(1);"),
-      std::string_view("for (;;);"),
-      std::string_view("while (1);"),
-  };
-  AdvancePastUtf8Bom(&data);
+          // Infinite loops.
+          "for(;;);",  // observed on facebook.com
+          "while(1);",
+          "for (;;);",
+          "while (1);",
+      });
+
+  data = StripUtf8Bom(data);
   SniffingResult has_parser_breaker = MatchesSignature(
-      &data, kScriptBreakingPrefixes, base::CompareCase::SENSITIVE);
-  if (has_parser_breaker != kNo) {
+      data, kScriptBreakingPrefixes, base::CompareCase::SENSITIVE);
+  if (has_parser_breaker != SniffingResult::kNo) {
     return has_parser_breaker;
   }
 
