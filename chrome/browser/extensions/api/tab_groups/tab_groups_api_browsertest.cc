@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -124,10 +124,10 @@ tab_groups::SavedTabGroup CreateSavedTabGroupFromLocalId(
   return saved_group;
 }
 
-// Closes all tabs in `tab_list`, closing the leftmost one each time.
+// Closes all tabs in `tab_list`.
 void CloseAllTabs(TabListInterface* tab_list) {
-  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
-    tab_list->GetTab(0)->Close();
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+    tab->Close();
   }
 }
 
@@ -693,6 +693,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   }
   ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
 
+  TabListInterface* tab_list = GetTabListInterface();
+  const int initial_tab_count = tab_list->GetTabCount();
+
   // Use the TabGroupsMoveFunction to move the group to index 1 in the other
   // window.
   constexpr int kNumTabsMovedAcrossWindows = 3;
@@ -705,8 +708,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
                                           api_test_utils::FunctionMode::kNone));
 
   // On some platforms (e.g. Android) tab move between windows is async, so
-  // allow the operation to complete.
-  base::RunLoop().RunUntilIdle();
+  // wait for the tab count and group presence to reflect the completed move
+  // across windows.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return tab_list->GetTabCount() ==
+               initial_tab_count - kNumTabsMovedAcrossWindows &&
+           tab_list2->GetTabCount() == kNumTabs2 + kNumTabsMovedAcrossWindows &&
+           tab_list2->ContainsTabGroup(group);
+  }));
 
   ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_list2->GetTabCount());
   EXPECT_EQ(tab_list2->GetTab(1)->GetContents(), web_contents(2));
@@ -721,7 +730,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   CloseAllTabs(tab_list2);
 
   // Close tabs in the original window.
-  TabListInterface* tab_list = GetTabListInterface();
   CloseAllTabs(tab_list);
 }
 
