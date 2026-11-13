@@ -43,6 +43,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -210,15 +212,15 @@ public class AdaptiveUiControllerImplTest {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry first = newEntry();
         mController.show(first);
-        verify(mObserver).onWillShow(AdaptiveUiContainer.BOTTOM_SHEET);
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
         mController.show(first);
-        verify(mObserver, never()).onWillShow(AdaptiveUiContainer.MODAL_DIALOG);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
 
         mController.show(newEntry());
-        verify(mObserver).onWillShow(AdaptiveUiContainer.MODAL_DIALOG);
+        verify(mModalDialogManager).showDialog(any(), anyInt());
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 
     // ---------------------------------------------------------------------------------------
@@ -237,24 +239,23 @@ public class AdaptiveUiControllerImplTest {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
         mController.show(newEntry());
         PropertyModel model = captureDialogModel(ModalDialogType.TAB);
-        verify(mObserver).onWillShow(AdaptiveUiContainer.MODAL_DIALOG);
-        verify(mObserver, never()).onShown();
+        verify(mObserver, never()).onShown(anyInt());
 
         ModalDialogManagerObserver dialogObserver = captureDialogObserver();
         dialogObserver.onDialogCreated(model, /* dialog= */ null);
         dialogObserver.onDialogShown(new View(mActivity));
 
-        verify(mObserver).onShown();
+        verify(mObserver).onShown(AdaptiveUiContainer.MODAL_DIALOG);
     }
 
     @Test
-    public void testDialog_HideRelaysFeatureReason() {
+    public void testDialog_DismissRelaysFeatureReason() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
         AdaptiveUiEntry entry = newEntry();
         mController.show(entry);
         PropertyModel model = captureDialogModel(ModalDialogType.TAB);
 
-        mController.hide(entry, DismissReason.PRIMARY_ACTION);
+        mController.dismiss(entry, DismissReason.PRIMARY_ACTION);
 
         verify(mModalDialogManager).dismissDialog(eq(model), anyInt());
         verify(mObserver).onDismissed(DismissReason.PRIMARY_ACTION);
@@ -277,17 +278,15 @@ public class AdaptiveUiControllerImplTest {
     // ---------------------------------------------------------------------------------------
 
     @Test
-    public void testSheet_OnWillShowBeforeRequestAndOnShownWhenVisible() {
+    public void testSheet_OnShownRelayedWhenContainerShowsIt() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         mController.show(newEntry());
 
-        InOrder inOrder = inOrder(mObserver, mBottomSheetController);
-        inOrder.verify(mObserver).onWillShow(AdaptiveUiContainer.BOTTOM_SHEET);
-        inOrder.verify(mBottomSheetController).requestShowContent(any(), eq(/* animate= */ true));
-        verify(mObserver, never()).onShown();
+        verify(mBottomSheetController).requestShowContent(any(), eq(/* animate= */ true));
+        verify(mObserver, never()).onShown(anyInt());
 
         captureSheetObserver().onSheetContentChanged(captureSheetContent());
-        verify(mObserver).onShown();
+        verify(mObserver).onShown(AdaptiveUiContainer.BOTTOM_SHEET);
     }
 
     @Test
@@ -317,14 +316,14 @@ public class AdaptiveUiControllerImplTest {
     }
 
     @Test
-    public void testSheet_HideShowingSheetRelaysFeatureReason() {
+    public void testSheet_DismissShowingSheetRelaysFeatureReason() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry = newEntry();
         mController.show(entry);
         BottomSheetContent content = captureSheetContent();
         mCurrentSheetContent = content;
 
-        mController.hide(entry, DismissReason.SECONDARY_ACTION);
+        mController.dismiss(entry, DismissReason.SECONDARY_ACTION);
         verify(mBottomSheetController)
                 .hideContent(
                         eq(content),
@@ -357,12 +356,12 @@ public class AdaptiveUiControllerImplTest {
     // ---------------------------------------------------------------------------------------
 
     @Test
-    public void testHideAfterDismissalIsIgnored() {
+    public void testDismissAfterDismissalIsIgnored() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry = newEntry();
         mController.show(entry);
-        mController.hide(entry, DismissReason.CLOSE_BUTTON);
-        mController.hide(entry, DismissReason.CLOSE_BUTTON);
+        mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
+        mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
 
         verify(mObserver).onDismissed(anyInt());
     }
@@ -400,7 +399,7 @@ public class AdaptiveUiControllerImplTest {
         inOrder.verify(mModalDialogManager).dismissDialog(any(), anyInt());
         inOrder.verify(mBottomSheetController)
                 .hideContent(eq(content), eq(/* animate= */ false), anyInt());
-        verify(mObserver).onShown();
+        verify(mObserver).onShown(anyInt());
         verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
     }
 
@@ -430,7 +429,7 @@ public class AdaptiveUiControllerImplTest {
         InOrder inOrder = inOrder(mModalDialogManager);
         inOrder.verify(mModalDialogManager).dismissDialog(eq(tabModel), anyInt());
         inOrder.verify(mModalDialogManager).dismissDialog(eq(appModel), anyInt());
-        verify(mObserver, times(2)).onShown();
+        verify(mObserver, times(2)).onShown(anyInt());
         verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
     }
 
@@ -466,72 +465,8 @@ public class AdaptiveUiControllerImplTest {
                 .hideContent(eq(first), eq(/* animate= */ false), anyInt());
         inOrder.verify(mBottomSheetController)
                 .hideContent(eq(second), eq(/* animate= */ false), anyInt());
-        verify(mObserver, times(2)).onShown();
+        verify(mObserver, times(2)).onShown(anyInt());
         verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
-    }
-
-    @Test
-    public void testHideFromOnWillShowSkipsTheContainer() {
-        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
-        AdaptiveUiEntry entry = newEntry();
-        doAnswer(
-                        invocation -> {
-                            mController.hide(entry, DismissReason.CLOSE_BUTTON);
-                            return null;
-                        })
-                .when(mObserver)
-                .onWillShow(anyInt());
-
-        mController.show(entry);
-
-        verify(mObserver).onDismissed(DismissReason.CLOSE_BUTTON);
-        verify(mObserver, never()).onShown();
-        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
-    }
-
-    @Test
-    public void testDestroyFromOnWillShowSkipsTheContainer() {
-        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
-        AdaptiveUiEntry entry = newEntry();
-        doAnswer(
-                        invocation -> {
-                            mController.destroy();
-                            return null;
-                        })
-                .when(mObserver)
-                .onWillShow(anyInt());
-
-        mController.show(entry);
-
-        verify(mObserver).onDismissed(DismissReason.TAB_CLOSED);
-        verify(mObserver, never()).onShown();
-        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
-    }
-
-    @Test
-    public void testHideAndShowAgainFromOnWillShowShowsOnce() {
-        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
-        AdaptiveUiEntry entry = newEntry();
-        boolean[] reshown = new boolean[1];
-        doAnswer(
-                        invocation -> {
-                            if (reshown[0]) return null;
-                            reshown[0] = true;
-                            mController.hide(entry, DismissReason.CLOSE_BUTTON);
-                            mController.show(entry);
-                            return null;
-                        })
-                .when(mObserver)
-                .onWillShow(anyInt());
-
-        mController.show(entry);
-
-        // The nested show() created the presenter, so the outer one doesn't create another.
-        verify(mObserver, times(2)).onWillShow(AdaptiveUiContainer.BOTTOM_SHEET);
-        verify(mObserver).onDismissed(DismissReason.CLOSE_BUTTON);
-        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 
     @Test
@@ -539,10 +474,77 @@ public class AdaptiveUiControllerImplTest {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry = newEntry();
         mController.show(entry);
-        mController.hide(entry, DismissReason.CLOSE_BUTTON);
+        mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
 
         mController.show(entry);
 
         verify(mBottomSheetController, times(2)).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testShow_ReturnsSheetRequestResult() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean()))
+                .thenReturn(true, false);
+
+        AdaptiveUiEntry first = newEntry();
+        assertEquals(Integer.valueOf(AdaptiveUiContainer.BOTTOM_SHEET), mController.show(first));
+        // Duplicate show on a showing or queued entry returns null.
+        assertNull(mController.show(first));
+
+        AdaptiveUiEntry second = newEntry();
+        assertNull(mController.show(second));
+    }
+
+    @Test
+    public void testShow_ReturnsDialogResult() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        AdaptiveUiEntry queued = newEntry();
+        assertNull(mController.show(queued));
+
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            for (ModalDialogManagerObserver o :
+                                    captureAllDialogObservers(/* expectedCount= */ 2)) {
+                                o.onDialogCreated(model, /* dialog= */ null);
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.TAB));
+        assertEquals(
+                Integer.valueOf(AdaptiveUiContainer.MODAL_DIALOG), mController.show(newEntry()));
+    }
+
+    @Test
+    public void testSheet_ForwardsPrecedenceToSheetType() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(
+                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build())
+                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                        .setSheetUserInitiated(true)
+                        .setSheetUserCritical(UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
+                        .build();
+
+        mController.show(entry);
+
+        BottomSheetContent content = captureSheetContent();
+        BottomSheetType expected =
+                new BottomSheetType.Builder()
+                        .setModal(/* isModal= */ true)
+                        .setPersistent(false)
+                        .setUserInitiated(true)
+                        .setUserCritical(UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
+                        .build();
+        assertEquals(expected, content.getSheetType());
+    }
+
+    private List<ModalDialogManagerObserver> captureAllDialogObservers(int expectedCount) {
+        ArgumentCaptor<ModalDialogManagerObserver> captor =
+                ArgumentCaptor.forClass(ModalDialogManagerObserver.class);
+        verify(mModalDialogManager, times(expectedCount)).addObserver(captor.capture());
+        return captor.getAllValues();
     }
 }

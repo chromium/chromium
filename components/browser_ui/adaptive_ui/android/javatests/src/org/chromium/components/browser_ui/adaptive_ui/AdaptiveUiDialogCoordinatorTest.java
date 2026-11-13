@@ -1123,6 +1123,41 @@ public class AdaptiveUiDialogCoordinatorTest {
     }
 
     @Test
+    public void testShow_ReturnsWhetherDialogWasCreated() {
+        AdaptiveUiDialogCoordinator queuedDialog = createCoordinator(newModelBuilder().build());
+        // Manager queued or dropped the dialog without calling onDialogCreated.
+        assertFalse(queuedDialog.show());
+
+        AdaptiveUiDialogCoordinator shownDialog = createCoordinator(newModelBuilder().build());
+        doAnswer(
+                        invocation -> {
+                            shownDialog.onDialogCreated(
+                                    shownDialog.getDialogModel(), /* dialog= */ null);
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(shownDialog.getDialogModel(), ModalDialogType.TAB);
+        assertTrue(shownDialog.show());
+
+        shownDialog.destroy();
+        assertFalse(shownDialog.show());
+
+        // Created and then dismissed inside showDialog(), e.g. the dialog failed to show.
+        AdaptiveUiDialogCoordinator dismissedDialog = createCoordinator(newModelBuilder().build());
+        doAnswer(
+                        invocation -> {
+                            dismissedDialog.onDialogCreated(
+                                    dismissedDialog.getDialogModel(), /* dialog= */ null);
+                            dismissedDialog.onDismiss(
+                                    dismissedDialog.getDialogModel(), DialogDismissalCause.UNKNOWN);
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(dismissedDialog.getDialogModel(), ModalDialogType.TAB);
+        assertFalse(dismissedDialog.show());
+    }
+
+    @Test
     public void testHide_AfterDismissalIsIgnored() {
         AdaptiveUiDialogCoordinator coordinator = createCoordinator(newModelBuilder().build());
         coordinator.show();

@@ -10,20 +10,14 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface AdaptiveUiObserver {
     /**
-     * Called at most once per {@link AdaptiveUiController#show}, after the container is chosen and
-     * before the entry's content is attached. Not called if the entry is closed first.
-     *
-     * @param container The container that will present the entry.
-     */
-    default void onWillShow(@AdaptiveUiContainer int container) {}
-
-    /**
      * Called at most once per {@link AdaptiveUiController#show}, when the container starts showing
      * the entry (a dialog right after it is shown, a sheet once it takes the entry's content). Not
      * called if the entry is closed while it still waits in a queue, and not called again if the
      * container temporarily hides the entry and shows it again.
+     *
+     * @param container The container that presents the entry.
      */
-    default void onShown() {}
+    default void onShown(@AdaptiveUiContainer int container) {}
 
     /**
      * Called exactly once per {@link AdaptiveUiController#show}, when the entry is closed, whether

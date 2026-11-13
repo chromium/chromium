@@ -9,13 +9,13 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,8 +40,13 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
      * AdaptiveUiSheetCoordinator}.
      */
     interface Presenter {
-        /** Hands the entry to its container, which may queue it. */
-        void show();
+        /**
+         * Hands the entry to its container, which may queue it.
+         *
+         * @return {@code true} if the container is showing or taking over for the entry now; {@code
+         *     false} if it was queued, suppressed, or dropped.
+         */
+        boolean show();
 
         /**
          * Closes the entry if it is showing or queued; the presenter reports the dismissal.
@@ -65,12 +70,6 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
 
     /** The presenter of every entry that is showing or queued. */
     private final Map<AdaptiveUiEntry, Presenter> mPresenters = new HashMap<>();
-
-    /**
-     * Entries not shown yet: from {@link #show} until the container shows or dismisses them. An
-     * entry here without a presenter is still in its observer's onWillShow.
-     */
-    private final Set<AdaptiveUiEntry> mPendingEntries = new HashSet<>();
 
     private boolean mDestroyed;
 
@@ -102,12 +101,9 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
         if (mDestroyed) return;
         mDestroyed = true;
         // Closing the entry a container is presenting makes the container present the next one in
-        // its queue, so close the current entries last: pending entries first, then shown entries
-        // that a container put back in its queue. The collections are copied because close()
-        // removes entries from them.
-        for (AdaptiveUiEntry entry : new ArrayList<>(mPendingEntries)) {
-            close(entry, DismissReason.TAB_CLOSED, /* animate= */ false);
-        }
+        // its queue, so close the entries waiting in a queue first (not shown yet, or put back
+        // after they were shown) and the current ones last. The map is copied because close()
+        // removes entries from it.
         List<AdaptiveUiEntry> currentEntries = new ArrayList<>();
         for (Map.Entry<AdaptiveUiEntry, Presenter> item : new ArrayList<>(mPresenters.entrySet())) {
             if (item.getValue().isCurrent()) {
@@ -123,34 +119,20 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
     }
 
     @Override
-    public void show(AdaptiveUiEntry entry) {
+    public @Nullable @AdaptiveUiContainer Integer show(AdaptiveUiEntry entry) {
         assert !mDestroyed : "A destroyed controller should not have #show invoked on it.";
-        // An entry that is already pending or showing stays in its current container.
-        if (mDestroyed || mPendingEntries.contains(entry) || mPresenters.containsKey(entry)) {
-            return;
-        }
+        // An entry that is already showing or queued stays in its current container.
+        if (mDestroyed || mPresenters.containsKey(entry)) return null;
 
         @AdaptiveUiContainer int container = selectContainer(entry.getAllowedContainers());
-        AdaptiveUiObserver observer = entry.getObserver();
-        // Added before onWillShow, so a hide() or destroy() from the observer finds the entry.
-        mPendingEntries.add(entry);
-        // Fires before the presenter binds the entry's View into the container.
-        if (observer != null) observer.onWillShow(container);
-        // The observer may have hidden the entry (or destroyed this controller) in onWillShow, and
-        // close() already reported the dismissal; or it hid and showed it again, and that nested
-        // show() already created the presenter.
-        if (!mPendingEntries.contains(entry) || mPresenters.containsKey(entry)) return;
-
         Runnable onShown =
                 () -> {
                     if (mDestroyed) return;
-                    mPendingEntries.remove(entry);
-                    notifyShown(entry);
+                    notifyShown(entry, container);
                 };
         Callback<Integer> onDismissed =
                 reason -> {
                     mPresenters.remove(entry);
-                    mPendingEntries.remove(entry);
                     notifyDismissed(entry, reason);
                 };
         Presenter presenter =
@@ -166,29 +148,24 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
                                 mContext,
                                 entry.getPropertyModel(),
                                 entry.getScope(),
+                                entry.isSheetUserInitiated(),
+                                entry.getSheetUserCriticalFeature(),
                                 mBottomSheetController,
                                 onShown,
                                 onDismissed);
         mPresenters.put(entry, presenter);
-        presenter.show();
+        return presenter.show() ? container : null;
     }
 
     @Override
-    public void hide(AdaptiveUiEntry entry, @DismissReason int reason) {
+    public void dismiss(AdaptiveUiEntry entry, @DismissReason int reason) {
         close(entry, reason, /* animate= */ true);
     }
 
-    /**
-     * Closes {@code entry} if it is showing or queued. An entry hidden from its observer's
-     * onWillShow has no presenter yet, so it is dismissed here directly.
-     */
+    /** Closes {@code entry} if it is showing or queued. */
     private void close(AdaptiveUiEntry entry, @DismissReason int reason, boolean animate) {
         Presenter presenter = mPresenters.get(entry);
-        if (presenter != null) {
-            presenter.hide(reason, animate);
-        } else if (mPendingEntries.remove(entry)) {
-            notifyDismissed(entry, reason);
-        }
+        if (presenter != null) presenter.hide(reason, animate);
     }
 
     /**
@@ -212,9 +189,9 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
         return sheetAllowed ? AdaptiveUiContainer.BOTTOM_SHEET : AdaptiveUiContainer.MODAL_DIALOG;
     }
 
-    private static void notifyShown(AdaptiveUiEntry entry) {
+    private static void notifyShown(AdaptiveUiEntry entry, @AdaptiveUiContainer int container) {
         AdaptiveUiObserver observer = entry.getObserver();
-        if (observer != null) observer.onShown();
+        if (observer != null) observer.onShown(container);
     }
 
     private static void notifyDismissed(AdaptiveUiEntry entry, @DismissReason int reason) {

@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -47,6 +48,8 @@ final class AdaptiveUiSheetCoordinator
         implements AdaptiveUiControllerImpl.Presenter, BottomSheetContent {
     private final PropertyModel mModel;
     private final @AdaptiveUiScope int mScope;
+    private final boolean mIsUserInitiated;
+    private final @UserCriticalFeature int mUserCriticalFeature;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mOnShown;
     private final Callback<Integer> mOnDismissed;
@@ -102,6 +105,9 @@ final class AdaptiveUiSheetCoordinator
      * @param scope The {@link AdaptiveUiScope} governing whether the sheet survives tab switches
      *     and navigation ({@link AdaptiveUiScope#WINDOW}) or is cleared automatically ({@link
      *     AdaptiveUiScope#TRANSIENT}).
+     * @param isUserInitiated Whether the sheet is triggered by an explicit user action.
+     * @param userCriticalFeature The approved {@link UserCriticalFeature} for sheet precedence, or
+     *     {@link UserCriticalFeature#NONE}.
      * @param bottomSheetController The window's {@link BottomSheetController} that shows the sheet.
      * @param onShown Runs once, when the {@link BottomSheetController} takes this content (the
      *     sheet starts opening). Not run again if the sheet is suppressed or re-queued and later
@@ -115,11 +121,15 @@ final class AdaptiveUiSheetCoordinator
             Context context,
             PropertyModel model,
             @AdaptiveUiScope int scope,
+            boolean isUserInitiated,
+            @UserCriticalFeature int userCriticalFeature,
             BottomSheetController bottomSheetController,
             Runnable onShown,
             Callback<Integer> onDismissed) {
         mModel = model;
         mScope = scope;
+        mIsUserInitiated = isUserInitiated;
+        mUserCriticalFeature = userCriticalFeature;
         mBottomSheetController = bottomSheetController;
         mOnShown = onShown;
         mOnDismissed = onDismissed;
@@ -166,12 +176,17 @@ final class AdaptiveUiSheetCoordinator
         }
     }
 
-    /** Hands the sheet to the {@link BottomSheetController}, which may queue it. */
+    /**
+     * Hands the sheet to the {@link BottomSheetController}, which may queue it.
+     *
+     * @return {@code true} if the sheet is showing or taking over now; {@code false} if it was
+     *     queued, suppressed, or dropped.
+     */
     @Override
-    public void show() {
-        if (mDestroyed) return;
+    public boolean show() {
+        if (mDestroyed) return false;
         mBottomSheetController.addObserver(mSheetObserver);
-        mBottomSheetController.requestShowContent(this, /* animate= */ true);
+        return mBottomSheetController.requestShowContent(this, /* animate= */ true);
     }
 
     /**
@@ -263,6 +278,8 @@ final class AdaptiveUiSheetCoordinator
         return new BottomSheetType.Builder()
                 .setModal(/* isModal= */ true)
                 .setPersistent(mScope == AdaptiveUiScope.WINDOW)
+                .setUserInitiated(mIsUserInitiated)
+                .setUserCritical(mUserCriticalFeature)
                 .build();
     }
 

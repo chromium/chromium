@@ -29,15 +29,21 @@ public interface AdaptiveUiController {
      * {@link AdaptiveUiObserver#onShown} fires once it is visible.
      *
      * @param entry The entry to show.
+     * @return The container that is now showing the entry or actively taking over for it (such as
+     *     superseding a lower-precedence sheet); null if the entry was queued behind existing
+     *     content, suppressed, or dropped (e.g. already showing or queued, or destroyed). A queued
+     *     entry learns its container from {@link AdaptiveUiObserver#onShown}.
      */
-    void show(AdaptiveUiEntry entry);
+    @Nullable
+    @AdaptiveUiContainer
+    Integer show(AdaptiveUiEntry entry);
 
     /**
-     * Closes {@code entry} if it is showing or queued. {@link AdaptiveUiObserver#onDismissed} fires
-     * with {@code reason}.
+     * Dismisses {@code entry} if it is showing or queued. {@link AdaptiveUiObserver#onDismissed}
+     * fires with {@code reason}.
      *
-     * @param entry The entry to close.
-     * @param reason Why the feature closed the entry.
+     * @param entry The entry to dismiss.
+     * @param reason Why the feature dismissed the entry.
      */
-    void hide(AdaptiveUiEntry entry, @DismissReason int reason);
+    void dismiss(AdaptiveUiEntry entry, @DismissReason int reason);
 }

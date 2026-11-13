@@ -108,12 +108,18 @@ final class AdaptiveUiDialogCoordinator
         return mDialogModel;
     }
 
-    /** Hands the dialog to the {@link ModalDialogManager}, which may queue it. */
+    /**
+     * Hands the dialog to the {@link ModalDialogManager}, which may queue it.
+     *
+     * @return {@code true} if the dialog was created for immediate presentation; {@code false} if
+     *     it was queued, dropped, or already destroyed.
+     */
     @Override
-    public void show() {
-        if (mDestroyed) return;
+    public boolean show() {
+        if (mDestroyed) return false;
         mModalDialogManager.addObserver(this);
         mModalDialogManager.showDialog(mDialogModel, getDialogType(mScope));
+        return mCreatedLast && !mDestroyed;
     }
 
     /**

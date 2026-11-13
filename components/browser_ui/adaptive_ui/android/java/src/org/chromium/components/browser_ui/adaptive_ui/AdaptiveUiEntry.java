@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.adaptive_ui;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
@@ -19,16 +20,22 @@ public class AdaptiveUiEntry {
     private final Set<@AdaptiveUiContainer Integer> mAllowedContainers;
     private final PropertyModel mPropertyModel;
     private final @Nullable AdaptiveUiObserver mObserver;
+    private final boolean mIsSheetUserInitiated;
+    private final @UserCriticalFeature int mSheetUserCriticalFeature;
 
     private AdaptiveUiEntry(
             @AdaptiveUiScope int scope,
             Set<@AdaptiveUiContainer Integer> allowedContainers,
             PropertyModel propertyModel,
-            @Nullable AdaptiveUiObserver observer) {
+            @Nullable AdaptiveUiObserver observer,
+            boolean isSheetUserInitiated,
+            @UserCriticalFeature int sheetUserCriticalFeature) {
         mScope = scope;
         mAllowedContainers = allowedContainers;
         mPropertyModel = propertyModel;
         mObserver = observer;
+        mIsSheetUserInitiated = isSheetUserInitiated;
+        mSheetUserCriticalFeature = sheetUserCriticalFeature;
     }
 
     public @AdaptiveUiScope int getScope() {
@@ -52,12 +59,30 @@ public class AdaptiveUiEntry {
         return mObserver;
     }
 
+    /**
+     * Optional, bottom sheet only: whether the sheet is triggered directly by an explicit user
+     * action rather than passively by browser state. Defaults to {@code false}.
+     */
+    public boolean isSheetUserInitiated() {
+        return mIsSheetUserInitiated;
+    }
+
+    /**
+     * Optional, bottom sheet only: the approved {@link UserCriticalFeature} for sheet precedence,
+     * or {@link UserCriticalFeature#NONE} (default).
+     */
+    public @UserCriticalFeature int getSheetUserCriticalFeature() {
+        return mSheetUserCriticalFeature;
+    }
+
     /** Builder for {@link AdaptiveUiEntry}. */
     public static class Builder {
         private final PropertyModel mPropertyModel;
         private final Set<@AdaptiveUiContainer Integer> mAllowedContainers = new HashSet<>();
         private @AdaptiveUiScope int mScope = AdaptiveUiScope.TRANSIENT;
         private @Nullable AdaptiveUiObserver mObserver;
+        private boolean mIsSheetUserInitiated;
+        private @UserCriticalFeature int mSheetUserCriticalFeature = UserCriticalFeature.NONE;
 
         /**
          * Creates a builder for an {@link AdaptiveUiEntry}.
@@ -91,6 +116,29 @@ public class AdaptiveUiEntry {
         }
 
         /**
+         * Optional, bottom sheet only: sets whether the sheet is triggered directly by an explicit
+         * user action rather than passively by browser state. Used for bottom sheet precedence.
+         *
+         * @param isUserInitiated Whether the sheet is user-initiated. Defaults to {@code false}.
+         */
+        public Builder setSheetUserInitiated(boolean isUserInitiated) {
+            mIsSheetUserInitiated = isUserInitiated;
+            return this;
+        }
+
+        /**
+         * Optional, bottom sheet only: sets an approved {@link UserCriticalFeature} constant for
+         * top bottom sheet precedence.
+         *
+         * @param feature The approved {@link UserCriticalFeature} constant. Defaults to {@link
+         *     UserCriticalFeature#NONE}.
+         */
+        public Builder setSheetUserCritical(@UserCriticalFeature int feature) {
+            mSheetUserCriticalFeature = feature;
+            return this;
+        }
+
+        /**
          * Builds the {@link AdaptiveUiEntry}.
          *
          * @throws IllegalStateException if no allowed container was set.
@@ -104,7 +152,9 @@ public class AdaptiveUiEntry {
                     mScope,
                     Collections.unmodifiableSet(new HashSet<>(mAllowedContainers)),
                     mPropertyModel,
-                    mObserver);
+                    mObserver,
+                    mIsSheetUserInitiated,
+                    mSheetUserCriticalFeature);
         }
     }
 }

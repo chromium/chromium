@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.adaptive_ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -44,6 +46,22 @@ public class AdaptiveUiEntryTest {
                 entry.getAllowedContainers());
         assertSame(model, entry.getPropertyModel());
         assertNull(entry.getObserver());
+        assertFalse(entry.isSheetUserInitiated());
+        assertEquals(UserCriticalFeature.NONE, entry.getSheetUserCriticalFeature());
+    }
+
+    @Test
+    public void testBuilderSetsSheetPrecedence() {
+        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(model)
+                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                        .setSheetUserInitiated(true)
+                        .setSheetUserCritical(UserCriticalFeature.ACCOUNT_PICKER)
+                        .build();
+
+        assertTrue(entry.isSheetUserInitiated());
+        assertEquals(UserCriticalFeature.ACCOUNT_PICKER, entry.getSheetUserCriticalFeature());
     }
 
     @Test

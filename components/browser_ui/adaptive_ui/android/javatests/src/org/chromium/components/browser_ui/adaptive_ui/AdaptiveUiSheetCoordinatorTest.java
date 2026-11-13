@@ -47,6 +47,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -78,10 +80,20 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     private AdaptiveUiSheetCoordinator createContent(
             PropertyModel model, @AdaptiveUiScope int scope) {
+        return createContent(model, scope, /* isUserInitiated= */ false, UserCriticalFeature.NONE);
+    }
+
+    private AdaptiveUiSheetCoordinator createContent(
+            PropertyModel model,
+            @AdaptiveUiScope int scope,
+            boolean isUserInitiated,
+            @UserCriticalFeature int userCriticalFeature) {
         return new AdaptiveUiSheetCoordinator(
                 mActivity,
                 model,
                 scope,
+                isUserInitiated,
+                userCriticalFeature,
                 mBottomSheetController,
                 () -> mShownCount++,
                 mSheetDismissals::add);
@@ -200,11 +212,35 @@ public class AdaptiveUiSheetCoordinatorTest {
                 createContent(newModelBuilder().build(), AdaptiveUiScope.WINDOW);
         assertTrue(windowContent.getSheetType().isModal());
         assertTrue(windowContent.getSheetType().isPersistent());
+        assertFalse(windowContent.getSheetType().isUserInitiated());
+        assertFalse(windowContent.getSheetType().isUserCritical());
 
         AdaptiveUiSheetCoordinator transientContent =
                 createContent(newModelBuilder().build(), AdaptiveUiScope.TRANSIENT);
         assertTrue(transientContent.getSheetType().isModal());
         assertFalse(transientContent.getSheetType().isPersistent());
+        assertFalse(transientContent.getSheetType().isUserInitiated());
+        assertFalse(transientContent.getSheetType().isUserCritical());
+    }
+
+    @Test
+    public void testGetSheetTypeReflectsPrecedence() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder().build(),
+                        AdaptiveUiScope.TRANSIENT,
+                        /* isUserInitiated= */ true,
+                        UserCriticalFeature.ACCOUNT_PICKER);
+        BottomSheetType expected =
+                new BottomSheetType.Builder()
+                        .setModal(/* isModal= */ true)
+                        .setPersistent(false)
+                        .setUserInitiated(true)
+                        .setUserCritical(UserCriticalFeature.ACCOUNT_PICKER)
+                        .build();
+        assertEquals(expected, content.getSheetType());
+        assertTrue(content.getSheetType().isUserInitiated());
+        assertTrue(content.getSheetType().isUserCritical());
     }
 
     @Test
@@ -980,6 +1016,22 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         content.destroy();
         assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testShow_ReturnsRequestShowContentResult() {
+        AdaptiveUiSheetCoordinator shownContent = createContent(newModelBuilder().build());
+        when(mBottomSheetController.requestShowContent(shownContent, /* animate= */ true))
+                .thenReturn(true);
+        assertTrue(shownContent.show());
+
+        AdaptiveUiSheetCoordinator queuedContent = createContent(newModelBuilder().build());
+        when(mBottomSheetController.requestShowContent(queuedContent, /* animate= */ true))
+                .thenReturn(false);
+        assertFalse(queuedContent.show());
+
+        queuedContent.destroy();
+        assertFalse(queuedContent.show());
     }
 
     @Test
