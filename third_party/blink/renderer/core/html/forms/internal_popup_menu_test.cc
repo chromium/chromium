@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/core/page/popup_opening_observer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -611,6 +612,142 @@ TEST_F(InternalPopupMenuTest, NarrowedPopupIsNotScrolled) {
   PaintLayerScrollableArea* viewport = popup_view->LayoutViewport();
   ASSERT_GT(viewport->ContentsSize().width(), kNarrowedSize.width());
   EXPECT_EQ(0.f, viewport->GetScrollOffset().x());
+}
+
+namespace {
+
+class AdoptingPopupOpeningObserver final
+    : public GarbageCollected<AdoptingPopupOpeningObserver>,
+      public PopupOpeningObserver {
+ public:
+  AdoptingPopupOpeningObserver(ChromeClient& chrome_client,
+                               Document& target_document,
+                               Element& element_to_adopt)
+      : chrome_client_(&chrome_client),
+        target_document_(target_document),
+        element_to_adopt_(element_to_adopt) {
+    chrome_client_->RegisterPopupOpeningObserver(this);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(chrome_client_);
+    visitor->Trace(target_document_);
+    visitor->Trace(element_to_adopt_);
+  }
+
+  void WillOpenPopup() override {
+    chrome_client_->UnregisterPopupOpeningObserver(this);
+    target_document_->adoptNode(element_to_adopt_, ASSERT_NO_EXCEPTION);
+  }
+
+ private:
+  Member<ChromeClient> chrome_client_;
+  Member<Document> target_document_;
+  Member<Element> element_to_adopt_;
+};
+
+}  // namespace
+
+// See crbug.com/580868681.
+TEST_F(InternalPopupMenuTest, DatePopupNotOpenedWhenOwnerAdoptedDuringOpen) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper1;
+  WebViewImpl* web_view1 = web_view_helper1.Initialize();
+  frame_test_helpers::WebViewHelper web_view_helper2;
+  WebViewImpl* web_view2 = web_view_helper2.Initialize();
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view1->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <input id="date" type="date">
+  )HTML",
+                                     base_url);
+  frame_test_helpers::LoadHTMLString(web_view2->MainFrameImpl(),
+                                     "<!DOCTYPE html>", base_url);
+
+  Document& document1 =
+      *web_view1->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  Document& document2 =
+      *web_view2->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document1.View()->UpdateAllLifecyclePhasesForTest();
+  document2.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* date =
+      To<HTMLInputElement>(document1.getElementById(AtomicString("date")));
+  ASSERT_TRUE(date);
+
+  MakeGarbageCollected<AdoptingPopupOpeningObserver>(
+      web_view1->GetChromeClient(), document2, *date);
+
+  auto* listener =
+      MakeGarbageCollected<ShowPickerOnEventListener>(web_view1, date);
+  document1.domWindow()->addEventListener(event_type_names::kPagehide,
+                                          listener);
+
+  LocalFrame::NotifyUserActivation(
+      document1.GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+
+  web_view_helper1.Reset();
+
+  EXPECT_FALSE(listener->OpenedPopup());
+  if (WebPagePopupImpl* popup = listener->OpenedPopup()) {
+    static_cast<WidgetBaseClient*>(popup)->GetURLForDebugTrace();
+  }
+}
+
+// See crbug.com/580866198.
+TEST_F(InternalPopupMenuTest, ColorPopupNotOpenedWhenOwnerAdoptedDuringOpen) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper1;
+  WebViewImpl* web_view1 = web_view_helper1.Initialize();
+  frame_test_helpers::WebViewHelper web_view_helper2;
+  WebViewImpl* web_view2 = web_view_helper2.Initialize();
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view1->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <input id="color" type="color">
+  )HTML",
+                                     base_url);
+  frame_test_helpers::LoadHTMLString(web_view2->MainFrameImpl(),
+                                     "<!DOCTYPE html>", base_url);
+
+  Document& document1 =
+      *web_view1->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  Document& document2 =
+      *web_view2->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document1.View()->UpdateAllLifecyclePhasesForTest();
+  document2.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* color =
+      To<HTMLInputElement>(document1.getElementById(AtomicString("color")));
+  ASSERT_TRUE(color);
+
+  MakeGarbageCollected<AdoptingPopupOpeningObserver>(
+      web_view1->GetChromeClient(), document2, *color);
+
+  auto* listener =
+      MakeGarbageCollected<ShowPickerOnEventListener>(web_view1, color);
+  document1.domWindow()->addEventListener(event_type_names::kPagehide,
+                                          listener);
+
+  LocalFrame::NotifyUserActivation(
+      document1.GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+
+  web_view_helper1.Reset();
+
+  EXPECT_FALSE(listener->OpenedPopup());
+  if (WebPagePopupImpl* popup = listener->OpenedPopup()) {
+    static_cast<WidgetBaseClient*>(popup)->GetURLForDebugTrace();
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
