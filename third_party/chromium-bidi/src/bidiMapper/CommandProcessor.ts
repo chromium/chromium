@@ -224,6 +224,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#bluetoothProcessor.simulateGattDisconnection(
           this.#parser.parseSimulateGattDisconnectionParameters(command.params),
         );
+      case 'bluetooth.simulateGattMtuChange':
+        return await this.#bluetoothProcessor.simulateGattMtuChange(
+          this.#parser.parseSimulateGattMtuChangeParameters(command.params),
+        );
       case 'bluetooth.simulatePreconnectedPeripheral':
         return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(
           this.#parser.parseSimulatePreconnectedPeripheralParameters(

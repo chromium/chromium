@@ -70,6 +70,7 @@ export type BluetoothCommand =
   | Bluetooth.SimulateAdvertisement
   | Bluetooth.SimulateGattConnectionResponse
   | Bluetooth.SimulateGattDisconnection
+  | Bluetooth.SimulateGattMtuChange
   | Bluetooth.SimulateService
   | Bluetooth.SimulateCharacteristic
   | Bluetooth.SimulateCharacteristicResponse
@@ -182,6 +183,19 @@ export namespace Bluetooth {
   export type SimulateGattDisconnectionParameters = {
     context: string;
     address: string;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateGattMtuChange = {
+    method: 'bluetooth.simulateGattMtuChange';
+    params: Bluetooth.SimulateGattMtuChangeParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateGattMtuChangeParameters = {
+    context: string;
+    address: string;
+    mtu: number;
   };
 }
 export namespace Bluetooth {

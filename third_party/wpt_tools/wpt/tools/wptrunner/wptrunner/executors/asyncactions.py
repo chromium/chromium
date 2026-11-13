@@ -102,6 +102,15 @@ class BidiBluetoothSimulateGattDisconnectionAction(BidiBluetoothAction):
         return await self.protocol.bidi_bluetooth.simulate_gatt_disconnection(
             context, address)
 
+class BidiBluetoothSimulateGattMtuChangeAction(BidiBluetoothAction):
+    name = "bidi.bluetooth.simulate_gatt_mtu_change"
+
+    async def execute(self, context: str, payload: Mapping[str, Any]) -> Any:
+        address = payload["address"]
+        mtu = payload["mtu"]
+        return await self.protocol.bidi_bluetooth.simulate_gatt_mtu_change(
+            context, address, mtu)
+
 class BidiBluetoothSimulateServiceAction(BidiBluetoothAction):
     name = "bidi.bluetooth.simulate_service"
 
@@ -444,6 +453,7 @@ async_actions = [
     BidiBluetoothSimulatePreconnectedPeripheralAction,
     BidiBluetoothSimulateGattConnectionResponseAction,
     BidiBluetoothSimulateGattDisconnectionAction,
+    BidiBluetoothSimulateGattMtuChangeAction,
     BidiBluetoothSimulateServiceAction,
     BidiBluetoothSimulateCharacteristicAction,
     BidiBluetoothSimulateCharacteristicResponseAction,

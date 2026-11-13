@@ -71,6 +71,9 @@ export interface BidiCommandParameterParser {
   parseSimulateGattDisconnectionParameters(
     params: unknown,
   ): Bluetooth.SimulateGattDisconnectionParameters;
+  parseSimulateGattMtuChangeParameters(
+    params: unknown,
+  ): Bluetooth.SimulateGattMtuChangeParameters;
   parseSimulatePreconnectedPeripheralParameters(
     params: unknown,
   ): Bluetooth.SimulatePreconnectedPeripheralParameters;

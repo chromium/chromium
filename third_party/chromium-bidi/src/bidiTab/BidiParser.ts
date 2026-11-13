@@ -94,6 +94,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Bluetooth.SimulateGattDisconnectionParameters {
     return Parser.Bluetooth.parseSimulateGattDisconnectionParams(params);
   }
+  parseSimulateGattMtuChangeParameters(
+    params: unknown,
+  ): Bluetooth.SimulateGattMtuChangeParameters {
+    return Parser.Bluetooth.parseSimulateGattMtuChangeParams(params);
+  }
   parseSimulatePreconnectedPeripheralParameters(
     params: unknown,
   ): Bluetooth.SimulatePreconnectedPeripheralParameters {

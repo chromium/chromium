@@ -120,6 +120,7 @@ export const BluetoothCommandSchema: z.ZodLazy<
       typeof Bluetooth.SimulateAdvertisementSchema,
       typeof Bluetooth.SimulateGattConnectionResponseSchema,
       typeof Bluetooth.SimulateGattDisconnectionSchema,
+      typeof Bluetooth.SimulateGattMtuChangeSchema,
       typeof Bluetooth.SimulateServiceSchema,
       typeof Bluetooth.SimulateCharacteristicSchema,
       typeof Bluetooth.SimulateCharacteristicResponseSchema,
@@ -136,6 +137,7 @@ export const BluetoothCommandSchema: z.ZodLazy<
     Bluetooth.SimulateAdvertisementSchema,
     Bluetooth.SimulateGattConnectionResponseSchema,
     Bluetooth.SimulateGattDisconnectionSchema,
+    Bluetooth.SimulateGattMtuChangeSchema,
     Bluetooth.SimulateServiceSchema,
     Bluetooth.SimulateCharacteristicSchema,
     Bluetooth.SimulateCharacteristicResponseSchema,
@@ -390,6 +392,34 @@ export namespace Bluetooth {
     z.object({
       context: z.string(),
       address: z.string(),
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const SimulateGattMtuChangeSchema: z.ZodLazy<
+    z.ZodObject<{
+      method: z.ZodLiteral<'bluetooth.simulateGattMtuChange'>;
+      params: typeof Bluetooth.SimulateGattMtuChangeParametersSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateGattMtuChange'),
+      params: Bluetooth.SimulateGattMtuChangeParametersSchema,
+    }),
+  );
+}
+export namespace Bluetooth {
+  export const SimulateGattMtuChangeParametersSchema: z.ZodLazy<
+    z.ZodObject<{
+      context: z.ZodString;
+      address: z.ZodString;
+      mtu: z.ZodNumber;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      mtu: z.number().int().nonnegative(),
     }),
   );
 }

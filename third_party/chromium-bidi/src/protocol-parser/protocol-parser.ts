@@ -723,6 +723,14 @@ export namespace Bluetooth {
         .SimulateGattDisconnectionParametersSchema,
     ) as Protocol.Bluetooth.SimulateGattDisconnectionParameters;
   }
+  export function parseSimulateGattMtuChangeParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateGattMtuChangeParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateGattMtuChangeParametersSchema,
+    ) as Protocol.Bluetooth.SimulateGattMtuChangeParameters;
+  }
   export function parseSimulatePreconnectedPeripheralParams(
     params: unknown,
   ): Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters {
