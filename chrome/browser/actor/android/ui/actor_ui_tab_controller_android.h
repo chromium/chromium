@@ -15,6 +15,8 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace tabs {
 class TabInterface;
 }
@@ -27,8 +29,9 @@ namespace actor::ui {
 
 class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
  public:
-  ActorUiTabControllerAndroid(tabs::TabInterface& tab,
-                              ActorKeyedService* actor_keyed_service);
+  static bool ShouldCreateForProfile(Profile* profile);
+
+  explicit ActorUiTabControllerAndroid(tabs::TabInterface& tab);
   ~ActorUiTabControllerAndroid() override;
 
   // ActorUiTabControllerInterface implementation.

@@ -233,8 +233,7 @@ class ActorOverlayMediator
 
     private void onCurrentTabChanged(@Nullable Tab tab) {
         mDismissSnackbarCallback.run();
-        // TODO(crbug.com/520161144): We had to remove "assert mTabController != null;" to pass the
-        // test in ActorOverlayCoordinatorTest#testTabSwitchToDestroyedTab.
+        // mTabController is legitimately null for destroyed, Incognito, or actor-off tabs.
         if (mCurrentTab != null) {
             mCurrentTab.removeObserver(mTabObserver);
             if (mTabController != null) {

@@ -127,6 +127,7 @@ public class ReaderModeManagerTest {
     @Before
     public void setUp() throws TimeoutException {
         GlicEnabling.setEnabledForTesting(false);
+        ActorUiTabController.setActorUiSupportedForTesting(false);
         ReaderModeTabUtilsJni.setInstanceForTesting(mDistillerTabUtilsJniMock);
         WebDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         ReaderModeTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ADABOOST_MODEL);

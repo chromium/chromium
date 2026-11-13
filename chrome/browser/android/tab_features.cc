@@ -10,7 +10,6 @@
 #include "base/check_is_test.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
 #include "chrome/browser/android/media_state_observer.h"
@@ -353,12 +352,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
                                                                           *tab);
   }
 
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  if (glic::GlicEnabling::IsProfileEligible(profile) && actor_service) {
+  if (actor::ui::ActorUiTabControllerAndroid::ShouldCreateForProfile(profile)) {
     actor_ui_tab_controller_ =
         GetUserDataFactory()
-            .CreateInstance<actor::ui::ActorUiTabControllerAndroid>(
-                *tab, *tab, actor_service);
+            .CreateInstance<actor::ui::ActorUiTabControllerAndroid>(*tab, *tab);
   }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasksContext)) {

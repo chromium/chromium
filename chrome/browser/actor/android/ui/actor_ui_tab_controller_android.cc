@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
-#include "url/android/gurl_android.h"
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -12,11 +11,15 @@
 #include "base/check_deref.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/android/jni_headers/ActorUiTabController_jni.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/actor/android/jni_headers/ActorUiTabController_jni.h"
 
 namespace actor::ui {
 
@@ -24,12 +27,17 @@ namespace {
 bool g_suppress_navigation_dialogs_for_testing = false;
 }  // namespace
 
+// static
+bool ActorUiTabControllerAndroid::ShouldCreateForProfile(Profile* profile) {
+  return glic::GlicEnabling::IsProfileEligible(profile) &&
+         actor::ActorKeyedService::Get(profile);
+}
+
 ActorUiTabControllerAndroid::ActorUiTabControllerAndroid(
-    tabs::TabInterface& tab,
-    ActorKeyedService* actor_keyed_service)
+    tabs::TabInterface& tab)
     : ActorUiTabControllerInterface(tab),
       tab_(tab),
-      actor_keyed_service_(actor_keyed_service),
+      actor_keyed_service_(ActorKeyedService::Get(tab.GetProfile())),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ActorUiTabControllerAndroid::~ActorUiTabControllerAndroid() = default;
@@ -128,6 +136,11 @@ ActorUiTabControllerAndroid::GetWeakPtr() {
 
 UiTabState ActorUiTabControllerAndroid::GetCurrentUiTabState() const {
   return current_ui_tab_state_;
+}
+
+static jboolean JNI_ActorUiTabController_IsActorUiSupported(JNIEnv* env,
+                                                            Profile* profile) {
+  return ActorUiTabControllerAndroid::ShouldCreateForProfile(profile);
 }
 
 }  // namespace actor::ui

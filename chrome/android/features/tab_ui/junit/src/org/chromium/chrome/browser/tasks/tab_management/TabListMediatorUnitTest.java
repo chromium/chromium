@@ -664,6 +664,7 @@ public class TabListMediatorUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         GlicEnabling.setEnabledForTesting(false);
+        ActorUiTabController.setActorUiSupportedForTesting(false);
         mTabListConfig = null;
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);

@@ -328,6 +328,7 @@ public class ReadAloudControllerUnitTest {
         TapToSeekSelectionManager.setSelectionPopupController(mSelectionPopupController);
 
         GlicEnabling.setEnabledForTesting(false);
+        ActorUiTabController.setActorUiSupportedForTesting(false);
         mController = createController();
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserver.capture());
         verify(mFullscreenManager).addObserver(mFullscreenObserver.capture());

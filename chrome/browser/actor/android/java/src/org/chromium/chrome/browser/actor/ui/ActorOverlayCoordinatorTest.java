@@ -113,6 +113,7 @@ public class ActorOverlayCoordinatorTest {
     @Before
     public void setUp() {
         GlicEnabling.setEnabledForTesting(true);
+        ActorUiTabController.setActorUiSupportedForTesting(true);
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         FrameLayout parent = new FrameLayout(mActivity);

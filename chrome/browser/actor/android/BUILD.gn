@@ -139,6 +139,7 @@ source_set("android") {
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/android:tabs_public",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles",
     "//chrome/browser/tab",
     "//components/tabs:public",

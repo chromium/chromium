@@ -64,6 +64,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -223,6 +224,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         GlicEnabling.setEnabledForTesting(false);
+        ActorUiTabController.setActorUiSupportedForTesting(false);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.isTabStateInitialized()).thenReturn(true);

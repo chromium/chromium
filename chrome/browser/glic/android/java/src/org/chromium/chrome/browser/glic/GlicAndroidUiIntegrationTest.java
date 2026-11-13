@@ -103,6 +103,7 @@ public class GlicAndroidUiIntegrationTest {
     @Before
     public void setUp() throws Exception {
         GlicEnabling.setEnabledForTesting(true, /* forwardToNative= */ false);
+        ActorUiTabController.setActorUiSupportedForTesting(true);
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.GLIC);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -143,6 +144,7 @@ public class GlicAndroidUiIntegrationTest {
     @After
     public void tearDown() {
         ActorKeyedServiceFactory.setForTesting(null);
+        ActorUiTabController.setActorUiSupportedForTesting(null);
         GlicKeyedServiceFactory.setForTesting(null);
         GlicEnabling.setEnabledForTesting(false, false);
         ThreadUtils.runOnUiThreadBlocking(

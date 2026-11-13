@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -335,6 +336,7 @@ public class ToolbarManagerUnitTest {
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         GlicEnabling.setEnabledForTesting(true);
+        ActorUiTabController.setActorUiSupportedForTesting(true);
         ComposeboxQueryControllerBridge.setInstanceForTesting(null);
         ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
