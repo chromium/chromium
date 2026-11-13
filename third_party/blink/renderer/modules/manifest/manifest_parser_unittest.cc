@@ -6363,7 +6363,7 @@ TEST_F(ManifestParserTest, TranslationsParseRules) {
       auto& manifest = ParseManifest(R"({ "translations": [] })");
       EXPECT_TRUE(manifest->translations.empty());
       EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("property 'translations' ignored, object expected.",
+      EXPECT_EQ("property 'translations' ignored, type object expected.",
                 errors()[0]);
     }
 

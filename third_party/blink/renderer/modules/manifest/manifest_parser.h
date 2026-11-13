@@ -128,6 +128,11 @@ class MODULES_EXPORT ManifestParser {
                                     const String& key,
                                     Trim trim);
 
+  // Helper function to look up an array or object under |key|, logging a type
+  // error if the property exists but has the wrong JSON type.
+  const JSONArray* ParseArray(const JSONObject* object, const String& key);
+  const JSONObject* ParseObject(const JSONObject* object, const String& key);
+
   // Helper function to parse strings present in a member that itself is
   // a dictionary like 'shortcut' as defined in:
   // https://w3c.github.io/manifest/#shortcutitem-and-its-members Each strings
@@ -384,12 +389,6 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
-  // Keep in sync with ScopeExtensionTypeMap. E.g. kOrigin -> "origin"
-  enum class ScopeExtensionType {
-    kOrigin = 0,
-  };
-  static constexpr const char* ScopeExtensionTypeMap[1] = {"origin"};
-
   // Parses the 'scope_extensions' field of a Manifest, as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns the parsed list of ScopeExtensions. The returned ScopeExtensions
@@ -434,12 +433,11 @@ class MODULES_EXPORT ManifestParser {
   HashMap<String, Vector<String>> ParseFileHandlerAccept(
       const JSONObject* accept);
 
-  // Parses an extension in the 'accept' field of a FileHandler, as defined in:
-  // https://github.com/WICG/file-handling/blob/main/explainer.md. Returns
-  // whether the parsing was successful and, if so, populates |output| with the
-  // parsed extension.
-  bool ParseFileHandlerAcceptExtension(const JSONValue* extension,
-                                       String* ouput);
+  // Validates an extension string in the 'accept' field of a FileHandler, as
+  // defined in: https://github.com/WICG/file-handling/blob/main/explainer.md.
+  // Returns true if |extension| is valid, or logs an error and returns false
+  // otherwise.
+  bool ValidateFileHandlerAcceptExtension(const String& extension);
 
   // Parses the 'protocol_handlers' field of a Manifest, as defined in:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
