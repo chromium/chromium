@@ -19,14 +19,15 @@ class WebContents;
 namespace webui {
 
 // Sets the user profile for `web_contents` created in TopChromeWebUIProfile.
-// The client that creates `web_contents` must call this right after creating
-// it, before its WebPreferences are first computed, and only once.
+// May be called only once, either right after creating `web_contents` or after
+// it navigated. A caller that binds after WebPreferences were computed must
+// recompute them with WebContents::OnWebPreferencesChanged().
 void SetUserProfile(content::WebContents* web_contents, Profile* user_profile);
 
 // Returns the user profile for `web_contents`. For `web_contents` created in
 // TopChromeWebUIProfile, this is the profile set by SetUserProfile(), or null
-// if it was not set or has been destroyed. Otherwise, this is the profile of
-// `web_contents`.
+// if it was not set yet or has been destroyed. Otherwise, this is the profile
+// of `web_contents`.
 Profile* GetUserProfile(content::WebContents* web_contents);
 
 }  // namespace webui

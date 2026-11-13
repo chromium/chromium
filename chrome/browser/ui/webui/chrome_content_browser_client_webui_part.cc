@@ -98,10 +98,11 @@ bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
   if (url.SchemeIs(content::kChromeUIScheme)) {
     // Use default prefs for WebUi. Not further modifications necessary for
     // web_prefs_source.
-  } else {
+  } else if (Profile* user_profile = webui::GetUserProfile(web_contents)) {
     // Use profile prefs for normal websites. A WebContents in
-    // TopChromeWebUIProfile, which has no user prefs, uses its user profile.
-    PrefService* prefs = webui::GetUserProfile(web_contents)->GetPrefs();
+    // TopChromeWebUIProfile, which has no user prefs, uses its user profile,
+    // and keeps the defaults until the user profile is bound.
+    PrefService* prefs = user_profile->GetPrefs();
     web_prefs_source.default_font_size =
         prefs->GetInteger(prefs::kWebKitDefaultFontSize);
     web_prefs_source.default_fixed_font_size =

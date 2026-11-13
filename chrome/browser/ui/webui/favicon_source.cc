@@ -122,6 +122,10 @@ void FaviconSource::StartDataRequest(
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   Profile* profile = GetProfileForRequest(wc_getter);
+  if (!profile) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
@@ -286,11 +290,9 @@ Profile* FaviconSource::GetProfileForRequest(
   // A source created for TopChromeWebUIProfile, see the constructor.
   content::WebContents* web_contents = wc_getter.Run();
   CHECK(web_contents);
-  // The user profile is set when the WebContents is created in
-  // TopChromeWebUIProfile, and outlives it.
+  // The user profile is null until it is set, see webui::SetUserProfile().
   Profile* user_profile = webui::GetUserProfile(web_contents);
-  CHECK(user_profile);
-  return user_profile->GetOriginalProfile();
+  return user_profile ? user_profile->GetOriginalProfile() : nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

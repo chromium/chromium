@@ -192,13 +192,15 @@ void SanitizedImageSource::StartDataRequest(
 #if !BUILDFLAG(IS_ANDROID)
   if (!url_loader_factory_) {
     // In TopChromeWebUIProfile, which is shared by the windows of all profiles,
-    // use the account and the network of the user who requests the image. The
-    // user profile is set when the WebContents is created in
-    // TopChromeWebUIProfile, and outlives it.
+    // use the account and the network of the user who requests the image. A
+    // WebContents whose user profile is not bound yet gets an empty response.
     content::WebContents* web_contents = wc_getter.Run();
     CHECK(web_contents);
     Profile* user_profile = webui::GetUserProfile(web_contents);
-    CHECK(user_profile);
+    if (!user_profile) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
     identity_manager = IdentityManagerFactory::GetForProfile(user_profile);
     request_attributes.url_loader_factory = user_profile->GetURLLoaderFactory();
   }
