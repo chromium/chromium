@@ -17,9 +17,7 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.TripBuilder;
-import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -32,7 +30,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
@@ -72,15 +69,6 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     /** The toolbar, entered by default with this Station. */
     public final ToolbarFacility toolbar;
 
-    // Forwarded from |toolbar|.
-    public final OptionalViewElement<View> optionalToolbarMicButtonElement;
-    public final OptionalViewElement<View> homeButtonElement;
-    public final OptionalViewElement<View> signinButtonElement;
-    // TODO(crbug.com/477035792): Temporarily nullable while the toolbar is being migrated.
-    public final @Nullable ViewElement<ToolbarControlContainer> toolbarElement;
-    public final ViewElement<View> tabSwitcherButtonElement;
-    public final ViewElement<View> menuButtonElement;
-
     /** Prefer the CtaPageStation's subclass |newBuilder()|. */
     public static Builder<CtaPageStation> newGenericBuilder() {
         return new Builder<>(CtaPageStation::new);
@@ -94,12 +82,6 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
 
         toolbar = declareDefaultFacility(new ToolbarFacility());
-        toolbarElement = toolbar.toolbarElement;
-        tabSwitcherButtonElement = toolbar.tabSwitcherButtonElement;
-        menuButtonElement = toolbar.menuButtonElement;
-        homeButtonElement = toolbar.homeButtonElement;
-        optionalToolbarMicButtonElement = toolbar.optionalToolbarMicButtonElement;
-        signinButtonElement = toolbar.signinButtonElement;
     }
 
     /**
