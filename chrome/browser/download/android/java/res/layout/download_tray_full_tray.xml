@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The full download tray, opened from the toolbar button: the download_tray_popup list between a
+     header and a footer. In a window too short for all of it, only the list shrinks. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/download_tray_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/download_tray_item_padding_horizontal"
+        android:paddingEnd="@dimen/download_tray_header_padding_end"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:accessibilityHeading="true"
+            android:text="@string/download_tray_header"
+            android:textAppearance="@style/TextAppearance.TextLargeThick.Primary" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/download_tray_close"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/close"
+            android:scaleType="center"
+            android:src="@drawable/material_ic_close_24dp"
+            app:tint="@color/default_icon_color_tint_list" />
+    </LinearLayout>
+
+    <include
+        layout="@layout/download_tray_popup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View style="@style/HorizontalDivider" />
+
+    <LinearLayout
+        android:id="@+id/download_tray_full_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:paddingStart="@dimen/download_tray_item_padding_horizontal"
+        android:paddingEnd="@dimen/download_tray_item_padding_horizontal"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/download_tray_full_history"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+
+        <!-- Opens in a new tab or window, as desktop's footer icon shows. -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/download_tray_item_icon_margin_end"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_open_in_new_20dp"
+            app:tint="@color/default_icon_color_tint_list" />
+    </LinearLayout>
+</LinearLayout>

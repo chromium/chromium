@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.tray;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.view.View;
@@ -30,17 +31,19 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
  * Decides when the download tray shows downloads and builds the models for its rows. Mirrors the
  * desktop download bubble's partial view: once nothing is downloading, every download this window
  * saw complete that the user hasn't acted on yet is listed in a popup anchored to the toolbar
- * button.
+ * button. The button opens the full tray of recent downloads, as desktop's main view.
  */
 @NullMarked
 class DownloadTrayMediator implements DownloadStateModel.Observer {
@@ -53,6 +56,9 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
          * @return Whether the popup is showing, e.g. false if there is no room for it.
          */
         boolean showCompletions(View anchor, ModelList rows);
+
+        /** As {@link #showCompletions}, but shows {@code rows} as the full tray. */
+        boolean showFullTray(View anchor, ModelList rows);
 
         /** Dismisses the popup, if showing. */
         void dismiss();
@@ -87,6 +93,9 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     /** The showing popup's list, or null if no popup is showing. */
     private @Nullable ModelList mShownList;
 
+    /** Whether the showing popup is the full tray rather than the completion popup. */
+    private boolean mIsFullTrayShowing;
+
     /**
      * Completions since the last popup, waiting to be shown once nothing is still downloading. Kept
      * so they are still shown if the last active download fails, is cancelled or is removed.
@@ -94,8 +103,8 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     private final Set<ContentId> mPendingIds = new ArraySet<>();
 
     /**
-     * When the last popup was shown. Starts one interval in the past so the first completion always
-     * shows ({@link TimeUtils#elapsedRealtimeMillis()} is never negative).
+     * When the last completion popup was shown. One interval in the past, as it starts, lets the
+     * next one show right away.
      */
     private long mLastShownTimeMs = -MIN_SHOW_INTERVAL_MS;
 
@@ -140,6 +149,48 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     void onDismissed() {
         mShownRows.clear();
         mShownList = null;
+        mIsFullTrayShowing = false;
+    }
+
+    /**
+     * Opens the full tray of this window's recent downloads, or closes it if it is open. As
+     * desktop's main view, listed downloads count as acted on, and with nothing to list the
+     * download history opens instead.
+     */
+    void toggleFullTray() {
+        if (mIsFullTrayShowing) {
+            mPopupController.dismiss();
+            return;
+        }
+        View anchor = mAnchorSupplier.get();
+        if (anchor == null || !anchor.isShown()) return;
+
+        // As on desktop, opening the tray resets the completion popup's minimum interval.
+        mLastShownTimeMs = -MIN_SHOW_INTERVAL_MS;
+
+        Map<ContentId, ListItem> rowsById = new ArrayMap<>();
+        ModelList rows = buildFullTrayRows(rowsById);
+        if (rows.isEmpty()) {
+            openDownloadHistory();
+            return;
+        }
+        // Showing first dismisses any completion popup, which clears the shown rows, so record the
+        // new ones only once the tray is showing.
+        if (!mPopupController.showFullTray(anchor, rows)) return;
+        mShownList = rows;
+        mShownRows.putAll(rowsById);
+        mIsFullTrayShowing = true;
+        mUnactionedIds.removeAll(rowsById.keySet());
+    }
+
+    /** Called when the user asks for the full download history from the tray. */
+    void onFullHistoryClicked() {
+        mPopupController.dismiss();
+        openDownloadHistory();
+    }
+
+    private void openDownloadHistory() {
+        mDelegate.showDownloadManager(mIsIncognitoSelected.getAsBoolean());
     }
 
     // DownloadStateModel.Observer implementation:
@@ -225,7 +276,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         if (anchor == null || !anchor.isShown()) return;
 
         Map<ContentId, ListItem> rowsById = new ArrayMap<>();
-        ModelList rows = buildUnactionedRows(rowsById);
+        ModelList rows = buildCompletionPopupRows(rowsById);
         if (rows.isEmpty()) return;
 
         // Showing replaces any previous popup, whose dismissal clears the shown rows, so set them
@@ -236,28 +287,54 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mShownRows.putAll(rowsById);
     }
 
+    /** Builds the completion popup's rows: the un-actioned completions this window shows. */
+    private ModelList buildCompletionPopupRows(Map<ContentId, ListItem> rowsById) {
+        return buildRecentCompletedRows(mUnactionedIds::contains, rowsById);
+    }
+
     /**
-     * Builds rows for the un-actioned completions this window shows, most recently started first,
-     * recording each row's download in {@code rowsById}. Completions no longer in the model's
-     * recent list are forgotten, as desktop marks them actioned.
+     * Builds the full tray's rows: all recent completions this window shows, acted on or not, as
+     * desktop's main view.
      */
-    private ModelList buildUnactionedRows(Map<ContentId, ListItem> rowsById) {
+    private ModelList buildFullTrayRows(Map<ContentId, ListItem> rowsById) {
+        // Only completions are listed, so the model's cap on them also caps the tray, as desktop's
+        // kDefaultMaxNumItemsToShow.
+        return buildRecentCompletedRows(id -> true, rowsById);
+    }
+
+    /**
+     * Builds a row for each of the model's recent completions that this window shows and {@code
+     * shouldList} accepts, most recently started first, recording each row's download in {@code
+     * rowsById}.
+     */
+    private ModelList buildRecentCompletedRows(
+            Predicate<ContentId> shouldList, Map<ContentId, ListItem> rowsById) {
+        List<OfflineItem> recent = mModel.getRecentCompletedItems();
+        markNoLongerRecentAsActioned(recent);
         // Re-checked as the window may have switched between regular and incognito since.
         boolean isIncognitoSelected = mIsIncognitoSelected.getAsBoolean();
-        Set<ContentId> stillRecent = new ArraySet<>();
         ModelList rows = new ModelList();
-        for (OfflineItem item : mModel.getRecentCompletedItems()) {
+        for (OfflineItem item : recent) {
             ContentId id = assumeNonNull(item.id); // The model only keeps items with ids.
-            if (!mUnactionedIds.contains(id)) continue;
-            stillRecent.add(id);
-            if (DownloadStateModel.isVisibleInWindow(item, isIncognitoSelected)) {
-                ListItem row = new ListItem(RowType.COMPLETED, createCompletedItemModel(item));
-                rows.add(row);
-                rowsById.put(id, row);
-            }
+            if (!shouldList.test(id)) continue;
+            if (!DownloadStateModel.isVisibleInWindow(item, isIncognitoSelected)) continue;
+            ListItem row = new ListItem(RowType.COMPLETED, createCompletedItemModel(item));
+            rows.add(row);
+            rowsById.put(id, row);
         }
-        mUnactionedIds.retainAll(stillRecent);
         return rows;
+    }
+
+    /**
+     * Marks un-actioned completions that are no longer in the model's {@code recent} list (started
+     * over 24 hours ago or past its cap) as actioned, as desktop does.
+     */
+    private void markNoLongerRecentAsActioned(List<OfflineItem> recent) {
+        Set<ContentId> recentIds = new ArraySet<>();
+        for (OfflineItem item : recent) {
+            recentIds.add(assumeNonNull(item.id));
+        }
+        mUnactionedIds.retainAll(recentIds);
     }
 
     private void onOpen(OfflineItem item) {
@@ -306,8 +383,8 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     /**
-     * Returns the status line for a completed download, e.g. "4.30 MB • Done", as the desktop
-     * download bubble does ({@code StatusTextBuilderUtils::GetCompletedTotalSizeString}).
+     * Returns the status line for a completed download, e.g. "4.30 MB • 3 minutes ago", as
+     * desktop's {@code BubbleStatusTextBuilder::GetCompletedStatusText}.
      */
     private String getCompletedDescription(OfflineItem item) {
         long bytes = item.totalSizeBytes > 0 ? item.totalSizeBytes : item.receivedBytes;
@@ -321,6 +398,21 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         return mContext.getString(
                 R.string.download_tray_item_status_message_with_separator,
                 size,
-                mContext.getString(R.string.download_tray_item_status_done));
+                getCompletedState(item));
+    }
+
+    /**
+     * Returns how long ago {@code item} completed: "Done" within a minute, then e.g. "3 minutes
+     * ago".
+     */
+    private CharSequence getCompletedState(OfflineItem item) {
+        long nowMs = TimeUtils.currentTimeMillis();
+        // Offline items may have no completion time, and a clock set back gives a negative age.
+        if (item.completionTimeMs <= 0
+                || nowMs - item.completionTimeMs < DateUtils.MINUTE_IN_MILLIS) {
+            return mContext.getString(R.string.download_tray_item_status_done);
+        }
+        return DateUtils.getRelativeTimeSpanString(
+                item.completionTimeMs, nowMs, DateUtils.MINUTE_IN_MILLIS, /* flags= */ 0);
     }
 }

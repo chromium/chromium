@@ -2806,6 +2806,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_TRAY_ITEM_STATUS_DONE" desc="When a download is finished, let the user know.">
         Done
       </message>
+      <message name="IDS_DOWNLOAD_TRAY_HEADER" desc="Header text of the download tray, the popup listing recent downloads that opens from the download toolbar button.">
+        Recent download history
+      </message>
+      <message name="IDS_DOWNLOAD_TRAY_FULL_HISTORY" desc="Label in the download tray for the button that opens a full list of download history.">
+        Full download history
+      </message>
 
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?

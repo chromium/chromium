@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,8 @@ import android.app.Activity;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -109,9 +112,14 @@ public class DownloadTrayCoordinatorTest {
         return popup;
     }
 
+    private View shownContent() {
+        View content = shownPopup().getContentView();
+        assertNotNull(content);
+        return content;
+    }
+
     private SimpleRecyclerViewAdapter shownAdapter() {
-        RecyclerView list = (RecyclerView) shownPopup().getContentView();
-        assertNotNull(list);
+        RecyclerView list = shownContent().findViewById(R.id.download_tray_list);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) list.getAdapter();
         assertNotNull(adapter);
         return adapter;
@@ -120,17 +128,39 @@ public class DownloadTrayCoordinatorTest {
     /** Builds and binds the first row as the list would; it only lays out rows when drawn. */
     private View firstRow() {
         SimpleRecyclerViewAdapter adapter = shownAdapter();
-        RecyclerView list = (RecyclerView) shownPopup().getContentView();
+        RecyclerView list = shownContent().findViewById(R.id.download_tray_list);
         SimpleRecyclerViewAdapter.ViewHolder holder =
                 adapter.createViewHolder(list, RowType.COMPLETED);
         adapter.bindViewHolder(holder, 0);
         return holder.itemView;
     }
 
+    private static void assertHasHeaderAndFooter(View content, boolean hasHeaderAndFooter) {
+        assertEquals(hasHeaderAndFooter, content.findViewById(R.id.download_tray_header) != null);
+        assertEquals(
+                hasHeaderAndFooter, content.findViewById(R.id.download_tray_full_history) != null);
+    }
+
+    /** Returns whether the window showing {@code content} can take focus. */
+    private static boolean isFocusable(View content) {
+        WindowManager.LayoutParams params =
+                (WindowManager.LayoutParams) content.getRootView().getLayoutParams();
+        return (params.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) == 0;
+    }
+
+    private static void dispatchTouch(View view, int action, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, action, x, y, /* metaState= */ 0);
+        view.dispatchTouchEvent(event);
+        event.recycle();
+    }
+
     @Test
     public void testCompletion_showsPopupThatAutoDismisses() {
         completeDownload();
         assertEquals(1, shownAdapter().getItemCount());
+        assertHasHeaderAndFooter(shownContent(), false);
+        // It opens on its own, so it leaves focus in the page.
+        assertFalse(isFocusable(shownContent()));
 
         ShadowLooper.idleMainLooper(
                 DownloadTrayCoordinator.AUTO_DISMISS_MS - 1, TimeUnit.MILLISECONDS);
@@ -171,6 +201,75 @@ public class DownloadTrayCoordinatorTest {
 
         verify(mOnActioned).run();
         verify(mDelegate).openItem(item);
+        assertNull(mCoordinator.getPopupForTesting());
+    }
+
+    @Test
+    public void testFullTray_hasHeaderAndFooterTakesFocusAndStaysUntilClosed() {
+        completeDownload();
+        mCoordinator.toggleFullTray();
+        View content = shownContent();
+        assertEquals(1, shownAdapter().getItemCount());
+        assertHasHeaderAndFooter(content, true);
+        assertTrue(isFocusable(content));
+
+        // Opened by the user, it neither auto-dismisses nor closes on hover.
+        ShadowLooper.idleMainLooper(DownloadTrayCoordinator.AUTO_DISMISS_MS, TimeUnit.MILLISECONDS);
+        shownPopup();
+
+        content.findViewById(R.id.download_tray_close).performClick();
+        assertNull(mCoordinator.getPopupForTesting());
+    }
+
+    @Test
+    public void testFullTray_closesOnOutsideTapsOnly() {
+        completeDownload();
+        mCoordinator.toggleFullTray();
+        View header = shownContent().findViewById(R.id.download_tray_header);
+        View root = header.getRootView();
+        ShadowLooper.idleMainLooper();
+
+        // A tap on a part of the tray that isn't a button, e.g. its title, leaves it open.
+        int[] headerLocation = new int[2];
+        header.getLocationInWindow(headerLocation);
+        dispatchTouch(root, MotionEvent.ACTION_DOWN, headerLocation[0] + 1, headerLocation[1] + 1);
+        shownPopup();
+
+        dispatchTouch(root, MotionEvent.ACTION_OUTSIDE, 0, 0);
+        assertNull(mCoordinator.getPopupForTesting());
+    }
+
+    @Test
+    public void testFullTrayInShortWindow_onlyListShrinks() {
+        completeDownload();
+        mCoordinator.toggleFullTray();
+        View content = shownContent();
+        View header = content.findViewById(R.id.download_tray_header);
+        View list = content.findViewById(R.id.download_tray_list);
+        View footer = content.findViewById(R.id.download_tray_full_history);
+        int widthSpec = MeasureSpec.makeMeasureSpec(320, MeasureSpec.EXACTLY);
+        content.measure(widthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        int headerHeight = header.getMeasuredHeight();
+        int listHeight = list.getMeasuredHeight();
+        int footerHeight = footer.getMeasuredHeight();
+
+        // Laid out shorter than it wants, as the popup is in a short window, the header and footer
+        // keep their height and the list, which scrolls, takes what is left, as on desktop.
+        int shortfall = listHeight / 2;
+        int shortHeight = content.getMeasuredHeight() - shortfall;
+        content.measure(widthSpec, MeasureSpec.makeMeasureSpec(shortHeight, MeasureSpec.EXACTLY));
+        assertEquals(headerHeight, header.getMeasuredHeight());
+        assertEquals(footerHeight, footer.getMeasuredHeight());
+        assertEquals(listHeight - shortfall, list.getMeasuredHeight());
+    }
+
+    @Test
+    public void testFullTray_footerOpensDownloadManager() {
+        completeDownload();
+        mCoordinator.toggleFullTray();
+        shownContent().findViewById(R.id.download_tray_full_history).performClick();
+
+        verify(mDelegate).showDownloadManager(/* isIncognito= */ false);
         assertNull(mCoordinator.getPopupForTesting());
     }
 

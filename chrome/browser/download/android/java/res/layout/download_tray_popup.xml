@@ -5,9 +5,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- The download toolbar button tray: a list of download_tray_item_row rows. -->
-<androidx.recyclerview.widget.RecyclerView
+<!-- The download toolbar button tray: a list of download_tray_item_row rows, which scrolls once it
+     reaches its max height, as desktop's row list does. download_tray_full_tray adds a header and
+     footer around it. -->
+<org.chromium.components.browser_ui.widget.BoundedLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:scrollbars="vertical" />
+    android:orientation="vertical"
+    app:maxHeight="@dimen/download_tray_list_max_height">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/download_tray_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical" />
+</org.chromium.components.browser_ui.widget.BoundedLinearLayout>

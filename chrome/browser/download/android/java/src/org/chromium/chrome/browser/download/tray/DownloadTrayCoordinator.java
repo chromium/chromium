@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download.tray;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 
 /**
  * Entry point for the download toolbar button tray. Shows a popup listing completed downloads,
- * anchored to the toolbar button, mirroring the desktop download bubble's partial view.
+ * anchored to the toolbar button, mirroring the desktop download bubble.
  */
 @NullMarked
 public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupController, Destroyable {
@@ -92,30 +92,59 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
         mMediator.destroy();
     }
 
+    /** Opens or closes the full tray; see {@link DownloadTrayMediator#toggleFullTray()}. */
+    public void toggleFullTray() {
+        mMediator.toggleFullTray();
+    }
+
     // DownloadTrayMediator.PopupController implementation:
 
     @Override
     public boolean showCompletions(View anchor, ModelList rows) {
+        if (!showPopup(
+                anchor,
+                themedContext -> buildList(themedContext, R.layout.download_tray_popup, rows),
+                /* focusable= */ false)) {
+            return false;
+        }
+        // Leave the popup up for screen reader users, who need time to find it, as desktop does.
+        if (!AccessibilityState.isTouchExplorationEnabled()) {
+            mHandler.postDelayed(mAutoDismissRunnable, AUTO_DISMISS_MS);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean showFullTray(View anchor, ModelList rows) {
+        return showPopup(
+                anchor, themedContext -> buildFullTray(themedContext, rows), /* focusable= */ true);
+    }
+
+    /**
+     * Shows a popup with {@code content} anchored to {@code anchor}, replacing any shown popup.
+     *
+     * @param focusable Whether the popup takes focus, for keyboard access and Escape to close it.
+     *     Only for popups the user opened, so one opening on its own leaves keystrokes to the page.
+     */
+    private boolean showPopup(
+            View anchor, AnchoredPopupWindow.ViewBuilder content, boolean focusable) {
         dismiss();
         ViewRectProvider anchorRectProvider = new ViewRectProvider(anchor);
-        Resources resources = mContext.getResources();
         mPopup =
                 new AnchoredPopupWindow.Builder(
                                 mContext,
                                 anchor.getRootView(),
                                 assumeNonNull(mContext.getDrawable(R.drawable.menu_bg_tinted)),
-                                themedContext -> buildList(themedContext, rows),
+                                content,
                                 anchorRectProvider)
                         .setDesiredContentWidth(
-                                resources.getDimensionPixelSize(R.dimen.download_tray_popup_width))
-                        // Longer lists scroll, as desktop's row list does (kMaxHeightForRowList).
-                        .setMaxHeight(
-                                resources.getDimensionPixelSize(
-                                        R.dimen.download_tray_popup_max_height))
+                                mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.download_tray_popup_width))
                         .setPreferredVerticalOrientation(
                                 AnchoredPopupWindow.VerticalOrientation.BELOW)
-                        // Outside taps dismiss; taps on the row are handled by the row itself.
-                        .setDismissOnTouchInteraction(true)
+                        .setFocusable(focusable)
+                        // Only taps outside close it, as for a menu; taps inside are the content's.
+                        .setOutsideTouchable(true)
                         .setDismissOnScreenSizeChange(true)
                         .addOnDismissListener(this::onPopupDismissed)
                         .build();
@@ -129,11 +158,6 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
             onPopupDismissed();
             return false;
         }
-
-        // Leave the popup up for screen reader users, who need time to find it, as desktop does.
-        if (!AccessibilityState.isTouchExplorationEnabled()) {
-            mHandler.postDelayed(mAutoDismissRunnable, AUTO_DISMISS_MS);
-        }
         return true;
     }
 
@@ -142,17 +166,24 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
         if (mPopup != null) mPopup.dismiss();
     }
 
-    private View buildList(Context themedContext, ModelList rows) {
-        RecyclerView list =
-                (RecyclerView)
-                        LayoutInflater.from(themedContext)
-                                .inflate(R.layout.download_tray_popup, /* root= */ null);
+    /** Inflates {@code layout}, which contains the tray's list, and binds {@code rows} to it. */
+    private View buildList(Context themedContext, @LayoutRes int layout, ModelList rows) {
+        View content = LayoutInflater.from(themedContext).inflate(layout, /* root= */ null);
+        RecyclerView list = content.findViewById(R.id.download_tray_list);
         list.setLayoutManager(new LinearLayoutManager(themedContext));
         // The adapter keeps each row's view bound to its model while the popup shows.
         mAdapter = new SimpleRecyclerViewAdapter(rows);
         mAdapter.registerType(RowType.COMPLETED, this::buildRow, DownloadTrayItemViewBinder::bind);
         list.setAdapter(mAdapter);
-        return list;
+        return content;
+    }
+
+    private View buildFullTray(Context themedContext, ModelList rows) {
+        View content = buildList(themedContext, R.layout.download_tray_full_tray, rows);
+        content.findViewById(R.id.download_tray_close).setOnClickListener(v -> dismiss());
+        content.findViewById(R.id.download_tray_full_history)
+                .setOnClickListener(v -> mMediator.onFullHistoryClicked());
+        return content;
     }
 
     private View buildRow(ViewGroup parent) {

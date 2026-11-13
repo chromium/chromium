@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.download;
 
-import android.content.Context;
+import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
@@ -16,15 +16,15 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 /** Provides the download toolbar button tray with dependencies from {@code //chrome/android}. */
 @NullMarked
 public class DownloadTrayDelegateImpl implements DownloadTrayDelegate {
-    private final Context mContext;
+    private final Activity mActivity;
 
     /**
      * Creates an instance of {@link DownloadTrayDelegateImpl}.
      *
-     * @param context The context of the window hosting the tray, used to open downloads.
+     * @param activity The activity of the window hosting the tray, used to open downloads.
      */
-    public DownloadTrayDelegateImpl(Context context) {
-        mContext = context;
+    public DownloadTrayDelegateImpl(Activity activity) {
+        mActivity = activity;
     }
 
     @Override
@@ -35,7 +35,16 @@ public class DownloadTrayDelegateImpl implements DownloadTrayDelegate {
         @DownloadOpenSource int source = DownloadOpenSource.DOWNLOAD_TRAY;
         // The tray opens a file in a new Chrome tab when Chrome supports its format, and otherwise
         // falls back to the default app, as the download message does.
-        if (DownloadUtils.openItemInChrome(item, mContext, otrProfileId, source)) return;
-        DownloadUtils.openItem(item, otrProfileId, source, mContext);
+        if (DownloadUtils.openItemInChrome(item, mActivity, otrProfileId, source)) return;
+        DownloadUtils.openItem(item, otrProfileId, source, mActivity);
+    }
+
+    @Override
+    public void showDownloadManager(boolean isIncognito) {
+        DownloadUtils.showDownloadManager(
+                mActivity,
+                /* tab= */ null,
+                isIncognito ? OtrProfileId.getPrimaryOtrProfileId() : null,
+                DownloadOpenSource.DOWNLOAD_TRAY);
     }
 }

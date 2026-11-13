@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -82,6 +83,15 @@ public class DownloadTrayMediatorTest {
         mActivity.setContentView(mAnchor);
         mCurrentAnchor = mAnchor;
         doReturn(true).when(mPopupController).showCompletions(any(), any());
+        // Like the real popup, the full tray replaces (and so dismisses) a showing completion
+        // popup.
+        doAnswer(
+                        invocation -> {
+                            mMediator.onDismissed();
+                            return true;
+                        })
+                .when(mPopupController)
+                .showFullTray(any(), any());
         mModel = new DownloadStateModel(mProvider);
         verify(mProvider).getAllItems(mGetAllItemsCallbackCaptor.capture());
         mMediator =
@@ -143,6 +153,12 @@ public class DownloadTrayMediatorTest {
         ModelList rows = captureShownRows();
         assertEquals(1, rows.size());
         return rows.get(0).model;
+    }
+
+    /** Returns the rows of the most recently shown full tray. */
+    private ModelList captureFullTrayRows() {
+        verify(mPopupController, atLeastOnce()).showFullTray(eq(mAnchor), mRowsCaptor.capture());
+        return mRowsCaptor.getValue();
     }
 
     private static List<CharSequence> titles(ModelList rows) {
@@ -458,6 +474,135 @@ public class DownloadTrayMediatorTest {
         dismissAndWait();
         runToState("b", OfflineItemState.COMPLETE);
         verify(mPopupController, times(1)).showCompletions(any(), any());
+    }
+
+    @Test
+    public void testFullTray_listsAllRecentNewestFirstAndToggles() {
+        // "a" was shown and not acted on; "b" was opened from its popup (which lists both).
+        runToState("a", OfflineItemState.COMPLETE);
+        dismissAndWait();
+        runToState("b", OfflineItemState.COMPLETE);
+        captureShownRows().get(0).model.get(DownloadTrayItemProperties.ON_OPEN).onClick(mAnchor);
+        dismissAndWait();
+
+        // The full tray lists both, newest first, and needs no new completion to open.
+        mCurrentAnchor = null;
+        mMediator.toggleFullTray();
+        verify(mPopupController, never()).showFullTray(any(), any());
+        mCurrentAnchor = mAnchor;
+        mMediator.toggleFullTray();
+        assertEquals(List.of("b.pdf", "a.pdf"), titles(captureFullTrayRows()));
+
+        // Toggling again closes it.
+        clearInvocations(mPopupController);
+        mMediator.toggleFullTray();
+        verify(mPopupController).dismiss();
+    }
+
+    @Test
+    public void testFullTray_replacesCompletionPopupAndClosesOnceEmpty() {
+        runToState("a", OfflineItemState.COMPLETE);
+
+        // Opening the tray replaces the completion popup.
+        mMediator.toggleFullTray();
+        assertEquals(List.of("a.pdf"), titles(captureFullTrayRows()));
+
+        // As on desktop, the tray closes once its last row is gone.
+        verify(mPopupController, never()).dismiss();
+        mModel.onItemRemoved(id("a"));
+        assertEquals(0, captureFullTrayRows().size());
+        verify(mPopupController).dismiss();
+    }
+
+    @Test
+    public void testFullTray_withNothingToList_opensDownloadManagerForWindowProfile() {
+        // As on desktop, the button opens the full download history rather than an empty tray.
+        mIsIncognitoSelected = true;
+        mMediator.toggleFullTray();
+
+        verify(mPopupController, never()).showFullTray(any(), any());
+        verify(mDelegate).showDownloadManager(/* isIncognito= */ true);
+    }
+
+    @Test
+    public void testFullTray_letsNextCompletionPopupShowWithoutWaiting() {
+        runToState("a", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+
+        // As on desktop, opening the tray resets the minimum interval between completion popups.
+        mMediator.toggleFullTray();
+        mMediator.onDismissed();
+        runToState("b", OfflineItemState.COMPLETE);
+
+        verify(mPopupController, times(2)).showCompletions(any(), any());
+        assertEquals("b.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testFullTrayThatCouldNotShow_changesNothing() {
+        runToState("a", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+        doReturn(false).when(mPopupController).showFullTray(any(), any());
+
+        // Not showing, e.g. for lack of room, the tray isn't taken to be open, so the next press
+        // tries to open it again rather than close it.
+        mMediator.toggleFullTray();
+        mMediator.toggleFullTray();
+        verify(mPopupController, times(2)).showFullTray(any(), any());
+        verify(mPopupController, never()).dismiss();
+
+        // Nor does the download it would have listed count as acted on.
+        runToState("b", OfflineItemState.COMPLETE);
+        assertEquals(List.of("b.pdf", "a.pdf"), titles(captureShownRows()));
+    }
+
+    @Test
+    public void testFullTray_listsAndActionsOnlyDownloadsTheWindowShows() {
+        // A regular download, then an incognito one while regular tabs are shown.
+        runToState("a", OfflineItemState.COMPLETE);
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+        mModel.onItemsAdded(
+                List.of(createIncognitoItem("b", OfflineItemState.IN_PROGRESS, primary)));
+        mModel.onItemUpdated(
+                createIncognitoItem("b", OfflineItemState.COMPLETE, primary),
+                /* updateDelta= */ null);
+        mMediator.onDismissed();
+
+        mMediator.toggleFullTray();
+        assertEquals(List.of("a.pdf"), titles(captureFullTrayRows()));
+        mMediator.onDismissed();
+
+        // As on desktop, only the listed download counts as acted on, so once incognito tabs are
+        // shown the next completion popup still lists the incognito one.
+        mIsIncognitoSelected = true;
+        runToState("c", OfflineItemState.COMPLETE);
+        assertEquals(List.of("c.pdf", "b.pdf"), titles(captureShownRows()));
+
+        // With incognito tabs shown, the tray lists both profiles' downloads.
+        mMediator.onDismissed();
+        mMediator.toggleFullTray();
+        assertEquals(List.of("c.pdf", "b.pdf", "a.pdf"), titles(captureFullTrayRows()));
+    }
+
+    @Test
+    public void testDescription_showsTimeSinceCompletionAfterAMinute() {
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        OfflineItem justDone = createItem("a", OfflineItemState.COMPLETE);
+        justDone.completionTimeMs = TimeUtils.currentTimeMillis() - TimeUnit.SECONDS.toMillis(59);
+        mModel.onItemUpdated(justDone, /* updateDelta= */ null);
+        OfflineItem earlier = createItem("b", OfflineItemState.COMPLETE);
+        earlier.completionTimeMs = TimeUtils.currentTimeMillis() - TimeUnit.MINUTES.toMillis(3);
+        mModel.onItemUpdated(earlier, /* updateDelta= */ null);
+
+        ModelList rows = captureShownRows();
+        assertEquals(
+                "4.30 MB • 3 minutes ago",
+                rows.get(0).model.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals(
+                "4.30 MB • Done", rows.get(1).model.get(DownloadTrayItemProperties.DESCRIPTION));
     }
 
     @Test

@@ -259,6 +259,7 @@ android_resources("java_resources") {
     "java/res/layout/download_location_preference_item.xml",
     "java/res/layout/download_location_spinner_dropdown_item.xml",
     "java/res/layout/download_location_spinner_item.xml",
+    "java/res/layout/download_tray_full_tray.xml",
     "java/res/layout/download_tray_item_row.xml",
     "java/res/layout/download_tray_popup.xml",
     "java/res/values/dimens.xml",

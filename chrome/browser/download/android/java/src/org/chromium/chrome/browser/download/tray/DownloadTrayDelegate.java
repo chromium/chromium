@@ -15,4 +15,11 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 public interface DownloadTrayDelegate {
     /** Opens a completed download. */
     void openItem(OfflineItem item);
+
+    /**
+     * Opens the full download history.
+     *
+     * @param isIncognito Whether to show the incognito profile's downloads.
+     */
+    void showDownloadManager(boolean isIncognito);
 }
