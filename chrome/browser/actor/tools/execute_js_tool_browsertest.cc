@@ -198,16 +198,26 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, IsolatedWorldScope) {
             content::EvalJs(web_contents(), "window.actor_isolated_var"));
 }
 
-// Blink reports synchronous exceptions to the console rather than to the tool,
-// so the result doesn't include the exception's message.
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, ExceptionHandled) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
 
   auto result = RunExecuteJsTool("throw new Error('test_error');");
   ASSERT_TRUE(result);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsScriptFailed);
-  EXPECT_FALSE(result->message.empty());
-  EXPECT_EQ(GetJsErrorMessage(*result), std::nullopt);
+  EXPECT_THAT(result->message, HasSubstr("test_error"));
+  EXPECT_THAT(result->message, HasSubstr("line 1"));
+  EXPECT_EQ(GetJsErrorMessage(*result), result->message);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SyncTypeErrorMessageAndLine) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto result = RunExecuteJsTool("const x = null;\nx.foo;");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsScriptFailed);
+  EXPECT_THAT(result->message, HasSubstr("TypeError"));
+  EXPECT_THAT(result->message, HasSubstr("line 2"));
+  EXPECT_EQ(GetJsErrorMessage(*result), result->message);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SyntaxError) {
@@ -216,6 +226,77 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SyntaxError) {
   auto result = RunExecuteJsTool("2 +");
   ASSERT_TRUE(result);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsScriptFailed);
+  EXPECT_THAT(result->message, HasSubstr("SyntaxError"));
+  EXPECT_THAT(result->message, HasSubstr("line 1"));
+  EXPECT_EQ(GetJsErrorMessage(*result), result->message);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, BareReturnAutoWrapped) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto result = RunExecuteJsTool("const a = 1;\nreturn a + 2; // trailing");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*result), "3");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, BareAwaitAutoWrapped) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto expr_result = RunExecuteJsTool(
+      "await new Promise(r => setTimeout(() => r('awaited_expr'), 50))");
+  ASSERT_TRUE(expr_result);
+  EXPECT_EQ(expr_result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*expr_result), "\"awaited_expr\"");
+
+  auto semi_result = RunExecuteJsTool(
+      "await new Promise(r => setTimeout(() => r('awaited_semi'), 50));");
+  ASSERT_TRUE(semi_result);
+  EXPECT_EQ(semi_result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*semi_result), "\"awaited_semi\"");
+
+  auto stmt_result = RunExecuteJsTool(
+      "const v = await new Promise(r => setTimeout(() => r('awaited_stmt'), "
+      "50));\nreturn v;");
+  ASSERT_TRUE(stmt_result);
+  EXPECT_EQ(stmt_result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*stmt_result), "\"awaited_stmt\"");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, BareObjectLiteralAutoWrapped) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto result = RunExecuteJsTool("{ a: 1, b: 2 }");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*result), "{\"a\":1,\"b\":2}");
+
+  auto semi_result = RunExecuteJsTool("{ a: 1, b: 2 };");
+  ASSERT_TRUE(semi_result);
+  EXPECT_EQ(semi_result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*semi_result), "{\"a\":1,\"b\":2}");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, BareReturnThrowsReportsError) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto result = RunExecuteJsTool("const x = null;\nreturn x.foo;");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsScriptFailed);
+  EXPECT_THAT(GetJsErrorMessage(*result), Optional(HasSubstr("TypeError")));
+  EXPECT_EQ(GetJsErrorMessage(*result), result->message);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       BareReturnWithInnerSyntaxError) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto result = RunExecuteJsTool("return 1;\nconst x = 1; const x = 2;");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsScriptFailed);
+  EXPECT_THAT(result->message, HasSubstr("has already been declared"));
+  EXPECT_THAT(result->message, HasSubstr("line 2"));
+  EXPECT_EQ(GetJsErrorMessage(*result), result->message);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, TimeoutTriggered) {
@@ -301,8 +382,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, WaitForPromiseRejected) {
   EXPECT_EQ(GetJsErrorMessage(*result), result->message);
 }
 
-// Unlike a synchronous exception, an exception thrown in an async function
-// rejects the promise it returns, so the error is reported.
+// An exception thrown in an async function rejects the promise it returns, so
+// the error is reported.
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, AsyncFunctionThrows) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
 

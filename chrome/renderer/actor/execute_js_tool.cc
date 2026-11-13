@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +18,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
@@ -29,9 +32,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_script_source.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-function-callback.h"
@@ -39,8 +40,11 @@
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-json.h"
 #include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-message.h"
+#include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-promise.h"
+#include "v8/include/v8-script.h"
 #include "v8/include/v8-value.h"
 
 namespace actor {
@@ -223,6 +227,140 @@ std::optional<ScriptValueText> ConvertResult(v8::Isolate* isolate,
   return ToUtf8(isolate, text, kExecuteJsMaxResultBytes);
 }
 
+// Returns `str` as a V8 string, or empty if it exceeds V8's length limit.
+v8::MaybeLocal<v8::String> ToV8String(v8::Isolate* isolate,
+                                      std::string_view str) {
+  if (!base::IsValueInRangeForNumericType<int>(str.size())) {
+    return {};
+  }
+  return v8::String::NewFromUtf8(isolate, str.data(),
+                                 v8::NewStringType::kNormal,
+                                 static_cast<int>(str.size()));
+}
+
+// Formats the `v8::Message` and 1-based line number from `try_catch`, adjusting
+// line numbers by `line_offset` wrapper lines prepended before user code. Does
+// not run user JavaScript.
+std::optional<std::string> FormatTryCatchMessage(v8::Isolate* isolate,
+                                                 v8::Local<v8::Context> context,
+                                                 const v8::TryCatch& try_catch,
+                                                 int line_offset) {
+  v8::Local<v8::Message> message = try_catch.Message();
+  if (message.IsEmpty()) {
+    return std::nullopt;
+  }
+  v8::Local<v8::String> message_text = message->Get();
+  if (message_text.IsEmpty()) {
+    return std::nullopt;
+  }
+  std::string suffix;
+  int line = 0;
+  if (message->GetLineNumber(context).To(&line)) {
+    line -= line_offset;
+    if (line > 0) {
+      suffix = absl::StrFormat(" (line %d)", line);
+    }
+  }
+  const size_t max_message_bytes = kMaxErrorMessageBytes > suffix.size()
+                                       ? kMaxErrorMessageBytes - suffix.size()
+                                       : 0;
+  std::string text = ToUtf8(isolate, message_text, max_message_bytes).text;
+  text.append(suffix);
+  return text;
+}
+
+struct CompiledScript {
+  v8::Local<v8::Script> script;
+  // Number of wrapper lines prepended before the caller's script code.
+  int line_offset = 0;
+  // Populated when all compilation attempts fail without termination.
+  std::string error_message;
+};
+
+// Compiles `script_code` as a classic script first. On a syntax error (e.g.
+// bare `return`, top-level `await`, or an unparenthesized object literal),
+// retries wrapped as an async arrow expression and then an async arrow block.
+CompiledScript CompileScript(v8::Isolate* isolate,
+                             v8::Local<v8::Context> context,
+                             std::string_view script_code,
+                             bool* terminated) {
+  auto try_compile = [&](std::string_view code, int line_offset,
+                         v8::Local<v8::Script>* out_script,
+                         std::string* out_error) -> bool {
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::String> v8_source;
+    if (!ToV8String(isolate, code).ToLocal(&v8_source)) {
+      if (try_catch.HasTerminated()) {
+        *terminated = true;
+        return false;
+      }
+      *out_error =
+          FormatTryCatchMessage(isolate, context, try_catch, line_offset)
+              .value_or("Failed to convert script code to a V8 string.");
+      return false;
+    }
+    if (v8::Script::Compile(context, v8_source).ToLocal(out_script)) {
+      return true;
+    }
+    if (try_catch.HasTerminated()) {
+      *terminated = true;
+      return false;
+    }
+    *out_error = FormatTryCatchMessage(isolate, context, try_catch, line_offset)
+                     .value_or("The script failed to compile.");
+    return false;
+  };
+
+  CompiledScript result;
+  std::string raw_error;
+  if (try_compile(script_code, /*line_offset=*/0, &result.script, &raw_error) ||
+      *terminated) {
+    return result;
+  }
+
+  // Try an async arrow expression first so bare `await <expr>` and object
+  // literals like `{a: 1, b: 2}` evaluate to their value instead of undefined.
+  // Strip a trailing semicolon so inputs like `await fetch(...);` still compile
+  // as an expression.
+  std::string_view expr_code =
+      base::TrimWhitespaceASCII(script_code, base::TRIM_TRAILING);
+  if (expr_code.ends_with(';')) {
+    expr_code.remove_suffix(1);
+  }
+  std::string async_expr =
+      base::StrCat({"(async () => (\n", expr_code, "\n))()"});
+  std::string unused_expr_error;
+  if (try_compile(async_expr, /*line_offset=*/1, &result.script,
+                  &unused_expr_error) ||
+      *terminated) {
+    result.line_offset = 1;
+    return result;
+  }
+
+  // Fall back to an async arrow body so bare `return` and multi-statement
+  // `await` scripts work without an explicit wrapper.
+  std::string async_block =
+      base::StrCat({"(async () => {\n", script_code, "\n})()"});
+  std::string block_error;
+  if (try_compile(async_block, /*line_offset=*/1, &result.script,
+                  &block_error) ||
+      *terminated) {
+    result.line_offset = 1;
+    return result;
+  }
+
+  // If raw compilation only rejected top-level `return` or `await`, report the
+  // async-block error which points to the actual syntax issue in the body.
+  // Otherwise report the raw error so the synthetic wrapper isn't exposed.
+  if (raw_error.find("Illegal return statement") != std::string::npos ||
+      raw_error.find("await is only valid") != std::string::npos) {
+    result.error_message = std::move(block_error);
+  } else {
+    result.error_message = std::move(raw_error);
+  }
+  return result;
+}
+
 // Describes `error`, a thrown exception or a rejection reason, for the failure
 // message. Its string conversion can run page JavaScript, so it is bounded by
 // `deadline`.
@@ -255,17 +393,22 @@ mojom::ActionResultPtr MakeScriptFailedResult(std::string_view message) {
                     /*requires_page_stabilization=*/false, message);
 }
 
+// Returns the result for a script that failed with a JavaScript error.
+// `description` is used as both the failure message and `js_error_message`.
+mojom::ActionResultPtr MakeJsErrorResult(std::string description) {
+  mojom::ActionResultPtr result = MakeScriptFailedResult(description);
+  result->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/std::string(), /*truncated=*/false, std::move(description));
+  return result;
+}
+
 // Returns the result for a script whose promise was rejected with `error`. The
 // description of `error` is both the failure message and `js_error_message`.
 mojom::ActionResultPtr MakeJsErrorResult(v8::Isolate* isolate,
                                          v8::Local<v8::Context> context,
                                          v8::Local<v8::Value> error,
                                          base::TimeTicks deadline) {
-  std::string description = DescribeError(isolate, context, error, deadline);
-  mojom::ActionResultPtr result = MakeScriptFailedResult(description);
-  result->execute_js_response = mojom::ExecuteJsResponse::New(
-      /*result=*/std::string(), /*truncated=*/false, std::move(description));
-  return result;
+  return MakeJsErrorResult(DescribeError(isolate, context, error, deadline));
 }
 
 // Returns the result for a script that produced `value`.
@@ -357,23 +500,41 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
   // script runs, and check `weak_this` once it returns.
   const base::TimeDelta timeout = GetTimeout(action_->timeout_ms);
   const base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
-  const blink::WebScriptSource source(
-      blink::WebString::FromUtf8(action_->script_code));
+  const std::string script_code = action_->script_code;
   base::WeakPtr<ExecuteJsTool> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      web_frame->GetScriptContextFromWorldId(isolate, ISOLATED_WORLD_ID_ACTOR);
+  if (context.IsEmpty()) {
+    std::move(callback).Run(
+        MakeScriptFailedResult("The script context is no longer available."));
+    return;
+  }
+
+  v8::Context::Scope context_scope(context);
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> value;
+  std::string compile_error;
+  int line_offset = 0;
   bool timed_out = false;
   {
     // Also bounds the microtasks the script queues, since they run before
     // script execution returns. Later continuations, e.g. after a timer or a
     // fetch, run as regular page tasks.
     ScopedTimeoutWatchdog watchdog(isolate, timeout);
-    value = web_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-        ISOLATED_WORLD_ID_ACTOR, source, blink::BackForwardCacheAware::kAllow);
-    timed_out = watchdog.Stop() || try_catch.HasTerminated();
+    CompiledScript compiled =
+        CompileScript(isolate, context, script_code, &timed_out);
+    line_offset = compiled.line_offset;
+    if (!timed_out && !compiled.script.IsEmpty()) {
+      v8::MicrotasksScope microtasks_scope(context,
+                                           v8::MicrotasksScope::kRunMicrotasks);
+      std::ignore = compiled.script->Run(context).ToLocal(&value);
+    } else if (!timed_out) {
+      compile_error = std::move(compiled.error_message);
+    }
+    timed_out = watchdog.Stop() || timed_out || try_catch.HasTerminated();
   }
 
   if (timed_out) {
@@ -386,17 +547,24 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  v8::Local<v8::Context> context =
-      web_frame->GetScriptContextFromWorldId(isolate, ISOLATED_WORLD_ID_ACTOR);
-  if (context.IsEmpty()) {
-    std::move(callback).Run(
-        MakeScriptFailedResult("The script context is no longer available."));
+  if (!compile_error.empty()) {
+    std::move(callback).Run(MakeJsErrorResult(std::move(compile_error)));
+    return;
+  }
+
+  if (try_catch.HasCaught()) {
+    std::optional<std::string> description =
+        FormatTryCatchMessage(isolate, context, try_catch, line_offset);
+    if (description) {
+      std::move(callback).Run(MakeJsErrorResult(std::move(*description)));
+    } else {
+      std::move(callback).Run(
+          MakeJsErrorResult(isolate, context, try_catch.Exception(), deadline));
+    }
     return;
   }
 
   if (value.IsEmpty()) {
-    // Blink reports exceptions the script throws, including syntax errors, to
-    // the console rather than to the caller, so no details are available.
     std::move(callback).Run(MakeScriptFailedResult(
         "The script threw an exception or has a syntax error."));
     return;
@@ -409,12 +577,12 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
         value = promise->Result();
         break;
       case v8::Promise::kRejected:
+        promise->MarkAsHandled();
         std::move(callback).Run(
             MakeJsErrorResult(isolate, context, promise->Result(), deadline));
         return;
       case v8::Promise::kPending: {
         const uint32_t id = AddPendingPromise({std::move(callback), deadline});
-        v8::Context::Scope context_scope(context);
         v8::Local<v8::Value> data = v8::Integer::NewFromUnsigned(isolate, id);
         v8::Local<v8::Function> on_fulfilled;
         v8::Local<v8::Function> on_rejected;
