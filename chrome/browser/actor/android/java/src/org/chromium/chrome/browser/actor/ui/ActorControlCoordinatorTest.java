@@ -105,7 +105,7 @@ public class ActorControlCoordinatorTest {
                 new ActorControlCoordinator(
                         mTabBottomSheetManager, mStateTracker, mTabSelectionDelegate);
 
-        mModel = mCoordinator.getModelForTesting();
+        mModel = mCoordinator.getModel();
         mMediator = mCoordinator.getMediatorForTesting();
 
         ShadowLooper.idleMainLooper();
@@ -204,7 +204,6 @@ public class ActorControlCoordinatorTest {
         assertNotNull(mModel);
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
-        assertEquals(mModel, mCoordinator.getModel());
     }
 
     @Test

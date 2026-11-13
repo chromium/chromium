@@ -221,13 +221,6 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
     }
 
     /**
-     * @return The {@link PropertyModel} for this component.
-     */
-    /* package */ PropertyModel getModelForTesting() {
-        return mModel;
-    }
-
-    /**
      * @return The {@link ActorControlMediator} for this component.
      */
     /* package */ ActorControlMediator getMediatorForTesting() {
