@@ -12,6 +12,7 @@
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/window_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
@@ -60,7 +61,15 @@ constexpr float kButtonRounding = 32.f;
 constexpr SkColor kSelectedTextColor = SK_ColorBLUE;
 constexpr SkColor kUnselectedTextColor = SK_ColorWHITE;
 
-views::Widget* g_fake_trackpad_widget = nullptr;
+// The virtual trackpad widget currently showing, if any.
+std::unique_ptr<views::Widget>& FakeTrackpadWidget() {
+  static base::NoDestructor<std::unique_ptr<views::Widget>> widget;
+  return *widget;
+}
+
+void OnWidgetCloseRequested(views::Widget::ClosedReason) {
+  FakeTrackpadWidget().reset();
+}
 
 using FingerButtonOnClick = views::Button::PressedCallback;
 
@@ -268,27 +277,24 @@ void VirtualTrackpadView::Toggle() {
     return;
   }
 
-  if (g_fake_trackpad_widget) {
-    g_fake_trackpad_widget->Close();
-    g_fake_trackpad_widget = nullptr;
+  std::unique_ptr<views::Widget>& widget = FakeTrackpadWidget();
+  if (widget) {
+    widget.reset();
     return;
   }
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->RegisterWindowClosingCallback(
-      base::BindOnce([]() { g_fake_trackpad_widget = nullptr; }));
   delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetCanResize(true);
   delegate->SetTitle(u"Virtual Trackpad Simulator");
 
   // `SetContentsView()` must be done through the delegate. If we wanted to call
-  // it directly, through `g_fake_trackpad_widget`, it would cause a CHECK to
-  // fail because it is a widget with non-client views due to it being a
-  // `TYPE_WINDOW`.
+  // it directly, through `widget`, it would cause a CHECK to fail because it is
+  // a widget with non-client views due to it being a `TYPE_WINDOW`.
   delegate->SetContentsView(std::make_unique<VirtualTrackpadView>());
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = delegate.release();
   // TODO(b/252556382): The bounds and root should be where the user last
@@ -300,9 +306,9 @@ void VirtualTrackpadView::Toggle() {
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = true;
 
-  // The widget is owned by its native widget.
-  g_fake_trackpad_widget = new views::Widget(std::move(params));
-  g_fake_trackpad_widget->Show();
+  widget = std::make_unique<views::Widget>(std::move(params));
+  widget->MakeCloseSynchronous(base::BindOnce(&OnWidgetCloseRequested));
+  widget->Show();
 
   // Used to extend bounds on the virtual trackpad window for resizing. Note
   // that we cannot use
@@ -310,8 +316,7 @@ void VirtualTrackpadView::Toggle() {
   // virtual trackpad window is not a toplevel window.
   auto targeter = std::make_unique<aura::WindowTargeter>();
   targeter->SetInsets(gfx::Insets(-chromeos::kResizeOutsideBoundsSize));
-  g_fake_trackpad_widget->GetNativeWindow()->SetEventTargeter(
-      std::move(targeter));
+  widget->GetNativeWindow()->SetEventTargeter(std::move(targeter));
 }
 
 void VirtualTrackpadView::AddedToWidget() {
@@ -349,7 +354,7 @@ void VirtualTrackpadView::Layout(PassKey) {
 
 // static
 views::Widget* VirtualTrackpadView::GetWidgetForTesting() {
-  return g_fake_trackpad_widget;
+  return FakeTrackpadWidget().get();
 }
 
 void VirtualTrackpadView::OnFingerButtonPressed(int num_fingers) {
