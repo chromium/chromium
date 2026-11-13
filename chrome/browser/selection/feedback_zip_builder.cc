@@ -4,6 +4,7 @@
 
 #include "chrome/browser/selection/feedback_zip_builder.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -26,6 +27,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -149,16 +151,86 @@ std::string BuildMetadataJson(const TabMetadata& tab_metadata,
       .value_or("{}");
 }
 
-// Creates a new file and writes `data` to it.
-// Fails if the path, even as a symlink, already exists.
-bool WriteNewFile(const base::FilePath& path, base::span<const uint8_t> data) {
-  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  return file.IsValid() && file.WriteAtCurrentPosAndCheck(data);
-}
+// Collects files to be passed to zip::Zip().
+// Makes sure that the ZIP file only contains those contained files. In
+// particular, no symlinks that existed before or are created during the
+// lifetime of the `StagedFileAccessor` are added to the ZIP file.
+class StagedFileAccessor : public zip::FileAccessor {
+ public:
+  explicit StagedFileAccessor(base::FilePath dir)
+      : dir_(std::move(dir)), created_time_(base::Time::Now()) {}
+  StagedFileAccessor(const StagedFileAccessor&) = delete;
+  StagedFileAccessor& operator=(const StagedFileAccessor&) = delete;
+  ~StagedFileAccessor() override = default;
 
-bool WriteNewFile(const base::FilePath& path, std::string_view data) {
-  return WriteNewFile(path, base::as_byte_span(data));
-}
+  // Creates a new file and writes `data` to it.
+  // Fails if the path, even as a symlink, already exists.
+  // Keeps the file open for the lifetime of `this` so that zip::Zip() reads
+  // that file's content, even if the file is replaced with another file in
+  // the meantime.
+  bool WriteNewFile(std::string_view filename, base::span<const uint8_t> data) {
+    base::FilePath rel_path = base::FilePath::FromASCII(filename);
+    base::File file(dir_.Append(rel_path), base::File::FLAG_CREATE |
+                                               base::File::FLAG_WRITE |
+                                               base::File::FLAG_READ);
+    if (!file.IsValid() || !file.WriteAtCurrentPosAndCheck(data) ||
+        file.Seek(base::File::FROM_BEGIN, 0) != 0) {
+      return false;
+    }
+    files_.emplace_back(std::move(rel_path), std::move(file));
+    return true;
+  }
+
+  bool WriteNewFile(std::string_view filename, std::string_view data) {
+    return WriteNewFile(filename, base::as_byte_span(data));
+  }
+
+  // zip::FileAccessor:
+
+  // Populates `files` with the files in any of the given `paths` that were
+  // created with `WriteNewFile()`.
+  bool Open(zip::Paths paths, std::vector<base::File>* files) override {
+    files->reserve(files->size() + paths.size());
+    for (const base::FilePath& path : paths) {
+      auto it = std::ranges::find(files_, path, &Entry::first);
+      if (it == files_.end() || !it->second.IsValid()) {
+        return false;
+      }
+      files->push_back(std::move(it->second));
+    }
+    return true;
+  }
+
+  // Only lists the files that were created with `WriteNewFile()`.
+  // Does not add other files or subdirectories to avoid adding unwanted data to
+  // the ZIP file.
+  bool List(const base::FilePath& path,
+            std::vector<base::FilePath>* files,
+            std::vector<base::FilePath>* subdirs) override {
+    if (!path.empty()) {
+      return false;
+    }
+    for (const auto& [rel_path, file] : files_) {
+      files->push_back(rel_path);
+    }
+    return true;
+  }
+
+  bool GetInfo(const base::FilePath& path, Info* info) override {
+    if (!std::ranges::contains(files_, path, &Entry::first)) {
+      return false;
+    }
+    info->is_directory = false;
+    info->last_modified = created_time_;
+    return true;
+  }
+
+ private:
+  using Entry = std::pair<base::FilePath, base::File>;
+  const base::FilePath dir_;
+  const base::Time created_time_;
+  std::vector<Entry> files_;
+};
 
 }  // namespace
 
@@ -295,37 +367,37 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
     return std::nullopt;
   }
 
-  const base::FilePath dir = temp_dir.GetPath();
-  auto get_image_path = [&](std::string_view prefix,
-                            const EncodedImage& image) {
+  StagedFileAccessor file_accessor(temp_dir.GetPath());
+  auto get_image_name = [](std::string_view prefix, const EncodedImage& image) {
     CHECK(image.mime_type == "image/jpeg" || image.mime_type == "image/png");
     std::string_view ext = image.mime_type == "image/jpeg" ? "jpg" : "png";
-    return dir.AppendASCII(base::StrCat({prefix, ".", ext}));
+    return base::StrCat({prefix, ".", ext});
   };
   const std::optional<EncodedImage> full_screenshot =
       EncodedImage::Create(state.screenshot);
-  if (!WriteNewFile(dir.AppendASCII("metadata.json"), metadata_json) ||
+  if (!file_accessor.WriteNewFile("metadata.json", metadata_json) ||
       (full_screenshot.has_value() &&
-       !WriteNewFile(get_image_path("screenshot", *full_screenshot),
-                     full_screenshot->bytes)) ||
+       !file_accessor.WriteNewFile(
+           get_image_name("screenshot", *full_screenshot),
+           full_screenshot->bytes)) ||
       (state.mes_screenshot.has_value() &&
-       !WriteNewFile(get_image_path("mes_screenshot", *state.mes_screenshot),
-                     state.mes_screenshot->bytes)) ||
+       !file_accessor.WriteNewFile(
+           get_image_name("mes_screenshot", *state.mes_screenshot),
+           state.mes_screenshot->bytes)) ||
       (state.apc.has_value() &&
-       !WriteNewFile(dir.AppendASCII("apc.pb"),
-                     state.apc->SerializeAsString())) ||
+       !file_accessor.WriteNewFile("apc.pb", state.apc->SerializeAsString())) ||
       (state.selected_text.has_value() &&
-       !WriteNewFile(dir.AppendASCII("selection.txt"),
-                     base::UTF16ToUTF8(*state.selected_text))) ||
+       !file_accessor.WriteNewFile("selection.txt",
+                                   base::UTF16ToUTF8(*state.selected_text))) ||
       (state.request.has_value() &&
-       !WriteNewFile(dir.AppendASCII("request.pb"),
-                     state.request->SerializeAsString())) ||
+       !file_accessor.WriteNewFile("request.pb",
+                                   state.request->SerializeAsString())) ||
       (state.response.has_value() &&
-       !WriteNewFile(dir.AppendASCII("response.pb"),
-                     state.response->SerializeAsString())) ||
+       !file_accessor.WriteNewFile("response.pb",
+                                   state.response->SerializeAsString())) ||
       (state.suggestions_json.has_value() &&
-       !WriteNewFile(dir.AppendASCII("suggestions.json"),
-                     *state.suggestions_json))) {
+       !file_accessor.WriteNewFile("suggestions.json",
+                                   *state.suggestions_json))) {
     return std::nullopt;
   }
 
@@ -333,7 +405,7 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
   if (zip_path.empty()) {
     return std::nullopt;
   }
-  if (!zip::Zip(temp_dir.GetPath(), zip_path, /*include_hidden_files=*/false)) {
+  if (!zip::Zip({.file_accessor = &file_accessor, .dest_file = zip_path})) {
     base::DeleteFile(zip_path);
     return std::nullopt;
   }
