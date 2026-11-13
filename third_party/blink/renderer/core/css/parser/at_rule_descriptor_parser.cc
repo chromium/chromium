@@ -295,9 +295,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kViewTransition:
       return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
     case StyleRule::kFunction:
-    case StyleRule::kMixin:
-      return Parser::ParseAtFunctionOrMixinDescriptor(rule_type, id, stream,
-                                                      context);
+      return Parser::ParseAtFunctionDescriptor(id, stream, context);
     case StyleRule::kLocation:
       return Parser::ParseAtLocationDescriptor(id, stream, context);
     case StyleRule::kCharset:
@@ -316,11 +314,11 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kLayerStatement:
     case StyleRule::kNestedDeclarations:
     case StyleRule::kFunctionDeclarations:
+    case StyleRule::kMixin:
     case StyleRule::kNamespace:
     case StyleRule::kScope:
     case StyleRule::kSupports:
     case StyleRule::kStartingStyle:
-    case StyleRule::kResult:
     case StyleRule::kPrivate:
     case StyleRule::kApplyMixin:
     case StyleRule::kContents:
@@ -558,18 +556,13 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
   return parsed_value;
 }
 
-CSSValue* AtRuleDescriptorParser::ParseAtFunctionOrMixinDescriptor(
-    StyleRule::RuleType rule_type,
+CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   if (id != AtRuleDescriptorID::Result && id != AtRuleDescriptorID::Variable) {
     return nullptr;
   }
-  if (id == AtRuleDescriptorID::Result && rule_type == StyleRule::kMixin) {
-    return nullptr;
-  }
-
   bool important_ignored;
   CSSVariableData* variable_data =
       CSSVariableParser::ConsumeUnparsedDeclaration(

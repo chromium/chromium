@@ -11,28 +11,22 @@
       @private {
         --c: 5px;
       }
-      @result {
-        width: var(--c, 1px);
-      }
+      width: var(--c, 1px);
     }
 
     @mixin --outer-size() {
       @private {
         --size: 11px;
       }
-      @result {
-        width: var(--size, 1px);
-        @apply --inner-size;
-      }
+      width: var(--size, 1px);
+      @apply --inner-size;
     }
 
     @mixin --inner-size() {
       @private {
         --size: 22px;
       }
-      @result {
-        height: var(--size, 2px);
-      }
+      height: var(--size, 2px);
     }
 
     @mixin --conditional() {
@@ -46,24 +40,20 @@
           --off: 6px;
         }
       }
-      @result {
-        width: var(--on, 1px);
-        height: var(--off, 8px);
-      }
+      width: var(--on, 1px);
+      height: var(--off, 8px);
     }
 
     @mixin --with-fallback() {
       @private {
         --f: 3px;
       }
-      @result {
-        @contents {
-          @private {
-            --g: 6px;
-          }
-          width: var(--f, 1px);
-          height: var(--g, 2px);
+      @contents {
+        @private {
+          --g: 6px;
         }
+        width: var(--f, 1px);
+        height: var(--g, 2px);
       }
     }
   </style>

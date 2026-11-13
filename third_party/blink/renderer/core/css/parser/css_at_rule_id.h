@@ -63,7 +63,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleMixin,
   kCSSAtRuleApplyMixin,
   kCSSAtRuleContents,
-  kCSSAtRuleResult,
   kCSSAtRulePrivate,
   kCSSAtRuleCustomMedia,
 

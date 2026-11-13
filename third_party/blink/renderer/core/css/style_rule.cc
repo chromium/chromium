@@ -49,9 +49,9 @@
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_private_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
-#include "third_party/blink/renderer/core/css/css_result_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -198,9 +199,6 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kMixin:
       To<StyleRuleMixin>(this)->TraceAfterDispatch(visitor);
       return;
-    case kResult:
-      To<StyleRuleResult>(this)->TraceAfterDispatch(visitor);
-      return;
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->TraceAfterDispatch(visitor);
       return;
@@ -305,9 +303,6 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       return;
     case kMixin:
       To<StyleRuleMixin>(this)->~StyleRuleMixin();
-      return;
-    case kResult:
-      To<StyleRuleResult>(this)->~StyleRuleResult();
       return;
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->~StyleRuleApplyMixin();
@@ -446,10 +441,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kMixin:
       rule = MakeGarbageCollected<CSSMixinRule>(To<StyleRuleMixin>(self),
                                                 parent_sheet);
-      break;
-    case kResult:
-      rule = MakeGarbageCollected<CSSResultRule>(To<StyleRuleResult>(self),
-                                                 parent_sheet);
       break;
     case kPrivate: {
       DCHECK(parent_rule);
@@ -715,9 +706,6 @@ StyleRuleBase* StyleRuleBase::Clone(
     }
     case kMixin:
       return CloneGroupRule(To<StyleRuleMixin>(this), new_parent,
-                            mixin_parameter_bindings);
-    case kResult:
-      return CloneGroupRule(To<StyleRuleResult>(this), new_parent,
                             mixin_parameter_bindings);
     case kApplyMixin:
       return CloneGroupRule(To<StyleRuleApplyMixin>(this), new_parent,
@@ -1226,17 +1214,6 @@ void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(parameters_);
 }
 
-StyleRuleResult::StyleRuleResult(HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleGroup(kResult, child_rules) {}
-
-StyleRuleResult::StyleRuleResult(const StyleRuleResult& other,
-                                 HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleGroup(kResult, child_rules) {}
-
-void StyleRuleResult::TraceAfterDispatch(blink::Visitor* visitor) const {
-  StyleRuleGroup::TraceAfterDispatch(visitor);
-}
-
 StyleRuleApplyMixin::StyleRuleApplyMixin(
     const StyleRuleApplyMixin& other,
     HeapVector<Member<StyleRuleBase>> child_rules)
@@ -1278,33 +1255,31 @@ void StyleRuleCustomMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(media_query_value_);
 }
 
+void MixinParameterBindings::Trace(Visitor* visitor) const {
+  visitor->Trace(parent_mixin_);
+  visitor->Trace(bindings_);
+  visitor->Trace(argument_private_scope_);
+}
+
 uint32_t MixinParameterBindings::ComputeHash() const {
   uint32_t hash = parent_mixin_ ? parent_mixin_->GetHash() : 1234;
+  hash = HashInts(hash, argument_private_scope_
+                            ? HashPointer(argument_private_scope_.Get())
+                            : 0);
   for (const auto& [key, value] : bindings_) {
     hash = HashInts(hash, HashInts(key.Impl()->GetHash(),
                                    value.value ? value.value->Hash() : 5678));
-  }
-  for (const auto& [key, value] : base_locals_) {
-    hash =
-        HashInts(hash, HashInts(key.Impl()->GetHash() ^ 4321, value->Hash()));
   }
   return hash;
 }
 
 bool MixinParameterBindings::operator==(
     const MixinParameterBindings& other) const {
-  if (bindings_ != other.bindings_) {
-    return false;
-  }
-  if (base_locals_ != other.base_locals_) {
+  if (bindings_ != other.bindings_ ||
+      argument_private_scope_ != other.argument_private_scope_) {
     return false;
   }
   return base::ValuesEquivalent(parent_mixin_, other.parent_mixin_);
-}
-
-void MixinParameterBindings::CQDependentValue::Trace(Visitor* visitor) const {
-  visitor->Trace(data);
-  visitor->Trace(container_queries);
 }
 
 }  // namespace blink

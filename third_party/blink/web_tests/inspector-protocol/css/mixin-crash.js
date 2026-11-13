@@ -2,9 +2,7 @@
   var {page, session, dp} = await testRunner.startHTML(
       `<style>
          @mixin --test() {
-           @result {
-             @contents;
-           }
+           @contents;
          }
          body {
            background: red;

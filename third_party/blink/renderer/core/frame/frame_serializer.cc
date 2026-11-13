@@ -1255,9 +1255,6 @@ function main(metadata) {
       case CSSRule::kMixinRule:
         static_assert(IsCSSGroupingRuleType(CSSRule::kMixinRule));
         [[fallthrough]];
-      case CSSRule::kResultRule:
-        static_assert(IsCSSGroupingRuleType(CSSRule::kResultRule));
-        [[fallthrough]];
       case CSSRule::kNavigationRule:
         static_assert(IsCSSGroupingRuleType(CSSRule::kNavigationRule));
         [[fallthrough]];

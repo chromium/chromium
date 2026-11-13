@@ -683,7 +683,6 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kCustomMedia:
       case StyleRuleBase::kLocation:
         break;
-      case StyleRuleBase::kResult:
       case StyleRuleBase::kApplyMixin:
       case StyleRuleBase::kContents:
       case StyleRuleBase::kPrivate:

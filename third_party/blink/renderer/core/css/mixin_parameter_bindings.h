@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MIXIN_PARAMETER_BINDINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MIXIN_PARAMETER_BINDINGS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -12,7 +13,7 @@
 
 namespace blink {
 
-class ContainerQuerySet;
+class CSSPrivateBindings;
 
 // A set of custom mixin bindings at some given point in the stylesheet,
 // i.e., which variable has which value (and which type is it supposed
@@ -44,42 +45,15 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
     }
   };
 
-  // Since container queries cannot be evaluated at RuleSet creation time
-  // (where we also create the MixinParameterBindings), we cannot always
-  // create this fully. Thus, locals are split into two; first, there's
-  // base_locals_, which are always active and the base. Then, there's the
-  // (possibly empty) set of CQ-dependent locals that are applied on top
-  // of base_locals_; for each property name, we have a series of values with
-  // associated ContainerQuery to test, in declaration order.
-  // This means we can start from the back, and stop as soon as we see
-  // the first matching CQ.
-  struct CQDependentValue {
-    DISALLOW_NEW();
-
-    Member<CSSVariableData> data;
-    Member<ContainerQuerySet> container_queries;
-
-    void Trace(Visitor* visitor) const;
-  };
-
-  MixinParameterBindings(
-      HeapHashMap<String, Binding> bindings,
-      HeapHashMap<String, Member<CSSVariableData>> base_locals,
-      HeapHashMap<String, HeapVector<CQDependentValue>>
-          conditional_override_locals,
-      const MixinParameterBindings* previous_in_env_chain)
+  MixinParameterBindings(HeapHashMap<String, Binding> bindings,
+                         const MixinParameterBindings* previous_in_env_chain,
+                         const CSSPrivateBindings* argument_private_scope)
       : bindings_(std::move(bindings)),
-        base_locals_(std::move(base_locals)),
-        conditional_override_locals_(std::move(conditional_override_locals)),
         parent_mixin_(previous_in_env_chain),
+        argument_private_scope_(argument_private_scope),
         hash_(ComputeHash()) {}
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parent_mixin_);
-    visitor->Trace(bindings_);
-    visitor->Trace(base_locals_);
-    visitor->Trace(conditional_override_locals_);
-  }
+  CORE_EXPORT void Trace(Visitor* visitor) const;
 
   // NOTE: Equality here is only used for the MPC, where false negatives
   // are OK. In particular, we compare bindings one level at a time;
@@ -90,15 +64,11 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   bool operator==(const MixinParameterBindings& other) const;
 
   const HeapHashMap<String, Binding>& GetBindings() const { return bindings_; }
-  const HeapHashMap<String, Member<CSSVariableData>>& GetBaseLocals() const {
-    return base_locals_;
-  }
-  const HeapHashMap<String, HeapVector<CQDependentValue>>&
-  GetConditionalOverrideLocals() const {
-    return conditional_override_locals_;
-  }
 
   const MixinParameterBindings* GetParentMixin() const { return parent_mixin_; }
+  const CSSPrivateBindings* GetArgumentPrivateScope() const {
+    return argument_private_scope_.Get();
+  }
 
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
@@ -109,21 +79,10 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   uint32_t ComputeHash() const;
 
   HeapHashMap<String, Binding> bindings_;
-  HeapHashMap<String, Member<CSSVariableData>> base_locals_;
-  HeapHashMap<String, HeapVector<CQDependentValue>>
-      conditional_override_locals_;
 
   Member<const MixinParameterBindings> parent_mixin_;
+  Member<const CSSPrivateBindings> argument_private_scope_;
   uint32_t hash_;
-};
-
-template <>
-struct VectorTraits<MixinParameterBindings::CQDependentValue>
-    : VectorTraitsBase<MixinParameterBindings::CQDependentValue> {
-  static const bool kCanClearUnusedSlotsWithMemset = true;
-  static const bool kCanInitializeWithMemset = true;
-  static const bool kCanMoveWithMemcpy = true;
-  static const bool kCanTraceConcurrently = true;
 };
 
 }  // namespace blink

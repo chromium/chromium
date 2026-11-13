@@ -941,8 +941,6 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumeApplyMixinRule(stream);
     case CSSAtRuleID::kCSSAtRuleContents:
       return ConsumeContentsRule(stream);
-    case CSSAtRuleID::kCSSAtRuleResult:
-      return ConsumeResultRule(stream);
     case CSSAtRuleID::kCSSAtRulePrivate:
       return ConsumePrivateRule(stream);
     case CSSAtRuleID::kCSSAtRulePositionTry:
@@ -1312,8 +1310,7 @@ StyleRuleBase* CSSParserImpl::CreateDeclarationsRule(
           nesting_type, *context_,
           /*selectors=*/WhereScopeSelector(), declarations);
     case CSSNestingType::kFunction:
-    case CSSNestingType::kMixin:
-      // For descriptors within @function or @mixin, e.g.:
+      // For descriptors within @function, e.g.:
       //
       //  @function --x() {
       //    --local: 1px;
@@ -2542,53 +2539,15 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kMixin, header_start);
     observer_->EndRuleHeader(header_end);
-    observer_->StartRuleBody(stream.Offset());
   }
 
   // Parse the actual block.
-  CSSParserTokenStream::BlockGuard guard(stream);
-  HeapVector<Member<StyleRuleBase>, 4> child_rules;
   PrivateNameMap private_names;
   base::AutoReset<PrivateNameMap*> reset_private_names(&private_names_,
                                                        &private_names);
   PrivateNameMap authored_private_names;
   base::AutoReset<PrivateNameMap*> reset_authored_private_names(
       &mixin_authored_private_names_, &authored_private_names);
-  ConsumeBlockContents(stream, StyleRule::kMixin, CSSNestingType::kMixin,
-                       /*parent_rule_for_nesting=*/nullptr,
-                       /*nested_declarations_start_index=*/0, &child_rules,
-                       /*has_visited_pseudo=*/false);
-
-  if (observer_) {
-    observer_->EndRuleBody(stream.LookAheadOffset());
-  }
-
-  if (style_sheet_) {
-    style_sheet_->SetHasMixinRules();
-  }
-  return MakeGarbageCollected<StyleRuleMixin>(name, std::move(*parameters),
-                                              std::move(authored_private_names),
-                                              std::move(child_rules));
-}
-
-StyleRuleResult* CSSParserImpl::ConsumeResultRule(
-    CSSParserTokenStream& stream) {
-  wtf_size_t header_start = stream.LookAheadOffset();
-
-  // The prelude should be empty.
-  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
-                                             CSSAtRuleID::kCSSAtRuleResult)) {
-    return nullptr;
-  }
-
-  stream.EnsureLookAhead();
-  wtf_size_t header_end = stream.LookAheadOffset();
-  if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kResult, header_start);
-    observer_->EndRuleHeader(header_end);
-  }
-
-  // Parse the actual block.
   StyleRule* fake_parent_rule;
   {
     base::AutoReset<bool> reset_in_mixin(&in_mixin_, true);
@@ -2598,14 +2557,18 @@ StyleRuleResult* CSSParserImpl::ConsumeResultRule(
   // ConsumeDeclarationListForMixins() must have a fake parent rule in case
   // there are any rules containing parent selectors (including raw
   // declarations, as they are wrapped in an implicit nested block); however,
-  // StyleRuleResult is a StyleRuleGroup and expects to own its rules itself.
+  // StyleRuleMixin is a StyleRuleGroup and expects to own its rules itself.
   // This means that even though fake_parent_rule is the parent pointed to by
   // the selectors (and will be kept alive by them), it doesn't actually
   // contain the child rules and isn't used for anything anymore. Once
   // a mixin is actually used (in @apply), we clone all the rules and call
   // Clone(), which changes all the parent references to @apply's parent.
   fake_parent_rule->EnsureChildRules();
-  return MakeGarbageCollected<StyleRuleResult>(
+  if (style_sheet_) {
+    style_sheet_->SetHasMixinRules();
+  }
+  return MakeGarbageCollected<StyleRuleMixin>(
+      name, std::move(*parameters), std::move(authored_private_names),
       HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
@@ -3272,8 +3235,7 @@ void CSSParserImpl::ConsumeBlockContents(
       }
       default:
         if (nesting_type != CSSNestingType::kNone &&
-            nesting_type != CSSNestingType::kFunction &&
-            nesting_type != CSSNestingType::kMixin) {
+            nesting_type != CSSNestingType::kFunction) {
           bool invalid_rule_error = false;
           StyleRuleBase* child =
               ConsumeNestedRule(std::nullopt, rule_type, stream, nesting_type,
@@ -3339,8 +3301,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
   DCHECK(child_rules);
 
   bool is_nested_group_rule = nesting_type == CSSNestingType::kNesting ||
-                              nesting_type == CSSNestingType::kFunction ||
-                              nesting_type == CSSNestingType::kMixin;
+                              nesting_type == CSSNestingType::kFunction;
   if (is_nested_group_rule) {
     // This is a nested group rule, which (in addition to rules) allows
     // *declarations* to appear directly within the body of the rule, e.g.:
@@ -3364,8 +3325,6 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     StyleRule::RuleType rule_type;
     if (nesting_type == CSSNestingType::kFunction) {
       rule_type = StyleRule::kFunction;
-    } else if (nesting_type == CSSNestingType::kMixin) {
-      rule_type = StyleRule::kMixin;
     } else {
       rule_type = StyleRule::kStyle;
     }
@@ -3408,10 +3367,6 @@ AllowedRules AllowedNestedRules(StyleRule::RuleType parent_rule_type,
                AllowedRules{CSSAtRuleID::kCSSAtRulePrivate};
       }
     }
-    case StyleRule::kMixin:
-      return CSSParserImpl::kConditionalRules |
-             AllowedRules{CSSAtRuleID::kCSSAtRulePrivate,
-                          CSSAtRuleID::kCSSAtRuleResult};
     case StyleRule::kPage:
       return CSSParserImpl::kPageMarginRules;
     case StyleRule::kFunction:
@@ -3487,13 +3442,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   size_t properties_count = parsed_properties_.size();
 
-  bool parsing_descriptor =
-      rule_type == StyleRule::kFontFace ||
-      rule_type == StyleRule::kFontPaletteValues ||
-      rule_type == StyleRule::kProperty || rule_type == StyleRule::kLocation ||
-      rule_type == StyleRule::kCounterStyle ||
-      rule_type == StyleRule::kViewTransition ||
-      rule_type == StyleRule::kFunction || rule_type == StyleRule::kMixin;
+  bool parsing_descriptor = rule_type == StyleRule::kFontFace ||
+                            rule_type == StyleRule::kFontPaletteValues ||
+                            rule_type == StyleRule::kProperty ||
+                            rule_type == StyleRule::kLocation ||
+                            rule_type == StyleRule::kCounterStyle ||
+                            rule_type == StyleRule::kViewTransition ||
+                            rule_type == StyleRule::kFunction;
 
   uint64_t id = parsing_descriptor
                     ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())

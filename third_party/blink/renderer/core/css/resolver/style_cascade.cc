@@ -1286,64 +1286,33 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
 
   const MixinParameterBindings* mixin_parameter_bindings =
       binding_chain[binding_index];
-  for (const auto& binding : mixin_parameter_bindings->GetBindings()) {
-    local_types.insert(binding.key, &binding.value.syntax);
-    ResolveFunctionParameter(binding.key, binding.value.value,
-                             binding.value.default_value, binding.value.syntax,
-                             tree_scope, resolver, *context, function_context,
-                             function_arguments, unresolved_defaults);
-  }
-
-  if (!ResolveUnresolvedFunctionDefaults(
-          unresolved_defaults, local_types, /*function=*/nullptr,
-          /*tree_scope=*/nullptr, function_context, resolver, context,
-          function_arguments)) {
-    return nullptr;
-  }
-
-  const auto& conditional_override_locals =
-      mixin_parameter_bindings->GetConditionalOverrideLocals();
-
-  // Avoid copying the base locals when there's nothing to override: point
-  // `unresolved_locals` straight at GetBaseLocals() in that case, since it
-  // outlives this call.
-  HeapHashMap<String, Member<CSSVariableData>> locals_after_cq;
-  const HeapHashMap<String, Member<CSSVariableData>>* unresolved_locals =
-      &mixin_parameter_bindings->GetBaseLocals();
-  if (!conditional_override_locals.empty()) {
-    locals_after_cq = mixin_parameter_bindings->GetBaseLocals();
-    for (const auto& [name, candidates] : conditional_override_locals) {
-      // Mark this as uncacheable in the MPC.
-      // TODO(sesse): Loosen this restriction, by including the CQ evaluation
-      // results in the MPC key (and also update operator== and GetHash() to
-      // include CQ-dependent locals).
-      state_.StyleBuilder().SetHasContainerRelativeValue();
-
-      // Find the last-declared value with a matching container query (if
-      // any), and apply it.
-      for (const MixinParameterBindings::CQDependentValue& candidate :
-           std::views::reverse(candidates)) {
-        if (EvaluateContainerQueries(state_.GetElement(), state_.GetPseudoId(),
-                                     *candidate.container_queries,
-                                     state_.NearestSizeContainer(),
-                                     match_result_)) {
-          locals_after_cq.Set(name, candidate.data);
-          break;
-        }
-      }
+  {
+    HeapAutoReset<const CSSPrivateBindings> argument_scope(
+        &current_css_private_bindings_,
+        mixin_parameter_bindings->GetArgumentPrivateScope());
+    for (const auto& binding : mixin_parameter_bindings->GetBindings()) {
+      local_types.insert(binding.key, &binding.value.syntax);
+      ResolveFunctionParameter(
+          binding.key, binding.value.value, binding.value.default_value,
+          binding.value.syntax, tree_scope, resolver, *context,
+          function_context, function_arguments, unresolved_defaults);
     }
-    unresolved_locals = &locals_after_cq;
+
+    if (!ResolveUnresolvedFunctionDefaults(
+            unresolved_defaults, local_types, /*function=*/nullptr,
+            /*tree_scope=*/nullptr, function_context, resolver, context,
+            function_arguments)) {
+      return nullptr;
+    }
   }
 
   FunctionContext ctx = {
       .arguments = function_arguments,
-      .locals = {},  // Populated by ApplyLocalVariables.
-      .unresolved_locals = *unresolved_locals,
+      .locals = {},
+      .unresolved_locals = {},
       .local_types = local_types,
       .parent = function_context,
   };
-  ApplyLocalVariables(resolver, *context, ctx);
-
   return MakeFunctionContextFromMixinAndResolveSubstitutions(
       property, value, tree_scope, binding_chain, binding_index + 1, &ctx,
       resolver);

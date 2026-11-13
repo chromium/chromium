@@ -98,8 +98,6 @@ constexpr FlaggedAtRuleEntry kFlaggedAtRuleEntries[] = {
      &RuntimeEnabledFeatures::RouteMatchingEnabled},
     {"private", CSSAtRuleID::kCSSAtRulePrivate, WebFeature::kCSSAtPrivate,
      &RuntimeEnabledFeatures::CSSPrivateEnabled},
-    {"result", CSSAtRuleID::kCSSAtRuleResult, WebFeature::kCSSMixins,
-     &RuntimeEnabledFeatures::CSSMixinsEnabled},
 };
 // clang-format on
 

@@ -238,9 +238,7 @@ TEST_F(StyleEngineTest, UnrelatedStyleChangePreservesMixinMapIdentity) {
   SetBodyInnerHTML(R"HTML(
     <style id="mixins">
       @mixin --mixin() {
-        @result {
-          color: green;
-        }
+        color: green;
       }
     </style>
     <style id="unrelated">#unused { color: red; }</style>
@@ -258,9 +256,7 @@ TEST_F(StyleEngineTest, UnrelatedStyleChangePreservesMixinMapIdentity) {
 
   GetElementById("mixins")->setTextContent(R"CSS(
         @mixin --mixin() {
-          @result {
-            color: blue;
-          }
+          color: blue;
         }
       )CSS");
   UpdateAllLifecyclePhases();

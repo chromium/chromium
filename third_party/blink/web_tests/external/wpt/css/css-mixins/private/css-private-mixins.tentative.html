@@ -11,29 +11,23 @@
       @private {
         --size: 1em;
       }
-      @result {
-        width: var(--size, 999px);
-      }
+      width: var(--size, 999px);
     }
 
     @mixin --overridden-private() {
       @private {
         --color: red;
       }
-      @result {
-        --color: green;
-        color: var(--color);
-      }
+      --color: green;
+      color: var(--color);
     }
 
     @mixin --descendant-private() {
       @private {
         --size: 20px;
       }
-      @result {
-        & > .child {
-          width: var(--size, 999px);
-        }
+      & > .child {
+        width: var(--size, 999px);
       }
     }
 
@@ -41,10 +35,8 @@
       @private {
         --size: 20px;
       }
-      @result {
-        & + .sibling {
-          width: var(--size, 30px);
-        }
+      & + .sibling {
+        width: var(--size, 30px);
       }
     }
 
@@ -52,18 +44,14 @@
       @private {
         --size: 20px;
       }
-      @result {
-        height: var(--size, 999px);
-      }
+      height: var(--size, 999px);
     }
 
     @mixin --wrap() {
       @private {
         --size: 20px;
       }
-      @result {
-        @contents;
-      }
+      @contents;
     }
 
     #first {
@@ -120,14 +108,12 @@
       @private {
         --q: 6px;
       }
-      @result {
-        @apply --wrap {
-          @private {
-            --r: 7px;
-          }
-          width: var(--r, 1px);
-          height: var(--q, 2px);
+      @apply --wrap {
+        @private {
+          --r: 7px;
         }
+        width: var(--r, 1px);
+        height: var(--q, 2px);
       }
     }
 
@@ -139,10 +125,8 @@
       @private {
         --c3: blue;
       }
-      @result {
-        border-right-color: var(--c2);
-        border-bottom-color: var(--c3);
-      }
+      border-right-color: var(--c2);
+      border-bottom-color: var(--c3);
     }
 
     #shadowed {
@@ -153,9 +137,7 @@
     }
 
     @mixin --param-width(--p) {
-      @result {
-        width: var(--p, 999px);
-      }
+      width: var(--p, 999px);
     }
 
     #param-over-private {
@@ -169,16 +151,14 @@
       @private {
         --size: 5px;
       }
-      @result {
-        & > .n {
-          @private {
-            --size: 33px;
-          }
-          width: var(--size, 3px);
+      & > .n {
+        @private {
+          --size: 33px;
         }
-        & > .m {
-          width: var(--size, 4px);
-        }
+        width: var(--size, 3px);
+      }
+      & > .m {
+        width: var(--size, 4px);
       }
     }
 
@@ -190,10 +170,8 @@
       @private {
         --size: var(--v);
       }
-      @result {
-        & > .x {
-          width: var(--size, 999px);
-        }
+      & > .x {
+        width: var(--size, 999px);
       }
     }
 

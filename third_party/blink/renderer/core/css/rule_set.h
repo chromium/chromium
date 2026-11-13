@@ -691,14 +691,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const CSSPrivateBindings* PrivateScopeForMixinRules(
       base::span<const Member<StyleRuleBase>> rules,
       const ApplyingMixin& applying_mixin) const;
-  void FlattenMixinLocals(
-      base::span<const Member<StyleRuleBase>> rules,
-      const MediaQueryEvaluator& medium,
-      const ContainerQuerySet* container_queries,
-      HeapHashMap<String, Member<CSSVariableData>>& locals,
-      HeapHashMap<String, HeapVector<MixinParameterBindings::CQDependentValue>>&
-          cq_dependent_locals);
-
   // Determines whether or not CSSSelector::is_covered_by_bucketing_ should
   // be computed during calls to FindBestBucketAndAdd.
   enum class BucketCoverage {
