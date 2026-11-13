@@ -74,6 +74,10 @@ source_set("model") {
     "safe_browsing_helper_factory.mm",
     "safe_browsing_metrics_collector_factory.h",
     "safe_browsing_metrics_collector_factory.mm",
+    "suspicious_site_history_observer_service.h",
+    "suspicious_site_history_observer_service.mm",
+    "suspicious_site_history_observer_service_factory.h",
+    "suspicious_site_history_observer_service_factory.mm",
     "suspicious_site_tab_helper.h",
     "suspicious_site_tab_helper.mm",
     "suspicious_site_tab_helper_delegate.h",
@@ -86,6 +90,7 @@ source_set("model") {
   public_deps = [
     ":user_population_helper",
     ":verdict_cache_manager_factory",
+    "//components/history/core/browser",
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",
   ]
 
@@ -283,6 +288,7 @@ source_set("unit_tests") {
     "safe_browsing_blocking_page_unittest.mm",
     "safe_browsing_client_factory_unittest.mm",
     "safe_browsing_client_impl_unittest.mm",
+    "suspicious_site_history_observer_service_unittest.mm",
     "suspicious_site_tab_helper_unittest.mm",
     "user_population_helper_unittest.mm",
     "v5_get_hash_protocol_manager_factory_unittest.mm",
@@ -298,6 +304,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
+    "//components/history/core/browser",
     "//components/optimization_guide/core:prediction",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
