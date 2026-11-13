@@ -28,8 +28,7 @@
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
-  self.bannerSize = BannerImageSizeType::kStandard;
-  self.bannerName = [self bannerNameForPromo];
+  [self configureBanner];
   if (![self.titleText length] || ![self.subtitleText length]) {
     // Sets default promo text if title and subtitle text are not explicitly
     // set.
@@ -66,7 +65,9 @@
         constraintEqualToAnchor:self.specificContentView.widthAnchor],
   ]];
 
-  if ([self.disclaimerText length] > 0) {
+  // Top-align `contentView` to keep `subtitleBottomMargin` when a disclaimer
+  // is shown or requested; otherwise bottom-align it above the buttons.
+  if ([self.disclaimerText length] > 0 || [self shouldTopAlignContentView]) {
     [NSLayoutConstraint activateConstraints:@[
       [contentView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.specificContentView
@@ -88,11 +89,12 @@
 
 #pragma mark - Subclassing
 
-- (NSString*)bannerNameForPromo {
+- (void)configureBanner {
+  self.bannerSize = BannerImageSizeType::kStandard;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return kChromeDefaultBrowserScreenBannerImage;
+  self.bannerName = kChromeDefaultBrowserScreenBannerImage;
 #else
-  return kChromiumDefaultBrowserScreenBannerImage;
+  self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
 #endif
 }
 
@@ -128,6 +130,10 @@
                     IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
   return [[InstructionView alloc] initWithList:defaultBrowserSteps];
+}
+
+- (BOOL)shouldTopAlignContentView {
+  return NO;
 }
 
 #pragma mark - DefaultBrowserScreenConsumer
@@ -170,8 +176,13 @@
       break;
     }
   }
-  self.disclaimerText = [array componentsJoinedByString:@" "];
-  self.disclaimerURLs = urls;
+  // Avoid creating an empty `disclaimerView` in `PromoStyleViewController`
+  // when `contentView` is top-aligned, while preserving existing bottom spacing
+  // when bottom-aligned.
+  if (array.count > 0 || ![self shouldTopAlignContentView]) {
+    self.disclaimerText = [array componentsJoinedByString:@" "];
+    self.disclaimerURLs = urls;
+  }
 }
 
 @end
