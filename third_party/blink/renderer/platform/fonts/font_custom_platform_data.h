@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 #include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
@@ -47,18 +48,32 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTypeface;
 
 namespace blink {
 
+class FontDescription;
 class FontPlatformData;
-class FontVariationSettings;
 
 class PLATFORM_EXPORT FontCustomPlatformData
     : public GarbageCollected<FontCustomPlatformData> {
  public:
+  enum class VariationAxisMode {
+    // Constrains axes against `base_typeface_`'s `fvar` table: returns empty if
+    // `base_typeface_` is not a variable font, clamps `auto` descriptor ranges
+    // to `fvar` `[min, max]`, filters `ital` against `fvar`, and populates
+    // `fvar`'s default `opsz` for `font-optical-sizing: none`.
+    kClampToTypeface,
+    // Resolves coordinates from CSS and explicit `@font-face` descriptors
+    // without clamping or filtering against `base_typeface_`'s `fvar` table
+    // (for unpatched IFT fonts whose `fvar` may omit pinned axes or have
+    // narrowed `[min, max]` ranges until patches are applied).
+    kIgnoreTypefaceAxes,
+  };
+
   static FontCustomPlatformData* Create(SharedBuffer*,
                                         String& ots_parse_message);
   static FontCustomPlatformData* Create(sk_sp<SkTypeface>, size_t data_size);
@@ -71,6 +86,16 @@ class PLATFORM_EXPORT FontCustomPlatformData
   ~FontCustomPlatformData();
 
   void Trace(Visitor*) const {}
+
+  // Resolves unique variation axis coordinates (with `font-variation-settings`
+  // overriding high-level CSS properties using last-wins precedence). Kept as
+  // an instance method so future axis reconciliation (e.g., checking whether
+  // `base_typeface_` already exposes a usable `ital` axis) can inspect
+  // `base_typeface_`.
+  Vector<FontVariationAxis, 5> ResolveVariationAxes(
+      const FontDescription& font_description,
+      const FontSelectionCapabilities& selection_capabilities,
+      VariationAxisMode mode) const;
 
   // The size argument should come from EffectiveFontSize() and
   // adjusted_specified_size should come from AdjustedSpecifiedSize() of

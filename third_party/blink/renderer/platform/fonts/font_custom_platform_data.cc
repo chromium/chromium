@@ -33,15 +33,18 @@
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <optional>
 #include <utility>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
@@ -140,31 +143,33 @@ ResolvedVariations ResolveVariations(
     const FontSelectionRequest& selection_request,
     const FontSelectionCapabilities& selection_capabilities,
     OpticalSizing optical_sizing,
-    const FontVariationSettings* variation_settings) {
+    const FontVariationSettings* variation_settings,
+    FontCustomPlatformData::VariationAxisMode mode) {
   ResolvedVariations result;
   result.synthetic_bold = bold;
   result.synthetic_italic = synthesize_italic;
 
-  FontFormatCheck::VariableFontSubType font_sub_type =
-      FontFormatCheck::ProbeVariableFont(base_typeface);
-  bool is_variable_font =
-      font_sub_type ==
-          FontFormatCheck::VariableFontSubType::kVariableTrueType ||
-      font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCff2;
-  if (!is_variable_font) {
-    return result;
+  TypefaceAxes typeface_axes;
+  if (mode == FontCustomPlatformData::VariationAxisMode::kClampToTypeface) {
+    FontFormatCheck::VariableFontSubType font_sub_type =
+        FontFormatCheck::ProbeVariableFont(base_typeface);
+    bool is_variable_font =
+        font_sub_type ==
+            FontFormatCheck::VariableFontSubType::kVariableTrueType ||
+        font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCff2;
+    if (!is_variable_font) {
+      return result;
+    }
+    typeface_axes = GetTypefaceAxes(*base_typeface);
   }
-
-  const TypefaceAxes typeface_axes = GetTypefaceAxes(*base_typeface);
 
   // Maximum axis count is maximum value for the OpenType USHORT,
   // which is a 16bit unsigned.
   // https://www.microsoft.com/typography/otspec/fvar.htm Variation
   // settings coming from CSS can have duplicate assignments and the
   // list can be longer than UINT16_MAX, but ignoring the length for
-  // now, going with a reasonable upper limit. Deduplication is
-  // handled by Skia with priority given to the last occurring
-  // assignment.
+  // now, going with a reasonable upper limit. Deduplication gives
+  // priority to the last occurring assignment.
   const wtf_size_t settings_count =
       (variation_settings &&
        variation_settings->size() < std::numeric_limits<uint16_t>::max())
@@ -197,14 +202,19 @@ ResolvedVariations ResolveVariations(
   const bool use_ital_axis =
       font_variable_italic_axis && is_italic_keyword && typeface_axes.ital &&
       typeface_axes.ital->min <= 1 && typeface_axes.ital->max >= 1;
-  if (font_variable_italic_axis && typeface_axes.ital) {
+  if (font_variable_italic_axis) {
     // The italic keyword instantiates the ital axis at 1. Any other
     // font-style value instantiates it at 0, as the matching algorithm
     // selects italic value 0 within the axis range; in particular, the
     // ital axis is not used to satisfy an oblique request. See
     // https://drafts.csswg.org/css-fonts-4/#font-style-matching. Values
     // outside the axis range are clamped by Skia.
-    result.axes.emplace_back(kItalTag, use_ital_axis ? 1.0f : 0.0f);
+    if (mode ==
+        FontCustomPlatformData::VariationAxisMode::kIgnoreTypefaceAxes) {
+      result.axes.emplace_back(kItalTag, is_italic_keyword ? 1.0f : 0.0f);
+    } else if (typeface_axes.ital) {
+      result.axes.emplace_back(kItalTag, use_ital_axis ? 1.0f : 0.0f);
+    }
   }
 
   // CSS and OpenType have opposite definitions of direction of slant
@@ -212,6 +222,10 @@ ResolvedVariations ResolveVariations(
   // values clockwise - in CSS positive values are clockwise rotations /
   // skew. See note in https://drafts.csswg.org/css-fonts/#font-style-prop -
   // map value from CSS to OpenType here.
+  //
+  // TODO(wmedrano): In `kIgnoreTypefaceAxes` mode, avoid requesting non-zero
+  // `slnt` (`-14`) for `font-style: italic` when the font's `ital` axis
+  // already satisfies it and `slnt` is not explicitly overridden.
   auto negate_slope = [](float slope) { return slope == 0.0f ? 0.0f : -slope; };
   float slnt = negate_slope(selection_request.slope);
   if (use_ital_axis) {
@@ -238,22 +252,39 @@ ResolvedVariations ResolveVariations(
   }
   result.axes.emplace_back(kSlntTag, slnt);
 
-  bool explicit_opsz_configured = false;
-  for (wtf_size_t i = 0; i < settings_count; ++i) {
-    const FontVariationAxis& setting = (*variation_settings)[i];
-    if (setting.Tag() == kOpszTag) {
-      explicit_opsz_configured = true;
-    }
-    result.axes.push_back(setting);
+  if (optical_sizing == OpticalSizing::kAuto) {
+    // `FontDescription::AdjustedSpecifiedSize()` divides `0 / 0` (`NaN`) when
+    // `font-size: 0px` is combined with a `size-adjust` descriptor.
+    result.axes.emplace_back(kOpszTag, std::isfinite(adjusted_specified_size)
+                                           ? adjusted_specified_size
+                                           : 0.0f);
+  } else if (optical_sizing == OpticalSizing::kNone && typeface_axes.opsz) {
+    // Explicitly set default value to avoid automatic application of
+    // optical sizing as it seems to happen on SkTypeface on Mac.
+    result.axes.emplace_back(kOpszTag, typeface_axes.opsz->def);
   }
 
-  if (!explicit_opsz_configured) {
-    if (optical_sizing == OpticalSizing::kAuto) {
-      result.axes.emplace_back(kOpszTag, adjusted_specified_size);
-    } else if (optical_sizing == OpticalSizing::kNone && typeface_axes.opsz) {
-      // Explicitly set default value to avoid automatic application of
-      // optical sizing as it seems to happen on SkTypeface on Mac.
-      result.axes.emplace_back(kOpszTag, typeface_axes.opsz->def);
+  // Override built-in axes in place (last assignment wins) so
+  // `ResolveVariationAxes()` returns one coordinate per axis. CSS
+  // `FontVariationSettings` are already sorted and deduplicated, so tracking
+  // `max_tag` keeps scanning bounded to `built_in_count` (<= 5) in O(n) while
+  // still deduplicating unsorted callers.
+  const wtf_size_t built_in_count = result.axes.size();
+  std::optional<uint32_t> max_tag;
+  for (wtf_size_t i = 0; i < settings_count; ++i) {
+    const FontVariationAxis& setting = (*variation_settings)[i];
+    const wtf_size_t scan_limit = (!max_tag || *max_tag < setting.Tag())
+                                      ? built_in_count
+                                      : result.axes.size();
+    max_tag = max_tag ? std::max(*max_tag, setting.Tag()) : setting.Tag();
+    base::span<FontVariationAxis> scan_range =
+        base::span(result.axes).first(scan_limit);
+    auto existing =
+        std::ranges::find(scan_range, setting.Tag(), &FontVariationAxis::Tag);
+    if (existing != scan_range.end()) {
+      *existing = setting;
+    } else {
+      result.axes.push_back(setting);
     }
   }
 
@@ -281,6 +312,22 @@ FontCustomPlatformData::~FontCustomPlatformData() {
   }
 }
 
+Vector<FontVariationAxis, 5> FontCustomPlatformData::ResolveVariationAxes(
+    const FontDescription& font_description,
+    const FontSelectionCapabilities& selection_capabilities,
+    VariationAxisMode mode) const {
+  DCHECK(base_typeface_);
+  return ResolveVariations(
+             base_typeface_, font_description.AdjustedSpecifiedSize(),
+             /*bold=*/false, /*synthesize_italic=*/false,
+             font_description.GetStyleSyntax() ==
+                 FontDescription::StyleSyntax::kItalicKeyword,
+             font_description.GetFontSelectionRequest(), selection_capabilities,
+             font_description.FontOpticalSizing(),
+             font_description.VariationSettings(), mode)
+      .axes;
+}
+
 const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     float size,
     float adjusted_specified_size,
@@ -302,7 +349,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
   ResolvedVariations resolved = ResolveVariations(
       base_typeface_, adjusted_specified_size, bold, synthesize_italic,
       is_italic_keyword, selection_request, selection_capabilities,
-      optical_sizing, variation_settings);
+      optical_sizing, variation_settings, VariationAxisMode::kClampToTypeface);
   bool synthetic_bold = resolved.synthetic_bold;
   bool synthetic_italic = resolved.synthetic_italic;
   if (!resolved.axes.empty()) {

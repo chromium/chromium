@@ -2277,6 +2277,7 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_thread_safe_data_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
     "fonts/font_cache_test.cc",
+    "fonts/font_custom_platform_data_test.cc",
     "fonts/font_description_test.cc",
     "fonts/font_fallback_iterator_test.cc",
     "fonts/font_family_test.cc",
