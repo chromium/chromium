@@ -26,7 +26,7 @@ _POM_TEMPLATE = """\
       <groupId>{group_id}</groupId>
       <artifactId>{artifact_id}</artifactId>
       <version>{version}</version>
-      <scope>runtime</scope>
+      <scope>runtime</scope>{exclusions}
     </dependency>
   </dependencies>
   <build>
@@ -85,10 +85,31 @@ def latest_version(maven_url, package):
     return _detect_latest(maven_url, package)
 
 
-def build_jar_with_dependencies(maven_url, package, version, work_dir='.'):
+def _exclusions_xml(exclusions):
+    if not exclusions:
+        return ''
+    lines = ['', '      <exclusions>']
+    for exclusion in exclusions:
+        group_id, artifact_id = exclusion.split(':')
+        lines += [
+            '        <exclusion>',
+            f'          <groupId>{group_id}</groupId>',
+            f'          <artifactId>{artifact_id}</artifactId>',
+            '        </exclusion>',
+        ]
+    lines.append('      </exclusions>')
+    return '\n'.join(lines)
+
+
+def build_jar_with_dependencies(
+    maven_url, package, version, work_dir='.', exclusions=()
+):
     """Builds a .jar containing |package| and its dependencies.
 
     Must be called from within a 3pp checkout (it uses third_party/jdk).
+
+    Args:
+      exclusions: group:artifact of dependencies to leave out.
 
     Returns:
       Path to the built .jar.
@@ -101,6 +122,7 @@ def build_jar_with_dependencies(maven_url, package, version, work_dir='.'):
             group_id=group_id,
             artifact_id=artifact_id,
             maven_url=maven_url,
+            exclusions=_exclusions_xml(exclusions),
         )
     )
 
@@ -137,13 +159,16 @@ def _install(
     version,
     jar_name=None,
     post_process_func=None,
+    exclusions=(),
 ):
     # Runs in a docker container.
     artifact_id = package.split(':')[1]
     if not jar_name:
         jar_name = f'{artifact_id}.jar'
 
-    src_jar_path = build_jar_with_dependencies(maven_url, package, version)
+    src_jar_path = build_jar_with_dependencies(
+        maven_url, package, version, exclusions=exclusions
+    )
     dst_jar_path = os.path.join(output_prefix, jar_name)
     if post_process_func:
         post_process_func(src_jar_path, dst_jar_path)
@@ -161,6 +186,7 @@ def main(
     runtime_deps=(),
     version_deps=None,
     version_strings_func=None,
+    exclusions=(),
 ):
     """3pp entry point for fetch.py.
 
@@ -174,6 +200,8 @@ def main(
           post_process_func. See common.main().
       version_deps: Extra paths to hash into the version. See common.main().
       version_strings_func: See common.main().
+      exclusions: Dependencies of |package| to leave out of the .jar, as
+          group:artifact (e.g. some.group:unused-thing).
     """
 
     def do_latest():
@@ -188,6 +216,7 @@ def main(
             args.version,
             jar_name,
             post_process_func,
+            exclusions,
         )
 
     common.main(

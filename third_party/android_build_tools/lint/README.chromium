@@ -17,6 +17,9 @@ Local Modifications:
   checks of //third_party/androidx compiled in, plus the JDK .so files it loads
   and lint-builtins.jar (Kotlin builtins it reads at run time). Oracle GraalVM
   is under the GraalVM Free Terms and Conditions (GFTC).
+- lint.jar also contains lint-gradle (without Groovy) for its annotation
+  extractor, com.android.tools.lint.annotations.ExtractAnnotationsDriver.
+  bin/lint-graalvm runs it when its first argument is --extract-annotations.
 
 What version is this:
   * Run print_version.sh to find out the version.

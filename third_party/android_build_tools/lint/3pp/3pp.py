@@ -10,6 +10,10 @@ the lint checks that androidx aars ship (lint.jar inside the .aar) are
 compiled in. The CRC-32 of each of those lint.jar files is part of the package
 version, so a new package is built when lint or any of those checks change, but
 not for androidx rolls that leave them alone.
+
+lint.jar also has lint-gradle's annotation extractor, which writes the
+annotations.zip that lint reads for a library's typedefs. The image runs it
+when its first argument is --extract-annotations (see launcher/LintMain.java).
 """
 
 import glob
@@ -29,7 +33,7 @@ import common
 import graalvm
 import maven
 
-_MAIN_CLASS = 'com.android.tools.lint.Main'
+_MAIN_CLASS = 'org.chromium.build.lint.LintMain'
 _ANDROIDX_LIBS = 'third_party/androidx/cipd/libs'
 _SDK_DIR = 'third_party/android_sdk/public'
 _KOTLIN_STDLIB = ('third_party/android_deps/cipd/libs/'
@@ -152,8 +156,9 @@ def _sample_workloads(work_dir, aar_dirs, classpath, sdk_dir,
 
     The image only gets reflection metadata for code that runs while tracing,
     so the runs mirror every lint.py mode: a library analysis (--analyze-only),
-    the app analysis, the report (--report-only, filtered by a baseline) and a
-    monolithic run.
+    the app analysis, the report (--report-only, filtered by a baseline), a
+    monolithic run and an annotation extraction (whose last argument is its
+    output path).
     """
     sample_dir = os.path.join(work_dir, 'sample')
     shutil.copytree(str(_THIS_DIR / 'sample'), sample_dir)
@@ -188,7 +193,8 @@ def _sample_workloads(work_dir, aar_dirs, classpath, sdk_dir,
     lib_partials = os.path.join(work_dir, 'lib_partials')
     app_partials = os.path.join(work_dir, 'app_partials')
     full_partials = os.path.join(work_dir, 'full_partials')
-    for d in (lib_partials, app_partials, full_partials):
+    extract_dir = os.path.join(work_dir, 'extract_jvm')
+    for d in (lib_partials, app_partials, full_partials, extract_dir):
         os.makedirs(d, exist_ok=True)
     # lint.py passes a baseline to the report step.
     baseline = os.path.join(work_dir, 'lint-baseline.xml')
@@ -244,6 +250,11 @@ def _sample_workloads(work_dir, aar_dirs, classpath, sdk_dir,
         'ThreadConstraint,BlockingMethod,StaticInitializerThreadConstraint,'
         'BlockingStaticInitializer'
     ]
+    extract_args = [
+        '--extract-annotations', '--sources', ':'.join(srcs), '--classpath',
+        ':'.join(classpath), '--output',
+        os.path.join(extract_dir, 'annotations.zip')
+    ]
     return [
         common_args + ['--project', lib_project, '--analyze-only'],
         common_args + ['--project', app_project, '--analyze-only'],
@@ -252,6 +263,7 @@ def _sample_workloads(work_dir, aar_dirs, classpath, sdk_dir,
             '--project', full_project, '--xml',
             os.path.join(work_dir, 'full.xml')
         ],
+        extract_args,
     ], lib_partials
 
 
@@ -355,12 +367,15 @@ def _build_native_image(lint_jar, output_prefix):
             if name.endswith('.kotlin_builtins'):
                 dst.writestr(name, src.read(name))
 
-    subst_dir = os.path.join(work_dir, 'substitutions')
+    # Substitutions and the main class.
+    classes_dir = os.path.join(work_dir, 'classes')
     common.run_cmd([
         os.path.join(graal_home, 'bin', 'javac'), '--add-exports',
         'org.graalvm.nativeimage/com.oracle.svm.core.annotate=ALL-UNNAMED',
-        '-cp', lint_jar, '-d', subst_dir
-    ] + sorted(str(p) for p in (_THIS_DIR / 'substitutions').glob('*.java')))
+        '-cp', lint_jar, '-d', classes_dir
+    ] + sorted(
+        str(p) for d in ('substitutions', 'launcher')
+        for p in (_THIS_DIR / d).glob('*.java')))
 
     sdk_platform = _sdk_platform(src_root)
     sdk_dir = os.path.dirname(os.path.dirname(sdk_platform))
@@ -375,7 +390,7 @@ def _build_native_image(lint_jar, output_prefix):
         lint_jar,
         output_path,
         main_class=_MAIN_CLASS,
-        extra_cp=[subst_dir] + aar_lint_jars,
+        extra_cp=[classes_dir] + aar_lint_jars,
         tracing_args_list=workloads,
         extra_reachability_metadata=_native_image_metadata(
             lint_jar, aar_lint_jars),
@@ -430,6 +445,17 @@ def _build_native_image(lint_jar, output_prefix):
             raise RuntimeError('lint-graalvm smoke test: {} differs'.format(name))
         if b'LintError' in b and b'LintError' not in a:
             raise RuntimeError('lint-graalvm smoke test: LintError in ' + name)
+    # And the same annotations.zip.
+    jvm_zip = workloads[-1][-1]
+    native_zip = os.path.join(work_dir, 'extract_native', 'annotations.zip')
+    os.makedirs(os.path.dirname(native_zip))
+    common.run_cmd([output_path] + workloads[-1][:-1] + [native_zip])
+    with zipfile.ZipFile(jvm_zip) as a, zipfile.ZipFile(native_zip) as b:
+        entries = {i.filename: a.read(i) for i in a.infolist()}
+        if not entries:
+            raise RuntimeError('lint-graalvm smoke test: empty annotations.zip')
+        if entries != {i.filename: b.read(i) for i in b.infolist()}:
+            raise RuntimeError('lint-graalvm smoke test: annotations.zip differs')
     shutil.rmtree(work_dir)
 
 
@@ -440,7 +466,11 @@ def _post_process(src_jar_path, dst_jar_path):
 
 
 maven.main(
-    package='com.android.tools.lint:lint',
+    # lint plus the annotation extractor (lint-gradle). The extractor does not
+    # need Groovy, which lint-gradle uses for build.gradle files.
+    package='com.android.tools.lint:lint-gradle',
+    jar_name='lint.jar',
+    exclusions=['org.apache.groovy:groovy'],
     post_process_func=_post_process,
     # Allows local-test runs against the lint version in //DEPS.
     version_override=os.environ.get('LINT_3PP_VERSION_OVERRIDE'),
