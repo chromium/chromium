@@ -753,6 +753,10 @@
     <message name="IDS_GLIC_FRE_DIALOG_ENTERPRISE_DESCRIPTION_BOLD" desc="Description in the Gemini in Chrome opt-in dialog for enterprise users explaining that their organization's data is private and secure, with bold lead-in." formatter_data="android_java">
       <ph name="BEGIN_BOLD_1">&lt;b1&gt;</ph>Tabs are shared for more relevant answers.<ph name="END_BOLD_1">&lt;/b1&gt;</ph> Google uses the content and URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime. <ph name="BEGIN_BOLD_2">&lt;b2&gt;</ph>Your organization’s data is private and secure.<ph name="END_BOLD_2">&lt;/b2&gt;</ph> It won’t be used to improve generative AI models.
     </message>
+    <!-- TODO(crbug.com/585286375): Remove translateable="false" and add screenshot. -->
+    <message name="IDS_GLIC_FRE_DIALOG_ENTERPRISE_DESCRIPTION_BOLD_V2" desc="Description in the Gemini in Chrome opt-in dialog for enterprise users explaining that their organization's data is private and secure, with bold lead-in." translateable="false" formatter_data="android_java">
+      <ph name="BEGIN_BOLD_1">&lt;b1&gt;</ph>Tabs are shared for more relevant answers.<ph name="END_BOLD_1">&lt;/b1&gt;</ph> Google uses the content and URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime. <ph name="BEGIN_BOLD_2">&lt;b2&gt;</ph>Your organization’s data is private and secure.<ph name="END_BOLD_2">&lt;/b2&gt;</ph> It won’t be used to train generative AI models.
+    </message>
     <message name="IDS_GLIC_FRE_DIALOG_ACCEPT" desc="Button in the Gemini in Chrome opt-in dialog. Turns on Gemini in Chrome and opens it. [CHAR_LIMIT=32]" formatter_data="android_java">
       Start chat
     </message>

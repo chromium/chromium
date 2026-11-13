@@ -23,6 +23,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.CustomTabLauncher;
@@ -118,12 +119,19 @@ class GlicBottomSheetFreCoordinator {
         return new SpanInfo("<" + tag + ">", "</" + tag + ">", new StyleSpan(Typeface.BOLD));
     }
 
+    private static @StringRes int getDescriptionStringRes(boolean isEnterpriseAccount) {
+        if (!isEnterpriseAccount) {
+            return R.string.glic_fre_dialog_tab_sharing_description_bold;
+        }
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.GLIC_NATIVE_FRE_ANDROID,
+                        ChromeFeatureList.GLIC_NATIVE_FRE_ANDROID_USE_TRAIN_ENTERPRISE_COPY)
+                ? R.string.glic_fre_dialog_enterprise_description_bold_v2
+                : R.string.glic_fre_dialog_enterprise_description_bold;
+    }
+
     private void updateBodyText(boolean isEnterpriseAccount) {
-        @StringRes
-        int descriptionRes =
-                isEnterpriseAccount
-                        ? R.string.glic_fre_dialog_enterprise_description_bold
-                        : R.string.glic_fre_dialog_tab_sharing_description_bold;
+        @StringRes int descriptionRes = getDescriptionStringRes(isEnterpriseAccount);
         SpanInfo termsLink = link("link1", R.string.glic_fre_dialog_terms_url);
         SpanInfo privacyLink = link("link2", R.string.glic_fre_dialog_privacy_notice_url);
         SpanInfo[] spans =

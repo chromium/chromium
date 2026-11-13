@@ -1974,6 +1974,8 @@ public abstract class ChromeFeatureList {
     public static final String FRE_STRING_CHANGES_SAFETY = "safety";
     public static final String FRE_STRING_CHANGES_SEAMLESSNESS = "seamlessness";
     public static final String GLIC_NATIVE_FRE_ANDROID_SKELETON_TIMEOUT_MS = "skeleton_timeout_ms";
+    public static final String GLIC_NATIVE_FRE_ANDROID_USE_TRAIN_ENTERPRISE_COPY =
+            "use_train_enterprise_copy";
     public static final String IPH_BOOKMARK_BAR_VISIBILITY_VARIANT =
             "IPH_BookmarkBarVisibility_x_variant";
     public static final String NTP_AURORA_CHANGE_BUTTON_COLOR = "change_button_color";
@@ -2010,7 +2012,11 @@ public abstract class ChromeFeatureList {
                                     Map.entry(FRE_STRING_CHANGES_SEAMLESSNESS, "false"))),
                     Map.entry(
                             GLIC_NATIVE_FRE_ANDROID,
-                            Map.of(GLIC_NATIVE_FRE_ANDROID_SKELETON_TIMEOUT_MS, "15000")),
+                            Map.ofEntries(
+                                    Map.entry(GLIC_NATIVE_FRE_ANDROID_SKELETON_TIMEOUT_MS, "15000"),
+                                    Map.entry(
+                                            GLIC_NATIVE_FRE_ANDROID_USE_TRAIN_ENTERPRISE_COPY,
+                                            "false"))),
                     Map.entry(
                             IPH_BOOKMARK_BAR_VISIBILITY,
                             Map.of(IPH_BOOKMARK_BAR_VISIBILITY_VARIANT, "medium")),
@@ -2047,7 +2053,13 @@ public abstract class ChromeFeatureList {
                                             Map.entry(FRE_STRING_CHANGES_SEAMLESSNESS, "false"))),
                             Map.entry(
                                     GLIC_NATIVE_FRE_ANDROID,
-                                    Map.of(GLIC_NATIVE_FRE_ANDROID_SKELETON_TIMEOUT_MS, "15000")),
+                                    Map.ofEntries(
+                                            Map.entry(
+                                                    GLIC_NATIVE_FRE_ANDROID_SKELETON_TIMEOUT_MS,
+                                                    "15000"),
+                                            Map.entry(
+                                                    GLIC_NATIVE_FRE_ANDROID_USE_TRAIN_ENTERPRISE_COPY,
+                                                    "false"))),
                             Map.entry(
                                     IPH_BOOKMARK_BAR_VISIBILITY,
                                     Map.of(IPH_BOOKMARK_BAR_VISIBILITY_VARIANT, "medium")),
