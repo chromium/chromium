@@ -2292,6 +2292,9 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
               CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP)) {
     return;
   }
+  if (web_contents()->GetFocusedFrame() != driver->render_frame_host()) {
+    return;
+  }
 #if BUILDFLAG(IS_ANDROID)
   PasswordGenerationController* password_generation_controller =
       PasswordGenerationController::GetIfExisting(web_contents());

@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
@@ -293,6 +294,39 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   popup_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.role, ax::mojom::Role::kListBox);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       ManualGenerationRequiresFocusedFrame) {
+  NavigateToFile("/password/framed_signup_form.html");
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  ASSERT_TRUE(content::ExecJs(
+      child_frame, "document.getElementById('password_field').focus()"));
+  content::FocusWebContentsOnFrame(WebContents(), child_frame);
+  ASSERT_EQ(WebContents()->GetFocusedFrame(), child_frame);
+
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->GeneratePassword(
+      autofill::password_generation::PasswordGenerationType::kManual);
+
+  // Move focus to the main frame before the asynchronous renderer reply from
+  // `child_frame` arrives.
+  content::FocusWebContentsOnFrame(WebContents(),
+                                   WebContents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::ExecJs(child_frame, ""));
+
+  EXPECT_FALSE(client->generation_popup_controller());
+
+  // Refocus `child_frame` and verify that the popup is shown when the frame
+  // remains focused.
+  content::FocusWebContentsOnFrame(WebContents(), child_frame);
+  client->GeneratePassword(
+      autofill::password_generation::PasswordGenerationType::kManual);
+  ASSERT_TRUE(content::ExecJs(child_frame, ""));
+
+  EXPECT_TRUE(client->generation_popup_controller());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
