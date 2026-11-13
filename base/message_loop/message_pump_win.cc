@@ -973,7 +973,7 @@ bool MessagePumpForIOCompletionPortImpl::WaitForIOCompletion(DWORD timeout) {
       });
 
   item.handler.ExtractAsDangling()->OnIOCompleted(
-      item.context.ExtractAsDangling(), item.bytes_transfered, item.error);
+      item.context, item.bytes_transfered, item.error);
 
   return true;
 }
@@ -1014,8 +1014,7 @@ bool MessagePumpForIOCompletionPortImpl::ProcessInternalIOItem(
     const IOItem& item) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  if (reinterpret_cast<void*>(this) ==
-          reinterpret_cast<void*>(item.context.get()) &&
+  if (reinterpret_cast<void*>(this) == reinterpret_cast<void*>(item.context) &&
       reinterpret_cast<void*>(this) ==
           reinterpret_cast<void*>(item.handler.get())) {
     // This is our internal completion.

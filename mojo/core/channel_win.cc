@@ -15,14 +15,18 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/process/current_process.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
@@ -31,9 +35,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_local.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace mojo {
 namespace core {
@@ -83,9 +89,73 @@ class ChannelWinMessageQueue {
   base::circular_deque<QueuedMessage> queue_;
 };
 
+class ChannelWin;
+
+// The completion key for every ChannelWin handle. It is never destroyed, and
+// forwards each completion to the live ChannelWin that owns its IOContext, if
+// there is one.
+//
+// A ChannelWin can't be its own completion key: the key stays on the pipe's
+// kernel file object after the ChannelWin closes its handle, and I/O that the
+// peer started before handing over the pipe can complete after the ChannelWin
+// is gone.
+class ChannelWinIOHandler final : public base::MessagePumpForIO::IOHandler {
+ public:
+  static ChannelWinIOHandler& Get() {
+    static base::NoDestructor<ChannelWinIOHandler> instance;
+    return *instance;
+  }
+
+  ChannelWinIOHandler(const ChannelWinIOHandler&) = delete;
+  ChannelWinIOHandler& operator=(const ChannelWinIOHandler&) = delete;
+
+  // Must be called on the IO thread that dispatches `channel`'s completions.
+  void Register(const base::MessagePumpForIO::IOContext* read_context,
+                const base::MessagePumpForIO::IOContext* write_context,
+                ChannelWin* channel) {
+    ContextMap* contexts = contexts_.Get();
+    if (!contexts) {
+      contexts_.Set(std::make_unique<ContextMap>());
+      contexts = contexts_.Get();
+    }
+    CHECK(contexts->try_emplace(MakeKey(read_context), channel).second);
+    CHECK(contexts->try_emplace(MakeKey(write_context), channel).second);
+  }
+
+  // Must be called on the thread that called Register().
+  void Unregister(const base::MessagePumpForIO::IOContext* read_context,
+                  const base::MessagePumpForIO::IOContext* write_context) {
+    ContextMap* contexts = contexts_.Get();
+    CHECK(contexts);
+    CHECK_EQ(contexts->erase(MakeKey(read_context)), 1u);
+    CHECK_EQ(contexts->erase(MakeKey(write_context)), 1u);
+  }
+
+  // base::MessagePumpForIO::IOHandler:
+  void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
+                     DWORD bytes_transfered,
+                     DWORD error) override;
+
+ private:
+  friend class base::NoDestructor<ChannelWinIOHandler>;
+
+  // Maps IOContext addresses to the ChannelWin that owns them.
+  using ContextMap = absl::flat_hash_map<uintptr_t, raw_ptr<ChannelWin>>;
+
+  static uintptr_t MakeKey(const base::MessagePumpForIO::IOContext* context) {
+    return reinterpret_cast<uintptr_t>(context);
+  }
+
+  ChannelWinIOHandler() : base::MessagePumpForIO::IOHandler(FROM_HERE) {}
+  ~ChannelWinIOHandler() override = default;
+
+  // Each IO thread has its own map, so a completion only reaches a ChannelWin
+  // on the IO thread that dequeued it.
+  base::ThreadLocalOwnedPointer<ContextMap> contexts_;
+};
+
 class ChannelWin : public Channel,
                    public base::CurrentThread::DestructionObserver,
-                   public base::MessagePumpForIO::IOHandler,
                    public base::MessagePumpForIO::IOEventHandler {
  public:
   ChannelWin(Delegate* delegate,
@@ -93,7 +163,6 @@ class ChannelWin : public Channel,
              HandlePolicy handle_policy,
              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : Channel(delegate, handle_policy),
-        base::MessagePumpForIO::IOHandler(FROM_HERE),
         base::MessagePumpForIO::IOEventHandler(FROM_HERE),
         is_untrusted_process_(connection_params.is_untrusted_process()),
         self_(this),
@@ -214,6 +283,8 @@ class ChannelWin : public Channel,
   }
 
  private:
+  friend class ChannelWinIOHandler;
+
   struct EventIOState {
     EventIOState(base::win::ScopedHandle read_event,
                  base::win::ScopedHandle write_event)
@@ -225,7 +296,7 @@ class ChannelWin : public Channel,
   };
 
   // May run on any thread.
-  ~ChannelWin() override = default;
+  ~ChannelWin() override { CHECK(!contexts_registered_); }
 
   void StartOnIOThread() {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -253,10 +324,16 @@ class ChannelWin : public Channel,
       read_context_.GetOverlapped()->hEvent =
           event_io_->read_watch.event_handle();
     } else {
-      if (!io_thread->RegisterIOHandler(handle_.get(), this)) {
+      if (!io_thread->RegisterIOHandler(handle_.get(),
+                                        &ChannelWinIOHandler::Get())) {
         OnError(Error::kConnectionFailed);
         return;
       }
+      // Completions are only dispatched from the pump on this thread, so none
+      // can arrive before the contexts are registered.
+      ChannelWinIOHandler::Get().Register(&read_context_, &write_context_,
+                                          this);
+      contexts_registered_ = true;
     }
 
     counted_for_metrics_ = IsRendererProcessForMetrics();
@@ -320,6 +397,7 @@ class ChannelWin : public Channel,
       handle_.Close();
     }
     MaybeFinishEventShutdown();
+    MaybeUnregisterContexts();
 
     if (counted_for_metrics_) {
       DCHECK_GT(g_open_channel_metrics.open_channels, 0u);
@@ -333,9 +411,12 @@ class ChannelWin : public Channel,
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    scoped_refptr<ChannelWin> keep_alive(this);
     if (self_) {
       ShutDownOnIOThread();
     }
+    // Pending IO will never be dispatched once the pump is gone.
+    UnregisterContexts();
   }
 
   void MaybeFinishEventShutdown() {
@@ -395,10 +476,8 @@ class ChannelWin : public Channel,
     }
   }
 
-  // base::MessageLoop::IOHandler:
-  void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
-                     DWORD /*bytes_transfered*/,
-                     DWORD /*error*/) override {
+  // Called by ChannelWinIOHandler.
+  void OnIOCompleted(base::MessagePumpForIO::IOContext* context) {
     // I/O completion port association belongs to the underlying file object
     // rather than to `handle_`, so a packet delivered here does not necessarily
     // correspond to an operation started by this Channel. OnReadDone() and
@@ -448,6 +527,7 @@ class ChannelWin : public Channel,
     } else if (bytes_read == 0) {
       OnError(Error::kDisconnected);
     }
+    MaybeUnregisterContexts();
   }
 
   void OnWriteDone() {
@@ -475,6 +555,7 @@ class ChannelWin : public Channel,
     if (write_error) {
       OnWriteError(Error::kDisconnected);
     }
+    MaybeUnregisterContexts();
   }
 
   void ReadMore(size_t next_read_size_hint) {
@@ -561,6 +642,29 @@ class ChannelWin : public Channel,
     OnError(error);
   }
 
+  void MaybeUnregisterContexts() {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    if (!contexts_registered_ || !is_shutting_down_ || pending_read_) {
+      return;
+    }
+    {
+      base::AutoLock lock(write_lock_);
+      if (pending_write_) {
+        return;
+      }
+    }
+    UnregisterContexts();
+  }
+
+  void UnregisterContexts() {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    if (!contexts_registered_) {
+      return;
+    }
+    contexts_registered_ = false;
+    ChannelWinIOHandler::Get().Unregister(&read_context_, &write_context_);
+  }
+
   const bool is_untrusted_process_;
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
@@ -572,6 +676,7 @@ class ChannelWin : public Channel,
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   bool counted_for_metrics_ = false;
+  bool contexts_registered_ = false;
 
   base::MessagePumpForIO::IOContext read_context_;
   // A reference to this Channel, held while a read is outstanding.
@@ -591,6 +696,23 @@ class ChannelWin : public Channel,
 
   bool leak_handle_ = false;
 };
+
+void ChannelWinIOHandler::OnIOCompleted(
+    base::MessagePumpForIO::IOContext* context,
+    DWORD /*bytes_transfered*/,
+    DWORD /*error*/) {
+  const ContextMap* contexts = contexts_.Get();
+  if (!contexts) {
+    return;
+  }
+  auto it = contexts->find(MakeKey(context));
+  if (it == contexts->end()) {
+    return;
+  }
+  // The channel may unregister during this call, which invalidates `it`.
+  ChannelWin* channel = it->second;
+  channel->OnIOCompleted(context);
+}
 
 }  // namespace
 

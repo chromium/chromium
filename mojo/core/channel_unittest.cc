@@ -5,6 +5,7 @@
 #include "mojo/core/channel.h"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -1253,6 +1254,88 @@ TEST(ChannelWinTest, IgnoresIOCompletionsItDidNotStart) {
   sender->ShutDown();
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return receiver->HasOneRef() && sender->HasOneRef(); }));
+}
+
+// Tests that a completion for I/O that a destroyed ChannelWin did not start,
+// with an OVERLAPPED that is already freed, is ignored.
+TEST(ChannelWinTest, IgnoresIOCompletionsAfterDestruction) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+  PlatformChannelEndpoint receiver_endpoint =
+      platform_channel.TakeLocalEndpoint();
+  PlatformChannelEndpoint other_endpoint = receiver_endpoint.Clone();
+  ASSERT_TRUE(other_endpoint.is_valid());
+
+  CallbackChannelDelegate receiver_delegate;
+  scoped_refptr<Channel> receiver = Channel::Create(
+      &receiver_delegate, ConnectionParams(std::move(receiver_endpoint)),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  receiver->Start();
+
+  // A message on a second channel is used below to tell when the pump has
+  // dequeued the stale completion. Set all of that up now, before freeing the
+  // memory that the stale completion refers to. If that memory were reused in
+  // the meantime, mishandling the completion could go unnoticed: a ChannelWin
+  // created after `receiver` is destroyed, for instance, could take its place
+  // and receive the completion instead.
+  PlatformChannel second_platform_channel;
+  CallbackChannelDelegate second_receiver_delegate;
+  scoped_refptr<Channel> second_receiver = Channel::Create(
+      &second_receiver_delegate,
+      ConnectionParams(second_platform_channel.TakeLocalEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  second_receiver->Start();
+
+  MockChannelDelegate second_sender_delegate;
+  scoped_refptr<Channel> second_sender = Channel::Create(
+      &second_sender_delegate,
+      ConnectionParams(second_platform_channel.TakeRemoteEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  second_sender->Start();
+
+  Channel::MessagePtr message = Channel::Message::CreateMessage(0, 0);
+  base::RunLoop drain_loop;
+  second_receiver_delegate.set_on_message(drain_loop.QuitClosure());
+
+  // Let the channels register their handles and start reading.
+  base::RunLoop start_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, start_loop.QuitClosure());
+  start_loop.Run();
+
+  receiver->ShutDown();
+  ASSERT_TRUE(base::test::RunUntil([&] { return receiver->HasOneRef(); }));
+  receiver.reset();
+
+  // `other_endpoint` keeps the pipe's file object and its completion key alive.
+  // Queue a completion on it, then free the OVERLAPPED before the pump sees it,
+  // as if it were an address in another process. The padding gives the
+  // allocation an unusual size, to make it unlikely that its memory is reused
+  // before then.
+  struct PaddedOverlapped {
+    OVERLAPPED overlapped = {};
+    std::array<char, 1200> padding = {};
+  };
+  auto padded_overlapped = std::make_unique<PaddedOverlapped>();
+  ASSERT_NO_FATAL_FAILURE(
+      StartAndCancelRead(other_endpoint.platform_handle().GetHandle().get(),
+                         padded_overlapped->overlapped));
+  padded_overlapped.reset();
+
+  // The completion port is FIFO, so once the message arrives, the pump has
+  // dequeued the stale completion.
+  second_sender->Write(std::move(message));
+  drain_loop.Run();
+
+  second_receiver->ShutDown();
+  second_sender->ShutDown();
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return second_receiver->HasOneRef() && second_sender->HasOneRef();
+  }));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

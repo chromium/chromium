@@ -242,6 +242,11 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
 // handle, no less privileged process can obtain another: opening a pipe by
 // name creates a new file object, and duplicating a handle out of this process
 // requires PROCESS_DUP_HANDLE access to it.
+//
+// I/O which was already pending on the pipe end when it was handed over is not
+// covered: it can still complete later, even after the Channel is destroyed.
+// ChannelWin ignores such completions; see ChannelWinIOHandler in
+// channel_win.cc.
 bool IsExclusivelyOwnedPipe(HANDLE handle) {
   return base::win::GetObjectHandleCount(handle) == 1u &&
          ::GetNamedPipeInfo(handle, nullptr, nullptr, nullptr, nullptr);
