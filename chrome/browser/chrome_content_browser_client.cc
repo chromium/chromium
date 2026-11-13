@@ -479,7 +479,6 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/files/file_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/version.h"
 #include "base/win/win_util.h"
@@ -494,10 +493,6 @@
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "content/public/browser/tracing_service.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "services/webnn/public/cpp/webnn_buildflags.h"
-#if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
-#include "services/webnn/public/mojom/features.mojom-features.h"
-#endif
 #elif BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "chrome/browser/browser_process_platform_part_mac.h"
@@ -5605,23 +5600,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
-
-  // Allow loading the WebNN WebGPU accelerator for renderers when the feature
-  // is enabled.
-#if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
-  if (sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
-      base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebNNLiteRTGpuInRenderer)) {
-    const base::FilePath accelerator_path =
-        GetModulePath(L"libLiteRtWebGpuAccelerator.dll");
-    if (base::PathExists(accelerator_path)) {
-      result = config->AllowExtraDll(accelerator_path.value());
-      if (result != sandbox::SBOX_ALL_OK) {
-        return false;
-      }
-    }
-  }
-#endif
 #endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
   return true;
 }

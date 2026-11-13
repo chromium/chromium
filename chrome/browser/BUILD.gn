@@ -3863,7 +3863,6 @@ source_set("browser") {
       "//chrome/browser/win:impl",
       "//chrome/browser/win:jumplist",
       "//components/app_launch_prefetch",
-      "//services/webnn/public/cpp:buildflags",
       "//third_party/wtl",
     ]
   }

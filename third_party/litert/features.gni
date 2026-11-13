@@ -9,6 +9,7 @@ declare_args() {
 
 declare_args() {
   # This enables building LiteRT with the statically linked ML Drift WebGPU
-  # accelerator.
-  build_litert_with_ml_drift = false
+  # accelerator on desktop platforms.
+  build_litert_with_ml_drift =
+      build_litert_with_xnnpack && !is_android && !is_ios
 }

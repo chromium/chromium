@@ -494,7 +494,6 @@ include_rules = [
   "+services/shape_detection/public/mojom",
   "+services/strings",
   "+services/webnn/public/mojom/features.mojom-features.h",
-  "+services/webnn/public/cpp/webnn_buildflags.h",
   "+services/tracing/public/cpp",
   "+services/video_capture/public",
   "+services/viz/public",

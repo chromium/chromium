@@ -77,7 +77,10 @@ if (build_litert_with_ml_drift) {
   }
 
   ml_drift_source_set("ml_drift_common_base") {
-    visibility = [ ":ml_drift_common" ]
+    visibility = [
+      ":ml_drift",
+      ":ml_drift_common",
+    ]
     sources = [
       "src/ml_drift/common/data_type.cc",
       "src/ml_drift/common/data_type.h",
@@ -399,7 +402,10 @@ if (build_litert_with_ml_drift) {
 
     # NOTE: this should only include the internal targets. All other
     # deps should go in the ml_drift_source_set template.
-    public_deps = [ ":ml_drift_common" ]
+    public_deps = [
+      ":ml_drift_common",
+      ":ml_drift_common_base",
+    ]
   }
 }
 

@@ -155,10 +155,9 @@ void RecordDeviceType(const mojom::Device device) {
 // Returns true if the request described by `options` should be served by the
 // renderer-process (in-process) TFLite/LiteRT backend instead of the
 // GPU-process backend. For `kGpu` device requests, the GPU process attempts
-// execution first using the LiteRT WebGPU accelerator
-// (`libLiteRtWebGpuAccelerator`, which is preloaded during
-// `PreSandboxWebNNInitialization()`). If no GPU accelerator is available or if
-// the request is for `kCpu` / `kNpu`, it falls back to the renderer-process
+// execution first using the LiteRT WebGPU accelerator unless
+// `kWebNNLiteRTGpuInRenderer` is enabled. If no GPU accelerator is available or
+// if the request is for `kCpu` / `kNpu`, it falls back to the renderer-process
 // (in-process) TFLite/LiteRT backend.
 bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options) {
   if (options.device == mojom::Device::kGpu &&
@@ -644,8 +643,7 @@ void WebNNContextProviderImpl::FallbackToTFLite(
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
   // Attempt to create a LiteRT GPU context (`ContextImplLiteRt`) in the GPU
-  // process using the WebGPU accelerator preloaded prior to sandbox lockdown
-  // (`PreSandboxWebNNInitialization()`). If context creation fails or is not
+  // process using the WebGPU accelerator. If context creation fails or is not
   // supported, returning `kNotSupportedError` from `OnCreateWebNNContextImpl`
   // lets the renderer's `ML::createContext` fallback path create the in-process
   // LiteRT context instead.
