@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -45,6 +47,18 @@ using blink::mojom::FileChooserParams;
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -692,6 +706,238 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_ContentUriFile) {
 
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ(content_uri_2, files[0]->get_native_file()->file_path);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+namespace {
+
+std::vector<base::FilePath> PathsOf(
+    const std::vector<blink::mojom::FileChooserFileInfoPtr>& files) {
+  std::vector<base::FilePath> paths;
+  for (const auto& file : files) {
+    paths.push_back(file->get_native_file()->file_path);
+  }
+  return paths;
+}
+
+}  // namespace
+
+// Drives a file selection end to end through content analysis:
+// MultiFilesSelected() -> PerformContentAnalysisIfNeeded() ->
+// ContentAnalysisDelegate -> the real FilesRequestHandler, which opens and
+// reads each file. Only the upload is faked, through
+// FakeContentAnalysisDelegate, whose status callback decides the verdict per
+// file.
+class FileSelectHelperContentAnalysisTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  FileSelectHelperContentAnalysisTest() {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://example.com"));
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+            base::DoNothing(),
+            base::BindRepeating(
+                &FileSelectHelperContentAnalysisTest::ScanStatus,
+                base::Unretained(this)),
+            "dm_token"));
+    enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+  }
+
+  void TearDown() override {
+    enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+    enterprise_connectors::ContentAnalysisDelegate::EnableUIAfterTesting();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  void EnablePolicy() {
+    static constexpr char kPolicy[] = R"({
+      "service_provider": "google",
+      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
+      "block_until_verdict": 1
+    })";
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED, kPolicy);
+  }
+
+  // Creates `name` under the temp dir and returns its path.
+  base::FilePath CreateFile(std::string_view name) {
+    base::FilePath path = temp_dir_.GetPath().AppendASCII(name);
+    EXPECT_TRUE(base::WriteFile(path, "file content"));
+    return path;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  void DisableFlag() {
+    feature_list_.Reset();
+    feature_list_.InitAndDisableFeature(
+        enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank);
+  }
+
+  // Returns a FileProvider content URI for `path`, as the Android file picker
+  // would hand to FileSelectHelper.
+  base::FilePath ContentUriFor(const base::FilePath& path) {
+    std::optional<base::FilePath> uri =
+        base::test::android::GetContentUriFromCacheDirFilePath(path);
+    EXPECT_TRUE(uri.has_value());
+    EXPECT_TRUE(uri->IsContentUri());
+    return uri.value_or(base::FilePath());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Files whose scan should return a BLOCK verdict.
+  void SetBlockedFiles(std::set<base::FilePath> paths) {
+    blocked_files_ = std::move(paths);
+  }
+
+  // Simulates the picker returning `selected` and runs the result through
+  // content analysis. Returns the files the listener received.
+  std::vector<blink::mojom::FileChooserFileInfoPtr> SelectFiles(
+      const std::vector<ui::SelectedFileInfo>& selected) {
+    scan_count_ = 0;
+    scoped_refptr<FileSelectHelper> helper = new FileSelectHelper(profile());
+    std::vector<blink::mojom::FileChooserFileInfoPtr> result;
+    helper->SetFileSelectListenerForTesting(
+        base::MakeRefCounted<TestFileSelectListener>(&result));
+    // State that RunFileChooser() sets before opening the picker.
+    helper->render_frame_host_ = main_rfh();
+    helper->web_contents_ = web_contents();
+    helper->dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
+    helper->dialog_mode_ = blink::mojom::FileChooserParams::Mode::kOpenMultiple;
+
+    helper->MultiFilesSelected(selected);
+    // The scan completes asynchronously; the listener is notified last.
+    EXPECT_TRUE(base::test::RunUntil([&]() { return !helper->listener_; }));
+    return result;
+  }
+
+  int scan_count() const { return scan_count_; }
+
+ private:
+  enterprise_connectors::ContentAnalysisResponse ScanStatus(
+      const std::string& contents,
+      const base::FilePath& path) {
+    ++scan_count_;
+    using FakeDelegate =
+        enterprise_connectors::test::FakeContentAnalysisDelegate;
+    if (blocked_files_.contains(path)) {
+      return FakeDelegate::DlpResponse(
+          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
+          "block_rule",
+          enterprise_connectors::ContentAnalysisResponse::Result::
+              TriggeredRule::BLOCK);
+    }
+    return FakeDelegate::SuccessfulResponse({"dlp"});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir temp_dir_;
+  std::set<base::FilePath> blocked_files_;
+  int scan_count_ = 0;
+};
+
+TEST_F(FileSelectHelperContentAnalysisTest, AllowedFilesAreUploaded) {
+  EnablePolicy();
+  base::FilePath foo = CreateFile("foo.txt");
+  base::FilePath bar = CreateFile("bar.txt");
+
+  auto result =
+      SelectFiles({ui::SelectedFileInfo(foo), ui::SelectedFileInfo(bar)});
+
+  EXPECT_EQ(scan_count(), 2);
+  EXPECT_THAT(PathsOf(result), testing::ElementsAre(foo, bar));
+}
+
+TEST_F(FileSelectHelperContentAnalysisTest, BlockedFileIsRemoved) {
+  EnablePolicy();
+  base::FilePath foo = CreateFile("foo.txt");
+  base::FilePath bar = CreateFile("bar.txt");
+  SetBlockedFiles({foo});
+
+  auto result =
+      SelectFiles({ui::SelectedFileInfo(foo), ui::SelectedFileInfo(bar)});
+
+  EXPECT_EQ(scan_count(), 2);
+  EXPECT_THAT(PathsOf(result), testing::ElementsAre(bar));
+}
+
+TEST_F(FileSelectHelperContentAnalysisTest, AllFilesBlocked) {
+  EnablePolicy();
+  base::FilePath foo = CreateFile("foo.txt");
+  base::FilePath bar = CreateFile("bar.txt");
+  SetBlockedFiles({foo, bar});
+
+  auto result =
+      SelectFiles({ui::SelectedFileInfo(foo), ui::SelectedFileInfo(bar)});
+
+  EXPECT_EQ(scan_count(), 2);
+  EXPECT_TRUE(result.empty());
+}
+
+TEST_F(FileSelectHelperContentAnalysisTest, NotScannedWithoutPolicy) {
+  base::FilePath foo = CreateFile("foo.txt");
+  SetBlockedFiles({foo});  // Would be removed if it were scanned.
+
+  auto result = SelectFiles({ui::SelectedFileInfo(foo)});
+
+  EXPECT_EQ(scan_count(), 0);
+  EXPECT_THAT(PathsOf(result), testing::ElementsAre(foo));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FileSelectHelperContentAnalysisTest, NotScannedWithFlagDisabled) {
+  DisableFlag();
+  EnablePolicy();
+  base::FilePath foo = CreateFile("foo.txt");
+  SetBlockedFiles({foo});  // Would be removed if it were scanned.
+
+  auto result = SelectFiles({ui::SelectedFileInfo(foo)});
+
+  EXPECT_EQ(scan_count(), 0);
+  EXPECT_THAT(PathsOf(result), testing::ElementsAre(foo));
+}
+
+// The Android picker returns content URIs with a display name rather than
+// file system paths. They must be read through the content resolver and
+// filtered by verdict like regular files, and the URIs (not the display names)
+// must be handed to the page.
+TEST_F(FileSelectHelperContentAnalysisTest, ContentUris) {
+  EnablePolicy();
+  base::FilePath foo_uri = ContentUriFor(CreateFile("foo.txt"));
+  base::FilePath bar_uri = ContentUriFor(CreateFile("bar.txt"));
+  ui::SelectedFileInfo foo(foo_uri);
+  foo.display_name = "foo.txt";
+  ui::SelectedFileInfo bar(bar_uri);
+  bar.display_name = "bar.txt";
+
+  auto result = SelectFiles({foo, bar});
+  EXPECT_EQ(scan_count(), 2);
+  ASSERT_THAT(PathsOf(result), testing::ElementsAre(foo_uri, bar_uri));
+  EXPECT_EQ(result[0]->get_native_file()->display_name, u"foo.txt");
+
+  SetBlockedFiles({foo_uri});
+  result = SelectFiles({foo, bar});
+  EXPECT_EQ(scan_count(), 2);
+  EXPECT_THAT(PathsOf(result), testing::ElementsAre(bar_uri));
+
+  SetBlockedFiles({foo_uri, bar_uri});
+  result = SelectFiles({foo, bar});
+  EXPECT_EQ(scan_count(), 2);
+  EXPECT_TRUE(result.empty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
