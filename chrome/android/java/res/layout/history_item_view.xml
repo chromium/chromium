@@ -12,6 +12,24 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:id="@+id/content"
+        style="@style/ListItemContainer">
+
+        <ImageView
+            android:id="@+id/start_icon"
+            style="@style/ListItemStartIcon"
+            android:background="@drawable/list_item_icon_modern_bg"
+            android:importantForAccessibility="no" />
+
+        <include layout="@layout/title_and_description_layout" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/end_button"
+            style="@style/ListItemEndIcon"
+            android:visibility="gone" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/spark_container"
         android:layout_width="@dimen/history_item_spark_size"

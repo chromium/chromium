@@ -97,7 +97,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -1603,7 +1603,7 @@ public class HistoryUiTest {
     }
 
     private void toggleItemSelection(int position) {
-        final SelectableItemView<HistoryItem> itemView = getItemView(position);
+        final SelectableItemViewBase<HistoryItem> itemView = getItemView(position);
         itemView.performLongClick();
         layoutRecyclerView();
     }
@@ -1613,7 +1613,7 @@ public class HistoryUiTest {
     }
 
     @SuppressWarnings("unchecked")
-    private SelectableItemView<HistoryItem> getItemView(int position) {
+    private SelectableItemViewBase<HistoryItem> getItemView(int position) {
         ViewHolder mostRecentHolder = mRecyclerView.findViewHolderForAdapterPosition(position);
         Assert.assertTrue(
                 mostRecentHolder + " should be instance of SelectableItemViewHolder",

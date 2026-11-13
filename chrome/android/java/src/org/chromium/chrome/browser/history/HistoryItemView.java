@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.history;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
@@ -31,15 +35,19 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.CheckableSelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-/** The SelectableItemView for items displayed in the browsing history UI. */
+/** The CheckableSelectableItemView for items displayed in the browsing history UI. */
 @NullMarked
-public class HistoryItemView extends SelectableItemView<HistoryItem> {
+public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
+    private LinearLayout mContentView;
+    private ImageView mStartIconView;
+    private TextView mTitleView;
+    private TextView mDescriptionView;
     private ImageButton mRemoveButton;
     private @Nullable VectorDrawableCompat mBlockedVisitDrawable;
     private AppInfoCache mAppInfoCache;
@@ -48,6 +56,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private final RoundedIconGenerator mIconGenerator;
     private DefaultFaviconHelper mFaviconHelper;
 
+    private final int mDefaultLevel;
+    private final int mSelectedLevel;
     private final int mMinIconSize;
     private final int mDisplayedIconSize;
     private final int mEndPadding;
@@ -61,6 +71,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     public HistoryItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        mDefaultLevel = getResources().getInteger(R.integer.list_item_level_default);
+        mSelectedLevel = getResources().getInteger(R.integer.list_item_level_selected);
         mMinIconSize = FaviconUtils.getDefaultFaviconSize(context);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
@@ -70,11 +82,36 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     }
 
     @Override
+    protected ImageView getIconView() {
+        return mStartIconView;
+    }
+
+    @Override
+    protected @Nullable ColorStateList getDefaultIconTint() {
+        return null;
+    }
+
+    @Override
+    protected int getDefaultLevel() {
+        return mDefaultLevel;
+    }
+
+    @Override
+    protected int getSelectedLevel() {
+        return mSelectedLevel;
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mContentView = findViewById(R.id.content);
+        mStartIconView = findViewById(R.id.start_icon);
+        mTitleView = findViewById(R.id.title);
+        mDescriptionView = findViewById(R.id.description);
+        ImageViewCompat.setImageTintList(mStartIconView, getDefaultIconTint());
         mStartIconView.setImageResource(R.drawable.default_favicon);
 
-        mRemoveButton = mEndButtonView;
+        mRemoveButton = findViewById(R.id.end_button);
         mRemoveButton.setImageResource(R.drawable.btn_delete_24dp);
         mRemoveButton.setContentDescription(getContext().getString(R.string.remove));
         ImageViewCompat.setImageTintList(
@@ -94,10 +131,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
 
         mSparkContainer = findViewById(R.id.spark_container);
-        // Ensure the spark is drawn on top of the favicon and its background. This is needed
-        // because the content of xml is added first, then the content from code is added next (on
-        // top of the xml children).
-        mSparkContainer.bringToFront();
     }
 
     @Override
@@ -126,10 +159,10 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                                 R.drawable.ic_block_red,
                                 getContext().getTheme());
             }
-            setStartIconDrawable(mBlockedVisitDrawable);
+            setIconDrawable(mBlockedVisitDrawable);
             mTitleView.setTextColor(getContext().getColor(R.color.default_red));
         } else {
-            setStartIconDrawable(
+            setIconDrawable(
                     mFaviconHelper.getDefaultFaviconDrawable(getContext(), item.getUrl(), true));
             requestIcon();
 
@@ -277,7 +310,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                                     mIconGenerator,
                                     getResources(),
                                     mDisplayedIconSize);
-                    setStartIconDrawable(drawable);
+                    setIconDrawable(drawable);
                 });
     }
 
