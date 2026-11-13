@@ -12,6 +12,7 @@
 #include "base/containers/enum_set.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/csp_validator.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -52,6 +53,12 @@ enum class Gate {
   // kComponent, not kExternalComponent, extensions may declare chrome:// host
   // permissions by default).
   kHostPermission,
+  // The extension must be `WebUIOriginGrant::extension_id`. Used for
+  // chrome-untrusted://, which URLPattern (and therefore "host_permissions")
+  // cannot express. Only allowed with a component audience (enforced by a
+  // static_assert below), which ensures that unpacked extensions claiming the
+  // ID via the manifest "key" cannot pass.
+  kExtensionId,
   // Test-only: requires --allow-webui-test-in-component-extensions (and a
   // kComponent location). See csp_validator::IsWebUITestAllowedForLocation().
   kWebUITestSwitch,
@@ -60,9 +67,11 @@ using enum Gate;
 
 struct WebUIOriginGrant {
   WebUIOriginUses uses;
+  std::string_view scheme = content::kChromeUIScheme;
   std::string_view host;
   Audience audience;
   Gate gate = Gate::kNone;
+  std::string_view extension_id;
 };
 
 // The complete set of WebUI origins extensions may access.
@@ -101,10 +110,31 @@ constexpr WebUIOriginGrant kWebUIOriginGrants[] = {
      .gate = kWebUITestSwitch},
 
     // Opt-in via "host_permissions".
+    // TODO(crbug.com/585554201): Exempt component extensions' chrome:// host
+    // permissions from ExtensionSettings runtime_blocked_hosts.
+    {.uses = {kFrameSubresource},
+     .host = chrome::kChromeUIFavicon2Host,
+     .audience = kComponentExtensionsAndPlatformApps,
+     .gate = kHostPermission},
     {.uses = {kFrameSubresource},
      .host = chrome::kChromeUIImageHost,
      .audience = kComponentExtensionsAndPlatformApps,
      .gate = kHostPermission},
+
+    // chrome-untrusted:// subframes embedded by the New Tab Page. The embedded
+    // sources must also allow the extension as a frame ancestor.
+    {.uses = {kFrameNavigation},
+     .scheme = content::kChromeUIUntrustedScheme,
+     .host = chrome::kChromeUINewTabPageHost,
+     .audience = kComponentExtensions,
+     .gate = kExtensionId,
+     .extension_id = extension_misc::kNewTabPageExtensionId},
+    {.uses = {kFrameNavigation},
+     .scheme = content::kChromeUIUntrustedScheme,
+     .host = chrome::kChromeUIUntrustedNtpMicrosoftAuthHost,
+     .audience = kComponentExtensions,
+     .gate = kExtensionId,
+     .extension_id = extension_misc::kNewTabPageExtensionId},
 
     // Icons for extensions and apps.
     {.uses = {kFrameSubresource, kFrameNavigation},
@@ -124,9 +154,34 @@ static_assert(std::ranges::none_of(kWebUIOriginGrants, [](const auto& grant) {
          grant.uses.HasAny({kFrameSubresource, kFrameNavigation, kWorker});
 }));
 
+constexpr bool IsComponentAudience(Audience audience) {
+  switch (audience) {
+    case kComponentExtensionsAndPlatformApps:
+    case kComponentExtensions:
+    case kComponentAnyType:
+      return true;
+    case kExtensionsAndApps:
+      return false;
+  }
+}
+
+// Extension ID gates must name an extension and use a component audience, and
+// only extension ID gates may name an extension.
+static_assert(std::ranges::all_of(kWebUIOriginGrants, [](const auto& grant) {
+  return grant.gate == kExtensionId ? !grant.extension_id.empty() &&
+                                          IsComponentAudience(grant.audience)
+                                    : grant.extension_id.empty();
+}));
+
+// chrome-untrusted:// origins are only reachable through navigations.
+static_assert(std::ranges::all_of(kWebUIOriginGrants, [](const auto& grant) {
+  return grant.scheme != content::kChromeUIUntrustedScheme ||
+         grant.uses == WebUIOriginUses({kFrameNavigation});
+}));
+
 url::Origin ToOrigin(const WebUIOriginGrant& grant) {
   return url::Origin::CreateFromNormalizedTuple(
-      content::kChromeUIScheme, std::string(grant.host), /*port=*/0);
+      std::string(grant.scheme), std::string(grant.host), /*port=*/0);
 }
 
 bool IsInAudience(const Extension& extension, Audience audience) {
@@ -153,6 +208,8 @@ bool PassesGate(const Extension& extension, const WebUIOriginGrant& grant) {
     case kHostPermission:
       return extension.permissions_data()->HasHostPermission(
           ToOrigin(grant).GetURL());
+    case kExtensionId:
+      return extension.id() == grant.extension_id;
     case kWebUITestSwitch:
       return csp_validator::IsWebUITestAllowedForLocation(extension.location());
   }
@@ -176,7 +233,9 @@ std::vector<std::string> GetAllowedChromeUIHosts(const Extension& extension,
                                                  WebUIOriginUse use) {
   std::vector<std::string> hosts;
   for (const url::Origin& origin : GetAllowedWebUIOrigins(extension, use)) {
-    hosts.push_back(origin.host());
+    if (origin.scheme() == content::kChromeUIScheme) {
+      hosts.push_back(origin.host());
+    }
   }
   return hosts;
 }

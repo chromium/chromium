@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
@@ -36,6 +39,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -446,20 +450,32 @@ class ComponentExtensionWebUIOriginsBrowserTest
     : public ComponentExtensionBrowserTest {
  protected:
   static constexpr char kImageHostPermission[] = "chrome://image/*";
+  static constexpr char kFavicon2HostPermission[] = "chrome://favicon2/*";
+  static constexpr char kNewTabPageExtensionKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAykwjZZvD8VmMLl8zD6+aoJ/c3yC3"
+      "CGNlJwsOVMUrcFYN7PNXcEnbzdYELWakSOUvFONXrg5MLlEYn8JK7R4J6iJTPU8ChySEU2do"
+      "BXAB1200QcLo6GL+GW13SyzazqbB4FbSVuez9Gu0LIBHwZcoI/a7RG5ffGfm9FSPKRSzb9JR"
+      "Q5GKywcyGXnM6xEZ0dezHB9aNxt+SiVC5iRU3zLY9gxFIrqCYMPywGrHA1OWpFwiF7VrR8EJ"
+      "D73+5W/m/oiiSou6yPar9yFXhl/38huIxlypsRggptgKMyMvr0/iUO/mmWBxQZIQgtYYb0QR"
+      "S4QL42u2fvVmmVGolHWESI5c1wIDAQAB";
 
   // Loads an extension that declares `host_permissions`, and navigates the
-  // active tab to its page.
+  // active tab to its page. Component extensions default to `kExtensionKey`;
+  // non-component extensions only use a key if `key` is provided.
   const Extension* LoadAndNavigate(
       const std::vector<std::string>& host_permissions,
-      bool load_as_component) {
+      bool load_as_component,
+      std::optional<std::string_view> key = std::nullopt) {
     auto manifest =
         base::DictValue()
             .Set("name", "WebUI Origins Test")
             .Set("version", "1.0")
             .Set("manifest_version", 3)
             .Set("host_permissions", base::ToValueList(host_permissions));
-    if (load_as_component) {
-      manifest.Set("key", kExtensionKey);
+    if (std::string_view effective_key =
+            key.value_or(load_as_component ? kExtensionKey : "");
+        !effective_key.empty()) {
+      manifest.Set("key", effective_key);
     }
 
     auto dir = std::make_unique<TestExtensionDir>();
@@ -510,8 +526,9 @@ class ComponentExtensionWebUIOriginsBrowserTest
     return content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
-  // Registers a chrome:// data source at `source_name` that serves `body` for
-  // every path, and lets extensions embed it.
+  // Registers a data source at `source_name` (a chrome:// host, or a
+  // chrome-untrusted:// origin) that serves `body` for every path, and lets
+  // extensions embed it.
   void AddTestSource(const std::string& source_name, std::string body) {
     content::WebUIDataSource* source =
         content::WebUIDataSource::CreateAndAdd(profile(), source_name);
@@ -527,9 +544,22 @@ class ComponentExtensionWebUIOriginsBrowserTest
     source->DisableDenyXFrameOptions();
   }
 
-  // Registers a chrome://image/ data source that serves an SVG, standing in
-  // for the SanitizedImageSource that the New Tab Page registers, and returns
-  // the image's URL.
+  static GURL Favicon2Url() {
+    return GURL(
+        "chrome://favicon2/?size=16&scaleFactor=1x&pageUrl=https%3A%2F%2F"
+        "example.com%2F&allowGoogleServerFallback=0");
+  }
+
+  // Registers a chrome://favicon2/ or chrome://image/ data source that serves
+  // an SVG, for negative tests where PostActivateExtension() does not register
+  // the real source, and returns the image's URL.
+  GURL AddTestFavicon2Source() {
+    AddTestSource(
+        chrome::kChromeUIFavicon2Host,
+        "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'/>");
+    return GURL("chrome://favicon2/test.svg");
+  }
+
   GURL AddTestImageSource() {
     AddTestSource(
         chrome::kChromeUIImageHost,
@@ -542,13 +572,19 @@ class ComponentExtensionWebUIOriginsBrowserTest
 };
 
 // A component extension that declares the chrome://image/ host permission can
-// load it.
+// load it, and its data source is registered on activation.
 IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
                        DeclaredImageHostLoads) {
-  const GURL image_url = AddTestImageSource();
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+
   ASSERT_TRUE(LoadAndNavigate({kImageHostPermission},
                               /*load_as_component=*/true));
-  EXPECT_EQ("loaded", LoadImage(image_url));
+  EXPECT_EQ(
+      "loaded",
+      LoadImage(GURL("chrome://image/?" +
+                     https_server.GetURL("/load_image/image.png").spec())));
 }
 
 // A component extension that doesn't declare it can't. (The renderer blocks the
@@ -584,6 +620,82 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
   ASSERT_TRUE(child);
   EXPECT_EQ(GURL(chrome::kChromeUIThemeURL), child->GetLastCommittedURL());
   EXPECT_FALSE(child->IsErrorDocument());
+}
+
+// A component extension that declares the chrome://favicon2/ host permission
+// can load it, and its data source is registered on activation.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       DeclaredFavicon2HostLoads) {
+  ASSERT_TRUE(LoadAndNavigate({kFavicon2HostPermission},
+                              /*load_as_component=*/true));
+  EXPECT_EQ("loaded", LoadImage(Favicon2Url()));
+}
+
+// A component extension that doesn't declare it can't. (The renderer blocks the
+// request; the host permission gate itself is covered by
+// WebUIOriginAccessTest.HostPermissionOptIns*.)
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       UndeclaredFavicon2HostBlocked) {
+  const GURL favicon2_url = AddTestFavicon2Source();
+  ASSERT_TRUE(LoadAndNavigate({}, /*load_as_component=*/true));
+  EXPECT_EQ("error", LoadImage(favicon2_url));
+}
+
+// A non-component extension can't load it, even if it declares it. (The parser
+// drops the permission and the renderer blocks the request; the trust check
+// itself is covered by WebUIOriginAccessTest.HostPermissionOptInsRequireTrust.)
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       NonComponentCannotUseFavicon2Host) {
+  const GURL favicon2_url = AddTestFavicon2Source();
+  ASSERT_TRUE(LoadAndNavigate({kFavicon2HostPermission},
+                              /*load_as_component=*/false));
+  EXPECT_EQ("error", LoadImage(favicon2_url));
+}
+
+// The New Tab Page component extension can embed its chrome-untrusted://
+// subframes. The test source allows chrome-extension:// frame ancestors; the
+// real New Tab Page sources must allow the extension separately.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       NewTabPageExtensionCanEmbedUntrustedSubframes) {
+  const GURL untrusted_url("chrome-untrusted://new-tab-page/");
+  AddTestSource(untrusted_url.spec(),
+                "<!doctype html><html><body>ok</body></html>");
+  const Extension* extension =
+      LoadAndNavigate({}, /*load_as_component=*/true, kNewTabPageExtensionKey);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension_misc::kNewTabPageExtensionId, extension->id());
+  content::RenderFrameHost* child = EmbedSubframe(untrusted_url);
+  ASSERT_TRUE(child);
+  EXPECT_EQ(untrusted_url, child->GetLastCommittedURL());
+  EXPECT_FALSE(child->IsErrorDocument());
+}
+
+// Other component extensions can't.
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWebUIOriginsBrowserTest,
+                       OtherComponentExtensionCannotEmbedUntrustedSubframes) {
+  const GURL untrusted_url("chrome-untrusted://new-tab-page/");
+  AddTestSource(untrusted_url.spec(),
+                "<!doctype html><html><body>ok</body></html>");
+  ASSERT_TRUE(LoadAndNavigate({}, /*load_as_component=*/true));
+  content::RenderFrameHost* child = EmbedSubframe(untrusted_url);
+  ASSERT_TRUE(child);
+  EXPECT_EQ(GURL(content::kBlockedURL), child->GetLastCommittedURL());
+}
+
+// An unpacked extension claiming the New Tab Page extension's ID can't.
+IN_PROC_BROWSER_TEST_F(
+    ComponentExtensionWebUIOriginsBrowserTest,
+    SpoofedNewTabPageExtensionCannotEmbedUntrustedSubframes) {
+  const GURL untrusted_url("chrome-untrusted://new-tab-page/");
+  AddTestSource(untrusted_url.spec(),
+                "<!doctype html><html><body>ok</body></html>");
+  const Extension* extension =
+      LoadAndNavigate({}, /*load_as_component=*/false, kNewTabPageExtensionKey);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension_misc::kNewTabPageExtensionId, extension->id());
+  content::RenderFrameHost* child = EmbedSubframe(untrusted_url);
+  ASSERT_TRUE(child);
+  EXPECT_EQ(GURL(content::kBlockedURL), child->GetLastCommittedURL());
 }
 
 }  // namespace extensions

@@ -576,6 +576,7 @@ source_set("extensions") {
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/browser/undo",
     "//chrome/browser/update_client",
     "//chrome/common",

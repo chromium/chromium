@@ -14,10 +14,10 @@ namespace extensions {
 
 class Extension;
 
-// How an extension context uses a chrome:// origin.
+// How an extension context uses a chrome:// or chrome-untrusted:// origin.
 enum class WebUIOriginUse {
   // Subresource requests from extension frames, served by the chrome://
-  // URLLoaderFactory.
+  // URLLoaderFactory (chrome:// origins only).
   kFrameSubresource,
   // Requests from extension frames that ChildProcessSecurityPolicy checks
   // (ChildProcessSecurityPolicy::GrantRequestOrigin), e.g. subframe and other
@@ -41,7 +41,8 @@ enum class WebUIOriginUse {
   kMaxValue = kCorsAccess,
 };
 
-// Returns the chrome:// origins `extension` may use for `use`.
+// Returns the chrome:// and chrome-untrusted:// origins `extension` may use for
+// `use`.
 //
 // This is the single source of truth for the WebUI origins granted by:
 //   - ChromeContentBrowserClient (frame and worker URLLoaderFactories, and
@@ -56,8 +57,9 @@ enum class WebUIOriginUse {
 //
 // Other layers still apply independently: whether a chrome:// host permission
 // can be declared at all (CanSpecifyHostPermission() in permissions_parser.cc),
-// whether CSP allows scripts from chrome://resources (csp_validator.cc), and
-// whether the WebUI data source is registered.
+// whether CSP allows scripts from chrome://resources (csp_validator.cc),
+// whether the WebUI data source is registered, and whether a
+// chrome-untrusted:// source allows the extension as a frame ancestor.
 std::vector<url::Origin> GetAllowedWebUIOrigins(const Extension& extension,
                                                 WebUIOriginUse use);
 

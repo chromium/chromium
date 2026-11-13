@@ -4,9 +4,11 @@
 
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
@@ -27,6 +29,8 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
+#include "chrome/common/extensions/webui_origin_access.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "extensions/browser/delayed_install_manager.h"
@@ -167,6 +171,21 @@ void ChromeExtensionRegistrarDelegate::PostActivateExtension(
     content::URLDataSource::Add(
         profile_, std::make_unique<FaviconSource>(
                       profile_, chrome::FaviconUrlFormat::kFaviconLegacy));
+  }
+
+  // Same for chrome://favicon2/ and chrome://image/, for extensions that
+  // GetAllowedWebUIOrigins() grants access to them.
+  const std::vector<std::string> allowed_webui_hosts =
+      GetAllowedChromeUIHosts(*extension, WebUIOriginUse::kFrameSubresource);
+  if (std::ranges::contains(allowed_webui_hosts,
+                            chrome::kChromeUIFavicon2Host)) {
+    content::URLDataSource::Add(
+        profile_, std::make_unique<FaviconSource>(
+                      profile_, chrome::FaviconUrlFormat::kFavicon2));
+  }
+  if (std::ranges::contains(allowed_webui_hosts, chrome::kChromeUIImageHost)) {
+    content::URLDataSource::Add(
+        profile_, std::make_unique<SanitizedImageSource>(profile_));
   }
 
   // Same for chrome://theme/ resources.

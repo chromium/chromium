@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page_extension/new_tab_page_extension_bridge.h"
 #include "components/search/ntp_features.h"
 #include "extensions/browser/extension_config_map_factory.h"
@@ -37,8 +36,6 @@ NewTabPageExtensionBridgeFactory::NewTabPageExtensionBridgeFactory()
               .Build()) {
   DependsOn(extensions::ExtensionConfigMapFactory::GetInstance());
   DependsOn(extensions::ExtensionMojoBinderRegistryFactory::GetInstance());
-  // Used by SanitizedImageSource, which the bridge registers.
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 NewTabPageExtensionBridgeFactory::~NewTabPageExtensionBridgeFactory() = default;

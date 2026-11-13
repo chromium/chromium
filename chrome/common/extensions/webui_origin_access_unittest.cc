@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -39,10 +40,12 @@ url::Origin OriginFor(const char* url) {
 
 scoped_refptr<const Extension> BuildExtension(
     ManifestLocation location,
-    const std::vector<std::string>& host_permissions = {}) {
+    const std::vector<std::string>& host_permissions = {},
+    const std::string& id = std::string()) {
   return ExtensionBuilder("test")
       .SetLocation(location)
       .AddHostPermissions(host_permissions)
+      .SetID(id)
       .Build();
 }
 
@@ -127,20 +130,24 @@ TEST(WebUIOriginAccessTest, NonComponentExtensionDefaults) {
 }
 
 TEST(WebUIOriginAccessTest, ChromeUIHosts) {
-  auto extension = BuildExtension(ManifestLocation::kComponent);
+  auto extension =
+      BuildExtension(ManifestLocation::kComponent, /*host_permissions=*/{},
+                     extension_misc::kNewTabPageExtensionId);
   EXPECT_THAT(
       GetAllowedChromeUIHosts(*extension, WebUIOriginUse::kFrameSubresource),
       UnorderedElementsAre("resources", "theme", "favicon", "extension-icon",
                            "app-icon"));
+  // chrome-untrusted:// origins are excluded.
   EXPECT_THAT(
       GetAllowedChromeUIHosts(*extension, WebUIOriginUse::kFrameNavigation),
       UnorderedElementsAre("resources", "theme", "favicon", "extension-icon"));
 }
 
 TEST(WebUIOriginAccessTest, HostPermissionOptIns) {
-  auto extension =
-      BuildExtension(ManifestLocation::kComponent, {"chrome://image/*"});
+  auto extension = BuildExtension(ManifestLocation::kComponent,
+                                  {"chrome://favicon2/*", "chrome://image/*"});
   std::vector<url::Origin> expected = TrustedSubresourceOrigins();
+  expected.push_back(OriginFor("chrome://favicon2/"));
   expected.push_back(OriginFor("chrome://image/"));
   EXPECT_THAT(Origins(*extension, WebUIOriginUse::kFrameSubresource),
               UnorderedElementsAreArray(expected));
@@ -160,8 +167,10 @@ TEST(WebUIOriginAccessTest, HostPermissionOptInsRequireTrust) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
-  auto extension =
-      BuildExtension(ManifestLocation::kInternal, {"chrome://image/*"});
+  auto extension = BuildExtension(ManifestLocation::kInternal,
+                                  {"chrome://favicon2/*", "chrome://image/*"});
+  ASSERT_TRUE(extension->permissions_data()->HasHostPermission(
+      GURL("chrome://favicon2/")));
   ASSERT_TRUE(extension->permissions_data()->HasHostPermission(
       GURL("chrome://image/")));
   EXPECT_THAT(Origins(*extension, WebUIOriginUse::kFrameSubresource),
@@ -172,9 +181,49 @@ TEST(WebUIOriginAccessTest, ExternalComponentCannotDeclareOptIns) {
   // kExternalComponent extensions are trusted, but can't declare chrome://
   // host permissions (see CanSpecifyHostPermission()).
   auto extension = BuildExtension(ManifestLocation::kExternalComponent,
-                                  {"chrome://image/*"});
+                                  {"chrome://favicon2/*", "chrome://image/*"});
   EXPECT_THAT(Origins(*extension, WebUIOriginUse::kFrameSubresource),
               UnorderedElementsAreArray(TrustedSubresourceOrigins()));
+}
+
+TEST(WebUIOriginAccessTest, UntrustedOriginsOnlyForNewTabPageExtension) {
+  const url::Origin ntp = OriginFor("chrome-untrusted://new-tab-page/");
+  const url::Origin ms_auth =
+      OriginFor("chrome-untrusted://ntp-microsoft-auth/");
+
+  auto ntp_extension =
+      BuildExtension(ManifestLocation::kComponent, /*host_permissions=*/{},
+                     extension_misc::kNewTabPageExtensionId);
+  std::vector<url::Origin> expected = TrustedNavigationOrigins();
+  expected.push_back(ntp);
+  expected.push_back(ms_auth);
+  EXPECT_THAT(Origins(*ntp_extension, WebUIOriginUse::kFrameNavigation),
+              UnorderedElementsAreArray(expected));
+  // They are navigation-only.
+  for (WebUIOriginUse use : kAllUses) {
+    if (use == WebUIOriginUse::kFrameNavigation) {
+      continue;
+    }
+    EXPECT_THAT(Origins(*ntp_extension, use), Not(Contains(ntp)));
+    EXPECT_THAT(Origins(*ntp_extension, use), Not(Contains(ms_auth)));
+  }
+
+  // Other trusted extensions don't get them.
+  auto other_component = BuildExtension(ManifestLocation::kComponent);
+  EXPECT_THAT(Origins(*other_component, WebUIOriginUse::kFrameNavigation),
+              UnorderedElementsAreArray(TrustedNavigationOrigins()));
+
+  // Untrusted extensions claiming the New Tab Page extension's ID (e.g. via
+  // the manifest "key" of an unpacked extension) don't get them.
+  for (ManifestLocation location :
+       {ManifestLocation::kUnpacked, ManifestLocation::kCommandLine,
+        ManifestLocation::kInternal}) {
+    SCOPED_TRACE(static_cast<int>(location));
+    auto spoofed = BuildExtension(location, /*host_permissions=*/{},
+                                  extension_misc::kNewTabPageExtensionId);
+    EXPECT_THAT(Origins(*spoofed, WebUIOriginUse::kFrameNavigation),
+                UnorderedElementsAreArray(ExtensionNavigationOrigins()));
+  }
 }
 
 TEST(WebUIOriginAccessTest, WebUITestRequiresSwitch) {

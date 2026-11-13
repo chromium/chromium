@@ -12,6 +12,7 @@
     "metricsPrivate"
   ],
   "host_permissions": [
+    "chrome://favicon2/*",
     "chrome://image/*",
     "chrome://resources/*",
     "chrome://theme/*"
