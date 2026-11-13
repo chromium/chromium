@@ -280,6 +280,37 @@ TEST_F(MediaVideoEncoderWrapperTest, TunesVp9HardwareEncoderForScreenContent) {
   EXPECT_EQ(GetInitialContentHint(), media::VideoEncoder::ContentHint::Screen);
 }
 
+TEST_F(MediaVideoEncoderWrapperTest, ConfiguresAnnexBForH264AndHevc) {
+  for (const VideoCodec codec : {VideoCodec::kH264, VideoCodec::kHEVC}) {
+    config_.video_codec_params->codec = codec;
+    config_.use_hardware_encoder = true;
+    RecreateEncoder();
+
+    media::VideoEncoder::Options initialized_options;
+    EXPECT_CALL(*mock_encoder_, Initialize(_, _, _, _, _))
+        .WillOnce([&](VideoCodecProfile profile,
+                      const media::VideoEncoder::Options& options,
+                      media::VideoEncoder::EncoderInfoCB info,
+                      media::VideoEncoder::OutputCB output,
+                      media::VideoEncoder::EncoderStatusCB done) {
+          initialized_options = options;
+          std::move(info).Run(VideoEncoderInfo());
+          std::move(done).Run(EncoderStatus::Codes::kOk);
+          output_cb_ = output;
+        });
+    EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
+
+    const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+    ExpectVideoFrameEncoded(frame_info);
+    EXPECT_NE(EncodeVideoFrame(frame_info), nullptr);
+
+    EXPECT_EQ(initialized_options.avc.produce_annexb,
+              codec == VideoCodec::kH264);
+    EXPECT_EQ(initialized_options.hevc.produce_annexb,
+              codec == VideoCodec::kHEVC);
+  }
+}
+
 TEST_F(MediaVideoEncoderWrapperTest, SendsIntermediateFramesAfterKeyFrames) {
   ExpectEncoderInitialized();
 

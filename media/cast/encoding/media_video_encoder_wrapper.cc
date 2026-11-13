@@ -222,10 +222,13 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
     options_.content_hint = media::VideoEncoder::ContentHint::Screen;
   }
 
-  // NOTE: the H264 encoder can produce either AVC or annexb formatted frames.
-  // Annexb is better supported by Cast receivers.
+  // NOTE: H.264 and HEVC encoders can produce either length-prefixed
+  // (AVC/HEVC) or Annex-B formatted frames. Cast receivers expect Annex-B
+  // bitstreams with in-band parameter sets.
   if (codec_ == media::VideoCodec::kH264) {
     options_.avc.produce_annexb = true;
+  } else if (codec_ == media::VideoCodec::kHEVC) {
+    options_.hevc.produce_annexb = true;
   }
 
   // NOTE: since we don't actually know the frame size until the first

@@ -530,6 +530,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Hardware VP9 encoder"/>
   <int value="7" label="Software AV1 encoder"/>
   <int value="8" label="Hardware AV1 encoder"/>
+  <int value="9" label="Software HEVC encoder"/>
+  <int value="10" label="Hardware HEVC encoder"/>
 </enum>
 
 <!-- LINT.ThenChange(//media/cast/encoding/video_encoder.cc:CastStreamingVideoEncoderType) -->
