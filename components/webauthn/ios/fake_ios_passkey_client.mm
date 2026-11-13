@@ -4,12 +4,7 @@
 
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
 
-#import <memory>
-#import <utility>
-#import <vector>
-
-#import "base/functional/callback.h"
-#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "base/functional/callback.h"
 
 namespace webauthn {
 
@@ -55,12 +50,7 @@ void FakeIOSPasskeyClient::ShowInterstitial(InterstitialCallback callback) {
   std::move(callback).Run(interstitial_proceeds_);
 }
 
-void FakeIOSPasskeyClient::ShowPasskeyCreationInfobar(
-    const sync_pb::WebauthnCredentialSpecifics& passkey) {
-  ++show_passkey_creation_infobar_count_;
-  last_infobar_passkey_ =
-      std::make_unique<sync_pb::WebauthnCredentialSpecifics>(passkey);
-}
+void FakeIOSPasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {}
 
 bool FakeIOSPasskeyClient::DidShowSuggestionBottomSheet() const {
   return show_suggestion_bottom_sheet_called_;
@@ -68,19 +58,6 @@ bool FakeIOSPasskeyClient::DidShowSuggestionBottomSheet() const {
 
 bool FakeIOSPasskeyClient::DidShowCreationBottomSheet() const {
   return show_creation_bottom_sheet_called_;
-}
-
-bool FakeIOSPasskeyClient::DidShowPasskeyCreationInfobar() const {
-  return show_passkey_creation_infobar_count_ > 0;
-}
-
-size_t FakeIOSPasskeyClient::show_passkey_creation_infobar_count() const {
-  return show_passkey_creation_infobar_count_;
-}
-
-const sync_pb::WebauthnCredentialSpecifics*
-FakeIOSPasskeyClient::last_infobar_passkey() const {
-  return last_infobar_passkey_.get();
 }
 
 bool FakeIOSPasskeyClient::DidFetchTrustedVaultKeys() const {

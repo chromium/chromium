@@ -7,6 +7,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#import <memory>
 #import <string>
 
 #import "base/memory/raw_ptr.h"
@@ -21,19 +22,12 @@ namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
 
-namespace web {
-class WebState;
-}  // namespace web
-
 class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates and displays a passkey creation confirmation infobar on
-  // `web_state` when `web_state` is visible and `account_string` is non-empty.
-  // Returns whether the infobar was added.
-  static bool DisplayForWebState(web::WebState* web_state,
-                                 std::string account_string,
-                                 sync_pb::WebauthnCredentialSpecifics passkey,
-                                 id<SettingsCommands> settings_handler);
+  static std::unique_ptr<IOSCredentialProviderInfoBarDelegate> Create(
+      std::string account_string,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      id<SettingsCommands> settings_handler);
 
   explicit IOSCredentialProviderInfoBarDelegate(
       std::string account_string,

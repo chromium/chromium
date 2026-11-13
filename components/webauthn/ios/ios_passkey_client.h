@@ -15,10 +15,6 @@
 
 @protocol IOSPasskeyClientCommands;
 
-namespace sync_pb {
-class WebauthnCredentialSpecifics;
-}  // namespace sync_pb
-
 namespace webauthn {
 
 // Virtual class which exposes the API required by the PasskeyTabHelper to
@@ -78,9 +74,10 @@ class IOSPasskeyClient {
   // the session. Executes the callback with the user's decision.
   virtual void ShowInterstitial(InterstitialCallback callback) = 0;
 
-  // Displays a confirmation infobar for the newly created `passkey`.
-  virtual void ShowPasskeyCreationInfobar(
-      const sync_pb::WebauthnCredentialSpecifics& passkey) = 0;
+  // Sets whether showing the passkey creation infobar is allowed. Should be
+  // enabled before passkey creation happens within the passkey model and
+  // disabled after passkey creation is completed.
+  virtual void AllowPasskeyCreationInfobar(bool allowed) = 0;
 
   // Cancels the passkey request matching the given `request_info`.
   virtual void CancelPasskeyRequest(RequestInfo request_info) = 0;

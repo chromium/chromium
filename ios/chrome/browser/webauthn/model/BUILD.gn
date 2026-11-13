@@ -56,15 +56,11 @@ source_set("ios_chrome_passkey_client") {
   ]
   deps = [
     ":model",
-    "//base",
     "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//components/sync/protocol",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
@@ -74,6 +70,7 @@ source_set("ios_chrome_passkey_client") {
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
@@ -85,12 +82,7 @@ source_set("ios_chrome_passkey_client") {
   ]
 
   if (ios_enable_credential_provider_extension) {
-    deps += [
-      "//ios/chrome/browser/credential_provider/model",
-      "//ios/chrome/browser/shared/model/browser",
-      "//ios/chrome/browser/shared/model/web_state_list",
-      "//ios/chrome/browser/shared/public/commands",
-    ]
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
 }
 
@@ -148,7 +140,6 @@ source_set("unit_tests") {
     "//ios/chrome/app",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
-    "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
@@ -162,19 +153,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-
-  if (ios_enable_credential_provider_extension) {
-    deps += [
-      "//components/infobars/core",
-      "//components/password_manager/core/browser/ui:credential_ui_entry",
-      "//components/sync/protocol",
-      "//ios/chrome/app/strings",
-      "//ios/chrome/browser/credential_provider/model:test_support",
-      "//ios/chrome/browser/infobars/model",
-      "//ios/chrome/browser/shared/model/browser",
-      "//ios/chrome/browser/shared/model/browser/test:test_support",
-      "//ios/chrome/browser/shared/model/web_state_list",
-      "//ui/base",
-    ]
-  }
 }
