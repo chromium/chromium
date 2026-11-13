@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.adaptive_ui;
 
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,7 +31,8 @@ import java.util.Set;
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
- * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, and {@link
+ * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, {@link
+ * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
  * AdaptiveUiSheetCoordinator}, and {@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} applies
  * only to dialogs.
@@ -50,7 +52,8 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN);
+                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                    AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
 
     static void bind(PropertyModel model, View view, PropertyKey key) {
         if (key == AdaptiveUiProperties.HEADER_ICON) {
@@ -97,6 +100,13 @@ final class AdaptiveUiSheetViewBinder {
         } else if (key == AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED) {
             view.findViewById(R.id.adaptive_ui_sheet_secondary_button)
                     .setEnabled(!model.get(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED));
+        } else if (key == AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY) {
+            if (model.get(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY)) {
+                setupFilterTouchForSecurity(
+                        view.findViewById(R.id.adaptive_ui_sheet_primary_button));
+                setupFilterTouchForSecurity(
+                        view.findViewById(R.id.adaptive_ui_sheet_secondary_button));
+            }
         } else {
             assert NON_VISUAL_SHEET_KEYS.contains(key)
                     : "Unhandled AdaptiveUiProperties key in AdaptiveUiSheetViewBinder: " + key;
@@ -126,6 +136,15 @@ final class AdaptiveUiSheetViewBinder {
             container.addView(customView);
         }
         container.setVisibility(customView == null ? View.GONE : View.VISIBLE);
+    }
+
+    // Only obscured touches are swallowed. Other touches return false and reach the button's own
+    // click handling, which calls performClick(), so this listener never handles a click.
+    @SuppressWarnings("ClickableViewAccessibility")
+    private static void setupFilterTouchForSecurity(View button) {
+        button.setFilterTouchesWhenObscured(true);
+        button.setOnTouchListener(
+                (v, ev) -> (ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0);
     }
 
     private AdaptiveUiSheetViewBinder() {}

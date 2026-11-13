@@ -12,9 +12,11 @@ import androidx.activity.OnBackPressedCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -123,6 +125,25 @@ public class AdaptiveUiProperties {
     public static final WritableBooleanPropertyKey SECONDARY_BUTTON_KEEPS_OPEN =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Time in milliseconds after the entry is shown during which primary and secondary button
+     * clicks are ignored to prevent unintended taps. For sheets, the period starts once the sheet
+     * has finished opening. Each tap on these buttons restarts the period. Must not be negative.
+     * Defaults to {@code 0} (off).
+     */
+    public static final WritableLongPropertyKey BUTTON_TAP_PROTECTION_PERIOD_MS =
+            new WritableLongPropertyKey();
+
+    /**
+     * Whether to filter touches on the primary and secondary buttons when another visible window
+     * wholly or partially obscures this window. Read-only because dialogs cannot turn touch
+     * filtering off once enabled. Dialogs apply it only if the entry has an action button when
+     * shown: a button added later is not filtered, and removing every action button while shown
+     * trips a ModalDialog assert. Defaults to {@code false} (off).
+     */
+    public static final ReadableBooleanPropertyKey FILTER_TOUCH_FOR_SECURITY =
+            new ReadableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 HEADER_ICON,
@@ -143,6 +164,8 @@ public class AdaptiveUiProperties {
                 ON_SECONDARY_BUTTON_CLICKED,
                 SECONDARY_BUTTON_DISABLED,
                 SECONDARY_BUTTON_KEEPS_OPEN,
+                BUTTON_TAP_PROTECTION_PERIOD_MS,
+                FILTER_TOUCH_FOR_SECURITY,
             };
 
     private AdaptiveUiProperties() {}

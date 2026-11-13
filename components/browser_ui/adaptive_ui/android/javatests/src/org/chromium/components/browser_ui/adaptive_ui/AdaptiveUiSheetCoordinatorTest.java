@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -40,6 +44,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -52,6 +58,7 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -145,8 +152,417 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                        AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN);
+                        AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                        AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
         assertEquals(expected, AdaptiveUiSheetViewBinder.NON_VISUAL_SHEET_KEYS);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Button tap and touch protection.
+    // ---------------------------------------------------------------------------------------
+
+    private static MotionEvent obtainTouchEvent(long eventTime, int action, int flags) {
+        MotionEvent.PointerProperties props = new MotionEvent.PointerProperties();
+        props.id = 0;
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        coords.x = 1.0f;
+        coords.y = 1.0f;
+        return MotionEvent.obtain(
+                /* downTime= */ eventTime,
+                eventTime,
+                action,
+                /* pointerCount= */ 1,
+                new MotionEvent.PointerProperties[] {props},
+                new MotionEvent.PointerCoords[] {coords},
+                /* metaState= */ 0,
+                /* buttonState= */ 0,
+                /* xPrecision= */ 1.0f,
+                /* yPrecision= */ 1.0f,
+                /* deviceId= */ 0,
+                /* edgeFlags= */ 0,
+                InputDevice.SOURCE_CLASS_POINTER,
+                flags);
+    }
+
+    @Test
+    public void testButtonTapProtection_DefaultOffAllowsImmediateClicks() {
+        int[] primaryClicks = new int[1];
+        PropertyModel primaryModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(
+                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
+                                () -> primaryClicks[0]++)
+                        .build();
+        assertEquals(0L, primaryModel.get(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+        AdaptiveUiSheetCoordinator primaryContent = createContent(primaryModel);
+        BottomSheetObserver primaryObserver = showAndCaptureObserver(primaryContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(primaryContent);
+        primaryObserver.onSheetContentChanged(primaryContent);
+
+        find(primaryContent, R.id.adaptive_ui_sheet_primary_button).performClick();
+        assertEquals(1, primaryClicks[0]);
+        verify(mBottomSheetController)
+                .hideContent(
+                        primaryContent,
+                        /* animate= */ true,
+                        StateChangeReason.INTERACTION_COMPLETE);
+        primaryContent.destroy();
+
+        clearInvocations(mBottomSheetController);
+
+        int[] secondaryClicks = new int[1];
+        PropertyModel secondaryModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        AdaptiveUiSheetCoordinator secondaryContent = createContent(secondaryModel);
+        BottomSheetObserver secondaryObserver = showAndCaptureObserver(secondaryContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(secondaryContent);
+        secondaryObserver.onSheetContentChanged(secondaryContent);
+
+        find(secondaryContent, R.id.adaptive_ui_sheet_secondary_button).performClick();
+        assertEquals(1, secondaryClicks[0]);
+        verify(mBottomSheetController)
+                .hideContent(
+                        secondaryContent,
+                        /* animate= */ true,
+                        StateChangeReason.INTERACTION_COMPLETE);
+        secondaryContent.destroy();
+
+        assertEquals(
+                List.of(DismissReason.PRIMARY_ACTION, DismissReason.SECONDARY_ACTION),
+                mSheetDismissals);
+    }
+
+    @Test
+    public void testButtonTapProtection_BlocksQueuedAndPrematureTapsAndResetsTimer() {
+        int[] primaryClicks = new int[1];
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(
+                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
+                                () -> primaryClicks[0]++)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        View primary = find(content, R.id.adaptive_ui_sheet_primary_button);
+        View secondary = find(content, R.id.adaptive_ui_sheet_secondary_button);
+
+        // Clicks before onSheetContentChanged(content) are blocked even if time advances.
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        primary.performClick();
+        secondary.performClick();
+        assertEquals(0, primaryClicks[0]);
+        assertEquals(0, secondaryClicks[0]);
+        verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
+
+        // Sheet becomes current and settles open at t0.
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        // Clicks at +0ms and +300ms are ignored and each resets the protection start timestamp.
+        primary.performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(300));
+        primary.performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        // At +600ms from show (300ms after the premature tap, <= 500ms), click is still blocked.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(300));
+        primary.performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        // Exact inclusive boundary (+500ms since last tap) is also blocked and resets the timer.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(500));
+        secondary.performClick();
+        assertEquals(0, secondaryClicks[0]);
+
+        // Advancing +501ms allows the secondary click and restarts the protection window.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        secondary.performClick();
+        assertEquals(1, secondaryClicks[0]);
+        primary.performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        // Advancing another +501ms allows the primary click and dismisses the sheet.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        primary.performClick();
+        assertEquals(1, primaryClicks[0]);
+        verify(mBottomSheetController)
+                .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testButtonTapProtection_CloseButtonAndBackPressUnaffected() {
+        int[] primaryClicks = new int[1];
+        PropertyModel closeModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(
+                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
+                                () -> primaryClicks[0]++)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .build();
+        AdaptiveUiSheetCoordinator closeContent = createContent(closeModel);
+        BottomSheetObserver closeObserver = showAndCaptureObserver(closeContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(closeContent);
+        closeObserver.onSheetContentChanged(closeContent);
+        closeObserver.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        find(closeContent, R.id.adaptive_ui_sheet_primary_button).performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        find(closeContent, R.id.adaptive_ui_sheet_close_button).performClick();
+        verify(mBottomSheetController)
+                .hideContent(closeContent, /* animate= */ true, StateChangeReason.CLOSE_BUTTON);
+        closeContent.destroy();
+
+        clearInvocations(mBottomSheetController);
+
+        PropertyModel backModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(
+                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
+                                () -> primaryClicks[0]++)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .build();
+        AdaptiveUiSheetCoordinator backContent = createContent(backModel);
+        BottomSheetObserver backObserver = showAndCaptureObserver(backContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(backContent);
+        backObserver.onSheetContentChanged(backContent);
+        backObserver.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        find(backContent, R.id.adaptive_ui_sheet_primary_button).performClick();
+        assertEquals(0, primaryClicks[0]);
+
+        backContent.onBackPressed();
+        verify(mBottomSheetController)
+                .hideContent(backContent, /* animate= */ true, StateChangeReason.BACK_PRESS);
+        backContent.destroy();
+
+        assertEquals(
+                List.of(DismissReason.CLOSE_BUTTON, DismissReason.BACK_PRESS), mSheetDismissals);
+    }
+
+    @Test
+    public void testButtonTapProtection_BlocksDuringSlideInUntilSettled() {
+        int[] clicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 100L)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        View primary = find(content, R.id.adaptive_ui_sheet_primary_button);
+
+        // Taps stay blocked during the slide-in, even when it takes longer than the period.
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(200));
+        primary.performClick();
+        assertEquals(0, clicks[0]);
+
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(150));
+        primary.performClick();
+        assertEquals(0, clicks[0]);
+
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        // Later drags (FULL -> SCROLLING -> FULL) don't restart the period.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(50));
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.SWIPE);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(51));
+        primary.performClick();
+        assertEquals(1, clicks[0]);
+        verify(mBottomSheetController)
+                .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testButtonTapProtection_ReshowResetsPeriod() {
+        int[] clicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN, true)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        View primary = find(content, R.id.adaptive_ui_sheet_primary_button);
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        primary.performClick();
+        assertEquals(1, clicks[0]);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+
+        // Swapping into an already-open sheet (FULL) arms immediately without a state change.
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherSheetContent);
+        observer.onSheetContentChanged(mOtherSheetContent);
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        primary.performClick();
+        assertEquals(1, clicks[0]);
+
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        primary.performClick();
+        assertEquals(1, clicks[0]);
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        primary.performClick();
+        assertEquals(2, clicks[0]);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+
+        // Hiding and re-opening while still current (no content swap) stays blocked through
+        // SCROLLING and re-arms on the settled state.
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.OMNIBOX_FOCUS);
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        primary.performClick();
+        assertEquals(2, clicks[0]);
+
+        observer.onSheetStateChanged(SheetState.NONE, StateChangeReason.NONE);
+        primary.performClick();
+        assertEquals(2, clicks[0]);
+
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        primary.performClick();
+        assertEquals(2, clicks[0]);
+
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        primary.performClick();
+        assertEquals(2, clicks[0]);
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        primary.performClick();
+        assertEquals(3, clicks[0]);
+    }
+
+    @Test
+    public void testFilterTouchForSecurity_DefaultFalse() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        assertFalse(model.get(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY));
+        assertFalse(
+                find(content, R.id.adaptive_ui_sheet_primary_button)
+                        .getFilterTouchesWhenObscured());
+        assertFalse(
+                find(content, R.id.adaptive_ui_sheet_secondary_button)
+                        .getFilterTouchesWhenObscured());
+        assertFalse(
+                find(content, R.id.adaptive_ui_sheet_close_button).getFilterTouchesWhenObscured());
+    }
+
+    @Test
+    public void testFilterTouchForSecurity_EnabledFiltersObscuredTouchesOnActionButtonsOnly() {
+        int[] primaryClicks = new int[1];
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(
+                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
+                                () -> primaryClicks[0]++)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN, true)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View root = content.getContentView();
+        mActivity.setContentView(root);
+        root.measure(
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, 1000, 600);
+
+        View primary = find(content, R.id.adaptive_ui_sheet_primary_button);
+        View secondary = find(content, R.id.adaptive_ui_sheet_secondary_button);
+        View close = find(content, R.id.adaptive_ui_sheet_close_button);
+
+        assertTrue(primary.getFilterTouchesWhenObscured());
+        assertTrue(secondary.getFilterTouchesWhenObscured());
+        assertFalse(close.getFilterTouchesWhenObscured());
+
+        // Partially-obscured touch events are consumed without pressing buttons or firing clicks.
+        long now = SystemClock.uptimeMillis();
+        MotionEvent obscuredDown =
+                obtainTouchEvent(
+                        now,
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED);
+        MotionEvent obscuredUp =
+                obtainTouchEvent(
+                        now, MotionEvent.ACTION_UP, MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED);
+        assertTrue(primary.dispatchTouchEvent(obscuredDown));
+        assertFalse(primary.isPressed());
+        assertTrue(primary.dispatchTouchEvent(obscuredUp));
+        assertTrue(secondary.dispatchTouchEvent(obscuredDown));
+        assertFalse(secondary.isPressed());
+        assertTrue(secondary.dispatchTouchEvent(obscuredUp));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(0, primaryClicks[0]);
+        assertEquals(0, secondaryClicks[0]);
+
+        // Unobscured touch events (flags = 0) are not consumed by the security listener.
+        long later = SystemClock.uptimeMillis();
+        MotionEvent unobscuredDown =
+                obtainTouchEvent(later, MotionEvent.ACTION_DOWN, /* flags= */ 0);
+        MotionEvent unobscuredUp = obtainTouchEvent(later, MotionEvent.ACTION_UP, /* flags= */ 0);
+        primary.dispatchTouchEvent(unobscuredDown);
+        primary.dispatchTouchEvent(unobscuredUp);
+        secondary.dispatchTouchEvent(unobscuredDown);
+        secondary.dispatchTouchEvent(unobscuredUp);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(1, primaryClicks[0]);
+        assertEquals(1, secondaryClicks[0]);
+
+        obscuredDown.recycle();
+        obscuredUp.recycle();
+        unobscuredDown.recycle();
+        unobscuredUp.recycle();
     }
 
     // ---------------------------------------------------------------------------------------

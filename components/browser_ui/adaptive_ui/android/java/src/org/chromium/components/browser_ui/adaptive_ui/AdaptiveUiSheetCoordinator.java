@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
@@ -62,7 +63,17 @@ final class AdaptiveUiSheetCoordinator
             new BottomSheetObserver() {
                 @Override
                 public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                    if (newContent != AdaptiveUiSheetCoordinator.this) return;
+                    if (newContent != AdaptiveUiSheetCoordinator.this) {
+                        mTapProtectionStartTimestampMs = -1;
+                        return;
+                    }
+                    // The controller swaps content only while hidden, so the clock normally
+                    // starts on the settled state below. If this content ever becomes current in
+                    // an already-open sheet, start now so the buttons can't stay blocked.
+                    mTapProtectionStartTimestampMs =
+                            isSettledOpenState(mBottomSheetController.getSheetState())
+                                    ? TimeUtils.elapsedRealtimeMillis()
+                                    : -1;
                     // Shown again after a HIDDEN that was not a dismissal (suppressed, or pushed
                     // back by higher-priority content): a hide requested before that did not
                     // happen, so accept input again.
@@ -85,13 +96,18 @@ final class AdaptiveUiSheetCoordinator
                 @Override
                 public void onSheetStateChanged(
                         @SheetState int newState, @StateChangeReason int reason) {
+                    if (mBottomSheetController.getCurrentSheetContent()
+                            != AdaptiveUiSheetCoordinator.this) {
+                        return;
+                    }
                     // With BottomSheetDeferContentSwapOnHidden on, the hidden content is still
                     // current while observers are notified, before the BottomSheetController
                     // decides whether to destroy it.
-                    if (newState == SheetState.HIDDEN
-                            && mBottomSheetController.getCurrentSheetContent()
-                                    == AdaptiveUiSheetCoordinator.this) {
+                    if (newState == SheetState.HIDDEN) {
                         onSheetHidden(reason);
+                    } else if (isSettledOpenState(newState) && mTapProtectionStartTimestampMs < 0) {
+                        // Buttons sit at the bottom and are only fully visible once settled.
+                        mTapProtectionStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
                     }
                 }
             };
@@ -99,6 +115,7 @@ final class AdaptiveUiSheetCoordinator
     private boolean mShown;
     private @Nullable @DismissReason Integer mRequestedDismissReason;
     private @StateChangeReason int mLastHiddenReason = StateChangeReason.NONE;
+    private long mTapProtectionStartTimestampMs = -1;
 
     /**
      * @param context The {@link Context} used to inflate the sheet layout.
@@ -223,6 +240,7 @@ final class AdaptiveUiSheetCoordinator
      */
     void onSheetHidden(@StateChangeReason int stateChangeReason) {
         if (mDestroyed) return;
+        mTapProtectionStartTimestampMs = -1;
         mLastHiddenReason = stateChangeReason;
     }
 
@@ -336,11 +354,25 @@ final class AdaptiveUiSheetCoordinator
             ReadableObjectPropertyKey<@Nullable Runnable> callbackKey,
             ReadableBooleanPropertyKey keepsOpenKey,
             @DismissReason int reason) {
-        if (isDismissing()) return;
+        if (isDismissing() || isWithinButtonTapProtectionPeriod()) return;
         Runnable callback = mModel.get(callbackKey);
         if (callback != null) callback.run();
         if (mModel.get(keepsOpenKey)) return;
         requestDismiss(reason);
+    }
+
+    private boolean isWithinButtonTapProtectionPeriod() {
+        long durationMs = mModel.get(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
+        if (durationMs <= 0) return false;
+        if (mTapProtectionStartTimestampMs < 0) return true;
+        long now = TimeUtils.elapsedRealtimeMillis();
+        boolean blocked = now <= mTapProtectionStartTimestampMs + durationMs;
+        mTapProtectionStartTimestampMs = now;
+        return blocked;
+    }
+
+    private static boolean isSettledOpenState(@SheetState int state) {
+        return state == SheetState.HALF || state == SheetState.FULL;
     }
 
     /** Whether the sheet is destroyed or a dismissal was already requested. */

@@ -246,6 +246,11 @@ final class AdaptiveUiDialogCoordinator
             builder.with(ModalDialogProperties.CONTENT_DESCRIPTION, contentDescription);
         }
 
+        if (model.get(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY)
+                && (hasPrimary || hasSecondary)) {
+            builder.with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true);
+        }
+
         if (scope == AdaptiveUiScope.WINDOW) {
             builder.with(
                     ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,

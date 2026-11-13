@@ -23,9 +23,9 @@ import java.util.Set;
  * ModalDialogProperties} {@link PropertyModel} via {@link
  * org.chromium.ui.modelutil.PropertyModelChangeProcessor}.
  *
- * <p>Creation-time structural keys ({@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} and
- * {@link AdaptiveUiProperties#CUSTOM_VIEW}) and event-time action keys ({@link
- * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
+ * <p>Creation-time structural keys ({@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION}, {@link
+ * AdaptiveUiProperties#CUSTOM_VIEW}, and {@link AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY})
+ * and event-time action keys ({@link AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, and {@link
@@ -50,7 +50,8 @@ final class AdaptiveUiDialogViewBinder {
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN);
+                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                    AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY);
 
     static void bind(PropertyModel model, PropertyModel dialogModel, PropertyKey key) {
         if (key == AdaptiveUiProperties.HEADER_ICON) {
@@ -112,6 +113,10 @@ final class AdaptiveUiDialogViewBinder {
             dialogModel.set(
                     ModalDialogProperties.NEGATIVE_BUTTON_DISABLED,
                     model.get(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED));
+        } else if (key == AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS) {
+            dialogModel.set(
+                    ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                    model.get(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
         } else {
             assert COORDINATOR_HANDLED_KEYS.contains(key)
                     : "Unhandled AdaptiveUiProperties key in AdaptiveUiDialogViewBinder: " + key;
