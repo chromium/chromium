@@ -6359,7 +6359,6 @@ bool IsAngleWithinLimits(CSSPrimitiveValue* angle) {
 }
 
 bool IsAngleZero(CSSPrimitiveValue* angle) {
-  DCHECK(RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled());
   auto* numeric_angle = DynamicTo<CSSNumericLiteralValue>(angle);
   if (!numeric_angle) {
     return false;
@@ -6398,8 +6397,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
   }
 
   if (context.Mode() != kCSSFontFaceRuleMode || stream.AtEnd()) {
-    if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
-        IsAngleZero(start_angle)) {
+    if (IsAngleZero(start_angle)) {
       return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
     }
     CSSValueList* value_list = CSSValueList::CreateSpaceSeparated();
@@ -6414,8 +6412,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
-      IsAngleZero(start_angle) && IsAngleZero(end_angle)) {
+  if (IsAngleZero(start_angle) && IsAngleZero(end_angle)) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
   }
 

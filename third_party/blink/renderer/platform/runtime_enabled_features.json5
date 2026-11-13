@@ -3468,11 +3468,6 @@
       status: "stable",
     },
     {
-      // crbug.com/393391746
-      name: "FontStyleObliqueZeroDegreeAsNormal",
-      status: "stable",
-    },
-    {
       // crbug.com/325826179
       name: "FontUniqueNameTypefaceCache",
       status: "stable",

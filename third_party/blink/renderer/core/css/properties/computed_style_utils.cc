@@ -1152,8 +1152,7 @@ CSSValue* ComputedStyleUtils::ValueForFontStyle(const ComputedStyle& style) {
       break;
     case FontDescription::StyleSyntax::kExplicitAngle:
       // `oblique 0deg` always collapses to `normal`, both for static input
-      // (because FontSelectionValue(0) == kNormalSlopeValue, independent of
-      // the FontStyleObliqueZeroDegreeAsNormal runtime flag) and for
+      // (because FontSelectionValue(0) == kNormalSlopeValue) and for
       // animations that interpolate the slope down to 0deg.
       if (slope == kNormalSlopeValue) {
         return CSSIdentifierValue::Create(CSSValueID::kNormal);

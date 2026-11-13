@@ -1125,8 +1125,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     if (values->length()) {
       const double angle_degrees = To<CSSPrimitiveValue>(values->Item(0))
                                        .ComputeDegrees(length_resolver);
-      if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
-          angle_degrees == 0.0) {
+      if (angle_degrees == 0.0) {
         return kNormalSlopeValue;
       }
       return FontSelectionValue(angle_degrees);
