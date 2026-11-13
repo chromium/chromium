@@ -49,6 +49,10 @@ public class InstanceSwitcherFaviconHelper {
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
 
+    /* package */ void destroy() {
+        mLargeIconBridge.destroy();
+    }
+
     /* package */ void setFavicon(
             PropertyModel model,
             PropertyModel.WritableObjectPropertyKey<Drawable> faviconKey,

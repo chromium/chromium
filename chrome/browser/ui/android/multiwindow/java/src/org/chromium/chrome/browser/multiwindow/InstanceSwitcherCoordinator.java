@@ -479,6 +479,7 @@ public class InstanceSwitcherCoordinator {
                     public void onDismiss(
                             PropertyModel model, @DialogDismissalCause int dismissalCause) {
                         sPrevInstance = null;
+                        mFaviconHelper.destroy();
                     }
 
                     @Override

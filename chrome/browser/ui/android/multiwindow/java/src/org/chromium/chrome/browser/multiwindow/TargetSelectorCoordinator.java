@@ -135,6 +135,7 @@ public class TargetSelectorCoordinator {
                     public void onDismiss(
                             PropertyModel model, @DialogDismissalCause int dismissalCause) {
                         sPrevInstance = null;
+                        mFaviconHelper.destroy();
                         if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                             mMoveCallback.onResult(null);
                         }
