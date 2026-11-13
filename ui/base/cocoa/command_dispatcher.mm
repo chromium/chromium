@@ -191,7 +191,9 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   TRACE_EVENT2("ui", "CommandDispatcher::redispatchKeyEvent", "window num",
                _owner.windowNumber, "event window num",
                event.window.windowNumber);
-  CHECK(!_isRedispatchingKeyEvent, base::NotFatalUntil::M163);
+  // TODO(crbug.com/585026723): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!_isRedispatchingKeyEvent);
   base::AutoReset<BOOL> resetter(&_isRedispatchingKeyEvent, YES);
 
   CHECK(event, base::NotFatalUntil::M163);
