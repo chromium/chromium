@@ -8,41 +8,39 @@ import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
 export function getHtml(this: OmniboxEverywhereProfileIconElement) {
   return html`
-    <button id="profileContainer"
-        class="${this.profilePickerEnabled_ ? 'clickable' : ''}"
-        aria-disabled="${!this.profilePickerEnabled_}"
-        aria-label="${this.getProfileAriaLabel_()}"
-        title="${this.getProfileTooltip_()}"
-        @click="${this.onProfileIconClick_}">
-      ${this.isEnterpriseProfile_ ? html`
-        <div id="enterpriseBadge" aria-hidden="true"
-            title="${this.i18n('managedByYourOrganization')}">
-          <cr-icon icon="cr:domain"></cr-icon>
-        </div>
-      ` : ''}
-      <img id="profileIcon" src="${this.profileAvatarUrl_}"
-          alt="${this.i18n('profileButtonLabel')}">
-    </button>
-    <cr-action-menu id="profileMenu">
-      <div class="profile-card">
-        <div class="profile-card-header">
-          <img class="profile-card-avatar" src="${this.profileAvatarUrl_}" alt="">
-          <div class="profile-card-info">
-            <div class="profile-card-name">${this.profileName_}</div>
-            ${this.profileEmail_ ? html`
-              <div class="profile-card-email">${this.profileEmail_}</div>
-            ` : ''}
-          </div>
-        </div>
-        <div class="profile-card-divider"></div>
-        <button class="dropdown-item profile-card-switch-button"
-            @click="${this.onSwitchProfileClick_}">
-          <div class="profile-card-switch-icon" aria-hidden="true"></div>
-          <span class="profile-card-switch-label">
-            ${this.i18n('switchProfileLabel')}
-          </span>
-        </button>
+<button id="profileContainer"
+    class="${this.profilePickerEnabled_ ? 'clickable' : ''}"
+    aria-disabled="${!this.profilePickerEnabled_}"
+    aria-label="${this.getProfileAriaLabel_()}"
+    title="${this.getProfileTooltip_()}" @click="${this.onProfileIconClick_}">
+  ${this.isEnterpriseProfile_ ? html`
+    <div id="enterpriseBadge" aria-hidden="true"
+        title="${this.i18n('managedByYourOrganization')}">
+      <cr-icon icon="cr:domain"></cr-icon>
+    </div>
+  ` : ''}
+  <img id="profileIcon" src="${this.profileAvatarUrl_}"
+      alt="${this.i18n('profileButtonLabel')}">
+</button>
+<cr-action-menu id="profileMenu">
+  <div class="profile-card">
+    <div class="profile-card-header">
+      <img class="profile-card-avatar" src="${this.profileAvatarUrl_}" alt="">
+      <div class="profile-card-info">
+        <div class="profile-card-name">${this.profileName_}</div>
+        ${this.profileEmail_ ? html`
+          <div class="profile-card-email">${this.profileEmail_}</div>
+        ` : ''}
       </div>
-    </cr-action-menu>
-  `;
+    </div>
+    <div class="profile-card-divider"></div>
+    <button class="dropdown-item profile-card-switch-button"
+        @click="${this.onSwitchProfileClick_}">
+      <div class="profile-card-switch-icon" aria-hidden="true"></div>
+      <span class="profile-card-switch-label">
+        ${this.i18n('switchProfileLabel')}
+      </span>
+    </button>
+  </div>
+</cr-action-menu>`;
 }

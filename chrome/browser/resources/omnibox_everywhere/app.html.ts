@@ -10,8 +10,7 @@ import {FreChinMode} from './fre_chin.js';
 export function getHtml(this: OmniboxEverywhereAppElement) {
   return html`<!--_html_template_start_-->
 <div id="content">
-  ${
-      this.isComposeboxMode_ ? html`
+  ${this.isComposeboxMode_ ? html`
     <omnibox-everywhere-composebox id="composebox" searchbox-next-enabled
         ?is-active="${this.isActive_}"
         .isPendingContextUpload="${this.isPendingContextUpload_}"
@@ -21,46 +20,39 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         @composebox-submit="${this.onComposeboxSubmit_}"
         @open-voice-search="${this.onOpenVoiceSearch_}"
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
-        .showVoiceSearch="${true}"
-        .usePecApi="${this.usePecApi_}"
+        .showVoiceSearch="${true}" .usePecApi="${this.usePecApi_}"
         .isOblongShape="${this.isOblongShape_}"
         .contextManagementInComposeboxEnabled="${
-                                   this.contextManagementInComposeboxEnabled_}">
+            this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-composebox>
-  ` :
-                               html`
-    <omnibox-everywhere-omnibox id="searchbox"
-        ?is-active="${this.isActive_}"
+  ` : html`
+    <omnibox-everywhere-omnibox id="searchbox" ?is-active="${this.isActive_}"
         @open-composebox="${this.onOpenComposebox_}"
         @open-voice-search="${this.onOpenVoiceSearch_}"
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
         .contextManagementInComposeboxEnabled="${
-                                   this.contextManagementInComposeboxEnabled_}">
+            this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-omnibox>
   `}
   ${this.mostVisitedEnabled_ ? html`
     <div id="mostVisitedContainer" ?hidden="${this.isMostVisitedHidden_()}">
       <cr-most-visited id="mostVisited" single-row non-editable
           ?hide-title="${this.hideTitle_}"
-          .maxTiles="${this.getMaxMostVisitedTiles_()}"></cr-most-visited>
-      <button id="mostVisitedCloseButton"
-          aria-label="${this.i18n('close')}"
+          .maxTiles="${this.getMaxMostVisitedTiles_()}">
+      </cr-most-visited>
+      <button id="mostVisitedCloseButton" aria-label="${this.i18n('close')}"
           @click="${this.onMostVisitedCloseClick_}">
         <cr-icon icon="cr:close" aria-hidden="true"></cr-icon>
       </button>
     </div>
   ` : ''}
-  ${
-      this.isFreIntroModal_() ? html`
-    <fre-modal
-        ?small-loomnibox="${this.smallLoomnibox_}"
+  ${this.isFreIntroModal_() ? html`
+    <fre-modal ?small-loomnibox="${this.smallLoomnibox_}"
         @close="${this.onFreClose_}">
     </fre-modal>
   ` : ''}
-  ${
-      this.isFreShortcutSetupChin_() ? html`
-    <fre-chin
-        id="freShortcutSetupChin"
+  ${this.isFreShortcutSetupChin_() ? html`
+    <fre-chin id="freShortcutSetupChin"
         ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_SETUP}"
         .hotkeyTokens="${this.hotkeyTokens_}"
@@ -70,10 +62,8 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         @close="${this.onFreClose_}">
     </fre-chin>
   ` : ''}
-  ${
-      this.isFreShortcutReminderChin_() ? html`
-    <fre-chin
-        id="freShortcutReminderChin"
+  ${this.isFreShortcutReminderChin_() ? html`
+    <fre-chin id="freShortcutReminderChin"
         ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_REMINDER}"
         .hotkeyTokens="${this.hotkeyTokens_}"
@@ -99,8 +89,7 @@ ${this.showVoiceSearchOverlay_ ? html`
             .receivedSpeech="${this.voiceSearchReceivedSpeech_}">
         </search-animated-glow>
       ` : ''}
-      <cr-composebox-voice-search id="voiceSearch"
-          in-voice-search-mode
+      <cr-composebox-voice-search id="voiceSearch" in-voice-search-mode
           @voice-permission-changed="${this.onVoicePermissionChanged_}"
           @voice-search-cancel="${this.onVoiceSearchCancel_}"
           @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
@@ -109,14 +98,12 @@ ${this.showVoiceSearchOverlay_ ? html`
           @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
           @speech-received="${this.onVoiceSearchSpeechReceived_}"
           @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
-          .hasErrorTimer="${true}"
-          .idleTimeout="${this.voiceIdleTimeoutMs_}"
+          .hasErrorTimer="${true}" .idleTimeout="${this.voiceIdleTimeoutMs_}"
           .dynamicTimeoutEnabled="${true}"
           .queryLengthLimit="${this.voiceQueryLengthLimit_}"
           .liveTranscriptEnabled="${false}"
           .pageCallbackRouter="${this.callbackRouter_}"
-          .autosubmitEnabled="${true}"
-          .submitStopButtonsEnabled="${true}">
+          .autosubmitEnabled="${true}" .submitStopButtonsEnabled="${true}">
       </cr-composebox-voice-search>
     </div>
   </dialog>

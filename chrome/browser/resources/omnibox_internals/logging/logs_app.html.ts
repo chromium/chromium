@@ -8,7 +8,6 @@ import type {LogsAppElement} from './logs_app.js';
 import {renderDropdown} from './logs_app_helpers.js';
 
 export function getHtml(this: LogsAppElement) {
-  // clang-format off
   return html`
 <h1>Omnibox Debug Logs</h1>
 <div>
@@ -20,9 +19,10 @@ export function getHtml(this: LogsAppElement) {
         <th class="tag header-cell">
           <div class="header-container">
             <span>Tag</span>
-            <button data-filter="tag"
-                    ?disabled="${this.uniqueTags_.size <= 1}"
-                    @click="${this.onDropdownToggleClick_}">▼</button>
+            <button data-filter="tag" ?disabled="${this.uniqueTags_.size <= 1}"
+                @click="${this.onDropdownToggleClick_}">
+              ▼
+            </button>
             ${this.openFilterDropdown_ === 'tag' ?
                 renderDropdown(
                     'tag', this.uniqueTags_, this.selectedTags_,
@@ -34,8 +34,10 @@ export function getHtml(this: LogsAppElement) {
           <div class="header-container">
             <span>Source Location</span>
             <button data-filter="source"
-                    ?disabled="${this.uniqueSources_.size <= 1}"
-                    @click="${this.onDropdownToggleClick_}">▼</button>
+                ?disabled="${this.uniqueSources_.size <= 1}"
+                @click="${this.onDropdownToggleClick_}">
+              ▼
+            </button>
             ${this.openFilterDropdown_ === 'source' ?
                 renderDropdown(
                     'source', this.uniqueSources_, this.selectedSources_,
@@ -48,8 +50,10 @@ export function getHtml(this: LogsAppElement) {
           <div class="header-container">
             <span>Proto</span>
             <button data-filter="proto"
-                    ?disabled="${this.uniqueProtos_.size <= 1}"
-                    @click="${this.onDropdownToggleClick_}">▼</button>
+                ?disabled="${this.uniqueProtos_.size <= 1}"
+                @click="${this.onDropdownToggleClick_}">
+              ▼
+            </button>
             ${this.openFilterDropdown_ === 'proto' ?
                 renderDropdown(
                     'proto', this.uniqueProtos_, this.selectedProtos_,
@@ -73,7 +77,10 @@ export function getHtml(this: LogsAppElement) {
           <td class="proto">
             ${item.protoType ? html`
               <a target="_blank"
-                 href="${`http://protoshop/embed?tabs=viewer,editor,textproto&type=${item.protoType}&protobytes=${encodeURIComponent(item.protoBase64 || '')}`}">
+                  href="${
+                      `http://protoshop/embed?tabs=viewer,editor,textproto&type=${
+                          item.protoType}&protobytes=${
+                          encodeURIComponent(item.protoBase64 || '')}`}">
                 View ${item.protoType.split('.').pop()}
               </a>
             ` : ''}
@@ -82,7 +89,5 @@ export function getHtml(this: LogsAppElement) {
       `)}
     </tbody>
   </table>
-</div>
-`;
-  // clang-format on
+</div>`;
 }
