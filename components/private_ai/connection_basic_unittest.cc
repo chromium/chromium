@@ -318,6 +318,27 @@ TEST_F(ConnectionBasicTest, SecureChannelUnknownRequestId) {
   EXPECT_EQ(on_disconnect_counter_, 0);
 }
 
+TEST_F(ConnectionBasicTest, CallbackReentrancyOnWriteFailure) {
+  secure_channel_->set_write_succeeds(false);
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>> inner_future;
+  auto outer_callback = base::BindOnce(
+      [](Connection* connection, base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>* inner_future_ptr, base::expected<proto::PrivateAiResponse, StatusCode> result) {
+        EXPECT_FALSE(result.has_value());
+        EXPECT_EQ(result.error(), StatusCode::kConnectionClosedByClient);
+        proto::PrivateAiRequest inner_request;
+        connection->Send(std::move(inner_request), base::TimeDelta(), inner_future_ptr->GetCallback());
+      },
+      connection_.get(), &inner_future);
+
+  proto::PrivateAiRequest request;
+  connection_->Send(std::move(request), base::TimeDelta(), std::move(outer_callback));
+
+  EXPECT_TRUE(inner_future.IsReady());
+  EXPECT_FALSE(inner_future.Get().has_value());
+  EXPECT_EQ(inner_future.Get().error(), StatusCode::kConnectionClosedByClient);
+}
+
 }  // namespace
 
 }  // namespace private_ai

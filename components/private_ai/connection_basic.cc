@@ -101,14 +101,18 @@ void ConnectionBasic::OnResponseReceived(
 
 void ConnectionBasic::CallOnDisconnect(StatusCode status_code) {
   // First reject pending requests so that higher layers like
-  // ConnectionTokenAttestation can report the correct error code.
+  // ConnectionTokenAttestation can report the correct error code. Reset state
+  // early so that re-entrant Send() calls are rejected immediately while we are
+  // draining pending requests.
+  auto on_disconnect = std::move(on_disconnect_);
+
   auto pending_requests = std::move(pending_request_callbacks_);
   for (auto& pending_request : pending_requests) {
     std::move(pending_request.second).Run(base::unexpected(status_code));
   }
 
-  if (on_disconnect_) {
-    std::move(on_disconnect_).Run(status_code);
+  if (on_disconnect) {
+    std::move(on_disconnect).Run(status_code);
   }
 }
 
