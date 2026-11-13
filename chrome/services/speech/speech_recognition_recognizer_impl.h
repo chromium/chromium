@@ -168,6 +168,9 @@ class SpeechRecognitionRecognizerImpl
   // Reset and initialize the SODA client.
   void ResetSoda();
 
+  // Releases the SODA instance during extended silence.
+  void ReleaseSodaForSilence();
+
   // Updates `timestamp_estimator_` with `media_start_pts`.
   void AddMediaTimestampToEstimator(
       const std::optional<base::TimeDelta>& media_start_pts);
@@ -204,6 +207,12 @@ class SpeechRecognitionRecognizerImpl
   // Time the most recent nonzero data was processed.
   // Used when options_->skip_continuously_empty_audio == true.
   base::Time last_non_empty_audio_time_ = base::Time::Now();
+
+  // True while SODA is released for silence.
+  bool soda_released_for_silence_ = false;
+
+  // Whether MarkDone() has been called.
+  bool marked_done_ = false;
 
   // Tracks which media timestamps originated speech transcriptions.
   // This is reset (and pending estimated are lost) every time SODA is reset.

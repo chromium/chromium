@@ -538,9 +538,7 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
       // No nonzero data for several seconds. Don't send this buffer of zeroes,
       // and release the SODA instance to free memory until non-empty audio
       // resumes.
-      if (soda_client_) {
-        soda_client_->Destroy();
-      }
+      ReleaseSodaForSilence();
 
       // Forward `media_start_pts` since we can seek into the middle of long
       // stretches of silence.
@@ -568,6 +566,15 @@ void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
 }
 
 void SpeechRecognitionRecognizerImpl::MarkDone() {
+  const bool already_marked_done = std::exchange(marked_done_, true);
+  if (soda_released_for_silence_) {
+    // SODA is already released, so notify the client directly.
+    if (!already_marked_done) {
+      speech_recognition_stopped_callback_.Run();
+    }
+    return;
+  }
+
   soda_client_->MarkDone();
 }
 
@@ -614,6 +621,9 @@ void SpeechRecognitionRecognizerImpl::
   if (!base::CheckMul(buffer->data.size(), sizeof(buffer->data[0]))
            .AssignIfValid(&buffer_size)) {
     mojo::ReportBadMessage(kInvalidAudioDataError);
+    return;
+  }
+  if (marked_done_) {
     return;
   }
 
@@ -701,7 +711,7 @@ void SpeechRecognitionRecognizerImpl::RecordDuration() {
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSoda() {
-  if (!is_client_requesting_speech_recognition_) {
+  if (!is_client_requesting_speech_recognition_ || marked_done_) {
     return;
   }
 
@@ -773,8 +783,25 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
       reinterpret_cast<void*>(static_cast<uintptr_t>(soda_client_id_));
   CHECK(soda_client_);
   soda_client_->Reset(config, sample_rate_, channel_count_);
+  if (soda_client_->IsInitialized()) {
+    soda_released_for_silence_ = false;
+  }
 
   timestamp_estimator_ = std::make_unique<SpeechTimestampEstimator>();
+}
+
+void SpeechRecognitionRecognizerImpl::ReleaseSodaForSilence() {
+  if (!soda_client_ || marked_done_) {
+    return;
+  }
+
+  if (soda_client_->IsInitialized()) {
+    // Unregister first to drop the STOP event emitted during Destroy().
+    SodaClientRegistry::GetInstance()->Unregister(soda_client_id_);
+    soda_client_->Destroy();
+    soda_client_id_ = SodaClientRegistry::GetInstance()->Register(this);
+  }
+  soda_released_for_silence_ = true;
 }
 
 soda::chrome::ExtendedSodaConfigMsg*

@@ -4,21 +4,40 @@
 
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/native_library.h"
+#include "base/path_service.h"
+#include "base/scoped_native_library.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
+#include "components/soda/buildflags.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
+#include "base/containers/span.h"
+#include "base/strings/string_util.h"
+#include "chrome/services/speech/soda/soda_test_paths.h"
+#include "media/audio/wav_audio_handler.h"
+#include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
+#endif
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -33,6 +52,12 @@ constexpr char kPrimaryLanguageNameGeneric[] = "en";
 constexpr char kPrimaryLanguageNameGenericUpperCase[] = "EN";
 constexpr char kSodaTfLiteDelegateStatusHistogram[] =
     "Accessibility.LiveCaption.SodaTfLiteDelegateStatus";
+
+using GetCreateCountFn = int (*)();
+
+DISABLE_CFI_DLSYM int CallGetCreateCount(GetCreateCountFn get_create_count) {
+  return get_create_count();
+}
 
 }  // namespace
 
@@ -58,10 +83,12 @@ class SpeechRecognitionRecognizerImplTest
       run_loop_->Quit();
     }
   }
-  void OnSpeechRecognitionStopped() override {}
+  void OnSpeechRecognitionStopped() override { ++stopped_count_; }
   void OnSpeechRecognitionError() override {}
   void OnLanguageIdentificationEvent(
-      media::mojom::LanguageIdentificationEventPtr event) override {}
+      media::mojom::LanguageIdentificationEventPtr event) override {
+    ++language_identification_event_count_;
+  }
 
   void CreateRecognizer(media::mojom::SpeechRecognitionOptionsPtr options,
                         const std::string& primary_language_name) {
@@ -74,6 +101,16 @@ class SpeechRecognitionRecognizerImplTest
     ON_CALL(*soda_client_, IsInitialized())
         .WillByDefault(testing::Return(true));
     recognizer_->SetSodaClientForTesting(std::move(soda_client));
+  }
+
+  void CreateRecognizerWithSodaLibrary(
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      const base::FilePath& library_path) {
+    recognizer_ = std::make_unique<SpeechRecognitionRecognizerImpl>(
+        receiver_.BindNewPipeAndPassRemote(), std::move(options),
+        base::FilePath(), config_paths_, kPrimaryLanguageName,
+        /*mask_offensive_words=*/true);
+    recognizer_->CreateSodaClient(library_path);
   }
 
   media::mojom::SpeechRecognitionOptionsPtr CreateOptions(
@@ -92,11 +129,19 @@ class SpeechRecognitionRecognizerImplTest
     return options;
   }
 
+  media::mojom::SpeechRecognitionOptionsPtr CreateOptionsSkippingEmptyAudio() {
+    auto options = CreateOptions();
+    options->skip_continuously_empty_audio = true;
+    return options;
+  }
+
   base::flat_map<std::string, base::FilePath> config_paths() {
     return config_paths_;
   }
 
  protected:
+  static constexpr int kSampleRate = 16000;
+
   // Sends a TFLITE_DELEGATE_INFO response through the SODA callback, with the
   // XNNPACK delegate feature in the given state.
   void SendTfLiteDelegateInfo(bool delegate_requested,
@@ -147,13 +192,118 @@ class SpeechRecognitionRecognizerImplTest
                                                     media_start_pts);
   }
 
+  void SendAudioSamples(const std::vector<int16_t>& samples, int sample_rate) {
+    auto audio_buffer = media::mojom::AudioDataS16::New();
+    audio_buffer->sample_rate = sample_rate;
+    audio_buffer->channel_count = 1;
+    audio_buffer->frame_count = samples.size();
+    audio_buffer->data = samples;
+    recognizer_->SendAudioToSpeechRecognitionService(std::move(audio_buffer),
+                                                     std::nullopt);
+  }
+
+  void SendNonEmptyAudio() {
+    SendAudioSamples(std::vector<int16_t>(kSampleRate, 1), kSampleRate);
+  }
+
+  void SendEmptyAudio() {
+    SendAudioSamples(std::vector<int16_t>(kSampleRate, 0), kSampleRate);
+  }
+
+  void SendEmptyAudioPastSilenceThreshold() {
+    task_environment_.FastForwardBy(base::Seconds(11));
+    SendEmptyAudio();
+  }
+
+  // Configures `soda_client_` to emit STOP on `soda_thread_` on Destroy() and
+  // MarkDone(), matching the real SODA library.
+  void EmulateSodaLibrary() {
+    ASSERT_TRUE(soda_thread_.Start());
+    ON_CALL(*soda_client_, IsInitialized()).WillByDefault([this]() {
+      return soda_initialized_;
+    });
+    ON_CALL(*soda_client_, Reset(_, _, _))
+        .WillByDefault([this](const SerializedSodaConfig config, int, int) {
+          StopEmulatedSodaAndWait();
+          soda_config_ = config;
+          soda_config_.soda_config = nullptr;
+          soda_config_.soda_config_size = 0;
+          soda_initialized_ = true;
+          soda_running_ = true;
+        });
+    ON_CALL(*soda_client_, Destroy()).WillByDefault([this]() {
+      StopEmulatedSodaAndWait();
+      soda_initialized_ = false;
+    });
+    ON_CALL(*soda_client_, MarkDone()).WillByDefault([this]() {
+      if (std::exchange(soda_running_, false)) {
+        PostSodaResponse(soda_config_, StopResponse());
+      }
+    });
+  }
+
+  void StopEmulatedSodaAndWait() {
+    if (std::exchange(soda_running_, false)) {
+      PostSodaResponse(soda_config_, StopResponse());
+      soda_thread_.FlushForTesting();
+    }
+  }
+
+  static soda::chrome::SodaResponse StopResponse() {
+    soda::chrome::SodaResponse response;
+    response.set_soda_type(soda::chrome::SodaResponse::STOP);
+    return response;
+  }
+
+  static soda::chrome::SodaResponse RecognitionResponse(
+      const std::string& transcription) {
+    soda::chrome::SodaResponse response;
+    response.set_soda_type(soda::chrome::SodaResponse::RECOGNITION);
+    auto* result = response.mutable_recognition_result();
+    result->set_result_type(soda::chrome::SodaRecognitionResult::FINAL);
+    result->add_hypothesis(transcription);
+    return response;
+  }
+
+  void PostSodaResponse(const SerializedSodaConfig& config,
+                        const soda::chrome::SodaResponse& response) {
+    soda_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](SerializedSodaConfig config, const std::string& serialized) {
+              config.callback(serialized.c_str(), serialized.size(),
+                              config.callback_handle);
+            },
+            config, response.SerializeAsString()));
+  }
+
+  // Flushes `soda_thread_` and waits for queued client events to be delivered.
+  void FlushSodaAndClientEvents() {
+    if (soda_thread_.IsRunning()) {
+      soda_thread_.FlushForTesting();
+    }
+    const int expected_count = language_identification_event_count_ + 1;
+    recognizer_->language_identification_event_callback().Run(
+        kPrimaryLanguageName, media::mojom::ConfidenceLevel::kUnknown,
+        media::mojom::AsrSwitchResult::kDefaultNoSwitch);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return language_identification_event_count_ == expected_count;
+    }));
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::Thread soda_thread_{"FakeSodaThread"};
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient> receiver_{
       this};
   base::flat_map<std::string, base::FilePath> config_paths_;
   media::SpeechRecognitionResult last_received_result_;
   int recognition_event_count_ = 0;
+  int language_identification_event_count_ = 0;
+  int stopped_count_ = 0;
+  SerializedSodaConfig soda_config_ = {};
+  bool soda_initialized_ = false;
+  bool soda_running_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<SpeechRecognitionRecognizerImpl> recognizer_;
   raw_ptr<NiceMock<::soda::MockSodaClient>> soda_client_ = nullptr;
@@ -754,5 +904,229 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
             recognizer_->GetExtendedSodaConfigMsgForTesting()
                 ->language_pack_directory());
 }
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       SilenceReleaseDoesNotNotifyClientOfStop) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  SendNonEmptyAudio();
+  ASSERT_TRUE(soda_initialized_);
+
+  EXPECT_CALL(*soda_client_, Destroy()).Times(1);
+  EXPECT_CALL(*soda_client_, AddAudio(_, _)).Times(0);
+  SendEmptyAudioPastSilenceThreshold();
+  FlushSodaAndClientEvents();
+  EXPECT_FALSE(soda_initialized_);
+  EXPECT_EQ(0, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       ResultsQueuedBeforeReleaseAreStillDelivered) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  SendNonEmptyAudio();
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // Queue a result before SODA is released for silence.
+  PostSodaResponse(soda_config_, RecognitionResponse("queued"));
+  soda_thread_.FlushForTesting();
+  ASSERT_EQ(0, recognition_event_count_);
+
+  SendEmptyAudio();
+  EXPECT_FALSE(soda_initialized_);
+
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, recognition_event_count_);
+  EXPECT_EQ("queued", last_received_result_.transcription);
+  EXPECT_EQ(0, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       ResumesRecognitionAcrossSilenceCycles) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(3);
+  EXPECT_CALL(*soda_client_, Destroy()).Times(2);
+
+  SendNonEmptyAudio();
+  for (int cycle = 1; cycle <= 2; ++cycle) {
+    SCOPED_TRACE(cycle);
+    const SerializedSodaConfig released_soda_config = soda_config_;
+    SendEmptyAudioPastSilenceThreshold();
+    EXPECT_FALSE(soda_initialized_);
+
+    SendNonEmptyAudio();
+    EXPECT_TRUE(soda_initialized_);
+    EXPECT_NE(released_soda_config.callback_handle,
+              soda_config_.callback_handle);
+
+    // Stale responses from the released instance are dropped.
+    PostSodaResponse(released_soda_config, RecognitionResponse("stale"));
+    PostSodaResponse(released_soda_config, StopResponse());
+    FlushSodaAndClientEvents();
+    EXPECT_EQ(cycle - 1, recognition_event_count_);
+
+    PostSodaResponse(soda_config_, RecognitionResponse("fresh"));
+    FlushSodaAndClientEvents();
+    EXPECT_EQ(cycle, recognition_event_count_);
+    EXPECT_EQ("fresh", last_received_result_.transcription);
+  }
+  EXPECT_EQ(0, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       MarkDoneWhileReleasedNotifiesClientOnce) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  SendNonEmptyAudio();
+  SendEmptyAudioPastSilenceThreshold();
+  FlushSodaAndClientEvents();
+  ASSERT_FALSE(soda_initialized_);
+  ASSERT_EQ(0, stopped_count_);
+
+  EXPECT_CALL(*soda_client_, MarkDone()).Times(0);
+  recognizer_->MarkDone();
+  recognizer_->MarkDone();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+
+  // Audio arriving after MarkDone() is ignored.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  EXPECT_CALL(*soda_client_, AddAudio(_, _)).Times(0);
+  SendNonEmptyAudio();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       MarkDoneAfterInitialSilenceNotifiesClient) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  // Drop silent audio past the threshold before SODA is ever initialized.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  SendEmptyAudioPastSilenceThreshold();
+  ASSERT_FALSE(soda_initialized_);
+
+  EXPECT_CALL(*soda_client_, MarkDone()).Times(0);
+  recognizer_->MarkDone();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       MarkDoneDuringSpeechForwardsSodaStop) {
+  CreateRecognizer(CreateOptionsSkippingEmptyAudio(), kPrimaryLanguageName);
+  EmulateSodaLibrary();
+
+  SendNonEmptyAudio();
+  EXPECT_CALL(*soda_client_, MarkDone()).Times(1);
+  recognizer_->MarkDone();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+
+  // SODA is not released for silence after MarkDone().
+  EXPECT_CALL(*soda_client_, Destroy()).Times(0);
+  SendEmptyAudioPastSilenceThreshold();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, SilenceReleaseWithRealSodaClient) {
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+  base::FilePath fake_lib_path = exe_dir.AppendASCII(
+      base::GetNativeLibraryName("fake_soda_library_for_testing"));
+  ASSERT_TRUE(base::PathExists(fake_lib_path));
+
+  base::ScopedNativeLibrary fake_lib(fake_lib_path);
+  ASSERT_TRUE(fake_lib.is_valid());
+  auto get_create_count = reinterpret_cast<GetCreateCountFn>(
+      fake_lib.GetFunctionPointer("GetFakeSodaLibraryCreateCount"));
+  ASSERT_TRUE(get_create_count);
+  const int initial_create_count = CallGetCreateCount(get_create_count);
+
+  CreateRecognizerWithSodaLibrary(CreateOptionsSkippingEmptyAudio(),
+                                  fake_lib_path);
+
+  SendNonEmptyAudio();
+  EXPECT_EQ(initial_create_count + 1, CallGetCreateCount(get_create_count));
+
+  SendEmptyAudioPastSilenceThreshold();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(0, stopped_count_);
+
+  SendNonEmptyAudio();
+  EXPECT_EQ(initial_create_count + 2, CallGetCreateCount(get_create_count));
+
+  recognizer_->MarkDone();
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(1, stopped_count_);
+}
+
+#if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
+
+TEST_F(SpeechRecognitionRecognizerImplTest, SilenceReleaseWithRealSodaLibrary) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  // TODO(crbug.com/40753481): Enable test once arm64 macOS binary is available
+  // in CIPD.
+  GTEST_SKIP()
+      << "SODA test binary for arm64 macOS is currently being rolled in CIPD.";
+#else
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  const base::FilePath soda_resources_dir =
+      test_data_dir.Append(base::FilePath(::soda::kSodaResourcePath));
+  const base::FilePath libsoda_path = soda_resources_dir.Append(
+      base::FilePath(::soda::kSodaTestBinaryRelativePath));
+  ASSERT_TRUE(base::PathExists(libsoda_path));
+  config_paths_[kPrimaryLanguageName] = soda_resources_dir.Append(
+      base::FilePath(::soda::kSodaLanguagePackRelativePath));
+  ASSERT_TRUE(base::PathExists(config_paths_[kPrimaryLanguageName]));
+
+  std::string wav_data;
+  ASSERT_TRUE(base::ReadFileToString(soda_resources_dir.Append(base::FilePath(
+                                         ::soda::kSodaTestAudioRelativePath)),
+                                     &wav_data));
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(wav_data));
+  ASSERT_TRUE(handler);
+  ASSERT_EQ(1, handler->GetNumChannels());
+  auto bus = media::AudioBus::Create(handler->GetNumChannels(),
+                                     handler->total_frames_for_testing());
+  size_t frames_written = 0u;
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  std::vector<int16_t> speech(bus->frames());
+  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(speech);
+  const int sample_rate = handler->GetSampleRate();
+
+  CreateRecognizerWithSodaLibrary(CreateOptionsSkippingEmptyAudio(),
+                                  libsoda_path);
+
+  SendAudioSamples(speech, sample_rate);
+  task_environment_.FastForwardBy(base::Seconds(11));
+  SendAudioSamples(std::vector<int16_t>(sample_rate, 0), sample_rate);
+  FlushSodaAndClientEvents();
+  EXPECT_EQ(0, stopped_count_);
+
+  SendAudioSamples(speech, sample_rate);
+  SendAudioSamples(speech, sample_rate);
+  recognizer_->MarkDone();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return stopped_count_ > 0; }));
+  EXPECT_EQ(1, stopped_count_);
+  EXPECT_TRUE(last_received_result_.is_final);
+  std::string transcription =
+      base::ToLowerASCII(last_received_result_.transcription);
+  std::erase_if(transcription,
+                [](char c) { return base::IsAsciiPunctuation(c); });
+  EXPECT_EQ("hey google hey google", transcription);
+#endif
+}
+
+#endif  // BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
 
 }  // namespace speech
