@@ -3616,44 +3616,9 @@ if (is_chromeos) {
   # These tests are only meant to run on an FYI bot because they
   # test against live sites, as a way to catch potential regressions.
   test("accessibility_live_site_tests") {
-    ldflags = []
-
     deps = [
-      ":test_support",
-      "//chrome:packed_resources",
-      "//chrome:resources",
-      "//chrome:strings",
-      "//chrome/browser",
       "//chrome/browser/ash/accessibility:live_site_tests",
-      "//chrome/browser/devtools",
-      "//chrome/renderer",
-      "//chrome/test/base:chrome_test_launcher",
-      "//chrome/test/base:chrome_test_suite",
       "//chrome/test/base:interactive_ui_tests_runner",
-      "//components/resources",
-      "//components/sync",
-      "//components/sync:test_support",
-      "//content/test:test_support",
-      "//crypto:test_support",
-      "//extensions/buildflags",
-      "//google_apis:test_support",
-      "//google_apis/common:test_support",
-      "//google_apis/drive",
-      "//net",
-      "//net:net_resources",
-      "//net:test_support",
-      "//skia",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/hunspell",
-      "//third_party/icu",
-      "//third_party/libpng:libpng_for_testonly",
-      "//ui/base:test_support",
-      "//ui/events:test_support",
-      "//ui/ozone",
-      "//ui/platform_window/common",
-      "//ui/resources:ui_test_pak",
-      "//ui/web_dialogs:test_support",
     ]
   }
 }
