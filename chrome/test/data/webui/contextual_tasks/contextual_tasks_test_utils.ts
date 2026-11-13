@@ -4,18 +4,23 @@
 
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
-// <if expr="not is_android or enable_webui_contextual_tasks_composebox">
-import type {ContextualTasksComposeboxElement} from 'chrome://contextual-tasks/composebox.js';
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import type {ContextualTasksInnerComposeboxElement} from 'chrome://contextual-tasks/contextual_tasks_inner_composebox.js';
+import type {PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
-import type {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// </if>
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestContextualTasksPageHandler, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+
+// clang-format off
+// <if expr="not is_android or enable_webui_contextual_tasks_composebox">
+import type {ContextualTasksComposeboxElement} from 'chrome://contextual-tasks/composebox.js';
+import type {ContextualTasksInnerComposeboxElement} from 'chrome://contextual-tasks/contextual_tasks_inner_composebox.js';
+import type {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {assertDeepEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+// </if>
+// clang-format on
 
 // Base64 encoding of a UI handshake request message [1, 2, 3].
 // Generated from btoa(String.fromCharCode(...[1, 2, 3]))
@@ -114,26 +119,35 @@ export function getSubmitButton(composebox: any): HTMLButtonElement|null {
       composebox.shadowRoot.querySelector('cr-composebox-submit');
   return submitElement?.$.submitIcon || null;
 }
+export function setupTestHandler(url: string = fixtureUrl) {
+  const handler = new TestContextualTasksPageHandler(url);
+  const {instance, remote} = browserProxyFactory.createForTest(handler);
+  browserProxyFactory.setInstance(instance);
+  remote.onCookieSyncCompleted();
+  return {handler, callbackRouterRemote: remote};
+}
+
 /**
  * Creates and appends a 'contextual-tasks-app' element to the document body.
- * @param url The URL to initialize the test proxy with.
- * @param setupProxy Optional callback to configure the test proxy before
+ * @param url The URL to initialize the test handler with.
+ * @param setupHandler Optional callback to configure the test handler before
  *     element creation.
  * @param waitForInitialLoadStart If true, waits for the app's initial load
  *     start to finish.
  * @returns A promise that resolves to an object containing the created app
- *     element and the test proxy.
+ *     element, the test handler, and the callback router remote.
  */
 export async function createContextualTasksAppElement(
     url: string = fixtureUrl,
-    setupProxy?: (proxy: TestContextualTasksBrowserProxy) => void,
+    setupHandler?: (
+        handler: TestContextualTasksPageHandler,
+        callbackRouterRemote: PageRemote) => void,
     waitForInitialLoadStart: boolean = true) {
-  const proxy = new TestContextualTasksBrowserProxy(url);
-  BrowserProxyImpl.setInstance(proxy);
+  const {handler, callbackRouterRemote} = setupTestHandler(url);
   const toolbarProxy = new TestToolbarBrowserProxy();
   ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
-  if (setupProxy) {
-    setupProxy(proxy);
+  if (setupHandler) {
+    setupHandler(handler, callbackRouterRemote);
   }
   const appElement = document.createElement('contextual-tasks-app');
 
@@ -151,7 +165,7 @@ export async function createContextualTasksAppElement(
   }
   await microtasksFinished();
 
-  return {appElement, proxy, toolbarProxy};
+  return {appElement, handler, callbackRouterRemote, toolbarProxy};
 }
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">

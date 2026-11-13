@@ -5,7 +5,6 @@
 import 'chrome://contextual-tasks/app.js';
 import 'chrome://contextual-tasks/onboarding_tooltip.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksOnboardingTooltipElement} from 'chrome://contextual-tasks/onboarding_tooltip.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -18,9 +17,8 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createCtComposeboxApp} from './contextual_tasks_test_utils.js';
+import {createCtComposeboxApp, setupTestHandler} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('OnboardingTooltipTest', () => {
   let tooltipElement: ContextualTasksOnboardingTooltipElement;
@@ -169,8 +167,7 @@ suite('ContextualTasksOnboardingTooltipForkTest', () => {
 
     // SlimWebview (Android) only allows https/http/about:blank in
     // navigate(); the chrome://webui-test fixture url would assert.
-    const testProxy = new TestContextualTasksBrowserProxy('about:blank');
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler('about:blank');
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(

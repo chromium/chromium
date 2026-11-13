@@ -5,7 +5,6 @@
 import 'chrome://contextual-tasks/top_toolbar.js';
 import 'chrome://contextual-tasks/sources_menu.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {ProfileTooltipElement} from 'chrome://contextual-tasks/profile_tooltip.js';
@@ -19,8 +18,8 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertHTMLElement} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {assertHTMLElement, setupTestHandler} from './contextual_tasks_test_utils.js';
+import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 // clang-format off
 // <if expr="not is_android">
@@ -33,7 +32,6 @@ import type {TestContextualTasksToolbarUiService} from './test_contextual_tasks_
 
 suite('TopToolbarTest', () => {
   let topToolbar: TopToolbarElement;
-  let proxy: TestContextualTasksBrowserProxy;
   let toolbarProxy: TestToolbarBrowserProxy;
 
   // Ignore OS-level window blur/resize events (e.g. from parallel browser_tests
@@ -57,9 +55,7 @@ suite('TopToolbarTest', () => {
   });
 
   setup(() => {
-    proxy = new TestContextualTasksBrowserProxy(
-        'chrome://webui-test/contextual_tasks/test.html');
-    BrowserProxyImpl.setInstance(proxy);
+    setupTestHandler('chrome://webui-test/contextual_tasks/test.html');
     toolbarProxy = new TestToolbarBrowserProxy();
     ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
     loadTimeData.overrideValues({

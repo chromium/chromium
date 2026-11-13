@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {WebViewType} from 'chrome://contextual-tasks/web_view_type.js';
 import {WindowManager} from 'chrome://contextual-tasks/window_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {fixtureUrl} from './contextual_tasks_test_utils.js';
+import {fixtureUrl, setupTestHandler} from './contextual_tasks_test_utils.js';
+import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 
 interface MockNewWindowEvent {
   preventDefault(): void;
@@ -33,13 +32,12 @@ suite('WindowManagerTest', () => {
   let mockMainWebview: MockWebview;
   let newWindowCallback: ((e: MockNewWindowEvent) => void)|null = null;
 
-  let proxy: TestContextualTasksBrowserProxy;
+  let handler: TestContextualTasksPageHandler;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
+    handler = setupTestHandler(fixtureUrl).handler;
 
     mockMainWebview = {
       addEventListener:
@@ -132,7 +130,7 @@ suite('WindowManagerTest', () => {
 
     newWindowCallback(mockEvent);
 
-    const [, url, windowId] = await proxy.handler.whenCalled('registerWindow');
+    const [, url, windowId] = await handler.whenCalled('registerWindow');
     assertEquals('https://example.com/popup', url);
     assertTrue(!!windowId.value);
   });

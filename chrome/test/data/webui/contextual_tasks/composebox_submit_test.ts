@@ -7,7 +7,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {IconType} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import type {PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -25,9 +25,9 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, installMock, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, installMock, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_TAB_CONTEXT_FN, setupAutocompleteResults, uploadFileAndVerify} from './test_searchbox_utils.js';
 
 function pressEnter(element: HTMLElement) {
@@ -60,7 +60,8 @@ function disableAnimationsRecursively(element: Element) {
 suite('ContextualTasksComposeboxSubmitTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
-  let testProxy: TestContextualTasksBrowserProxy;
+  let testHandler: TestContextualTasksPageHandler;
+  let callbackRouterRemote: PageRemote;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -99,8 +100,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    const testSetup = setupTestHandler(fixtureUrl);
+    testHandler = testSetup.handler;
+    callbackRouterRemote = testSetup.callbackRouterRemote;
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
@@ -148,10 +150,10 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('LensButtonTriggersOverlay', async () => {
-    testProxy.handler.setIsShownInTab(false);
+    testHandler.setIsShownInTab(false);
 
-    testProxy.callbackRouterRemote.onSidePanelStateChanged();
-    await testProxy.callbackRouterRemote.$.flushForTesting();
+    callbackRouterRemote.onSidePanelStateChanged();
+    await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
     assertTrue(composebox.lensButtonTriggersOverlay);
@@ -182,11 +184,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         const threadFrame = contextualTasksApp.$.threadFrame;
         const flexCenterContainer = contextualTasksApp.$.flexCenterContainer;
 
-        testProxy.handler.setIsAiPage(false);
+        testHandler.setIsAiPage(false);
         contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
-        testProxy.callbackRouterRemote.enterBasicMode();
-        await testProxy.callbackRouterRemote.$.flushForTesting();
+        callbackRouterRemote.enterBasicMode();
+        await callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         assertFalse(
@@ -202,8 +204,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
             '0', flexCenterStyle.zIndex,
             'Flex center container z-index should be 0');
 
-        testProxy.callbackRouterRemote.exitBasicMode();
-        await testProxy.callbackRouterRemote.$.flushForTesting();
+        callbackRouterRemote.exitBasicMode();
+        await callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
 
         await microtasksFinished();
@@ -236,11 +238,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         const contextualComposebox = contextualTasksApp.$.composebox;
         const header = contextualTasksApp.$.composeboxHeaderWrapper;
 
-        testProxy.handler.setIsAiPage(false);
+        testHandler.setIsAiPage(false);
         contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
-        testProxy.callbackRouterRemote.enterBasicMode();
-        await testProxy.callbackRouterRemote.$.flushForTesting();
+        callbackRouterRemote.enterBasicMode();
+        await callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
         await microtasksFinished();
         assertTrue(
@@ -255,8 +257,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
             contextualComposebox.hidden,
             'Contextual composebox should be hidden after enterBasicMode');
 
-        testProxy.callbackRouterRemote.exitBasicMode();
-        await testProxy.callbackRouterRemote.$.flushForTesting();
+        callbackRouterRemote.exitBasicMode();
+        await callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
         await microtasksFinished();
 
@@ -659,7 +661,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('Composebox submits by pressing enter, then clears input', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    callbackRouterRemote.onZeroStateChange(true);
     await microtasksFinished();
 
     await uploadFileAndVerify(
@@ -717,7 +719,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('Composebox zero state open triggers animation', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    callbackRouterRemote.onZeroStateChange(true);
     await microtasksFinished();
     await composebox.updateComplete;
 
@@ -727,7 +729,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('Composebox subsequent submit triggers animation', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    callbackRouterRemote.onZeroStateChange(true);
     await microtasksFinished();
 
     await uploadFileAndVerify(
@@ -766,7 +768,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
+    callbackRouterRemote.onZeroStateChange(false);
     await microtasksFinished();
     await composebox.updateComplete;
 
@@ -1027,7 +1029,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 // Fork SUBMIT SUITE
 // =============================================================================
 suite('ContextualTasksComposeboxForkSubmitTest', () => {
-  let testProxy: TestContextualTasksBrowserProxy;
+  let callbackRouterRemote: PageRemote;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -1065,8 +1067,7 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    callbackRouterRemote = setupTestHandler(fixtureUrl).callbackRouterRemote;
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
@@ -1178,7 +1179,7 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     const {app, innerComposebox} = parts;
 
     // Zero state with no tool: an empty query is not submittable.
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    callbackRouterRemote.onZeroStateChange(true);
     await microtasksFinished();
     await app.updateComplete;
     await innerComposebox.updateComplete;
@@ -1214,7 +1215,7 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
         'Clicking the disabled submit button should be a no-op');
 
     // Deep Search follow-up (not zero state): now submittable.
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
+    callbackRouterRemote.onZeroStateChange(false);
     await microtasksFinished();
     await app.updateComplete;
     await innerComposebox.updateComplete;
@@ -1248,7 +1249,7 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     });
     searchboxCallbackRouterRemote.onInputStateChanged(noToolState);
     await searchboxCallbackRouterRemote.$.flushForTesting();
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
+    callbackRouterRemote.onZeroStateChange(false);
     await microtasksFinished();
     await app.updateComplete;
     await innerComposebox.updateComplete;
@@ -1312,7 +1313,6 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
 // =============================================================================
 suite('ContextualTasksComposeboxForkInjectInputTest', () => {
   const QUERY_AUTOCOMPLETE_FN = 'queryAutocomplete';
-  let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -1347,8 +1347,7 @@ suite('ContextualTasksComposeboxForkInjectInputTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler(fixtureUrl);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(

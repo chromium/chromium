@@ -48,9 +48,8 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {ComposeboxPosition, InjectedInput} from './contextual_tasks.mojom-webui.js';
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import {browserProxyFactory} from './contextual_tasks.mojom-webui.js';
+import type {BrowserProxy, ComposeboxPosition, InjectedInput} from './contextual_tasks.mojom-webui.js';
 import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -318,7 +317,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       loadTimeData.getString('friendlyZeroStateTitleBeforeName');
   protected accessor friendlyZeroStateTitleAfterName_: string =
       loadTimeData.getString('friendlyZeroStateTitleAfterName');
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private toolbarBrowserProxy_: ToolbarBrowserProxy =
       ToolbarBrowserProxyImpl.getInstance();
   private toolbarListenerIds_: number[] = [];

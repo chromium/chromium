@@ -4,22 +4,17 @@
 
 import 'chrome://contextual-tasks/app.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {isFullWebView} from 'chrome://contextual-tasks/web_view_type.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {fixtureUrl} from './contextual_tasks_test_utils.js';
+import {fixtureUrl, setupTestHandler} from './contextual_tasks_test_utils.js';
 
 suite('ContextualTasksWebviewTest', function() {
-
-
   test('webview does not add gsc param when in tab', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    proxy.handler.setIsShownInTab(true);
-    BrowserProxyImpl.setInstance(proxy);
+    const {handler} = setupTestHandler(fixtureUrl);
+    handler.setIsShownInTab(true);
 
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
@@ -50,9 +45,8 @@ suite('ContextualTasksWebviewTest', function() {
   });
 
   test('webview preserves gsc param if explicitly in url', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    proxy.handler.setIsShownInTab(true);
-    BrowserProxyImpl.setInstance(proxy);
+    const {handler} = setupTestHandler(fixtureUrl);
+    handler.setIsShownInTab(true);
 
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
@@ -83,9 +77,8 @@ suite('ContextualTasksWebviewTest', function() {
   });
 
   test('webview adds gsc param when in side panel', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    proxy.handler.setIsShownInTab(false);
-    BrowserProxyImpl.setInstance(proxy);
+    const {handler} = setupTestHandler(fixtureUrl);
+    handler.setIsShownInTab(false);
 
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
@@ -115,8 +108,7 @@ suite('ContextualTasksWebviewTest', function() {
   });
 
   test('webview adds user agent to request headers', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
+    setupTestHandler(fixtureUrl);
 
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
@@ -166,9 +158,8 @@ suite('ContextualTasksWebviewTest', function() {
   test('webview replaces host when set', async () => {
     loadTimeData.overrideValues({chrome_host: 'corp.google.com'});
 
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    proxy.handler.setIsShownInTab(true);
-    BrowserProxyImpl.setInstance(proxy);
+    const {handler} = setupTestHandler(fixtureUrl);
+    handler.setIsShownInTab(true);
 
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
@@ -198,8 +189,7 @@ suite('ContextualTasksWebviewTest', function() {
   });
 
   test('webview adds viewport size params', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
+    setupTestHandler(fixtureUrl);
 
     const appElement = document.createElement('contextual-tasks-app');
     // Set a size to ensure getBoundingClientRect returns non-zero values.

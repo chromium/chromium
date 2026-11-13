@@ -6,7 +6,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
+import type {BrowserProxy} from './contextual_tasks.mojom-webui.js';
 import {HANDSHAKE_INTERVAL_MS, MAX_HANDSHAKE_ATTEMPTS} from './utils.js';
 import type {WebViewType} from './web_view_type.js';
 
