@@ -23,8 +23,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/platform_keys/keystore_service_util.h"
@@ -39,7 +37,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::ExtensionPlatformKeysService;
 using chromeos::KeystoreAlgorithm;
 using chromeos::KeystoreAlgorithmName;
 using chromeos::KeystoreEcdsaParams;

@@ -12,10 +12,10 @@
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/keystore_service.h"
 #include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
@@ -152,9 +152,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
     }
   }
 
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
+  ash::platform_keys::ExtensionPlatformKeysService* service =
+      ash::platform_keys::ExtensionPlatformKeysServiceFactory::
+          GetForBrowserContext(browser_context());
   CHECK(service, base::NotFatalUntil::M161);
 
   service->SelectClientCertificates(
@@ -320,9 +320,9 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     }
   }
 
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
+  ash::platform_keys::ExtensionPlatformKeysService* service =
+      ash::platform_keys::ExtensionPlatformKeysServiceFactory::
+          GetForBrowserContext(browser_context());
   CHECK(service, base::NotFatalUntil::M161);
 
   if (params->hash_algorithm_name == "none") {

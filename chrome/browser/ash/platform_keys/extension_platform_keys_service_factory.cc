@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -13,20 +13,20 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
+namespace ash::platform_keys {
 namespace {
 
 // This delegate selects a certificate by showing the certificate selection
 // dialog to the user.
 class DefaultSelectDelegate
-    : public chromeos::ExtensionPlatformKeysService::SelectDelegate {
+    : public ExtensionPlatformKeysService::SelectDelegate {
  public:
   DefaultSelectDelegate() = default;
   DefaultSelectDelegate(const DefaultSelectDelegate&) = delete;
@@ -47,7 +47,7 @@ class DefaultSelectDelegate
       std::move(callback).Run(nullptr /* no certificate selected */);
       return;
     }
-    ShowPlatformKeysCertificateSelector(
+    chromeos::ShowPlatformKeysCertificateSelector(
         web_contents, extension->short_name(), certs,
         // Don't call |callback| once this delegate is destructed, thus use a
         // WeakPtr.
@@ -110,4 +110,4 @@ ExtensionPlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
   return service;
 }
 
-}  // namespace chromeos
+}  // namespace ash::platform_keys

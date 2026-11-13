@@ -27,12 +27,12 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -330,7 +330,7 @@ void OnKeyRegisteredForCorporateUsage(base::OnceClosure done_callback,
 void RegisterCorporateKeyWithService(
     CERTCertificate* cert,
     base::OnceClosure done_callback,
-    std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
+    std::unique_ptr<ash::platform_keys::ExtensionKeyPermissionsService>
         service) {
   std::vector<uint8_t> client_cert_spki(
       cert->derPublicKey.data,
@@ -585,7 +585,7 @@ void CertStoreServiceTest::SetUpCerts(
 
 void CertStoreServiceTest::RegisterCorporateKey(CERTCertificate* cert) {
   base::RunLoop run_loop;
-  chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
+  ash::platform_keys::ExtensionKeyPermissionsServiceFactory::
       GetForBrowserContextAndExtension(
           base::BindOnce(&RegisterCorporateKeyWithService, cert,
                          run_loop.QuitClosure()),

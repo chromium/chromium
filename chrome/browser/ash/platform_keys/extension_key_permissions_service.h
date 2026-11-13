@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
 
 #include <stdint.h>
 
@@ -35,7 +35,7 @@ namespace ash {
 class KeystoreService;
 }  // namespace ash
 
-namespace chromeos::platform_keys {
+namespace ash::platform_keys {
 
 // PlatformKeys is a field stored in each extension's state store. It saves
 // signing permissions of keys in the context of a (Profile, Extension) pair.
@@ -222,6 +222,6 @@ class ExtensionKeyPermissionsService {
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 
-}  // namespace chromeos::platform_keys
+}  // namespace ash::platform_keys
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_

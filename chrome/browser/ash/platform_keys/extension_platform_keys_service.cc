@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,10 +19,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/keystore_service.h"
 #include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
@@ -52,7 +52,7 @@ using chromeos::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
 using chromeos::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash::platform_keys {
 
 namespace {
 
@@ -72,61 +72,62 @@ bool IsExtensionAllowlisted(const extensions::Extension* extension) {
       .is_available();
 }
 
-KeystoreType KeystoreTypeFromTokenId(platform_keys::TokenId token_id) {
+KeystoreType KeystoreTypeFromTokenId(
+    chromeos::platform_keys::TokenId token_id) {
   switch (token_id) {
-    case platform_keys::TokenId::kUser:
+    case chromeos::platform_keys::TokenId::kUser:
       return KeystoreType::kUser;
-    case platform_keys::TokenId::kSystem:
+    case chromeos::platform_keys::TokenId::kSystem:
       return KeystoreType::kDevice;
   }
 }
 
 KeystoreSigningScheme GetKeystoreSigningScheme(
-    platform_keys::KeyType key_type,
-    platform_keys::HashAlgorithm hash_algorithm) {
+    chromeos::platform_keys::KeyType key_type,
+    chromeos::platform_keys::HashAlgorithm hash_algorithm) {
   switch (key_type) {
-    case platform_keys::KeyType::kRsassaPkcs1V15: {
+    case chromeos::platform_keys::KeyType::kRsassaPkcs1V15: {
       switch (hash_algorithm) {
-        case platform_keys::HASH_ALGORITHM_NONE:
+        case chromeos::platform_keys::HASH_ALGORITHM_NONE:
           return KeystoreSigningScheme::kRsassaPkcs1V15None;
-        case platform_keys::HASH_ALGORITHM_SHA1:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA1:
           return KeystoreSigningScheme::kRsassaPkcs1V15Sha1;
-        case platform_keys::HASH_ALGORITHM_SHA256:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA256:
           return KeystoreSigningScheme::kRsassaPkcs1V15Sha256;
-        case platform_keys::HASH_ALGORITHM_SHA384:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA384:
           return KeystoreSigningScheme::kRsassaPkcs1V15Sha384;
-        case platform_keys::HASH_ALGORITHM_SHA512:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA512:
           return KeystoreSigningScheme::kRsassaPkcs1V15Sha512;
       }
     }
-    case platform_keys::KeyType::kEcdsa: {
+    case chromeos::platform_keys::KeyType::kEcdsa: {
       switch (hash_algorithm) {
-        case platform_keys::HASH_ALGORITHM_NONE:
+        case chromeos::platform_keys::HASH_ALGORITHM_NONE:
           // This combination is not supported.
           return KeystoreSigningScheme::kUnknown;
-        case platform_keys::HASH_ALGORITHM_SHA1:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA1:
           return KeystoreSigningScheme::kEcdsaSha1;
-        case platform_keys::HASH_ALGORITHM_SHA256:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA256:
           return KeystoreSigningScheme::kEcdsaSha256;
-        case platform_keys::HASH_ALGORITHM_SHA384:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA384:
           return KeystoreSigningScheme::kEcdsaSha384;
-        case platform_keys::HASH_ALGORITHM_SHA512:
+        case chromeos::platform_keys::HASH_ALGORITHM_SHA512:
           return KeystoreSigningScheme::kEcdsaSha512;
       }
     }
-    case platform_keys::KeyType::kRsaOaep:
+    case chromeos::platform_keys::KeyType::kRsaOaep:
       // Keys with type RSA-OAEP cannot be used for signing.
       return KeystoreSigningScheme::kUnknown;
   }
 }
 
 // Returns whether a key with algorithm `key_type` can be used for signing.
-bool IsKeyUsedForSigning(platform_keys::KeyType key_type) {
+bool IsKeyUsedForSigning(chromeos::platform_keys::KeyType key_type) {
   switch (key_type) {
-    case platform_keys::KeyType::kRsassaPkcs1V15:
-    case platform_keys::KeyType::kEcdsa:
+    case chromeos::platform_keys::KeyType::kRsassaPkcs1V15:
+    case chromeos::platform_keys::KeyType::kEcdsa:
       return true;
-    case platform_keys::KeyType::kRsaOaep:
+    case chromeos::platform_keys::KeyType::kRsaOaep:
       return false;
   }
 }
@@ -160,8 +161,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     DONE,
   };
 
-  GenerateKeyTask(platform_keys::TokenId token_id,
-                  platform_keys::KeyType key_type,
+  GenerateKeyTask(chromeos::platform_keys::TokenId token_id,
+                  chromeos::platform_keys::KeyType key_type,
                   extensions::ExtensionId extension_id,
                   GenerateKeyCallback callback,
                   ExtensionPlatformKeysService* service)
@@ -187,12 +188,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   virtual void GenerateKey(
       ash::KeystoreService::GenerateKeyCallback callback) = 0;
 
-  platform_keys::TokenId token_id_;
-  platform_keys::KeyType key_type_;
+  chromeos::platform_keys::TokenId token_id_;
+  chromeos::platform_keys::KeyType key_type_;
   std::vector<uint8_t> public_key_spki_der_;
   const extensions::ExtensionId extension_id_;
   GenerateKeyCallback callback_;
-  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+  std::unique_ptr<ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
   const raw_ptr<ExtensionPlatformKeysService> service_;
 
@@ -234,16 +235,14 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   // Gets the permissions for the extension with id |extension_id|.
   void GetExtensionPermissions() {
-    platform_keys::ExtensionKeyPermissionsServiceFactory::
-        GetForBrowserContextAndExtension(
-            base::BindOnce(&GenerateKeyTask::OnPermissionsGot,
-                           weak_factory_.GetWeakPtr()),
-            service_->browser_context_, extension_id_);
+    ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
+        base::BindOnce(&GenerateKeyTask::OnPermissionsGot,
+                       weak_factory_.GetWeakPtr()),
+        service_->browser_context_, extension_id_);
   }
 
-  void OnPermissionsGot(
-      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
-          extension_key_permissions_service) {
+  void OnPermissionsGot(std::unique_ptr<ExtensionKeyPermissionsService>
+                            extension_key_permissions_service) {
     extension_key_permissions_service_ =
         std::move(extension_key_permissions_service);
     DoStep();
@@ -272,7 +271,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     }
 
     LOG(ERROR) << "Corporate key registration failed: "
-               << platform_keys::KeystoreErrorToString(error);
+               << chromeos::platform_keys::KeystoreErrorToString(error);
 
     service_->keystore_service_->RemoveKey(
         KeystoreTypeFromTokenId(token_id_), std::move(public_key_spki_der_),
@@ -288,9 +287,9 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     if (is_remove_error) {
       LOG(ERROR)
           << "Failed to remove a dangling key with error: "
-          << platform_keys::KeystoreErrorToString(remove_error)
+          << chromeos::platform_keys::KeystoreErrorToString(remove_error)
           << ", after failing to register key for corporate usage with error: "
-          << platform_keys::KeystoreErrorToString(
+          << chromeos::platform_keys::KeystoreErrorToString(
                  corporate_key_registration_error);
     }
 
@@ -311,8 +310,8 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   // This key task generates an RSA key with the parameters |token_id| and
   // |modulus_length| and registers it for the extension with id |extension_id|.
   // The generated key will be passed to |callback|.
-  GenerateRSAKeyTask(platform_keys::TokenId token_id,
-                     platform_keys::KeyType key_type,
+  GenerateRSAKeyTask(chromeos::platform_keys::TokenId token_id,
+                     chromeos::platform_keys::KeyType key_type,
                      unsigned int modulus_length,
                      bool sw_backed,
                      const std::string& extension_id,
@@ -332,11 +331,11 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   // Generates the RSA key.
   void GenerateKey(
       ash::KeystoreService::GenerateKeyCallback callback) override {
-    CHECK(key_type_ == platform_keys::KeyType::kRsassaPkcs1V15 ||
-          key_type_ == platform_keys::KeyType::kRsaOaep);
+    CHECK(key_type_ == chromeos::platform_keys::KeyType::kRsassaPkcs1V15 ||
+          key_type_ == chromeos::platform_keys::KeyType::kRsaOaep);
 
     KeystoreAlgorithm algorithm =
-        key_type_ == platform_keys::KeyType::kRsassaPkcs1V15
+        key_type_ == chromeos::platform_keys::KeyType::kRsassaPkcs1V15
             ? MakeRsassaPkcs1v15KeystoreAlgorithm(modulus_length_, sw_backed_)
             : MakeRsaOaepKeystoreAlgorithm(modulus_length_, sw_backed_);
     service_->keystore_service_->GenerateKey(KeystoreTypeFromTokenId(token_id_),
@@ -353,8 +352,8 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
   // This Task generates an EC key with the parameters |token_id| and
   // |named_curve| and registers it for the extension with id |extension_id|.
   // The generated key will be passed to |callback|.
-  GenerateECKeyTask(platform_keys::TokenId token_id,
-                    platform_keys::KeyType key_type,
+  GenerateECKeyTask(chromeos::platform_keys::TokenId token_id,
+                    chromeos::platform_keys::KeyType key_type,
                     std::string named_curve,
                     std::string extension_id,
                     GenerateKeyCallback callback,
@@ -372,7 +371,7 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
   // Generates the EC key.
   void GenerateKey(
       ash::KeystoreService::GenerateKeyCallback callback) override {
-    CHECK(key_type_ == platform_keys::KeyType::kEcdsa);
+    CHECK(key_type_ == chromeos::platform_keys::KeyType::kEcdsa);
 
     service_->keystore_service_->GenerateKey(
         KeystoreTypeFromTokenId(token_id_),
@@ -399,11 +398,11 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // multiple times, also updates the permission to prevent any future signing
   // operation of that extension using that same key. If an error occurs, an
   // error status is passed to |callback|.
-  SignTask(std::optional<platform_keys::TokenId> token_id,
+  SignTask(std::optional<chromeos::platform_keys::TokenId> token_id,
            std::vector<uint8_t> data,
            std::vector<uint8_t> public_key_spki_der,
-           platform_keys::KeyType key_type,
-           platform_keys::HashAlgorithm hash_algorithm,
+           chromeos::platform_keys::KeyType key_type,
+           chromeos::platform_keys::HashAlgorithm hash_algorithm,
            std::string extension_id,
            SignCallback callback,
            ExtensionPlatformKeysService* service)
@@ -457,16 +456,13 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    platform_keys::ExtensionKeyPermissionsServiceFactory::
-        GetForBrowserContextAndExtension(
-            base::BindOnce(&SignTask::OnPermissionsGot,
-                           weak_factory_.GetWeakPtr()),
-            service_->browser_context_, extension_id_);
+    ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
+        base::BindOnce(&SignTask::OnPermissionsGot, weak_factory_.GetWeakPtr()),
+        service_->browser_context_, extension_id_);
   }
 
-  void OnPermissionsGot(
-      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
-          extension_key_permissions_service) {
+  void OnPermissionsGot(std::unique_ptr<ExtensionKeyPermissionsService>
+                            extension_key_permissions_service) {
     extension_key_permissions_service_ =
         std::move(extension_key_permissions_service);
     DoStep();
@@ -512,7 +508,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
                                   chromeos::KeystoreError error) {
     if (is_error) {
       LOG(ERROR) << "Marking a key used for signing failed: "
-                 << platform_keys::KeystoreErrorToString(error);
+                 << chromeos::platform_keys::KeystoreErrorToString(error);
       next_step_ = Step::DONE;
       std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(), error);
       DoStep();
@@ -549,14 +545,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
-  std::optional<platform_keys::TokenId> token_id_;
+  std::optional<chromeos::platform_keys::TokenId> token_id_;
   const std::vector<uint8_t> data_;
   const std::vector<uint8_t> public_key_spki_der_;
 
   KeystoreSigningScheme signing_scheme_;
   const extensions::ExtensionId extension_id_;
   SignCallback callback_;
-  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+  std::unique_ptr<ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
   const raw_ptr<ExtensionPlatformKeysService> service_;
   base::WeakPtrFactory<SignTask> weak_factory_{this};
@@ -571,7 +567,7 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
     DONE,
   };
 
-  SetKeyTagTask(platform_keys::TokenId token_id,
+  SetKeyTagTask(chromeos::platform_keys::TokenId token_id,
                 std::vector<uint8_t> key_tag,
                 std::vector<uint8_t> public_key_spki_der,
                 std::string extension_id,
@@ -619,16 +615,14 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    platform_keys::ExtensionKeyPermissionsServiceFactory::
-        GetForBrowserContextAndExtension(
-            base::BindOnce(&SetKeyTagTask::GotPermissions,
-                           weak_factory_.GetWeakPtr()),
-            service_->browser_context_, extension_id_);
+    ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
+        base::BindOnce(&SetKeyTagTask::GotPermissions,
+                       weak_factory_.GetWeakPtr()),
+        service_->browser_context_, extension_id_);
   }
 
-  void GotPermissions(
-      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
-          extension_key_permissions_service) {
+  void GotPermissions(std::unique_ptr<ExtensionKeyPermissionsService>
+                          extension_key_permissions_service) {
     extension_key_permissions_service_ =
         std::move(extension_key_permissions_service);
     DoStep();
@@ -663,7 +657,7 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
   void DidSetKeyTag(bool is_error, chromeos::KeystoreError error) {
     if (is_error) {
       LOG(ERROR) << "Failed to set the tag to the key with an error: "
-                 << platform_keys::KeystoreErrorToString(error);
+                 << chromeos::platform_keys::KeystoreErrorToString(error);
       std::move(callback_).Run(error);
     } else {
       std::move(callback_).Run(/*error=*/std::nullopt);
@@ -674,13 +668,13 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
-  platform_keys::TokenId token_id_;
+  chromeos::platform_keys::TokenId token_id_;
   const std::vector<uint8_t> key_tag_;
   const std::vector<uint8_t> public_key_spki_der_;
 
   const extensions::ExtensionId extension_id_;
   SetKeyTagCallback callback_;
-  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+  std::unique_ptr<ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
   const raw_ptr<ExtensionPlatformKeysService> service_;
   base::WeakPtrFactory<SetKeyTagTask> weak_factory_{this};
@@ -706,7 +700,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // permission for the selected cert. Finally, either the selection or, if
   // |interactive| is false, matching certs that the extension has permission
   // for are passed to |callback|.
-  SelectTask(const platform_keys::ClientCertificateRequest& request,
+  SelectTask(const chromeos::platform_keys::ClientCertificateRequest& request,
              std::unique_ptr<net::CertificateList> input_client_certificates,
              bool interactive,
              std::string extension_id,
@@ -778,16 +772,14 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    platform_keys::ExtensionKeyPermissionsServiceFactory::
-        GetForBrowserContextAndExtension(
-            base::BindOnce(&SelectTask::OnPermissionsGot,
-                           weak_factory_.GetWeakPtr()),
-            service_->browser_context_, extension_id_);
+    ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
+        base::BindOnce(&SelectTask::OnPermissionsGot,
+                       weak_factory_.GetWeakPtr()),
+        service_->browser_context_, extension_id_);
   }
 
-  void OnPermissionsGot(
-      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
-          extension_key_permissions_service) {
+  void OnPermissionsGot(std::unique_ptr<ExtensionKeyPermissionsService>
+                            extension_key_permissions_service) {
     extension_key_permissions_service_ =
         std::move(extension_key_permissions_service);
     DoStep();
@@ -859,7 +851,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         std::move(matches_pending_permissions_check_.front());
     matches_pending_permissions_check_.pop_front();
     std::vector<uint8_t> public_key_spki_der =
-        platform_keys::GetSubjectPublicKeyInfo(certificate);
+        chromeos::platform_keys::GetSubjectPublicKeyInfo(certificate);
 
     extension_key_permissions_service_->CanUseKey(
         public_key_spki_der, /*is_sign_operation=*/true,
@@ -901,7 +893,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       DoStep();
       return;
     }
-    platform_keys::IntersectCertificates(
+    chromeos::platform_keys::IntersectCertificates(
         matches_, *input_client_certificates_,
         base::BindOnce(&SelectTask::GotIntersection,
                        weak_factory_.GetWeakPtr()));
@@ -944,7 +936,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       return;
     }
     extension_key_permissions_service_->SetUserGrantedSigningPermission(
-        platform_keys::GetSubjectPublicKeyInfo(selected_cert_),
+        chromeos::platform_keys::GetSubjectPublicKeyInfo(selected_cert_),
         base::BindOnce(&SelectTask::OnPermissionsUpdated,
                        weak_factory_.GetWeakPtr()));
   }
@@ -952,7 +944,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void OnPermissionsUpdated(bool is_error, chromeos::KeystoreError error) {
     if (is_error) {
       LOG(WARNING) << "Error while updating permissions: "
-                   << platform_keys::KeystoreErrorToString(error);
+                   << chromeos::platform_keys::KeystoreErrorToString(error);
     }
 
     DoStep();
@@ -979,13 +971,13 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       matches_pending_permissions_check_;
   net::CertificateList matches_;
   scoped_refptr<net::X509Certificate> selected_cert_;
-  platform_keys::ClientCertificateRequest request_;
+  chromeos::platform_keys::ClientCertificateRequest request_;
   std::unique_ptr<net::CertificateList> input_client_certificates_;
   const bool interactive_;
   const extensions::ExtensionId extension_id_;
   SelectCertificatesCallback callback_;
   const raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+  std::unique_ptr<ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
   const raw_ptr<ExtensionPlatformKeysService> service_;
   base::WeakPtrFactory<SelectTask> weak_factory_{this};
@@ -1010,8 +1002,8 @@ void ExtensionPlatformKeysService::SetSelectDelegate(
 }
 
 void ExtensionPlatformKeysService::GenerateRSAKey(
-    platform_keys::TokenId token_id,
-    platform_keys::KeyType key_type,
+    chromeos::platform_keys::TokenId token_id,
+    chromeos::platform_keys::KeyType key_type,
     unsigned int modulus_length,
     bool sw_backed,
     std::string extension_id,
@@ -1024,7 +1016,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     return;
   }
 
-  if (key_type == platform_keys::KeyType::kRsaOaep &&
+  if (key_type == chromeos::platform_keys::KeyType::kRsaOaep &&
       !chromeos::features::IsPlatformKeysChangesWave1Enabled()) {
     std::move(callback).Run(
         /*public_key_spki_der=*/std::vector<uint8_t>(),
@@ -1038,8 +1030,8 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
 }
 
 void ExtensionPlatformKeysService::GenerateECKey(
-    platform_keys::TokenId token_id,
-    platform_keys::KeyType key_type,
+    chromeos::platform_keys::TokenId token_id,
+    chromeos::platform_keys::KeyType key_type,
     std::string named_curve,
     std::string extension_id,
     GenerateKeyCallback callback) {
@@ -1061,11 +1053,11 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 }
 
 void ExtensionPlatformKeysService::SignDigest(
-    std::optional<platform_keys::TokenId> token_id,
+    std::optional<chromeos::platform_keys::TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
-    platform_keys::KeyType key_type,
-    platform_keys::HashAlgorithm hash_algorithm,
+    chromeos::platform_keys::KeyType key_type,
+    chromeos::platform_keys::HashAlgorithm hash_algorithm,
     std::string extension_id,
     SignCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
@@ -1082,7 +1074,7 @@ void ExtensionPlatformKeysService::SignDigest(
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
-    std::optional<platform_keys::TokenId> token_id,
+    std::optional<chromeos::platform_keys::TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     std::string extension_id,
@@ -1097,13 +1089,13 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
 
   StartOrQueueTask(std::make_unique<SignTask>(
       token_id, std::move(data), std::move(public_key_spki_der),
-      /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
-      platform_keys::HASH_ALGORITHM_NONE, std::move(extension_id),
+      /*key_type=*/chromeos::platform_keys::KeyType::kRsassaPkcs1V15,
+      chromeos::platform_keys::HASH_ALGORITHM_NONE, std::move(extension_id),
       std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::SelectClientCertificates(
-    const platform_keys::ClientCertificateRequest& request,
+    const chromeos::platform_keys::ClientCertificateRequest& request,
     std::unique_ptr<net::CertificateList> client_certificates,
     bool interactive,
     std::string extension_id,
@@ -1123,7 +1115,7 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
 }
 
 void ExtensionPlatformKeysService::SetKeyTag(
-    platform_keys::TokenId token_id,
+    chromeos::platform_keys::TokenId token_id,
     std::vector<uint8_t> tag,
     std::vector<uint8_t> public_key_spki_der,
     std::string extension_id,
@@ -1163,4 +1155,4 @@ void ExtensionPlatformKeysService::TaskFinished(Task* task) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash::platform_keys

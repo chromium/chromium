@@ -85,7 +85,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/os_feedback:os_feedback",
   "//chrome/browser/ash/ownership:ownership",
   "//chrome/browser/ash/phonehub:phonehub",
-  "//chrome/browser/ash/platform_keys/key_permissions:key_permissions",
   "//chrome/browser/ash/platform_keys:keystore_service",
   "//chrome/browser/ash/policy/core:core",
   "//chrome/browser/ash/policy/dlp:dlp",

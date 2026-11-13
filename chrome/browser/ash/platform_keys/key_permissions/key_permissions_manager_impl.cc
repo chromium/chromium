@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/kcer/key_permissions.pb.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"

@@ -19,12 +19,12 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_base.h"
@@ -150,9 +150,10 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     mock_policy_provider()->UpdateChromePolicy(policy);
   }
 
-  chromeos::ExtensionPlatformKeysService* GetExtensionPlatformKeysService() {
-    return chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-        profile());
+  ash::platform_keys::ExtensionPlatformKeysService*
+  GetExtensionPlatformKeysService() {
+    return ash::platform_keys::ExtensionPlatformKeysServiceFactory::
+        GetForBrowserContext(profile());
   }
 
   bool RunPlatformKeysTest(const char* test_suite_name) {
@@ -180,7 +181,7 @@ class PlatformKeysTest : public PlatformKeysTestBase {
         LoadExtension(test_data_dir_.AppendASCII("platform_keys_genkey"));
 
     base::RunLoop run_loop;
-    chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
+    ash::platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
             base::BindOnce(&PlatformKeysTest::GotPermissionsForExtension,
                            base::Unretained(this), run_loop.QuitClosure()),
@@ -208,7 +209,7 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   }
 
   void OnKeyRegisteredForCorporateUsage(
-      std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
+      std::unique_ptr<ash::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service,
       base::OnceClosure done_callback,
       bool is_error,
@@ -219,7 +220,7 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
   void GotPermissionsForExtension(
       base::OnceClosure done_callback,
-      std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
+      std::unique_ptr<ash::platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service) {
     auto* extension_key_permissions_service_unowned =
         extension_key_permissions_service.get();
@@ -280,7 +281,7 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 };
 
 class TestSelectDelegate
-    : public chromeos::ExtensionPlatformKeysService::SelectDelegate {
+    : public ash::platform_keys::ExtensionPlatformKeysService::SelectDelegate {
  public:
   // On each Select call, selects the next entry in |certs_to_select| from back
   // to front. Once the first entry is reached, that one will be selected

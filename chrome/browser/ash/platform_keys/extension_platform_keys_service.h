@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#define CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,7 +33,7 @@ class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 }  // namespace net
 
-namespace chromeos {
+namespace ash::platform_keys {
 
 class ExtensionPlatformKeysService : public KeyedService {
  public:
@@ -96,8 +95,8 @@ class ExtensionPlatformKeysService : public KeyedService {
   // software-backed. If the generation was successful, `callback` will be
   // invoked with the resulting public key. If it failed, the resulting public
   // key will be empty. Will only call back during the lifetime of this object.
-  void GenerateRSAKey(platform_keys::TokenId token_id,
-                      platform_keys::KeyType key_type,
+  void GenerateRSAKey(chromeos::platform_keys::TokenId token_id,
+                      chromeos::platform_keys::KeyType key_type,
                       unsigned int modulus_length_bits,
                       bool sw_backed,
                       std::string extension_id,
@@ -110,8 +109,8 @@ class ExtensionPlatformKeysService : public KeyedService {
   // generation was successful, `callback` will be invoked with the resulting
   // public key. If it failed, the resulting public key will be empty. Will only
   // call back during the lifetime of this object.
-  void GenerateECKey(platform_keys::TokenId token_id,
-                     platform_keys::KeyType key_type,
+  void GenerateECKey(chromeos::platform_keys::TokenId token_id,
+                     chromeos::platform_keys::KeyType key_type,
                      std::string named_curve,
                      std::string extension_id,
                      GenerateKeyCallback callback);
@@ -137,11 +136,11 @@ class ExtensionPlatformKeysService : public KeyedService {
   // future signing attempts. If signing was successful, |callback| will be
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
-  void SignDigest(std::optional<platform_keys::TokenId> token_id,
+  void SignDigest(std::optional<chromeos::platform_keys::TokenId> token_id,
                   std::vector<uint8_t> data,
                   std::vector<uint8_t> public_key_spki_der,
-                  platform_keys::KeyType key_type,
-                  platform_keys::HashAlgorithm hash_algorithm,
+                  chromeos::platform_keys::KeyType key_type,
+                  chromeos::platform_keys::HashAlgorithm hash_algorithm,
                   std::string extension_id,
                   SignCallback callback);
 
@@ -157,7 +156,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // future signing attempts. If signing was successful, |callback| will be
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
-  void SignRSAPKCS1Raw(std::optional<platform_keys::TokenId> token_id,
+  void SignRSAPKCS1Raw(std::optional<chromeos::platform_keys::TokenId> token_id,
                        std::vector<uint8_t> data,
                        std::vector<uint8_t> public_key_spki_der,
                        std::string extension_id,
@@ -185,7 +184,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // and an error status will be returned. Will only call back during the
   // lifetime of this object. |web_contents| must not be null.
   void SelectClientCertificates(
-      const platform_keys::ClientCertificateRequest& request,
+      const chromeos::platform_keys::ClientCertificateRequest& request,
       std::unique_ptr<net::CertificateList> client_certificates,
       bool interactive,
       std::string extension_id,
@@ -202,7 +201,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // operation aborts. In any case |callback| will be invoked and if the
   // operation failed it will contain an error. Will only call back during the
   // lifetime of this object.
-  void SetKeyTag(platform_keys::TokenId token_id,
+  void SetKeyTag(chromeos::platform_keys::TokenId token_id,
                  std::vector<uint8_t> tag,
                  std::vector<uint8_t> public_key_spki_der,
                  std::string extension_id,
@@ -234,6 +233,6 @@ class ExtensionPlatformKeysService : public KeyedService {
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash::platform_keys
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_

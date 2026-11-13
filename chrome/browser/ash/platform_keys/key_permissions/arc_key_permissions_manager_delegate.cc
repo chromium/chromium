@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -132,8 +132,8 @@ void UserPrivateTokenArcKpmDelegate::CheckArcKeyAvailibility() {
   }
 
   std::vector<std::string> corporate_key_usage_allowed_app_ids =
-      chromeos::platform_keys::ExtensionKeyPermissionsService::
-          GetCorporateKeyUsageAllowedAndroidAppIds(policy_service_);
+      ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAndroidAppIds(
+          policy_service_);
 
   for (const auto& package_name : corporate_key_usage_allowed_app_ids) {
     auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);

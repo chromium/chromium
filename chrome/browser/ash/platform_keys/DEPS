@@ -11,12 +11,17 @@ include_rules = [
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  "extension_key_permissions_service_factory\\.cc": [
+    "+chrome/browser/policy/profile_policy_connector.h",
+  ],
+  "extension_platform_keys_service_factory\\.cc": [
+    "+chrome/browser/ui/platform_keys_certificate_selector_chromeos.h",
+  ],
   # The keyed service factory is the //chrome seam here.
   "(platform_keys_service_browsertest\\.cc|platform_keys_service_factory\\.cc)": [
     "+chrome/browser/net",

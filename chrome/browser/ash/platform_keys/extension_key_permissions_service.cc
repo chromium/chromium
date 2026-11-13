@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/extension_key_permissions_service.h"
 
 #include <stdint.h>
 
@@ -17,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/ash/platform_keys/keystore_service.h"
 #include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
@@ -28,7 +27,7 @@
 #include "components/policy/policy_constants.h"
 #include "extensions/browser/state_store.h"
 
-namespace chromeos::platform_keys {
+namespace ash::platform_keys {
 
 namespace {
 const char kStateStoreSPKI[] = "SPKI";
@@ -193,7 +192,8 @@ void ExtensionKeyPermissionsService::CanUseKeyWithFlags(
     chromeos::GetKeyTagsResult key_tags) {
   if (!key_tags.has_value()) {
     LOG(ERROR) << "Failed to check if the key is corporate: "
-               << KeystoreErrorToString(key_tags.error());
+               << chromeos::platform_keys::KeystoreErrorToString(
+                      key_tags.error());
     std::move(callback).Run(/*allowed=*/false);
     return;
   }
@@ -377,4 +377,4 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAndroidAppIds(
   return permissions;
 }
 
-}  // namespace chromeos::platform_keys
+}  // namespace ash::platform_keys

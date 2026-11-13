@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/keystore_service.h"
 #include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
@@ -97,9 +97,9 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
     return RespondNow(Error(platform_keys::kErrorInvalidToken));
   }
 
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
+  ash::platform_keys::ExtensionPlatformKeysService* service =
+      ash::platform_keys::ExtensionPlatformKeysServiceFactory::
+          GetForBrowserContext(browser_context());
   CHECK(service, base::NotFatalUntil::M161);
 
   std::optional<chromeos::platform_keys::KeyType> key_type =

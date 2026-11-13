@@ -6,6 +6,14 @@ assert(is_chromeos)
 
 static_library("platform_keys") {
   sources = [
+    "extension_key_permissions_service.cc",
+    "extension_key_permissions_service.h",
+    "extension_key_permissions_service_factory.cc",
+    "extension_key_permissions_service_factory.h",
+    "extension_platform_keys_service.cc",
+    "extension_platform_keys_service.h",
+    "extension_platform_keys_service_factory.cc",
+    "extension_platform_keys_service_factory.h",
     "platform_keys_service.cc",
     "platform_keys_service.h",
     "platform_keys_service_factory.cc",
@@ -19,18 +27,27 @@ static_library("platform_keys") {
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/net",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:platform_keys_certificate_selector_chromeos",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/kcer",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/platform_keys",
     "//chromeos/components/certificate_provider",
+    "//chromeos/constants",
     "//components/keyed_service/core",
+    "//components/policy:generated",
     "//components/policy/core/common",
     "//components/user_manager",
     "//content/public/browser",
     "//crypto",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//third_party/boringssl",
   ]
 }
 
@@ -50,7 +67,6 @@ static_library("keystore_service") {
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
@@ -61,7 +77,7 @@ static_library("keystore_service") {
     "//net",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/chromeos/platform_keys" ]
+  allow_circular_includes_from = [ ":platform_keys" ]
 }
 
 static_library("test_support") {
