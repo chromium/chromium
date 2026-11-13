@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
@@ -791,30 +792,22 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIFrameCacheTest,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
-                       CreatesNonDesktopWidgetWhenFlagDisabled) {
-  CreatePopupForTestQuery();
-  views::Widget* widget = popup_widget();
-  ASSERT_TRUE(widget);
-  EXPECT_FALSE(widget->GetIsDesktopWidget());
-}
-
 class OmniboxPopupViewWebUIDesktopWidgetTest
-    : public OmniboxPopupViewWebUITest {
+    : public base::test::WithFeatureOverride,
+      public OmniboxPopupViewWebUITest {
  public:
-  OmniboxPopupViewWebUIDesktopWidgetTest() = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kOmniboxPopupDesktopWidget};
+  OmniboxPopupViewWebUIDesktopWidgetTest()
+      : base::test::WithFeatureOverride(features::kOmniboxPopupDesktopWidget) {}
 };
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIDesktopWidgetTest,
-                       CreatesDesktopWidgetWhenFlagEnabled) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(OmniboxPopupViewWebUIDesktopWidgetTest);
+
+IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIDesktopWidgetTest,
+                       CreatesDesktopWidgetOnlyWhenFlagEnabled) {
   CreatePopupForTestQuery();
   views::Widget* widget = popup_widget();
   ASSERT_TRUE(widget);
-  EXPECT_TRUE(widget->GetIsDesktopWidget());
+  EXPECT_EQ(IsParamFeatureEnabled(), widget->GetIsDesktopWidget());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
