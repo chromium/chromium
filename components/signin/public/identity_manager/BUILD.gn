@@ -69,6 +69,7 @@ source_set("identity_manager") {
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",
     "//services/network/public/cpp",
+    "//third_party/icu",
   ]
 
   if (!is_fuchsia) {

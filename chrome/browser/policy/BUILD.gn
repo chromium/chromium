@@ -919,6 +919,7 @@ source_set("unit_tests") {
       "cbcm_invalidations_initializer_unittest.cc",
       "chrome_browser_cloud_management_register_watcher_unittest.cc",
       "client_data_delegate_desktop_unittest.cc",
+      "restrict_signin_to_pattern_policy_handler_unittest.cc",
     ]
   }
 
@@ -1137,6 +1138,7 @@ source_set("policy") {
         "chrome_browser_cloud_management_controller_desktop.h",
         "client_data_delegate_desktop.h",
         "cloud/user_policy_signin_service.h",
+        "restrict_signin_to_pattern_policy_handler.h",
       ]
     }
   }
@@ -1452,6 +1454,7 @@ source_set("impl") {
         "chrome_browser_cloud_management_register_watcher.h",
         "client_data_delegate_desktop.cc",
         "cloud/user_policy_signin_service.cc",
+        "restrict_signin_to_pattern_policy_handler.cc",
       ]
       deps += [
         "//chrome/browser/enterprise:browser_launch_reporting",

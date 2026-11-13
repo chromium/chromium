@@ -5,6 +5,7 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -24,11 +25,43 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
 
 namespace {
+
+// Patterns like "*@foo.com" are not accepted by our regex engine (since they
+// are not valid regular expressions - they should instead be ".*@foo.com").
+// For convenience, detect these patterns and insert a "." character at the
+// front.
+std::unique_ptr<icu::RegexMatcher> CreateUsernamePatternMatcher(
+    std::string_view pattern) {
+  std::u16string utf16_pattern = base::UTF8ToUTF16(pattern);
+  if (utf16_pattern.starts_with(u'*')) {
+    utf16_pattern.insert(utf16_pattern.begin(), u'.');
+  }
+
+  UErrorCode status = U_ZERO_ERROR;
+  icu::UnicodeString icu_pattern(utf16_pattern.data(), utf16_pattern.length());
+  auto matcher = std::make_unique<icu::RegexMatcher>(
+      icu_pattern, UREGEX_CASE_INSENSITIVE, status);
+  if (!U_SUCCESS(status)) {
+    LOG(ERROR) << "Invalid login regex: " << utf16_pattern
+               << ", status: " << status;
+    return nullptr;
+  }
+  return matcher;
+}
+
+bool MatchesUsername(std::string_view username, icu::RegexMatcher& matcher) {
+  icu::UnicodeString icu_input = icu::UnicodeString::fromUTF8(username);
+  matcher.reset(icu_input);
+  UErrorCode status = U_ZERO_ERROR;
+  UBool match = matcher.matches(status);
+  return U_SUCCESS(status) && match;
+}
 
 bool IsAccountAllowed(const PrefService* prefs, std::string_view email) {
   return !prefs || IsUsernameAllowedByPatternFromPrefs(prefs, email);
@@ -42,34 +75,49 @@ bool IsUsernameAllowedByPattern(std::string_view username,
     return true;
   }
 
-  // Patterns like "*@foo.com" are not accepted by our regex engine (since they
-  // are not valid regular expressions - they should instead be ".*@foo.com").
-  // For convenience, detect these patterns and insert a "." character at the
-  // front.
-  std::u16string utf16_pattern = base::UTF8ToUTF16(pattern);
-  if (utf16_pattern[0] == L'*') {
-    utf16_pattern.insert(utf16_pattern.begin(), L'.');
+  // If an invalid pattern is provided, then prohibit *all* logins (better to
+  // break signin than to quietly allow users to sign in).
+  std::unique_ptr<icu::RegexMatcher> matcher =
+      CreateUsernamePatternMatcher(pattern);
+  return matcher && MatchesUsername(username, *matcher);
+}
+
+bool IsUsernamePatternValid(std::string_view pattern) {
+  if (pattern.empty()) {
+    return true;
   }
 
-  // See if the username matches the policy-provided pattern.
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::UnicodeString icu_pattern(false, utf16_pattern.data(),
-                                       utf16_pattern.length());
-  icu::RegexMatcher matcher(icu_pattern, UREGEX_CASE_INSENSITIVE, status);
-  if (!U_SUCCESS(status)) {
-    LOG(ERROR) << "Invalid login regex: " << utf16_pattern
-               << ", status: " << status;
-    // If an invalid pattern is provided, then prohibit *all* logins (better to
-    // break signin than to quietly allow users to sign in).
+  std::unique_ptr<icu::RegexMatcher> matcher =
+      CreateUsernamePatternMatcher(pattern);
+  if (!matcher) {
     return false;
   }
-  // The default encoding is UTF-8 in Chromium's ICU.
-  icu::UnicodeString icu_input(username.data());
-  matcher.reset(icu_input);
+
+  // Semantic catch-all probe. If `user@example.com` matches, the pattern
+  // accepts arbitrary Google account emails (e.g. `.*`, `.+`,
+  // `.*@example.com`).
+  if (MatchesUsername("user@example.com", *matcher)) {
+    return true;
+  }
+
+  // Verify that `@` is preceded by a non-anchor local-part pattern (rejecting
+  // `@domain.com` and `^@domain.com`) and followed by a domain label, dot
+  // separator (escaped or literal), and a literal or wildcard TLD expression.
+  UErrorCode status = U_ZERO_ERROR;
+  const icu::UnicodeString kDomainRegex(
+      uR"regex([^^*+?()|\s][^@|\s]*@)regex"
+      uR"regex([^@\s]+?(?:\\*\.|\[\.\]))regex"
+      uR"regex((?:\((?:\?[a-zA-Z]*:)?)*)regex"
+      uR"regex((?:[a-zA-Z0-9]{2,}|\.[*+]|)regex"
+      uR"regex(\[[^\]]+\](?:[*+]|\{[0-9,]+\}|\[[^\]]+\])|)regex"
+      uR"regex(\\[a-zA-Z](?:[*+]|\{[0-9,]+\})))regex");
+  const icu::UnicodeString normalized_pattern = matcher->pattern().pattern();
+  icu::RegexMatcher domain_matcher(kDomainRegex, UREGEX_CASE_INSENSITIVE,
+                                   status);
+  CHECK(U_SUCCESS(status));
+  domain_matcher.reset(normalized_pattern);
   status = U_ZERO_ERROR;
-  UBool match = matcher.matches(status);
-  DCHECK(U_SUCCESS(status));
-  return !!match;  // !! == convert from UBool to bool.
+  return domain_matcher.find(status) && U_SUCCESS(status);
 }
 
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,

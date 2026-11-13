@@ -246,6 +246,9 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/idle/idle_timeout_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/restrict_signin_to_pattern_policy_handler.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_management_constants.h"
@@ -2074,9 +2077,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kImportDialogAutofillFormData,
     base::Value::Type::BOOLEAN },
 
-  { key::kRestrictSigninToPattern,
-    prefs::kGoogleServicesUsernamePattern,
-    base::Value::Type::STRING },
   { key::kHardwareAccelerationModeEnabled,
     prefs::kHardwareAccelerationModeEnabled,
     base::Value::Type::BOOLEAN },
@@ -3511,6 +3511,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(
+      std::make_unique<RestrictSigninToPatternPolicyHandler>());
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)

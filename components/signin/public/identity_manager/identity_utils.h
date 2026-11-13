@@ -26,6 +26,10 @@ class IdentityManager;
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern);
 
+// Returns true if `pattern` is empty or is a valid regular expression that can
+// match standard `user@domain.tld` email addresses.
+bool IsUsernamePatternValid(std::string_view pattern);
+
 // Returns true if the username is allowed based on a pattern registered
 // |prefs::kGoogleServicesUsernamePattern| with the preferences service
 // referenced by |prefs|.

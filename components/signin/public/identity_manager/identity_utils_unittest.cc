@@ -140,6 +140,46 @@ TEST_F(IdentityUtilsIsUsernameAllowedTest, MatchingWildcardPatterns) {
   EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 }
 
+TEST_F(IdentityUtilsIsUsernameAllowedTest, ValidUsernamePatterns) {
+  constexpr std::string_view kValidPatterns[] = {
+      "",
+      ".*",
+      ".+",
+      ".*@.*",
+      "*@example.com",
+      "*@corp.com",
+      ".*@example\\.com",
+      "^.*@(corp|sub)\\.example\\.com$",
+      "alice@corp\\.com|bob@corp\\.com",
+      ".*@google.com",
+      ".*@acme\\.[a-z]{2,}",
+      ".*@acme\\..*",
+      ".*@acme\\.(?:com|org)",
+  };
+  for (std::string_view pattern : kValidPatterns) {
+    SCOPED_TRACE(pattern);
+    EXPECT_TRUE(IsUsernamePatternValid(pattern));
+  }
+}
+
+TEST_F(IdentityUtilsIsUsernameAllowedTest, InvalidUsernamePatterns) {
+  constexpr std::string_view kInvalidPatterns[] = {
+      "0",
+      "false",
+      "   ",
+      "[",
+      "Login@NotAllowed",
+      ".*@NotAllowed",
+      "@domain.com",
+      "^@domain.com",
+      ".*@acme\\.",
+  };
+  for (std::string_view pattern : kInvalidPatterns) {
+    SCOPED_TRACE(pattern);
+    EXPECT_FALSE(IsUsernamePatternValid(pattern));
+  }
+}
+
 TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
   const int cookie_accounts_count = 3;
   std::vector<gaia::ListedAccount> cookie_accounts(cookie_accounts_count);

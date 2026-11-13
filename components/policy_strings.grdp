@@ -252,6 +252,9 @@
   <message name="IDS_POLICY_BROWSER_SIGNIN_USER_SCOPE_WARNING" desc="The warning message displayed in the status column of the BrowserSignin policy when it is configured at user scope instead of machine scope.">
     This policy is intended to be applied at the machine level. Its behavior when applied as a user policy is not officially supported and will be deprecated.
   </message>
+  <message name="IDS_POLICY_RESTRICT_SIGNIN_TO_PATTERN_WARNING" desc="Warning displayed when RestrictSigninToPattern cannot match a standard user@domain.tld Google account email address.">
+    This pattern does not appear to match a valid email address domain. Users may be unable to sign in or existing profiles may be removed.
+  </message>
   <message name="IDS_POLICY_ERROR_WITH_PATH" desc="The text displayed in the status column when a policy error message contains an error path.">
     Error at <ph name="ERROR_PATH">$1<ex>AC.Delays.ScreenOff</ex></ph>: <ph name="ERROR_MESSAGE">$2<ex>Value is out of range.</ex></ph>
   </message>
