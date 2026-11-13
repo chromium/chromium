@@ -7509,6 +7509,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpComponentExtensionDescription, kOsAll,
      FEATURE_VALUE_TYPE(ntp_features::kNtpComponentExtension)},
 
+    {"ntp-shortcuts-reorder", flag_descriptions::kNtpShortcutsReorderName,
+     flag_descriptions::kNtpShortcutsReorderDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsReorder)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
      flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,
@@ -7683,11 +7688,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-shortcuts-redesign", flag_descriptions::kNtpShortcutsRedesignName,
      flag_descriptions::kNtpShortcutsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsRedesign)},
-
-    {"ntp-shortcuts-reorder", flag_descriptions::kNtpShortcutsReorderName,
-     flag_descriptions::kNtpShortcutsReorderDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsReorder)},
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
