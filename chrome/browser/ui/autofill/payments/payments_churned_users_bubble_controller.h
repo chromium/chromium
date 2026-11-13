@@ -77,6 +77,20 @@ class PaymentsChurnedUsersBubbleController
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  // Which phase of the churned-users flow the controller is configured for.
+  // `BubbleManager` and `IsShowingBubble()` track whether the corresponding
+  // bubble is queued, currently open, or dismissed to the omnibox icon.
+  enum class BubbleState {
+    kInactive,
+    // Configured for the opt-in prompt.
+    kPrompt,
+    // User accepted the opt-in prompt; waiting for the delay before requesting
+    // the confirmation bubble.
+    kPendingConfirmation,
+    // Configured for the post-acceptance confirmation bubble.
+    kConfirmation,
+  };
+
   void OnConfirmationBubbleClosed(PaymentsUiClosedReason closed_reason);
 
   ui::ScopedUnownedUserData<PaymentsChurnedUsersBubbleController>
@@ -84,18 +98,7 @@ class PaymentsChurnedUsersBubbleController
 
   bool is_reshow_ = false;
   AccountInfo account_info_;
-
-  // Set to false if a user cancels or closes the bubble churned users bubble,
-  // or if a user interacts with the confirmation bubble. This ensures the page
-  // action icon goes away so that the user isn't stuck with the icon and
-  // re-showing the bubble in the omnibox.
-  bool should_show_icon_ = true;
-
-  // Denotes whether the user has accepted the churned users bubble. Since
-  // there is a loading state that triggers after accepting the churned users
-  // bubble, this variable is used to signal that an acceptance has occurred so
-  // that the bubble is treated as accepted on close.
-  bool is_accepted_ = false;
+  BubbleState state_ = BubbleState::kInactive;
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
 
