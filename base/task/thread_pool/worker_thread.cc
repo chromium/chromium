@@ -38,6 +38,10 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#include "base/mac/workgroup.h"
+#endif
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/thread_cache.h"  // nogncheck
@@ -431,6 +435,10 @@ void WorkerThread::RunWorker() {
         base::HangWatcher::ThreadType::kThreadPoolThread);
   }
 
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  uint32_t foreground_workgroup_generation = 0;
+#endif
+
   while (!ShouldExit()) {
 #if BUILDFLAG(IS_APPLE)
     apple::ScopedNSAutoreleasePool autorelease_pool;
@@ -463,6 +471,13 @@ void WorkerThread::RunWorker() {
     // Thread type needs to be updated before GetWork.
     MaybeUpdateThreadType();
 
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+    if (mac::ShouldJoinProcessForegroundWorkgroup(thread_type_hint_)) {
+      mac::MaybeSyncCurrentThreadToForegroundWorkgroup(
+          foreground_workgroup_generation);
+    }
+#endif
+
     // Get the task source containing the first task to execute.
     RegisteredTaskSource task_source = delegate()->GetWork(this);
 
@@ -493,6 +508,12 @@ void WorkerThread::RunWorker() {
           delegate()->SwapProcessedTask(std::move(task_source), this);
 
       MaybeUpdateThreadType();
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+      if (mac::ShouldJoinProcessForegroundWorkgroup(thread_type_hint_)) {
+        mac::MaybeSyncCurrentThreadToForegroundWorkgroup(
+            foreground_workgroup_generation);
+      }
+#endif
 
       // Check that task_source is always cleared, to help investigation of
       // memory corruption where task_source is non-null after being moved.

@@ -135,6 +135,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     TimeTicks quit_runloop_after = TimeTicks::Max();
 
     bool task_execution_allowed = true;
+
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+    uint32_t foreground_workgroup_generation = 0;
+#endif
   };
 
   const MainThreadOnly& MainThreadOnlyForTesting() const {

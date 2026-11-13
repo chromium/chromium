@@ -32,6 +32,8 @@
 #include "base/message_loop/message_pump_apple.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_android.h"
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#include "base/mac/workgroup.h"
 #endif
 
 namespace base::sequence_manager::internal {
@@ -331,6 +333,9 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     main_thread_only().in_high_res_mode = false;
     Time::ActivateHighResolutionTimer(false);
   }
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  mac::MaybeSyncCurrentThreadToForegroundWorkgroup(
+      main_thread_only().foreground_workgroup_generation);
 #endif
   MessagePump::Delegate::NextWorkInfo next_work_info{};
 
