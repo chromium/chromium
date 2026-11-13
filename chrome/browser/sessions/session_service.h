@@ -232,6 +232,8 @@ class SessionService : public SessionServiceBase {
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   void RebuildCommandsIfRequired() override;
 
+  bool HasPendingTabCloses() const override;
+
   bool ShouldDeleteSessionStorageOnTabClosing(
       SessionID window_id) const override;
 

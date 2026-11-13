@@ -237,6 +237,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.Counterfactual.RebuildWouldHaveDroppedTabs"
+    enum="Boolean" expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded each time enough changes pile up that the browser schedules a
+    rewrite of the session file from scratch. True if, at that moment, the last
+    window was partway through closing and some of its tabs were already gone.
+    Before the fix for https://crbug.com/582857276, the rewrite ran right away
+    and those tabs would have been missing after a restart. Only this
+    last-window case is counted, so the true count is a lower bound.
+  </summary>
+</histogram>
+
 <histogram name="Session.ID.RestoredDifference" units="Session IDs"
     expires_after="2027-02-07">
   <owner>gambard@chromium.org</owner>

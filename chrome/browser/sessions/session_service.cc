@@ -772,6 +772,10 @@ void SessionService::RebuildCommandsIfRequired() {
   }
 }
 
+bool SessionService::HasPendingTabCloses() const {
+  return !pending_tab_close_ids_.empty();
+}
+
 bool SessionService::ShouldDeleteSessionStorageOnTabClosing(
     SessionID window_id) const {
   // If the window is closing, then the tab's sessionStorage should be kept

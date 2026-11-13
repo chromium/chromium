@@ -291,6 +291,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   virtual void DidScheduleCommand() {}
 
+  // Returns true if a full rewrite now would lose tabs restore still needs.
+  virtual bool HasPendingTabCloses() const;
+
   // Returns true if changes to tabs in the specified window should be tracked.
   bool ShouldTrackChangesToWindow(SessionID window_id) const;
 

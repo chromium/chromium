@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -860,6 +861,11 @@ void SessionServiceBase::ScheduleCommand(
   if (!command_storage_manager_->pending_reset() &&
       command_storage_manager_->commands_since_reset() >= kWritesPerReset &&
       !is_closing_command) {
+    if (!rebuild_on_next_save_) {
+      base::UmaHistogramBoolean(
+          "Session.Counterfactual.RebuildWouldHaveDroppedTabs",
+          HasPendingTabCloses());
+    }
     rebuild_on_next_save_ = true;
   }
   DidScheduleCommand();
@@ -907,6 +913,10 @@ bool SessionServiceBase::ShouldTrackBrowser(
 
   return ShouldRestoreWindowOfType(
       WindowTypeForBrowserType(browser->GetType()));
+}
+
+bool SessionServiceBase::HasPendingTabCloses() const {
+  return false;
 }
 
 bool SessionServiceBase::ShouldDeleteSessionStorageOnTabClosing(

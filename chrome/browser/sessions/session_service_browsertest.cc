@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -183,6 +184,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, LogExit) {
 
 IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
                        ResetDuringLastWindowTeardownKeepsAllTabs) {
+  base::HistogramTester histogram_tester;
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
@@ -195,6 +197,16 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
   AddBlankTabAndShow(browser());
   SessionID window_id = browser()->GetSessionID();
 
+  helper.command_storage_manager()->Save();
+
+  // Crossing the rewrite threshold with the window open loses nothing.
+  for (int i = helper.command_storage_manager()->commands_since_reset();
+       i < SessionServiceBase::kWritesPerReset; ++i) {
+    service()->SetWindowVisibleOnAllWorkspaces(window_id, true);
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Session.Counterfactual.RebuildWouldHaveDroppedTabs", false, 1);
+  // Performs and writes the deferred rewrite, restarting the count.
   helper.command_storage_manager()->Save();
 
   int current = helper.command_storage_manager()->commands_since_reset();
@@ -214,6 +226,8 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
 
   // Push past kWritesPerReset DURING teardown.
   service()->SetWindowVisibleOnAllWorkspaces(window_id, true);
+  histogram_tester.ExpectBucketCount(
+      "Session.Counterfactual.RebuildWouldHaveDroppedTabs", true, 1);
 
   // Finish closing the browser.
   CloseBrowserSynchronously(browser());
