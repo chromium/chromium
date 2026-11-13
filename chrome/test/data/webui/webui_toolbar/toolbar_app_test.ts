@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {GlicActorTaskIconElement, GlicButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, ContentSettingImageType, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, PageActionAnimationStyle, PageActionId, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, COLOR_PROVIDER_CHANGED, ColorChangeUpdater, ContentSettingImageType, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, PageActionAnimationStyle, PageActionId, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {FocusRequestListener, ToolbarAppElement, ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy as BaseTestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
@@ -1461,5 +1461,220 @@ suite('ToolbarAppTest', () => {
     assertDeepEquals(
         {x: 10, y: 20},
         await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropFile'));
+  });
+
+  test('UnboundApplyBoundProfileUpdatesColorsAndButtons', async () => {
+    loadTimeData.overrideValues({
+      enableGlicButton: true,
+      enableAvatarButton: true,
+      enableHomeButton: true,
+    });
+    document.adoptedStyleSheets = [];
+
+    // With `isUnbound` unset (flag off), no global bind hook is installed.
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: false,
+    });
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertEquals(undefined, window.__webuiToolbarApplyBoundProfile);
+    document.body.removeChild(app);
+
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      backButtonEnabled: false,
+      forwardButtonEnabled: false,
+      homeButtonShouldBeShown: false,
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+      isUnbound: true,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertEquals('function', typeof window.__webuiToolbarApplyBoundProfile);
+
+    assertFalse(!!app.shadowRoot.querySelector('#glic-button'));
+    assertFalse(!!app.shadowRoot.querySelector('#avatar'));
+    const homeBefore = app.shadowRoot.querySelector<HTMLElement>('#home');
+    assertTrue(!!homeBefore);
+    assertTrue(homeBefore.hidden);
+
+    let scheduleLayoutCalls = 0;
+    const appInternal = app as unknown as {
+      scheduleLayoutResponsiveControls_: () => void,
+    };
+    const origSchedule = appInternal.scheduleLayoutResponsiveControls_;
+    appInternal.scheduleLayoutResponsiveControls_ = function() {
+      scheduleLayoutCalls++;
+      origSchedule.call(app);
+    };
+
+    // Apply `colorsCss` and button diffs first on the fresh unbound element so
+    // the `!this.isColorChangeUpdaterStarted_` branch runs and the adopted
+    // sheet stays installed across `updateComplete` until
+    // `COLOR_PROVIDER_CHANGED` fires.
+    window.__webuiToolbarApplyBoundProfile!({
+      colorsCss: ':root { --test-bound-toolbar-color: rgb(12, 34, 56); }',
+      isProfileEligibleForGlic: true,
+      canShowAvatarForProfile: true,
+      homeButtonShouldBeShown: true,
+    });
+    assertEquals(1, document.adoptedStyleSheets.length);
+    assertEquals(1, scheduleLayoutCalls);
+    assertEquals(
+        'rgb(12, 34, 56)',
+        getComputedStyle(document.documentElement)
+            .getPropertyValue('--test-bound-toolbar-color')
+            .trim());
+    await app.updateComplete;
+    assertEquals(1, document.adoptedStyleSheets.length);
+
+    assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
+    assertTrue(!!app.shadowRoot.querySelector('#avatar'));
+    const homeAfter = app.shadowRoot.querySelector<HTMLElement>('#home');
+    assertTrue(!!homeAfter);
+    assertFalse(homeAfter.hidden);
+
+    // Next ColorChangeUpdater refresh removes the temporary adopted sheet.
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    assertEquals(0, document.adoptedStyleSheets.length);
+
+    // Empty or unchanged values do no stylesheet or responsive-controls work.
+    scheduleLayoutCalls = 0;
+    window.__webuiToolbarApplyBoundProfile!({});
+    window.__webuiToolbarApplyBoundProfile!({
+      isProfileEligibleForGlic: true,
+      canShowAvatarForProfile: true,
+      homeButtonShouldBeShown: true,
+    });
+    assertEquals(0, document.adoptedStyleSheets.length);
+    assertEquals(0, scheduleLayoutCalls);
+
+    // Resetting `adoptedStyleSheets` externally does not block re-applying the
+    // same `colorsCss` string.
+    const repeatedCss =
+        ':root { --test-bound-toolbar-color: rgb(78, 90, 12); }';
+    window.__webuiToolbarApplyBoundProfile!({colorsCss: repeatedCss});
+    assertEquals(1, document.adoptedStyleSheets.length);
+    document.adoptedStyleSheets = [];
+    window.__webuiToolbarApplyBoundProfile!({colorsCss: repeatedCss});
+    assertEquals(1, document.adoptedStyleSheets.length);
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    assertEquals(0, document.adoptedStyleSheets.length);
+
+    // Added buttons get help bubble anchors, and removed ones lose them.
+    await microtasksFinished();
+    assertTrue(app.canShowHelpBubble('kGlicButtonElementId'));
+    assertTrue(app.canShowHelpBubble('kToolbarAvatarButtonElementId'));
+    window.__webuiToolbarApplyBoundProfile!({
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+    });
+    await app.updateComplete;
+    await microtasksFinished();
+    assertFalse(!!app.shadowRoot.querySelector('#glic-button'));
+    assertFalse(app.canShowHelpBubble('kGlicButtonElementId'));
+    assertFalse(app.canShowHelpBubble('kToolbarAvatarButtonElementId'));
+
+    // Once the window's ToolbarState arrives, it owns the home button.
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await app.updateComplete;
+    window.__webuiToolbarApplyBoundProfile!({homeButtonShouldBeShown: true});
+    await app.updateComplete;
+    assertTrue(app.shadowRoot.querySelector<HTMLElement>('#home')!.hidden);
+  });
+
+  test('UnboundAppliesStashedBoundProfile', async () => {
+    loadTimeData.overrideValues({
+      enableGlicButton: true,
+      enableAvatarButton: true,
+      enableHomeButton: true,
+    });
+    document.adoptedStyleSheets = [];
+    // The browser stashes the bound state when it binds before this script
+    // installs the bind hook.
+    window.__webuiToolbarBoundProfile = {
+      colorsCss: ':root { --test-stashed-color: rgb(1, 2, 3); }',
+      isProfileEligibleForGlic: true,
+    };
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+      isUnbound: true,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+
+    assertEquals(undefined, window.__webuiToolbarBoundProfile);
+    assertEquals(1, document.adoptedStyleSheets.length);
+    assertEquals(
+        'rgb(1, 2, 3)',
+        getComputedStyle(document.documentElement)
+            .getPropertyValue('--test-stashed-color')
+            .trim());
+    assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
+    assertFalse(!!app.shadowRoot.querySelector('#avatar'));
+
+    document.body.removeChild(app);
+    assertEquals(0, document.adoptedStyleSheets.length);
+  });
+
+  test('UnboundPreDomContentLoadedInitialStateAppliesColorsCss', async () => {
+    loadTimeData.overrideValues({
+      enableGlicButton: true,
+      enableAvatarButton: true,
+      enableHomeButton: true,
+    });
+    document.adoptedStyleSheets = [];
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      backButtonEnabled: false,
+      forwardButtonEnabled: false,
+      homeButtonShouldBeShown: true,
+      isProfileEligibleForGlic: true,
+      canShowAvatarForProfile: true,
+      isUnbound: true,
+      colorsCss: ':root { --test-pre-dcl-color: rgb(90, 80, 70); }',
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+
+    assertEquals(1, document.adoptedStyleSheets.length);
+    assertEquals(
+        'rgb(90, 80, 70)',
+        getComputedStyle(document.documentElement)
+            .getPropertyValue('--test-pre-dcl-color')
+            .trim());
+    assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
+    assertTrue(!!app.shadowRoot.querySelector('#avatar'));
+
+    // Re-applying the same diff at commit leaves the sheet as is.
+    window.__webuiToolbarApplyBoundProfile!({
+      colorsCss: ':root { --test-pre-dcl-color: rgb(90, 80, 70); }',
+      isProfileEligibleForGlic: true,
+      canShowAvatarForProfile: true,
+      homeButtonShouldBeShown: true,
+    });
+    assertEquals(1, document.adoptedStyleSheets.length);
+
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    assertEquals(0, document.adoptedStyleSheets.length);
   });
 });

@@ -60,6 +60,8 @@ export enum ToolbarStateKey {
   IS_FALLBACK_PREWARMING = 'isFallbackPrewarming',
   IS_PROFILE_ELIGIBLE_FOR_GLIC = 'isProfileEligibleForGlic',
   CAN_SHOW_AVATAR_FOR_PROFILE = 'canShowAvatarForProfile',
+  IS_UNBOUND = 'isUnbound',
+  COLORS_CSS = 'colorsCss',
 }
 
 /**
@@ -79,6 +81,26 @@ export interface ToolbarFlatStateSchema {
   [ToolbarStateKey.IS_FALLBACK_PREWARMING]: boolean;
   [ToolbarStateKey.IS_PROFILE_ELIGIBLE_FOR_GLIC]: boolean;
   [ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE]: boolean;
+  [ToolbarStateKey.IS_UNBOUND]: boolean;
+  [ToolbarStateKey.COLORS_CSS]: string;
+}
+
+/**
+ * Profile-derived state delivered on the frame channel when an unbound toolbar
+ * spare is bound to a window's user profile.
+ */
+export interface BoundProfileState {
+  isProfileEligibleForGlic?: boolean;
+  canShowAvatarForProfile?: boolean;
+  homeButtonShouldBeShown?: boolean;
+  colorsCss?: string;
+}
+
+declare global {
+  interface Window {
+    __webuiToolbarApplyBoundProfile?: (state: BoundProfileState) => void;
+    __webuiToolbarBoundProfile?: BoundProfileState;
+  }
 }
 
 function createDefaultPermissionChipState(): PermissionChipState {
@@ -199,6 +221,15 @@ export class InitialStateReader {
   getInteger<K extends keyof ToolbarFlatStateSchema>(key: K): number {
     const val = this.state_[key];
     return typeof val === 'number' ? val : 0;
+  }
+
+  /**
+   * Reads a string property for the given `key` from the initial state
+   * dictionary. Returns `''` if the property is missing or not a string.
+   */
+  getString<K extends keyof ToolbarFlatStateSchema>(key: K): string {
+    const val = this.state_[key];
+    return typeof val === 'string' ? val : '';
   }
 }
 

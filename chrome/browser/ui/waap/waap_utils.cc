@@ -86,6 +86,31 @@ class PrewarmColorProviderSource : public ui::ColorProviderSource,
   const ui::ColorProviderKey key_;
 };
 
+void SetPrewarmColorProviderSource(content::WebContents* web_contents,
+                                   ui::ColorProviderKey key) {
+  auto source = std::make_unique<PrewarmColorProviderSource>(std::move(key));
+  // Switch the observed source before replacing UserData so destroying a
+  // previous PrewarmColorProviderSource does not transiently fall back to the
+  // default source.
+  web_contents->SetColorProviderSource(source.get());
+  web_contents->SetUserData(PrewarmColorProviderSource::kUserDataKey,
+                            std::move(source));
+}
+
+std::unique_ptr<content::WebContents> CreateToolbarWebContents(
+    Profile& contents_profile) {
+  return content::WebContents::Create(content::WebContents::CreateParams(
+      &contents_profile,
+      content::SiteInstance::CreateForURL(
+          &contents_profile, GURL(chrome::kChromeUIWebUIToolbarURL))));
+}
+
+void NavigateToolbarWebContents(content::WebContents& web_contents) {
+  web_contents.GetController().LoadURL(
+      GURL(chrome::kChromeUIWebUIToolbarURL), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+}
+
 }  // namespace
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -141,6 +166,28 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  ConfigureCommonWebUIContents(web_contents, task_manager_string_id,
+                               /*create_prefs_tab_helper=*/true);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Set up the color provider source so that early navigation during background
+  // prewarming (before a views::Widget exists) can resolve theme color
+  // properties. Skipped on Android, where the NTB starts loading only after
+  // NtbWebUiCoordinator attaches the WindowAndroid (the real
+  // ColorProviderSource), so a temporary source would only cause an extra
+  // ColorProvider and WebPreferences recomputation.
+  // TODO(crbug.com/581783426): Enable for Android if the NTB WebContents is
+  // prewarmed before a window exists (e.g. PrewarmWebUIContents with
+  // TopChromeWebUIProfile), with an Android ColorProviderKey source.
+  SetPrewarmColorProviderSource(web_contents, GetColorProviderKey(profile));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+// static
+void PrewarmHelper::ConfigureCommonWebUIContents(
+    content::WebContents* web_contents,
+    int task_manager_string_id,
+    bool create_prefs_tab_helper) {
   if (auto* registry =
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
     registry->SetPageType(web_contents,
@@ -152,7 +199,9 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
   // Needed for UKM PageLoad metrics.
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 
-  PrefsTabHelper::CreateForWebContents(web_contents);
+  if (create_prefs_tab_helper) {
+    PrefsTabHelper::CreateForWebContents(web_contents);
+  }
   task_manager::WebContentsTags::CreateForToolContents(web_contents,
                                                        task_manager_string_id);
 
@@ -170,23 +219,6 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
     web_contents->OptOutFrameEviction(
         content::FrameEvictionOptOutClient::GetPassKey());
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Set up the color provider source so that early navigation during background
-  // prewarming (before a views::Widget exists) can resolve theme color
-  // properties. Skipped on Android, where the NTB starts loading only after
-  // NtbWebUiCoordinator attaches the WindowAndroid (the real
-  // ColorProviderSource), so a temporary source would only cause an extra
-  // ColorProvider and WebPreferences recomputation.
-  // TODO(crbug.com/581783426): Enable for Android if the NTB WebContents is
-  // prewarmed before a window exists (e.g. PrewarmWebUIContents with
-  // TopChromeWebUIProfile), with an Android ColorProviderKey source.
-  auto source = std::make_unique<PrewarmColorProviderSource>(
-      GetColorProviderKey(profile));
-  web_contents->SetColorProviderSource(source.get());
-  web_contents->SetUserData(PrewarmColorProviderSource::kUserDataKey,
-                            std::move(source));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -201,25 +233,61 @@ std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUIContents(
     bool pre_navigate) {
   Profile& contents_profile =
       webui::GetProfileForTopChromeWebUIContents(profile);
-  scoped_refptr<content::SiteInstance> site_instance =
-      content::SiteInstance::CreateForURL(
-          &contents_profile, GURL(chrome::kChromeUIWebUIToolbarURL));
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(&contents_profile, site_instance));
+      CreateToolbarWebContents(contents_profile);
 
   ConfigureWebUIContents(web_contents.get(), profile,
                          IDS_TASK_MANAGER_WEBUI_TOOLBAR);
 
   if (pre_navigate) {
-    web_contents->GetController().LoadURL(
-        GURL(chrome::kChromeUIWebUIToolbarURL), content::Referrer(),
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+    NavigateToolbarWebContents(*web_contents);
   } else {
-    site_instance->GetProcess()->Init();
+    web_contents->GetSiteInstance()->GetProcess()->Init();
   }
 
   return web_contents;
+}
+
+std::unique_ptr<content::WebContents>
+PrewarmHelper::PrewarmUnboundWebUIContents(
+    Profile& template_profile,
+    base::FunctionRef<void(content::WebContents&)> seed) {
+  Profile* top_chrome_profile = webui::GetTopChromeWebUIProfile();
+  CHECK(top_chrome_profile);
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateToolbarWebContents(*top_chrome_profile);
+
+  ConfigureCommonWebUIContents(web_contents.get(),
+                               IDS_TASK_MANAGER_WEBUI_TOOLBAR,
+                               /*create_prefs_tab_helper=*/false);
+  // Set up the color provider source so that early navigation can resolve
+  // theme color properties.
+  SetPrewarmColorProviderSource(web_contents.get(),
+                                GetColorProviderKey(&template_profile));
+  seed(*web_contents);
+  NavigateToolbarWebContents(*web_contents);
+  return web_contents;
+}
+
+bool PrewarmHelper::BindUserProfile(content::WebContents& web_contents,
+                                    Profile& profile) {
+  webui::SetUserProfile(&web_contents, &profile);
+
+  CHECK(!PrefsTabHelper::FromWebContents(&web_contents));
+  PrefsTabHelper::CreateForWebContents(&web_contents);
+  web_contents.SyncRendererPrefs();
+
+  const auto* current_source = static_cast<const PrewarmColorProviderSource*>(
+      web_contents.GetUserData(PrewarmColorProviderSource::kUserDataKey));
+  CHECK(current_source);
+  ui::ColorProviderKey profile_key = GetColorProviderKey(&profile);
+  const bool colors_changed =
+      profile_key != current_source->GetColorProviderKey();
+  if (colors_changed) {
+    SetPrewarmColorProviderSource(&web_contents, std::move(profile_key));
+  }
+  web_contents.OnWebPreferencesChanged();
+  return colors_changed;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

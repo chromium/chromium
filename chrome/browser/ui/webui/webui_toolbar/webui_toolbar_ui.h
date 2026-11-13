@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -40,6 +41,7 @@ class HelpBubbleHandler;
 
 class OmniboxController;
 class Profile;
+class WebUIToolbarUnboundSeedUserData;
 
 // The webui controller for the webui toolbar. This class has a two part
 // initialization. The controller is not ready to use until after
@@ -100,6 +102,14 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // It can change while the browser runs, and a prewarmed toolbar reads it
   // when it navigates, which can be long before a window adopts it.
   static ProfileButtonEligibility GetProfileButtonEligibility(Profile* profile);
+
+  // Delivers any fields that differ from the unbound spare's seeded values
+  // (including `colorsCss` only when `colors_changed` is true) to the
+  // `WebUIToolbarUI` controller of `web_contents`, if any, and removes
+  // `WebUIToolbarUnboundSeedUserData` from `web_contents`.
+  static void OnUserProfileBound(content::WebContents& web_contents,
+                                 Profile& profile,
+                                 bool colors_changed);
 
   void BindInterface(
       mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
@@ -171,6 +181,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
     return omnibox_controller_;
   }
 
+  base::DictValue BuildInitialStateForTesting();
+  // Does what OnUserProfileBound() does for this controller.
+  void OnUserProfileBoundForTesting(Profile& profile, bool colors_changed);
+
   bool is_initialized() const { return is_initialized_; }
 
  private:
@@ -186,12 +200,29 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   void InitBrowserControlsService(DependencyProvider& dependency_provider);
   void InitToolbarUIService(DependencyProvider& dependency_provider);
+  base::DictValue BuildInitialState();
+  // Applies the bound `profile` diff to this controller.
+  void ApplyBoundUserProfile(Profile& profile, bool colors_changed);
+  base::DictValue BuildBoundProfileState(
+      Profile& profile,
+      const WebUIToolbarUnboundSeedUserData& seed_data,
+      bool colors_changed);
+  void OverwriteInitialStateWebUIProperty();
+  void SendBoundProfileState(const base::DictValue& bound_state);
+
+  class BoundProfileStateHandler;
 
   // Returns the profile of the window of the toolbar. See
-  // webui::GetUserProfile().
+  // webui::GetUserProfile(). Must only be called once the user profile is
+  // bound.
   Profile* GetUserProfile() const;
 
   bool is_initialized_ = false;
+  bool has_committed_navigation_ = false;
+  bool sent_unbound_initial_state_ = false;
+  std::optional<base::DictValue> pending_bound_profile_state_;
+  // Owned by `web_ui()`, which destroys this controller first.
+  raw_ptr<BoundProfileStateHandler> bound_profile_state_handler_ = nullptr;
   raw_ptr<OmniboxController> omnibox_controller_ = nullptr;
 
   std::unique_ptr<browser_controls_api::BrowserControlsService>
@@ -261,6 +292,33 @@ class WebUIToolbarUIDependencyProviderUserData
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtr<WebUIToolbarUI::DependencyProvider> provider_;
+};
+
+// Stores the template profile's seeded toolbar values on an unbound spare
+// `content::WebContents` while its user profile is deferred, so
+// `WebUIToolbarUI` populates `initialState` from them and sends only fields
+// that differ when the adopting window binds its user profile.
+class WebUIToolbarUnboundSeedUserData
+    : public content::WebContentsUserData<WebUIToolbarUnboundSeedUserData> {
+ public:
+  ~WebUIToolbarUnboundSeedUserData() override;
+
+  const WebUIToolbarUI::ProfileButtonEligibility& button_eligibility() const {
+    return button_eligibility_;
+  }
+  bool home_button_should_be_shown() const {
+    return home_button_should_be_shown_;
+  }
+
+ private:
+  WebUIToolbarUnboundSeedUserData(content::WebContents* contents,
+                                  Profile& template_profile);
+
+  friend class content::WebContentsUserData<WebUIToolbarUnboundSeedUserData>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  WebUIToolbarUI::ProfileButtonEligibility button_eligibility_;
+  bool home_button_should_be_shown_ = false;
 };
 
 class WebUIToolbarConfig : public DefaultTopChromeWebUIConfig<WebUIToolbarUI> {

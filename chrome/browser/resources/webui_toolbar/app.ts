@@ -21,18 +21,60 @@ import {HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {ToolbarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, createDefaultLocationBarState, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
-import type {BrowserProxy, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
+import type {BoundProfileState, BrowserProxy, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import type {ExtensionsElement} from './extensions.js';
 import type {LocationBarElement} from './location_bar.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
+
+let boundColorsStyleSheet: CSSStyleSheet|null = null;
+let boundColorsCss = '';
+let boundColorsAbortController: AbortController|null = null;
+
+function clearBoundColorsCss() {
+  boundColorsAbortController?.abort();
+  boundColorsAbortController = null;
+  if (boundColorsStyleSheet) {
+    const sheet = boundColorsStyleSheet;
+    boundColorsStyleSheet = null;
+    document.adoptedStyleSheets =
+        document.adoptedStyleSheets.filter(s => s !== sheet);
+  }
+  boundColorsCss = '';
+}
+
+// Adopts `colorsCss` until the next `COLOR_PROVIDER_CHANGED` event. Returns
+// false if `colorsCss` is empty or already applied.
+function applyBoundColorsCss(colorsCss?: string): boolean {
+  if (!colorsCss ||
+      (colorsCss === boundColorsCss && boundColorsStyleSheet !== null &&
+       document.adoptedStyleSheets.includes(boundColorsStyleSheet))) {
+    return false;
+  }
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(colorsCss);
+  clearBoundColorsCss();
+  boundColorsCss = colorsCss;
+  boundColorsStyleSheet = sheet;
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+
+  const abortController = new AbortController();
+  boundColorsAbortController = abortController;
+  ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+      COLOR_PROVIDER_CHANGED, () => {
+        if (boundColorsStyleSheet === sheet) {
+          clearBoundColorsCss();
+        }
+      }, {once: true, signal: abortController.signal});
+  return true;
+}
 
 // LINT.IfChange(InitialWebUIRendererMilestones)
 const MARK_JS_RESOURCES_LOADED = 'JsResourcesLoaded';
@@ -266,6 +308,9 @@ export class ToolbarAppElement extends AppElementBase {
       INVALID_TOOLBAR_STATE_LISTENER_HANDLE;
   private iconTable_: IconTable;
   private isPageInitialized_: boolean = false;
+  private registeredTrackedElements_ = new Map<string, HTMLElement>();
+  private hasStartedRegisteringTrackedElements_ = false;
+  private isColorChangeUpdaterStarted_ = false;
   private hasReadState_ = false;
   // Set when the browser's first ToolbarState (the
   // ToolbarUIService.getInitialState() answer) arrives, and reset when this
@@ -354,8 +399,96 @@ export class ToolbarAppElement extends AppElementBase {
       e.preventDefault();
     });
     this.iconTable_ = IconTable.getInstance();
-    ColorChangeUpdater.forDocument().start();
+    if (!this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND)) {
+      this.startColorChangeUpdater_();
+    }
     MetricsReporterImpl.getInstance().mark(MARK_JS_RESOURCES_LOADED);
+  }
+
+  // Starts `colors.css` updates. An unbound spare defers this until a window
+  // adopts it, so the first `COLOR_PROVIDER_CHANGED` event follows a
+  // `colors.css` load for the bound profile, not for the template profile.
+  private startColorChangeUpdater_() {
+    if (this.isColorChangeUpdaterStarted_) {
+      return;
+    }
+    this.isColorChangeUpdaterStarted_ = true;
+    ColorChangeUpdater.forDocument().start();
+  }
+
+  /**
+   * Applies the user profile's theme colors CSS and button eligibility
+   * synchronously when an unbound toolbar spare is adopted by a window.
+   */
+  applyBoundProfile(state: BoundProfileState) {
+    const colorsApplied = applyBoundColorsCss(state.colorsCss);
+    if (!this.isColorChangeUpdaterStarted_) {
+      this.startColorChangeUpdater_();
+    } else if (colorsApplied) {
+      // The `colors.css` load that start() triggered may have finished
+      // already, so load it again to retire the adopted sheet.
+      ColorChangeUpdater.forDocument().onColorProviderChanged();
+    }
+
+    let controlsChanged = false;
+    if (state.isProfileEligibleForGlic !== undefined) {
+      const nextGlic = loadTimeData.getBoolean('enableGlicButton') &&
+          state.isProfileEligibleForGlic;
+      if (this.isGlicButtonEnabled_ !== nextGlic) {
+        this.isGlicButtonEnabled_ = nextGlic;
+        controlsChanged = true;
+      }
+    }
+    if (state.canShowAvatarForProfile !== undefined) {
+      const nextAvatar = loadTimeData.getBoolean('enableAvatarButton') &&
+          state.canShowAvatarForProfile;
+      if (this.isAvatarButtonEnabled_ !== nextAvatar) {
+        this.isAvatarButtonEnabled_ = nextAvatar;
+        controlsChanged = true;
+        // The first toolbar state clears `initial-load` on the avatar it
+        // renders, so an avatar added after it clears its own.
+        if (nextAvatar && this.hasReceivedToolbarState_) {
+          this.updateComplete.then(() => this.clearAvatarInitialLoad_());
+        }
+      }
+    }
+    if (!this.hasReceivedToolbarState_ &&
+        state.homeButtonShouldBeShown !== undefined &&
+        this.toolbarState_.homeControlState.shouldBeShown !==
+            state.homeButtonShouldBeShown) {
+      this.toolbarState_ = {
+        ...this.toolbarState_,
+        homeControlState: {
+          ...this.toolbarState_.homeControlState,
+          shouldBeShown: state.homeButtonShouldBeShown,
+        },
+      };
+      controlsChanged = true;
+    }
+    if (!controlsChanged) {
+      return;
+    }
+    if (this.hasNonNavigationControlsEnabled_() && this.isConnected) {
+      ensureLazyLoaded().then(() => this.scheduleLayoutResponsiveControls_());
+    }
+    this.scheduleLayoutResponsiveControls_();
+    if (this.hasStartedRegisteringTrackedElements_) {
+      const sessionId = this.initializeSessionId_;
+      this.updateComplete.then(() => this.registerTrackedElements_(sessionId));
+    }
+  }
+
+  // Removes `initial-load` from the avatar button once it has rendered, so
+  // later changes animate.
+  private async clearAvatarInitialLoad_() {
+    const avatar = this.shadowRoot.querySelector<CrLitElement>('#avatar');
+    if (!avatar) {
+      return;
+    }
+    await whenUpgraded(avatar);
+    requestAnimationFrame(() => {
+      avatar.classList.remove('initial-load');
+    });
   }
 
   /**
@@ -368,7 +501,13 @@ export class ToolbarAppElement extends AppElementBase {
     if (this.webUIToolbarFullyEnabled_) {
       this.setAttribute('webui-toolbar-fully-enabled', '');
     }
-    if (this.hasNonNavigationControlsEnabled_()) {
+    // An unbound spare may enable the Glic or avatar button when a window
+    // adopts it, so it also preloads lazy_load.js for them.
+    const mayEnableBoundControls =
+        this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND) &&
+        (loadTimeData.getBoolean('enableGlicButton') ||
+         loadTimeData.getBoolean('enableAvatarButton'));
+    if (this.hasNonNavigationControlsEnabled_() || mayEnableBoundControls) {
       // Request loading of the lazy loaded module within an idle callback.
       // Pass a timeout because untimed idle callbacks only run during Blink
       // idle periods, which never start while the toolbar has a zero-width
@@ -430,21 +569,15 @@ export class ToolbarAppElement extends AppElementBase {
               const isFirstToolbarState = !this.hasReceivedToolbarState_;
               if (isFirstToolbarState) {
                 this.hasReceivedToolbarState_ = true;
+                // An unbound spare adopted with no bound-state diff starts
+                // `colors.css` updates here.
+                this.startColorChangeUpdater_();
                 this.updateComplete.then(async () => {
-                  const avatar =
-                      this.shadowRoot.querySelector<CrLitElement>('#avatar');
                   const extensions =
                       this.shadowRoot.querySelector<ExtensionsElement>(
                           '#extensions');
                   await Promise.all([
-                    (async () => {
-                      if (avatar) {
-                        await whenUpgraded(avatar);
-                        requestAnimationFrame(() => {
-                          avatar.classList.remove('initial-load');
-                        });
-                      }
-                    })(),
+                    this.clearAvatarInitialLoad_(),
                     (async () => {
                       if (extensions) {
                         await whenUpgraded(extensions);
@@ -484,6 +617,24 @@ export class ToolbarAppElement extends AppElementBase {
         this.initializePage_(sessionId);
       });
     }
+
+    if (this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND)) {
+      // A window that adopted this spare before commit overwrote
+      // `initialState`, adding `colorsCss` if its colors differ.
+      if (applyBoundColorsCss(
+              this.initialState_.getString(ToolbarStateKey.COLORS_CSS))) {
+        this.startColorChangeUpdater_();
+      }
+      window.__webuiToolbarApplyBoundProfile = (state: BoundProfileState) =>
+          this.applyBoundProfile(state);
+      // The browser stashes the bound state here if a window adopted this
+      // spare after commit but before this script ran.
+      const stashedState = window.__webuiToolbarBoundProfile;
+      if (stashedState) {
+        delete window.__webuiToolbarBoundProfile;
+        this.applyBoundProfile(stashedState);
+      }
+    }
   }
 
   // Returns whether any control other than the navigation buttons (back,
@@ -503,27 +654,34 @@ export class ToolbarAppElement extends AppElementBase {
         this.isAppMenuButtonEnabled_;
   }
 
-  private async initializePage_(sessionId: number) {
-    if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
-        this.isPageInitialized_) {
-      return;
+  private async registerTrackedElements_(sessionId: number): Promise<boolean> {
+    if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
+      return false;
     }
-
     const undefinedElements =
         this.shadowRoot.querySelectorAll(':not(:defined)');
     if (undefinedElements.length > 0) {
       await Promise.all(Array.from(
           undefinedElements, el => customElements.whenDefined(el.localName)));
-      if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
-          this.isPageInitialized_) {
-        return;
+      if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
+        return false;
       }
     }
-    this.isPageInitialized_ = true;
 
     for (const {selector, id} of TRACKED_ELEMENTS) {
-      const el = this.shadowRoot.querySelector<HTMLElement>(selector);
+      const el =
+          this.shadowRoot.querySelector<HTMLElement>(selector) ?? undefined;
+      const registeredEl = this.registeredTrackedElements_.get(id);
+      if (el === registeredEl) {
+        continue;
+      }
+      // A control that applyBoundProfile() removed or re-rendered.
+      if (registeredEl) {
+        this.unregisterHelpBubble(id);
+        this.registeredTrackedElements_.delete(id);
+      }
       if (el) {
+        this.registeredTrackedElements_.set(id, el);
         const tracker = (el as {highlightTracker?: unknown}).highlightTracker;
         this.registerHelpBubble(id, el, {
           onHighlightChanged: (highlighted: boolean) => {
@@ -537,6 +695,21 @@ export class ToolbarAppElement extends AppElementBase {
         });
       }
     }
+    return true;
+  }
+
+  private async initializePage_(sessionId: number) {
+    if (sessionId !== this.initializeSessionId_ || !this.isConnected ||
+        this.isPageInitialized_) {
+      return;
+    }
+
+    this.hasStartedRegisteringTrackedElements_ = true;
+    if (!await this.registerTrackedElements_(sessionId) ||
+        this.isPageInitialized_) {
+      return;
+    }
+    this.isPageInitialized_ = true;
 
     const waitSelectors = [
       '#back',
@@ -575,6 +748,9 @@ export class ToolbarAppElement extends AppElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    delete window.__webuiToolbarApplyBoundProfile;
+    clearBoundColorsCss();
+
     this.removeEventListener('dragover', this.dragOverListener_);
     this.removeEventListener('drop', this.dropListener_);
     this.removeEventListener('keydown', this.keyDownListener_);
@@ -595,15 +771,12 @@ export class ToolbarAppElement extends AppElementBase {
     this.hasReceivedToolbarState_ = false;
     this.initializeSessionId_++;
 
-    if (this.isPageInitialized_) {
-      for (const {selector, id} of TRACKED_ELEMENTS) {
-        const el = this.shadowRoot.querySelector<HTMLElement>(selector);
-        if (el) {
-          this.unregisterHelpBubble(id);
-        }
-      }
-      this.isPageInitialized_ = false;
+    for (const id of this.registeredTrackedElements_.keys()) {
+      this.unregisterHelpBubble(id);
     }
+    this.registeredTrackedElements_.clear();
+    this.hasStartedRegisteringTrackedElements_ = false;
+    this.isPageInitialized_ = false;
   }
 
   // Drill down to find the actual active element

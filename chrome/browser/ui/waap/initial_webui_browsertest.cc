@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -96,7 +97,10 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1524,18 +1528,22 @@ using TakeResult = WebUIContentsPrerenderer::TakeResult;
 // paint deadline is short, so that refills after windows that built their own
 // toolbar, such as the startup window, do not keep tests idle.
 std::vector<base::test::FeatureRefAndParams> GetRefillFeatures(
-    std::vector<base::test::FeatureRefAndParams> additional_features) {
+    std::vector<base::test::FeatureRefAndParams> additional_features,
+    bool unbound = false) {
   additional_features.emplace_back(
       features::kWebUIReloadButton,
       base::FieldTrialParams{
           {"WebUIReloadButtonPrewarmWebUI", "true"},
           {"WebUIReloadButtonPrewarmWebUIPreNavigate", "true"},
           {"WebUIReloadButtonProfilePrewarming", "true"}});
-  additional_features.emplace_back(
-      features::kTopChromeWebUIPrerendering,
-      base::FieldTrialParams{
-          {"TopChromeWebUIPrerenderingDelay", "0s"},
-          {"TopChromeWebUIPrerenderingPaintDeadline", "100ms"}});
+  base::FieldTrialParams prerendering_params{
+      {"TopChromeWebUIPrerenderingDelay", "0s"},
+      {"TopChromeWebUIPrerenderingPaintDeadline", "100ms"}};
+  if (unbound) {
+    prerendering_params["TopChromeWebUIPrerenderingUnbound"] = "true";
+  }
+  additional_features.emplace_back(features::kTopChromeWebUIPrerendering,
+                                   std::move(prerendering_params));
   return additional_features;
 }
 
@@ -1553,9 +1561,10 @@ class InitialWebUIProfilePrewarmRefillBrowserTest
  protected:
   explicit InitialWebUIProfilePrewarmRefillBrowserTest(
       std::vector<base::test::FeatureRefAndParams> additional_features,
-      std::vector<base::test::FeatureRef> disabled_features)
+      std::vector<base::test::FeatureRef> disabled_features,
+      bool unbound = false)
       : InitialWebUIBrowserTestBase(
-            GetRefillFeatures(std::move(additional_features)),
+            GetRefillFeatures(std::move(additional_features), unbound),
             std::move(disabled_features)) {}
 
   InitialWebUIProfileService* GetService() {
@@ -2038,5 +2047,190 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(spare, service->toolbar_web_contents_for_testing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+class InitialWebUIUnboundPrerenderBrowserTest
+    : public InitialWebUIProfilePrewarmRefillBrowserTest {
+ public:
+  InitialWebUIUnboundPrerenderBrowserTest()
+      : InitialWebUIProfilePrewarmRefillBrowserTest(
+            {{features::kTopChromeWebUISharedRenderer, {}},
+             {features::kWebUIToolbar, {}},
+             {features::kGlic, {}}},
+            /*disabled_features=*/{},
+            /*unbound=*/true) {}
+
+ protected:
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, `chromeos::features::kFeatureManagementGlic` is off by default
+  // and `AvatarToolbarButtonInterface::CanShowForProfile()` hides `#avatar` on
+  // regular windows while showing it on Incognito windows (`false -> true`).
+  static constexpr bool kRegularHasGlic = false;
+  static constexpr bool kRegularHasAvatar = false;
+#else
+  // On Win/Mac/Linux, regular profiles show both `#glic-button` and `#avatar`,
+  // and Incognito hides `#glic-button` (`true -> false`).
+  static constexpr bool kRegularHasGlic = true;
+  static constexpr bool kRegularHasAvatar = true;
+#endif
+  static constexpr bool kIncognitoHasGlic = false;
+  static constexpr bool kIncognitoHasAvatar = true;
+
+  InitialWebUIProfileService* service() {
+    return InitialWebUIProfileService::GetForTopChromeWebUIProfile();
+  }
+
+  content::WebContents* WaitForUnboundSpare() {
+    if (!base::test::RunUntil([&]() {
+          return service() && service()->has_toolbar_contents_for_testing();
+        })) {
+      return nullptr;
+    }
+    return service()->toolbar_web_contents_for_testing();
+  }
+
+  void WaitForUnboundSpareToolbarReady(content::WebContents* spare) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 spare,
+                 "!!document.querySelector('toolbar-app') && "
+                 "!!document.querySelector('toolbar-app').shadowRoot && "
+                 "!!document.querySelector('toolbar-app').shadowRoot"
+                 ".querySelector('#reload')")
+          .ExtractBool();
+    }));
+    EXPECT_EQ(
+        kRegularHasGlic,
+        content::EvalJs(spare,
+                        "!!document.querySelector('toolbar-app').shadowRoot"
+                        ".querySelector('#glic-button')"));
+    EXPECT_EQ(
+        kRegularHasAvatar,
+        content::EvalJs(spare,
+                        "!!document.querySelector('toolbar-app').shadowRoot"
+                        ".querySelector('#avatar')"));
+  }
+
+  bool CssColorsMatch(content::WebContents* contents,
+                      const std::string& css_a,
+                      const std::string& css_b) {
+    return content::EvalJs(contents, content::JsReplace(R"(
+      (() => {
+        const normalize = c => {
+          const el = document.createElement('div');
+          el.style.color = c;
+          document.body.appendChild(el);
+          const out = getComputedStyle(el).color;
+          el.remove();
+          return out;
+        };
+        return !!$1 && !!$2 && normalize($1) === normalize($2);
+      })()
+    )",
+                                                        css_a, css_b))
+        .ExtractBool();
+  }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;  // Forces light mode.
+};
+
+// Verifies that no per-profile service is created in unbound mode, and that an
+// Incognito window adopts the light regular-seeded spare, receives the explicit
+// button-eligibility diff and dark `colorsCss`, and renders Incognito's button
+// state and toolbar color.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       IncognitoWindowAdoptsUnboundSpareWithColors) {
+  ASSERT_TRUE(InitialWebUIProfileService::IsUnboundPrerenderingEnabled());
+  Profile* regular_profile = browser()->GetProfile();
+  EXPECT_FALSE(
+      InitialWebUIProfileServiceFactory::GetForProfile(regular_profile));
+  const auto regular_eligibility =
+      WebUIToolbarUI::GetProfileButtonEligibility(regular_profile);
+  ASSERT_EQ(kRegularHasGlic, regular_eligibility.is_profile_eligible_for_glic);
+  ASSERT_EQ(kRegularHasAvatar, regular_eligibility.can_show_avatar_for_profile);
+
+  content::WebContents* spare = WaitForUnboundSpare();
+  ASSERT_TRUE(spare);
+  ASSERT_TRUE(content::WaitForLoadStop(spare));
+  EXPECT_FALSE(webui::GetUserProfile(spare));
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight, spare->GetColorMode());
+  WaitForUnboundSpareToolbarReady(spare);
+  const std::string unbound_toolbar_color =
+      content::EvalJs(spare,
+                      "getComputedStyle(document.documentElement)"
+                      ".getPropertyValue('--color-toolbar').trim()")
+          .ExtractString();
+
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito);
+  ASSERT_EQ(spare, GetToolbarContents(incognito));
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+  EXPECT_EQ(incognito->GetProfile(), webui::GetUserProfile(spare));
+  const auto incognito_eligibility =
+      WebUIToolbarUI::GetProfileButtonEligibility(incognito->GetProfile());
+  ASSERT_EQ(kIncognitoHasGlic,
+            incognito_eligibility.is_profile_eligible_for_glic);
+  ASSERT_EQ(kIncognitoHasAvatar,
+            incognito_eligibility.can_show_avatar_for_profile);
+  ASSERT_NE(regular_eligibility, incognito_eligibility);
+
+  // Wait for the bound diff to update the toolbar buttons and apply Incognito's
+  // toolbar color (once attached to `WebUIToolbarWebView`, `ColorChangeUpdater`
+  // may also finish refreshing `<link href="chrome://theme/colors.css">` and
+  // retire the temporary sheet, so `BoundProfileAppliedBeforeFirstPaint`
+  // checks the first frame while this test asserts the steady-state computed
+  // color).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(spare,
+                           "!!document.querySelector('toolbar-app').shadowRoot"
+                           ".querySelector('#glic-button')")
+                   .ExtractBool() == kIncognitoHasGlic &&
+           content::EvalJs(spare,
+                           "!!document.querySelector('toolbar-app').shadowRoot"
+                           ".querySelector('#avatar')")
+                   .ExtractBool() == kIncognitoHasAvatar;
+  }));
+  EXPECT_EQ(true,
+            content::EvalJs(spare,
+                            "document.querySelector('toolbar-app').shadowRoot"
+                            ".querySelector('#home').hidden"));
+
+  const std::string expected_incognito_css = ui::ConvertSkColorToCSSColor(
+      spare->GetColorProvider().GetColor(kColorToolbar));
+  content::WebContents* regular_toolbar = GetToolbarContents(browser());
+  const std::string regular_css = ui::ConvertSkColorToCSSColor(
+      regular_toolbar->GetColorProvider().GetColor(kColorToolbar));
+  ASSERT_NE(expected_incognito_css, regular_css);
+
+  const std::string actual_toolbar_color =
+      content::EvalJs(spare,
+                      "getComputedStyle(document.documentElement)"
+                      ".getPropertyValue('--color-toolbar').trim()")
+          .ExtractString();
+  EXPECT_FALSE(
+      CssColorsMatch(spare, actual_toolbar_color, unbound_toolbar_color));
+  EXPECT_TRUE(
+      CssColorsMatch(spare, actual_toolbar_color, expected_incognito_css));
+}
+
+// Verifies that closing the last normal window drops the unbound spare, and
+// opening a new window restarts the refill.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       DropsUnboundSpareWhenLastWindowCloses) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_TRUE(WaitForUnboundSpare());
+
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBackgroundMode);
+  CloseBrowserSynchronously(browser());
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  ASSERT_TRUE(CreateBrowser(profile));
+  EXPECT_TRUE(WaitForUnboundSpare());
+}
 
 }  // namespace waap

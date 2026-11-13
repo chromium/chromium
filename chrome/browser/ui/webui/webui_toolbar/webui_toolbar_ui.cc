@@ -67,9 +67,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/common/bindings_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
@@ -87,6 +90,19 @@ WebUIToolbarUIDependencyProviderUserData::
 WebUIToolbarUIDependencyProviderUserData::
     ~WebUIToolbarUIDependencyProviderUserData() = default;
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebUIToolbarUnboundSeedUserData);
+
+WebUIToolbarUnboundSeedUserData::WebUIToolbarUnboundSeedUserData(
+    content::WebContents* contents,
+    Profile& template_profile)
+    : content::WebContentsUserData<WebUIToolbarUnboundSeedUserData>(*contents),
+      button_eligibility_(
+          WebUIToolbarUI::GetProfileButtonEligibility(&template_profile)),
+      home_button_should_be_shown_(
+          template_profile.GetPrefs()->GetBoolean(prefs::kShowHomeButton)) {}
+
+WebUIToolbarUnboundSeedUserData::~WebUIToolbarUnboundSeedUserData() = default;
+
 namespace {
 
 constexpr char kIsNavigationLoading[] = "isNavigationLoading";
@@ -102,6 +118,15 @@ constexpr char kInitialWebUISurfaceSyncEnabled[] =
 constexpr char kIsFallbackPrewarming[] = "isFallbackPrewarming";
 constexpr char kIsProfileEligibleForGlic[] = "isProfileEligibleForGlic";
 constexpr char kCanShowAvatarForProfile[] = "canShowAvatarForProfile";
+constexpr char kIsUnbound[] = "isUnbound";
+constexpr char kColorsCss[] = "colorsCss";
+constexpr char kThemeColorsCssUrl[] =
+    "chrome://theme/colors.css?sets=ui,chrome";
+// Calls the page's bind hook, or stashes the bound state for the page to apply
+// when its script has not installed the hook yet.
+constexpr char kApplyBoundProfileFn[] =
+    "(window.__webuiToolbarApplyBoundProfile ?? "
+    "(state => window.__webuiToolbarBoundProfile = state))";
 
 // Retrieves the current toolbar state from the provider's fetcher
 // and populates a nested dictionary `initialState`.
@@ -121,12 +146,13 @@ constexpr char kCanShowAvatarForProfile[] = "canShowAvatarForProfile";
 //
 // If provider is null, such as during background prewarming when the actual
 // browser window view is not yet created, it directly populates default
-// dictionary values, except that it reads the profile's home button pref and
-// current touch mode.
+// dictionary values, except that it reads `profile`'s home button pref (or the
+// seeded value from `seed_data`) and current touch mode.
 // TODO(crbug.com/530370659): Replaced with mojom struct for type safety.
 void PopulateInitialState(base::DictValue& dict,
                           WebUIToolbarUI::DependencyProvider* provider,
-                          Profile* profile) {
+                          Profile* profile,
+                          const WebUIToolbarUnboundSeedUserData* seed_data) {
   dict.Set(
       kInitialWebUISurfaceSyncEnabled,
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
@@ -141,8 +167,10 @@ void PopulateInitialState(base::DictValue& dict,
     dict.Set(kForwardButtonEnabled, false);
     // A prewarmed toolbar then shows the home button and the touch layout from
     // its first frame, rather than after its window sends the toolbar state.
-    dict.Set(kHomeButtonShouldBeShown,
-             profile->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+    const bool show_home_button =
+        profile ? profile->GetPrefs()->GetBoolean(prefs::kShowHomeButton)
+                : seed_data->home_button_should_be_shown();
+    dict.Set(kHomeButtonShouldBeShown, show_home_button);
     dict.Set(kBatterySaverButtonVisible, false);
     dict.Set(kLayoutConstantsVersion, 0);
     dict.Set(kTouchUi, ui::TouchUiController::Get()->touch_ui());
@@ -197,6 +225,21 @@ void AddURLDataSources(Profile* profile) {
 }
 
 }  // namespace
+
+// Sends the bound profile state through the page-lifetime-checked
+// `CallJavascriptFunction()`.
+class WebUIToolbarUI::BoundProfileStateHandler
+    : public content::WebUIMessageHandler {
+ public:
+  void Send(const base::DictValue& bound_state) {
+    AllowJavascript();
+    CallJavascriptFunction(kApplyBoundProfileFn, bound_state);
+  }
+
+ private:
+  // content::WebUIMessageHandler:
+  void RegisterMessages() override {}
+};
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
     // Sets `enable_chrome_send` to true to enable
@@ -344,6 +387,27 @@ WebUIToolbarUI::GetProfileButtonEligibility(Profile* profile) {
   };
 }
 
+// static
+void WebUIToolbarUI::OnUserProfileBound(content::WebContents& web_contents,
+                                        Profile& profile,
+                                        bool colors_changed) {
+  if (content::WebUI* web_ui = web_contents.GetWebUI()) {
+    if (content::WebUIController* controller = web_ui->GetController()) {
+      if (auto* toolbar_ui = controller->GetAs<WebUIToolbarUI>()) {
+        toolbar_ui->ApplyBoundUserProfile(profile, colors_changed);
+      }
+    }
+  }
+  web_contents.RemoveUserData(WebUIToolbarUnboundSeedUserData::UserDataKey());
+}
+
+void WebUIToolbarUI::OnUserProfileBoundForTesting(Profile& profile,
+                                                  bool colors_changed) {
+  ApplyBoundUserProfile(profile, colors_changed);
+  web_ui()->GetWebContents()->RemoveUserData(
+      WebUIToolbarUnboundSeedUserData::UserDataKey());
+}
+
 WebUIToolbarConfig::WebUIToolbarConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIWebUIToolbarHost) {}
@@ -482,6 +546,153 @@ void WebUIToolbarUI::InitToolbarUIService(
       dependency_provider.GetToolbarUIServiceDelegate());
 }
 
+base::DictValue WebUIToolbarUI::BuildInitialState() {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* user_data =
+      WebUIToolbarUIDependencyProviderUserData::FromWebContents(web_contents);
+  base::DictValue values;
+  Profile* user_profile = webui::GetUserProfile(web_contents);
+  const bool is_deferred = !user_profile;
+  const WebUIToolbarUnboundSeedUserData* seed_data = nullptr;
+  if (is_deferred) {
+    seed_data = WebUIToolbarUnboundSeedUserData::FromWebContents(web_contents);
+    CHECK(seed_data);
+  }
+  if (user_data) {
+    auto* provider_user_data = user_data->provider();
+    PopulateInitialState(values, provider_user_data, user_profile, seed_data);
+    values.Set(kIsFallbackPrewarming, false);
+  } else {
+    PopulateInitialState(values, nullptr, user_profile, seed_data);
+    values.Set(kIsFallbackPrewarming, true);
+  }
+  // These depend on the profile of the window, so they are set for each frame
+  // instead of in the WebUIDataSource, which is shared by the toolbars in the
+  // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
+  // toolbars can be for windows of different profiles. An unbound spare starts
+  // with the template profile's seeded values and receives any fields that
+  // differ for the bound profile in ApplyBoundUserProfile().
+  const ProfileButtonEligibility eligibility =
+      user_profile ? GetProfileButtonEligibility(user_profile)
+                   : seed_data->button_eligibility();
+  values.Set(kIsProfileEligibleForGlic,
+             eligibility.is_profile_eligible_for_glic);
+  values.Set(kCanShowAvatarForProfile, eligibility.can_show_avatar_for_profile);
+  if (is_deferred) {
+    values.Set(kIsUnbound, true);
+  } else if (pending_bound_profile_state_) {
+    values.Set(kIsUnbound, true);
+    if (const std::string* colors_css =
+            pending_bound_profile_state_->FindString(kColorsCss)) {
+      values.Set(kColorsCss, *colors_css);
+    }
+  }
+  return values;
+}
+
+base::DictValue WebUIToolbarUI::BuildInitialStateForTesting() {
+  return BuildInitialState();
+}
+
+void WebUIToolbarUI::ApplyBoundUserProfile(Profile& profile,
+                                           bool colors_changed) {
+  // Bound-state delivery covers three cases depending on how far the spare's
+  // navigation has progressed when a window takes and binds it:
+  // 1. Take after commit: send the diff on the frame channel right away. The
+  //    page applies it, or stashes it if its script has not run yet.
+  // 2. Take after the frame got the unbound `initialState` and before commit:
+  //    overwrite `initialState` with the bound values (keeping
+  //    `isUnbound: true` and adding `colorsCss` when colors changed), and also
+  //    send the diff at commit in case the page reads `initialState` before
+  //    the overwrite lands (applying it twice is harmless). Note that if
+  //    `NavigationClient::CommitNavigation` is already in flight on
+  //    `IPC::Channel` while `has_committed_navigation_` is still false on the
+  //    UI thread, `WasShown` can precede `DidFinishNavigation()`'s
+  //    `SendBoundProfileState()` when `<toolbar-app>` cached `initialState`
+  //    before the overwrite landed.
+  // 3. Take before the frame got the unbound `initialState` (or with no WebUI
+  //    yet): send nothing; frame creation reads the bound profile directly.
+  CHECK_EQ(&profile, GetUserProfile());
+  if (!sent_unbound_initial_state_) {
+    return;
+  }
+  const auto* seed_data = WebUIToolbarUnboundSeedUserData::FromWebContents(
+      web_ui()->GetWebContents());
+  CHECK(seed_data);
+  base::DictValue bound_state =
+      BuildBoundProfileState(profile, *seed_data, colors_changed);
+  if (bound_state.empty()) {
+    return;
+  }
+  if (has_committed_navigation_) {
+    SendBoundProfileState(bound_state);
+    return;
+  }
+  pending_bound_profile_state_ = std::move(bound_state);
+  OverwriteInitialStateWebUIProperty();
+}
+
+base::DictValue WebUIToolbarUI::BuildBoundProfileState(
+    Profile& profile,
+    const WebUIToolbarUnboundSeedUserData& seed_data,
+    bool colors_changed) {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  base::DictValue bound_state;
+  const ProfileButtonEligibility eligibility =
+      GetProfileButtonEligibility(&profile);
+  if (eligibility.is_profile_eligible_for_glic !=
+      seed_data.button_eligibility().is_profile_eligible_for_glic) {
+    bound_state.Set(kIsProfileEligibleForGlic,
+                    eligibility.is_profile_eligible_for_glic);
+  }
+  if (eligibility.can_show_avatar_for_profile !=
+      seed_data.button_eligibility().can_show_avatar_for_profile) {
+    bound_state.Set(kCanShowAvatarForProfile,
+                    eligibility.can_show_avatar_for_profile);
+  }
+  const bool show_home_button =
+      profile.GetPrefs()->GetBoolean(prefs::kShowHomeButton);
+  if (show_home_button != seed_data.home_button_should_be_shown()) {
+    bound_state.Set(kHomeButtonShouldBeShown, show_home_button);
+  }
+
+  if (colors_changed) {
+    std::optional<std::string> css = ThemeSource::GenerateColorsCss(
+        web_contents->GetColorProvider(), GURL(kThemeColorsCssUrl));
+    if (css) {
+      bound_state.Set(kColorsCss, std::move(*css));
+    }
+  }
+  return bound_state;
+}
+
+void WebUIToolbarUI::OverwriteInitialStateWebUIProperty() {
+  content::RenderFrameHost* rfh = web_ui()->GetRenderFrameHost();
+  if (!rfh || !rfh->IsActive() ||
+      !rfh->GetEnabledBindings().Has(content::BindingsPolicyValue::kWebUi)) {
+    return;
+  }
+  std::string initial_json;
+  base::JSONWriter::Write(BuildInitialState(), &initial_json);
+  rfh->SetWebUIProperty("initialState", initial_json);
+}
+
+void WebUIToolbarUI::SendBoundProfileState(const base::DictValue& bound_state) {
+  // Sends `JavaScriptExecuteRequest` on `blink.mojom.LocalFrame` (an associated
+  // remote), which shares `IPC::Channel` with `blink.mojom.Widget`'s
+  // `UpdateVisualProperties` and `WasShown` messages. In the post-commit case
+  // (case 1), this runs before `WasShown` and the first frame; see case 2 in
+  // `ApplyBoundUserProfile()` for the in-flight commit caveat.
+  if (web_ui()->CanCallJavascript()) {
+    if (!bound_profile_state_handler_) {
+      auto handler = std::make_unique<BoundProfileStateHandler>();
+      bound_profile_state_handler_ = handler.get();
+      web_ui()->AddMessageHandler(std::move(handler));
+    }
+    bound_profile_state_handler_->Send(bound_state);
+  }
+}
+
 void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
   TopChromeWebUIController::WebUIRenderFrameCreated(rfh);
 
@@ -492,37 +703,18 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
         features::kWebUIReloadButtonRestartUnresponsiveRenderersTimeout.Get());
   }
 
+  has_committed_navigation_ = false;
+  if (webui::GetUserProfile(web_ui()->GetWebContents())) {
+    sent_unbound_initial_state_ = false;
+    pending_bound_profile_state_.reset();
+  }
+
   // Inject the initial toolbar state synchronously into the frame to allow
   // the JS frontend to initialize synchronously during load.
-  //
-  // During Pre-Navigate prewarming, the window View does not exist yet when the
-  // page starts loading in the background, so the UserData is missing. In this
-  // case, PopulateInitialState() injects a mostly default-valued initial state
-  // that reads only the profile's home button pref and the current touch mode.
-  //
-  // Otherwise (normal load or Renderer-Only prewarming), we retrieve the actual
-  // window View's provider from UserData.
-  auto* user_data = WebUIToolbarUIDependencyProviderUserData::FromWebContents(
-      web_ui()->GetWebContents());
-  base::DictValue values;
-  Profile* user_profile = GetUserProfile();
-  if (user_data) {
-    auto* provider_user_data = user_data->provider();
-    PopulateInitialState(values, provider_user_data, user_profile);
-    values.Set(kIsFallbackPrewarming, false);
-  } else {
-    PopulateInitialState(values, nullptr, user_profile);
-    values.Set(kIsFallbackPrewarming, true);
+  base::DictValue values = BuildInitialState();
+  if (values.FindBool(kIsUnbound).value_or(false)) {
+    sent_unbound_initial_state_ = true;
   }
-  // These depend on the profile of the window, so they are set for each frame
-  // instead of in the WebUIDataSource, which is shared by the toolbars in the
-  // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
-  // toolbars can be for windows of different profiles.
-  const ProfileButtonEligibility eligibility =
-      GetProfileButtonEligibility(user_profile);
-  values.Set(kIsProfileEligibleForGlic,
-             eligibility.is_profile_eligible_for_glic);
-  values.Set(kCanShowAvatarForProfile, eligibility.can_show_avatar_for_profile);
 
   std::string json_string;
   base::JSONWriter::Write(values, &json_string);
@@ -542,17 +734,33 @@ void WebUIToolbarUI::DidFinishNavigation(
     // Cache the navigation start time. This is the single source of truth
     // for the active document's time origin.
     navigation_start_ticks_ = navigation_handle->NavigationStart();
+    // Only a commit of this WebUI's own page can receive the bound state.
+    if (navigation_handle->GetRenderFrameHost() ==
+            web_ui()->GetRenderFrameHost() &&
+        !navigation_handle->IsErrorPage()) {
+      has_committed_navigation_ = true;
+      if (pending_bound_profile_state_) {
+        SendBoundProfileState(*pending_bound_profile_state_);
+        pending_bound_profile_state_.reset();
+      }
+    }
   }
 }
 
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
-  auto* theme_colors_manager =
-      ThemeColorsSourceManagerFactory::GetForProfile(GetUserProfile());
-  CHECK(theme_colors_manager);
-  theme_colors_manager->PopulateLocalResourceLoaderConfig(
-      config, requesting_origin, web_ui()->GetWebContents());
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  // An unbound spare has no user profile to read theme colors from, so its
+  // initial `colors.css` load goes through `ThemeSource`. Later reloads add a
+  // `version` parameter and go through `ThemeSource` for every toolbar.
+  if (Profile* user_profile = webui::GetUserProfile(web_contents)) {
+    auto* theme_colors_manager =
+        ThemeColorsSourceManagerFactory::GetForProfile(user_profile);
+    CHECK(theme_colors_manager);
+    theme_colors_manager->PopulateLocalResourceLoaderConfig(
+        config, requesting_origin, web_contents);
+  }
 
   WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
       config, requesting_origin);

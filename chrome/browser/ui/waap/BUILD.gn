@@ -62,6 +62,7 @@ if (!is_android) {
       "//content/public/browser",
       "//ui/base",
       "//ui/base/unowned_user_data",
+      "//ui/native_theme",
       "//ui/views",
     ]
   }
@@ -161,11 +162,14 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_test_util",
       "//chrome/browser/sessions",
+      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/webui:webui_util",
@@ -193,6 +197,9 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/blink/public/common",
       "//ui/base",
+      "//ui/color",
+      "//ui/native_theme",
+      "//ui/native_theme:test_support",
       "//url",
     ]
   }
@@ -233,10 +240,12 @@ source_set("unit_tests") {
       ":waap",
       ":window_metrics_manager",
       "//chrome/browser/lifetime",
+      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/test:test_support",
       "//components/prefs",
       "//components/startup_metric_utils",
@@ -244,11 +253,14 @@ source_set("unit_tests") {
       "//skia",
       "//testing/gmock",
       "//third_party/blink/public/common",
+      "//ui/base",
       "//ui/base:test_support",
       "//ui/color",
       "//ui/events",
       "//ui/events:test_support",
+      "//ui/native_theme",
       "//ui/views",
+      "//ui/views:test_support",
     ]
   }
 }

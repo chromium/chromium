@@ -30,11 +30,14 @@ InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
 
     if (features::kWebUIReloadButtonProfilePrewarming.Get()) {
       // If `WebUIReloadButtonProfilePrewarming` is enabled, the WebContents is
-      // created and pre-navigated in the profile service, so we just take it
-      // from there.
-      if (auto* profile_service =
-              InitialWebUIProfileServiceFactory::GetForProfile(profile)) {
-        toolbar_web_contents_ = profile_service->TakeToolbarContents();
+      // created and pre-navigated in the profile service (or the unbound
+      // TopChromeWebUIProfile service), so we just take it from there.
+      InitialWebUIProfileService* profile_service =
+          InitialWebUIProfileService::IsUnboundPrerenderingEnabled()
+              ? InitialWebUIProfileService::GetForTopChromeWebUIProfile()
+              : InitialWebUIProfileServiceFactory::GetForProfile(profile);
+      if (profile_service) {
+        toolbar_web_contents_ = profile_service->TakeToolbarContents(*profile);
       }
     }
 

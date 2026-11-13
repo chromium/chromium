@@ -126,7 +126,7 @@ TEST_F(InitialWebUIManagerRefillOffTest,
       InitialWebUIProfileServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(profile_service);
   // Consume the profile spare created in the constructor so none is available.
-  EXPECT_TRUE(profile_service->TakeToolbarContents());
+  EXPECT_TRUE(profile_service->TakeToolbarContents(*profile()));
   ASSERT_FALSE(profile_service->has_toolbar_contents_for_testing());
 
   InitialWebUIManager manager(&browser_window_);

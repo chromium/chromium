@@ -24,9 +24,19 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace waap {
@@ -139,6 +149,65 @@ TEST_F(PrewarmHelperTest, ConfigureWebUIContents) {
   ASSERT_TRUE(page_node);
   EXPECT_EQ(performance_manager::PageType::kNonTabWebUI, page_node->GetType());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ColorProviderChangeCounter : public content::WebContentsObserver {
+ public:
+  explicit ColorProviderChangeCounter(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void OnColorProviderChanged() override { ++count_; }
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+TEST_F(PrewarmHelperTest,
+       BindUserProfileRecomputesWebPreferencesAndSkipsMatchingColorSource) {
+  base::test::ScopedFeatureList feature_list{
+      features::kTopChromeWebUISharedRenderer};
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_profile;
+  profile()->GetPrefs()->SetBoolean(prefs::kWebKitDomPasteEnabled, true);
+
+  // Seeded from `profile()`: binding `profile()` skips switching the color
+  // provider source while still recomputing WebPreferences once, and runs the
+  // seed callback before navigation.
+  bool seed_called = false;
+  std::unique_ptr<content::WebContents> matching =
+      PrewarmHelper::PrewarmUnboundWebUIContents(
+          *profile(), [&](content::WebContents& contents) {
+            EXPECT_FALSE(webui::GetUserProfile(&contents));
+            EXPECT_TRUE(contents.GetController().IsInitialNavigation());
+            seed_called = true;
+          });
+  ASSERT_TRUE(matching);
+  EXPECT_TRUE(seed_called);
+  EXPECT_FALSE(matching->GetOrCreateWebPreferences().dom_paste_enabled);
+  ColorProviderChangeCounter matching_counter(matching.get());
+  EXPECT_FALSE(PrewarmHelper::BindUserProfile(*matching, *profile()));
+  EXPECT_EQ(0, matching_counter.count());
+  EXPECT_EQ(profile(), webui::GetUserProfile(matching.get()));
+  EXPECT_TRUE(PrefsTabHelper::FromWebContents(matching.get()));
+  EXPECT_TRUE(matching->GetOrCreateWebPreferences().dom_paste_enabled);
+
+  // When the bound profile's color provider key differs from the seed,
+  // `BindUserProfile` updates the color provider source and returns true.
+  std::unique_ptr<content::WebContents> differing =
+      PrewarmHelper::PrewarmUnboundWebUIContents(*profile(),
+                                                 [](content::WebContents&) {});
+  ASSERT_TRUE(differing);
+  const ui::ColorProviderKey seeded_key =
+      PrewarmHelper::GetColorProviderKey(profile());
+  ThemeServiceFactory::GetForProfile(profile())->SetBrowserColorScheme(
+      seeded_key.color_mode == ui::ColorProviderKey::ColorMode::kDark
+          ? ThemeService::BrowserColorScheme::kLight
+          : ThemeService::BrowserColorScheme::kDark);
+  ColorProviderChangeCounter differing_counter(differing.get());
+  EXPECT_TRUE(PrewarmHelper::BindUserProfile(*differing, *profile()));
+  EXPECT_EQ(1, differing_counter.count());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace waap

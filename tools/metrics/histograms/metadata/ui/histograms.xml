@@ -1096,18 +1096,22 @@ chromium-metrics-reviews@google.com.
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
-    Records whether a new normal browser window of a regular profile adopted the
-    WebUI toolbar that its profile prewarmed, and if not, why.
+    Records whether a new normal browser window adopted a prewarmed WebUI
+    toolbar, and if not, why: either its regular profile's spare, or (with
+    TopChromeWebUIPrerenderingUnbound enabled) the process-wide unbound spare
+    shared by windows of any profile.
 
-    Recorded each time such a window is created while the WebUI toolbar, the
+    Recorded each time an eligible normal browser window is created (a regular
+    profile by default, or any profile when TopChromeWebUIPrerenderingUnbound is
+    enabled alongside TopChromeWebUISharedRenderer and
+    WebUIReloadButtonPrewarmWebUIPreNavigate) while the WebUI toolbar, the
     TopChromeWebUIPrerendering feature, and the WebUIReloadButtonPrewarmWebUI
     and WebUIReloadButtonProfilePrewarming params of the WebUIReloadButton
-    feature are enabled. The profile builds no prewarmed toolbar when it is
-    created, only after its first window, so windows opened before that first
-    build, such as every window of a startup or session restore, record &quot;No
-    spare&quot;. So do windows opened before the profile rebuilds its prewarmed
-    toolbar after the last window took it, or while memory pressure stops the
-    rebuild.
+    feature are enabled. No prewarmed toolbar is built before the first window
+    opens, so windows opened before that first build, such as every window of a
+    startup or session restore, record &quot;No spare&quot;. So do windows
+    opened before the prewarmed toolbar is rebuilt after the last window took
+    it, or while memory pressure stops the rebuild.
   </summary>
 </histogram>
 

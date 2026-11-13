@@ -46,7 +46,9 @@ InitialWebUIProfileServiceFactory::BuildServiceInstanceForBrowserContext(
   // The service prewarms the toolbar WebContents in each regular profile when
   // the profile is initialized. If ShouldUseTopChromeWebUIProfile(), the
   // toolbar WebContents is created in TopChromeWebUIProfile instead, so the
-  // service isn't needed unless it prerenders. It is still needed with
+  // service isn't needed unless it prerenders per-profile spares. With
+  // IsUnboundPrerenderingEnabled(), one process-wide unbound spare serves every
+  // window instead of per-profile spares. It is still needed with
   // kTopChromeWebUISharedRenderer in --single-process mode, where the toolbar
   // stays in the user profile.
   //
@@ -58,7 +60,8 @@ InitialWebUIProfileServiceFactory::BuildServiceInstanceForBrowserContext(
   // creating no WebContents when the profile is initialized: the first spare
   // is built after the profile's first window opens.
   if (webui::ShouldUseTopChromeWebUIProfile() &&
-      !InitialWebUIProfileService::IsPrerenderingEnabled()) {
+      (!InitialWebUIProfileService::IsPrerenderingEnabled() ||
+       InitialWebUIProfileService::IsUnboundPrerenderingEnabled())) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

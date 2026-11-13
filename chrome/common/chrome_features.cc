@@ -2001,6 +2001,19 @@ BASE_FEATURE_ENUM_PARAM(TopChromeWebUIPrerenderingMemoryPressureLevel,
                         &kTopChromeWebUIPrerendering,
                         TopChromeWebUIPrerenderingMemoryPressureLevel::kNever,
                         &kTopChromeWebUIPrerenderingEvictMemoryPressureOptions);
+// Whether to prerender a single unbound toolbar in `TopChromeWebUIProfile`
+// that binds its user profile when a window of any profile adopts it, instead
+// of one spare per regular profile. Requires `IsPrerenderingEnabled()` (the
+// WebUI toolbar, `kWebUIReloadButton`, `WebUIReloadButtonPrewarmWebUI`,
+// `WebUIReloadButtonProfilePrewarming`, and `kTopChromeWebUIPrerendering`),
+// `ShouldUseTopChromeWebUIProfile()` (the shared renderer), and
+// `WebUIReloadButtonPrewarmWebUIPreNavigate`. Without the shared renderer or
+// `WebUIReloadButtonPrewarmWebUIPreNavigate`, this param falls back to
+// per-profile spares.
+BASE_FEATURE_PARAM(bool,
+                   kTopChromeWebUIPrerenderingUnbound,
+                   &kTopChromeWebUIPrerendering,
+                   false);
 // Switches location bar over to a WebUI implementation.
 // See crbug.com/470042732
 BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);

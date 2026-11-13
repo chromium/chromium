@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
@@ -130,7 +131,29 @@ class PrewarmHelper {
   static std::unique_ptr<content::WebContents> PrewarmWebUIContents(
       Profile* profile,
       bool pre_navigate);
+
+  // Prewarms and navigates an unbound WebUI toolbar WebContents in
+  // TopChromeWebUIProfile, seeding its prewarm color provider key from
+  // `template_profile` without binding a user profile. Runs `seed` after
+  // configuring the WebContents and before `LoadURL()`, since
+  // `WebUIRenderFrameCreated()` can run inside `LoadURL()`.
+  static std::unique_ptr<content::WebContents> PrewarmUnboundWebUIContents(
+      Profile& template_profile,
+      base::FunctionRef<void(content::WebContents&)> seed);
+
+  // Binds an unbound `web_contents` in TopChromeWebUIProfile to `profile`: sets
+  // its user profile, creates `PrefsTabHelper` and syncs renderer prefs,
+  // switches the prewarm color provider source only when `profile`'s key
+  // differs from the current prewarm source's key, and recomputes
+  // WebPreferences. Returns whether the color provider key changed.
+  static bool BindUserProfile(content::WebContents& web_contents,
+                              Profile& profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+ private:
+  static void ConfigureCommonWebUIContents(content::WebContents* web_contents,
+                                           int task_manager_string_id,
+                                           bool create_prefs_tab_helper);
 };
 
 }  // namespace waap
