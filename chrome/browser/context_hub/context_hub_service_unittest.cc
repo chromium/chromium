@@ -2674,7 +2674,9 @@ TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_DefaultsWhenUnset) {
 
 TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SetTrimsAndNotifies) {
   MockServiceObserver observer;
-  service_.AddObserver(&observer);
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
   EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(
                             "- Keep shopping tabs together."));
 
@@ -2685,7 +2687,6 @@ TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SetTrimsAndNotifies) {
             "- Keep shopping tabs together.");
   EXPECT_EQ(service_.GetEffectiveAutoTabGroupsPreferences(),
             "- Keep shopping tabs together.");
-  service_.RemoveObserver(&observer);
 }
 
 TEST_F(ContextHubServiceTest,
@@ -2693,7 +2694,9 @@ TEST_F(ContextHubServiceTest,
   ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("first"));
 
   MockServiceObserver observer;
-  service_.AddObserver(&observer);
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
   // Observers always receive the effective text, i.e. the defaults again.
   std::string notified;
   EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_))
@@ -2703,13 +2706,14 @@ TEST_F(ContextHubServiceTest,
   EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
       prefs::kContextHubAutoTabGroupsPreferences));
   EXPECT_EQ(notified, service_.GetEffectiveAutoTabGroupsPreferences());
-  service_.RemoveObserver(&observer);
 }
 
 TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_RejectsOverByteCap) {
   PrefService* prefs = profile_.GetPrefs();
   MockServiceObserver observer;
-  service_.AddObserver(&observer);
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
   EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_)).Times(0);
 
   // Exactly at the cap is accepted; one byte over is rejected.
@@ -2731,7 +2735,6 @@ TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_RejectsOverByteCap) {
   EXPECT_FALSE(service_.SetAutoTabGroupsPreferences(multibyte));
   EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
             at_cap);
-  service_.RemoveObserver(&observer);
 }
 
 TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SavedInProfilePref) {
@@ -2872,6 +2875,313 @@ TEST_F(ContextHubServiceTest, GroupTabs_SendsPreferencesOnlyWhenStored) {
   ASSERT_TRUE(second.Wait());
   EXPECT_EQ(second_request.auto_tab_groups_preferences(),
             "- Keep groups to at most 5 tabs.");
+}
+
+// Fixture helpers for the refinement tests: run one session (default
+// grouping, then an optional follow-up prompt) so that suggestions exist and
+// the chat history reflects it.
+class ContextHubServiceRefinementTest : public ContextHubServiceTest {
+ protected:
+  static optimization_guide::proto::ContextHubResponse RefinementResponse(
+      std::string_view preferences) {
+    optimization_guide::proto::ContextHubResponse response;
+    response.mutable_auto_tab_groups_preference_refinement_response()
+        ->set_preferences(preferences);
+    return response;
+  }
+
+  // The stored document; empty when the defaults apply.
+  std::string StoredPreferences() {
+    return profile_.GetPrefs()->GetString(
+        prefs::kContextHubAutoTabGroupsPreferences);
+  }
+
+  void RunSession(const std::string& follow_up_prompt,
+                  std::string_view assistant_text_response = "") {
+    optimization_guide::proto::ContextHubResponse response =
+        CreateSingleGroupResponse("Work", {1, 2});
+    if (!assistant_text_response.empty()) {
+      response.mutable_group_response()->set_text_response(
+          assistant_text_response);
+    }
+    ExpectModelExecution(response, &grouping_request_);
+    base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                           std::string>
+        future;
+    service_.GroupTabs({{1, "Tab 1", GURL("https://example1.com")},
+                        {2, "Tab 2", GURL("https://example2.com")}},
+                       follow_up_prompt,
+                       future.GetCallback<std::vector<TabGroupEntry>,
+                                          std::vector<TabData>, std::string>());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  void ExpectRefinementResult(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      optimization_guide::proto::ContextHubRequest* captured = nullptr) {
+    refinement_done_.Clear();
+    await_refinement_ = true;
+    EXPECT_CALL(
+        mock_remote_model_executor_,
+        ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub,
+                     _, _, _))
+        .WillOnce([this, result = std::move(result), captured](
+                      optimization_guide::ModelBasedCapabilityKey,
+                      const google::protobuf::MessageLite& metadata,
+                      const optimization_guide::ModelExecutionOptions&,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultCallback
+                              callback) mutable {
+          const optimization_guide::proto::ContextHubRequest* request =
+              AsContextHubRequest(metadata);
+          if (captured && request) {
+            *captured = *request;
+          }
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
+                                        /*log_entry=*/nullptr)
+                             .Then(refinement_done_.GetCallback()));
+        })
+        .RetiresOnSaturation();
+  }
+
+  void ExpectRefinement(
+      optimization_guide::proto::ContextHubRequest* captured,
+      const optimization_guide::proto::ContextHubResponse& response) {
+    ExpectRefinementResult(WrapContextHubResponse(response), captured);
+  }
+
+  void CapturePendingRefinement(
+      optimization_guide::OptimizationGuideModelExecutionResultCallback*
+          pending) {
+    await_refinement_ = false;
+    EXPECT_CALL(
+        mock_remote_model_executor_,
+        ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub,
+                     _, _, _))
+        .WillOnce(
+            [pending](optimization_guide::ModelBasedCapabilityKey,
+                      const google::protobuf::MessageLite&,
+                      const optimization_guide::ModelExecutionOptions&,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultCallback cb) {
+              *pending = std::move(cb);
+            })
+        .RetiresOnSaturation();
+  }
+
+  bool ConfirmAllTabGroups() {
+    base::test::TestFuture<bool, std::vector<base::Uuid>> future;
+    service_.ConfirmAllTabGroups(future.GetCallback());
+    const bool ok = std::get<0>(future.Take());
+    if (await_refinement_) {
+      await_refinement_ = false;
+      EXPECT_TRUE(refinement_done_.Wait());
+    }
+    return ok;
+  }
+
+  // The GROUPING request of the most recent `RunSession()`; not asserted on.
+  optimization_guide::proto::ContextHubRequest grouping_request_;
+  base::test::TestFuture<void> refinement_done_;
+  bool await_refinement_ = false;
+};
+
+TEST_F(ContextHubServiceRefinementTest, CreateGroups_RefinesAndStores) {
+  RunSession("keep work and personal separate");
+  ASSERT_EQ(service_.GetTabGroupChatHistory().size(), 1u);
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(
+                            "- Keep work and personal tabs apart."));
+
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(
+      &request, RefinementResponse("  - Keep work and personal tabs apart.\n"));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+
+  EXPECT_EQ(request.request_type(),
+            optimization_guide::proto::
+                CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT);
+  ASSERT_EQ(request.chat_history_size(), 1);
+  EXPECT_EQ(request.chat_history(0).message_content(),
+            "keep work and personal separate");
+  // The whole effective document goes in: nothing was stored, so the
+  // defaults.
+  EXPECT_NE(request.auto_tab_groups_preferences().find("Group tabs by task"),
+            std::string::npos);
+  EXPECT_EQ(request.entry_items_size(), 0);
+
+  EXPECT_EQ(StoredPreferences(), "- Keep work and personal tabs apart.");
+  // Creating groups ended the session.
+  EXPECT_TRUE(service_.GetTabGroupChatHistory().empty());
+}
+
+TEST_F(ContextHubServiceRefinementTest,
+       CreateGroups_RefinesExistingStoredPreferences) {
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("- Existing."));
+  RunSession("also keep shopping tabs together");
+
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(
+      &request,
+      RefinementResponse("- Existing.\n- Keep shopping tabs together."));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+
+  EXPECT_EQ(request.auto_tab_groups_preferences(), "- Existing.");
+  EXPECT_EQ(StoredPreferences(), "- Existing.\n- Keep shopping tabs together.");
+}
+
+TEST_F(ContextHubServiceRefinementTest,
+       CreateGroups_PreservesMultiTurnChatHistoryOrder) {
+  RunSession(/*follow_up_prompt=*/"",
+             /*assistant_text_response=*/"Grouped into Work.");
+  RunSession(/*follow_up_prompt=*/"split personal out",
+             /*assistant_text_response=*/"Split Personal from Work.");
+
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(&request,
+                   RefinementResponse("- Keep work and personal apart."));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+
+  ASSERT_EQ(request.chat_history_size(), 3);
+  EXPECT_EQ(request.chat_history(0).role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(request.chat_history(0).message_content(), "Grouped into Work.");
+  EXPECT_EQ(request.chat_history(1).role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(request.chat_history(1).message_content(), "split personal out");
+  EXPECT_EQ(request.chat_history(2).role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(request.chat_history(2).message_content(),
+            "Split Personal from Work.");
+}
+
+TEST_F(ContextHubServiceRefinementTest, CreateGroups_NoPromptNoRefinement) {
+  RunSession("");
+  // Only the assistant's turn (if any) is in the history: nothing to learn.
+  EXPECT_CALL(mock_remote_model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_TRUE(service_.GetTabGroupChatHistory().empty());
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, CreateGroups_NoGroupsEndsSession) {
+  service_.AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "hello");
+  EXPECT_CALL(mock_remote_model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  // No group was created, so there is no acceptance to learn from, but
+  // "Create groups" still ends the session.
+  EXPECT_TRUE(service_.GetTabGroupChatHistory().empty());
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_UnchangedResultIsIgnored) {
+  RunSession("put these two together");
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_)).Times(0);
+
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(
+      &request,
+      RefinementResponse(service_.GetEffectiveAutoTabGroupsPreferences()));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_EmptyResultIsDropped) {
+  RunSession("never more than 5 tabs");
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(&request, RefinementResponse("   "));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_OverCapResultIsDropped) {
+  RunSession("never more than 5 tabs");
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(
+      &request,
+      RefinementResponse(std::string(
+          ContextHubService::kMaxAutoTabGroupsPreferencesLength + 1, 'a')));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_StaleResultIsDropped) {
+  RunSession("group by project");
+
+  // Hold the refinement callback so the user can save in the meantime.
+  optimization_guide::OptimizationGuideModelExecutionResultCallback pending;
+  CapturePendingRefinement(&pending);
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  ASSERT_TRUE(pending);
+
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("- My own words."));
+
+  std::move(pending).Run(
+      WrapContextHubResponse(RefinementResponse("- Group by project.")),
+      nullptr);
+
+  EXPECT_EQ(StoredPreferences(), "- My own words.");
+}
+
+TEST_F(ContextHubServiceRefinementTest,
+       Refinement_StaleResultOnResetIsDropped) {
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("- Initial custom prefs."));
+  RunSession("group by project");
+
+  optimization_guide::OptimizationGuideModelExecutionResultCallback pending;
+  CapturePendingRefinement(&pending);
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  ASSERT_TRUE(pending);
+
+  // Resetting to defaults while refinement is in flight also invalidates the
+  // pending result.
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences(""));
+
+  std::move(pending).Run(
+      WrapContextHubResponse(RefinementResponse("- Group by project.")),
+      nullptr);
+
+  EXPECT_EQ(StoredPreferences(), "");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_ErrorIsDroppedSilently) {
+  RunSession("group by project");
+  ExpectRefinementResult(
+      optimization_guide::OptimizationGuideModelExecutionResult());
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_EQ(StoredPreferences(), "");
+
+  // No retry, but the in-flight guard was released: the next session refines
+  // again.
+  RunSession("group by project");
+  optimization_guide::proto::ContextHubRequest request;
+  ExpectRefinement(&request, RefinementResponse("- Group by project."));
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  EXPECT_EQ(StoredPreferences(), "- Group by project.");
+}
+
+TEST_F(ContextHubServiceRefinementTest, Refinement_SingleInFlight) {
+  RunSession("group by project");
+  optimization_guide::OptimizationGuideModelExecutionResultCallback pending;
+  CapturePendingRefinement(&pending);
+  ASSERT_TRUE(ConfirmAllTabGroups());
+  ASSERT_TRUE(pending);
+
+  // A second session that ends while the first refinement is pending makes
+  // no second call.
+  RunSession("and keep shopping apart");
+  EXPECT_CALL(mock_remote_model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  ASSERT_TRUE(ConfirmAllTabGroups());
 }
 
 TEST_F(ContextHubServiceTest, DeleteAllTabGroups) {

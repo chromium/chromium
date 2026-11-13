@@ -1443,6 +1443,14 @@ std::string ContextHubService::GetEffectiveAutoTabGroupsPreferences() const {
 }
 
 bool ContextHubService::SetAutoTabGroupsPreferences(std::string_view text) {
+  if (!StoreAutoTabGroupsPreferences(text)) {
+    return false;
+  }
+  ++auto_tab_groups_preferences_generation_;
+  return true;
+}
+
+bool ContextHubService::StoreAutoTabGroupsPreferences(std::string_view text) {
   if (!base::FeatureList::IsEnabled(
           browser::context_hub::mojom::kAutoTabGroups)) {
     return false;
@@ -1743,8 +1751,84 @@ void ContextHubService::OnAllTabGroupsFetchedForConfirmation(
     ConfirmAllTabGroupsCallback callback,
     std::vector<TabGroupEntry> groups) {
   std::vector<base::Uuid> added_group_guids = AddTabGroupsToSyncService(groups);
-  DeleteAllTabGroups(
+  const bool groups_created = !added_group_guids.empty();
+  FinishTabGroupSession(
+      groups_created,
       base::BindOnce(std::move(callback), true, std::move(added_group_guids)));
+}
+
+void ContextHubService::FinishTabGroupSession(bool groups_created,
+                                              base::OnceClosure done) {
+  std::vector<optimization_guide::proto::ChatHistoryTurn> history =
+      GetTabGroupChatHistory();
+  if (groups_created &&
+      std::ranges::any_of(
+          history, [](const optimization_guide::proto::ChatHistoryTurn& turn) {
+            return turn.role() ==
+                   optimization_guide::proto::ChatHistoryTurn::ROLE_USER;
+          })) {
+    RefineAutoTabGroupsPreferences(std::move(history));
+  }
+  ClearTabGroupChatHistory();
+  DeleteAllTabGroups(std::move(done));
+}
+
+void ContextHubService::RefineAutoTabGroupsPreferences(
+    std::vector<optimization_guide::proto::ChatHistoryTurn> history) {
+  if (auto_tab_groups_preference_refinement_in_flight_) {
+    return;
+  }
+  optimization_guide::proto::ContextHubRequest request;
+  request.set_request_type(
+      optimization_guide::proto::
+          CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT);
+  for (optimization_guide::proto::ChatHistoryTurn& turn : history) {
+    *request.add_chat_history() = std::move(turn);
+  }
+  request.set_auto_tab_groups_preferences(
+      GetEffectiveAutoTabGroupsPreferences());
+
+  auto_tab_groups_preference_refinement_in_flight_ = true;
+  optimization_guide_remote_model_executor_->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
+      optimization_guide::ModelExecutionOptions(),
+      base::BindOnce(
+          &ContextHubService::HandleAutoTabGroupsPreferenceRefinementResult,
+          weak_factory_.GetWeakPtr(), auto_tab_groups_preferences_generation_));
+}
+
+void ContextHubService::HandleAutoTabGroupsPreferenceRefinementResult(
+    uint64_t generation,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  auto_tab_groups_preference_refinement_in_flight_ = false;
+  if (!result.response.has_value()) {
+    return;
+  }
+  std::optional<optimization_guide::proto::ContextHubResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::ContextHubResponse>(*result.response);
+  if (!response ||
+      !response->has_auto_tab_groups_preference_refinement_response()) {
+    return;
+  }
+  std::string_view refined = base::TrimWhitespaceASCII(
+      response->auto_tab_groups_preference_refinement_response().preferences(),
+      base::TRIM_ALL);
+  // Ignore empty responses so `StoreAutoTabGroupsPreferences()` does not reset
+  // to defaults.
+  if (refined.empty()) {
+    return;
+  }
+  // Drop stale results if the user saved or reset while the request was in
+  // flight.
+  if (generation != auto_tab_groups_preferences_generation_) {
+    return;
+  }
+  if (refined == GetEffectiveAutoTabGroupsPreferences()) {
+    return;
+  }
+  StoreAutoTabGroupsPreferences(refined);
 }
 
 std::vector<TabGroupEntry> ContextHubService::GetConfirmedTabGroups() const {

@@ -2899,6 +2899,81 @@ TEST_F(ContextHubPageHandlerTest, ConfirmAllTabGroups) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(ContextHubPageHandlerTest, ConfirmAllTabGroups_NoGroupsEndsSession) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  service->AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER,
+      "keep work and personal separate");
+
+  // Nothing to confirm: the tab provider creates no group.
+  EXPECT_CALL(*mock_tab_provider_, ConfirmTabGroups(_))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*GetMockOptimizationGuideService(), ExecuteModel(_, _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->ConfirmAllTabGroups(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+
+  // "Create groups" still ends the session: no refinement, history cleared.
+  EXPECT_TRUE(service->GetTabGroupChatHistory().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       ConfirmAllTabGroups_EndsSessionAndRefinesPreferences) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  // A session: one suggested group and a follow-up prompt from the user.
+  TabGroupEntry group{
+      .label = "Work",
+      .tab_ids = {1, 2},
+  };
+  base::test::TestFuture<void> replace_future;
+  service->ReplaceTabGroups({group}, replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+  service->AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER,
+      "keep work and personal separate");
+
+  EXPECT_CALL(*mock_tab_provider_, ConfirmTabGroups(_))
+      .WillOnce(testing::Return(true));
+  optimization_guide::proto::ContextHubRequest request;
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [&request](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            ASSERT_EQ(request_metadata.GetTypeName(), request.GetTypeName());
+            request = static_cast<
+                const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(),
+                nullptr);
+          });
+
+  base::test::TestFuture<bool> future;
+  handler_->ConfirmAllTabGroups(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  EXPECT_EQ(request.request_type(),
+            optimization_guide::proto::
+                CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT);
+  ASSERT_EQ(request.chat_history_size(), 1);
+  EXPECT_EQ(request.chat_history(0).message_content(),
+            "keep work and personal separate");
+  EXPECT_TRUE(service->GetTabGroupChatHistory().empty());
+}
+
 TEST_F(ContextHubPageHandlerTest, RemoveConfirmedTabGroup) {
   auto* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);

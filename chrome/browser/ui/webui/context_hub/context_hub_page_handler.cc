@@ -1135,7 +1135,10 @@ void ContextHubPageHandler::ConfirmAllTabGroups(
           return;
         }
         bool success = handler->tab_provider_->ConfirmTabGroups(groups);
-        service->DeleteAllTabGroups(
+        // End the session and trigger preference refinement if groups were
+        // created.
+        service->FinishTabGroupSession(
+            /*groups_created=*/success,
             base::BindOnce(std::move(callback), success));
       },
       weak_factory_.GetWeakPtr(), service->GetWeakPtr(), std::move(callback)));

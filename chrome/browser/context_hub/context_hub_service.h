@@ -289,6 +289,14 @@ class ContextHubService : public KeyedService,
   // Clears all tab group chat history turns from the LRU cache.
   void ClearTabGroupChatHistory();
 
+  // Must be called when the user clicks "Create groups", by whichever path
+  // performs the confirmation. When `groups_created` is true (at least one
+  // group was actually created) and the conversation contains a user turn,
+  // hands the chat history to preference refinement (one model call, best
+  // effort), then clears the session's chat history and deletes all unconfirmed
+  // tab group suggestions, running `done` upon completion.
+  void FinishTabGroupSession(bool groups_created, base::OnceClosure done);
+
   // Auto Tab Groups preferences: a short markdown document, written by the
   // user or distilled by the model, that shapes grouping decisions. The
   // built-in defaults are never persisted: a stored document always wins over
@@ -426,6 +434,9 @@ class ContextHubService : public KeyedService,
   }
 
  private:
+  // Implements `SetAutoTabGroupsPreferences()` and the refinement write path.
+  bool StoreAutoTabGroupsPreferences(std::string_view text);
+
   // Attempts to generate 1P AutoTodos if eligible and not already in flight.
   void MaybeTriggerFirstPartyAutoTodosGeneration();
 
@@ -521,6 +532,22 @@ class ContextHubService : public KeyedService,
   void GenerateTabGroups(std::vector<TabData> tabs,
                          const std::string& user_command,
                          GroupTabsCallback callback);
+
+  // Asks the model to distill durable preferences from `history`, the chat
+  // history of one completed session (the user has just created the groups).
+  // At most one refinement is in flight at a time; a second request while one
+  // is pending is dropped.
+  void RefineAutoTabGroupsPreferences(
+      std::vector<optimization_guide::proto::ChatHistoryTurn> history);
+
+  // Handles the refinement result. `generation` is the value of
+  // `auto_tab_groups_preferences_generation_` when the request was sent; a
+  // result computed against an older document than the one the user has since
+  // saved or reset is discarded. Errors are dropped silently (no retries).
+  void HandleAutoTabGroupsPreferenceRefinementResult(
+      uint64_t generation,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Handles the async response when all auto todos are fetched to populate
   // existing first party todos in the CMS request.
@@ -652,6 +679,13 @@ class ContextHubService : public KeyedService,
   base::LRUCache<TabGroupChatHistoryTurnId,
                  optimization_guide::proto::ChatHistoryTurn>
       tab_group_chat_history_cache_;
+
+  // Incremented on every committed user save or reset so that a refinement
+  // result computed against an older document can be discarded.
+  uint64_t auto_tab_groups_preferences_generation_ = 0;
+
+  // True while a `PREFERENCE_REFINEMENT` request is pending.
+  bool auto_tab_groups_preference_refinement_in_flight_ = false;
 
   using MemoryBankChatHistoryTurnId =
       base::IdType64<class MemoryBankChatHistoryTurnIdTag>;
