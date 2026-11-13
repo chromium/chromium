@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1793289600
+  seconds: 1794448800
 }
-version: "3.0.0"
+version: "4.0.0"
 compatibility_version: 1
 operators: {
   name: "mtcs.dev Test CA Operator"
@@ -24,18 +24,18 @@ operators: {
   email: "plants.labs@digicert.com"
 }
 issuers: {
-  friendly_name: "mtcs.dev Test CA 1"
-  base_id: "11129.11.99.1"
+  friendly_name: "mtcs.dev Test CA 2"
+  base_id: "11129.11.99.3"
   state_history: {
     state: STATE_USABLE
     state_start: {
-      seconds: 1783375200
+      seconds: 1794448800
     }
   }
   operator_history: {
     name: "mtcs.dev Test CA Operator"
     operator_start: {
-      seconds: 1783375200
+      seconds: 1794448800
     }
   }
   base_url: "https://ca1.test.mtcs.dev"
@@ -44,10 +44,10 @@ issuers: {
   max_cert_lifetime: {
     seconds: 604800
   }
-  key_sha256: "2bd288b3912f358a79a5adeaf96b5df984edcf02e01b21613efd0f1864cfc72d"
+  key_sha256: "7bbfaa42246a53c5ef3371bda4bf980258584467bf914967365c52795481030a"
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
-  spec_version: SPEC_VERSION_DRAFT05
+  spec_version: SPEC_VERSION_DRAFT07
 }
 issuers: {
   friendly_name: "TrustAsia Test CA 3"
@@ -131,24 +131,24 @@ issuers: {
   spec_version: SPEC_VERSION_DRAFT07
 }
 mirrors: {
-  friendly_name: "mtcs.dev Test Mirror 1"
-  base_id: "11129.11.99.2"
+  friendly_name: "mtcs.dev Test Mirror 2"
+  base_id: "11129.11.99.4"
   state_history: {
     state: STATE_USABLE
     state_start: {
-      seconds: 1783375200
+      seconds: 1794448800
     }
   }
   operator_history: {
     name: "mtcs.dev Test Mirror Operator"
     operator_start: {
-      seconds: 1783375200
+      seconds: 1794448800
     }
   }
   base_url: "https://mirror1.test.mtcs.dev/mirror"
   type: SIGNER_TYPE_MIRROR
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
-  key_sha256: "4f0be97b157bae43f89d88afded1b5182b7774f112161cc73def7438afb37ea4"
+  key_sha256: "2074c3292751cd41e2358bc62570baba9c52e786a3561fbfe6aafc48c45fdf8b"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
   submission_prefix: "https://mirror1.test.mtcs.dev"
 }
