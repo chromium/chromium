@@ -20,6 +20,18 @@ h1 {
   margin-top: 0;
 }
 
+#deleteMatchingKeys {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+#tagPrefixInput {
+  flex: 1;
+  max-width: 600px;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

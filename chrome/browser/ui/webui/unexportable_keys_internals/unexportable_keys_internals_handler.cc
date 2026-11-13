@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -75,22 +76,20 @@ void UnexportableKeysInternalsHandler::GetUnexportableKeysInfo(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(
           &UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection,
-          // `this` is guaranteed to be alive because `key_service_`
-          // is owned by `this`.
-          base::Unretained(this), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void UnexportableKeysInternalsHandler::DeleteKey(
-    const unexportable_keys::UnexportableSigningKeyId& key_id,
-    DeleteKeyCallback callback) {
+void UnexportableKeysInternalsHandler::DeleteKeys(
+    const std::vector<unexportable_keys::UnexportableSigningKeyId>& key_ids,
+    DeleteKeysCallback callback) {
   key_service_->DeleteKeysSlowlyAsync(
-      {key_id}, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_ids, unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(
-          [](DeleteKeyCallback callback,
+          [](DeleteKeysCallback callback, size_t key_count,
              unexportable_keys::ServiceErrorOr<size_t> result) {
-            std::move(callback).Run(static_cast<bool>(result.value_or(0)));
+            std::move(callback).Run(result == key_count);
           },
-          std::move(callback)));
+          std::move(callback), key_ids.size()));
 }
 
 void UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection(

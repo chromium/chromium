@@ -24,7 +24,8 @@ struct UnexportableKeyInfo {
 interface PageHandlerFactory {
   // Creates the `handler` to be used for communication between the Browser and
   // the Renderer.
-  CreateUnexportableKeysInternalsHandler(pending_receiver<PageHandler> handler);
+  CreateUnexportableKeysInternalsHandler(
+      pending_receiver<PageHandler> handler);
 };
 
 // Called from TS side of chrome://unexportable-keys-internals (Renderer ->
@@ -34,7 +35,7 @@ interface PageHandler {
   // metadata.
   GetUnexportableKeysInfo() => (array<UnexportableKeyInfo> keys);
 
-  // Deletes the key identified by `key_id`. Returns `true` on success,
-  // `false` otherwise.
-  DeleteKey(UnexportableSigningKeyId key_id) => (bool success);
+  // Deletes the keys identified by `key_ids`. Returns `true` if all of them
+  // were deleted, `false` otherwise.
+  DeleteKeys(array<UnexportableSigningKeyId> key_ids) => (bool success);
 };

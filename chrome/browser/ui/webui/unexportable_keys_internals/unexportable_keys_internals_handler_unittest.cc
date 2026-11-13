@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -27,7 +28,9 @@
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -36,7 +39,9 @@ using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 
-
+using GetAllKeysCallback =
+    base::OnceCallback<void(unexportable_keys::ServiceErrorOr<std::vector<
+                                unexportable_keys::UnexportableSigningKeyId>>)>;
 
 class UnexportableKeysInternalsHandlerTest : public testing::Test {
  public:
@@ -55,6 +60,12 @@ class UnexportableKeysInternalsHandlerTest : public testing::Test {
   StrictMock<unexportable_keys::MockUnexportableKeyService>&
   mock_key_service() {
     return CHECK_DEREF(mock_key_service_);
+  }
+
+  // Destroys the handler, and with it the key service.
+  void ResetHandler() {
+    mock_key_service_ = nullptr;
+    handler_.reset();
   }
 
  private:
@@ -311,27 +322,67 @@ TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
                                       Eq(creation_time_2))))));
 }
 
-TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeyFails) {
-  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync)
-      .WillOnce(RunOnceCallback<2>(
-          base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeysFails) {
+  const unexportable_keys::UnexportableSigningKeyId key_id;
+
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(ElementsAre(key_id), _, _))
+      .WillOnce(RunOnceCallback<2>(base::unexpected(
+          unexportable_keys::ServiceError::kOperationNotSupported)));
 
   base::test::TestFuture<bool> delete_future;
-  handler().DeleteKey(unexportable_keys::UnexportableSigningKeyId(),
-                      delete_future.GetCallback());
+  handler().DeleteKeys({key_id}, delete_future.GetCallback());
 
   EXPECT_FALSE(delete_future.Get());
 }
 
-TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeySucceeds) {
-  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync)
+TEST_F(UnexportableKeysInternalsHandlerTest,
+       DeleteKeysFailsIfNotAllKeysAreDeleted) {
+  const unexportable_keys::UnexportableSigningKeyId key_id_1;
+  const unexportable_keys::UnexportableSigningKeyId key_id_2;
+
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(ElementsAre(key_id_1, key_id_2), _, _))
       .WillOnce(RunOnceCallback<2>(1));
 
   base::test::TestFuture<bool> delete_future;
-  handler().DeleteKey(unexportable_keys::UnexportableSigningKeyId(),
-                      delete_future.GetCallback());
+  handler().DeleteKeys({key_id_1, key_id_2}, delete_future.GetCallback());
+
+  EXPECT_FALSE(delete_future.Get());
+}
+
+TEST_F(UnexportableKeysInternalsHandlerTest, DeleteKeysSucceeds) {
+  const unexportable_keys::UnexportableSigningKeyId key_id_1;
+  const unexportable_keys::UnexportableSigningKeyId key_id_2;
+
+  EXPECT_CALL(mock_key_service(),
+              DeleteKeysSlowlyAsync(ElementsAre(key_id_1, key_id_2), _, _))
+      .WillOnce(RunOnceCallback<2>(2));
+
+  base::test::TestFuture<bool> delete_future;
+  handler().DeleteKeys({key_id_1, key_id_2}, delete_future.GetCallback());
 
   EXPECT_TRUE(delete_future.Get());
+}
+
+// The key service runs pending callbacks with an error after it is destroyed.
+// They must not reach the destroyed handler.
+TEST_F(UnexportableKeysInternalsHandlerTest,
+       GetUnexportableKeysInfoDoesNotRunAfterHandlerIsDestroyed) {
+  GetAllKeysCallback get_all_keys_callback;
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
+      .WillOnce(MoveArg<1>(&get_all_keys_callback));
+
+  base::test::TestFuture<
+      std::vector<unexportable_keys_internals::mojom::UnexportableKeyInfoPtr>>
+      get_future;
+  handler().GetUnexportableKeysInfo(get_future.GetCallback());
+  ResetHandler();
+  std::move(get_all_keys_callback)
+      .Run(base::unexpected(
+          unexportable_keys::ServiceError::kOperationCancelled));
+
+  EXPECT_FALSE(get_future.IsReady());
 }
 
 }  // namespace

@@ -9,6 +9,16 @@ import type {UnexportableKeysInternalsAppElement} from './app.js';
 export function getHtml(this: UnexportableKeysInternalsAppElement) {
   return html`
 <h1>Unexportable Keys Internals</h1>
+<div id="deleteMatchingKeys">
+  <input id="tagPrefixInput" type="text" aria-label="Key tag prefix"
+      placeholder="Key tag prefix (empty matches keys without a tag)"
+      .value="${this.tagPrefix_}" @input="${this.onTagPrefixInput_}">
+  <cr-button id="deleteMatchingKeysButton"
+      ?disabled="${!this.getMatchingKeys_().length}"
+      @click="${this.onDeleteMatchingKeysClick_}">
+    Delete matching keys (${this.getMatchingKeys_().length})
+  </cr-button>
+</div>
 <table>
   <tr>
     ${this.columns_.map(col => html`

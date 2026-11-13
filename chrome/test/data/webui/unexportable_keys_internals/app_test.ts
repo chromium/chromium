@@ -7,18 +7,18 @@ import 'chrome://unexportable-keys-internals/app.js';
 import type {UnexportableKeysInternalsAppElement} from 'chrome://unexportable-keys-internals/app.js';
 import {browserProxyFactory} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
 import type {PageHandlerInterface, UnexportableKeyInfo, UnexportableSigningKeyId} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
   private keys_: UnexportableKeyInfo[] = [];
-  private deleteKeySuccess_ = true;
+  private deleteKeysSuccess_ = true;
 
   constructor() {
     super([
       'getUnexportableKeysInfo',
-      'deleteKey',
+      'deleteKeys',
     ]);
   }
 
@@ -31,13 +31,13 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
     return Promise.resolve({keys: this.keys_});
   }
 
-  setDeleteKeySuccess(success: boolean) {
-    this.deleteKeySuccess_ = success;
+  setDeleteKeysSuccess(success: boolean) {
+    this.deleteKeysSuccess_ = success;
   }
 
-  deleteKey(keyId: UnexportableSigningKeyId) {
-    this.methodCalled('deleteKey', keyId);
-    return Promise.resolve({success: this.deleteKeySuccess_});
+  deleteKeys(keyIds: UnexportableSigningKeyId[]) {
+    this.methodCalled('deleteKeys', keyIds);
+    return Promise.resolve({success: this.deleteKeysSuccess_});
   }
 }
 
@@ -65,14 +65,46 @@ suite('UnexportableKeysInternals', function() {
     creationTime: new Date('2025-01-01T00:00:00Z'),
   };
 
-  setup(function() {
+  const untaggedKey: UnexportableKeyInfo = {
+    keyId: {keyId: 3n.toString(16).padStart(UNGUESSABLE_TOKEN_LENGTH, '0')},
+    wrappedKey: 'key3_wrapped',
+    algorithm: 'ECDSA',
+    keyTag: '',
+    creationTime: new Date('2025-01-03T00:00:00Z'),
+  };
+
+  const originalConfirm = window.confirm;
+
+  function createElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = document.createElement('unexportable-keys-internals-app');
+    document.body.appendChild(element);
+  }
+
+  function setTagPrefix(tagPrefix: string) {
+    const input =
+        element.shadowRoot.querySelector<HTMLInputElement>('#tagPrefixInput');
+    assertTrue(!!input);
+    input.value = tagPrefix;
+    input.dispatchEvent(new Event('input'));
+  }
+
+  function getDeleteMatchingKeysButton(): HTMLElement {
+    const button = element.shadowRoot.querySelector<HTMLElement>(
+        '#deleteMatchingKeysButton');
+    assertTrue(!!button);
+    return button;
+  }
+
+  setup(function() {
     handler = new TestPageHandler();
     handler.setGetUnexportableKeysInfoResponse([sampleKey1, sampleKey2]);
     browserProxyFactory.setInstance({handler});
+    createElement();
+  });
 
-    element = document.createElement('unexportable-keys-internals-app');
-    document.body.appendChild(element);
+  teardown(function() {
+    window.confirm = originalConfirm;
   });
 
   test('DisplaysKeysTable', async function() {
@@ -132,8 +164,8 @@ suite('UnexportableKeysInternals', function() {
     // Delete the first key.
     deleteButtons[0]!.click();
 
-    const keyId = await handler.whenCalled('deleteKey');
-    assertEquals(sampleKey1.keyId, keyId);
+    assertDeepEquals(
+        [sampleKey1.keyId], await handler.whenCalled('deleteKeys'));
 
     // Should trigger a re-fetch once the delete is resolved.
     await handler.whenCalled('getUnexportableKeysInfo');
@@ -161,13 +193,13 @@ suite('UnexportableKeysInternals', function() {
     const deleteButtons = element.shadowRoot.querySelectorAll('cr-icon-button');
     assertEquals(2, deleteButtons.length);
 
-    handler.setDeleteKeySuccess(false);
+    handler.setDeleteKeysSuccess(false);
 
     // Delete the first key.
     deleteButtons[0]!.click();
 
-    const keyId = await handler.whenCalled('deleteKey');
-    assertEquals(sampleKey1.keyId, keyId);
+    assertDeepEquals(
+        [sampleKey1.keyId], await handler.whenCalled('deleteKeys'));
 
     // Should trigger a re-fetch once the delete is resolved.
     await handler.whenCalled('getUnexportableKeysInfo');
@@ -195,8 +227,8 @@ suite('UnexportableKeysInternals', function() {
     // Delete the first key.
     deleteButtons[0]!.click();
 
-    const keyId = await handler.whenCalled('deleteKey');
-    assertEquals(sampleKey1.keyId, keyId);
+    assertDeepEquals(
+        [sampleKey1.keyId], await handler.whenCalled('deleteKeys'));
 
     // Should trigger a re-fetch once the delete is resolved.
     await handler.whenCalled('getUnexportableKeysInfo');
@@ -205,5 +237,117 @@ suite('UnexportableKeysInternals', function() {
     // The toast (if shown before) should be immediately hidden after the key
     // has been deleted successfully.
     assertFalse(deleteErrorToast.open);
+  });
+
+  test('DeleteMatchingKeysButtonCountsMatchingKeys', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+
+    // An empty prefix only matches keys without a tag.
+    const button = getDeleteMatchingKeysButton();
+    assertEquals('Delete matching keys (0)', button.textContent.trim());
+    assertTrue(button.hasAttribute('disabled'));
+
+    setTagPrefix('tag');
+    await microtasksFinished();
+    assertEquals('Delete matching keys (2)', button.textContent.trim());
+    assertFalse(button.hasAttribute('disabled'));
+
+    setTagPrefix('tag1');
+    await microtasksFinished();
+    assertEquals('Delete matching keys (1)', button.textContent.trim());
+  });
+
+  test('DeleteMatchingKeysAsksForConfirmation', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    setTagPrefix('tag');
+    await microtasksFinished();
+
+    let confirmMessage: string|undefined;
+    window.confirm = (message?: string) => {
+      confirmMessage = message;
+      return false;
+    };
+    getDeleteMatchingKeysButton().click();
+    await microtasksFinished();
+
+    assertEquals('Are you sure you want to delete 2 keys?', confirmMessage);
+    assertEquals(0, handler.getCallCount('deleteKeys'));
+  });
+
+  test('DeleteMatchingKeysSuccess', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    handler.resetResolver('getUnexportableKeysInfo');
+    setTagPrefix('tag1');
+    await microtasksFinished();
+
+    // Make sure subsequent calls to `getUnexportableKeysInfo` only return
+    // `sampleKey2`.
+    handler.setGetUnexportableKeysInfoResponse([sampleKey2]);
+
+    window.confirm = () => true;
+    getDeleteMatchingKeysButton().click();
+
+    assertDeepEquals(
+        [sampleKey1.keyId], await handler.whenCalled('deleteKeys'));
+
+    // Should trigger a re-fetch once the delete is resolved.
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+
+    // Only the second key should remain.
+    const rows = element.shadowRoot.querySelectorAll('tr');
+    assertEquals(2, rows.length);
+    assertFalse(element.$.deleteErrorToast.open);
+  });
+
+  test('DeleteMatchingKeysWithEmptyPrefix', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    handler.resetResolver('getUnexportableKeysInfo');
+    handler.setGetUnexportableKeysInfoResponse(
+        [sampleKey1, sampleKey2, untaggedKey]);
+    createElement();
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    handler.resetResolver('getUnexportableKeysInfo');
+
+    let confirmMessage: string|undefined;
+    window.confirm = (message?: string) => {
+      confirmMessage = message;
+      return true;
+    };
+    getDeleteMatchingKeysButton().click();
+
+    assertDeepEquals(
+        [untaggedKey.keyId], await handler.whenCalled('deleteKeys'));
+    assertEquals('Are you sure you want to delete 1 key?', confirmMessage);
+
+    // Should trigger a re-fetch once the delete is resolved.
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+  });
+
+  test('DeleteMatchingKeysShowsErrorToastOnFailure', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    handler.resetResolver('getUnexportableKeysInfo');
+    setTagPrefix('tag');
+    await microtasksFinished();
+
+    handler.setDeleteKeysSuccess(false);
+    window.confirm = () => true;
+    getDeleteMatchingKeysButton().click();
+
+    assertDeepEquals(
+        [sampleKey1.keyId, sampleKey2.keyId],
+        await handler.whenCalled('deleteKeys'));
+
+    // Should trigger a re-fetch once the delete is resolved.
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+
+    assertTrue(element.$.deleteErrorToast.open);
   });
 });

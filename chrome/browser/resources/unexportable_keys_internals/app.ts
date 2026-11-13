@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -47,6 +48,7 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
       unexportableKeysInfo_: {type: Array},
       sortColumn_: {type: String},
       sortReverse_: {type: Boolean},
+      tagPrefix_: {type: String},
     };
   }
 
@@ -66,6 +68,7 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
   ];
 
   protected accessor unexportableKeysInfo_: UnexportableKeyInfo[] = [];
+  protected accessor tagPrefix_: string = '';
   private accessor sortColumn_: SortKey = 'creationTime';
   private accessor sortReverse_: boolean = true;
 
@@ -81,15 +84,32 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
     const keyId =
         this.unexportableKeysInfo_[Number(currentTarget.dataset['index'])]!
             .keyId;
-    const {success} = await this.browserProxy_.handler.deleteKey(keyId);
-    if (!success) {
-      this.$.deleteErrorToast.show();
-    } else if (this.$.deleteErrorToast.open) {
-      // Hide the toast if it was shown before but this time the key has been
-      // deleted successfully.
-      this.$.deleteErrorToast.hide();
+    const {success} = await this.browserProxy_.handler.deleteKeys([keyId]);
+    this.onDeleteFinished_(success);
+  }
+
+  protected onTagPrefixInput_(e: Event) {
+    this.tagPrefix_ = (e.target as HTMLInputElement).value;
+  }
+
+  // Returns the listed keys whose tag starts with `tagPrefix_`. An empty prefix
+  // only matches keys without a tag, so that a single click can't delete the
+  // keys of all channels and user data directories.
+  protected getMatchingKeys_(): UnexportableKeyInfo[] {
+    return this.unexportableKeysInfo_.filter(
+        item => this.tagPrefix_ ? item.keyTag.startsWith(this.tagPrefix_) :
+                                  !item.keyTag);
+  }
+
+  protected async onDeleteMatchingKeysClick_() {
+    const keys = this.getMatchingKeys_();
+    if (!window.confirm(`Are you sure you want to delete ${keys.length} ${
+            keys.length === 1 ? 'key' : 'keys'}?`)) {
+      return;
     }
-    this.updateKeysList_();
+    const {success} =
+        await this.browserProxy_.handler.deleteKeys(keys.map(key => key.keyId));
+    this.onDeleteFinished_(success);
   }
 
   protected onSortClick_(e: Event) {
@@ -122,6 +142,17 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
     const {keys} = await this.browserProxy_.handler.getUnexportableKeysInfo();
     this.unexportableKeysInfo_ = keys;
     this.sortKeys_();
+  }
+
+  private onDeleteFinished_(success: boolean) {
+    if (!success) {
+      this.$.deleteErrorToast.show();
+    } else if (this.$.deleteErrorToast.open) {
+      // Hide the toast if it was shown before but this time the deletion
+      // succeeded.
+      this.$.deleteErrorToast.hide();
+    }
+    this.updateKeysList_();
   }
 
   private sortKeys_() {
