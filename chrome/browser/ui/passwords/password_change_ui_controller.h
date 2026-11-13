@@ -11,6 +11,10 @@
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "ui/views/widget/widget.h"
 
+namespace password_manager {
+struct LeakedPasswordDetails;
+}  // namespace password_manager
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -55,6 +59,12 @@ class PasswordChangeUIController {
 
   // Updates the `state_` and the UI.
   virtual void UpdateState(PasswordChangeUIDelegate::State state);
+
+  // Invoked when password change can't be offered because the login check
+  // failed with a server error. Shows a regular leak warning for `details`
+  // instead.
+  virtual void OnLoginCheckFailedWithServerError(
+      password_manager::LeakedPasswordDetails details);
 
 #if defined(UNIT_TEST)
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }

@@ -7,10 +7,10 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -89,9 +90,15 @@ class PasswordChangeDelegateImpl
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:CoarseFinalPasswordChangeState)
 
   PasswordChangeDelegateImpl(GURL change_password_url,
-                             password_manager::PasswordForm credentials,
+                             password_manager::LeakedPasswordDetails details,
                              tabs::TabInterface* tab_interface);
   ~PasswordChangeDelegateImpl() override;
+
+  // Starts the flow. `completion_callback` is run once the flow is stopped and
+  // the delegate can be destroyed. It may run from within `Start()` or other
+  // methods of the delegate, so the owner must not destroy the delegate
+  // synchronously.
+  void Start(base::OnceClosure completion_callback);
 
   PasswordChangeDelegateImpl(const PasswordChangeDelegateImpl&) = delete;
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
@@ -127,8 +134,6 @@ class PasswordChangeDelegateImpl
   // PasswordChangeDelegate:
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   void Stop() override;
-  void AddObserver(PasswordChangeDelegate::Observer* observer) override;
-  void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
 
   // PasswordChangeUIDelegate:
   State GetCurrentState() const override;
@@ -158,7 +163,7 @@ class PasswordChangeDelegateImpl
 
   void OnLoginStateCheckedWithoutPIResult(LoginCheckResult login_status);
   void OnLoginStateCheckedWithPIResult(LoginCheckResult login_status);
-  // Updates `current_state_` and notifies `observers_`.
+  // Updates `current_state_` and notifies `ui_controller_`.
   void UpdateState(State new_state);
 
   bool IsPrivacyNoticeAcknowledged() const;
@@ -177,7 +182,9 @@ class PasswordChangeDelegateImpl
   void RecordLoggedInCheckQuality(LoginCheckResult result);
 
   const GURL change_password_url_;
-  password_manager::PasswordForm password_form_info_;
+  // Leaked credentials for which password change is offered. Also used to
+  // show a regular leak warning if password change isn't possible.
+  password_manager::LeakedPasswordDetails leak_details_;
 
   raw_ptr<content::WebContents> originator_ = nullptr;
 
@@ -196,8 +203,8 @@ class PasswordChangeDelegateImpl
   // Inference before the user accepts the feature.
   std::unique_ptr<LoginCheckResult> login_check_result_;
 
-  base::ObserverList<PasswordChangeDelegate::Observer, /*check_empty=*/true>
-      observers_;
+  // Notifies the owner that the flow is stopped.
+  base::OnceClosure completion_callback_;
 
   // The time when the user started the password change flow.
   base::Time flow_start_time_;

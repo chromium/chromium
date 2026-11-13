@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
-#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -91,21 +91,6 @@ bool IsPasswordFieldVisible(const password_manager::PasswordForm& form) {
   }
   return true;
 }
-
-// Returns the ManagePasswordsUIController of `web_contents`, or nullptr if the
-// tab is gone.
-ManagePasswordsUIController* GetPasswordsUIController(
-    const base::WeakPtr<content::WebContents>& web_contents) {
-  return web_contents
-             ? ManagePasswordsUIController::FromWebContents(web_contents.get())
-             : nullptr;
-}
-
-void NotifyLeakDialogHidden(base::WeakPtr<content::WebContents> originator) {
-  if (auto* controller = GetPasswordsUIController(originator)) {
-    controller->OnLeakDialogHidden();
-  }
-}
 #endif
 
 }  // namespace
@@ -128,7 +113,7 @@ ChromePasswordChangeService::ChromePasswordChangeService(
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
 #if !BUILDFLAG(IS_ANDROID)
-  CHECK(password_change_data_.empty());
+  CHECK(password_change_delegates_.empty());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -233,12 +218,14 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
         base::FeatureList::IsEnabled(
             password_change::features::kPasswordChangeWithGlic));
 
-  auto delegate = std::make_unique<PasswordChangeDelegateImpl>(
-      std::move(change_pwd_url), details.credentials,
-      tabs::TabInterface::GetFromContents(originator));
-  delegate->AddObserver(this);
-  password_change_data_.push_back(
-      {std::move(delegate), originator->GetWeakPtr(), std::move(details)});
+  password_change_delegates_.emplace_back(
+      std::make_unique<PasswordChangeDelegateImpl>(
+          std::move(change_pwd_url), std::move(details),
+          tabs::TabInterface::GetFromContents(originator)));
+  password_change_delegates_.back()->Start(
+      base::BindOnce(&ChromePasswordChangeService::OnPasswordChangeStopped,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     password_change_delegates_.back()->AsWeakPtr()));
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -271,9 +258,9 @@ ChromePasswordChangeService::GetCredentialsProviderForActorSurface(
   if (!surface) {
     return nullptr;
   }
-  for (const auto& data : password_change_data_) {
-    if (data.delegate->IsPasswordChangeOngoing(surface->GetWebContents())) {
-      return data.delegate.get();
+  for (const auto& delegate : password_change_delegates_) {
+    if (delegate->IsPasswordChangeOngoing(surface->GetWebContents())) {
+      return delegate.get();
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -283,104 +270,39 @@ ChromePasswordChangeService::GetCredentialsProviderForActorSurface(
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  for (const auto& data : password_change_data_) {
-    if (data.delegate->IsPasswordChangeOngoing(web_contents)) {
-      return data.delegate.get();
+  for (const auto& delegate : password_change_delegates_) {
+    if (delegate->IsPasswordChangeOngoing(web_contents)) {
+      return delegate.get();
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return nullptr;
 }
 
-void ChromePasswordChangeService::OnPasswordChangeStopped(
-    PasswordChangeDelegate* delegate) {
 #if !BUILDFLAG(IS_ANDROID)
-  delegate->RemoveObserver(this);
+void ChromePasswordChangeService::OnPasswordChangeStopped(
+    base::WeakPtr<PasswordChangeDelegate> delegate) {
+  auto iter =
+      std::ranges::find(password_change_delegates_, delegate.get(),
+                        &std::unique_ptr<PasswordChangeDelegateImpl>::get);
+  if (iter == password_change_delegates_.end()) {
+    return;
+  }
 
-  auto iter = FindPasswordChangeData(delegate);
-  CHECK(iter != password_change_data_.end());
-
-  std::unique_ptr<PasswordChangeDelegate> deleted_delegate =
-      std::move(iter->delegate);
-  password_change_data_.erase(iter);
+  // Remove the delegate right away so that it's no longer considered ongoing,
+  // but destroy it asynchronously since it may still be on the stack, e.g. when
+  // it stops from within `Start()` or one of its own methods.
+  std::unique_ptr<PasswordChangeDelegateImpl> deleted_delegate =
+      std::move(*iter);
+  password_change_delegates_.erase(iter);
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(deleted_delegate));
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePasswordChangeService::OnPasswordChangeFinishedSuccessfully(
-    PasswordChangeDelegate* delegate) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto iter = FindPasswordChangeData(delegate);
-  if (iter == password_change_data_.end()) {
-    return;
-  }
-
-  if (auto* controller = GetPasswordsUIController(iter->originator)) {
-    controller->OnPasswordChangeFinishedSuccessfully();
-  }
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePasswordChangeService::OnPasswordChangeDeclined(
-    PasswordChangeDelegate* delegate) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto iter = FindPasswordChangeData(delegate);
-  if (iter == password_change_data_.end()) {
-    return;
-  }
-
-  // Post a task since ManagePasswordsUIController doesn't show any bubble while
-  // password change is still ongoing.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&NotifyLeakDialogHidden, iter->originator));
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePasswordChangeService::OnLoginCheckFailedWithServerError(
-    PasswordChangeDelegate* delegate) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto iter = FindPasswordChangeData(delegate);
-  if (iter == password_change_data_.end()) {
-    return;
-  }
-
-  auto* controller = GetPasswordsUIController(iter->originator);
-  if (!controller) {
-    return;
-  }
-
-  password_manager::LeakedPasswordDetails details = iter->details;
-  details.leak_type &=
-      ~password_manager::CredentialLeakFlags::kHasChangePasswordUrl;
-  controller->OnCredentialLeak(std::move(details));
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-std::vector<ChromePasswordChangeService::PasswordChangeData>::iterator
-ChromePasswordChangeService::FindPasswordChangeData(
-    PasswordChangeDelegate* delegate) {
-  return std::ranges::find(
-      password_change_data_, delegate,
-      [](const PasswordChangeData& data) { return data.delegate.get(); });
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromePasswordChangeService::Shutdown() {
 #if !BUILDFLAG(IS_ANDROID)
-  for (const auto& data : password_change_data_) {
-    data.delegate->RemoveObserver(this);
-  }
-  password_change_data_.clear();
+  password_change_delegates_.clear();
   for (const auto& delegate : password_change_from_checkup_delegates_) {
     delegate->Stop(actor::ActorTask::StoppedReason::kShutdown);
   }

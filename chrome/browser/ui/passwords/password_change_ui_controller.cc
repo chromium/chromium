@@ -30,6 +30,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -435,6 +436,13 @@ std::unique_ptr<views::BubbleDialogModelHost> CreateDialogModelHost(
       std::move(dialog_model), ui::mojom::ModalType::kChild);
 }
 
+void NotifyLeakDialogHidden(base::WeakPtr<tabs::TabInterface> tab) {
+  if (auto* passwords_ui_controller =
+          ManagePasswordsUIController::From(tab.get())) {
+    passwords_ui_controller->OnLeakDialogHidden();
+  }
+}
+
 }  // namespace
 
 PasswordChangeUIController::PasswordChangeUIController(
@@ -454,6 +462,13 @@ void PasswordChangeUIController::UpdateState(
   }
 
   state_ = state;
+  if (state_ == PasswordChangeUIDelegate::State::kPasswordSuccessfullyChanged) {
+    if (auto* passwords_ui_controller =
+            ManagePasswordsUIController::From(tab_interface_)) {
+      passwords_ui_controller->OnPasswordChangeFinishedSuccessfully();
+    }
+  }
+
   std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
       configuration = GetDialogOrToastConfiguration(state);
 
@@ -479,6 +494,18 @@ void PasswordChangeUIController::UpdateState(
   CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
   ShowDialog(std::move(
       std::get<std::unique_ptr<views::BubbleDialogModelHost>>(configuration)));
+}
+
+void PasswordChangeUIController::OnLoginCheckFailedWithServerError(
+    password_manager::LeakedPasswordDetails details) {
+  auto* passwords_ui_controller =
+      ManagePasswordsUIController::From(tab_interface_);
+  if (!passwords_ui_controller) {
+    return;
+  }
+  details.leak_type &=
+      ~password_manager::CredentialLeakFlags::kHasChangePasswordUrl;
+  passwords_ui_controller->OnCredentialLeak(std::move(details));
 }
 
 std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
@@ -708,6 +735,11 @@ void PasswordChangeUIController::OnDialogCanceled() {
   LogDialogAction(state_, PasswordChangeDialogAction::kCancelButtonClicked);
   if (state_ == PasswordChangeUIDelegate::State::kWaitingForAgreement ||
       state_ == PasswordChangeUIDelegate::State::kOfferingPasswordChange) {
+    // Post a task since ManagePasswordsUIController doesn't show any bubble
+    // while password change is still ongoing.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NotifyLeakDialogHidden, tab_interface_->GetWeakPtr()));
     ui_delegate_->OnPasswordChangeDeclined();
     return;
   }

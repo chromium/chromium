@@ -25,8 +25,6 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
               (content::WebContents*),
               (override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 

@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
-#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -56,6 +57,21 @@ constexpr char kChangePasswordURL[] = "https://example.com/password/";
 const std::u16string kTestEmail = u"elisa.buckett@gmail.com";
 const std::u16string kPassword = u"cE1L45Vgxyzlu8";
 
+password_manager::LeakedPasswordDetails CreateLeakedPasswordDetails() {
+  password_manager::PasswordForm form;
+  form.url = GURL(kChangePasswordURL);
+  form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
+  form.username_value = kTestEmail;
+  form.password_value =
+      password_manager::PasswordString(std::u16string(kPassword));
+  return password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(true),
+          password_manager::HasChangePasswordUrl(true)),
+      std::move(form), /*in_account_store=*/true);
+}
+
 class MockPasswordChangeUIController : public PasswordChangeUIController {
  public:
   explicit MockPasswordChangeUIController(PasswordChangeUIDelegate* ui_delegate)
@@ -63,6 +79,10 @@ class MockPasswordChangeUIController : public PasswordChangeUIController {
   ~MockPasswordChangeUIController() override = default;
 
   MOCK_METHOD(void, UpdateState, (PasswordChangeUIDelegate::State), (override));
+  MOCK_METHOD(void,
+              OnLoginCheckFailedWithServerError,
+              (password_manager::LeakedPasswordDetails),
+              (override));
 };
 
 class FakePasswordManagerClient
@@ -74,37 +94,6 @@ class FakePasswordManagerClient
 
  private:
   GURL url_ = GURL("example.com");
-};
-
-class MockManagePasswordsUIController : public ManagePasswordsUIController {
- public:
-  MockManagePasswordsUIController(tabs::TabInterface& tab,
-                                  content::WebContents* web_contents)
-      : ManagePasswordsUIController(tab, web_contents) {}
-  ~MockManagePasswordsUIController() override = default;
-
-  void PrimaryPageChanged(content::Page& page) override {}
-};
-
-class MockPasswordChangeDelegateObserver
-    : public PasswordChangeDelegate::Observer {
- public:
-  MOCK_METHOD(void,
-              OnPasswordChangeStopped,
-              (PasswordChangeDelegate*),
-              (override));
-  MOCK_METHOD(void,
-              OnPasswordChangeFinishedSuccessfully,
-              (PasswordChangeDelegate*),
-              (override));
-  MOCK_METHOD(void,
-              OnPasswordChangeDeclined,
-              (PasswordChangeDelegate*),
-              (override));
-  MOCK_METHOD(void,
-              OnLoginCheckFailedWithServerError,
-              (PasswordChangeDelegate*),
-              (override));
 };
 
 class MockPasswordChangeActuator : public PasswordChangeActuator {
@@ -232,9 +221,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*tab_interface_, GetContents).WillByDefault(Return(web_contents()));
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          tab_interface_.get());
-    manage_passwords_ui_controller_ =
-        std::make_unique<::testing::NiceMock<MockManagePasswordsUIController>>(
-            *tab_interface_, web_contents());
     ON_CALL(*tab_interface_, RegisterWillDetach)
         .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
           tab_will_detach_callback_ = std::move(callback);
@@ -243,7 +229,6 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    manage_passwords_ui_controller_.reset();
     actuator_.reset();
     delegate_.reset();
     mock_optimization_guide_keyed_service_ = nullptr;
@@ -255,17 +240,13 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   PasswordChangeDelegateImpl* delegate() { return delegate_.get(); }
 
   void CreateDelegate(bool inject_actuator = true) {
-    password_manager::PasswordForm form;
-    form.url = GURL(kChangePasswordURL);
-    form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
-    form.username_value = kTestEmail;
-    form.password_value =
-        password_manager::PasswordString(std::u16string(kPassword));
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kChangePasswordURL), std::move(form), tab_interface_.get());
+        GURL(kChangePasswordURL), CreateLeakedPasswordDetails(),
+        tab_interface_.get());
     delegate_->SetCustomUIController(
         std::make_unique<NiceMock<MockPasswordChangeUIController>>(
             delegate_.get()));
+    delegate_->Start(completion_callback_.Get());
     if (inject_actuator) {
       actuator_ = InjectMockActuator();
     }
@@ -276,8 +257,8 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     delegate_.reset();
   }
 
-  MockManagePasswordsUIController* manage_passwords_ui_controller() {
-    return manage_passwords_ui_controller_.get();
+  base::MockCallback<base::OnceClosure>& completion_callback() {
+    return completion_callback_;
   }
 
   MockPasswordChangeUIController* mock_ui_controller() {
@@ -311,8 +292,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
-  std::unique_ptr<::testing::NiceMock<MockManagePasswordsUIController>>
-      manage_passwords_ui_controller_;
+  NiceMock<base::MockCallback<base::OnceClosure>> completion_callback_;
   std::unique_ptr<PasswordChangeDelegateImpl> delegate_;
   base::WeakPtr<MockPasswordChangeActuator> actuator_;
   tabs::TabInterface::WillDetach tab_will_detach_callback_;
@@ -583,23 +563,15 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
 
 TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
-  testing::InSequence s;
-  EXPECT_CALL(observer, OnPasswordChangeDeclined(delegate()));
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(completion_callback(), Run());
   delegate()->OnPasswordChangeDeclined();
-  delegate()->RemoveObserver(&observer);
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
-       ActuationStateChangedUpdatesUIAndObservers) {
+TEST_F(PasswordChangeDelegateImplTest, ActuationStateChangedUpdatesUI) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
   const std::vector<
       std::pair<PasswordChangeActuator::State, PasswordChangeUIDelegate::State>>
@@ -617,18 +589,10 @@ TEST_F(PasswordChangeDelegateImplTest,
       };
 
   for (const auto& [actuator_state, delegate_state] : kTestStates) {
-    if (actuator_state ==
-        PasswordChangeActuator::State::kPasswordSuccessfullyChanged) {
-      EXPECT_CALL(observer, OnPasswordChangeFinishedSuccessfully(delegate()));
-    } else {
-      EXPECT_CALL(observer, OnPasswordChangeFinishedSuccessfully).Times(0);
-    }
     EXPECT_CALL(*mock_ui_controller(), UpdateState(delegate_state));
     delegate()->OnActuationStateChanged(actuator_state);
     EXPECT_EQ(delegate()->GetCurrentState(), delegate_state);
   }
-
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -684,15 +648,13 @@ TEST_F(PasswordChangeDelegateImplTest,
        OnTabWillDetach_DeleteReason_CancelsActuatorAndStopsFlow) {
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
   delegate()->StartPasswordChangeFlow();
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedIn);
 
   EXPECT_CALL(*actuator(), Cancel());
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(completion_callback(), Run());
   base::HistogramTester histogram_tester;
 
   SimulateTabWillDetach(tabs::TabInterface::DetachReason::kDelete);
@@ -700,20 +662,16 @@ TEST_F(PasswordChangeDelegateImplTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.UserClosedTab",
       PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm, 1);
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, OnTabWillDetach_OtherReason_Ignored) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
   EXPECT_CALL(*actuator(), Cancel()).Times(0);
-  EXPECT_CALL(observer, OnPasswordChangeStopped).Times(0);
+  EXPECT_CALL(completion_callback(), Run).Times(0);
 
   SimulateTabWillDetach(
       tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
@@ -796,21 +754,18 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
             PasswordChangeUIDelegate::State::kNoState);
   ASSERT_TRUE(delegate()->login_checker());
 
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError(delegate())).Times(0);
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(*mock_ui_controller(), OnLoginCheckFailedWithServerError)
+      .Times(0);
+  EXPECT_CALL(completion_callback(), Run());
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kError, /*logging_data=*/nullptr,
       LoginCheckResult::LoginCheckError::kTimeout);
   EXPECT_FALSE(delegate()->logs_uploader());
 
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
-       PrivateInferenceLoginCheck_ServerError_NotifiesObserver) {
+       PrivateInferenceLoginCheck_ServerError_ShowsLeakWarning) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
@@ -820,20 +775,16 @@ TEST_F(PasswordChangeDelegateImplTest,
             PasswordChangeUIDelegate::State::kNoState);
   ASSERT_TRUE(delegate()->login_checker());
 
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError(delegate()));
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(*mock_ui_controller(),
+              OnLoginCheckFailedWithServerError(CreateLeakedPasswordDetails()));
+  EXPECT_CALL(completion_callback(), Run());
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kError, /*logging_data=*/nullptr,
       LoginCheckResult::LoginCheckError::kServerError);
   EXPECT_FALSE(delegate()->logs_uploader());
-
-  delegate()->RemoveObserver(&observer);
 }
 
-// Verifies there is no crash and no observer notification (and hence no
+// Verifies there is no crash and no UI notification (and hence no
 // credential leak dialog) if the originator tab is closed while the login
 // check is still in flight.
 TEST_F(PasswordChangeDelegateImplTest,
@@ -845,18 +796,16 @@ TEST_F(PasswordChangeDelegateImplTest,
   CreateDelegate();
   ASSERT_TRUE(delegate()->login_checker());
 
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
   // Closing the tab stops the flow and destroys the login checker, so a late
   // server error can no longer reach the delegate.
-  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError).Times(0);
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(*mock_ui_controller(), OnLoginCheckFailedWithServerError)
+      .Times(0);
+  EXPECT_CALL(completion_callback(), Run());
   SimulateTabWillDetach(tabs::TabInterface::DetachReason::kDelete);
 
   EXPECT_FALSE(delegate()->login_checker());
 
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
@@ -874,13 +823,10 @@ TEST_F(PasswordChangeDelegateImplTest, IsPasswordChangeOngoing) {
 
 TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
   EXPECT_CALL(*actuator(), OpenPasswordChangeTab(web_contents()));
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(completion_callback(), Run());
   delegate()->OpenPasswordChangeTab();
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
@@ -898,12 +844,9 @@ TEST_F(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
 
 TEST_F(PasswordChangeDelegateImplTest, OnUiDismissedStopsFlow) {
   CreateDelegate();
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  EXPECT_CALL(completion_callback(), Run());
   delegate()->OnUiDismissed();
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
