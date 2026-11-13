@@ -20440,6 +20440,26 @@
             ]
         }
     ],
+    "V8MaglevAsTopTier": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MaglevAsTopTier",
+                    "enable_features": [
+                        "V8Flag_maglev_as_top_tier"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8MaxValidPolymorphicMapCount": [
         {
             "platforms": [
