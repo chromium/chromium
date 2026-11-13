@@ -7,7 +7,6 @@
 
 #include <list>
 #include <map>
-#include <set>
 #include <string>
 
 #include "base/component_export.h"
@@ -17,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -34,7 +34,6 @@ class SimpleUrlPatternMatcher;
 namespace network {
 namespace mojom {
 enum class FetchResponseType : int32_t;
-enum class RequestDestination : int32_t;
 enum class RequestMode : int32_t;
 enum class SharedDictionaryError : int32_t;
 }  // namespace mojom
@@ -100,7 +99,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) = 0;
 
@@ -112,7 +111,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) = 0;
@@ -124,10 +123,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
 // DictionaryInfoType.
 template <class DictionaryInfoType>
 DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
-    std::map<
-        url::SchemeHostPort,
-        std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-                 DictionaryInfoType>>& dictionary_info_map,
+    std::map<url::SchemeHostPort,
+             std::map<std::tuple<std::string, RequestDestinationSet>,
+                      DictionaryInfoType>>& dictionary_info_map,
     const GURL& url,
     mojom::RequestDestination destination,
     std::list<DictionaryInfoType*>& expired_entries) {
@@ -148,8 +146,7 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     }
 
     // When `match_dest` is empty, we don't check the `destination`.
-    if (!info.match_dest().empty() &&
-        !info.match_dest().contains(destination)) {
+    if (!info.match_dest().empty() && !info.match_dest().Has(destination)) {
       continue;
     }
     CHECK(info.matcher());
@@ -194,15 +191,14 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
 // DictionaryInfoType.
 template <class DictionaryInfoType>
 DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
-    std::map<
-        url::SchemeHostPort,
-        std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-                 DictionaryInfoType>>& dictionary_info_map,
+    std::map<url::SchemeHostPort,
+             std::map<std::tuple<std::string, RequestDestinationSet>,
+                      DictionaryInfoType>>& dictionary_info_map,
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     const std::optional<base::TimeDelta>& ttl) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));

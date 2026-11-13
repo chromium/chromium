@@ -7,7 +7,6 @@
 
 #include <map>
 #include <optional>
-#include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
@@ -52,7 +51,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
         base::Time response_time,
         base::TimeDelta expiration,
         const std::string& match,
-        std::set<mojom::RequestDestination> match_dest,
+        RequestDestinationSet match_dest,
         const std::string& id,
         base::Time last_used_time,
         scoped_refptr<net::IOBuffer> data,
@@ -73,9 +72,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const base::Time& response_time() const { return response_time_; }
     base::TimeDelta expiration() const { return expiration_; }
     const std::string& match() const { return match_; }
-    const std::set<mojom::RequestDestination>& match_dest() const {
-      return match_dest_;
-    }
+    RequestDestinationSet match_dest() const { return match_dest_; }
     const std::string& id() const { return dictionary_->id(); }
     const base::Time& last_used_time() const { return last_used_time_; }
     size_t size() const { return dictionary_->size(); }
@@ -104,7 +101,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     base::Time response_time_;
     base::TimeDelta expiration_;
     std::string match_;
-    std::set<mojom::RequestDestination> match_dest_;
+    RequestDestinationSet match_dest_;
     base::Time last_used_time_;
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher_;
 
@@ -140,7 +137,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) override;
   bool UpdateLastFetchTimeIfAlreadyRegistered(
@@ -148,22 +145,21 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) override;
 
   const std::map<
       url::SchemeHostPort,
-      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-               DictionaryInfo>>&
+      std::map<std::tuple<std::string, RequestDestinationSet>, DictionaryInfo>>&
   GetDictionaryMap() {
     return dictionary_info_map_;
   }
 
   void DeleteDictionary(const url::SchemeHostPort& host,
                         const std::string& match,
-                        const std::set<mojom::RequestDestination>& match_dest);
+                        RequestDestinationSet match_dest);
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher);
@@ -183,7 +179,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       base::TimeDelta expiration,
       const std::string& match,
       std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       SharedDictionaryWriterInMemory::Result result,
       scoped_refptr<net::IOBuffer> data,
@@ -196,8 +192,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
   std::map<
       url::SchemeHostPort,
-      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-               DictionaryInfo>>
+      std::map<std::tuple<std::string, RequestDestinationSet>, DictionaryInfo>>
       dictionary_info_map_;
   base::WeakPtrFactory<SharedDictionaryStorageInMemory> weak_factory_{this};
 };

@@ -13,6 +13,7 @@
 #include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/to_vector.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -199,10 +200,7 @@ network::mojom::SharedDictionaryInfoPtr ToMojoSharedDictionaryInfo(
     const DictionaryInfoType& info) {
   auto mojo_info = network::mojom::SharedDictionaryInfo::New();
   mojo_info->match = info.match();
-  for (const auto dest : info.match_dest()) {
-    mojo_info->match_dest.push_back(dest);
-  }
-  std::sort(mojo_info->match_dest.begin(), mojo_info->match_dest.end());
+  mojo_info->match_dest = base::ToVector(info.match_dest());
   mojo_info->id = info.id();
   mojo_info->dictionary_url = info.url();
   mojo_info->last_fetch_time = info.last_fetch_time();

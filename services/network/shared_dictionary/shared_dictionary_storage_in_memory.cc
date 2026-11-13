@@ -67,7 +67,7 @@ void SharedDictionaryStorageInMemory::GetDictionary(
 void SharedDictionaryStorageInMemory::DeleteDictionary(
     const url::SchemeHostPort& host,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest) {
+    RequestDestinationSet match_dest) {
   auto it = dictionary_info_map_.find(host);
   if (it != dictionary_info_map_.end()) {
     it->second.erase(std::make_tuple(match, match_dest));
@@ -121,7 +121,7 @@ SharedDictionaryStorageInMemory::CreateWriter(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) {
   CHECK(matcher);
@@ -136,7 +136,7 @@ bool SharedDictionaryStorageInMemory::UpdateLastFetchTimeIfAlreadyRegistered(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     const std::optional<base::TimeDelta>& ttl,
     base::Time last_fetch_time) {
@@ -163,7 +163,7 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     base::TimeDelta expiration,
     const std::string& match,
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     SharedDictionaryWriterInMemory::Result result,
     scoped_refptr<net::IOBuffer> data,
@@ -190,7 +190,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    std::set<mojom::RequestDestination> match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     base::Time last_used_time,
     scoped_refptr<net::IOBuffer> data,
@@ -202,7 +202,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
       response_time_(response_time),
       expiration_(expiration),
       match_(match),
-      match_dest_(std::move(match_dest)),
+      match_dest_(match_dest),
       last_used_time_(last_used_time),
       matcher_(std::move(matcher)),
       dictionary_(base::MakeRefCounted<SharedDictionaryInMemory>(data,

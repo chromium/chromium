@@ -9,9 +9,12 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace network {
+
+using RequestDestinationSet = base::EnumSet<mojom::RequestDestination>;
 
 // Options for the choice of handling empty string for
 // RequestDestination::kEmpty.

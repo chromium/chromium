@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ON_DISK_H_
 
 #include <map>
-#include <set>
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -51,16 +50,14 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
     WrappedDictionaryInfo(WrappedDictionaryInfo&&);
     WrappedDictionaryInfo& operator=(WrappedDictionaryInfo&&);
 
-    const std::set<mojom::RequestDestination>& match_dest() const {
-      return match_dest_;
-    }
+    RequestDestinationSet match_dest() const { return match_dest_; }
     const url_pattern::SimpleUrlPatternMatcher* matcher() const {
       return matcher_.get();
     }
 
    private:
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher_;
-    std::set<mojom::RequestDestination> match_dest_;
+    RequestDestinationSet match_dest_;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -102,7 +99,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) override;
   bool UpdateLastFetchTimeIfAlreadyRegistered(
@@ -110,7 +107,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
+      RequestDestinationSet match_dest,
       const std::string& id,
       const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) override;
@@ -139,10 +136,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
-  const std::map<
-      url::SchemeHostPort,
-      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-               WrappedDictionaryInfo>>&
+  const std::map<url::SchemeHostPort,
+                 std::map<std::tuple<std::string, RequestDestinationSet>,
+                          WrappedDictionaryInfo>>&
   GetDictionaryMapForTesting() {
     return dictionary_info_map_;
   }
@@ -150,10 +146,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   base::WeakPtr<SharedDictionaryManagerOnDisk> manager_;
   const net::SharedDictionaryIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
-  std::map<
-      url::SchemeHostPort,
-      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
-               WrappedDictionaryInfo>>
+  std::map<url::SchemeHostPort,
+           std::map<std::tuple<std::string, RequestDestinationSet>,
+                    WrappedDictionaryInfo>>
       dictionary_info_map_;
 
   scoped_refptr<SharedDictionaryCache> dictionary_cache_;

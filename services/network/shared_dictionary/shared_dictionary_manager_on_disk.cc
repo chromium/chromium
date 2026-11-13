@@ -41,10 +41,9 @@ std::optional<base::UnguessableToken> DeserializeToUnguessableToken(
   return base::UnguessableToken::Deserialize(token->high(), token->low());
 }
 
-std::string ToCommaSeparatedString(
-    const std::set<mojom::RequestDestination>& match_dest) {
+std::string ToCommaSeparatedString(RequestDestinationSet match_dest) {
   std::vector<std::string_view> destinations;
-  for (auto dest : match_dest) {
+  for (mojom::RequestDestination dest : match_dest) {
     std::string_view result = RequestDestinationToString(
         dest, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
     destinations.push_back(result);
@@ -640,7 +639,7 @@ SharedDictionaryManagerOnDisk::CreateWriter(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     base::OnceCallback<void(net::SharedDictionaryInfo)> callback) {
   const base::UnguessableToken disk_cache_key_token =
@@ -665,7 +664,7 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     const base::UnguessableToken& disk_cache_key_token,
     base::OnceCallback<void(net::SharedDictionaryInfo)> callback,

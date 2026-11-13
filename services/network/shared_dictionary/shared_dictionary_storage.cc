@@ -36,19 +36,19 @@ constexpr std::string_view kDefaultTypeRaw = "raw";
 class DictionaryHeaderInfo {
  public:
   DictionaryHeaderInfo(std::string match,
-                       std::set<network::mojom::RequestDestination> match_dest,
+                       RequestDestinationSet match_dest,
                        std::string type,
                        std::string id,
                        std::optional<base::TimeDelta> ttl)
       : match(std::move(match)),
-        match_dest(std::move(match_dest)),
+        match_dest(match_dest),
         type(std::move(type)),
         id(std::move(id)),
         ttl(std::move(ttl)) {}
   ~DictionaryHeaderInfo() = default;
 
   std::string match;
-  std::set<network::mojom::RequestDestination> match_dest;
+  RequestDestinationSet match_dest;
   std::string type;
   std::string id;
   std::optional<base::TimeDelta> ttl;
@@ -100,7 +100,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
   std::string* match_value = nullptr;
   // Maybe we don't need to support multiple match-dest.
   // https://github.com/httpwg/http-extensions/issues/2722
-  std::set<network::mojom::RequestDestination> match_dest_values;
+  RequestDestinationSet match_dest_values;
   std::string* type_value = nullptr;
   std::string* id_value = nullptr;
   std::optional<base::TimeDelta> ttl;
@@ -131,7 +131,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
             RequestDestinationFromString(
                 *str, EmptyRequestDestinationOption::kUseTheEmptyString);
         if (dest_value) {
-          match_dest_values.insert(*dest_value);
+          match_dest_values.Put(*dest_value);
         }
       }
       // A list that is entirely made up of unknown destinations will never
@@ -180,7 +180,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
   }
 
   return DictionaryHeaderInfo(
-      std::move(*match_value), std::move(match_dest_values),
+      std::move(*match_value), match_dest_values,
       type_value ? std::move(*type_value) : std::string(kDefaultTypeRaw),
       id_value ? std::move(*id_value) : std::string(), std::move(ttl));
 }

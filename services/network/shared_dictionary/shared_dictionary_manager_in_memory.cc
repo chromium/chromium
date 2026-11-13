@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
 
 #include <algorithm>
+#include <set>
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -53,7 +54,7 @@ class EvictionCandidate {
   EvictionCandidate(raw_ptr<SharedDictionaryStorageInMemory> storage,
                     const url::SchemeHostPort& host,
                     const std::string& match,
-                    const std::set<mojom::RequestDestination>& match_dest)
+                    RequestDestinationSet match_dest)
       : storage_(storage),
         host_(host),
         match_(match),
@@ -68,15 +69,13 @@ class EvictionCandidate {
   const url::SchemeHostPort& host() const { return host_; }
   raw_ptr<SharedDictionaryStorageInMemory> storage() const { return storage_; }
   const std::string& match() const { return match_; }
-  const std::set<mojom::RequestDestination> match_dest() const {
-    return match_dest_;
-  }
+  RequestDestinationSet match_dest() const { return match_dest_; }
 
  private:
   raw_ptr<SharedDictionaryStorageInMemory> storage_;
   url::SchemeHostPort host_;
   std::string match_;
-  std::set<mojom::RequestDestination> match_dest_;
+  RequestDestinationSet match_dest_;
 };
 
 constexpr base::MemoryConsumerTraits kInMemoryTraits(

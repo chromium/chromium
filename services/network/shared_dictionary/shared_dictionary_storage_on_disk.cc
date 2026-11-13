@@ -59,11 +59,10 @@ void RecordMetadataReadTimeMetrics(
       time_delta);
 }
 
-std::set<mojom::RequestDestination> ToRequestDestinationSet(
-    std::string_view input) {
+RequestDestinationSet ToRequestDestinationSet(std::string_view input) {
   const std::vector<std::string_view> dest_strings = base::SplitStringPiece(
       input, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::set<mojom::RequestDestination> destinations;
+  RequestDestinationSet destinations;
   for (const auto dest_string : dest_strings) {
     auto dest = RequestDestinationFromString(
         dest_string, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
@@ -71,7 +70,7 @@ std::set<mojom::RequestDestination> ToRequestDestinationSet(
       LOG(ERROR) << "Invalid request destination string: " << dest_string;
       continue;
     }
-    destinations.insert(*dest);
+    destinations.Put(*dest);
   }
   return destinations;
 }
@@ -287,7 +286,7 @@ SharedDictionaryStorageOnDisk::CreateWriter(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) {
   CHECK(matcher);
@@ -308,7 +307,7 @@ bool SharedDictionaryStorageOnDisk::UpdateLastFetchTimeIfAlreadyRegistered(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    const std::set<mojom::RequestDestination>& match_dest,
+    RequestDestinationSet match_dest,
     const std::string& id,
     const std::optional<base::TimeDelta>& ttl,
     base::Time last_fetch_time) {
