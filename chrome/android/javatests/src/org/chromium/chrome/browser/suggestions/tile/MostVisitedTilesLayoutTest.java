@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -119,6 +118,7 @@ public class MostVisitedTilesLayoutTest {
     private final CallbackHelper mLoadCompleteHelper = new CallbackHelper();
     private MostVisitedTilesCoordinator mCoordinator;
     private TileGroup.Delegate mTileGroupDelegate;
+    private SuggestionsUiDelegateImpl mSuggestionsUiDelegate;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -142,6 +142,10 @@ public class MostVisitedTilesLayoutTest {
         if (mTileGroupDelegate != null) {
             ThreadUtils.runOnUiThreadBlocking(() -> mTileGroupDelegate.destroy());
             mTileGroupDelegate = null;
+        }
+        if (mSuggestionsUiDelegate != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mSuggestionsUiDelegate.onDestroy());
+            mSuggestionsUiDelegate = null;
         }
     }
 
@@ -335,7 +339,7 @@ public class MostVisitedTilesLayoutTest {
 
         // TODO (https://crbug.com/40680929):  Add incognito mode tests.
         Profile profile = ProfileManager.getLastUsedRegularProfile();
-        SuggestionsUiDelegate uiDelegate =
+        mSuggestionsUiDelegate =
                 new SuggestionsUiDelegateImpl(null, profile, null, activity.getSnackbarManager());
 
         mTileGroupDelegate =
@@ -355,6 +359,7 @@ public class MostVisitedTilesLayoutTest {
                         new UiConfig(containerLayout),
                         null,
                         null);
-        mCoordinator.initWithNative(profile, uiDelegate, mTileGroupDelegate, mTouchEnabledDelegate);
+        mCoordinator.initWithNative(
+                profile, mSuggestionsUiDelegate, mTileGroupDelegate, mTouchEnabledDelegate);
     }
 }
