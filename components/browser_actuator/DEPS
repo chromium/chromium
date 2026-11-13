@@ -1,6 +1,7 @@
 include_rules = [
   "+base",
   "+components/keyed_service/core",
+  "+components/stream_transport/public",
   "+net/base/url_util.h",
   "+services/network/public/cpp",
   "+third_party/protobuf",
