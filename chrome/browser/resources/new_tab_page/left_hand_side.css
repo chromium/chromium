@@ -10,7 +10,6 @@
   display: block;
   height: 100%;
   overflow: hidden;
-  transition: width 300ms cubic-bezier(0.2, 0.0, 0, 1.0);
   /* The element sets this in both modes: in hybrid mode it switches between
    * the folded rail's width and the expanded width, in full-iframe mode it
    * mirrors the width the embedded page reports through frame-sizing (see
@@ -18,17 +17,6 @@
    * iframe's width, lets the rest of the NTP slide in sync with the rail.
    * Until the first width is known the host sizes to its content. */
   width: var(--cr-left-hand-side-width, fit-content);
-}
-
-:host([is-expanded_]) {
-  transition: width 450ms cubic-bezier(0.2, 0.0, 0, 1.0);
-}
-
-@container style(--cr-animations-disabled: 1) {
-  :host,
-  :host([is-expanded_]) {
-    transition: none;
-  }
 }
 
 #expanded,
@@ -50,4 +38,95 @@
 
 #expanded.ready {
   width: auto;
+}
+
+/* Stack #folded and #expanded in a single grid cell (without setting
+ * position: relative on :host, which would clip cr-tooltip's absolute
+ * positioning inside #folded) so they can cross-fade over the rail background
+ * while :host animates its width. */
+:host([enable-threads-rail-hybrid_]) {
+  background-color: var(--color-new-tab-page-threads-rail-background);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:host([enable-threads-rail-hybrid_]) #expanded,
+:host([enable-threads-rail-hybrid_]) #folded {
+  grid-area: 1 / 1;
+  justify-self: start;
+}
+
+/* Keep opacity: 1 (and no will-change) on #folded at rest so it does not
+ * create a stacking context that traps cr-tooltip (z-index: 1002) behind
+ * #rhsContent (z-index: 1). */
+:host([enable-threads-rail-hybrid_]) #folded {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+:host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
+    #folded {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+:host([enable-threads-rail-hybrid_]) #expanded {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+:host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
+    #expanded {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+@starting-style {
+  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
+      #expanded {
+    opacity: 0;
+  }
+}
+
+/* cr_shared_vars.css only defines --cr-animations-disabled: 1 under
+ * prefers-reduced-motion: reduce (leaving it unset otherwise), so enable
+ * transitions whenever it is not 1 instead of maintaining a separate reset
+ * block. */
+@container not style(--cr-animations-disabled: 1) {
+  :host {
+    transition: width 300ms cubic-bezier(0.2, 0.0, 0, 1.0);
+  }
+
+  :host([is-expanded_]) {
+    transition: width 450ms cubic-bezier(0.2, 0.0, 0, 1.0);
+  }
+
+  :host([enable-threads-rail-hybrid_]) #folded {
+    /* Delay fade-in by 150ms on collapse so #expanded fades out first, then
+     * fade #folded in over the remaining 150ms. */
+    transition: opacity 150ms ease 150ms, visibility 0s 0s;
+  }
+
+  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
+      #folded {
+    /* Fade out over the first 100ms of the 450ms expand transition before
+     * #expanded begins fading in at 225ms. */
+    transition: opacity 100ms ease, visibility 0s 100ms;
+  }
+
+  :host([enable-threads-rail-hybrid_]) #expanded {
+    /* Fade out over 240ms (80% of the 300ms collapse transition). */
+    transition: opacity 240ms ease, visibility 0s 240ms;
+  }
+
+  :host([enable-threads-rail-hybrid_][is-expanded_][is-expanded-ready_])
+      #expanded {
+    /* Delay fade-in by 225ms (50% of the 450ms expand transition) and fade in
+     * over the remaining 225ms. */
+    transition: opacity 225ms ease 225ms, visibility 0s 0s;
+  }
 }

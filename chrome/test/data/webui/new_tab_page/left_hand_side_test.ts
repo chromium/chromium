@@ -12,11 +12,11 @@ import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from './test_support.js';
+import {installMock, LAYOUT_TOLERANCE_PX} from './test_support.js';
 
 const EXPANDED_LHS_ORIGIN = 'https://www.google.com';
 const EXPANDED_LHS_URL = `${EXPANDED_LHS_ORIGIN}/search?nem=341`;
@@ -50,6 +50,9 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // So that width and fade changes apply immediately instead of
+    // transitioning.
+    document.documentElement.style.setProperty('--cr-animations-disabled', '1');
     loadTimeData.overrideValues({
       enableThreadsRailHybrid: true,
       expandedLhsUrl: EXPANDED_LHS_URL,
@@ -59,6 +62,11 @@ suite('NewTabPageLeftHandSideTest', () => {
     windowProxy = installMock(WindowProxy);
     // Prevents the iframe from actually loading the LHS page.
     windowProxy.setResultFor('createIframeSrc', '');
+  });
+
+  teardown(() => {
+    document.documentElement.style.removeProperty('--cr-animations-disabled');
+    document.documentElement.dir = '';
   });
 
   async function createLeftHandSide() {
@@ -271,14 +279,18 @@ suite('NewTabPageLeftHandSideTest', () => {
     folded.click();
     await microtasksFinished();
     assertFalse(expanded.hidden);
-    assertTrue(folded.hidden);
+    assertFalse(expanded.inert);
+    assertFalse(folded.hidden);
+    assertTrue(folded.inert);
     assertEquals('320px', getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
     await microtasksFinished();
     assertEquals(expanded, getExpandedIframe());
-    assertTrue(expanded.hidden);
+    assertFalse(expanded.hidden);
+    assertTrue(expanded.inert);
     assertFalse(folded.hidden);
+    assertFalse(folded.inert);
     assertEquals(collapsedWidth, getHostWidthProperty());
   });
 
@@ -297,26 +309,33 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertTrue(!!initialExpanded);
     assertTrue(initialExpanded.hidden);
     assertFalse(folded.hidden);
+    assertFalse(folded.inert);
     assertEquals(collapsedWidth, getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
     await microtasksFinished();
     assertFalse(initialExpanded.hidden);
-    assertTrue(folded.hidden);
+    assertFalse(initialExpanded.inert);
+    assertFalse(folded.hidden);
+    assertTrue(folded.inert);
     assertEquals('320px', getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
     await microtasksFinished();
     assertEquals(initialExpanded, getExpandedIframe());
-    assertTrue(initialExpanded.hidden);
+    assertFalse(initialExpanded.hidden);
+    assertTrue(initialExpanded.inert);
     assertFalse(folded.hidden);
+    assertFalse(folded.inert);
     assertEquals(collapsedWidth, getHostWidthProperty());
 
     await expandLeftHandSide();
     assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
     assertEquals(initialExpanded, getExpandedIframe());
     assertFalse(initialExpanded.hidden);
-    assertTrue(folded.hidden);
+    assertFalse(initialExpanded.inert);
+    assertFalse(folded.hidden);
+    assertTrue(folded.inert);
     assertEquals('320px', getHostWidthProperty());
   });
 
@@ -336,11 +355,13 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertTrue(!!expanded);
     assertTrue(expanded.hidden);
     assertFalse(folded.hidden);
+    assertFalse(folded.inert);
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
     await microtasksFinished();
     assertFalse(expanded.hidden);
-    assertTrue(folded.hidden);
+    assertFalse(folded.hidden);
+    assertTrue(folded.inert);
   });
 
   ['pointerenter', 'focusin'].forEach(eventName => {
@@ -364,16 +385,20 @@ suite('NewTabPageLeftHandSideTest', () => {
           assertTrue(!!preloaded);
           assertTrue(preloaded.hidden);
           assertFalse(folded.hidden);
+          assertFalse(folded.inert);
           assertEquals(collapsedWidth, getHostWidthProperty());
 
           // Receiving NTP_LHS_READY while preloaded marks the iframe ready and
-          // updates its width, but keeps the rail folded until clicked.
+          // updates its width, but keeps it visually hidden and inert until
+          // clicked.
           postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
           await microtasksFinished();
           assertEquals('320px', preloaded.style.width);
           assertTrue(preloaded.classList.contains('ready'));
-          assertTrue(preloaded.hidden);
+          assertFalse(preloaded.hidden);
+          assertTrue(preloaded.inert);
           assertFalse(folded.hidden);
+          assertFalse(folded.inert);
           assertEquals(collapsedWidth, getHostWidthProperty());
 
           // Clicking the folded rail expands immediately since the preloaded
@@ -381,7 +406,9 @@ suite('NewTabPageLeftHandSideTest', () => {
           folded.click();
           await microtasksFinished();
           assertFalse(preloaded.hidden);
-          assertTrue(folded.hidden);
+          assertFalse(preloaded.inert);
+          assertFalse(folded.hidden);
+          assertTrue(folded.inert);
           assertEquals('320px', getHostWidthProperty());
         });
   });
@@ -573,6 +600,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
         assertFalse(!!getExpandedIframe());
         assertFalse(folded.hidden);
+        assertFalse(folded.inert);
 
         // Clicking EXPAND_RAIL expands the LHS iframe.
         const expandButton =
@@ -584,11 +612,13 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertTrue(!!expanded);
         assertTrue(expanded.hidden);
         assertFalse(folded.hidden);
+        assertFalse(folded.inert);
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
         await microtasksFinished();
         assertFalse(expanded.hidden);
-        assertTrue(folded.hidden);
+        assertFalse(folded.hidden);
+        assertTrue(folded.inert);
         assertEquals('320px', getHostWidthProperty());
       });
 
@@ -610,13 +640,108 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertTrue(!!expanded);
         assertTrue(expanded.hidden);
         assertFalse(folded.hidden);
+        assertFalse(folded.inert);
         assertEquals(collapsedWidth, getHostWidthProperty());
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
         await microtasksFinished();
         assertFalse(expanded.hidden);
-        assertTrue(folded.hidden);
+        assertFalse(folded.hidden);
+        assertTrue(folded.inert);
         assertEquals('320px', getHostWidthProperty());
+      });
+
+  test(
+      'toggles folded and expanded visibility on open and close in hybrid mode',
+      async () => {
+        loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+        await createLeftHandSide();
+
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        folded.dispatchEvent(new Event('pointerenter'));
+        await microtasksFinished();
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
+        await microtasksFinished();
+
+        const expanded = getExpandedIframe()!;
+        // setup() sets --cr-animations-disabled: 1, disabling transitions.
+        assertEquals('0s', getComputedStyle(leftHandSide).transitionDuration);
+        assertEquals('0s', getComputedStyle(folded).transitionDuration);
+        assertEquals('0s', getComputedStyle(expanded).transitionDuration);
+
+        // Removing --cr-animations-disabled enables transitions via
+        // @container not style(--cr-animations-disabled: 1).
+        document.documentElement.style.removeProperty(
+            '--cr-animations-disabled');
+        assertEquals('0.3s', getComputedStyle(leftHandSide).transitionDuration);
+        assertEquals('0.15s, 0s', getComputedStyle(folded).transitionDuration);
+        assertEquals(
+            '0.24s, 0s', getComputedStyle(expanded).transitionDuration);
+        document.documentElement.style.setProperty(
+            '--cr-animations-disabled', '1');
+
+        assertFalse(folded.hidden);
+        assertFalse(folded.inert);
+        assertEquals('visible', getComputedStyle(folded).visibility);
+        assertEquals('1', getComputedStyle(folded).opacity);
+        assertFalse(expanded.hidden);
+        assertTrue(expanded.inert);
+        assertEquals('hidden', getComputedStyle(expanded).visibility);
+        assertEquals('0', getComputedStyle(expanded).opacity);
+
+        folded.click();
+        await microtasksFinished();
+        assertTrue(folded.inert);
+        assertEquals('hidden', getComputedStyle(folded).visibility);
+        assertEquals('0', getComputedStyle(folded).opacity);
+        assertFalse(expanded.inert);
+        assertEquals('visible', getComputedStyle(expanded).visibility);
+        assertEquals('1', getComputedStyle(expanded).opacity);
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertFalse(folded.inert);
+        assertEquals('visible', getComputedStyle(folded).visibility);
+        assertEquals('1', getComputedStyle(folded).opacity);
+        assertFalse(expanded.hidden);
+        assertTrue(expanded.inert);
+        assertEquals('hidden', getComputedStyle(expanded).visibility);
+        assertEquals('0', getComputedStyle(expanded).opacity);
+      });
+
+  test(
+      'keeps expanded width stationary and preserves tooltip overflow',
+      async () => {
+        loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+        await createLeftHandSide();
+
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        // Neither :host nor #folded may create an absolute containing block or
+        // resting stacking context, so cr-tooltip inside #folded can overflow
+        // above #rhsContent.
+        assertEquals('static', getComputedStyle(leftHandSide).position);
+        assertEquals('static', getComputedStyle(folded).position);
+        assertEquals('1', getComputedStyle(folded).opacity);
+
+        await expandLeftHandSide();
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
+        await microtasksFinished();
+
+        const expanded = getExpandedIframe()!;
+        leftHandSide.style.width = '180px';
+        const lhsLtrRect = leftHandSide.getBoundingClientRect();
+        const expandedLtrRect = expanded.getBoundingClientRect();
+        assertNear(180, lhsLtrRect.width, LAYOUT_TOLERANCE_PX);
+        assertNear(261, expandedLtrRect.width, LAYOUT_TOLERANCE_PX);
+        assertNear(lhsLtrRect.left, expandedLtrRect.left, LAYOUT_TOLERANCE_PX);
+
+        document.documentElement.dir = 'rtl';
+        const lhsRtlRect = leftHandSide.getBoundingClientRect();
+        const expandedRtlRect = expanded.getBoundingClientRect();
+        assertNear(
+            lhsRtlRect.right, expandedRtlRect.right, LAYOUT_TOLERANCE_PX);
       });
 
   test(
