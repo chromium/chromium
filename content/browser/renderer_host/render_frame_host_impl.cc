@@ -2422,19 +2422,10 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(
 RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     const GlobalRenderFrameHostToken& global_frame_token,
     mojo::ReportBadMessageCallback* process_mismatch_callback) {
-  return RenderFrameHostImpl::FromFrameToken(global_frame_token.child_id,
-                                             global_frame_token.frame_token,
-                                             process_mismatch_callback);
-}
-
-// static
-RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
-    int process_id,
-    const blink::LocalFrameToken& frame_token,
-    mojo::ReportBadMessageCallback* process_mismatch_callback) {
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
   return RenderFrameHostImpl::FromFrameToken(
-      ChildProcessId::FromUnsafeValue(process_id), frame_token,
-      process_mismatch_callback);
+      ChildProcessId::FromUnsafeValue(global_frame_token.child_id),
+      global_frame_token.frame_token, process_mismatch_callback);
 }
 
 // static
@@ -2485,16 +2476,6 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromDocumentToken(
   }
 
   return rfh;
-}
-
-// static
-RenderFrameHostImpl* RenderFrameHostImpl::FromDocumentToken(
-    int process_id,
-    const blink::DocumentToken& document_token,
-    mojo::ReportBadMessageCallback* process_mismatch_callback) {
-  return RenderFrameHostImpl::FromDocumentToken(
-      ChildProcessId::FromUnsafeValue(process_id), document_token,
-      process_mismatch_callback);
 }
 
 // static
@@ -10785,7 +10766,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // InitiatorNavigationState.
   if (params->initiator_frame_token) {
     RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(), params->initiator_frame_token.value());
+        GetProcess()->GetID(), params->initiator_frame_token.value());
 
     // Try recording the AdClickMainFrameNavigation use counter for navigation
     // targeting this page's main frame, or targeting a new tab.
@@ -12008,8 +11989,7 @@ void RenderFrameHostImpl::BeginNavigation(
 
   if (begin_params->initiator_frame_token) {
     RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
-        GetProcess()->GetDeprecatedID(),
-        begin_params->initiator_frame_token.value());
+        GetProcess()->GetID(), begin_params->initiator_frame_token.value());
     if (IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
           /*initiator_frame=*/initiator_frame,

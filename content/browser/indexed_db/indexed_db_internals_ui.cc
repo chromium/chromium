@@ -52,8 +52,10 @@ scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
   const blink::ExecutionContextToken& context_token = client_info.context_token;
 
   if (client_info.document_token) {
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue().
     auto* rfh = RenderFrameHostImpl::FromDocumentToken(
-        process_id, client_info.document_token.value());
+        ChildProcessId::FromUnsafeValue(process_id),
+        client_info.document_token.value());
     return rfh ? RenderFrameDevToolsAgentHost::GetFor(rfh) : nullptr;
   }
 

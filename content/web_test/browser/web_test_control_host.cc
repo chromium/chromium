@@ -1925,8 +1925,9 @@ void WebTestControlHost::SetFrameWindowHidden(
 WebContents* WebTestControlHost::GetWebContentsFromCurrentContext(
     const blink::LocalFrameToken& frame_token) {
   const int render_process_id = receiver_bindings_.current_context();
-  auto* rfh =
-      RenderFrameHostImpl::FromFrameToken(render_process_id, frame_token);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  auto* rfh = RenderFrameHostImpl::FromFrameToken(
+      ChildProcessId::FromUnsafeValue(render_process_id), frame_token);
   if (!rfh) {
     return nullptr;
   }

@@ -194,8 +194,10 @@ IndexedDBClientStateCheckerFactory::GetClientStateCheckerCallback() {
                 [](int32_t process_id, blink::DocumentToken document_token,
                    DisallowInactiveClientReason reason)
                     -> std::tuple<bool, ScopedKeepActive> {
+                  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
                   RenderFrameHost* rfh = RenderFrameHostImpl::FromDocumentToken(
-                      process_id, document_token);
+                      ChildProcessId::FromUnsafeValue(process_id),
+                      document_token);
                   if (!rfh) {
                     return {false, CreateNullScopedKeepActive()};
                   }

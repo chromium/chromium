@@ -90,8 +90,9 @@ PrefetchDocumentManager::~PrefetchDocumentManager() = default;
 PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
     int process_id,
     const blink::DocumentToken& document_token) {
-  if (auto* rfh =
-          RenderFrameHostImpl::FromDocumentToken(process_id, document_token)) {
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  if (auto* rfh = RenderFrameHostImpl::FromDocumentToken(
+          ChildProcessId::FromUnsafeValue(process_id), document_token)) {
     if (auto* prefetch_document_manager = GetForCurrentDocument(rfh)) {
       // A RenderFrameHost can have multiple Documents/PrefetchDocumentManagers
       // and the Document of `document_token` might be pending deletion or

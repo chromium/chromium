@@ -1158,8 +1158,7 @@ void RenderFrameHostManager::DidChangeOpener(
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
     RenderFrameHostImpl* opener_rfhi = RenderFrameHostImpl::FromFrameToken(
-        source_site_instance_group->process()->GetDeprecatedID(),
-        *opener_frame_token);
+        source_site_instance_group->process()->GetID(), *opener_frame_token);
     // If |opener_rfhi| is null, the opener RFH has already disappeared.  In
     // this case, clear the opener rather than keeping the old opener around.
     if (opener_rfhi) {

@@ -1130,8 +1130,10 @@ std::string GpuProcessHost::GetIsolationKey(
     // Return an empty isolation key if the frame host is gone. This could
     // happen if the frame is destroyed (or being destroyed) in between when we
     // are trying to get the isolation key.
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue().
     RenderFrameHostImpl* frame_host = RenderFrameHostImpl::FromDocumentToken(
-        process_id, token.GetAs<blink::DocumentToken>());
+        ChildProcessId::FromUnsafeValue(process_id),
+        token.GetAs<blink::DocumentToken>());
     if (!frame_host) {
       return "";
     }
