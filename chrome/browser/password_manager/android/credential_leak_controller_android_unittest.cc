@@ -9,13 +9,11 @@
 
 #include "base/android/device_info.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -118,35 +116,6 @@ TEST_F(CredentialLeakControllerAndroidTest, ClickedCancel) {
 
   CheckUkmMetricsExpectations(test_ukm_recorder,
                               LeakDialogType::kCheckup,
-                              LeakDialogDismissalReason::kClickedClose);
-}
-
-TEST_F(CredentialLeakControllerAndroidTest, ClickedCancelWithKillswitch) {
-  if (base::android::device_info::is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordLeakDialog);
-
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  MakeController(profile(),
-                 std::make_unique<MockPasswordCheckupLauncherHelper>(),
-                 IsSaved(false), IsReused(true), IsSyncing(true), kTestAccount)
-      ->OnCancelDialog();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.CheckupAndChange",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  CheckUkmMetricsExpectations(test_ukm_recorder,
-                              LeakDialogType::kCheckupAndChange,
                               LeakDialogDismissalReason::kClickedClose);
 }
 

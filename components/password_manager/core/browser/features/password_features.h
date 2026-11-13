@@ -233,11 +233,6 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
-// Killswitch: When enabled, unifies the leak checkup dialog variations into a
-// single checkup dialog and removes the check for whether the credential was
-// saved on the current site.
-BASE_DECLARE_FEATURE(kUnifiedPasswordLeakDialog);
-
 // Controls rollout of storing `PasswordString` password values encrypted in
 // memory via `crypto::ProcessBoundU16String`. When disabled, `PasswordString`
 // keeps the password as a plaintext `std::u16string`; when enabled, it uses

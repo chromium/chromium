@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -111,18 +110,8 @@ bool ShouldCheckPasswords(CredentialLeakType leak_type) {
 }
 
 LeakDialogType GetLeakDialogType(CredentialLeakType leak_type) {
-  if (base::FeatureList::IsEnabled(features::kUnifiedPasswordLeakDialog)) {
-    return ShouldCheckPasswords(leak_type) ? LeakDialogType::kCheckup
-                                           : LeakDialogType::kChange;
-  }
-
-  if (!ShouldCheckPasswords(leak_type)) {
-    return LeakDialogType::kChange;
-  }
-
-  return password_manager::IsPasswordSaved(leak_type)
-             ? LeakDialogType::kCheckup
-             : LeakDialogType::kCheckupAndChange;
+  return ShouldCheckPasswords(leak_type) ? LeakDialogType::kCheckup
+                                         : LeakDialogType::kChange;
 }
 
 GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer) {
@@ -153,9 +142,6 @@ std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
       return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kChange>>();
     case LeakDialogType::kCheckup:
       return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kCheckup>>();
-    case LeakDialogType::kCheckupAndChange:
-      return std::make_unique<
-          LeakDialogTraitsImp<LeakDialogType::kCheckupAndChange>>();
   }
 }
 

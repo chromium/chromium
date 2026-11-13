@@ -24256,7 +24256,8 @@ Called by update_net_error_codes.py.-->
 <enum name="PasswordLeakDetectionDialogType">
   <int value="0" label="Password checkup offered"/>
   <int value="1" label="Manual password change offered"/>
-  <int value="2" label="Password checkup and manual password change offered"/>
+  <int value="2"
+      label="(Obsolete) Password checkup and manual password change offered"/>
   <int value="3"
       label="(Deprecated) Automatic and manual password change offered"/>
 </enum>

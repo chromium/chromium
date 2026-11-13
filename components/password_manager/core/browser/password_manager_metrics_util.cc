@@ -175,8 +175,6 @@ std::string_view LeakDialogMetricsRecorder::GetUMASuffix() const {
       return "Checkup";
     case LeakDialogType::kChange:
       return "Change";
-    case LeakDialogType::kCheckupAndChange:
-      return "CheckupAndChange";
   }
 }
 

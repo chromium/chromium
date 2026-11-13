@@ -2066,9 +2066,6 @@ useful for Chirp alerts (go/crca-alerts). -->
                  password for the current site."/>
     <variant name=".Checkup"
         summary="The user is asked to visit the Password Checkup"/>
-    <variant name=".CheckupAndChange"
-        summary="The user is asked to visit the Password Checkup and change
-                 their password"/>
   </token>
 </histogram>
 

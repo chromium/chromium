@@ -11,7 +11,6 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/android/window_android.h"
@@ -64,7 +63,6 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       dismissal_reason = LeakDialogDismissalReason::kClickedOk;
       break;
     case LeakDialogType::kCheckup:
-    case LeakDialogType::kCheckupAndChange:
       dismissal_reason = LeakDialogDismissalReason::kClickedCheckPasswords;
       break;
   }
@@ -78,7 +76,6 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       // No-op.
       break;
     case LeakDialogType::kCheckup:
-    case LeakDialogType::kCheckupAndChange:
       checkup_launcher_->LaunchCheckupOnDevice(
           env, profile_, window_android_,
           PasswordCheckReferrerAndroid::kLeakDialog, account_email_);

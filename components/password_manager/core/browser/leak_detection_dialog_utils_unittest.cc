@@ -8,10 +8,8 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -322,15 +320,15 @@ INSTANTIATE_TEST_SUITE_P(
         PasswordChangeCredentialLeakDialogUtilsTest::GetTestCases()));
 #endif
 
-TEST(CredentialLeakDialogUtilsUnifiedTest, UnifiedDialogDefaultEnabled) {
+TEST(CredentialLeakDialogUtilsTest, ReusedCredentialsShowCheckupDialog) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif
 
-  // When unified dialog is enabled by default, both saved and unsaved credentials with
-  // reuse should map to kCheckup and use the unified description.
+  // Both saved and unsaved reused credentials map to `kCheckup` and use the
+  // same description.
   EXPECT_EQ(LeakDialogType::kCheckup,
             GetLeakDialogType(
                 CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true))));
@@ -363,51 +361,8 @@ TEST(CredentialLeakDialogUtilsUnifiedTest, UnifiedDialogDefaultEnabled) {
           ->GetDescription());
 }
 
-TEST(CredentialLeakDialogUtilsUnifiedTest, KillswitchDisabled) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-#endif
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUnifiedPasswordLeakDialog);
-
-  // When disabled (killswitch active), unsaved credentials map to kCheckupAndChange.
-  EXPECT_EQ(LeakDialogType::kCheckup,
-            GetLeakDialogType(
-                CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true))));
-  EXPECT_EQ(LeakDialogType::kCheckupAndChange,
-            GetLeakDialogType(CreateLeakType(IsSaved(false), IsReused(true),
-                                             IsSyncing(true))));
-
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-#else
-          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
-#endif
-          ),
-      CreateDialogTraits(
-          CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)))
-          ->GetDescription());
-
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-#else
-          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
-#endif
-          ),
-      CreateDialogTraits(
-          CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)))
-          ->GetDescription());
-}
-
-#if BUILDFLAG(IS_ANDROID)
-TEST(CredentialLeakDialogUtilsUnifiedTest, AutomotiveShowsChangeDialog) {
+TEST(CredentialLeakDialogUtilsTest, AutomotiveShowsChangeDialog) {
   if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }

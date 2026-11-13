@@ -117,12 +117,11 @@ enum class LeakDialogType {
   kCheckup = 0,
   // The user is asked to change the password for the current site.
   kChange = 1,
-  // The user is asked to visit the Password Checkup and change the password for
-  // the current site.
-  kCheckupAndChange = 2,
+  // This value has been deprecated as part of unifying leak dialogs.
+  // kCheckupAndChange = 2,
   // This value has been deprecated as part of APC removal.
   // kChangeAutomatically = 3,
-  kMaxValue = kCheckupAndChange,
+  kMaxValue = kChange,
 };
 
 // Enum recording the dismissal reason of the data breach dialog which is shown

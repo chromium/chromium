@@ -8,9 +8,7 @@
 #include <string>
 #include <type_traits>
 
-#include "base/feature_list.h"
 #include "base/types/strong_alias.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -173,16 +171,10 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
   }
 
   std::u16string GetDescription() const override {
-    if (base::FeatureList::IsEnabled(features::kUnifiedPasswordLeakDialog)) {
-      return l10n_util::GetStringUTF16(
-          UsesPasswordManagerGoogleBranding()
-              ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-              : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-    }
     return l10n_util::GetStringUTF16(
         UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
+            ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+            : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   }
 
   std::u16string GetTitle() const override {
@@ -225,39 +217,6 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChange>
   bool ShouldCheckPasswords() const override { return false; }
 
   bool ShouldShowCancelButton() const override { return false; }
-};
-
-// Implementation of a leak checkup and change dialog.
-template <>
-class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
-    : public LeakDialogTraits {
- public:
-  LeakDialogTraitsImp() = default;
-  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
-  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
-
-  std::u16string GetAcceptButtonLabel() const override {
-    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
-  }
-
-  std::u16string GetCancelButtonLabel() const override {
-    return l10n_util::GetStringUTF16(IDS_CLOSE);
-  }
-
-  std::u16string GetDescription() const override {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-  }
-
-  std::u16string GetTitle() const override {
-    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM);
-  }
-
-  bool ShouldCheckPasswords() const override { return true; }
-
-  bool ShouldShowCancelButton() const override { return true; }
 };
 
 }  // namespace password_manager
