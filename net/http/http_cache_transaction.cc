@@ -2213,7 +2213,11 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   response_.headers->Update(*new_response_->headers.get());
   response_.stale_revalidate_timeout = base::Time();
   response_.response_time = new_response_->response_time;
-  if (new_response_->headers->response_code() != net::HTTP_NOT_MODIFIED) {
+  // For partial requests `original_response_time` always follows
+  // `response_time` (see DoPartialHeadersReceived()), so keep the stored value
+  // consistent with what is returned to the consumer.
+  if (new_response_->headers->response_code() != net::HTTP_NOT_MODIFIED ||
+      partial_) {
     response_.original_response_time = new_response_->response_time;
   }
   response_.request_time = new_response_->request_time;
@@ -2410,6 +2414,16 @@ int HttpCache::Transaction::DoPartialHeadersReceived() {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("net"),
                       "DoPartialHeadersReceived", track_for_state_change_);
   new_response_ = nullptr;
+
+  if (partial_) {
+    // Consumers may use `original_response_time` to detect whether the body
+    // is unchanged since a previous response. For partial requests, parts of
+    // the body may be fetched from the network after the headers have been
+    // returned, so this cannot be guaranteed. Set `original_response_time` to
+    // `response_time` unconditionally so that it changes on every validation
+    // and such consumers never see a stale value for a body that may differ.
+    response_.original_response_time = response_.response_time;
+  }
 
   if (partial_ && mode_ != NONE && !reading_) {
     // We are about to return the headers for a byte-range request to the user,
@@ -3057,22 +3071,22 @@ int HttpCache::Transaction::BeginCacheValidation() {
   }
 
   // If this is the first request (!reading_) of a 206 entry (is_sparse_) that
-  // doesn't actually cover the entire file (which with !reading would require
-  // partial->IsLastRange()), and the user is requesting the whole thing
-  // (!partial_->range_requested()), make sure to validate the first chunk,
+  // doesn't cover the whole requested range (which with !reading_ would
+  // require partial->IsLastRange()), make sure to validate the first chunk,
   // since afterwards it will be too late if it's actually out-of-date (or the
-  // server bungles invalidation). This is limited to the whole-file request
-  // as a targeted fix for https://crbug.com/888742 while avoiding extra
-  // requests in other cases, but the problem can occur more generally as well;
-  // it's just a lot less likely with applications actively using ranges.
-  // See https://crbug.com/902724 for the more general case.
-  bool first_read_of_full_from_partial =
-      is_sparse_ && !reading_ &&
-      (partial_ && !partial_->range_requested() && !partial_->IsLastRange());
+  // server bungles invalidation). See https://crbug.com/888742 and
+  // https://crbug.com/902724.
+  //
+  // This also guarantees that whenever any part of the body may be fetched
+  // from the network, a network response (and so a new `response_time`, which
+  // DoPartialHeadersReceived() copies to `original_response_time`) is
+  // received and stored before the headers are returned to the consumer.
+  bool first_read_of_incomplete_sparse_entry =
+      is_sparse_ && !reading_ && partial_ && !partial_->IsLastRange();
 
   if (partial_ && (is_sparse_ || truncated_) &&
       (!partial_->IsCurrentRangeCached() || invalid_range_ ||
-       first_read_of_full_from_partial)) {
+       first_read_of_incomplete_sparse_entry)) {
     // Force revalidation for sparse or truncated entries. Note that we don't
     // want to ignore the regular validation logic just because a byte range was
     // part of the request.

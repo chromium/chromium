@@ -2574,16 +2574,13 @@ TEST_F(HttpCacheRangeGetTest, OverlappingRangesCouldntConditionalize) {
   }
 
   {
-    // First range skips validation because the response is fresh while the
-    // second range requires validation since that range is not present in the
-    // cache and during validation it fails conditionalization.
+    // The first range is cached but the request extends beyond it, so the
+    // entry is validated before the headers are returned. The validation fails
+    // conditionalization, so the whole request is served from the network.
     cache.FailConditionalizations();
     ScopedMockTransaction transaction_pre(kRangeGET_TransactionOK);
     transaction_pre.request_headers = "Range: bytes = 10-29\r\n" EXTRA_HEADER;
-
-    // TODO(crbug.com/40639784): Fix this scenario to not return the cached
-    // bytes repeatedly.
-    transaction_pre.data = "rg: 10-19 rg: 10-19 rg: 20-29 ";
+    transaction_pre.data = "rg: 10-19 rg: 20-29 ";
     MockHttpRequest request_pre(transaction_pre);
     HttpResponseInfo response_pre;
     RunTransactionTestWithRequest(cache.http_cache(), transaction_pre,
@@ -2833,7 +2830,7 @@ TEST_F(HttpCacheRangeGetTest,
 
   // Request a longer range. This *should* be read in two parts:
   //
-  // 1. for the prefix: from the cache
+  // 1. for the prefix: from the cache, after validating it over the network
   // 2. for the suffix: from the network
   {
     ConnectedHandler connected_handler;
@@ -2849,9 +2846,9 @@ TEST_F(HttpCacheRangeGetTest,
         IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-    // 1 call for the first range's network transaction.
+    // 1 call for the network transaction validating the first range.
     EXPECT_THAT(connected_handler.transports(),
-                ElementsAre(CachedTestTransportInfo()));
+                ElementsAre(TestTransportInfo()));
 
     // Set the callback to return an error the next time it is called.
     connected_handler.set_result(ERR_INCONSISTENT_IP_ADDRESS_SPACE);
@@ -2860,9 +2857,9 @@ TEST_F(HttpCacheRangeGetTest,
     EXPECT_THAT(ReadTransaction(transaction.get(), &content),
                 IsError(ERR_INCONSISTENT_IP_ADDRESS_SPACE));
 
-    // A second call that failed.
+    // A second call, for the second range's network transaction, that failed.
     EXPECT_THAT(connected_handler.transports(),
-                ElementsAre(CachedTestTransportInfo(), TestTransportInfo()));
+                ElementsAre(TestTransportInfo(), TestTransportInfo()));
   }
 
   // Request the same range again, observe that nothing is read from cache.
@@ -2973,10 +2970,10 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnErrorSecondTime) {
         IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-    // 1 call for the first range's cache transaction: the first 20 bytes were
-    // cached by the previous two requests.
+    // 1 call for the network transaction validating the cached first 20 bytes
+    // (cached by the previous two requests).
     EXPECT_THAT(connected_handler.transports(),
-                ElementsAre(CachedTestTransportInfo()));
+                ElementsAre(TestTransportInfo()));
 
     std::string content;
     EXPECT_THAT(ReadTransaction(transaction.get(), &content), IsOk());
@@ -2984,7 +2981,7 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnErrorSecondTime) {
 
     // A second call from the network transaction for the last 10 bytes.
     EXPECT_THAT(connected_handler.transports(),
-                ElementsAre(CachedTestTransportInfo(), TestTransportInfo()));
+                ElementsAre(TestTransportInfo(), TestTransportInfo()));
   }
 }
 
@@ -3026,17 +3023,17 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackCalledForEachRangeWithPrefix) {
         IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-    // 1 call for the first range from the cache, reported as coming from the
-    // endpoint which initially served the cached range.
+    // 1 call for the network transaction that validates the cached first range
+    // before it is served from the cache.
     EXPECT_THAT(connected_handler.transports(),
-                ElementsAre(CachedTestTransportInfo()));
+                ElementsAre(TestTransportInfoWithPort(123)));
 
     ReadAndVerifyTransaction(transaction.get(), mock_transaction);
 
     // A second call for the last range's network transaction.
-    EXPECT_THAT(
-        connected_handler.transports(),
-        ElementsAre(CachedTestTransportInfo(), TestTransportInfoWithPort(123)));
+    EXPECT_THAT(connected_handler.transports(),
+                ElementsAre(TestTransportInfoWithPort(123),
+                            TestTransportInfoWithPort(123)));
   }
 }
 
@@ -8923,6 +8920,160 @@ TEST_F(HttpCacheRangeGetTest, 304) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+// Tests that for requests served from a sparse entry, `original_response_time`
+// always matches `response_time`, i.e. it changes on every validation, even
+// when the validation returned 304.
+TEST_F(HttpCacheRangeGetTest, OriginalResponseTimeChangesOnValidation) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+
+  const base::Time response_time1 = base::Time() + base::Hours(1233);
+  const base::Time response_time2 = base::Time() + base::Hours(1235);
+  const base::Time response_time3 = base::Time() + base::Hours(1237);
+
+  // Write the first range to the cache (0-9), creating a sparse entry.
+  transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
+  transaction.data = "rg: 00-09 ";
+  transaction.response_time = response_time1;
+  HttpResponseInfo response;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  ASSERT_TRUE(response.headers);
+  EXPECT_EQ(206, response.headers->response_code());
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time1, response.response_time);
+  EXPECT_EQ(response_time1, response.original_response_time);
+
+  // Now request the whole resource. The first range is validated with a 304
+  // before the headers are returned, and the rest (10-79) is fetched with
+  // If-Range after the headers have been returned.
+  transaction.request_headers = EXTRA_HEADER;
+  transaction.data = kFullRangeData;
+  transaction.response_time = response_time2;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  ASSERT_TRUE(response.headers);
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(3, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time2, response.response_time);
+  EXPECT_EQ(response_time2, response.original_response_time);
+
+  // The stored response info must match what was returned to the consumer.
+  {
+    disk_cache::Entry* entry = nullptr;
+    MockHttpRequest request(transaction);
+    ASSERT_TRUE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+    disk_cache::ScopedEntryPtr closer(entry);
+    HttpResponseInfo stored_response;
+    bool truncated = true;
+    ASSERT_TRUE(
+        MockHttpCache::ReadResponseInfo(entry, &stored_response, &truncated));
+    EXPECT_FALSE(truncated);
+    EXPECT_EQ(response_time2, stored_response.response_time);
+    EXPECT_EQ(response_time2, stored_response.original_response_time);
+  }
+
+  // Request the whole resource again. This time everything is served from the
+  // cache after a single 304 revalidation. `original_response_time` must still
+  // follow `response_time`.
+  transaction.response_time = response_time3;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  ASSERT_TRUE(response.headers);
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(4, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time3, response.response_time);
+  EXPECT_EQ(response_time3, response.original_response_time);
+}
+
+// Tests that a range request that hits a fresh sparse entry but needs more
+// data than is cached validates the entry before returning the headers, so
+// that `original_response_time` changes whenever part of the body may come
+// from the network.
+TEST_F(HttpCacheRangeGetTest,
+       OriginalResponseTimeChangesWhenSparseEntryIsFresh) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+  transaction.response_headers =
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Accept-Ranges: bytes\n"
+      "Cache-Control: max-age=3600\n"
+      "Content-Length: 10\n";
+
+  // Use realistic timestamps so that the entry is considered fresh.
+  const base::Time now = base::Time::Now();
+  const base::Time response_time1 = now - base::Minutes(3);
+  const base::Time response_time2 = now - base::Minutes(2);
+  const base::Time response_time3 = now - base::Minutes(1);
+
+  // Write the first range to the cache (0-9), creating a sparse entry.
+  transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
+  transaction.data = "rg: 00-09 ";
+  transaction.response_time = response_time1;
+  HttpResponseInfo response;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time1, response.original_response_time);
+
+  // The same range is served from the cache without touching the network.
+  transaction.response_time = response_time2;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time1, response.response_time);
+  EXPECT_EQ(response_time1, response.original_response_time);
+
+  // A range that starts in the cache but extends beyond it must validate the
+  // cached part (304) before the headers are returned and then fetch the rest
+  // (206), so `original_response_time` must change.
+  transaction.request_headers = "Range: bytes = 0-19\r\n" EXTRA_HEADER;
+  transaction.data = "rg: 00-09 rg: 10-19 ";
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_EQ(3, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time2, response.response_time);
+  EXPECT_EQ(response_time2, response.original_response_time);
+
+  // Now that range is fully cached and fresh, so it is served from the cache
+  // with the `original_response_time` under which it was stored.
+  transaction.response_time = response_time3;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_EQ(3, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time2, response.response_time);
+  EXPECT_EQ(response_time2, response.original_response_time);
+}
+
+// Tests that resuming a truncated entry results in an `original_response_time`
+// that matches the `response_time` of the network response.
+TEST_F(HttpCacheRangeGetTest, OriginalResponseTimeChangesForTruncatedEntry) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+
+  std::string raw_headers(
+      "HTTP/1.1 200 OK\n"
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Accept-Ranges: bytes\n"
+      "Content-Length: 80\n");
+  CreateTruncatedEntry(raw_headers, &cache);
+
+  const base::Time response_time = base::Time::Now() - base::Minutes(1);
+  transaction.request_headers = EXTRA_HEADER;
+  transaction.data = kFullRangeData;
+  transaction.response_time = response_time;
+  HttpResponseInfo response;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  ASSERT_TRUE(response.headers);
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(response_time, response.response_time);
+  EXPECT_EQ(response_time, response.original_response_time);
+}
+
 // Tests that we deal with 206s when revalidating range requests.
 TEST_F(HttpCacheRangeGetTest, ModifiedResult) {
   MockHttpCache cache;
@@ -11055,13 +11206,24 @@ TEST_F(HttpCacheTest, TransactionRetryLimit) {
   RunTransactionTest(cache.http_cache(), transaction);
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
 
-  // And now read from the cache and the network.  10-19 will get a
-  // 401, but will have already returned 0-9.
-  // We do not set X-Require-Mock-Auth because that causes the mock
-  // network transaction to become IsReadyToRestartForAuth().
-  transaction.request_headers =
-      "Range: bytes = 0-79\r\n"
-      "X-Require-Mock-Auth-Alt: dummy\r\n" EXTRA_HEADER;
+  // And now read from the cache and the network. The first network request
+  // validates 0-9 (which is then returned from the cache), and the second one,
+  // for 10-79, gets a 401 after 0-9 has already been returned.
+  // We do not use X-Require-Mock-Auth because that causes the mock network
+  // transaction to become IsReadyToRestartForAuth().
+  transaction.request_headers = "Range: bytes = 0-79\r\n" EXTRA_HEADER;
+  int network_requests = 0;
+  transaction.handler = base::BindLambdaForTesting(
+      [&](const HttpRequestInfo* request, std::string* response_status,
+          std::string* response_headers, std::string* response_data) {
+        if (++network_requests == 1) {
+          RangeTransactionServer::RangeHandler(request, response_status,
+                                               response_headers, response_data);
+          return;
+        }
+        response_status->assign("HTTP/1.1 401 Unauthorized");
+        response_data->assign("WWW-Authenticate: Foo\n");
+      });
 
   auto c = std::make_unique<Context>();
   c->trans = cache.CreateTransaction();
@@ -11077,6 +11239,7 @@ TEST_F(HttpCacheTest, TransactionRetryLimit) {
   std::string content;
   rv = ReadTransaction(c->trans.get(), &content);
   EXPECT_THAT(rv, IsError(ERR_CACHE_AUTH_FAILURE_AFTER_READ));
+  EXPECT_EQ(2, network_requests);
 }
 
 // Tests that we cache a 200 response to the validation request.
