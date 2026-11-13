@@ -158,6 +158,7 @@ struct NotificationRequest {
     std::string label;
   };
 
+  uint32_t replaces_id = 0;
   std::string summary;
   std::string body;
   std::string kde_origin_name;
@@ -237,9 +238,8 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
 
   dbus::MessageReader reader(method_call);
   std::string str;
-  uint32_t replaces_id;
-  EXPECT_TRUE(reader.PopString(&str));              // app_name
-  EXPECT_TRUE(reader.PopUint32(&replaces_id));      // replaces_id
+  EXPECT_TRUE(reader.PopString(&str));                  // app_name
+  EXPECT_TRUE(reader.PopUint32(&request.replaces_id));  // replaces_id
   EXPECT_TRUE(reader.PopString(&str));              // app_icon
   EXPECT_TRUE(reader.PopString(&request.summary));  // summary
   EXPECT_TRUE(reader.PopString(&request.body));     // body
@@ -782,6 +782,20 @@ class FakeNotificationProxy : public dbus::ObjectProxy {
     notify_callback_ = callback;
   }
 
+  // When set, replies to "Notify" are held until RunDeferredNotifyReplies().
+  void SetDeferNotifyReplies(bool defer) { defer_notify_replies_ = defer; }
+
+  // Sends the held "Notify" replies in the order the calls were made.
+  void RunDeferredNotifyReplies() {
+    auto replies = std::move(deferred_notify_replies_);
+    deferred_notify_replies_.clear();
+    for (auto& [callback, id] : replies) {
+      auto response = GetIdResponse(id);
+      std::move(callback).Run(response.get(), nullptr);
+    }
+  }
+
+  const std::vector<NotificationRequest>& requests() const { return requests_; }
   int notify_calls() const { return notify_calls_; }
   int close_calls() const { return close_calls_; }
   uint32_t last_closed_id() const { return last_closed_id_; }
@@ -797,6 +811,12 @@ class FakeNotificationProxy : public dbus::ObjectProxy {
     uint32_t id = id_;
     if (notify_callback_) {
       id = notify_callback_.Run(request);
+    }
+    requests_.push_back(std::move(request));
+
+    if (defer_notify_replies_) {
+      deferred_notify_replies_.emplace_back(std::move(callback), id);
+      return;
     }
 
     auto response = GetIdResponse(id);
@@ -826,6 +846,10 @@ class FakeNotificationProxy : public dbus::ObjectProxy {
   bool connect_signals_ = true;
   uint32_t id_ = 1;
   NotifyCallback notify_callback_;
+  bool defer_notify_replies_ = false;
+  std::vector<std::pair<ResponseOrErrorCallback, uint32_t>>
+      deferred_notify_replies_;
+  std::vector<NotificationRequest> requests_;
   std::map<std::string, SignalCallback> signal_callbacks_;
 
   int notify_calls_ = 0;
@@ -1023,6 +1047,91 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotifyAndCloseFormat) {
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, fake_notification_proxy_->close_calls());
   EXPECT_EQ(1u, fake_notification_proxy_->last_closed_id());
+}
+
+// Updates for a notification that arrive before the server has replied to the
+// first "Notify" call must replace that notification rather than create a new
+// one. Only the latest update is sent.
+TEST_F(NotificationPlatformBridgeLinuxTest, UpdatesBeforeNotifyReplyReplace) {
+  fake_notification_proxy_->SetNotificationId(5);
+  fake_notification_proxy_->SetDeferNotifyReplies(true);
+
+  CreateNotificationBridgeLinux(TestParams());
+  for (const char16_t* message : {u"one", u"two", u"three"}) {
+    notification_bridge_linux_->Display(
+        NotificationHandler::Type::WEB_NON_PERSISTENT, profile(),
+        NotificationBuilder("1").SetMessage(message).GetResult(), nullptr);
+  }
+  content::RunAllTasksUntilIdle();
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(0u, requests[0].replaces_id);
+  EXPECT_EQ("one", requests[0].body);
+
+  fake_notification_proxy_->RunDeferredNotifyReplies();
+  content::RunAllTasksUntilIdle();
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(5u, requests[1].replaces_id);
+  EXPECT_EQ("three", requests[1].body);
+
+  fake_notification_proxy_->RunDeferredNotifyReplies();
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2, fake_notification_proxy_->notify_calls());
+  EXPECT_EQ(0, fake_notification_proxy_->close_calls());
+
+  notification_bridge_linux_->Close(profile(), "1");
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->close_calls());
+  EXPECT_EQ(5u, fake_notification_proxy_->last_closed_id());
+}
+
+// A notification closed before the server has replied to its "Notify" call
+// must be closed on the server once the reply arrives.
+TEST_F(NotificationPlatformBridgeLinuxTest, CloseBeforeNotifyReply) {
+  fake_notification_proxy_->SetNotificationId(7);
+  fake_notification_proxy_->SetDeferNotifyReplies(true);
+
+  CreateNotificationBridgeLinux(TestParams());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_NON_PERSISTENT, profile(),
+      NotificationBuilder("1").SetMessage(u"one").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(0u, requests[0].replaces_id);
+  EXPECT_EQ("one", requests[0].body);
+
+  notification_bridge_linux_->Close(profile(), "1");
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(0, fake_notification_proxy_->close_calls());
+
+  // A new notification with the same ID is independent of the closed one.
+  fake_notification_proxy_->SetNotificationId(8);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_NON_PERSISTENT, profile(),
+      NotificationBuilder("1").SetMessage(u"two").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(0u, requests[1].replaces_id);
+  EXPECT_EQ("two", requests[1].body);
+
+  fake_notification_proxy_->RunDeferredNotifyReplies();
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->close_calls());
+  EXPECT_EQ(7u, fake_notification_proxy_->last_closed_id());
+
+  std::set<std::string> displayed;
+  notification_bridge_linux_->GetDisplayed(
+      profile(), base::BindLambdaForTesting(
+                     [&](std::set<std::string> set, bool supports_sync) {
+                       displayed = std::move(set);
+                     }));
+  EXPECT_THAT(displayed, testing::UnorderedElementsAre("1"));
+
+  notification_bridge_linux_->Close(profile(), "1");
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2, fake_notification_proxy_->close_calls());
+  EXPECT_EQ(8u, fake_notification_proxy_->last_closed_id());
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, ProgressPercentageAddedToSummary) {
