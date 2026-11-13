@@ -912,8 +912,8 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {
     return font_urls;
   }
 
-  // No need to record metrics for pages without web fonts to be prefetched
-  // or preloaded.
+  // Bandwidth limit check for prefetch/preload. If the bandwidth is below the
+  // limit, an empty fonts list is returned to disable the prefetch/preload.
   double max_bandwidth_mbps;
   net::NetworkChangeNotifier::ConnectionType connection_type;
   net::NetworkChangeNotifier::GetMaxBandwidthAndConnectionType(
@@ -923,17 +923,8 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {
            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN ||
        max_bandwidth_mbps <
            blink::features::kLCPPFontURLPredictorThresholdInMbps.Get())) {
-    base::UmaHistogramEnumeration(
-        "Blink.LCPP.FontFetch.Disabled.ConnectionType", connection_type,
-        net::NetworkChangeNotifier::ConnectionType::CONNECTION_LAST);
     return std::vector<GURL>();
   }
-  // Workaround: we cannot use UmaHistogramEnumeration because
-  // connection_type is defined with old C enum, and setting kValue causes
-  // namespace conflict.
-  base::UmaHistogramEnumeration(
-      "Blink.LCPP.FontFetch.Enabled.ConnectionType", connection_type,
-      net::NetworkChangeNotifier::ConnectionType::CONNECTION_LAST);
   return font_urls;
 }
 
