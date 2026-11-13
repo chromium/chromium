@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,14 +61,5 @@ import java.util.Set;
             }
         }
         return new AnchorContainerTopMargins(topMarginDiffs);
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                Locale.ENGLISH,
-                "[LeftTopMargin: %s, RightTopMargin: %s]",
-                get(AnchorSide.LEFT),
-                get(AnchorSide.RIGHT));
     }
 }
