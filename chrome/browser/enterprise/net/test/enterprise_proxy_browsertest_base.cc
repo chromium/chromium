@@ -14,6 +14,8 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
+#include "chrome/browser/enterprise/net/test/test_auth_helper.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -21,8 +23,12 @@
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace enterprise::test {
@@ -93,7 +99,8 @@ const std::vector<std::string>& GetOriginCertHostnames() {
 
 EnterpriseProxyBrowserTestBase::EnterpriseProxyBrowserTestBase(
     const ManagementContext& context)
-    : is_platform_managed_(context.is_platform_managed) {
+    : is_platform_managed_(context.is_platform_managed),
+      auth_helper_(TestAuthHelper::Create()) {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{enterprise_net::kEnableDynamicRouteFetching,
                             enterprise_net::kEnterpriseProxyErrorHandling},
@@ -116,18 +123,7 @@ EnterpriseProxyBrowserTestBase::~EnterpriseProxyBrowserTestBase() = default;
 
 void EnterpriseProxyBrowserTestBase::SetUpInProcessBrowserTestFixture() {
   MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
-  create_services_subscription_ =
-      BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(&EnterpriseProxyBrowserTestBase::
-                                      OnWillCreateBrowserContextServices,
-                                  base::Unretained(this)));
-}
-
-void EnterpriseProxyBrowserTestBase::OnWillCreateBrowserContextServices(
-    content::BrowserContext* context) {
-  IdentityTestEnvironmentProfileAdaptor::
-      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  auth_helper_->SetUpInProcessBrowserTestFixture(kExpectedAccessToken);
 }
 
 void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
@@ -135,20 +131,8 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
 
   Profile* profile = chrome_test_utils::GetProfile(this);
-  identity_test_env_adaptor_ =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile);
-  AccountInfo account_info =
-      identity_test_env_adaptor_->identity_test_env()
-          ->MakePrimaryAccountAvailable("user@managed.com",
-                                        signin::ConsentLevel::kSignin);
-  identity_test_env_adaptor_->identity_test_env()
-      ->SimulateSuccessfulFetchOfAccountInfo(
-          account_info.GetAccountId(), account_info.GetEmail(),
-          account_info.GetGaiaId(),
-          /*hosted_domain=*/"managed.com", "Full Name", "Given Name", "en-US",
-          /*picture_url=*/"");
-  identity_test_env_adaptor_->identity_test_env()
-      ->SetAutomaticIssueOfAccessTokens(true);
+  ASSERT_TRUE(profile);
+  auth_helper_->SetUpOnMainThread(profile);
 
   ASSERT_TRUE(pvd_server_.InitializeAndListen());
   ASSERT_TRUE(origin_server_.InitializeAndListen());
@@ -163,15 +147,57 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
       std::make_unique<enterprise_net::ScopedExtraAllowedDomainsForTesting>(
           std::vector<std::string>{"example.com", "separate-site.com",
                                    "127.0.0.1", "localhost"});
+
+  SignInPrimaryAccount();
 }
 
 void EnterpriseProxyBrowserTestBase::TearDownOnMainThread() {
   scoped_extra_domains_.reset();
-  identity_test_env_adaptor_.reset();
-  MixinBasedPlatformBrowserTest::TearDownOnMainThread();
-  EXPECT_TRUE(pvd_server_.ShutdownAndWaitUntilComplete());
-  EXPECT_TRUE(origin_server_.ShutdownAndWaitUntilComplete());
   default_proxy_server_.reset();
+  EXPECT_TRUE(origin_server_.ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(pvd_server_.ShutdownAndWaitUntilComplete());
+  auth_helper_->TearDownOnMainThread();
+  MixinBasedPlatformBrowserTest::TearDownOnMainThread();
+}
+
+signin::IdentityManager* EnterpriseProxyBrowserTestBase::GetIdentityManager() {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  return profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr;
+}
+
+void EnterpriseProxyBrowserTestBase::SignInPrimaryAccount(
+    const std::string& email,
+    const std::string& hosted_domain) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  // Pre-accept profile management so `ProfileManagementDisclaimerService` does
+  // not asynchronously launch the modal `chrome://managed-user-profile-notice`
+  // dialog in the background during routing/error browsertests.
+  enterprise_util::SetUserAcceptedAccountManagement(profile,
+                                                    !hosted_domain.empty());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  ASSERT_TRUE(identity_manager);
+  auth_helper_->SignInPrimaryAccount(identity_manager, email, hosted_domain,
+                                     current_access_token_);
+}
+
+void EnterpriseProxyBrowserTestBase::InvalidatePrimaryAccountCredentials() {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  ASSERT_TRUE(identity_manager);
+  signin::DisableAccessTokenFetchRetries(identity_manager);
+
+  CoreAccountInfo primary =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary.IsEmpty());
+  identity_manager->RemoveAccessTokenFromCache(
+      primary.account_id, signin::OAuthConsumerId::kSecureGatewayService,
+      current_access_token_);
+  auth_helper_->SimulateInvalidCredentials(primary.gaia);
+}
+
+size_t EnterpriseProxyBrowserTestBase::GetTokenFetchRequestCount() const {
+  return auth_helper_->GetTokenFetchRequestCount();
 }
 
 void EnterpriseProxyBrowserTestBase::SetUserProxyProvisioningDomains(

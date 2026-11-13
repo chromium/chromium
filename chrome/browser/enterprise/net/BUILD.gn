@@ -31,6 +31,8 @@ source_set("platform_browser_tests") {
       "test/enterprise_proxy_browsertest_base.cc",
       "test/enterprise_proxy_browsertest_base.h",
       "test/enterprise_proxy_error_browsertest.cc",
+      "test/test_auth_helper.cc",
+      "test/test_auth_helper.h",
       "test/test_connect_proxy.cc",
       "test/test_connect_proxy.h",
     ]
@@ -41,25 +43,61 @@ source_set("platform_browser_tests") {
       "//chrome/browser/net",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
-      "//chrome/browser/signin:identity_test_support",
       "//components/enterprise/browser/identifiers",
       "//components/enterprise/net/content",
       "//components/enterprise/net/core:test_support",
       "//components/error_page/common",
-      "//components/keyed_service/content",
       "//components/metrics:content",
       "//components/policy:policy_code_generate",
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
       "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings",
       "//components/tabs:public",
+      "//google_apis",
       "//net:test_support",
       "//testing/gtest",
       "//ui/base",
       "//url",
+    ]
+
+    if (is_android) {
+      sources += [ "test/test_auth_helper_android.cc" ]
+      deps += [ ":browser_test_support_jni" ]
+    } else {
+      sources += [ "test/test_auth_helper_desktop.cc" ]
+      deps += [
+        "//chrome/browser/signin:identity_test_support",
+        "//components/keyed_service/content",
+      ]
+    }
+  }
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  generate_jni("browser_test_support_jni") {
+    testonly = true
+    sources = [ "test/android/java/src/org/chromium/chrome/browser/enterprise/net/test/EnterpriseProxyAndroidSigninBridge.java" ]
+  }
+
+  android_library("browser_test_support_java") {
+    testonly = true
+    srcjar_deps = [ ":browser_test_support_jni" ]
+    sources = [ "test/android/java/src/org/chromium/chrome/browser/enterprise/net/test/EnterpriseProxyAndroidSigninBridge.java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/signin/public/android:java",
+      "//components/signin/public/android:signin_java_test_support",
+      "//google_apis/gaia/android:java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

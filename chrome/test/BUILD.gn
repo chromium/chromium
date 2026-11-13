@@ -688,6 +688,7 @@ if (is_android) {
       "//chrome/browser/engagement:android_browsertests",
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/enterprise/data_controls:android_browsertests",
+      "//chrome/browser/enterprise/net:browser_test_support_java",
       "//chrome/browser/enterprise/platform_auth:android_browsertests",
       "//chrome/browser/enterprise/platform_auth:features",
       "//chrome/browser/enterprise/platform_auth:test_utils",

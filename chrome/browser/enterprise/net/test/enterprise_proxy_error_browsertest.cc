@@ -422,11 +422,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
 // fails and proxy authentication correctly rejects the request.
 IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
                        ProxyAuthenticationFailure_InvalidCredentials) {
-  ASSERT_TRUE(identity_test_env());
-
-  // Invalidate refresh token so that token fetching fails.
-  identity_test_env()->SetAutomaticIssueOfAccessTokens(false);
-  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  InvalidatePrimaryAccountCredentials();
 
   base::ListValue domains;
   domains.Append(CreateDomainPolicyEntry(kTestPvdDomain));
@@ -439,6 +435,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_GE(GetTokenFetchRequestCount(), 1u);
   EXPECT_EQ(0u, origin_request_count());
 
   VerifyErrorPageShownHistograms(

@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -73,10 +74,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   // Because the first matching config (`kTestPvdDomain`) requires auth, an auth
   // header is sent (whereas `kUnauthenticatedPvdDomain` would not send one).
   EXPECT_TRUE(was_auth_header_received());
+  EXPECT_GE(GetTokenFetchRequestCount(), 1u);
   EXPECT_GE(origin_request_count(), 1u);
 
   // Verify the credentials format in Proxy-Authorization: Basic <base64>
-  const std::string auth_header = last_received_auth_header();
+  const std::string& auth_header = last_received_auth_header();
   ASSERT_TRUE(auth_header.starts_with("Basic "));
   std::string encoded_creds = auth_header.substr(6);
   std::string decoded_creds;
@@ -223,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   WaitForDynamicRoutesReady();
 
   // 1. Verify policy extra_headers were expanded on the /.well-known/pvd fetch.
-  const auto pvd_headers = last_pvd_request_headers();
+  const net::test_server::HttpRequest::HeaderMap pvd_headers =
+      last_pvd_request_headers();
   auto auth_it = pvd_headers.find("Authorization");
   ASSERT_NE(auth_it, pvd_headers.end());
   EXPECT_EQ(auth_it->second,
@@ -252,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   EXPECT_TRUE(was_proxy_accessed());
   EXPECT_TRUE(was_auth_header_received());
 
-  const std::string auth_header = last_received_auth_header();
+  const std::string& auth_header = last_received_auth_header();
   ASSERT_TRUE(auth_header.starts_with("Basic "));
   std::string decoded_creds;
   ASSERT_TRUE(base::Base64Decode(auth_header.substr(6), &decoded_creds));
@@ -273,6 +276,37 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
       "x-lang-placeholder=" + escape(kTestAcceptLanguages),
   };
   EXPECT_EQ(username, base::JoinString(expected_params, "&"));
+}
+
+// Verifies fetching `/.well-known/pvd` with `auth_config.type =
+// "profile_bearer_token"` (`use_oauth=true`) while dynamic route refresh holds
+// the `NetworkService` pause (`is_update_in_progress = true`):
+// - On Android, `ProfileOAuth2TokenServiceDelegateAndroid` fetches the OAuth2
+//   token out-of-band via JNI `AccountManagerFacade`, bypassing Chrome's paused
+//   `NetworkContext`, so `/.well-known/pvd` receives `Authorization: Bearer`
+//   and navigation succeeds end-to-end.
+// - On Desktop, `DesktopTestAuthHelper` currently issues tokens in-memory via
+//   `IdentityTestEnvironmentProfileAdaptor` (see `TODO(crbug.com/532559920)`).
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest, FetchesPvdWithOAuthToken) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/true));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  const net::test_server::HttpRequest::HeaderMap pvd_headers =
+      last_pvd_request_headers();
+  auto auth_it = pvd_headers.find("Authorization");
+  ASSERT_NE(auth_it, pvd_headers.end());
+  EXPECT_EQ(auth_it->second,
+            base::StringPrintf("Bearer %s", kExpectedAccessToken));
+  EXPECT_GE(GetTokenFetchRequestCount(), 1u);
+
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
 }
 
 // Verifies that traffic to unmatched destinations bypasses the proxy and
