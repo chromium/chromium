@@ -24,13 +24,21 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -50,6 +58,18 @@ namespace {
 
 constexpr ui::ElementContext kTestContext =
     ui::ElementContext::CreateFakeContextForTesting(1);
+
+// Simulates a key press of `key_code` on `web_contents`.
+void SimulateKeyDown(content::WebContents* web_contents,
+                     ui::KeyboardCode key_code) {
+  blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  key_event.windows_key_code = key_code;
+  web_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SimulateUserInteraction(key_event);
+}
 
 std::unique_ptr<KeyedService> BuildMockTracker(content::BrowserContext*) {
   return std::make_unique<
@@ -603,9 +623,115 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
       ->TestDidReceiveMouseDownEvent();
   EXPECT_TRUE(controller()->IsBubbleShowing());
 
+  // Scrolling on the observed WebContents does not close the bubble.
+  blink::WebGestureEvent scroll_event(
+      blink::WebInputEvent::Type::kGestureScrollBegin,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  web_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SimulateUserInteraction(scroll_event);
+  EXPECT_TRUE(controller()->IsBubbleShowing());
+
+  // Keys other than Enter and Space do not close the bubble.
+  for (blink::WebInputEvent::Type type :
+       {blink::WebInputEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::Type::kKeyDown}) {
+    blink::WebKeyboardEvent key_event(type, blink::WebInputEvent::kNoModifiers,
+                                      base::TimeTicks::Now());
+    web_contents->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->SimulateUserInteraction(key_event);
+    EXPECT_TRUE(controller()->IsBubbleShowing());
+  }
+
   // Interaction on the observed WebContents closes the bubble.
   content::WebContentsTester::For(web_contents.get())
       ->TestDidReceiveMouseDownEvent();
+
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+  EXPECT_FALSE(controller()->active_variant_for_testing().has_value());
+}
+
+// Enter and Space activate the focused control (e.g. the thread history
+// button), so they close the bubble unless the user is typing.
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ActivationKeyOnNonEditableElementClosesBubble) {
+  for (ui::KeyboardCode key_code : {ui::VKEY_RETURN, ui::VKEY_SPACE}) {
+    SCOPED_TRACE(key_code);
+    testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+        &mock_browser_window_);
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ON_CALL(mock_panel_controller, GetActiveWebContents())
+        .WillByDefault(testing::Return(web_contents.get()));
+
+    controller()->SetEntryPoint(
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+    CreateAndShowFaviconsElement();
+    ASSERT_TRUE(controller()->IsBubbleShowing());
+
+    // Other keys, such as Tab, keep the bubble open.
+    SimulateKeyDown(web_contents.get(), ui::VKEY_TAB);
+    EXPECT_TRUE(controller()->IsBubbleShowing());
+
+    SimulateKeyDown(web_contents.get(), key_code);
+    EXPECT_FALSE(controller()->IsBubbleShowing());
+  }
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ActivationKeyOnEditableElementKeepsBubble) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window_);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+
+  // Typing in a text field, including Space and Enter, keeps the bubble open.
+  content::FocusWebContentsOnFrame(web_contents.get(),
+                                   web_contents->GetPrimaryMainFrame());
+  content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+      ->SimulateFocusedElementChanged(/*is_editable_element=*/true,
+                                      /*is_richly_editable_element=*/false);
+  ASSERT_TRUE(web_contents->IsFocusedElementEditable());
+  SimulateKeyDown(web_contents.get(), ui::VKEY_SPACE);
+  SimulateKeyDown(web_contents.get(), ui::VKEY_RETURN);
+  EXPECT_TRUE(controller()->IsBubbleShowing());
+
+  // Once focus moves to a non-editable element, Enter closes the bubble.
+  content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+      ->SimulateFocusedElementChanged(/*is_editable_element=*/false,
+                                      /*is_richly_editable_element=*/false);
+  SimulateKeyDown(web_contents.get(), ui::VKEY_RETURN);
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ActiveWebContentsTouchStartClosesBubble) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window_);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+
+  blink::WebTouchEvent touch_event(blink::WebInputEvent::Type::kTouchStart,
+                                   blink::WebInputEvent::kNoModifiers,
+                                   base::TimeTicks::Now());
+  web_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SimulateUserInteraction(touch_event);
 
   EXPECT_FALSE(controller()->IsBubbleShowing());
   EXPECT_FALSE(controller()->active_variant_for_testing().has_value());
