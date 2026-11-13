@@ -176,9 +176,6 @@ enum class PushNotificationClientId;
 - (void)showNotificationsSettingsAndHighlightClient:
     (std::optional<PushNotificationClientId>)clientID;
 
-// Shows the Autofill settings UI.
-- (void)showAutofillSettings;
-
 // Shows the Autofill settings UI from an Autofill notice (no back button).
 - (void)showAutofillSettingsFromNotice;
 

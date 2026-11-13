@@ -1790,16 +1790,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.notificationsCoordinator showTrackingPrice];
 }
 
-- (void)showAutofillSettings {
+- (void)showAutofillSettingsFromNotice {
   _autofillSettingsCoordinator = [[AutofillSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
   _autofillSettingsCoordinator.delegate = self;
   [_autofillSettingsCoordinator start];
-}
-
-- (void)showAutofillSettingsFromNotice {
-  [self showAutofillSettings];
 }
 
 - (void)showSuggestionsFromGemini {
