@@ -122,9 +122,6 @@ BASE_DECLARE_FEATURE(kIOSChooseFromDriveSignedOut);
 // ExperienceKit for signed out users.
 BASE_DECLARE_FEATURE(kIOSDateToCalendarSignedOut);
 
-// Feature flag enabling the save to drive feature for signed out users.
-BASE_DECLARE_FEATURE(kIOSSaveToDriveSignedOut);
-
 // Feature flag enabling the save to photos feature for signed out users.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotosSignedOut);
 

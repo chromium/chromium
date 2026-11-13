@@ -1199,11 +1199,6 @@ inline constexpr char kIOSProvidesAppNotificationSettingsName[] =
 inline constexpr char kIOSProvidesAppNotificationSettingsDescription[] =
     "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
-inline constexpr char kIOSSaveToDriveSignedOutName[] =
-    "Save to Drive Signed Out";
-inline constexpr char kIOSSaveToDriveSignedOutDescription[] =
-    "Enables the Save to Drive feature to signed out users.";
-
 inline constexpr char kIOSSaveToPhotosSignedOutName[] =
     "Save to Photos Signed Out";
 inline constexpr char kIOSSaveToPhotosSignedOutDescription[] =

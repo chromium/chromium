@@ -41,24 +41,12 @@ DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 
 DownloadManagerMediator::~DownloadManagerMediator() {
   SetDownloadTask(nullptr);
-  identity_manager_observation_.Reset();
-  identity_manager_ = nullptr;
 }
 
 #pragma mark - Public
 
 void DownloadManagerMediator::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
-}
-
-void DownloadManagerMediator::SetIdentityManager(
-    signin::IdentityManager* identity_manager) {
-  identity_manager_observation_.Reset();
-  identity_manager_ = identity_manager;
-  if (identity_manager_) {
-    identity_manager_observation_.Observe(identity_manager_);
-    UpdateConsumer();
-  }
 }
 
 void DownloadManagerMediator::SetDriveService(
@@ -187,9 +175,8 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
 }
 
 bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
-  return drive::IsSaveToDriveAvailable(is_incognito_, identity_manager_,
-                                       drive_service_, pref_service_,
-                                       auth_service_);
+  return drive::IsSaveToDriveAvailable(is_incognito_, drive_service_,
+                                       pref_service_, auth_service_);
 }
 
 void DownloadManagerMediator::UpdateConsumer() {
@@ -367,16 +354,4 @@ void DownloadManagerMediator::OnUploadUpdated(UploadTask* task) {
 
 void DownloadManagerMediator::OnUploadDestroyed(UploadTask* task) {
   SetUploadTask(nullptr);
-}
-
-#pragma mark - signin::IdentityManager::Observer overrides
-
-void DownloadManagerMediator::OnIdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  SetIdentityManager(nullptr);
-}
-
-void DownloadManagerMediator::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event_details) {
-  UpdateConsumer();
 }

@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -113,11 +112,6 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _fileDestination = [self shouldBlockDownloadToFile]
                            ? FileDestination::kDrive
                            : FileDestination::kFiles;
-
-    CHECK(
-        base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut) ||
-            _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M152);
 
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -295,10 +289,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _prefsLoaded = YES;
   }
 
-  bool signedIn = [self isSignedIn];
   bool identityButtonHidden =
-      _fileDestination == FileDestination::kFiles ||
-      (base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut) && !signedIn);
+      _fileDestination == FileDestination::kFiles || ![self isSignedIn];
   [self.accountPickerConsumer setIdentityButtonHidden:identityButtonHidden
                                              animated:animated];
   [self.destinationPickerConsumer setSelectedDestination:_fileDestination];

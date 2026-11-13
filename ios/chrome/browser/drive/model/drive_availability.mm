@@ -39,7 +39,6 @@ enum class FilePickerDriveDisplayed {
 namespace drive {
 
 bool IsSaveToDriveAvailable(bool is_incognito,
-                            signin::IdentityManager* identity_manager,
                             drive::DriveService* drive_service,
                             PrefService* pref_service,
                             AuthenticationService* auth_service) {
@@ -64,13 +63,6 @@ bool IsSaveToDriveAvailable(bool is_incognito,
   // Drive is unavailable if the user can’t sign-in.
   if (!auth_service->SigninEnabled()) {
     return false;
-  }
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut)) {
-    // Check user is signed in.
-    if (!identity_manager ||
-        !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      return false;
-    }
   }
 
   return true;

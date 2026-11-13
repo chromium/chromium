@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -161,7 +160,6 @@
 
   _mediator.SetIsIncognito(isIncognito);
   ProfileIOS* profile = self.profile;
-  _mediator.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   _mediator.SetDriveService(drive::DriveServiceFactory::GetForProfile(profile));
   _mediator.SetPrefService(profile->GetPrefs());
   _mediator.SetAuthenticationService(
@@ -199,7 +197,6 @@
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
   _mediator.SetAuthenticationService(nullptr);
-  _mediator.SetIdentityManager(nullptr);
   if (IsDownloadListEnabled()) {
     _mediator.SetDownloadRecordService(nullptr);
   }

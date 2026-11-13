@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/url_util.h"
@@ -127,8 +126,7 @@ bool BrowserDownloadService::ShouldRestrictAllDownloads(
     return true;
   }
   bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
-      profile->IsOffTheRecord(), IdentityManagerFactory::GetForProfile(profile),
-      drive_service, pref_service, auth_service);
+      profile->IsOffTheRecord(), drive_service, pref_service, auth_service);
   return !is_save_to_drive_available;
 }
 

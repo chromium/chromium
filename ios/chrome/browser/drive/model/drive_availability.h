@@ -19,7 +19,6 @@ class DriveService;
 
 // Returns whether the Save to Drive entry point can be presented.
 bool IsSaveToDriveAvailable(bool is_incognito,
-                            signin::IdentityManager* identity_manager,
                             drive::DriveService* drive_service,
                             PrefService* pref_service,
                             AuthenticationService* auth_service);

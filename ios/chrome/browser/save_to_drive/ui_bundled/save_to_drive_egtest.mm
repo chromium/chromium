@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/policy/model/scoped_policy_list.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -210,17 +209,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testSaveToDriveDisplayedWhenSignedOut)] ||
-      [self
-          isRunningTest:@selector(
-                            testSaveToDriveWhenSignedOutWithAccountOnDevice)] ||
-      [self isRunningTest:@selector(testDriveFullStorageSignedOut)] ||
-      [self isRunningTest:@selector(testCanDownloadToDrive)] ||
-      [self isRunningTest:@selector(testSaveToDriveAccountRemoved)] ||
-      [self isRunningTest:@selector(testSaveToDriveSwitchProfileCancel)] ||
-      [self isRunningTest:@selector(testSaveToDriveSwitchProfileSwitch)]) {
-    configuration.features_enabled.push_back(kIOSSaveToDriveSignedOut);
-  }
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
     const std::string commandLineSwitch =
         std::string(kTestDriveFileUploaderCommandLineSwitch);
@@ -237,9 +225,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
         std::string(kTestDriveFileUploaderCommandLineSwitchFullStorage);
     configuration.additional_args.push_back(base::StringPrintf(
         "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
-  }
-  if ([self isRunningTest:@selector(testSignedOutDisablesSaveToDrive)]) {
-    configuration.features_disabled.push_back(kIOSSaveToDriveSignedOut);
   }
   return configuration;
 }
@@ -498,18 +483,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
-}
-
-// TODO(crbug.com/481988302): Remove this test once the "Save to Drive for
-// signed out users" experiment is fully launched.
-// Tests that "DOWNLOAD" button is presented instead of "SAVE..." if signed-out.
-- (void)testSignedOutDisablesSaveToDrive {
-  // Load a page with a download button and tap the download button.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
-  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
-  // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
 }
 
 // Test that the account picker is displayed when signed out without account on

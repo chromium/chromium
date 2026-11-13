@@ -7,9 +7,7 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/weak_ptr.h"
-#import "base/scoped_observation.h"
 #import "base/timer/timer.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/download/ui/download_manager_consumer.h"
 #import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/web/public/download/download_task_observer.h"
@@ -27,10 +25,6 @@ class DriveService;
 class PrefService;
 class UploadTask;
 
-namespace signin {
-class IdentityManager;
-}
-
 namespace web {
 class DownloadTask;
 }  // namespace web
@@ -39,7 +33,6 @@ class DownloadTask;
 // update consumer if download task was changed.
 class DownloadManagerMediator : public web::DownloadTaskObserver,
                                 public UploadTaskObserver,
-                                public signin::IdentityManager::Observer,
                                 public web::WebStateObserver {
  public:
   DownloadManagerMediator();
@@ -51,9 +44,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
 
   // Sets whether this download manager is in an Incognito browser.
   void SetIsIncognito(bool is_incognito);
-
-  // Sets the identity manager.
-  void SetIdentityManager(signin::IdentityManager* identity_manager);
 
   // Sets the Drive service.
   void SetDriveService(drive::DriveService* drive_service);
@@ -123,18 +113,8 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   void OnUploadUpdated(UploadTask* task) override;
   void OnUploadDestroyed(UploadTask* task) override;
 
-  // signin::IdentityManager::Observer overrides:
-  void OnIdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-
   void AppWillEnterForeground();
 
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;

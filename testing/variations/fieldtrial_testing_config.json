@@ -11626,21 +11626,6 @@
             ]
         }
     ],
-    "IOSSaveToDriveSignedOut": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSSaveToDriveSignedOut"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSettingsDefaultBrowserPromoV2": [
         {
             "platforms": [
