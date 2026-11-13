@@ -2448,7 +2448,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteTabs) {
   ::testing::NiceMock<MockTabModel> tab_model(GetProfile());
   TabModelList::AddTabModel(&tab_model);
 
-  ASSERT_EQ(1u, TabModelList::models().size());
+  ASSERT_TRUE(TabModelList::Contains(&tab_model));
 
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
@@ -2476,7 +2476,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   ::testing::NiceMock<MockTabModel> archived_tab_model(GetProfile());
   TabModelList::SetArchivedTabModel(&archived_tab_model);
 
-  ASSERT_EQ(1u, TabModelList::models().size());
+  ASSERT_TRUE(TabModelList::Contains(&tab_model));
+  ASSERT_FALSE(TabModelList::Contains(&archived_tab_model));
 
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
