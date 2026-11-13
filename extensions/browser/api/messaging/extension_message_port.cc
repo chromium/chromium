@@ -514,7 +514,7 @@ void ExtensionMessagePort::DispatchOnConnect(
   mojom::TabConnectionInfoPtr source = mojom::TabConnectionInfo::New();
 
   if (source_tab) {
-    source->tab = source_tab->Clone();
+    source->tab = std::move(*source_tab);
   }
   if (!source_frame.document_id.is_empty()) {
     source->document_id = source_frame.document_id.ToString();

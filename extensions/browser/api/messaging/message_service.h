@@ -159,6 +159,8 @@ class MessageService : public BrowserContextKeyedAPI,
 
   // Returns the number of open channels for test.
   size_t GetChannelCountForTest() { return channels_.size(); }
+  bool HasStrongKeepaliveOnReceiverForTest(const ChannelId& channel_id) const;
+  bool HasStrongKeepaliveOnOpenerForTest(const ChannelId& channel_id) const;
 
   bool HasPendingLazyContextChannelsForExtension(
       const ExtensionId& extension_id) const;

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -59,6 +60,7 @@
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/messaging_util.h"
 #include "extensions/common/api/messaging/port_context.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -72,6 +74,7 @@
 #include "ipc/constants.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -126,6 +129,13 @@ LazyContextId LazyContextIdFor(content::BrowserContext* browser_context,
   return LazyContextId::ForExtension(browser_context, extension);
 }
 
+BrowserContext* GetContextToUseForExtension(BrowserContext* context,
+                                            const Extension* extension) {
+  return IncognitoInfo::IsSplitMode(extension)
+             ? context
+             : ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+}
+
 const Extension* GetExtensionForNativeAppChannel(
     const ChannelEndpoint& source) {
   DCHECK(!source.is_for_native_host());
@@ -173,39 +183,64 @@ void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
 // ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls policy. They
 // are chosen as defaults because they are known apps that offer SDKs and do not
 // offer the possibility to restart a closed connection to a previous state.
-constexpr const char* kDefaultSWExtendedLifetimeList[] = {
-    // Smart Card Connector
-    "chrome-extension://khpfeaanjngmcnplbdlpegiifgpfgdco/",  // stable
-    "chrome-extension://mockcojkppdndnhgonljagclgpkjbkek/",  // beta
+constexpr auto kDefaultSWExtendedLifetimeExtensionIds =
+    base::MakeFixedFlatSet<std::string_view>({
+        // Smart Card Connector
+        "khpfeaanjngmcnplbdlpegiifgpfgdco",  // stable
+        "mockcojkppdndnhgonljagclgpkjbkek",  // beta
 
-    // Citrix Receiver
-    "chrome-extension://haiffjcadagjlijoggckpgfnoeiflnem/",  // stable
-    "chrome-extension://lbfgjakkeeccemhonnolnmglmfmccaag/",  // beta
-    "chrome-extension://anjihnbmjbbpofafpmklejenkgnjfcdi/",  // back-up
+        // Citrix Receiver
+        "haiffjcadagjlijoggckpgfnoeiflnem",  // stable
+        "lbfgjakkeeccemhonnolnmglmfmccaag",  // beta
+        "anjihnbmjbbpofafpmklejenkgnjfcdi",  // back-up
 
-    // VMware Horizon
-    "chrome-extension://ppkfnjlimknmjoaemnpidmdlfchhehel/",  // stable
-    "chrome-extension://kenkpdjcfppbccchillfdjkjnejjgand/",  // beta
-};
+        // VMware Horizon
+        "ppkfnjlimknmjoaemnpidmdlfchhehel",  // stable
+        "kenkpdjcfppbccchillfdjkjnejjgand",  // beta
+    });
 
-std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
-    content::BrowserContext* browser_context) {
-  std::vector<url::Origin> origins;
+void ApplyServiceWorkerExtendedLifetimeIfConfigured(
+    content::BrowserContext* browser_context,
+    const GURL& source_url,
+    const std::string& target_extension_id,
+    MessagePort* opener,
+    MessagePort* receiver) {
+  if (source_url.is_valid()) {
+    if (source_url.SchemeIs(kExtensionScheme)) {
+      if (kDefaultSWExtendedLifetimeExtensionIds.contains(source_url.host())) {
+        // Opener found in allowlist, keep receiver SW alive.
+        receiver->set_should_have_strong_keepalive(true);
+      }
+    } else if (source_url.SchemeIsBlob() || source_url.SchemeIsFileSystem()) {
+      const url::Origin origin = url::Origin::Create(source_url);
+      if (origin.scheme() == kExtensionScheme &&
+          kDefaultSWExtendedLifetimeExtensionIds.contains(origin.host())) {
+        // Opener found in allowlist, keep receiver SW alive.
+        receiver->set_should_have_strong_keepalive(true);
+      }
+    }
+  }
+  if (!target_extension_id.empty() &&
+      kDefaultSWExtendedLifetimeExtensionIds.contains(target_extension_id)) {
+    // Receiver found in allowlist, keep opener SW alive.
+    opener->set_should_have_strong_keepalive(true);
+  }
+
   const base::ListValue& extended_lifetime_urls =
       ExtensionPrefs::Get(browser_context)
           ->pref_service()
           ->GetList(
               pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls);
-  origins.reserve(std::size(kDefaultSWExtendedLifetimeList) +
-                  extended_lifetime_urls.size());
-
-  // Add default values.
-  for (const char* default_value : kDefaultSWExtendedLifetimeList) {
-    url::Origin origin = url::Origin::Create(GURL(default_value));
-    origins.push_back(std::move(origin));
+  if (extended_lifetime_urls.empty()) {
+    return;
   }
 
-  // Add policy values.
+  const url::Origin source_origin = url::Origin::Create(source_url);
+  const std::optional<url::Origin> target_origin =
+      target_extension_id.empty()
+          ? std::nullopt
+          : std::make_optional(
+                Extension::CreateOriginFromExtensionId(target_extension_id));
   for (const base::Value& value : extended_lifetime_urls) {
     GURL url(value.GetString());
     if (!url.is_valid()) {
@@ -215,10 +250,13 @@ std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
     if (origin.opaque()) {
       continue;
     }
-    origins.push_back(std::move(origin));
+    if (origin == source_origin) {
+      receiver->set_should_have_strong_keepalive(true);
+    }
+    if (target_origin && origin == *target_origin) {
+      opener->set_should_have_strong_keepalive(true);
+    }
   }
-
-  return origins;
 }
 
 // Verifies (via CHECK()) that the lazy context for the given `extension` is
@@ -1094,22 +1132,9 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // Check source and target of the connection and grant extended lifetime if
   // one of the ends is configured in the
   // ExtendedBackgroundLifetimeForPortConnectionsToUrls policy.
-  std::vector<url::Origin> extended_lifetime_origins =
-      GetServiceWorkerExtendedLifetimeOrigins(browser_context);
-  url::Origin source_origin = url::Origin::Create(params->source_url);
-  url::Origin target_origin =
-      Extension::CreateOriginFromExtensionId(params->target_extension_id);
-
-  for (const url::Origin& origin : extended_lifetime_origins) {
-    if (origin == source_origin) {
-      // Opener found in allowlist, keep receiver SW alive.
-      channel->receiver->set_should_have_strong_keepalive(true);
-    }
-    if (origin == target_origin) {
-      // Receiver found in allowlist, keep opener SW alive.
-      channel->opener->set_should_have_strong_keepalive(true);
-    }
-  }
+  ApplyServiceWorkerExtendedLifetimeIfConfigured(
+      browser_context, params->source_url, params->target_extension_id,
+      channel->opener.get(), channel->receiver.get());
 
   // Keep both ends of the channel alive until the channel is closed.
   channel->opener->IncrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
@@ -1308,6 +1333,20 @@ void MessageService::NotifyResponsePending(const PortId& port_id) {
   it->second->receiver->NotifyResponsePending();
 }
 
+bool MessageService::HasStrongKeepaliveOnReceiverForTest(
+    const ChannelId& channel_id) const {
+  auto it = channels_.find(channel_id);
+  return it != channels_.end() &&
+         it->second->receiver->should_have_strong_keepalive();
+}
+
+bool MessageService::HasStrongKeepaliveOnOpenerForTest(
+    const ChannelId& channel_id) const {
+  auto it = channels_.find(channel_id);
+  return it != channels_.end() &&
+         it->second->opener->should_have_strong_keepalive();
+}
+
 bool MessageService::HasPendingLazyContextChannelsForExtension(
     const ExtensionId& extension_id) const {
   return std::ranges::any_of(
@@ -1433,19 +1472,19 @@ void MessageService::OnOpenChannelAllowed(
     return;
   }
 
-  BrowserContext* context_to_use_for_extension =
-      IncognitoInfo::IsSplitMode(target_extension)
-          ? context
-          : ExtensionsBrowserClient::Get()->GetOriginalContext(context);
-  params->receiver = ExtensionMessagePort::CreateForExtension(
-      weak_factory_.GetWeakPtr(), params->receiver_port_id,
-      params->target_extension_id, context_to_use_for_extension);
-
   // The target might be a lazy background page or a Service Worker. In that
   // case, we have to check if it is loaded and ready, and if not, queue up the
-  // task and load the page.
+  // task and load the page. Defer creating `params->receiver` until we know the
+  // channel will not be queued: eager creation before queuing both wasted port
+  // allocation/observer registration on every lazy channel open and risked a
+  // spurious `PendingLazyContextClosePort` if another extension frame closed
+  // while the lazy context was waking.
   if (!MaybeAddPendingLazyContextOpenChannelTask(context, target_extension,
                                                  &params, pending_messages)) {
+    params->receiver = ExtensionMessagePort::CreateForExtension(
+        weak_factory_.GetWeakPtr(), params->receiver_port_id,
+        params->target_extension_id,
+        GetContextToUseForExtension(context, target_extension));
     OpenChannelImpl(context, std::move(params), target_extension,
                     /*did_enqueue=*/false);
     DispatchPendingMessages(std::move(pending_messages), channel_id);
@@ -1468,9 +1507,25 @@ void MessageService::PendingLazyContextOpenChannel(
           open_channel_wakeup_context_tracking_id,
           MessageTracker::OpenChannelMessagePipelineResult::kNoReceivers);
     }
-    // `OpenChannelImpl` will handle the cleanup and notify the opener.
-    // We use `context_` as a fallback `BrowserContext`.
-    OpenChannelImpl(context_, std::move(params), /*target_extension=*/nullptr,
+    // If the target extension is still enabled and the source endpoint is still
+    // valid, create a receiver port so `OpenChannelImpl` can still connect to
+    // any remaining live extension frames (e.g. popup, tab, or offscreen
+    // document). Use `params->source.browser_context()` so split-mode incognito
+    // openers only match frames in their own incognito `BrowserContext`.
+    const Extension* target_extension =
+        ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+            params->target_extension_id);
+    if (target_extension && params->source.IsValid()) {
+      params->receiver = ExtensionMessagePort::CreateForExtension(
+          weak_factory_.GetWeakPtr(), params->receiver_port_id,
+          params->target_extension_id,
+          GetContextToUseForExtension(params->source.browser_context(),
+                                      target_extension));
+    }
+    // `OpenChannelImpl` will connect to live frames if available, or clean up
+    // and notify the opener otherwise. We use `context_` as a fallback
+    // `BrowserContext`.
+    OpenChannelImpl(context_, std::move(params), target_extension,
                     /*did_enqueue=*/true);
     return;
   }
