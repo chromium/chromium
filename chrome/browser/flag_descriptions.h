@@ -3883,6 +3883,12 @@ inline constexpr char kOmniboxNativeVectorIconsDescription[] =
     "shared with desktop, rasterized on demand, instead of Android XML "
     "drawables";
 
+inline constexpr char kOmniboxStatefulAiModeButtonName[] =
+    "Omnibox Stateful AI Mode Button";
+inline constexpr char kOmniboxStatefulAiModeButtonDescription[] =
+    "Keeps the AI Mode button visible in the desktop omnibox while in AI Mode, "
+    "and turns it into a send button once there is something to submit";
+
 inline constexpr char kOmniboxVoicePlateIntentName[] =
     "Omnibox Voice Plate Intent";
 inline constexpr char kOmniboxVoicePlateIntentDescription[] =

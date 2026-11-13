@@ -7094,6 +7094,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNativeVectorIconsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxNativeVectorIcons)},
 
+    {"omnibox-stateful-ai-mode-button",
+     flag_descriptions::kOmniboxStatefulAiModeButtonName,
+     flag_descriptions::kOmniboxStatefulAiModeButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxStatefulAiModeButton)},
+
     {"omnibox-post-frame-autocomplete-start",
      flag_descriptions::kOmniboxPostFrameAutocompleteStartName,
      flag_descriptions::kOmniboxPostFrameAutocompleteStartDescription,

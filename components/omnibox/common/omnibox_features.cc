@@ -738,6 +738,11 @@ BASE_FEATURE(kOmniboxVoicePlateIntent, DISABLED);
 // from Android XML drawables.
 BASE_FEATURE(kOmniboxNativeVectorIcons, DISABLED);
 
+// If enabled, the AI Mode button in the desktop omnibox is stateful: it stays
+// visible in AI Mode, and turns into a send button once there is something to
+// submit.
+BASE_FEATURE(kOmniboxStatefulAiModeButton, DISABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -780,7 +785,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kZeroSuggestPrefetchOnPageLoadAndTabSwitch,
       &kAndroidTabSearchCloseTabButton,
       &kOmniboxVoicePlateIntent,
-      &kOmniboxNativeVectorIcons};
+      &kOmniboxNativeVectorIcons,
+      &kOmniboxStatefulAiModeButton};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

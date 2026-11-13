@@ -318,6 +318,15 @@ public class OmniboxFeatures {
     private static final CachedFlag sOmniboxNativeVectorIcons =
             newFlag(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS, FeatureState.DISABLED_IN_PROD);
 
+    /**
+     * Makes the AI Mode button in the desktop omnibox stateful: it stays visible in AI Mode, and
+     * turns into a send button once there is text or an attachment to submit.
+     */
+    public static final CachedFlag sOmniboxStatefulAiModeButton =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON,
+                    FeatureState.DISABLED_IN_PROD);
+
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
                     sTouchDownTriggerForPrefetch,

@@ -10252,6 +10252,7 @@ from previous Chrome versions.
   <int value="-1433156012" label="AppListDragAndDropRefactor:disabled"/>
   <int value="-1433087548" label="enable-app-install-alerts"/>
   <int value="-1432246303" label="FilesZipPack:enabled"/>
+  <int value="-1431957075" label="OmniboxStatefulAiModeButton:disabled"/>
   <int value="-1431722713" label="TabFreeze:disabled"/>
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
   <int value="-1431510203" label="HistoryPaneAndroid:enabled"/>
@@ -19881,6 +19882,7 @@ from previous Chrome versions.
       label="ReleaseNotesNotificationAlwaysEligible:disabled"/>
   <int value="1429031731"
       label="CrossOriginEmbedderPolicyCredentialless:enabled"/>
+  <int value="1429485117" label="OmniboxStatefulAiModeButton:enabled"/>
   <int value="1429923065" label="enable-media-internals:enabled"/>
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>

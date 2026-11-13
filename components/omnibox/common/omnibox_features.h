@@ -339,6 +339,10 @@ BASE_DECLARE_FEATURE(kOmniboxVoicePlateIntent);
 // gfx::VectorIcon definitions (shared with desktop) instead of being sourced
 // from Android XML drawables.
 BASE_DECLARE_FEATURE(kOmniboxNativeVectorIcons);
+// If enabled, the AI Mode button in the desktop omnibox is stateful: it stays
+// visible in AI Mode, and turns into a send button once there is something to
+// submit.
+BASE_DECLARE_FEATURE(kOmniboxStatefulAiModeButton);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, X-Geo headers are sent for all search navigations on all
