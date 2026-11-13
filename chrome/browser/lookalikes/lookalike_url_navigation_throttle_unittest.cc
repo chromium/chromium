@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
+#include <string>
+
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -15,6 +17,7 @@
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace lookalikes {
 
@@ -197,6 +200,90 @@ TEST_F(LookalikeThrottleTest, SpoofsBlockedForBlobUrls) {
                                          : content::NavigationThrottle::PROCEED,
               throttle->WillProcessResponse().action())
         << "Failed: " << test_case.url;
+  }
+}
+
+// Verifies that when the first hop of a redirect chain triggers a weaker
+// lookalike action (metrics-only or safety tip) and the final hop triggers an
+// interstitial, the navigation is still blocked with an interstitial.
+// Regression test for crbug.com/573697949.
+TEST_F(LookalikeThrottleTest, RedirectFromWeakerLookalikeToInterstitial) {
+  lookalikes::InitializeSafetyTipConfig();
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  const struct TestCase {
+    const char* first_hostname;
+    LookalikeActionType expected_first_action;
+    const char* last_hostname;
+    LookalikeActionType expected_last_action;
+    content::NavigationThrottle::ThrottleAction expected_throttle_action;
+  } kTestCases[] = {
+      // Edit distance (metrics-only) -> failed spoof checks (interstitial).
+      {"goooglé.com", LookalikeActionType::kRecordMetrics, "xn--ook-ooa.com",
+       LookalikeActionType::kShowInterstitial,
+       content::NavigationThrottle::CANCEL},
+      // Edit distance (metrics-only) -> target embedding (interstitial).
+      {"goooglé.com", LookalikeActionType::kRecordMetrics,
+       "google.com-test.com", LookalikeActionType::kShowInterstitial,
+       content::NavigationThrottle::CANCEL},
+      // Character swap (safety tip) -> skeleton match top 500 (interstitial).
+      {"goolge.com", LookalikeActionType::kShowSafetyTip, "googlé.com",
+       LookalikeActionType::kShowInterstitial,
+       content::NavigationThrottle::CANCEL},
+      // Skeleton match top 500 (interstitial) -> character swap (safety tip).
+      {"googlé.com", LookalikeActionType::kShowInterstitial, "goolge.com",
+       LookalikeActionType::kShowSafetyTip,
+       content::NavigationThrottle::CANCEL},
+      // Edit distance (metrics-only) -> benign domain (no interstitial).
+      {"goooglé.com", LookalikeActionType::kRecordMetrics, "example.com",
+       LookalikeActionType::kNone, content::NavigationThrottle::PROCEED},
+      // Character swap (safety tip) -> benign domain (no interstitial).
+      {"goolge.com", LookalikeActionType::kShowSafetyTip, "example.com",
+       LookalikeActionType::kNone, content::NavigationThrottle::PROCEED},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    const GURL first_url(std::string("http://") + test_case.first_hostname);
+    const GURL last_url(std::string("http://") + test_case.last_hostname);
+
+    ASSERT_EQ(test_case.expected_first_action,
+              service
+                  ->CheckUrlForLookalikes(
+                      first_url, /*engaged_sites=*/{},
+                      /*stop_checking_on_allowlist_or_ignore=*/true)
+                  .action_type)
+        << test_case.first_hostname;
+    ASSERT_EQ(test_case.expected_last_action,
+              service
+                  ->CheckUrlForLookalikes(
+                      last_url, /*engaged_sites=*/{},
+                      /*stop_checking_on_allowlist_or_ignore=*/true)
+                  .action_type)
+        << test_case.last_hostname;
+
+    ::testing::NiceMock<content::MockNavigationHandle> handle(last_url,
+                                                              main_rfh());
+    handle.set_redirect_chain({first_url, last_url});
+    handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+    ::testing::NiceMock<content::MockNavigationThrottleRegistry> registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+    LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);
+    ASSERT_EQ(1u, registry.throttles().size());
+    auto* throttle = static_cast<LookalikeUrlNavigationThrottle*>(
+        registry.throttles().back().get());
+    ASSERT_TRUE(throttle);
+    throttle->SetUseTestProfileForTesting();
+
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              throttle->WillStartRequest().action());
+    EXPECT_EQ(test_case.expected_throttle_action,
+              throttle->WillProcessResponse().action())
+        << "Failed: " << test_case.first_hostname << " -> "
+        << test_case.last_hostname;
   }
 }
 

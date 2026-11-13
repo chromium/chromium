@@ -527,28 +527,35 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   ukm::SourceId source_id = ukm::ConvertToSourceId(
       navigation_handle()->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
 
-  LookalikeUrlMatchType match_type =
+  const auto* proto = lookalikes::GetSafetyTipsRemoteConfigProto();
+  const LookalikeActionType first_action_type =
+      first_is_lookalike
+          ? GetActionForMatchType(proto, chrome::GetChannel(),
+                                  GetETLDPlusOne(first_url.GetHost()),
+                                  first_match_type)
+          : LookalikeActionType::kNone;
+  if (first_action_type == LookalikeActionType::kShowInterstitial) {
+    return CheckAndMaybeShowInterstitial(first_suggested_url, first_url,
+                                         source_id, first_match_type,
+                                         /*triggered_by_initial_url=*/true);
+  }
+
+  const LookalikeActionType last_action_type =
+      last_is_lookalike
+          ? GetActionForMatchType(proto, chrome::GetChannel(),
+                                  GetETLDPlusOne(last_url.GetHost()),
+                                  last_match_type)
+          : LookalikeActionType::kNone;
+  if (last_action_type == LookalikeActionType::kShowInterstitial) {
+    return CheckAndMaybeShowInterstitial(last_suggested_url, last_url,
+                                         source_id, last_match_type,
+                                         /*triggered_by_initial_url=*/false);
+  }
+
+  const LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
-  std::string etld_plus_one = first_is_lookalike
-                                  ? GetETLDPlusOne(first_url.GetHost())
-                                  : GetETLDPlusOne(last_url.GetHost());
-  LookalikeActionType action_type =
-      GetActionForMatchType(lookalikes::GetSafetyTipsRemoteConfigProto(),
-                            chrome::GetChannel(), etld_plus_one, match_type);
-
-  if (first_is_lookalike &&
-      action_type == LookalikeActionType::kShowInterstitial) {
-    return CheckAndMaybeShowInterstitial(
-        first_suggested_url, first_url, source_id, first_match_type,
-        /*triggered_by_initial_url=*/first_is_lookalike);
-  }
-
-  if (last_is_lookalike &&
-      action_type == LookalikeActionType::kShowInterstitial) {
-    return CheckAndMaybeShowInterstitial(
-        last_suggested_url, last_url, source_id, last_match_type,
-        /*triggered_by_initial_url=*/first_is_lookalike);
-  }
+  const LookalikeActionType action_type =
+      first_is_lookalike ? first_action_type : last_action_type;
 
   // IMPORTANT: Every time that a new lookalike heuristic is added, before
   // adding a warning UI, a console message should be printed here. To do that,
