@@ -1210,11 +1210,6 @@ TEST_F(TextIteratorTest, ExcludeAutofilledValueSelect) {
   TextIteratorBehavior behavior =
       TextIteratorBehavior::Builder().SetExcludeAutofilledValue(true).Build();
   EXPECT_EQ("", IteratePartial<DomTree>(start, end, behavior));
-
-  // When the feature is disabled, the previous behavior is restored (preview
-  // text is emitted).
-  ScopedTextIteratorExcludeAutofilledSelectFixForTest disable_fix(false);
-  EXPECT_EQ("[Two]", IteratePartial<DomTree>(start, end, behavior));
 }
 
 TEST_F(TextIteratorTest, ExcludeAutofilledValueListboxSelect) {
@@ -1243,11 +1238,6 @@ TEST_F(TextIteratorTest, ExcludeAutofilledValueListboxSelect) {
   TextIteratorBehavior behavior =
       TextIteratorBehavior::Builder().SetExcludeAutofilledValue(true).Build();
   EXPECT_EQ("", IteratePartial<DomTree>(start, end, behavior));
-
-  // When the feature is disabled, the previous behavior is restored (preview
-  // text is emitted).
-  ScopedTextIteratorExcludeAutofilledSelectFixForTest disable_fix(false);
-  EXPECT_EQ("[Two]", IteratePartial<DomTree>(start, end, behavior));
 }
 
 using RunContainers =

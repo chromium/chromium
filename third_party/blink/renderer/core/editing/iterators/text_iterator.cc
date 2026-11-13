@@ -533,13 +533,8 @@ template <typename Strategy>
 void TextIteratorAlgorithm<Strategy>::HandleTextNode() {
   if (ExcludesAutofilledValue()) {
     HTMLFormControlElement* control = nullptr;
-    if (RuntimeEnabledFeatures::
-            TextIteratorExcludeAutofilledSelectFixEnabled()) {
-      if (node_->IsInUserAgentShadowRoot()) {
-        control = DynamicTo<HTMLFormControlElement>(node_->OwnerShadowHost());
-      }
-    } else {
-      control = EnclosingTextControl(node_);
+    if (node_->IsInUserAgentShadowRoot()) {
+      control = DynamicTo<HTMLFormControlElement>(node_->OwnerShadowHost());
     }
     // For security reason, we don't expose suggested value if it is
     // auto-filled.
