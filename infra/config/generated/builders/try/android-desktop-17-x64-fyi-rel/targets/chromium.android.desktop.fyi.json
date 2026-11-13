@@ -277,7 +277,7 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
-          "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*",
+          "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*:PaintCanvasVideoRendererWithGLTest.*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

@@ -199,7 +199,11 @@ ci.builder(
             ),
             "media_unittests": targets.mixin(
                 args = [
-                    "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*",
+                    # crbug.com/391490503: AACAudioEncoderTest.FullCycleEncodeDecode*
+                    # TODO(crbug.com/558813685): Re-enable PaintCanvasVideoRendererWithGLTest.*
+                    # once emulator is updated past 37.1.11 with the Gfxstream
+                    # VK_EXT_host_image_copy fix.
+                    "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*:PaintCanvasVideoRendererWithGLTest.*",
                 ],
             ),
             "unit_tests": targets.mixin(
