@@ -142,7 +142,6 @@ void AndroidAutofillProvider::RenderFrameDeleted(
   if (session_state_ && session_state_->manager &&
       session_state_->last_queried_field_rfh_id == rfh->GetGlobalId()) {
     OnHidePopup(session_state_->manager.get());
-    session_state_->last_queried_field_rfh_id = {};
   }
   if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
     // `WebAuthnCredManDelegateFactory` takes care of cleaning up
@@ -173,7 +172,6 @@ void AndroidAutofillProvider::RenderFrameHostStateChanged(
     if (session_state_ && session_state_->manager &&
         session_state_->last_queried_field_rfh_id == rfh->GetGlobalId()) {
       OnHidePopup(session_state_->manager.get());
-      session_state_->last_queried_field_rfh_id = {};
     }
     if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
       ClearCredManCompletionCallback();
@@ -193,7 +191,6 @@ void AndroidAutofillProvider::DidFinishNavigation(
       session_state_->last_queried_field_rfh_id ==
           navigation_handle->GetPreviousRenderFrameHostId()) {
     OnHidePopup(session_state_->manager.get());
-    session_state_->last_queried_field_rfh_id = {};
   }
 
   if (credman_sheet_rfh_id_ ==
@@ -715,6 +712,7 @@ void AndroidAutofillProvider::OnHidePopup(AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (session_state_ && manager == session_state_->manager.get()) {
     bridge_->HideDatalistPopup();
+    session_state_->last_queried_field_rfh_id = {};
   }
 }
 
