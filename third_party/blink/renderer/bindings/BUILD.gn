@@ -12,15 +12,15 @@ import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/idl_in_core.gni")
 import("//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
-import("//third_party/blink/renderer/bindings/scripts/web_idl/web_idl.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
 bindings_gen_dir = get_path_info(".", "gen_dir")
 
 template("collect_idl_files") {
-  action_with_pydeps(target_name) {
-    script = "scripts/collect_idl_files.py"
+  python_action(target_name) {
+    python_binary =
+        "//third_party/blink/renderer/bindings/scripts:collect_idl_files"
 
     inputs = invoker.inputs
     outputs = [ invoker.output ]
@@ -97,13 +97,14 @@ collect_idl_files("web_idl_in_modules_for_testing") {
   output = "${bindings_gen_dir}/web_idl_in_modules_for_testing.pickle"
 }
 
-action_with_pydeps("web_idl_database") {
+python_action("web_idl_database") {
   visibility += [
     "//chrome/test/fuzzing/webidl_fuzzing:*",
     "//testing/libfuzzer/research/fuzzilli_idl_fuzzing:*",
   ]
 
-  script = "scripts/build_web_idl_database.py"
+  python_binary =
+      "//third_party/blink/renderer/bindings/scripts:build_web_idl_database"
 
   input_data_files = get_target_outputs(":web_idl_in_core") +
                      get_target_outputs(":web_idl_in_core_for_testing") +
@@ -134,8 +135,9 @@ action_with_pydeps("web_idl_database") {
 }
 
 template("generate_bindings") {
-  action_with_pydeps(target_name) {
-    script = "scripts/generate_bindings.py"
+  python_action(target_name) {
+    python_binary =
+        "//third_party/blink/renderer/bindings/scripts:generate_bindings"
 
     if (defined(invoker.visibility)) {
       visibility += invoker.visibility
@@ -291,23 +293,24 @@ group("generate_bindings_all") {
   ]
 }
 
-action_with_pydeps("check_generated_file_list") {
-  script = "scripts/check_generated_file_list.py"
+python_action("check_generated_file_list") {
+  python_binary =
+      "//third_party/blink/renderer/bindings/scripts:check_generated_file_list"
 
   web_idl_database_outputs = get_target_outputs(":web_idl_database")
   web_idl_database = web_idl_database_outputs[0]
   result_file = "${bindings_gen_dir}/check_generated_file_list_results.txt"
 
-  inputs = web_idl_compiler_inputs + [
-             web_idl_database,
-             "//third_party/blink/renderer/bindings/union_name_map.conf",
-             "//third_party/blink/renderer/bindings/generated_in_core.gni",
-             "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni",
-             "//third_party/blink/renderer/bindings/generated_in_modules.gni",
-             "//third_party/blink/renderer/bindings/idl_in_core.gni",
-             "//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni",
-             "//third_party/blink/renderer/bindings/idl_in_modules.gni",
-           ]
+  inputs = [
+    web_idl_database,
+    "//third_party/blink/renderer/bindings/union_name_map.conf",
+    "//third_party/blink/renderer/bindings/generated_in_core.gni",
+    "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni",
+    "//third_party/blink/renderer/bindings/generated_in_modules.gni",
+    "//third_party/blink/renderer/bindings/idl_in_core.gni",
+    "//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni",
+    "//third_party/blink/renderer/bindings/idl_in_modules.gni",
+  ]
   outputs = [ result_file ]
 
   file_list = []
@@ -447,8 +450,9 @@ action_with_pydeps("check_generated_file_list") {
   deps = [ ":web_idl_database" ]
 }
 
-action_with_pydeps("validate_web_idl") {
-  script = "scripts/validate_web_idl.py"
+python_action("validate_web_idl") {
+  python_binary =
+      "//third_party/blink/renderer/bindings/scripts:validate_web_idl"
 
   web_idl_database_outputs = get_target_outputs(":web_idl_database")
   web_idl_database = web_idl_database_outputs[0]

@@ -334,8 +334,8 @@ group("make_modules_generated") {
 
 # generate_event_interfaces ----------------------------------------------------
 
-action_with_pydeps("modules_event_interfaces") {
-  script = "//third_party/blink/renderer/bindings/scripts/generate_event_interface_names.py"
+python_action("modules_event_interfaces") {
+  python_binary = "//third_party/blink/renderer/bindings/scripts:generate_event_interface_names"
 
   inputs = [ web_idl_database_filepath ]
   outputs =

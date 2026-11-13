@@ -42,7 +42,7 @@ template("repack") {
 
   _compress = defined(invoker.compress) && invoker.compress
 
-  action_with_pydeps(_repack_target_name) {
+  python_action(_repack_target_name) {
     forward_variables_from(invoker,
                            [
                              "deps",
@@ -56,7 +56,7 @@ template("repack") {
     assert(defined(invoker.sources), "Need sources for $target_name")
     assert(defined(invoker.output), "Need output for $target_name")
 
-    script = "//tools/grit/pak_util.py"
+    python_binary = "//tools/grit:pak_util"
 
     inputs = []
     foreach(source, invoker.sources) {

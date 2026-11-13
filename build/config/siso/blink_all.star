@@ -26,7 +26,7 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "blink/generate_bindings",
-            "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/generate_bindings.py",
+            "command_prefix": platform.python_bin + " obj/third_party/blink/renderer/bindings/scripts/generate_bindings.pyz",
             "remote": remote_run,
             "timeout": "2m",
             "platform_ref": "large",
@@ -51,7 +51,7 @@ def __step_config(ctx, step_config):
             },
             {
                 "name": "blink/build_web_idl_database",
-                "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/build_web_idl_database.py",
+                "command_prefix": platform.python_bin + " obj/third_party/blink/renderer/bindings/scripts/build_web_idl_database.pyz",
                 "remote": remote_run,
                 "timeout": "2m",
                 "remote_command": platform.remote_python_bin,

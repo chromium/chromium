@@ -247,6 +247,26 @@ python_library("logdog_wrapper_py") {
   pydeps_file = "test_wrapper/logdog_wrapper.pydeps"
 }
 
+python_binary("compile_kt") {
+  script = "gyp/compile_kt.py"
+}
+
+python_binary("create_r_java") {
+  script = "gyp/create_r_java.py"
+}
+
+python_binary("dex") {
+  script = "gyp/dex.py"
+}
+
+python_binary("errorprone") {
+  script = "gyp/errorprone.py"
+}
+
+python_binary("turbine") {
+  script = "gyp/turbine.py"
+}
+
 python_binary("write_build_config") {
   script = "gyp/write_build_config.py"
 }

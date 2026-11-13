@@ -11,6 +11,9 @@ Archive layout:
   _pyz/<rel_path>.pyc   Bundled bytecode mirroring checkout-relative paths
                         under `//` (nested under `_pyz/` so keeping `foo.pyz`
                         on `sys.path` only exposes `_pyz_mp_main` at root).
+  _pyz/_pyz_entry.pyc   Copy of the entry script's bytecode, under a name that
+                        cannot collide with a sibling package (e.g. grit.py
+                        next to grit/__init__.py).
 
 Why a custom bootstrap is needed instead of compiling the main script directly
 as `__main__.pyc` and relying on standard `zipimport`:
@@ -150,8 +153,7 @@ def _init():
 
     _entry_rel = {entry_rel!r}
     _entry_file = os.path.join(_src_root, _entry_rel.replace('/', os.sep))
-    _entry_dir_rel, _, _entry_name = _entry_rel[:-3].rpartition('/')
-    _entry_loader = _zipimporter(_entry_dir_rel)
+    _entry_loader = _zipimporter('')
 
     def _run(is_main, g, _builtins=__builtins__, _exec=exec):
         sys.path_hooks.insert(0, _hook)
@@ -172,7 +174,7 @@ def _init():
         spec = _fi.ModuleSpec(
             '_pyz_mp_main', _entry_loader, origin=_entry_file
         )
-        code = _entry_loader.get_code(_entry_name)
+        code = _entry_loader.get_code('_pyz_entry')
         saved = {{
             '__name__': run_name,
             '__doc__': None,
@@ -280,11 +282,14 @@ def main():
             with open(fs_path, 'rb') as src_file:
                 source_bytes = src_file.read()
             display_path = os.path.relpath(fs_path).replace(os.sep, '/')
+            pyc_data = _compile_pyc(source_bytes, display_path)
             zip_helpers.add_to_zip_hermetic(
-                zf,
-                '_pyz/' + rel_py + 'c',
-                data=_compile_pyc(source_bytes, display_path),
+                zf, '_pyz/' + rel_py + 'c', data=pyc_data
             )
+            if rel_py == entry_rel:
+                zip_helpers.add_to_zip_hermetic(
+                    zf, '_pyz/_pyz_entry.pyc', data=pyc_data
+                )
 
             # Seed ancestor directories with `_KIND_NAMESPACE` via
             # `setdefault` so directories without `__init__.py` work as

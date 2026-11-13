@@ -6,11 +6,10 @@ import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/python.gni")
 import("//tools/grit/grit_rule.gni")
 
-action_with_pydeps("default_resource_ids") {
-  script = "//tools/grit/grit.py"
+python_action("default_resource_ids") {
+  python_binary = "//tools/grit"
   inputs = [ "resource_ids.spec" ]
   outputs = [ grit_resource_id_file ]
-  deps = [ "//tools/grit:grit_sources" ]
   depfile = "$target_gen_dir/$target_name.d"
   _rebased_input = rebase_path(inputs[0], root_build_dir)
   args = [
@@ -25,7 +24,7 @@ action_with_pydeps("default_resource_ids") {
   ]
 
   if (compute_inputs_for_analyze) {
-    _depfile_inputs = exec_script(script,
+    _depfile_inputs = exec_script("//tools/grit/grit.py",
                                   [
                                     "update_resource_ids",
                                     "--analyze-inputs",

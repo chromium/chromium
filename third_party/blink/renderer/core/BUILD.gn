@@ -709,8 +709,8 @@ if (is_ios) {
 
 # generate_event_interfaces ----------------------------------------------------
 
-action_with_pydeps("core_event_interfaces") {
-  script = "//third_party/blink/renderer/bindings/scripts/generate_event_interface_names.py"
+python_action("core_event_interfaces") {
+  python_binary = "//third_party/blink/renderer/bindings/scripts:generate_event_interface_names"
 
   inputs = [ web_idl_database_filepath ]
   outputs = [ get_path_info(".", "gen_dir") + "/event_interface_names.json5" ]

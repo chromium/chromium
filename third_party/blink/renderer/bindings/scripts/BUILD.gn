@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+
+visibility = [ "//third_party/blink/renderer/*" ]
+
+python_binary("build_web_idl_database") {
+  script = "build_web_idl_database.py"
+}
+
+python_binary("check_generated_file_list") {
+  script = "check_generated_file_list.py"
+}
+
+python_binary("collect_idl_files") {
+  script = "collect_idl_files.py"
+}
+
+python_binary("generate_bindings") {
+  script = "generate_bindings.py"
+}
+
+python_binary("generate_event_interface_names") {
+  script = "generate_event_interface_names.py"
+}
+
+python_binary("validate_web_idl") {
+  script = "validate_web_idl.py"
+}

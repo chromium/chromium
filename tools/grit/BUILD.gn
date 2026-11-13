@@ -2,12 +2,51 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/build.gni")
+
+python_binary("grit") {
+  script = "grit.py"
+
+  # Explicit because python_binary() skips default .pydeps when inputs is set.
+  pydeps_file = "grit.pydeps"
+  if (build_with_chromium) {
+    # Imported dynamically when gathering policy_template_metafile nodes
+    # (//components/policy/resources/policy_templates.py).
+    inputs = [
+      "//third_party/pyyaml/__init__.py",
+      "//third_party/pyyaml/composer.py",
+      "//third_party/pyyaml/constructor.py",
+      "//third_party/pyyaml/cyaml.py",
+      "//third_party/pyyaml/dumper.py",
+      "//third_party/pyyaml/emitter.py",
+      "//third_party/pyyaml/error.py",
+      "//third_party/pyyaml/events.py",
+      "//third_party/pyyaml/loader.py",
+      "//third_party/pyyaml/nodes.py",
+      "//third_party/pyyaml/parser.py",
+      "//third_party/pyyaml/reader.py",
+      "//third_party/pyyaml/representer.py",
+      "//third_party/pyyaml/resolver.py",
+      "//third_party/pyyaml/scanner.py",
+      "//third_party/pyyaml/serializer.py",
+      "//third_party/pyyaml/tokens.py",
+    ]
+  }
+}
+
+python_binary("pak_util") {
+  script = "pak_util.py"
+}
+
+python_binary("preprocess_if_expr") {
+  script = "preprocess_if_expr.py"
+}
+
 # This target creates a stamp file that depends on all the sources in the grit
 # directory. By depending on this, a target can force itself to be rebuilt if
 # grit itself changes.
-
-import("//build/config/sanitizers/sanitizers.gni")
-
 action("grit_sources") {
   depfile = "$target_out_dir/grit_sources.d"
   script = "stamp_grit_sources.py"

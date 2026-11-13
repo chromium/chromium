@@ -6,8 +6,8 @@ import("//build/config/python.gni")
 import("//tools/grit/grit_args.gni")
 
 template("preprocess_if_expr") {
-  action_with_pydeps(target_name) {
-    script = "//tools/grit/preprocess_if_expr.py"
+  python_action(target_name) {
+    python_binary = "//tools/grit:preprocess_if_expr"
 
     forward_variables_from(invoker,
                            [

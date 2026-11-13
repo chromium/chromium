@@ -703,14 +703,14 @@ template("generate_android_wrapper") {
 }
 
 template("generate_r_java") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
     depfile = "$target_gen_dir/${invoker.target_name}.d"
     inputs = [ invoker.rtxt_build_config ]
     outputs = [ invoker.srcjar_path ]
     _rebased_rtxt_build_config =
         rebase_path(invoker.rtxt_build_config, root_build_dir)
-    script = "//build/android/gyp/create_r_java.py"
+    python_binary = "//build/android:create_r_java"
     args = [
       "--depfile",
       rebase_path(depfile, root_build_dir),
@@ -1741,13 +1741,13 @@ if (enable_java_templates) {
             rebase_path(_input_class_jars, root_build_dir)
       }
 
-      action_with_pydeps(target_name) {
+      python_action(target_name) {
         forward_variables_from(invoker,
                                TESTONLY_AND_VISIBILITY + [
                                      "data",
                                      "data_deps",
                                    ])
-        script = "//build/android/gyp/dex.py"
+        python_binary = "//build/android:dex"
         deps = _deps
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
@@ -2092,6 +2092,8 @@ if (enable_java_templates) {
   #   rtxt_out_path: Path for the generated R.txt file.
   #
   template("prepare_resources") {
+    # TODO(crbug.com/582287459): Switch to python_action once
+    # components/cronet/gn2bp/gn_utils.py recognizes prepare_resources.pyz.
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
@@ -3007,7 +3009,15 @@ if (enable_java_templates) {
   # [1] https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html
   #
   template("compile_java") {
-    action_with_pydeps(target_name) {
+    if (invoker.use_turbine || invoker.enable_errorprone) {
+      _target_type = "python_action"
+    } else {
+      # TODO(crbug.com/582287459): Switch compile_java.py to python_action once
+      # `siso query ideanalysis` recognizes compile_java.pyz.
+      _target_type = "action_with_pydeps"
+    }
+
+    target(_target_type, target_name) {
       forward_variables_from(invoker,
                              [ "validations" ] + TESTONLY_AND_VISIBILITY)
 
@@ -3052,10 +3062,10 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_turbine) {
-        script = "//build/android/gyp/turbine.py"
+        python_binary = "//build/android:turbine"
         inputs = [ android_sdk_jar ]
       } else if (invoker.enable_errorprone) {
-        script = "//build/android/gyp/errorprone.py"
+        python_binary = "//build/android:errorprone"
         inputs = []
 
         # errorprone.py uses the native-image only with Chromium's plugin.
@@ -3337,8 +3347,8 @@ if (enable_java_templates) {
       _kotlin_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
     }
 
-    action_with_pydeps(target_name) {
-      script = "//build/android/gyp/compile_kt.py"
+    python_action(target_name) {
+      python_binary = "//build/android:compile_kt"
       depfile = "$target_gen_dir/$target_name.d"
       deps = _srcjar_deps + _kotlin_srcjar_deps
       if (defined(invoker.deps)) {

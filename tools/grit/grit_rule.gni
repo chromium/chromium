@@ -194,8 +194,8 @@ template("grit") {
     _grit_custom_target = invoker.grit_action_name_override
   }
 
-  action_with_pydeps(_grit_custom_target) {
-    script = "//tools/grit/grit.py"
+  python_action(_grit_custom_target) {
+    python_binary = "//tools/grit"
     inputs = [ invoker.source ]
 
     testonly = defined(invoker.testonly) && invoker.testonly
