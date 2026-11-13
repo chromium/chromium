@@ -380,8 +380,8 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
 
   bool use_real_should_skip_cursor_update_ = false;
   size_t can_synchronize_visual_properties_count_ = 0;
-  // If set, this runs at the end of the next SetBounds(), which is where
-  // UpdateLegacyWin() can run a nested message loop on Windows.
+  // If set, runs synchronously at the end of the next SetBounds() to simulate
+  // re-entrant native window or focus notifications.
   base::OnceClosure set_bounds_callback_;
   gfx::Size last_frame_size_;
   raw_ptr<FakeWindowEventDispatcher> dispatcher_;
@@ -1621,9 +1621,9 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentMoves) {
 }
 #endif
 
-// A popup can be closed in a nested message loop while InitAsPopup() sets its
-// bounds, e.g. because its parent loses focus. It must not be deleted until
-// InitAsPopup() returns, or be initialized any further, e.g. shown.
+// A popup may be closed synchronously while InitAsPopup() sets its bounds, e.g.
+// because its parent loses focus. It must not be deleted until InitAsPopup()
+// returns, or be initialized any further, e.g. shown.
 TEST_F(RenderWidgetHostViewAuraTest, PopupClosedWhileSettingBounds) {
   parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
   parent_view_->Focus();

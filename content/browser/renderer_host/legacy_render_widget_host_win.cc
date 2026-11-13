@@ -77,8 +77,9 @@ LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
 
 void LegacyRenderWidgetHostHWND::Destroy() {
   // Delete DirectManipulationHelper before the window is destroyed. The
-  // helper's destructor makes COM calls that can spin a nested message loop
-  // that could destroy the window through another path before returning.
+  // helper's destructor makes COM calls that can synchronously dispatch window
+  // messages (or re-enter via a COM STA wait loop), potentially destroying the
+  // window through another path before returning.
   base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
       msg_handler_weak_factory_.GetWeakPtr());
   direct_manipulation_helper_.reset();
@@ -213,8 +214,8 @@ void LegacyRenderWidgetHostHWND::Hide() {
 void LegacyRenderWidgetHostHWND::SetBounds(const gfx::Rect& bounds) {
   gfx::Rect bounds_in_pixel =
       display::win::GetScreenWin()->DIPToClientRect(hwnd(), bounds);
-  // ::SetWindowPos can spin a nested message loop, which can potentially
-  // destroy `this`.
+  // ::SetWindowPos synchronously dispatches window messages, which can
+  // potentially destroy `this`.
   base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
       msg_handler_weak_factory_.GetWeakPtr());
   ::SetWindowPos(hwnd(), nullptr, bounds_in_pixel.x(), bounds_in_pixel.y(),

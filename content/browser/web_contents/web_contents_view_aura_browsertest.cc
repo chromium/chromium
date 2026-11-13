@@ -38,12 +38,10 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/content_switches.h"
@@ -129,47 +127,38 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
   base::OnceClosure drop_callback_;
 };
 
-// Where SelfDestructingRenderWidgetHostViewAura runs the pending nested loop
-// task: from InitAsChild(), or while the view is being shown (from
-// EnsurePlatformVisibility(), since ShowWithVisibility() is final).
-enum class NestedLoopPoint {
+// Where ReentrantDestructionRenderWidgetHostViewAura runs the pending
+// synchronous callback: from InitAsChild(), while the view is being shown
+// (from EnsurePlatformVisibility(), since ShowWithVisibility() is final), or
+// while InitAsChild() adds the view's window to its parent.
+enum class ReentrantCallbackPoint {
   kInitAsChild,
   kShow,
-  // While InitAsChild() adds the view's window to its parent, which is where
-  // UpdateLegacyWin() runs.
   kAddChild,
 };
-NestedLoopPoint g_nested_loop_point = NestedLoopPoint::kInitAsChild;
+ReentrantCallbackPoint g_reentrant_callback_point =
+    ReentrantCallbackPoint::kInitAsChild;
 
-// Work to do in a nested message loop. It runs `done` when finished, which ends
-// the loop.
-using NestedLoopTask = base::OnceCallback<void(base::OnceClosure done)>;
+// Synchronous callback invoked at `g_reentrant_callback_point` to simulate
+// re-entrant destruction or teardown (see content/browser/SECURITY.md).
+using ReentrantCallback = base::OnceCallback<void(RenderWidgetHostViewAura*)>;
 
-// If set, the next view created runs this from `g_nested_loop_point`.
-NestedLoopTask& PendingNestedLoopTask() {
-  static base::NoDestructor<NestedLoopTask> task;
-  return *task;
+// If set, the next view created runs this from `g_reentrant_callback_point`.
+ReentrantCallback& PendingReentrantCallback() {
+  static base::NoDestructor<ReentrantCallback> callback;
+  return *callback;
 }
 
-NestedLoopTask CloseShellTask(Shell* shell) {
+ReentrantCallback CloseShellCallback(Shell* shell) {
   return base::BindOnce(
-      [](Shell* shell, base::OnceClosure done) {
-        shell->Close();
-        std::move(done).Run();
-      },
-      shell);
+      [](Shell* shell, RenderWidgetHostViewAura*) { shell->Close(); }, shell);
 }
 
-// The view that is running the pending nested loop task.
-RenderWidgetHostViewAura* g_view_running_nested_loop = nullptr;
-
-// Destroys the view running the nested loop, the way it is destroyed when its
-// renderer goes away.
-NestedLoopTask DestroyViewTask() {
-  return base::BindOnce([](base::OnceClosure done) {
-    g_view_running_nested_loop->RenderProcessGone();
-    std::move(done).Run();
-  });
+// Synchronously initiates destruction of `view` while it is still pinned on the
+// stack.
+ReentrantCallback DestroyViewCallback() {
+  return base::BindOnce(
+      [](RenderWidgetHostViewAura* view) { view->DestroyOrDefer(); });
 }
 
 // Runs a closure once a window has been added to the observed window, at the
@@ -194,28 +183,28 @@ class WindowAddedCallback : public aura::WindowObserver {
       this};
 };
 
-// A view that simulates a nested message loop running while it is initialized
-// or shown (as can happen on Windows, e.g. in UpdateLegacyWin() or when a
-// synchronous TSF lock session is started), in which it runs the pending nested
-// loop task, e.g. to close the tab.
-class SelfDestructingRenderWidgetHostViewAura
+// A view that invokes a synchronous callback while it is initialized or shown
+// (as can happen via native window, focus, or input-method callbacks; see
+// content/browser/SECURITY.md) to exercise re-entrant teardown paths.
+class ReentrantDestructionRenderWidgetHostViewAura
     : public RenderWidgetHostViewAura {
  public:
-  explicit SelfDestructingRenderWidgetHostViewAura(RenderWidgetHost* host)
+  explicit ReentrantDestructionRenderWidgetHostViewAura(RenderWidgetHost* host)
       : RenderWidgetHostViewAura(host),
-        // Only views created after the task is set run it, so that existing
+        // Only views created after the callback is set run it, so that existing
         // views, like the opener's, don't.
-        armed_(!PendingNestedLoopTask().is_null()) {}
-  ~SelfDestructingRenderWidgetHostViewAura() override = default;
+        armed_(!PendingReentrantCallback().is_null()) {}
+  ~ReentrantDestructionRenderWidgetHostViewAura() override = default;
 
   void InitAsChild(gfx::NativeView parent_view) override {
     std::optional<WindowAddedCallback> window_added;
     if (parent_view) {
       window_added.emplace(
           parent_view,
-          base::BindOnce(
-              &SelfDestructingRenderWidgetHostViewAura::MaybeRunNestedLoop,
-              base::Unretained(this), NestedLoopPoint::kAddChild));
+          base::BindOnce(&ReentrantDestructionRenderWidgetHostViewAura::
+                             MaybeRunReentrantCallback,
+                         base::Unretained(this),
+                         ReentrantCallbackPoint::kAddChild));
     }
     base::WeakPtr<RenderWidgetHostViewBase> weak_this = GetWeakPtr();
     RenderWidgetHostViewAura::InitAsChild(parent_view);
@@ -225,65 +214,37 @@ class SelfDestructingRenderWidgetHostViewAura
     if (!weak_this) {
       return;
     }
-    MaybeRunNestedLoop(NestedLoopPoint::kInitAsChild);
+    MaybeRunReentrantCallback(ReentrantCallbackPoint::kInitAsChild);
   }
 
  protected:
   void EnsurePlatformVisibility(PageVisibilityState page_visibility) override {
     RenderWidgetHostViewAura::EnsurePlatformVisibility(page_visibility);
-    MaybeRunNestedLoop(NestedLoopPoint::kShow);
+    MaybeRunReentrantCallback(ReentrantCallbackPoint::kShow);
   }
 
  private:
-  void MaybeRunNestedLoop(NestedLoopPoint point) {
-    if (!armed_ || point != g_nested_loop_point ||
-        PendingNestedLoopTask().is_null()) {
+  void MaybeRunReentrantCallback(ReentrantCallbackPoint point) {
+    if (!armed_ || point != g_reentrant_callback_point ||
+        PendingReentrantCallback().is_null()) {
       return;
     }
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(PendingNestedLoopTask()),
-                                  run_loop.QuitClosure()));
-    g_view_running_nested_loop = this;
-    run_loop.Run();
-    g_view_running_nested_loop = nullptr;
+    std::move(PendingReentrantCallback()).Run(this);
   }
 
   const bool armed_;
 };
 
-void InstallSelfDestructingRenderWidgetHostViewCreateHook() {
+void InstallReentrantDestructionRenderWidgetHostViewCreateHook() {
   WebContentsViewAura::InstallCreateHookForTests(
       [](RenderWidgetHost* host) -> RenderWidgetHostViewAura* {
-        return new SelfDestructingRenderWidgetHostViewAura(host);
+        return new ReentrantDestructionRenderWidgetHostViewAura(host);
       });
 }
 
-// Runs a closure when a frame is deleted. Unlike RenderFrameDeletedObserver,
-// this doesn't spin a RunLoop, so it can be used from a nested loop task.
-class FrameDeletedCallback : public WebContentsObserver {
- public:
-  FrameDeletedCallback(RenderFrameHost* frame, base::OnceClosure callback)
-      : WebContentsObserver(WebContents::FromRenderFrameHost(frame)),
-        frame_id_(frame->GetGlobalId()),
-        callback_(std::move(callback)) {}
-
-  // WebContentsObserver:
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
-    if (render_frame_host->GetGlobalId() == frame_id_ && callback_) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  const GlobalRenderFrameHostId frame_id_;
-  base::OnceClosure callback_;
-};
-
 // Closes the next popup that is created, the way `parent_view` closes its popup
-// when it loses focus, from a nested message loop run once the popup's window
-// is added to a root window (which is where UpdateLegacyWin() runs on Windows)
-// while RenderWidgetHostViewAura::InitAsPopup() initializes it.
+// when it loses focus, synchronously once the popup's window is added to a root
+// window while RenderWidgetHostViewAura::InitAsPopup() initializes it.
 class PopupClosingObserver : public aura::EnvObserver,
                              public aura::WindowObserver {
  public:
@@ -308,14 +269,8 @@ class PopupClosingObserver : public aura::EnvObserver,
   void OnWindowAddedToRootWindow(aura::Window* window) override {
     popup_window_observation_.Reset();
     closed_popup_ = true;
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          parent_view_->OnWindowFocused(/*gained_focus=*/nullptr,
-                                        parent_view_->GetNativeView());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    parent_view_->OnWindowFocused(/*gained_focus=*/nullptr,
+                                  parent_view_->GetNativeView());
   }
   void OnWindowDestroying(aura::Window* window) override {
     popup_window_observation_.Reset();
@@ -338,29 +293,29 @@ class WebContentsViewAuraReentrantDestructionTest : public ContentBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InstallSelfDestructingRenderWidgetHostViewCreateHook();
+    InstallReentrantDestructionRenderWidgetHostViewCreateHook();
     ContentBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    g_nested_loop_point = NestedLoopPoint::kInitAsChild;
-    PendingNestedLoopTask().Reset();
+    g_reentrant_callback_point = ReentrantCallbackPoint::kInitAsChild;
+    PendingReentrantCallback().Reset();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  protected:
-  // Closes the opener from a nested message loop at `point` while
+  // Synchronously closes the opener at `point` while
   // WebContentsImpl::CreateNewWindow() creates the window it opens.
-  void CloseOpenerWhileCreatingNewWindow(NestedLoopPoint point) {
+  void CloseOpenerWhileCreatingNewWindow(ReentrantCallbackPoint point) {
     Shell* opener = CreateBrowser();
     ASSERT_TRUE(NavigateToURL(
         opener, embedded_test_server()->GetURL("a.com", "/title1.html")));
     const size_t web_contents_count = GetAllWebContents().size();
 
     WebContentsDestroyedWatcher destroyed_watcher(opener->web_contents());
-    g_nested_loop_point = point;
-    PendingNestedLoopTask() = CloseShellTask(opener);
+    g_reentrant_callback_point = point;
+    PendingReentrantCallback() = CloseShellCallback(opener);
     // Without noopener, the new window's view is created and shown in
     // WebContentsImpl::CreateNewWindow().
     ExecuteScriptAsync(opener, "window.open('about:blank')");
@@ -372,11 +327,11 @@ class WebContentsViewAuraReentrantDestructionTest : public ContentBrowserTest {
   }
 };
 
-// WebContentsViewAura::CreateViewForWidget() runs InitAsChild(), which can pump
-// a nested message loop, and then keeps using the view and the
-// WebContentsViewAura. Closing the tab inside that loop destroys both, so this
-// verifies that destroying the WebContents re-entrantly there fails a CHECK
-// instead of using freed memory.
+// WebContentsViewAura::CreateViewForWidget() calls InitAsChild(), which may
+// trigger synchronous re-entrant callbacks, and then keeps using the view and
+// WebContentsViewAura. Closing the tab inside that callback destroys both, so
+// this verifies that destroying the WebContents re-entrantly there fails a
+// CHECK instead of using freed memory.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        WebContentsDestroyedDuringInitAsChild) {
   Shell* tab = CreateBrowser();
@@ -402,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
   // supported, so it must fail a CHECK rather than touch freed memory.
   EXPECT_CHECK_DEATH_WITH(
       {
-        PendingNestedLoopTask() = CloseShellTask(tab);
+        PendingReentrantCallback() = CloseShellCallback(tab);
         // Not NavigateToURL(), which would use the Shell after it is
         // destroyed.
         tab->web_contents()->GetController().LoadURLWithParams(
@@ -411,26 +366,25 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
       "prevent_destruction_");
 }
 
-// WebContentsImpl::CreateNewWindow() creates the new window's view, which runs
-// InitAsChild() and can pump a nested message loop, and then keeps using the
-// opener. If the opener is closed in that loop, the window must not be created,
-// and the opener must not be used after it is destroyed.
+// WebContentsImpl::CreateNewWindow() creates the new window's view via
+// InitAsChild() and then keeps using the opener. If the opener is closed
+// synchronously during InitAsChild(), the window must not be created, and the
+// opener must not be used after it is destroyed.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        OpenerDestroyedDuringNewWindowInitAsChild) {
-  CloseOpenerWhileCreatingNewWindow(NestedLoopPoint::kInitAsChild);
+  CloseOpenerWhileCreatingNewWindow(ReentrantCallbackPoint::kInitAsChild);
 }
 
-// Same, but with the opener closed while CreateNewWindow() shows the new
-// window's view.
+// Same, but with the opener closed synchronously while CreateNewWindow() shows
+// the new window's view.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        OpenerDestroyedDuringNewWindowShow) {
-  CloseOpenerWhileCreatingNewWindow(NestedLoopPoint::kShow);
+  CloseOpenerWhileCreatingNewWindow(ReentrantCallbackPoint::kShow);
 }
 
-// Same, but with only the opener frame removed in that loop, by its parent in
-// another process, which isn't blocked by the opener's window.open(). The
-// opener's WebContents is still used afterwards, but the opener frame must not
-// be.
+// Same, but with only the opener frame removed synchronously during
+// InitAsChild(). The opener's WebContents is still used afterwards, but the
+// opener frame must not be.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        OpenerFrameRemovedDuringNewWindowInitAsChild) {
   Shell* tab = CreateBrowser();
@@ -444,13 +398,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
   const size_t web_contents_count = GetAllWebContents().size();
 
   RenderFrameDeletedObserver opener_frame_deleted(opener_frame);
-  std::unique_ptr<FrameDeletedCallback> end_nested_loop;
-  PendingNestedLoopTask() =
-      base::BindLambdaForTesting([&](base::OnceClosure done) {
-        end_nested_loop = std::make_unique<FrameDeletedCallback>(
-            opener_frame, std::move(done));
-        ExecuteScriptAsync(main_frame,
-                           "document.querySelector('iframe').remove();");
+  PendingReentrantCallback() = base::BindLambdaForTesting(
+      [main_frame, opener_frame](RenderWidgetHostViewAura*) {
+        static_cast<RenderFrameHostImpl*>(main_frame)
+            ->RemoveChild(static_cast<RenderFrameHostImpl*>(opener_frame)
+                              ->frame_tree_node());
       });
   ExecuteScriptAsync(opener_frame, "window.open('about:blank')");
   ASSERT_TRUE(opener_frame_deleted.WaitUntilDeleted());
@@ -460,9 +412,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
   EXPECT_TRUE(main_frame->IsRenderFrameLive());
 }
 
-// The new window's view itself can also be destroyed while CreateNewWindow()
-// creates it, e.g. because its renderer goes away while InitAsChild() adds its
-// window to its parent, which is where UpdateLegacyWin() runs.
+// The new window's view itself may also be destroyed synchronously while
+// CreateNewWindow() creates it, e.g. via native window callbacks while
+// InitAsChild() adds its window to its parent.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        NewWindowViewDestroyedWhileAddedToParent) {
   Shell* opener = CreateBrowser();
@@ -470,17 +422,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
       opener, embedded_test_server()->GetURL("a.com", "/title1.html")));
   const size_t web_contents_count = GetAllWebContents().size();
 
-  g_nested_loop_point = NestedLoopPoint::kAddChild;
-  PendingNestedLoopTask() = DestroyViewTask();
+  g_reentrant_callback_point = ReentrantCallbackPoint::kAddChild;
+  PendingReentrantCallback() = DestroyViewCallback();
   // window.open() returns null when the window isn't created.
   EXPECT_EQ(true, EvalJs(opener, "window.open('about:blank') === null"));
   // The new window's WebContents was destroyed before it was opened.
   EXPECT_EQ(web_contents_count, GetAllWebContents().size());
 }
 
-// A popup can be closed while WebContentsImpl::ShowCreatedWidget() initializes
-// it, e.g. because its parent loses focus in a nested message loop, which
-// deletes its RenderWidgetHost. Neither may be used after that.
+// A popup may be closed synchronously while ShowCreatedWidget() initializes it,
+// e.g. because its parent loses focus, which deletes its RenderWidgetHost.
+// Neither may be used after that.
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
                        PopupClosedWhileParented) {
   ASSERT_TRUE(NavigateToURL(

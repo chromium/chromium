@@ -11110,8 +11110,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       delegate_->CreateNewWindow(this, *params, is_new_browsing_instance,
                                  was_consumed, cloned_namespace.get());
   if (!weak_self) {
-    // This RFH may be deleted after CreateNewWindow() due to a nested message
-    // loop (e.g. showing the new window closes the window hosting `this`). See
+    // This RFH may be synchronously deleted during CreateNewWindow() (e.g. if
+    // showing the new window closes the window hosting `this`). See
     // crbug.com/527676561.
     return;
   }

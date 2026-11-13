@@ -413,10 +413,10 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   CHECK_EQ(widget_type_, WidgetType::kFrame);
   CreateAuraWindow(aura::client::WINDOW_TYPE_CONTROL);
 
-  // Adding the window to a root window can run a nested message loop
-  // (UpdateLegacyWin() on Windows) in which this view is destroyed, and so can
-  // SetInputScope() below. Don't delete it until this returns, but stop using
-  // it once it is destroyed.
+  // Attaching the window to a root window or calling SetInputScope() below may
+  // synchronously destroy this view via native window, focus, or input-method
+  // callbacks (see content/browser/SECURITY.md). Defer deletion until this
+  // returns, and stop using it once destruction is pending.
   ScopedInputDispatchPin pin(this);
   if (parent_view)
     parent_view->AddChild(GetNativeView());
@@ -522,10 +522,10 @@ void RenderWidgetHostViewAura::InitAsPopup(
       ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
   window_->SetProperty(aura::client::kOwnedWindowAnchor, owned_window_anchor);
 
-  // ParentWindowWithContext(), SetBounds() and ShowWithVisibility() can run a
-  // nested message loop (UpdateLegacyWin() on Windows) in which this popup is
-  // closed, e.g. because its parent loses focus or is destroyed. Don't delete
-  // it until this returns, but stop using it once it is closed.
+  // ParentWindowWithContext(), SetBounds(), and ShowWithVisibility() may
+  // synchronously close this popup via native window or focus notifications
+  // (e.g. if its parent loses focus or is destroyed). Defer deletion until this
+  // returns, and stop using it once destruction is pending.
   ScopedInputDispatchPin pin(this);
   aura::Window* root = popup_parent_host_view_->window_->GetRootWindow();
   aura::client::ParentWindowWithContext(window_, root, bounds_in_screen,
@@ -653,8 +653,8 @@ void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
   }
 #if BUILDFLAG(IS_WIN)
   if (legacy_render_widget_host_HWND_) {
-    // `SetBounds()` calls ::SetWindowPos which can spin a nested message loop
-    // on Windows, potentially destroying `this`.
+    // `SetBounds()` calls ::SetWindowPos, which synchronously dispatches window
+    // messages on Windows, potentially destroying `this`.
     base::WeakPtr<RenderWidgetHostViewAura> weak_this(
         weak_ptr_factory_.GetWeakPtr());
     legacy_render_widget_host_HWND_->SetBounds(bounds_in_root);
@@ -813,7 +813,8 @@ void RenderWidgetHostViewAura::HideImpl() {
       if (host && legacy_render_widget_host_HWND_) {
         // We reparent the legacy Chrome_RenderWidgetHostHWND window to the
         // global hidden window on the same lines as Windowed plugin windows.
-        // This can spin a nested event loop that could potentially delete this.
+        // This synchronously dispatches window messages and could potentially
+        // delete `this`.
         base::WeakPtr<RenderWidgetHostViewAura> weak_this(
             weak_ptr_factory_.GetWeakPtr());
         legacy_render_widget_host_HWND_->UpdateParent(ui::GetHiddenWindow());
@@ -3549,8 +3550,8 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
                               window_->GetLocalSurfaceId());
 
 #if BUILDFLAG(IS_WIN)
-  // `UpdateLegacyWin()` can spin a nested message loop on Windows, potentially
-  // destroying `this`.
+  // `UpdateLegacyWin()` synchronously dispatches window messages on Windows,
+  // potentially destroying `this`.
   base::WeakPtr<RenderWidgetHostViewAura> weak_this(
       weak_ptr_factory_.GetWeakPtr());
   UpdateLegacyWin();
@@ -3580,8 +3581,8 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
   if (legacy_window_destroyed_ || !GetHostWindowHWND())
     return;
 
-  // `Create`, `UpdateParent`, and `SetBounds` can all spin a nested message
-  // loop on Windows, potentially destroying `this`.
+  // `Create`, `UpdateParent`, and `SetBounds` can all synchronously dispatch
+  // window messages on Windows, potentially destroying `this`.
   base::WeakPtr<RenderWidgetHostViewAura> weak_this(
       weak_ptr_factory_.GetWeakPtr());
 
@@ -3644,8 +3645,8 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  // `UpdateLegacyWin()` can spin a nested message loop on Windows, potentially
-  // destroying `this`.
+  // `UpdateLegacyWin()` synchronously dispatches window messages on Windows,
+  // potentially destroying `this`.
   UpdateLegacyWin();
   if (!weak_this) {
     return;
@@ -3670,8 +3671,8 @@ void RenderWidgetHostViewAura::RemovingFromRootWindow() {
 
 #if BUILDFLAG(IS_WIN)
   // Update the legacy window's parent temporarily to the hidden window. It
-  // will eventually get reparented to the right root. This can spin a nested
-  // event loop that can delete `this`, so do it last.
+  // will eventually get reparented to the right root. This synchronously
+  // dispatches window messages and can delete `this`, so do it last.
   if (legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->UpdateParent(ui::GetHiddenWindow());
   }

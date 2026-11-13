@@ -1039,9 +1039,8 @@ RenderWidgetHostViewBase* WebContentsViewAura::CreateViewForWidget(
       g_create_render_widget_host_view
           ? g_create_render_widget_host_view(render_widget_host)
           : new RenderWidgetHostViewAura(render_widget_host);
-  // InitAsChild() can run a nested message loop (e.g. UpdateLegacyWin() and
-  // SetInputScope() on Windows) in which the view is destroyed, e.g. if the
-  // renderer goes away.
+  // InitAsChild() may synchronously destroy `view` via native window, focus, or
+  // input-method callbacks (see content/browser/SECURITY.md).
   base::WeakPtr<RenderWidgetHostViewBase> weak_view = view->GetWeakPtr();
   view->InitAsChild(GetRenderWidgetHostViewParent());
   if (!weak_view) {

@@ -5922,10 +5922,10 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         new_contents_impl->GetPrimaryMainFrame()->browsing_context_state());
   }
 
-  // Creating and showing the new window's view, and AddNewContents(), can run
-  // a nested message loop (e.g. UpdateLegacyWin() on Windows) in which the
-  // opener's tab or frame is closed. If so, stop creating the window; the
-  // caller already handles the opener frame being gone. See
+  // Creating and showing the new window's view, and AddNewContents(), may
+  // synchronously destroy `this` or `opener` via delegate or native window/IME
+  // callbacks (see content/browser/SECURITY.md). If so, stop creating the
+  // window; the caller already handles the opener frame being gone. See
   // crbug.com/574739217.
   base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
   base::WeakPtr<RenderFrameHostImpl> weak_opener = opener->GetWeakPtr();
@@ -5998,8 +5998,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         *params.features, has_user_gesture, &was_blocked);
 
     if (!weak_this || !weak_opener) {
-      // `this` may be deleted after AddNewContents() due to a nested message
-      // loop (e.g. the window hosting the opener is closed). See
+      // The delegate may synchronously destroy `this` or `opener` during
+      // AddNewContents() (e.g. if the window hosting the opener is closed). See
       // crbug.com/527676561.
       return nullptr;
     }
@@ -6357,9 +6357,9 @@ void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
     }
   }
 
-  // InitAsPopup() can run a nested message loop (UpdateLegacyWin() on Windows)
-  // in which the popup is closed, e.g. because its parent loses focus, which
-  // deletes `render_widget_host_impl`.
+  // InitAsPopup() may synchronously close the popup via native window or focus
+  // notifications (e.g. because its parent loses focus), which deletes
+  // `render_widget_host_impl`.
   base::WeakPtr<RenderWidgetHostImpl> weak_widget =
       render_widget_host_impl->GetWeakPtr();
   widget_host_view->InitAsPopup(view, transformed_rect,
@@ -11778,8 +11778,8 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
 
-  // Creating the view can run a nested message loop, and callers keep using
-  // `this` and the new view afterwards, so `this` must not be destroyed here.
+  // Callers keep using `this` and the new view after this returns, so `this`
+  // must not be destroyed synchronously while creating the view.
   base::AutoReset<bool> scope(&prevent_destruction_, true);
 
   bool is_inner_frame_tree = [&]() {
@@ -11802,7 +11802,8 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
     RenderWidgetHostViewBase* rwh_view =
         view_->CreateViewForWidget(render_view_host->GetWidget());
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-    // The view is destroyed if the renderer goes away while it is created.
+    // `rwh_view` may be null if it was synchronously destroyed while being
+    // created.
     if (rwh_view) {
       rwh_view->SetSize(GetSizeForMainFrame());
     }
