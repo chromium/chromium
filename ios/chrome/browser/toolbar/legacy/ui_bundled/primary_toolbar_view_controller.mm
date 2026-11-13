@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller.h"
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -37,10 +36,6 @@ namespace {
 // Duration for the banner promo appearance/disappearance animation
 const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 }  // namespace
-
-// TODO(crbug.com/374808149): Clean up the killswitch.
-BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 @interface PrimaryToolbarViewController () <TabGroupIndicatorViewDelegate>
 
@@ -178,10 +173,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
       registerForTraitChanges:
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withAction:@selector(updateViews:previousTraitCollection:)];
-  // TODO(crbug.com/374808149): Clean up the killswitch.
-  if (base::FeatureList::IsEnabled(kPrimaryToolbarViewDidLoadUpdateViews)) {
-    [self updateViews:self.view previousTraitCollection:nil];
-  }
+  [self updateViews:self.view previousTraitCollection:nil];
 }
 
 #pragma mark - UIResponder
