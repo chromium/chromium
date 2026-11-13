@@ -83,22 +83,27 @@ public class FaviconHelper {
      * @param setIconCallback Callback called with fetched icons. May be called with null.
      */
     public void fetchFavicon(String origin, Callback<Drawable> setIconCallback) {
-        final LargeIconBridge iconBridge = new LargeIconBridge(mProfile);
         final GURL gurlOrigin = new GURL(origin);
         if (!gurlOrigin.isValid()) return;
-        iconBridge.getLargeIconForUrl(
-                gurlOrigin,
-                mDesiredSize,
-                (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                    Drawable drawable =
-                            FaviconUtils.getIconDrawableWithoutFilter(
-                                    icon,
-                                    gurlOrigin,
-                                    fallbackColor,
-                                    mIconGenerator,
-                                    mContext.getResources(),
-                                    mDesiredSize);
-                    setIconCallback.onResult(drawable);
-                });
+        final LargeIconBridge iconBridge = new LargeIconBridge(mProfile);
+        boolean willCall =
+                iconBridge.getLargeIconForUrl(
+                        gurlOrigin,
+                        mDesiredSize,
+                        (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
+                            iconBridge.destroy();
+                            Drawable drawable =
+                                    FaviconUtils.getIconDrawableWithoutFilter(
+                                            icon,
+                                            gurlOrigin,
+                                            fallbackColor,
+                                            mIconGenerator,
+                                            mContext.getResources(),
+                                            mDesiredSize);
+                            setIconCallback.onResult(drawable);
+                        });
+        if (!willCall) {
+            iconBridge.destroy();
+        }
     }
 }
