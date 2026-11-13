@@ -26,15 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BackgroundResourceFetchSupportStatus">
-  <int value="0" label="Supported"/>
-  <int value="1" label="Unsupported sync request"/>
-  <int value="2" label="Unsupported because HTTP method is not GET"/>
-  <int value="3" label="Unsupported non-HTTP scheme URL request"/>
-  <int value="4" label="Unsupported keepalive request"/>
-  <int value="5" label="Unsupported request from prefetch only document"/>
-</enum>
-
 <enum name="BooleanContentChangeMode">
   <int value="0" label="Discard Content"/>
   <int value="1" label="Retain Content"/>

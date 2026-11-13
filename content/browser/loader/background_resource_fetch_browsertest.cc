@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
@@ -16,12 +15,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/loader/background_resource_fetch_histograms.h"
 
 namespace content {
 namespace {
-
-using testing::ElementsAre;
 
 // TODO(crbug.com/40244488): When we will add VirtualTestSuites of web tests for
 // BackgroundResourceFetch feature, duplicated basic tests should be deleted
@@ -108,14 +104,8 @@ class BackgroundResourceFetchWebUIBrowserTest
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, ScriptLoad) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
   // Test normal script load behavior.
   TestScriptLoad("background_resource_fetch/test.js", /*expect_success=*/true);
-  FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histograms.GetAllSamples(
-                  blink::kBackgroundResourceFetchSupportStatusHistogramName),
-              ElementsAre(base::Bucket(
-                  blink::BackgroundResourceFetchSupportStatus::kSupported, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, ScriptLoadFailure) {
@@ -134,7 +124,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, ScriptLoadTwice) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
 
   // Test normal script load behavior.
   TestScriptLoad("background_resource_fetch/test.js?1",
@@ -142,12 +131,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, ScriptLoadTwice) {
   // Test normal script load behavior again.
   TestScriptLoad("background_resource_fetch/test.js?2",
                  /*expect_success=*/true);
-
-  FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histograms.GetAllSamples(
-                  blink::kBackgroundResourceFetchSupportStatusHistogramName),
-              ElementsAre(base::Bucket(
-                  blink::BackgroundResourceFetchSupportStatus::kSupported, 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, ScriptLoadStop) {
@@ -184,7 +167,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
                        UnsupportedSyncRequest) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
 
   // Fetch empty.html using sync XMLHttpRequest.
   EXPECT_EQ(200, EvalJs(shell(), R"(
@@ -195,23 +177,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
           return request.status;
         })();
       )"));
-
-  FetchHistogramsFromChildProcesses();
-
-  // Sync XMLHttpRequest is not supported. So the kUnsupportedSyncRequest UMA
-  // must have been recorded.
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          blink::kBackgroundResourceFetchSupportStatusHistogramName),
-      ElementsAre(base::Bucket(
-          blink::BackgroundResourceFetchSupportStatus::kUnsupportedSyncRequest,
-          1)));
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
                        UnsupportedNonGetRequest) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
 
   // Fetch empty.html using POST method.
   EXPECT_EQ("", EvalJs(shell(), R"(
@@ -221,27 +191,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
             resolve(await res.text());
           });
       )"));
-
-  FetchHistogramsFromChildProcesses();
-
-  // POST method is not supported. So the kUnsupportedNonGetRequest UMA must
-  // have been recorded.
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          blink::kBackgroundResourceFetchSupportStatusHistogramName),
-      ElementsAre(base::Bucket(blink::BackgroundResourceFetchSupportStatus::
-                                   kUnsupportedNonGetRequest,
-                               1)));
 }
 
 IN_PROC_BROWSER_TEST_P(BackgroundResourceFetchWebUIBrowserTest,
                        WebUIUntrustedUrlRequest) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
 
   // Fetch chrome-untrusted://example.com/. The load itself fails (there is no
-  // such resource), but the request still reaches the background loader support
-  // check.
+  // such resource).
   EXPECT_EQ("failed", EvalJs(shell(), R"(
         new Promise(async (resolve) => {
             try {
@@ -251,16 +208,6 @@ IN_PROC_BROWSER_TEST_P(BackgroundResourceFetchWebUIBrowserTest,
             }
           });
       )"));
-
-  FetchHistogramsFromChildProcesses();
-
-  const auto expected_status =
-      GetParam() ? blink::BackgroundResourceFetchSupportStatus::kSupported
-                 : blink::BackgroundResourceFetchSupportStatus::
-                       kUnsupportedNonHttpUrlRequest;
-  EXPECT_THAT(histograms.GetAllSamples(
-                  blink::kBackgroundResourceFetchSupportStatusHistogramName),
-              ElementsAre(base::Bucket(expected_status, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -274,7 +221,6 @@ INSTANTIATE_TEST_SUITE_P(,
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
                        UnsupportedKeepAliveRequest) {
   StartServerAndNavigateToTestPage();
-  base::HistogramTester histograms;
 
   // Fetch empty.html with {keepalive: true}.
   EXPECT_EQ("", EvalJs(shell(), R"(
@@ -283,17 +229,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest,
             resolve(await res.text());
           });
       )"));
-
-  FetchHistogramsFromChildProcesses();
-
-  // POST method is not supported. So the UnsupportedKeepAliveRequest UMA must
-  // have been recorded.
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          blink::kBackgroundResourceFetchSupportStatusHistogramName),
-      ElementsAre(base::Bucket(blink::BackgroundResourceFetchSupportStatus::
-                                   kUnsupportedKeepAliveRequest,
-                               1)));
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundResourceFetchBrowserTest, FontLoad) {

@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -32,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/loader/background_resource_fetch_histograms.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
@@ -558,38 +556,30 @@ TEST_F(BackgroundURLLoaderCanHandleRequestTest,
   const char kWebUIScheme[] = "webui-test";
   SchemeRegistry::RegisterURLSchemeAsWebUIForTest(kWebUIScheme);
 
-  base::HistogramTester histograms;
   network::ResourceRequest request;
   request.url = GURL(std::string(kWebUIScheme) + "://host/resource.js");
 
   EXPECT_TRUE(BackgroundURLLoader::CanHandleRequest(
       request, ResourceLoaderOptions(/*world=*/nullptr),
       /*is_prefech_only_document=*/false));
-  histograms.ExpectUniqueSample(
-      kBackgroundResourceFetchSupportStatusHistogramName,
-      BackgroundResourceFetchSupportStatus::kSupported, 1);
 
   SchemeRegistry::RemoveURLSchemeAsWebUIForTest(kWebUIScheme);
 }
 
 // WebUI support is gated behind the `BackgroundResourceFetchSupportsWebUI`
 // param. With the param disabled, WebUI scheme requests are not handled by the
-// background loader and are reported as `kUnsupportedNonHttpUrlRequest`.
+// background loader.
 TEST_F(BackgroundURLLoaderCanHandleRequestTest,
        CannotHandleRequestForWebUISchemeWhenParamDisabled) {
   const char kWebUIScheme[] = "webui-test";
   SchemeRegistry::RegisterURLSchemeAsWebUIForTest(kWebUIScheme);
 
-  base::HistogramTester histograms;
   network::ResourceRequest request;
   request.url = GURL(std::string(kWebUIScheme) + "://host/resource.js");
 
   EXPECT_FALSE(BackgroundURLLoader::CanHandleRequest(
       request, ResourceLoaderOptions(/*world=*/nullptr),
       /*is_prefech_only_document=*/false));
-  histograms.ExpectUniqueSample(
-      kBackgroundResourceFetchSupportStatusHistogramName,
-      BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest, 1);
 
   SchemeRegistry::RemoveURLSchemeAsWebUIForTest(kWebUIScheme);
 }
@@ -597,37 +587,27 @@ TEST_F(BackgroundURLLoaderCanHandleRequestTest,
 TEST_F(BackgroundURLLoaderCanHandleRequestTest,
        CanHandleRequestForWebUIUntrustedScheme) {
   EnableWebUISupport();
-  base::HistogramTester histograms;
   network::ResourceRequest request;
   request.url = GURL("chrome-untrusted://host/resource.js");
 
   EXPECT_TRUE(BackgroundURLLoader::CanHandleRequest(
       request, ResourceLoaderOptions(/*world=*/nullptr),
       /*is_prefech_only_document=*/false));
-  histograms.ExpectUniqueSample(
-      kBackgroundResourceFetchSupportStatusHistogramName,
-      BackgroundResourceFetchSupportStatus::kSupported, 1);
 }
 
 TEST_F(BackgroundURLLoaderCanHandleRequestTest,
        CannotHandleRequestForNonWebUIScheme) {
-  base::HistogramTester histograms;
   network::ResourceRequest request;
   request.url = GURL("ftp://host/resource.js");
 
   EXPECT_FALSE(BackgroundURLLoader::CanHandleRequest(
       request, ResourceLoaderOptions(/*world=*/nullptr),
       /*is_prefech_only_document=*/false));
-  histograms.ExpectUniqueSample(
-      kBackgroundResourceFetchSupportStatusHistogramName,
-      BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest, 1);
 }
 
 // A WebUI request that would be serviced from the WebUI bundled code cache must
 // not use the background loader: that static code cache is only serviced on the
-// main-thread loading path. Such requests are reported as
-// `kUnsupportedNonHttpUrlRequest`, matching how WebUI requests were counted
-// before WebUI schemes became supported.
+// main-thread loading path.
 TEST_F(BackgroundURLLoaderCanHandleRequestTest,
        CannotHandleRequestForWebUIBundledCodeCache) {
   EnableWebUISupport();
@@ -637,16 +617,12 @@ TEST_F(BackgroundURLLoaderCanHandleRequestTest,
   SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecodeForTest(kWebUIScheme);
   SetWebUIBundledCodeCacheURL(kUrl);
 
-  base::HistogramTester histograms;
   network::ResourceRequest request;
   request.url = kUrl;
 
   EXPECT_FALSE(BackgroundURLLoader::CanHandleRequest(
       request, ResourceLoaderOptions(/*world=*/nullptr),
       /*is_prefech_only_document=*/false));
-  histograms.ExpectUniqueSample(
-      kBackgroundResourceFetchSupportStatusHistogramName,
-      BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest, 1);
 
   SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest(kWebUIScheme);
   SchemeRegistry::RemoveURLSchemeAsWebUIForTest(kWebUIScheme);

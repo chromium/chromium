@@ -4691,17 +4691,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.BackgroundResourceFetchSupportStatus"
-    enum="BackgroundResourceFetchSupportStatus" expires_after="2025-09-14">
-  <owner>horo@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    Records whether BackgroundURLLoader can handle the resource request, and the
-    reason why it can't handle the request. Logged for every resource request
-    from the page which is not controlled by a service worker.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ResourceRequest.CodeFetchLatency" units="ms"
     expires_after="2027-05-02">
   <owner>olivierli@chromium.org</owner>
