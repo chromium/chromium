@@ -9,6 +9,7 @@
 
 #import "base/check.h"
 #import "base/containers/flat_set.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/private_insights/model/features.h"
 #import "ios/chrome/browser/private_insights/model/private_insights_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -71,12 +73,12 @@ namespace {
 
 using private_insights::events::ContextualCueLogEvent;
 
-// Returns the service that the contextual cues of `web_state` are logged to, or
-// null if they must not be logged: logging is disabled, or the profile is
-// off-the-record (it never has a service).
+// Returns the Private Insights service of the profile of `web_state`, or null
+// if it has none: `kIOSPrivateInsightsService` is disabled or the profile is
+// off-the-record.
 private_insights::PrivateInsightsService* GetPrivateInsightsService(
     web::WebState* web_state) {
-  if (!web_state || !IsPrivateInsightsLoggingEnabled()) {
+  if (!web_state || !base::FeatureList::IsEnabled(kIOSPrivateInsightsService)) {
     return nullptr;
   }
   ProfileIOS* profile =
@@ -87,10 +89,19 @@ private_insights::PrivateInsightsService* GetPrivateInsightsService(
   return PrivateInsightsServiceFactory::GetForProfile(*profile);
 }
 
-// Logs the cue presentation in `snapshot` to `service` as `event_type`.
-void LogToPrivateInsights(private_insights::PrivateInsightsService* service,
+// Logs the cue presentation in `snapshot` as `event_type`, if Private Insights
+// logging is enabled and the profile of `web_state` has a service.
+void LogToPrivateInsights(web::WebState* web_state,
                           ContextualCueLogEvent::EventType event_type,
                           const ContextualCueSnapshot& snapshot) {
+  if (!IsPrivateInsightsLoggingEnabled()) {
+    return;
+  }
+  private_insights::PrivateInsightsService* service =
+      GetPrivateInsightsService(web_state);
+  if (!service) {
+    return;
+  }
   service->LogContextualCueEvent(
       CreateContextualCueLogEvent(event_type, snapshot));
 }
@@ -765,10 +776,8 @@ void ContextualCueingTabHelper::OnHistoryQueryComplete(
 
   // Kept for `RecordCueShown()`, which logs them as the `recent_pages` of the
   // cue this request produces.
-  if (GetPrivateInsightsService(web_state_)) {
-    cue_request_background_tabs_.assign(request.background_tabs().begin(),
-                                        request.background_tabs().end());
-  }
+  cue_request_background_tabs_.assign(request.background_tabs().begin(),
+                                      request.background_tabs().end());
 
   const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
   if (!results.empty() && max_historical_tabs > 0) {
@@ -1045,15 +1054,13 @@ void ContextualCueingTabHelper::DismissFeatureEngagementPromo() {
 // `RecordCueClicked()`, can be logged as CLICKED of a cue shown on the same
 // page.
 void ContextualCueingTabHelper::LogCueShownToPrivateInsights() {
-  private_insights::PrivateInsightsService* service =
-      GetPrivateInsightsService(web_state_);
-  if (!service || !cue_.has_value()) {
+  if (!web_state_ || !cue_.has_value()) {
     return;
   }
   shown_cue_snapshot_ =
       std::make_unique<ContextualCueSnapshot>(CreateContextualCueSnapshot(
           web_state_, *cue_, cue_request_background_tabs_));
-  LogToPrivateInsights(service, ContextualCueLogEvent::SHOWN,
+  LogToPrivateInsights(web_state_, ContextualCueLogEvent::SHOWN,
                        *shown_cue_snapshot_);
 }
 
@@ -1063,12 +1070,7 @@ void ContextualCueingTabHelper::LogCueClickedToPrivateInsights() {
   if (!snapshot) {
     return;
   }
-  private_insights::PrivateInsightsService* service =
-      GetPrivateInsightsService(web_state_);
-  if (!service) {
-    return;
-  }
-  LogToPrivateInsights(service, ContextualCueLogEvent::CLICKED, *snapshot);
+  LogToPrivateInsights(web_state_, ContextualCueLogEvent::CLICKED, *snapshot);
 }
 
 }  // namespace contextual_cueing

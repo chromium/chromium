@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/private_insights/model/features.h"
 #import "ios/chrome/browser/private_insights/model/private_insights_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -2798,9 +2799,11 @@ class ContextualCueingTabHelperPrivateInsightsTest
  protected:
   void SetUp() override {
     ContextualCueingTabHelperTest::SetUp();
-    logging_feature_list_.InitAndEnableFeatureWithParameters(
-        kGeminiContextualSuggestionsCues,
-        CreateCuesFeatureParamsWithLogging(/*logging_enabled=*/true));
+    logging_feature_list_.InitWithFeaturesAndParameters(
+        {{kGeminiContextualSuggestionsCues,
+          CreateCuesFeatureParamsWithLogging(/*logging_enabled=*/true)},
+         {kIOSPrivateInsightsService, {}}},
+        {});
     ASSERT_TRUE(IsPrivateInsightsLoggingEnabled());
 
     mock_service_ = static_cast<MockPrivateInsightsService*>(

@@ -288,12 +288,12 @@ class ContextualCueingTabHelper
   void DismissFeatureEngagementPromo();
 
   // Snapshots `cue_` into `shown_cue_snapshot_` and logs it to Private Insights
-  // as SHOWN. No-op without a cue or a service to log to.
+  // as SHOWN. No-op without a cue.
   void LogCueShownToPrivateInsights();
 
   // Logs the presentation in `shown_cue_snapshot_` to Private Insights as
   // CLICKED and ends it, so that it logs at most one CLICKED. No-op without a
-  // presentation or a service to log to.
+  // presentation.
   void LogCueClickedToPrivateInsights();
 
   raw_ptr<web::WebState> web_state_ = nullptr;
@@ -328,18 +328,17 @@ class ContextualCueingTabHelper
   std::optional<ContextualCueUiType> cue_ui_type_;
   // Background tabs sent with the latest `ContextualCueingRequest`, which
   // `RecordCueShown()` logs to Private Insights as the `recent_pages` of the
-  // cue that request produced. Only kept while there is a service to log to,
-  // and cleared once the request yields no cue or its cue is invalidated.
+  // cue that request produced. Cleared once the request yields no cue or its
+  // cue is invalidated.
   std::vector<optimization_guide::proto::Tab> cue_request_background_tabs_;
-  // Snapshot of the current cue presentation, taken by `RecordCueShown()` when
-  // there is a Private Insights service to log to. CLICKED is built from it
-  // rather than from `cue_`, so it carries the `cue_id` and page context of
-  // SHOWN. It deliberately survives `InvalidateCue()` and `WasHidden()`: a chip
-  // tap starts Gemini before recording the click, and starting Gemini
-  // invalidates the cue (in a posted task) and could hide the tab. Cleared when
-  // the presentation ends: on click, on dismissal, on the next
-  // `RecordCueShown()`, on navigation to a new page, or when the user is no
-  // longer eligible for suggestions.
+  // Snapshot of the current cue presentation, taken by `RecordCueShown()`.
+  // CLICKED is built from it rather than from `cue_`, so it carries the
+  // `cue_id` and page context of SHOWN. It deliberately survives
+  // `InvalidateCue()` and `WasHidden()`: a chip tap starts Gemini before
+  // recording the click, and starting Gemini invalidates the cue (in a posted
+  // task) and could hide the tab. Cleared when the presentation ends: on click,
+  // on dismissal, on the next `RecordCueShown()`, on navigation to a new page,
+  // or when the user is no longer eligible for suggestions.
   std::unique_ptr<ContextualCueSnapshot> shown_cue_snapshot_;
   // Whether `cue_` has already been presented on a UI surface.
   bool has_presented_cue_ = false;

@@ -164,7 +164,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kShowCuesToAllUsers);
 // Whether contextual cue events are logged to the Private Insights service.
 // Mirrors desktop `kEnablePrivateInsightsLogging` on `kContextualCueingV2`.
 // Logging also needs a `PrivateInsightsService` for the profile, which only
-// exists when `private_insights::kPrivateInsightsFeature` is enabled.
+// exists when `kIOSPrivateInsightsService` is enabled.
 BASE_DECLARE_FEATURE_PARAM(bool, kEnablePrivateInsightsLogging);
 
 // Returns true if `IsGeminiContextualSuggestionsCuesEnabled()` and
