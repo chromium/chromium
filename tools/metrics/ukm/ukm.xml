@@ -7441,13 +7441,6 @@ be describing additional metrics about the same event.
       Records an enum representing the specific Client Hint type that was
       requested.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -7462,13 +7455,6 @@ be describing additional metrics about the same event.
       Records an enum representing the specific Client Hint type that was
       requested.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
