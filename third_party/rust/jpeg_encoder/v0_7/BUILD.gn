@@ -63,8 +63,8 @@ cargo_crate("lib") {
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
   # `gnrt_config.toml`).
-  _configs_to_remove += []
-  _configs_to_add += []
+  _configs_to_remove += [ "//build/config/compiler:default_optimization" ]
+  _configs_to_add += [ "//build/config/compiler:optimize_speed" ]
 
   # Applying config changes.
   library_configs -= _configs_to_remove
