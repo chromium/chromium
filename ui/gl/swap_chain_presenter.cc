@@ -75,20 +75,6 @@ bool IsProtectedVideo(gfx::ProtectedVideoType protected_video_type) {
   return protected_video_type != gfx::ProtectedVideoType::kClear;
 }
 
-const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
-  switch (type) {
-    case gfx::ProtectedVideoType::kClear:
-      return "Clear";
-    case gfx::ProtectedVideoType::kSoftwareProtected:
-      if (DirectCompositionOverlaysSupported())
-        return "SoftwareProtected.HasOverlaySupport";
-      else
-        return "SoftwareProtected.NoOverlaySupport";
-    case gfx::ProtectedVideoType::kHardwareProtected:
-      return "HardwareProtected";
-  }
-}
-
 base::win::ScopedHandle CreateDCompSurfaceHandle() {
   HANDLE handle = INVALID_HANDLE_VALUE;
   const HRESULT hr = ::DCompositionCreateSurfaceHandle(
@@ -1785,10 +1771,6 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
   }
   desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-  const std::string kSwapChainCreationResultByVideoTypeUmaPrefix =
-      "GPU.DirectComposition.SwapChainCreationResult3.";
-  const std::string protected_video_type_string =
-      ProtectedVideoTypeToString(protected_video_type);
   Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain;
 
   if (use_yuv_swap_chain) {
@@ -1799,10 +1781,6 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain1);
     failed_to_create_yuv_swapchain_ = FAILED(hr);
-
-    base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
-                                 protected_video_type_string,
-                             hr);
 
     if (failed_to_create_yuv_swapchain_) {
       DLOG(ERROR) << "Failed to create "
@@ -1843,10 +1821,6 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
     hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain1);
-
-    base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
-                                 protected_video_type_string,
-                             hr);
 
     if (FAILED(hr)) {
       // Disable overlay support so dc_layer_overlay will stop sending down
