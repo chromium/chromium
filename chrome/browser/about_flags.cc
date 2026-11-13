@@ -5046,6 +5046,13 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
     {"no reload, back, or forward animations",
      kToolbarGlowUpNoReloadBackForward, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kMenuSimplificationGlicSearchAboveSaveAndPrint[] = {
+        {"MenuSimplificationGlicSearchAboveSaveAndPrint", "true"}};
+const FeatureEntry::FeatureVariation kMenuSimplificationVariations[] = {
+    {"glic section above save", kMenuSimplificationGlicSearchAboveSaveAndPrint,
+     nullptr}};
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
     {"eval_mode", "true"}};
@@ -9862,7 +9869,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"menu-simplification", flag_descriptions::kMenuSimplificationName,
      flag_descriptions::kMenuSimplificationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMenuSimplification)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMenuSimplification,
+                                    kMenuSimplificationVariations,
+                                    "MenuSimplification")},
 
     {"webui-refresh-2026", flag_descriptions::kWebuiRefresh2026Name,
      flag_descriptions::kWebuiRefresh2026Description, kOsDesktop,

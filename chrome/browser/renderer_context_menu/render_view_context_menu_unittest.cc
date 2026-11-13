@@ -2916,6 +2916,42 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, PageMenuSeparators) {
   }
 }
 
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PageMenuSeparatorsGlicSearchAboveSaveAndPrint) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kMenuSimplification,
+        {{features::kMenuSimplificationGlicSearchAboveSaveAndPrint.name,
+          "true"}}},
+       {features::kGlicContextMenu, {}}},
+      {});
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com", true);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+  menu.Init();
+
+  const ui::SimpleMenuModel& model = menu.menu_model();
+  EXPECT_TRUE(HasSeparatorBetween(model, IDC_RELOAD, IDC_CONTENT_CONTEXT_GLIC));
+  if (menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)) {
+    EXPECT_FALSE(HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_GLIC,
+                                     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+    EXPECT_TRUE(HasSeparatorBetween(
+        model, IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, IDC_SAVE_PAGE));
+  } else {
+    EXPECT_TRUE(
+        HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_GLIC, IDC_SAVE_PAGE));
+  }
+  EXPECT_FALSE(HasSeparatorBetween(model, IDC_SAVE_PAGE, IDC_PRINT));
+  EXPECT_TRUE(HasSeparatorBetween(model, IDC_PRINT,
+                                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+}
+
 TEST_F(RenderViewContextMenuMenuSimplificationTest, LinkAndSelectionLayout) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGlicContextMenu);
@@ -4389,7 +4425,7 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
                   IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GOTOURL,
-                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                  kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif

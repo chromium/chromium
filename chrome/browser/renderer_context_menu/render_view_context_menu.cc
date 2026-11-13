@@ -1092,6 +1092,13 @@ content::RenderFrameHost* GetRenderFrameHostForFrameToken(
   return nullptr;
 }
 
+bool HasSearchProviderItem(const ui::SimpleMenuModel& menu_model) {
+  return menu_model.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
+             .has_value() ||
+         menu_model.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GOTOURL)
+             .has_value();
+}
+
 }  // namespace
 
 // static
@@ -2673,19 +2680,24 @@ void RenderViewContextMenu::AppendPageItems() {
 
   if (features::IsMenuSimplificationEnabled() &&
       params_.selection_text.empty() && !params_.is_editable) {
+    const bool glic_search_above_save_and_print =
+        features::kMenuSimplificationGlicSearchAboveSaveAndPrint.Get();
+
     // Navigation
     menu_model_.AddItemWithStringId(IDC_BACK, IDS_CONTENT_CONTEXT_BACK);
     menu_model_.AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
     menu_model_.AddItemWithStringId(IDC_RELOAD, IDS_CONTENT_CONTEXT_RELOAD);
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
-    // Save as & Print
-    menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
-                                    IDS_CONTENT_CONTEXT_SAVEPAGEAS);
-    menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+    if (!glic_search_above_save_and_print) {
+      // Save as & Print
+      menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
+                                      IDS_CONTENT_CONTEXT_SAVEPAGEAS);
+      menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
 
-    AppendLiveCaptionItem();
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+      AppendLiveCaptionItem();
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    }
 
     if (!glic_below_search) {
       // Ask gemini
@@ -2717,6 +2729,16 @@ void RenderViewContextMenu::AppendPageItems() {
     AppendIndigoItem();
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
+    if (glic_search_above_save_and_print) {
+      // Save as & Print
+      menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
+                                      IDS_CONTENT_CONTEXT_SAVEPAGEAS);
+      menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+
+      AppendLiveCaptionItem();
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    }
 
     // Open in reading mode & Listen to this page
     AppendReadAnythingItem();
@@ -3290,9 +3312,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
     // Glic and search should be within the same section in the menu.
-    if (glic_item_shown_ ||
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
-            .has_value()) {
+    if (glic_item_shown_ || HasSearchProviderItem(menu_model_)) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
     AppendPrintItem();
@@ -6484,9 +6504,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
 
-    if (glic_item_shown_ ||
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
-            .has_value()) {
+    if (glic_item_shown_ || HasSearchProviderItem(menu_model_)) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
 
@@ -6510,9 +6528,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
 
-    if (glic_item_shown_ ||
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
-            .has_value()) {
+    if (glic_item_shown_ || HasSearchProviderItem(menu_model_)) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
 

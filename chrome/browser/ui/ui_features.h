@@ -69,6 +69,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpReloadEnabled);
 BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpBackForwardEnabled);
 BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpBookmarkEnabled);
 BASE_DECLARE_FEATURE(kMenuSimplification);
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kMenuSimplificationGlicSearchAboveSaveAndPrint);
 BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 BASE_DECLARE_FEATURE(kWebuiRefresh2026);
 BASE_DECLARE_FEATURE(kAppMenuGlowUp);
