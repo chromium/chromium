@@ -29,10 +29,6 @@ tast.arc.Downloads
 # b/346793249, b/330290054
 tast.videoconferencing.OpenCLCacher
 
-# b/384060114
-tast.inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
-tast.inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
-
 # b/394108883
 tast.security.NetworkListenersNonARC@jacuzzi
 tast.security.NetworkListenersNonARC@octopus
@@ -51,7 +47,7 @@ tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
 # b/409064294
 tast.apps.SystemWebAppsInstallGuest
 
-# b/422132031
+# b/422132031, b/384060114
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
 
