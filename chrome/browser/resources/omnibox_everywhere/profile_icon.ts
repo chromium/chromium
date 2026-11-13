@@ -43,6 +43,8 @@ export class OmniboxEverywhereProfileIconElement extends
 
   static override get properties() {
     return {
+      hasVirtualFocus: {type: Boolean, reflect: true},
+      removeFromTabOrder: {type: Boolean},
       isEnterpriseProfile_: {
         type: Boolean,
         reflect: true,
@@ -55,6 +57,12 @@ export class OmniboxEverywhereProfileIconElement extends
     };
   }
 
+  // Set by `<omnibox-everywhere-omnibox>` while the profile button has virtual
+  // focus, which keeps DOM focus on the input.
+  accessor hasVirtualFocus: boolean = false;
+  // Set by `<omnibox-everywhere-omnibox>` while virtual focus handles Tab, as
+  // for the other input row buttons.
+  accessor removeFromTabOrder: boolean = false;
   protected accessor isEnterpriseProfile_: boolean =
       loadTimeData.getBoolean('isEnterpriseProfile');
   protected accessor profileAvatarUrl_: string =
@@ -75,6 +83,11 @@ export class OmniboxEverywhereProfileIconElement extends
 
   get isMenuOpen(): boolean {
     return this.isOpeningMenu_ || this.$.profileMenu.open;
+  }
+
+  /** Whether the profile button opens the profile menu. */
+  get isMenuEnabled(): boolean {
+    return this.profilePickerEnabled_;
   }
 
   // Closes the unbounded menu when Loomnibox hides in place (keeping the DOM
@@ -120,7 +133,8 @@ export class OmniboxEverywhereProfileIconElement extends
         .join('\n');
   }
 
-  protected getProfileAriaLabel_(): string {
+  /** Returns the label screen readers narrate for the profile button. */
+  getA11yLabel(): string {
     return [
       this.i18n('profileTooltipHeader'),
       this.profileName_,
@@ -129,8 +143,13 @@ export class OmniboxEverywhereProfileIconElement extends
         .join(' ');
   }
 
-  protected async onProfileIconClick_() {
-    if (!this.profilePickerEnabled_) {
+  /**
+   * Opens the profile menu, or closes it if it is open. Does nothing when the
+   * profile picker is off. Runs on click, and from the omnibox while the
+   * button has virtual focus.
+   */
+  async toggleMenu(): Promise<void> {
+    if (!this.isMenuEnabled) {
       return;
     }
     if (this.isMenuOpen) {
@@ -150,6 +169,10 @@ export class OmniboxEverywhereProfileIconElement extends
     } finally {
       this.isOpeningMenu_ = false;
     }
+  }
+
+  protected onProfileIconClick_(): Promise<void> {
+    return this.toggleMenu();
   }
 
   protected onSwitchProfileClick_() {

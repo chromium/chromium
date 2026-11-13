@@ -11,8 +11,9 @@ export function getHtml(this: OmniboxEverywhereProfileIconElement) {
 <button id="profileContainer"
     class="${this.profilePickerEnabled_ ? 'clickable' : ''}"
     aria-disabled="${!this.profilePickerEnabled_}"
-    aria-label="${this.getProfileAriaLabel_()}"
-    title="${this.getProfileTooltip_()}" @click="${this.onProfileIconClick_}">
+    tabindex="${this.removeFromTabOrder ? -1 : 0}"
+    aria-label="${this.getA11yLabel()}" title="${this.getProfileTooltip_()}"
+    @click="${this.onProfileIconClick_}">
   ${this.isEnterpriseProfile_ ? html`
     <div id="enterpriseBadge" aria-hidden="true"
         title="${this.i18n('managedByYourOrganization')}">

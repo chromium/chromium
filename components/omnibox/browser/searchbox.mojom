@@ -356,6 +356,7 @@ enum SelectionLineState {
   kFocusedButtonVoiceSearch = 8,
   kFocusedButtonLensSearch = 9,
   kFocusedButtonContextualChip = 10,
+  kFocusedButtonProfile = 11,
 };
 
 // See components/omnibox/browser/omnibox_popup_selection.h

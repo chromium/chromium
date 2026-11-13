@@ -476,6 +476,10 @@ export class OmniboxEverywhereOmniboxElement extends
     return this.selection.state === SelectionLineState.kFocusedButtonLensSearch;
   }
 
+  protected isProfileVirtualFocused_(): boolean {
+    return this.selection.state === SelectionLineState.kFocusedButtonProfile;
+  }
+
   override getAvailableSelections(result: AutocompleteResult|null):
       OmniboxPopupSelection[] {
     const available = super.getAvailableSelections(result);
@@ -496,6 +500,15 @@ export class OmniboxEverywhereOmniboxElement extends
         actionIndex: 0,
       });
     }
+    // The profile button is selectable only when it opens the profile menu.
+    // It renders last, so Tab reaches it last.
+    if (this.$.profileIcon.isMenuEnabled) {
+      available.push({
+        line: -1,
+        state: SelectionLineState.kFocusedButtonProfile,
+        actionIndex: 0,
+      });
+    }
     return available;
   }
 
@@ -506,6 +519,8 @@ export class OmniboxEverywhereOmniboxElement extends
         return this.i18n('voiceSearchButtonLabel');
       case SelectionLineState.kFocusedButtonLensSearch:
         return this.i18n('lensSearchButtonLabel');
+      case SelectionLineState.kFocusedButtonProfile:
+        return this.$.profileIcon.getA11yLabel();
       default:
         return super.getSelectionA11yLabel(match, selection);
     }
@@ -526,6 +541,11 @@ export class OmniboxEverywhereOmniboxElement extends
           this.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
       assert(button);
       button.click();
+      return true;
+    }
+    if (this.isProfileVirtualFocused_()) {
+      e.preventDefault();
+      this.$.profileIcon.toggleMenu();
       return true;
     }
     return super.handleVirtualFocusEnter(e);
@@ -889,6 +909,25 @@ export class OmniboxEverywhereOmniboxElement extends
 
   onOverflowMenuClosed() {
     this.isOverflowMenuOpen = false;
+  }
+
+  // `cr-action-menu` returns focus to the profile button when the profile menu
+  // closes. While the dropdown is visible, keys act on the virtual selection,
+  // so move focus back to the input. The input's blur cleared the selection's
+  // screen reader label, so narrate the profile button again if it still has
+  // virtual focus. The menu also closes after this element is removed (e.g.
+  // when switching to the composebox) and when Omnibox Everywhere hides or,
+  // in persistent mode, stays visible but inactive; leave focus and narration
+  // alone then.
+  protected onProfileMenuClose_() {
+    if (!this.isConnected || document.hidden || !this.isActive ||
+        !this.virtualFocusEnabled || !this.dropdownIsVisible) {
+      return;
+    }
+    this.focusInput();
+    if (this.isProfileVirtualFocused_()) {
+      this.narrateSelection(this.selection);
+    }
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {

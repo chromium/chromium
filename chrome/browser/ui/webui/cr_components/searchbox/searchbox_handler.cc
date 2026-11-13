@@ -1773,8 +1773,10 @@ OmniboxPopupSelection ConvertSelection(
     case searchbox::mojom::SelectionLineState::kFocusedButtonContextEntrypoint:
     case searchbox::mojom::SelectionLineState::kFocusedButtonVoiceSearch:
     case searchbox::mojom::SelectionLineState::kFocusedButtonLensSearch:
-    case searchbox::mojom::SelectionLineState::kFocusedButtonContextualChip: {
-      // Handled directly by webui omnibox popup.
+    case searchbox::mojom::SelectionLineState::kFocusedButtonContextualChip:
+    case searchbox::mojom::SelectionLineState::kFocusedButtonProfile: {
+      // Buttons that only WebUI handles. Renderers don't send these; see
+      // `selectionIsNativelySupported()`.
       NOTREACHED();
     }
     case searchbox::mojom::SelectionLineState::kCtrlEnter: {

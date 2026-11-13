@@ -32,8 +32,17 @@
   width: 28px;
 }
 
-#profileContainer:focus-visible {
+#profileContainer:focus-visible,
+:host([has-virtual-focus]) #profileContainer {
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+@media (forced-colors: active) {
+  #profileContainer:focus-visible,
+  :host([has-virtual-focus]) #profileContainer {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }
 
 #profileContainer.clickable {
