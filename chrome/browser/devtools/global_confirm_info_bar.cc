@@ -181,17 +181,18 @@ class GlobalConfirmInfoBar::TabHelper : public TabModelListObserver,
 
   ~TabHelper() override {
     tab_model_observations_.RemoveAllObservations();
-    TabModelList::RemoveObserver(this);
+    TabModelList::RemoveGlobalObserver(this);
   }
 
   void Init() {
     // This is the equivalent of observing for new windows (each window has a
     // TabModel).
-    TabModelList::AddObserver(this);
+    TabModelList::AddGlobalObserver(this);
     // Add the TabModel for each existing window.
-    for (TabModel* const model : TabModelList::models()) {
+    TabModelList::ForEachAll([this](TabModel* model) {
       OnTabModelAdded(model);
-    }
+      return true;
+    });
   }
 
   void OnTabModelAdded(TabModel* tab_model) override {

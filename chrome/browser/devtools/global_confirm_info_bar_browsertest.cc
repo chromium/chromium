@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -71,12 +72,16 @@ class GlobalConfirmInfoBarTest : public PlatformBrowserTest {
 
   // Returns the number of tabs in the current window.
   int GetTabCount() {
-    for (const TabModel* model : TabModelList::models()) {
+    int count = -1;
+    TabModelList::ForEachAll([&count](TabModel* model) {
       if (model->IsActiveModel()) {
-        return model->GetTabCount();
+        count = model->GetTabCount();
+        return false;
       }
-    }
-    NOTREACHED() << "No active TabModel?";
+      return true;
+    });
+    CHECK_GE(count, 0) << "No active TabModel?";
+    return count;
   }
 #else
   // Adds an additional tab.

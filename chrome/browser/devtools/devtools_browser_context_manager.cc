@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -45,16 +48,47 @@ void DestroyOTRProfileWhenAppropriate(base::WeakPtr<Profile> weak_profile) {
 
 #if BUILDFLAG(IS_ANDROID)
 void CloseAndroidTabsForProfile(Profile* profile) {
-  // Closing the last incognito tab can synchronously destroy its TabModel and
-  // remove it from TabModelList. Iterate by reverse index so removing the
-  // current model does not invalidate the remaining traversal.
-  for (size_t model_index = TabModelList::models().size(); model_index > 0;) {
-    TabModel* model = TabModelList::models()[--model_index];
-    for (int tab_index = model->GetTabCount(); tab_index > 0;) {
-      TabAndroid* tab = model->GetTabAt(--tab_index);
-      if (tab && tab->profile() == profile) {
-        model->CloseTabAt(tab_index);
+  // When `kEnforceIncognitoIsolation` is disabled, disposable DevTools OTR
+  // profiles (`CreateUniqueForDevTools()`) place tabs into the shared incognito
+  // `TabModel`, whose `GetProfile()` is the primary OTR profile rather than
+  // `profile`.
+  Profile* const original_profile = profile->GetOriginalProfile();
+  std::vector<tabs::TabHandle> tabs_to_close;
+  TabModelList::ForEachAll(
+      [profile, original_profile, &tabs_to_close](TabModel* model) {
+        Profile* model_profile = model->GetProfile();
+        if (!model_profile ||
+            model_profile->GetOriginalProfile() != original_profile) {
+          return true;
+        }
+        if (model_profile == profile) {
+          model->ForceCloseAllTabs();
+          return true;
+        }
+        for (tabs::TabInterface* tab_interface : model->GetAllTabs()) {
+          if (tab_interface && tab_interface->GetProfile() == profile) {
+            tabs_to_close.push_back(tab_interface->GetHandle());
+          }
+        }
+        return true;
+      });
+  for (tabs::TabHandle handle : tabs_to_close) {
+    tabs::TabInterface* tab = handle.Get();
+    if (!tab) {
+      continue;
+    }
+    TabModel* tab_model = nullptr;
+    TabModelList::ForEachAll([tab, &tab_model](TabModel* model) {
+      for (tabs::TabInterface* candidate : model->GetAllTabs()) {
+        if (candidate == tab) {
+          tab_model = model;
+          return false;
+        }
       }
+      return true;
+    });
+    if (tab_model) {
+      tab_model->CloseTab(handle);
     }
   }
 }

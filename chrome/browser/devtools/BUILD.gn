@@ -299,6 +299,7 @@ static_library("devtools") {
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//components/tabs:public",
       "//printing/buildflags",
       "//ui/base",
     ]

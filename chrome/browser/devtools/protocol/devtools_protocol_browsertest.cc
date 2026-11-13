@@ -934,8 +934,16 @@ IN_PROC_BROWSER_TEST_F(
   TabModel* context_model = TabModelList::GetTabModelForTabAndroid(context_tab);
   ASSERT_TRUE(context_model);
   ASSERT_EQ(1, context_model->GetTabCount());
-  ASSERT_EQ(context_model, TabModelList::models().back());
-  const size_t model_count = TabModelList::models().size();
+  ASSERT_TRUE(TabModelList::Contains(context_model));
+  auto count_models = [] {
+    size_t count = 0;
+    TabModelList::ForEachAll([&count](TabModel* /*model*/) {
+      ++count;
+      return true;
+    });
+    return count;
+  };
+  const size_t model_count = count_models();
 
   OwningTestTabModel later_model_a(context_profile);
   OwningTestTabModel later_model_b(context_profile);
@@ -960,6 +968,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(2, later_model_a.GetTabCount());
   ASSERT_EQ(2, later_model_b.GetTabCount());
 
+  context_model = nullptr;
   params = base::DictValue();
   params.Set("browserContextId", context_id);
   ASSERT_TRUE(
@@ -968,7 +977,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, later_model_a.GetTabCount());
   EXPECT_EQ(0, later_model_b.GetTabCount());
   EXPECT_FALSE(agent_host->GetWebContents());
-  EXPECT_EQ(model_count + 1, TabModelList::models().size());
+  EXPECT_TRUE(TabModelList::Contains(&later_model_a));
+  EXPECT_TRUE(TabModelList::Contains(&later_model_b));
+  EXPECT_EQ(model_count + 1, count_models());
 
   result = SendCommandSync("Target.getBrowserContexts");
   ASSERT_TRUE(result);

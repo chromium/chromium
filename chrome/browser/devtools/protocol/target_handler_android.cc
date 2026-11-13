@@ -13,6 +13,7 @@
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -88,16 +89,30 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     gurl = GURL(url::kAboutBlankURL);
   }
 
-  const TabModelList::TabModelVector& models = TabModelList::models();
-  if (models.empty()) {
-    return protocol::Response::ServerError("Could not find TabModelList");
-  }
-
   const bool enforce_incognito_isolation =
       base::FeatureList::IsEnabled(chrome::android::kEnforceIncognitoIsolation);
 
-  TabModel* tab_model = models[0];
-  CHECK(tab_model);
+  Profile* const default_profile = Profile::FromBrowserContext(
+      DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext());
+  TabModel* tab_model = nullptr;
+  if (default_profile) {
+    TabModelList::ForEach(default_profile, [&tab_model](TabModel* model) {
+      if (model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+        return true;
+      }
+      if (model->activity_type() == chrome::android::ActivityType::kTabbed) {
+        tab_model = model;
+        return false;
+      }
+      if (!tab_model) {
+        tab_model = model;
+      }
+      return true;
+    });
+  }
+  if (!default_profile || (!tab_model && !enforce_incognito_isolation)) {
+    return protocol::Response::ServerError("Could not find TabModelList");
+  }
 
   GURL inner_url = gurl;
   if (gurl.SchemeIs(content::kViewSourceScheme)) {
@@ -113,21 +128,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   if (!may_read_local_files_ && inner_url.SchemeIsFile()) {
     return protocol::Response::ServerError(
         "Creating a target with a local URL is not allowed");
-  }
-
-  CHECK(tab_model->GetProfile());
-  Profile* const default_profile =
-      enforce_incognito_isolation
-          ? tab_model->GetProfile()->GetOriginalProfile()
-          : tab_model->GetProfile();
-  CHECK(default_profile);
-
-  if (enforce_incognito_isolation) {
-    tab_model = nullptr;
-    TabModelList::ForEach(default_profile, [&](TabModel* candidate) {
-      tab_model = candidate;
-      return false;
-    });
   }
 
   Profile* profile = default_profile;
