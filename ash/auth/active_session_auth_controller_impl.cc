@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -272,9 +273,9 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   fingerprint_animation_finished_ = false;
   fingerprint_authentication_finished_ = false;
 
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  auto user_context = std::make_unique<UserContext>(*active_user);
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
+  auto user_context = std::make_unique<UserContext>(user);
 
   const bool ephemeral =
       user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
