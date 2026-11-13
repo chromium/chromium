@@ -210,17 +210,8 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
     CheckGpuTimers(RasterInterface());
   }
   ResetSharedImageBacking();
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
   if (sw_image_provider_context_provider_wrapper_) {
     sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
-  }
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
-  }
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 }
 
@@ -296,6 +287,18 @@ void BaseRenderingContext2D::ResetSharedImageBacking() {
   must_preserve_content_on_copy_on_write_ = true;
   current_resource_has_write_access_ = false;
   is_cleared_ = false;
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+    context_provider_wrapper_.reset();
+  }
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+    raster_context_provider_.reset();
+  }
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+    shared_image_interface_provider_.reset();
+  }
 }
 
 void BaseRenderingContext2D::ClearUnusedResources() {
@@ -358,21 +361,9 @@ void BaseRenderingContext2D::ResetBacking() {
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
   cached_content_id_ = cc::PaintImage::kInvalidContentId;
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-    context_provider_wrapper_.reset();
-  }
   if (sw_image_provider_context_provider_wrapper_) {
     sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
     sw_image_provider_context_provider_wrapper_.reset();
-  }
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
-    raster_context_provider_.reset();
-  }
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
-    shared_image_interface_provider_.reset();
   }
   notify_gpu_context_lost_task_.Cancel();
   notified_context_lost_ = false;
@@ -589,18 +580,10 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     if (IsGpuContextLost()) {
       ResetSharedImageBacking();
       canvas_image_provider_.reset();
-      if (context_provider_wrapper_) {
-        context_provider_wrapper_->RemoveObserver(this);
-        context_provider_wrapper_.reset();
-      }
       return;
     }
   } else if (!resource_) {
     ResetSharedImageBacking();
-    if (context_provider_wrapper_) {
-      context_provider_wrapper_->RemoveObserver(this);
-      context_provider_wrapper_.reset();
-    }
     return;
   }
 
@@ -608,10 +591,6 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       ResetSharedImageBacking();
-      if (context_provider_wrapper_) {
-        context_provider_wrapper_->RemoveObserver(this);
-        context_provider_wrapper_.reset();
-      }
       return;
     }
   } else {
