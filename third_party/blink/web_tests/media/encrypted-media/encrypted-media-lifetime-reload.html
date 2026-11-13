@@ -16,6 +16,7 @@
                 var mediaKeySession = null;
                 var hasSessionUpdateSucceeded = false;
                 var encryptedEventCount = 0;
+                var isReloaded = (location.hash == '#x');
 
                 var rawKey = new Uint8Array([0xeb, 0xdd, 0x62, 0xf1, 0x68, 0x14, 0xd2, 0x7b,
                                              0x68, 0xef, 0x12, 0x2a, 0xfc, 0xe4, 0xae, 0x3c]);
@@ -70,13 +71,16 @@
                     if (event.target.currentTime < 0.2 || !hasSessionUpdateSucceeded)
                         return;
 
+                    video.removeEventListener('timeupdate', onTimeUpdate, true);
+                    video.pause();
+
                     // Reload the page to catch any possible teardown issues.
-                    if (location.hash == '#x') {
+                    if (isReloaded) {
                         test.done();
                         return;
                     }
 
-                    location.hash += 'x';
+                    location.hash = '#x';
                     location.reload();
                 }
 
