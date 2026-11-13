@@ -84,7 +84,7 @@ void OffsetComponent(int offset, url::Component* part);
 bool IsEquivalentScheme(std::string_view scheme1, std::string_view scheme2);
 
 // For paths like ~, we use $HOME for the current user's home directory.
-// For tests, we allow our idea of $HOME to be overriden by this variable.
+// For tests, we allow our idea of $HOME to be overridden by this variable.
 extern const char* home_directory_override;
 
 }  // namespace url_formatter
