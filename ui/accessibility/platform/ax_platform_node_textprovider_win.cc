@@ -94,7 +94,7 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   // TODO(crbug.com/580103833): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(!start->IsNullPosition());
-  CHECK(!end->IsNullPosition(), base::NotFatalUntil::M163);
+  DCHECK(!end->IsNullPosition());
 
   start->SnapToMaxTextOffsetIfBeyond();
   end->SnapToMaxTextOffsetIfBeyond();
