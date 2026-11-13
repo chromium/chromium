@@ -75,6 +75,8 @@ std::string CreateListAccountsResponseInBinaryFormat(
     account->set_obfuscated_id(param.gaia_id.ToString());
     account->set_signed_out(param.signed_out);
     account->set_is_verified(param.verified);
+    account->set_display_name(param.display_name);
+    account->set_photo_url(param.photo_url);
   }
 
   std::string serialized_response;

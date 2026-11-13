@@ -26,6 +26,8 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
   std::string email;
   GaiaId gaia_id;
   std::string raw_email;
+  std::string display_name;
+  std::string photo_url;
   bool valid = true;
   bool signed_out = false;
   bool verified = true;

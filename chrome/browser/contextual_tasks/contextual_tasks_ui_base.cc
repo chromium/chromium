@@ -14,8 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -40,7 +38,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
-#include "chrome/browser/contextual_tasks/list_accounts_response.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -174,63 +171,11 @@ struct ProfileIndicatorInfo {
   uint32_t signed_in_account_count = 0;
 };
 
-struct ListedAccountExtraInfo {
-  std::string display_name;
-  std::string photo_url;
-};
-
-// TODO(crbug.com/578566401): Converge with `gaia::ParseBinaryListAccountsData`
-// and the standard `google_apis/gaia/list_accounts_response.proto` once
-// `display_name` and `photo_url` are unreserved there.
-bool ParseOffTheRecordListAccountsData(
-    std::string_view base64_data,
-    std::vector<gaia::ListedAccount>& accounts,
-    base::flat_map<GaiaId, ListedAccountExtraInfo>& extra_info_map) {
-  accounts.clear();
-  extra_info_map.clear();
-
-  std::string decoded;
-  if (!base::Base64Decode(base64_data, &decoded,
-                          base::Base64DecodePolicy::kForgiving)) {
-    return false;
-  }
-
-  contextual_tasks::ListAccountsResponse parsed_result;
-  if (!parsed_result.ParseFromString(decoded)) {
-    return false;
-  }
-
-  for (const auto& account : parsed_result.account()) {
-    if (account.display_email().empty() || account.obfuscated_id().empty()) {
-      continue;
-    }
-
-    gaia::ListedAccount listed_account;
-    listed_account.email = gaia::CanonicalizeEmail(account.display_email());
-    listed_account.gaia_id = GaiaId(account.obfuscated_id());
-    listed_account.valid =
-        !account.has_valid_session() || account.valid_session();
-    listed_account.signed_out =
-        account.has_signed_out() && account.signed_out();
-    listed_account.verified =
-        !account.has_is_verified() || account.is_verified();
-    listed_account.raw_email = account.display_email();
-
-    extra_info_map.insert_or_assign(listed_account.gaia_id,
-                                    ListedAccountExtraInfo{
-                                        .display_name = account.display_name(),
-                                        .photo_url = account.photo_url(),
-                                    });
-    accounts.push_back(std::move(listed_account));
-  }
-  return true;
-}
-
 ProfileIndicatorInfo GetProfileIndicatorInfoFromAccounts(
     const std::vector<gaia::ListedAccount>& accounts,
     signin::IdentityManager* identity_manager,
     const GURL& url,
-    const base::flat_map<GaiaId, ListedAccountExtraInfo>& extra_info_map = {}) {
+    bool use_listed_account_profile_info = false) {
   size_t user_index = contextual_tasks::GetUserIndex(url).value_or(0);
   if (user_index >= accounts.size()) {
     return {};
@@ -244,23 +189,22 @@ ProfileIndicatorInfo GetProfileIndicatorInfoFromAccounts(
       identity_manager
           ? identity_manager->FindExtendedAccountInfoByGaiaId(account.gaia_id)
           : AccountInfo();
-  auto extra_it = extra_info_map.find(account.gaia_id);
   GURL avatar_url;
   if (!extended_info.IsEmpty() && extended_info.GetAvatarImage().has_value()) {
     avatar_url = GURL(
         base::StrCat({chrome::kChromeUIContextualTasksURL,
                       kProfileAvatarPathPrefix, account.gaia_id.ToString()}));
-  } else if (extra_it != extra_info_map.end() &&
-             GURL(extra_it->second.photo_url).SchemeIs(url::kHttpsScheme)) {
-    avatar_url = GURL(base::StrCat(
-        {chrome::kChromeUIImageURL, "?", extra_it->second.photo_url}));
+  } else if (use_listed_account_profile_info &&
+             GURL(account.photo_url).SchemeIs(url::kHttpsScheme)) {
+    avatar_url =
+        GURL(base::StrCat({chrome::kChromeUIImageURL, "?", account.photo_url}));
   } else {
     avatar_url = GURL(profiles::GetPlaceholderAvatarIconUrl());
   }
 
   std::string full_name(extended_info.GetFullName().value_or(""));
-  if (full_name.empty() && extra_it != extra_info_map.end()) {
-    full_name = extra_it->second.display_name;
+  if (full_name.empty() && use_listed_account_profile_info) {
+    full_name = account.display_name;
   }
 
   uint32_t signed_in_account_count = base::checked_cast<uint32_t>(
@@ -422,9 +366,10 @@ class ContextualTasksUIBase::CookieJarObserver
     if (!otr_accounts_fresh_) {
       return ProfileIndicatorInfo{};
     }
-    return GetProfileIndicatorInfoFromAccounts(otr_accounts_,
-                                               /*identity_manager=*/nullptr,
-                                               url, otr_extra_account_info_);
+    return GetProfileIndicatorInfoFromAccounts(
+        otr_accounts_,
+        /*identity_manager=*/nullptr, url,
+        /*use_listed_account_profile_info=*/true);
   }
 
   // signin::IdentityManager::Observer:
@@ -461,8 +406,7 @@ class ContextualTasksUIBase::CookieJarObserver
   // GaiaAuthConsumer:
   void OnListAccountsSuccess(const std::string& data) override {
     gaia_auth_fetcher_.reset();
-    if (!ParseOffTheRecordListAccountsData(data, otr_accounts_,
-                                           otr_extra_account_info_)) {
+    if (!gaia::ParseBinaryListAccountsData(data, &otr_accounts_)) {
       otr_accounts_fresh_ = false;
       owner_->UpdateProfileIndicator();
       return;
@@ -523,7 +467,6 @@ class ContextualTasksUIBase::CookieJarObserver
         });
     if (!has_gaia_signin_cookie) {
       otr_accounts_.clear();
-      otr_extra_account_info_.clear();
       otr_accounts_fresh_ = true;
       owner_->UpdateProfileIndicator();
       return;
@@ -558,7 +501,6 @@ class ContextualTasksUIBase::CookieJarObserver
       cookie_listener_receiver_{this};
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
   std::vector<gaia::ListedAccount> otr_accounts_;
-  base::flat_map<GaiaId, ListedAccountExtraInfo> otr_extra_account_info_;
   bool otr_accounts_fresh_ = false;
   base::WeakPtrFactory<CookieJarObserver> weak_ptr_factory_{this};
 };

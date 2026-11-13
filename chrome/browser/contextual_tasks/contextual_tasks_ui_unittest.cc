@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
-#include "chrome/browser/contextual_tasks/list_accounts_response.pb.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
@@ -83,6 +81,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_auth_test_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -5601,21 +5600,29 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_EQ(account_count_future.Take(), 0u);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  // Simulate signing in to google.com in Incognito: build a binary
-  // ListAccountsResponse where account 1 includes `display_name` and
-  // `photo_url`, and account 2 omits them to test the placeholder fallback.
-  contextual_tasks::ListAccountsResponse list_accounts_response;
-  contextual_tasks::Account* account1 = list_accounts_response.add_account();
-  account1->set_display_name("Incognito User 1");
-  account1->set_display_email("incognito1@example.com");
-  account1->set_photo_url("https://lh3.googleusercontent.com/a/photo1.jpg");
-  account1->set_obfuscated_id("gaia_incog_1");
-  contextual_tasks::Account* account2 = list_accounts_response.add_account();
-  account2->set_display_email("incognito2@example.com");
-  account2->set_obfuscated_id("gaia_incog_2");
+  // Simulate signing in to google.com in Incognito: build a /ListAccounts
+  // response where account 1 includes `display_name` and `photo_url`, and
+  // account 2 omits them to test the placeholder fallback.
   test_url_loader_factory_.AddResponse(
       list_accounts_url,
-      base::Base64Encode(list_accounts_response.SerializeAsString()));
+      gaia::CreateListAccountsResponseInBinaryFormat({
+          {
+              .email = "incognito1@example.com",
+              .gaia_id = GaiaId("gaia_incog_1"),
+              .valid = true,
+              .signed_out = false,
+              .verified = true,
+              .display_name = "Incognito User 1",
+              .photo_url = "https://lh3.googleusercontent.com/a/photo1.jpg",
+          },
+          {
+              .email = "incognito2@example.com",
+              .gaia_id = GaiaId("gaia_incog_2"),
+              .valid = true,
+              .signed_out = false,
+              .verified = true,
+          },
+      }));
 
   network::mojom::CookieManager* cookie_manager =
       otr_profile->GetDefaultStoragePartition()

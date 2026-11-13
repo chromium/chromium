@@ -234,6 +234,27 @@ TEST(GaiaAuthUtilTest, ParseBinaryListAccountsData) {
   ASSERT_TRUE(accounts[1].valid);
 }
 
+TEST(GaiaAuthUtilTest, ParseBinaryListAccountsDataProfileInfo) {
+  ListAccountsResponse response;
+  Account* account1 = response.add_account();
+  account1->set_display_email("u1@g.c");
+  account1->set_obfuscated_id("1");
+  account1->set_display_name("User One");
+  account1->set_photo_url("https://example.com/photo1.jpg");
+  Account* account2 = response.add_account();
+  account2->set_display_email("u2@g.c");
+  account2->set_obfuscated_id("2");
+
+  std::vector<ListedAccount> accounts;
+  ASSERT_TRUE(ParseBinaryListAccountsData(
+      CreateBinaryListAccountsData(response), &accounts));
+  ASSERT_EQ(2u, accounts.size());
+  EXPECT_EQ("User One", accounts[0].display_name);
+  EXPECT_EQ("https://example.com/photo1.jpg", accounts[0].photo_url);
+  EXPECT_EQ("", accounts[1].display_name);
+  EXPECT_EQ("", accounts[1].photo_url);
+}
+
 TEST(GaiaAuthUtilTest, ParseBinaryListAccountsDataValidSession) {
   std::vector<ListedAccount> accounts;
   ListAccountsResponse response;

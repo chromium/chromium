@@ -180,6 +180,8 @@ bool ParseBinaryListAccountsData(const std::string& data,
     listed_account.verified =
         !account.has_is_verified() || account.is_verified();
     listed_account.raw_email = account.display_email();
+    listed_account.display_name = account.display_name();
+    listed_account.photo_url = account.photo_url();
     if (accounts) {
       accounts->push_back(std::move(listed_account));
     }

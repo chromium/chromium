@@ -13,8 +13,14 @@ option optimize_for = LITE_RUNTIME;
 // This is a projection of the type returned by Gaia's /ListAccounts, which only
 // has the fields that Chrome will use.
 message Account {
+  // The full display name for the account.
+  optional string display_name = 2;
+
   // The display email for the account.
   optional string display_email = 3;
+
+  // The profile photo URL for the account.
+  optional string photo_url = 4;
 
   // If the session for this account is still 'valid' (not expired,
   // the account is not disabled, etc.). Only present for person accounts when
@@ -31,7 +37,7 @@ message Account {
   optional bool is_verified = 15;
 
   // Internal Fields.
-  reserved 1, 2, 4, 5, 6, 7, 8, 11, 12, 13;
+  reserved 1, 5, 6, 7, 8, 11, 12, 13;
 }
 
 message ListAccountsResponse {

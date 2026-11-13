@@ -22,6 +22,8 @@ struct CookieParams {
   bool valid;
   bool signed_out;
   bool verified;
+  std::string display_name;
+  std::string photo_url;
 };
 
 std::string GenerateOAuth2MintTokenConsentResult(
