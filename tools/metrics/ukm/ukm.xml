@@ -14284,13 +14284,6 @@ be describing additional metrics about the same event.
       dynamically during one playback, and is only determined after any HLS
       fallback might happen.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="FinalPipelineStatus" enum="PipelineStatus">
     <summary>
@@ -14304,13 +14297,6 @@ be describing additional metrics about the same event.
       for the CDM to be set or waiting for decryption key. For an non-EME
       playback, this is always reported as false.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="IsEME">
     <summary>
@@ -14356,13 +14342,6 @@ be describing additional metrics about the same event.
       Type of media::Renderer used for the playback. In most cases we do not
       support dynamically changing RendererType during one playback.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="TimeToFirstFrame">
     <summary>
