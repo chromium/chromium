@@ -662,10 +662,21 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="NTP Colors Violet"/>
 </enum>
 
+<!-- LINT.IfChange(NTPThreadsRailAction) -->
+
 <enum name="NTPThreadsRailAction">
   <summary>User actions on the threads rail.</summary>
-  <int value="0" label="Show history clicked"/>
+  <int value="0" label="(Obsolete) Show history clicked"/>
+  <int value="1" label="Expand rail item clicked"/>
+  <int value="2" label="Focus realbox AIM item clicked"/>
+  <int value="3" label="Navigate item clicked"/>
+  <int value="4" label="Logo clicked"/>
+  <int value="5" label="Rail background clicked"/>
+  <int value="6" label="Unspecified navigate item clicked"/>
+  <int value="7" label="Fallback navigate item clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/threads_rail.ts:NTPThreadsRailAction) -->
 
 <enum name="NTPTileTitleSource">
   <summary>
