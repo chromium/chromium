@@ -8566,6 +8566,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-android-staging-smds", flag_descriptions::kUseAndroidStagingSmdsName,
      flag_descriptions::kUseAndroidStagingSmdsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kUseAndroidStagingSmds)},
+    {"use-direct-xkb-layout-for-thai-kedmanee-input-method",
+     flag_descriptions::kUseDirectXkbLayoutForThaiKedmaneeInputMethodName,
+     flag_descriptions::
+         kUseDirectXkbLayoutForThaiKedmaneeInputMethodDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod)},
     {"use-stork-smds-server-address",
      flag_descriptions::kUseStorkSmdsServerAddressName,
      flag_descriptions::kUseStorkSmdsServerAddressDescription, kOsCrOS,

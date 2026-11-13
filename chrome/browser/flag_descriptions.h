@@ -8037,6 +8037,13 @@ inline constexpr char kUseAnnotatedAccountIdDescription[] =
     "Uses AccountId annotated for BrowserContext to look up between ChromeOS "
     "User and BrowserContext, a.k.a. Profile.";
 
+inline constexpr char kUseDirectXkbLayoutForThaiKedmaneeInputMethodName[] =
+    "Use direct XKB layout for Thai Kedmanee input method";
+inline constexpr char
+    kUseDirectXkbLayoutForThaiKedmaneeInputMethodDescription[] =
+        "Use direct XKB layout for ChromeOS Thai Kedmanee input method, "
+        "instead of character remaps via m17n rule-based IME.";
+
 inline constexpr char kUseFakeDeviceForMediaStreamName[] =
     "Use fake video capture device";
 inline constexpr char kUseFakeDeviceForMediaStreamDescription[] =

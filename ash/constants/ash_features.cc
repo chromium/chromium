@@ -1549,6 +1549,10 @@ BASE_FEATURE(kTilingWindowResize, base::FEATURE_DISABLED_BY_DEFAULT);
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use direct XKB layout for Thai Kedmanee input method.
+BASE_FEATURE(kUseDirectXkbLayoutForThaiKedmaneeInputMethod,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
 // (a.k.a. browser's Profile).
 BASE_FEATURE(kUseAnnotatedAccountId, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -7967,6 +7967,8 @@ from previous Chrome versions.
   <int value="-2095167043" label="WebFeedKillSwitch:disabled"/>
   <int value="-2095123598" label="FastEnumeratePrinters:disabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
+  <int value="-2093972482"
+      label="UseDirectXkbLayoutForThaiKedmaneeInputMethod:enabled"/>
   <int value="-2093968325" label="FedCmAutoSelectedFlag:disabled"/>
   <int value="-2093047873"
       label="AbusiveOriginNotificationPermissionRevocation:enabled"/>
@@ -9450,6 +9452,8 @@ from previous Chrome versions.
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
   <int value="-1659659261" label="VpnAppsOnFlex:disabled"/>
   <int value="-1659445938" label="RealboxSecondaryZeroSuggest:enabled"/>
+  <int value="-1658830774"
+      label="UseDirectXkbLayoutForThaiKedmaneeInputMethod:disabled"/>
   <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
   <int value="-1658154886"
       label="CompressionDictionaryTransportRequireKnownRootCert:disabled"/>

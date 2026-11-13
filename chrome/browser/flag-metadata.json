@@ -9835,6 +9835,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "use-direct-xkb-layout-for-thai-kedmanee-input-method",
+    "owners": [ "tranbaoduy@chromium.org", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "use-fake-device-for-media-stream",
     "owners": [ "mcasas@chromium.org", "chromeos-gfx@google.com" ],
     // This flag is used for ChromeOS media testing to mock a source device.
