@@ -26,7 +26,7 @@ extension ObjectGroup {
         instanceType: .{{union|format_il_type}},
         properties: [
             {%- for field in union.fields %}
-            "{{field.name}}": .{{field.kind|format_il_type}},
+            "{{field.name}}": .{{field.kind|format_il_type(union in js_unions)}},
             {%- endfor %}
         ],
         methods: [:]

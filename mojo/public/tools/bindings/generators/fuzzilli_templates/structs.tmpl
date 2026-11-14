@@ -37,7 +37,7 @@ extension ObjectGroup {
         {%- if struct.fields %}
         properties: [
             {%- for field in struct.fields %}
-            "{{field.name}}": .{{field.kind|format_il_type}},
+            "{{field.name}}": .{{field.kind|format_il_type(struct in js_structs)}},
             {%- endfor %}
         ],
         {%- else %}

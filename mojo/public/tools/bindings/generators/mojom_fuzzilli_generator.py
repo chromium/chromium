@@ -354,8 +354,9 @@ class Generator(generator.Generator):
     assert False, f"Unsupported type: {kind}."
 
   # Maps a Mojom kind to its corresponding Fuzzilli Intermediate Language (IL)
-  # type name representation (e.g., "boolean", "jsFooStruct").
-  def _ILTypeName(self, kind):
+  # type name representation (e.g., "boolean", "jsFooStruct"). `is_in_js` says
+  # whether the value is made on the JS side.
+  def _ILTypeName(self, kind, is_in_js=True):
     if kind in PRIMITIVES_MAPPING:
       il_type, _ = PRIMITIVES_MAPPING[kind]
       return il_type
@@ -387,15 +388,21 @@ class Generator(generator.Generator):
     # calls into the interface, the remotes it gets from the browser (e.g. a
     # token from `Transfer()`) can be passed as well, as they are the same JS
     # objects as the remotes JS creates, so these keep the `Remote` type.
-    if self._IsAnyPendingRemoteKind(kind):
+    #
+    # Associated remotes are the exception: a `pending_associated_remote` that
+    # JS sends must be an associated endpoint it creates with
+    # `associateAndPassRemote()`.
+    if mojom.IsPendingRemoteKind(kind):
       name = self._FormatUniqueName(kind.kind)
-      if name not in self.js_implemented_interfaces:
-        return f"js{name}Remote"
-      if mojom.IsPendingAssociatedRemoteKind(kind):
-        return f"js{name}PendingAssociatedRemote"
       if name in self.js_called_interfaces:
         return f"js{name}Remote"
       return f"js{name}PendingRemote"
+
+    if mojom.IsPendingAssociatedRemoteKind(kind):
+      name = self._FormatUniqueName(kind.kind)
+      if is_in_js:
+        return f"js{name}PendingAssociatedRemote"
+      return f"js{name}Remote"
 
     if mojom.IsPendingReceiverKind(kind):
       return f"js{self._FormatUniqueName(kind.kind)}PendingReceiver"

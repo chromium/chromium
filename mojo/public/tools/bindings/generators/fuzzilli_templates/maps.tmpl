@@ -2,8 +2,8 @@ extension ILType {
 {%- for m in maps %}
     fileprivate static let {{m|format_il_type}}: ILType =
         .createJsMapType(
-            ofKeyType: .{{m.key_kind|format_il_type}},
-            ofValueType: .{{m.value_kind|format_il_type}}
+            ofKeyType: .{{m.key_kind|format_il_type(m in js_maps)}},
+            ofValueType: .{{m.value_kind|format_il_type(m in js_maps)}}
         )
 {%- endfor %}
 }

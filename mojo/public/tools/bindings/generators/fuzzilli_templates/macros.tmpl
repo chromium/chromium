@@ -1,9 +1,10 @@
 {#- Given a method parameter, returns a FuzzIL `Parameter`, with nullable
-    parameters represented via the `.either` case. -#}
-{%- macro to_fuzzilli_parameter(parameter) -%}
+    parameters represented via the `.either` case. `is_in_js` says whether the
+    value is made on the JS side. -#}
+{%- macro to_fuzzilli_parameter(parameter, is_in_js=True) -%}
     {%- if parameter.kind.is_nullable -%}
-    .either(.{{parameter.kind|format_il_type}}, .undefined)
+    .either(.{{parameter.kind|format_il_type(is_in_js)}}, .undefined)
     {%- else -%}
-    .plain(.{{parameter.kind|format_il_type}})
+    .plain(.{{parameter.kind|format_il_type(is_in_js)}})
     {%- endif -%}
 {%- endmacro -%}

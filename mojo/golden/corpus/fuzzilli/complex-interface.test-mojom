@@ -14,6 +14,10 @@ interface Primary {
   ReturnMixed()
       => (pending_remote<MixedRemote> remote,
           pending_associated_remote<MixedRemote> associated_remote);
+
+  PassMixedAssociated(pending_remote<MixedAssociatedRemote> remote);
+  ReturnMixedAssociated()
+      => (pending_associated_remote<MixedAssociatedRemote> associated_remote);
 };
 
 interface RemoteFromJs {
@@ -86,3 +90,5 @@ interface RemoteFromBrowserViaReceiverFromBrowser {};
 interface ReceiverFromBrowserViaReceiverFromBrowser {};
 
 interface MixedRemote {};
+
+interface MixedAssociatedRemote {};

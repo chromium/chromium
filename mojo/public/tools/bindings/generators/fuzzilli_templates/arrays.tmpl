@@ -1,7 +1,7 @@
 extension ILType {
 {%- for array in arrays %}
     fileprivate static let {{array|format_il_type}}: ILType =
-        .createJsArrayType(ofElementType: .{{array.kind|format_il_type}})
+        .createJsArrayType(ofElementType: .{{array.kind|format_il_type(array in js_arrays)}})
 {%- endfor %}
 }
 

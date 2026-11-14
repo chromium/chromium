@@ -25,6 +25,8 @@ extension ILType {
             "returnReceiver",
             "passMixed",
             "returnMixed",
+            "passMixedAssociated",
+            "returnMixedAssociated",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -194,6 +196,19 @@ extension ILType {
         ])
     fileprivate static let jsGoldenMixedRemoteRemoteWrapper: ILType = .object(
         ofGroup: "golden.MixedRemoteRemoteWrapper",
+        withMethods: [
+          "close",
+          "isBound",
+        ])
+
+    // MixedAssociatedRemote
+    fileprivate static let jsGoldenMixedAssociatedRemoteRemote: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemoteRemote",
+        withProperties: ["$"],
+        withMethods: [
+        ])
+    fileprivate static let jsGoldenMixedAssociatedRemoteRemoteWrapper: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemoteRemoteWrapper",
         withMethods: [
           "close",
           "isBound",
@@ -469,6 +484,24 @@ extension ILType {
     fileprivate static let jsGoldenMixedRemotePendingAssociatedRemote: ILType = .object(
         ofGroup: "golden.MixedRemotePendingAssociatedRemote",
         withProperties: ["$"])
+
+    // MixedAssociatedRemote
+    fileprivate static let jsGoldenMixedAssociatedRemoteCallbackRouter: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemoteCallbackRouter",
+        withProperties: [
+            "$",
+        ])
+    fileprivate static let jsGoldenMixedAssociatedRemoteCallbackRouterReceiverHelper: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemoteCallbackRouterReceiverHelper",
+        withMethods: [
+          "close",
+          "bindNewPipeAndPassRemote",
+        ])
+    fileprivate static let jsGoldenMixedAssociatedRemotePendingReceiver: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemotePendingReceiver")
+    fileprivate static let jsGoldenMixedAssociatedRemotePendingRemote: ILType = .object(
+        ofGroup: "golden.MixedAssociatedRemotePendingRemote",
+        withProperties: ["$"])
 }
 
 extension ObjectGroup {
@@ -494,6 +527,11 @@ extension ObjectGroup {
             ] => .undefined,
             "returnMixed": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_ReturnMixed_ResponseParams),
+            "passMixedAssociated": [
+                .plain(.jsGoldenMixedAssociatedRemoteRemote),
+            ] => .undefined,
+            "returnMixedAssociated": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_ReturnMixedAssociated_ResponseParams),
         ]
     )
 
@@ -744,6 +782,23 @@ extension ObjectGroup {
     fileprivate static let goldenMixedRemoteRemoteWrapper = ObjectGroup(
         name: "golden.MixedRemoteRemoteWrapper",
         instanceType: .jsGoldenMixedRemoteRemoteWrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+        ])
+
+    // MixedAssociatedRemote
+    fileprivate static let goldenMixedAssociatedRemoteRemote = ObjectGroup(
+        name: "golden.MixedAssociatedRemoteRemote",
+        instanceType: .jsGoldenMixedAssociatedRemoteRemote,
+        properties: ["$": .jsGoldenMixedAssociatedRemoteRemoteWrapper],
+        methods: [:]
+    )
+
+    fileprivate static let goldenMixedAssociatedRemoteRemoteWrapper = ObjectGroup(
+        name: "golden.MixedAssociatedRemoteRemoteWrapper",
+        instanceType: .jsGoldenMixedAssociatedRemoteRemoteWrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
@@ -1253,6 +1308,36 @@ extension ObjectGroup {
         properties: ["$": .jsGoldenMixedRemoteRemoteWrapper],
         methods: [:]
     )
+
+    // MixedAssociatedRemote
+    fileprivate static let goldenMixedAssociatedRemoteCallbackRouter = ObjectGroup(
+        name: "golden.MixedAssociatedRemoteCallbackRouter",
+        instanceType: .jsGoldenMixedAssociatedRemoteCallbackRouter,
+        properties: [
+            "$": .jsGoldenMixedAssociatedRemoteCallbackRouterReceiverHelper,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenMixedAssociatedRemoteCallbackRouterReceiverHelper = ObjectGroup(
+        name: "golden.MixedAssociatedRemoteCallbackRouterReceiverHelper",
+        instanceType: .jsGoldenMixedAssociatedRemoteCallbackRouterReceiverHelper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "bindNewPipeAndPassRemote": [] => .jsGoldenMixedAssociatedRemoteRemote,
+        ])
+    fileprivate static let goldenMixedAssociatedRemotePendingReceiver = ObjectGroup(
+        name: "golden.MixedAssociatedRemotePendingReceiver",
+        instanceType: .jsGoldenMixedAssociatedRemotePendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+    fileprivate static let goldenMixedAssociatedRemotePendingRemote = ObjectGroup(
+        name: "golden.MixedAssociatedRemotePendingRemote",
+        instanceType: .jsGoldenMixedAssociatedRemotePendingRemote,
+        properties: ["$": .jsGoldenMixedAssociatedRemoteRemoteWrapper],
+        methods: [:]
+    )
 }
 
 ///
@@ -1313,6 +1398,11 @@ extension ILType {
         ofGroup: "golden.Primary_ReturnMixed_ResponseParams",
         withProperties: [
             "remote",
+            "associatedRemote",
+        ])
+    fileprivate static let jsGoldenPrimary_ReturnMixedAssociated_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_ReturnMixedAssociated_ResponseParams",
+        withProperties: [
             "associatedRemote",
         ])
 }
@@ -1403,7 +1493,15 @@ extension ObjectGroup {
         instanceType: .jsGoldenPrimary_ReturnMixed_ResponseParams,
         properties: [
             "remote": .jsGoldenMixedRemoteRemote,
-            "associatedRemote": .jsGoldenMixedRemotePendingAssociatedRemote,
+            "associatedRemote": .jsGoldenMixedRemoteRemote,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryReturnMixedAssociatedResponseParams = ObjectGroup(
+        name: "golden.Primary_ReturnMixedAssociated_ResponseParams",
+        instanceType: .jsGoldenPrimary_ReturnMixedAssociated_ResponseParams,
+        properties: [
+            "associatedRemote": .jsGoldenMixedAssociatedRemoteRemote,
         ],
         methods: [:]
     )
@@ -1551,6 +1649,8 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenReceiverFromJsViaReceiverFromBrowserPendingReceiver,
     .goldenMixedRemoteRemote,
     .goldenMixedRemoteRemoteWrapper,
+    .goldenMixedAssociatedRemoteRemote,
+    .goldenMixedAssociatedRemoteRemoteWrapper,
     .goldenRemoteFromJsCallbackRouter,
     .goldenRemoteFromJsCallbackRouterReceiverHelper,
     .goldenRemoteFromJsPendingReceiver,
@@ -1610,6 +1710,10 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenMixedRemotePendingRemote,
     .goldenMixedRemotePendingAssociatedReceiver,
     .goldenMixedRemotePendingAssociatedRemote,
+    .goldenMixedAssociatedRemoteCallbackRouter,
+    .goldenMixedAssociatedRemoteCallbackRouterReceiverHelper,
+    .goldenMixedAssociatedRemotePendingReceiver,
+    .goldenMixedAssociatedRemotePendingRemote,
     .goldenRemoteFromJsReturnRemoteResponseParams,
     .goldenRemoteFromJsReturnReceiverResponseParams,
     .goldenReceiverFromJsReturnRemoteResponseParams,
@@ -1621,6 +1725,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenReceiverFromBrowserReturnRemoteResponseParams,
     .goldenReceiverFromBrowserReturnReceiverResponseParams,
     .goldenPrimaryReturnMixedResponseParams,
+    .goldenPrimaryReturnMixedAssociatedResponseParams,
 ] + commonMojoObjectGroups
 
 private let mojoBuiltins: [String: ILType] = [
@@ -1665,6 +1770,8 @@ private let mojoBuiltins: [String: ILType] = [
        .constructor([] => .jsGoldenRemoteFromJsViaReceiverFromBrowserCallbackRouter),
     "golden.MixedRemoteCallbackRouter":
        .constructor([] => .jsGoldenMixedRemoteCallbackRouter),
+    "golden.MixedAssociatedRemoteCallbackRouter":
+       .constructor([] => .jsGoldenMixedAssociatedRemoteCallbackRouter),
 ]
 
 private let keepGenerators = [
