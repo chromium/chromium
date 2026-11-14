@@ -24,7 +24,7 @@ export interface TabSearchApiProxy {
 
 export class TabSearchApiProxyImpl implements TabSearchApiProxy {
   recordRecentlyClosedItemOpenAction(withSearch: boolean, isTab: boolean) {
-    chrome.histograms.recordEnumerationValue(
+    chrome.metricsPrivate.recordEnumerationValue(
         isTab ? 'Tabs.TabSearch.WebUI.RecentlyClosedTabOpenAction' :
                 'Tabs.TabSearch.WebUI.RecentlyClosedGroupOpenAction',
         withSearch ? RecentlyClosedItemOpenAction.WITH_SEARCH :

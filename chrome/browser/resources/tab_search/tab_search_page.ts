@@ -327,7 +327,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private updateTabs_() {
     const isMarkOverlap =
         this.metricsReporter.hasLocalMark('TabListDataReceived');
-    chrome.histograms.recordBoolean(
+    chrome.metricsPrivate.recordBoolean(
         'Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap', isMarkOverlap);
     if (!isMarkOverlap) {
       this.metricsReporter.mark('TabListDataReceived');
@@ -529,7 +529,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private recordMetricsForAction(action: TabSearchAction, tabIndex: number) {
     const withSearch = !!this.searchText_;
     if (action === 'SwitchTab' || action === 'SwitchTabOtherWindow') {
-      chrome.histograms.recordEnumerationValue(
+      chrome.metricsPrivate.recordEnumerationValue(
           'Tabs.TabSearch.WebUI.TabSwitchAction',
           withSearch ? TabSwitchAction.WITH_SEARCH :
                        TabSwitchAction.WITHOUT_SEARCH,
@@ -538,7 +538,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
     switch (action) {
       case 'OpenRecentlyClosedEntry':
-        chrome.histograms.recordEnumerationValue(
+        chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ?
                 TabSearchUserAction.IN_FILTERED_LIST_OPEN_RECENTLY_CLOSED :
@@ -546,14 +546,14 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
             8);
         break;
       case 'SwitchTab':
-        chrome.histograms.recordEnumerationValue(
+        chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ? TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_TAB :
                          TabSearchUserAction.IN_UNFILTERED_LIST_SWITCHED_TAB,
             8);
         break;
       case 'SwitchTabOtherWindow':
-        chrome.histograms.recordEnumerationValue(
+        chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ?
                 TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB :
@@ -562,7 +562,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
             8);
         break;
       case 'CloseTab':
-        chrome.histograms.recordEnumerationValue(
+        chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ? TabSearchUserAction.IN_FILTERED_LIST_CLOSED_TAB :
                          TabSearchUserAction.IN_UNFILTERED_LIST_CLOSED_TAB,
@@ -575,7 +575,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     if (action === 'SwitchTabOtherWindow') {
       action = 'SwitchTab';
     }
-    chrome.histograms.recordSmallCount(
+    chrome.metricsPrivate.recordSmallCount(
         withSearch ? `Tabs.TabSearch.WebUI.IndexOf${action}InFilteredList` :
                      `Tabs.TabSearch.WebUI.IndexOf${action}InUnfilteredList`,
         tabIndex);
@@ -590,7 +590,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     switch (itemData.type) {
       case TabItemType.OPEN_TAB:
         const isMarkOverlap = this.metricsReporter.hasLocalMark('SwitchToTab');
-        chrome.histograms.recordBoolean(
+        chrome.metricsPrivate.recordBoolean(
             'Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap', isMarkOverlap);
         if (!isMarkOverlap) {
           this.metricsReporter.mark('SwitchToTab');
@@ -635,7 +635,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       default:
         throw new Error('ItemData is of invalid type.');
     }
-    chrome.histograms.recordTime(
+    chrome.metricsPrivate.recordTime(
         `Tabs.TabSearch.WebUI.TimeTo${action}In${state}List`,
         Math.round(Date.now() - this.windowShownTimestamp_));
   }

@@ -127,8 +127,6 @@ source_set("browser_tests") {
     "//components/os_crypt/browser:test_support",
     "//components/variations:test_support",
     "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/webui:buildflags",
