@@ -804,6 +804,12 @@ int HttpProxyConnectJob::DoQuicProxyCreateStream(int result) {
 
 int HttpProxyConnectJob::DoQuicProxyCreateStreamComplete(int result) {
   if (result < 0) {
+    // Tunnel setup does not retry `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED`, and
+    // proxy fallback does not recognize it, so report it as a closed
+    // connection.
+    if (result == ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED) {
+      return ERR_CONNECTION_CLOSED;
+    }
     return result;
   }
 

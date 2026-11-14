@@ -231,7 +231,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // Starts a request to create a stream.  If OK is returned, then
     // |stream_| will be updated with the newly created stream.  If
     // ERR_IO_PENDING is returned, then when the request is eventuallly
-    // complete |callback| will be called.
+    // complete |callback| will be called. Returns (or completes with)
+    // `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED` if the session received an
+    // HTTP/3 GOAWAY before the stream could be created.
     int RequestStream(bool requires_confirmation,
                       CompletionOnceCallback callback,
                       const NetworkTrafficAnnotationTag& traffic_annotation);
@@ -297,6 +299,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       return session_creation_initiator_;
     }
     bool WasEverUsed() const;
+    // Returns true if the session received a valid HTTP/3 GOAWAY frame. Remains
+    // valid after the session is closed.
+    bool Http3GoAwayReceived() const;
 
     // Returns true if the underlying session was ever used to create a stream.
     // Remains valid after the session is closed.
@@ -360,6 +365,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                          LoadTimingInfo::ConnectTiming connect_timing,
                          bool was_ever_used,
                          bool was_ever_used_to_create_streams,
+                         bool http3_goaway_received,
                          const ConnectionMigrationInformation& migration_info);
 
     // Called by |request| to create a stream.
@@ -411,6 +417,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
     bool was_ever_used_ = false;
     bool was_ever_used_to_create_streams_ = false;
+    // Cached value of the session's `http3_goaway_received()`, set when the
+    // session is closed. Only read once `session_` is null.
+    bool was_http3_goaway_received_ = false;
   };
 
   // A helper class used to manage a request to create a stream.
@@ -477,7 +486,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
     // For tracking how much time pending stream requests wait.
     base::TimeTicks pending_start_time_;
-    State next_state_;
+    State next_state_ = STATE_NONE;
 
     const NetworkTrafficAnnotationTag traffic_annotation_;
 
@@ -691,6 +700,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Returns true if the connection was ever used to create a stream,
   // including cases where the stream creation failed.
   bool was_ever_used_to_create_streams() const;
+
+  // Returns true if a valid HTTP/3 GOAWAY frame was received from the peer.
+  // Unlike `goaway_received()`, this is not set by malformed GOAWAY frames that
+  // close the connection.
+  bool http3_goaway_received() const { return http3_goaway_received_; }
 
   // Returns true if this side closed the connection with
   // QUIC_CONNECTION_CANCELLED or cancelled it for proactive IP pooling. Unlike
@@ -1305,6 +1319,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // True when the session is going away, and streams may no longer be created
   // on this session. Existing stream will continue to be processed.
   bool going_away_ = false;
+  // True when a valid HTTP/3 GOAWAY frame has been received from the peer.
+  bool http3_goaway_received_ = false;
   // Connection close source
   quic::ConnectionCloseSource source_ = quic::ConnectionCloseSource::FROM_SELF;
   // Connection close error. Set together with `source_`, before the pool is
@@ -1424,6 +1440,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 // When enabled, QuicChromiumClientSession registers and unregisters QUIC
 // connection close payloads with the Android system service.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicRegisterConnectionClosePayload);
+
+// When enabled, requests bound to a QUIC session that receives an HTTP/3
+// GOAWAY before a stream is created fail with
+// `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED` instead of `ERR_CONNECTION_CLOSED`.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicRetryPreStreamRequestsOnHttp3GoAway);
 
 }  // namespace features
 

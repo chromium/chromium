@@ -95,6 +95,9 @@ BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
 BASE_FEATURE(kQuicRegisterConnectionClosePayload,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicRetryPreStreamRequestsOnHttp3GoAway,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -576,6 +579,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
     LoadTimingInfo::ConnectTiming connect_timing,
     bool was_ever_used,
     bool was_ever_used_to_create_streams,
+    bool http3_goaway_received,
     const ConnectionMigrationInformation& migration_info) {
   session_ = nullptr;
   port_migration_detected_ = port_migration_detected;
@@ -588,6 +592,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   connect_timing_ = connect_timing;
   was_ever_used_ = was_ever_used;
   was_ever_used_to_create_streams_ = was_ever_used_to_create_streams;
+  was_http3_goaway_received_ = http3_goaway_received;
   last_migration_information_ = migration_info;
 }
 
@@ -662,6 +667,10 @@ int QuicChromiumClientSession::Handle::RequestStream(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!stream_request_);
 
+  if (Http3GoAwayReceived()) {
+    return ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED;
+  }
+
   if (!session_ || session_->going_away_) {
     return ERR_CONNECTION_CLOSED;
   }
@@ -687,7 +696,8 @@ QuicChromiumClientSession::Handle::ReleaseStream() {
 int QuicChromiumClientSession::Handle::WaitForHandshakeConfirmation(
     CompletionOnceCallback callback) {
   if (!session_) {
-    return ERR_CONNECTION_CLOSED;
+    return was_http3_goaway_received_ ? ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED
+                                      : ERR_CONNECTION_CLOSED;
   }
 
   return session_->WaitForHandshakeConfirmation(std::move(callback));
@@ -701,7 +711,8 @@ void QuicChromiumClientSession::Handle::CancelRequest(StreamRequest* request) {
 
 int QuicChromiumClientSession::Handle::TryCreateStream(StreamRequest* request) {
   if (!session_) {
-    return ERR_CONNECTION_CLOSED;
+    return was_http3_goaway_received_ ? ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED
+                                      : ERR_CONNECTION_CLOSED;
   }
 
   return session_->TryCreateStream(request);
@@ -741,6 +752,14 @@ bool QuicChromiumClientSession::Handle::WasEverUsedToCreateStreams() const {
   }
 
   return session_->was_ever_used_to_create_streams();
+}
+
+bool QuicChromiumClientSession::Handle::Http3GoAwayReceived() const {
+  if (!session_) {
+    return was_http3_goaway_received_;
+  }
+
+  return session_->http3_goaway_received();
 }
 
 const base::flat_set<std::string>&
@@ -819,6 +838,14 @@ void QuicChromiumClientSession::StreamRequest::OnRequestCompleteSuccess(
 
 void QuicChromiumClientSession::StreamRequest::OnRequestCompleteFailure(
     int rv) {
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+  if (for_websockets_) {
+    // TODO(crbug.com/40210995): Notify `start_websocket_callback_` on GOAWAY /
+    // session close so pending WebSocket handshakes fail promptly instead of
+    // waiting for the handshake timeout.
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   DCHECK_EQ(STATE_REQUEST_STREAM_COMPLETE, next_state_);
   // This method is called even when the request completes synchronously.
   if (callback_) {
@@ -1304,6 +1331,14 @@ size_t QuicChromiumClientSession::WriteHeadersOnHeadersStream(
 
 void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
   quic::QuicSpdySession::OnHttp3GoAway(id);
+  if (!connection()->connected()) {
+    return;
+  }
+  const bool retry_pre_stream_requests = base::FeatureList::IsEnabled(
+      features::kQuicRetryPreStreamRequestsOnHttp3GoAway);
+  if (retry_pre_stream_requests) {
+    http3_goaway_received_ = true;
+  }
   NotifyFactoryOfSessionGoingAway();
 
   PerformActionOnActiveStreams([id](quic::QuicStream* stream) {
@@ -1313,6 +1348,11 @@ void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
     }
     return true;
   });
+
+  if (retry_pre_stream_requests) {
+    CancelAllRequests(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED);
+    NotifyRequestsOfConfirmation(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED);
+  }
 }
 
 void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
@@ -1370,12 +1410,12 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {
   if (going_away_) {
-    handle->OnSessionClosed(connection()->version(), ERR_UNEXPECTED, error(),
-                            source_, port_migration_detected_,
-                            quic_connection_migration_attempted_,
-                            quic_connection_migration_successful_,
-                            GetConnectTiming(), WasConnectionEverUsed(),
-                            was_ever_used_to_create_streams(), migration_info_);
+    handle->OnSessionClosed(
+        connection()->version(), ERR_UNEXPECTED, error(), source_,
+        port_migration_detected_, quic_connection_migration_attempted_,
+        quic_connection_migration_successful_, GetConnectTiming(),
+        WasConnectionEverUsed(), was_ever_used_to_create_streams(),
+        http3_goaway_received_, migration_info_);
     return;
   }
 
@@ -1420,6 +1460,10 @@ int QuicChromiumClientSession::WaitForHandshakeConfirmation(
     return ERR_CONNECTION_CLOSED;
   }
 
+  if (http3_goaway_received_) {
+    return ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED;
+  }
+
   if (OneRttKeysAvailable()) {
     return OK;
   }
@@ -1429,14 +1473,14 @@ int QuicChromiumClientSession::WaitForHandshakeConfirmation(
 }
 
 int QuicChromiumClientSession::TryCreateStream(StreamRequest* request) {
-  if (goaway_received()) {
-    DVLOG(1) << "Going away.";
-    return ERR_CONNECTION_CLOSED;
-  }
-
   if (!connection()->connected()) {
     DVLOG(1) << "Already closed.";
     return ERR_CONNECTION_CLOSED;
+  }
+
+  if (http3_goaway_received_) {
+    DVLOG(1) << "Going away.";
+    return ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED;
   }
 
   if (going_away_) {
@@ -2356,6 +2400,8 @@ void QuicChromiumClientSession::OnConnectionClosed(
   CHECK(socket_found_in_writer);
   DCHECK(!HasActiveRequestStreams());
   CloseAllHandles(ERR_UNEXPECTED);
+  UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.AbortedPendingStreamRequests",
+                            stream_requests_.size());
   CancelAllRequests(ERR_CONNECTION_CLOSED);
   NotifyRequestsOfConfirmation(ERR_CONNECTION_CLOSED);
   NotifyFactoryOfSessionClosedLater();
@@ -3385,19 +3431,16 @@ void QuicChromiumClientSession::CloseAllHandles(int net_error) {
   while (!handles_.empty()) {
     Handle* handle = *handles_.begin();
     handles_.erase(handle);
-    handle->OnSessionClosed(connection()->version(), net_error, error(),
-                            source_, port_migration_detected_,
-                            quic_connection_migration_attempted_,
-                            quic_connection_migration_successful_,
-                            GetConnectTiming(), WasConnectionEverUsed(),
-                            was_ever_used_to_create_streams(), migration_info_);
+    handle->OnSessionClosed(
+        connection()->version(), net_error, error(), source_,
+        port_migration_detected_, quic_connection_migration_attempted_,
+        quic_connection_migration_successful_, GetConnectTiming(),
+        WasConnectionEverUsed(), was_ever_used_to_create_streams(),
+        http3_goaway_received_, migration_info_);
   }
 }
 
 void QuicChromiumClientSession::CancelAllRequests(int net_error) {
-  UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.AbortedPendingStreamRequests",
-                            stream_requests_.size());
-
   while (!stream_requests_.empty()) {
     StreamRequest* request = stream_requests_.front();
     stream_requests_.pop_front();

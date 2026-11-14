@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
@@ -235,6 +236,12 @@ int QuicSessionPool::ProxyJob::DoCreateProxyStream() {
 
 int QuicSessionPool::ProxyJob::DoCreateProxyStreamComplete(int rv) {
   if (rv != 0) {
+    // Tunnel setup does not retry `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED`, and
+    // proxy fallback does not recognize it, so report it as a closed
+    // connection.
+    if (rv == ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED) {
+      return ERR_CONNECTION_CLOSED;
+    }
     return rv;
   }
   proxy_stream_ = proxy_session_->ReleaseStream();

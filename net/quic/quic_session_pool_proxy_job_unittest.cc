@@ -20,6 +20,7 @@
 #include "net/net_buildflags.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
+#include "net/quic/quic_chromium_client_session_peer.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
@@ -763,6 +764,95 @@ TEST_P(QuicSessionPoolProxyJobTest, RequestSessionAgainInCallback) {
   // Verify the second request is successful.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return successful_request_socket_data.AllDataConsumed(); }));
+}
+
+TEST_P(QuicSessionPoolProxyJobTest, GoAwayOnProxySessionBeforeStreamCreated) {
+  Initialize();
+
+  GURL url("https://www.example.org/");
+  GURL proxy(kProxy1Url);
+  auto origin = url::SchemeHostPort(url);
+  auto proxy_origin = url::SchemeHostPort(proxy);
+  auto nak = NetworkAnonymizationKey();
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(origin.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(proxy_origin.host()));
+
+  ProofVerifyDetailsChromium verify_details;
+  verify_details.cert_verify_result.verified_cert = cert;
+  verify_details.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  QuicTestPacketMaker proxy_maker(
+      quic::ParsedQuicVersion::RFCv1(),
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), proxy_origin.host(), quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/false);
+
+  QuicSocketDataProvider socket_data(quic::ParsedQuicVersion::RFCv1());
+  socket_data
+      .AddWrite("initial-settings", proxy_maker.MakeInitialSettingsPacket(1))
+      .Sync();
+  socket_data
+      .AddWrite("streams-blocked",
+                proxy_maker.Packet(2)
+                    .AddStreamsBlockedFrame(/*control_frame_id=*/1,
+                                            /*stream_count=*/50,
+                                            /*unidirectional=*/false)
+                    .Build())
+      .Sync();
+  socket_factory_->AddSocketDataProvider(&socket_data);
+
+  // Establish the pooled proxy session first.
+  TestCompletionCallback proxy_callback;
+  RequestBuilder proxy_builder(this);
+  proxy_builder.destination = proxy_origin;
+  proxy_builder.quic_version = quic::ParsedQuicVersion::RFCv1();
+  proxy_builder.http_user_agent_settings = &http_user_agent_settings_;
+  proxy_builder.session_usage = SessionUsage::kProxy;
+  proxy_builder.cert_verify_flags =
+      CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
+  proxy_builder.url = proxy;
+  proxy_builder.callback = proxy_callback.callback();
+  ASSERT_THAT(proxy_builder.CallRequest(), IsError(ERR_IO_PENDING));
+  ASSERT_THAT(proxy_callback.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, PRIVACY_MODE_DISABLED, nak, ProxyChain::Direct(),
+      SessionUsage::kProxy, /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/true);
+  ASSERT_TRUE(proxy_session);
+
+  // Saturate `proxy_session` so `ProxyJob`'s tunnel stream request queues in
+  // `stream_requests_` before a stream can be created.
+  for (size_t i = 0; i < 50; ++i) {
+    ASSERT_TRUE(
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(proxy_session));
+  }
+
+  auto proxy_chain = ProxyChain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                         proxy_origin.host(), 443),
+  });
+  ASSERT_TRUE(proxy_chain.IsValid());
+
+  RequestBuilder builder(this);
+  builder.destination = origin;
+  builder.proxy_chain = proxy_chain;
+  builder.http_user_agent_settings = &http_user_agent_settings_;
+  builder.url = url;
+  ASSERT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  // Receiving HTTP/3 GOAWAY cancels the pending tunnel `StreamRequest` with
+  // `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED`, which `ProxyJob` remaps to
+  // `ERR_CONNECTION_CLOSED`.
+  proxy_session->OnHttp3GoAway(/*id=*/0);
+
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_TRUE(socket_data.AllDataConsumed());
 }
 
 #endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)

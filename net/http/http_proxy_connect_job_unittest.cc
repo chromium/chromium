@@ -2737,6 +2737,18 @@ TEST_P(HttpProxyConnectJobTest, ProxyPoolTimeoutWithExperimentDefaultParams) {
   EXPECT_LT(rtt_estimate, GetNestedConnectionTimeout());
 }
 
+TEST_P(HttpProxyConnectJobTest, QuicProxyCreateStreamCompleteErrors) {
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<HttpProxyConnectJob> connect_job =
+      CreateConnectJobForTunnel(&test_delegate);
+  EXPECT_THAT(connect_job->DoQuicProxyCreateStreamComplete(
+                  ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED),
+              test::IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_THAT(
+      connect_job->DoQuicProxyCreateStreamComplete(ERR_QUIC_PROTOCOL_ERROR),
+      test::IsError(ERR_QUIC_PROTOCOL_ERROR));
+}
+
 #if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // A Mock QuicSessionPool which can intercept calls to RequestSession.
 class MockQuicSessionPool : public QuicSessionPool {

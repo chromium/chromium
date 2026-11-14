@@ -93,9 +93,11 @@ int QuicHttpStream::InitializeStream(bool can_send_early,
   DCHECK(!stream_);
 
   // HttpNetworkTransaction will retry any request that fails with
-  // ERR_QUIC_HANDSHAKE_FAILED. It will retry any request with
-  // ERR_CONNECTION_CLOSED so long as the connection has been used for other
-  // streams first and headers have not yet been received.
+  // ERR_QUIC_HANDSHAKE_FAILED or ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED (the
+  // latter if the session received an HTTP/3 GOAWAY before the request was
+  // sent). It will retry any request with ERR_CONNECTION_CLOSED so long as the
+  // connection has been used for other streams first and headers have not yet
+  // been received.
   if (!quic_session()->IsConnected()) {
     return GetResponseStatus();
   }
@@ -766,10 +768,14 @@ int QuicHttpStream::ComputeResponseStatus() const {
     return session_error_;
   }
 
-  // If |response_info_| is null then the request has not been sent, so
-  // return ERR_CONNECTION_CLOSED to permit HttpNetworkTransaction to
+  // If `response_info_` is null then the request has not been sent, so return
+  // `ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED` if an HTTP/3 GOAWAY was received,
+  // or `ERR_CONNECTION_CLOSED` otherwise, to permit `HttpNetworkTransaction` to
   // retry the request.
   if (!response_info_) {
+    if (quic_session()->Http3GoAwayReceived()) {
+      return ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED;
+    }
     return ERR_CONNECTION_CLOSED;
   }
 

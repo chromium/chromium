@@ -1567,6 +1567,375 @@ TEST_P(QuicChromiumClientSessionTest, GoAwayReceived) {
                          session_.get()));
 }
 
+TEST_P(QuicChromiumClientSessionTest,
+       RequestStreamAfterGoAwayReturnsRetryableError) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle_before_goaway =
+      session_->CreateHandle(destination_);
+  std::unique_ptr<QuicChromiumClientSession::Handle>
+      handle_before_goaway_and_close = session_->CreateHandle(destination_);
+
+  session_->OnHttp3GoAway(0);
+
+  TestCompletionCallback callback1;
+  EXPECT_THAT(handle_before_goaway->RequestStream(
+                  /*requires_confirmation=*/false, callback1.callback(),
+                  TRAFFIC_ANNOTATION_FOR_TESTS),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+
+  // A handle created after `OnHttp3GoAway()` also preserves GOAWAY state.
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle_after_goaway =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback2;
+  EXPECT_THAT(handle_after_goaway->RequestStream(
+                  /*requires_confirmation=*/false, callback2.callback(),
+                  TRAFFIC_ANNOTATION_FOR_TESTS),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+
+  // Closing the connection after a valid GOAWAY keeps
+  // `was_http3_goaway_received_` on pre-existing handles.
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "Graceful shutdown",
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  TestCompletionCallback callback3;
+  EXPECT_THAT(handle_before_goaway_and_close->RequestStream(
+                  /*requires_confirmation=*/false, callback3.callback(),
+                  TRAFFIC_ANNOTATION_FOR_TESTS),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       RequestStreamAfterGoAwayWithKillSwitchDisabledReturnsConnectionClosed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kQuicRetryPreStreamRequestsOnHttp3GoAway);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  session_->OnHttp3GoAway(0);
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_CONNECTION_CLOSED));
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       RequestStreamWhenGoingAwayWithoutGoAwayReturnsConnectionClosed) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  session_->SetGoingAwayForTesting(true);
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_CONNECTION_CLOSED));
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       MalformedGoAwayClosesConnectionWithoutRetryableError) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddConnectionCloseFrame(quic::QUIC_HTTP_GOAWAY_INVALID_STREAM_ID,
+                                   "GOAWAY with invalid stream ID")
+          .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+
+  // Stream ID 1 is not a client-initiated bidirectional stream ID, so
+  // `QuicSpdySession::OnHttp3GoAway()` closes the connection with
+  // `QUIC_HTTP_GOAWAY_INVALID_STREAM_ID`.
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  session_->OnHttp3GoAway(/*id=*/1);
+
+  EXPECT_FALSE(session_->connection()->connected());
+  EXPECT_FALSE(session_->http3_goaway_received());
+  EXPECT_FALSE(handle->Http3GoAwayReceived());
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_CONNECTION_CLOSED));
+}
+
+TEST_P(QuicChromiumClientSessionTest, GoAwayCancelsPendingStreamRequests) {
+  base::HistogramTester histogram_tester;
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  const size_t kMaxOpenStreams = GetMaxAllowedOutgoingBidirectionalStreams();
+  for (size_t i = 0; i < kMaxOpenStreams; i++) {
+    EXPECT_TRUE(
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
+  }
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  session_->OnHttp3GoAway(0);
+  EXPECT_THAT(callback.WaitForResult(),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+  // `Net.QuicSession.AbortedPendingStreamRequests` is only recorded on session
+  // close, not on GOAWAY.
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.AbortedPendingStreamRequests", 0);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       GoAwayCancelsRequestWaitingForConfirmation) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  ASSERT_FALSE(session_->OneRttKeysAvailable());
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/true, callback.callback(),
+                            TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  session_->OnHttp3GoAway(0);
+  EXPECT_THAT(callback.WaitForResult(),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+// A GOAWAY that arrives after the handshake is confirmed but before the posted
+// confirmation callback runs fails the stream request with the retryable
+// error.
+TEST_P(QuicChromiumClientSessionTest,
+       GoAwayAfterConfirmationPostedReturnsRetryableError) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  ASSERT_FALSE(session_->OneRttKeysAvailable());
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/true, callback.callback(),
+                            TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  // Posts the confirmation callback, which runs after the GOAWAY.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  session_->OnHttp3GoAway(0);
+  EXPECT_THAT(callback.WaitForResult(),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+// Same as above, but the session also closes before the posted confirmation
+// callback runs, so the handle uses its cached GOAWAY state.
+TEST_P(QuicChromiumClientSessionTest,
+       GoAwayAndCloseAfterConfirmationPostedReturnsRetryableError) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  ASSERT_FALSE(session_->OneRttKeysAvailable());
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/true, callback.callback(),
+                            TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  session_->OnHttp3GoAway(0);
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "Graceful shutdown",
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  ASSERT_FALSE(handle->IsConnected());
+  EXPECT_THAT(callback.WaitForResult(),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       WaitForHandshakeConfirmationAfterGoAwayReturnsRetryableError) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  ASSERT_FALSE(session_->OneRttKeysAvailable());
+
+  session_->OnHttp3GoAway(0);
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(session_->WaitForHandshakeConfirmation(callback.callback()),
+              IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+// A malformed GOAWAY following a valid one closes the connection, but requests
+// that have not been sent remain safe to retry, so the handle keeps reporting
+// the retryable error.
+TEST_P(QuicChromiumClientSessionTest,
+       MalformedGoAwayAfterValidGoAwayKeepsRetryableError) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddConnectionCloseFrame(
+              quic::QUIC_HTTP_GOAWAY_ID_LARGER_THAN_PREVIOUS,
+              "GOAWAY received with ID 4 greater than previously received ID 0")
+          .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+
+  session_->OnHttp3GoAway(/*id=*/0);
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  session_->OnHttp3GoAway(/*id=*/4);
+
+  EXPECT_FALSE(session_->connection()->connected());
+  EXPECT_TRUE(handle->Http3GoAwayReceived());
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       ConnectionCloseRecordsAbortedPendingStreamRequests) {
+  base::HistogramTester histogram_tester;
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+  const size_t kMaxOpenStreams = GetMaxAllowedOutgoingBidirectionalStreams();
+  for (size_t i = 0; i < kMaxOpenStreams; i++) {
+    EXPECT_TRUE(
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
+  }
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      handle->RequestStream(/*requires_confirmation=*/false,
+                            callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "Graceful shutdown",
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_CLOSED));
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.AbortedPendingStreamRequests", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_P(QuicChromiumClientSessionTest, CanPool) {
   MockQuicData quic_data(version_);
   quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
@@ -3546,6 +3915,41 @@ TEST_P(QuicChromiumClientSessionTest,
 
   session_->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
                                 quic::ConnectionCloseBehavior::SILENT_CLOSE);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       OnHttp3GoAwayWithPendingWebSocketStreamRequestDoesNotCrash) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
+  ASSERT_TRUE(session_->allow_extended_connect());
+
+  const size_t kMaxOpenStreams = GetMaxAllowedOutgoingBidirectionalStreams();
+  for (size_t i = 0; i < kMaxOpenStreams; i++) {
+    ASSERT_TRUE(
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
+  }
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session_->CreateHandle(destination_);
+  EXPECT_EQ(nullptr, handle->CreateWebSocketQuicStreamAdapter(
+                         /*delegate=*/nullptr, base::DoNothing(),
+                         TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  session_->OnHttp3GoAway(/*id=*/0);
+  EXPECT_TRUE(session_->http3_goaway_received());
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 

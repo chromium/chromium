@@ -1893,6 +1893,31 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeStartConfirmed) {
   EXPECT_THAT(delegate->error(), IsError(ERR_CONNECTION_CLOSED));
 }
 
+// `BidirectionalStream` does not retry, so a stream request that fails because
+// of an HTTP/3 GOAWAY is reported as `ERR_CONNECTION_CLOSED`.
+TEST_P(BidirectionalStreamQuicImplTest, GoAwayBeforeStartConfirmed) {
+  SetRequest("POST", "/", DEFAULT_PRIORITY);
+  Initialize();
+
+  BidirectionalStreamRequestInfo request;
+  request.method = "POST";
+  request.url = GURL("http://www.google.com/");
+  request.end_stream_on_headers = false;
+  request.priority = DEFAULT_PRIORITY;
+
+  ConfirmHandshake();
+  session()->OnHttp3GoAway(0);
+
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
+  auto delegate =
+      std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
+  delegate->Start(&request, net_log_with_source(),
+                  session()->CreateHandle(destination_));
+  delegate->WaitUntilNextCallback(kOnFailed);
+  EXPECT_TRUE(delegate->on_failed_called());
+  EXPECT_THAT(delegate->error(), IsError(ERR_CONNECTION_CLOSED));
+}
+
 TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeStartNotConfirmed) {
   SetRequest("POST", "/", DEFAULT_PRIORITY);
   Initialize();

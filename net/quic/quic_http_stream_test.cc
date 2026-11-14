@@ -928,6 +928,20 @@ TEST_P(QuicHttpStreamTest, IsConnectionReusedKillSwitchDisabled) {
   EXPECT_TRUE(stream2.IsConnectionReused());
 }
 
+TEST_P(QuicHttpStreamTest, InitializeStreamAfterGoAwayAndConnectionClose) {
+  Initialize();
+
+  session_->OnHttp3GoAway(0);
+  connection_->CloseConnection(quic::QUIC_NO_ERROR, "Graceful shutdown",
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_THAT(
+      stream_->InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                                callback_.callback()),
+      IsError(ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED));
+}
+
 TEST_P(QuicHttpStreamTest, GetRequest) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   size_t spdy_request_header_frame_length;

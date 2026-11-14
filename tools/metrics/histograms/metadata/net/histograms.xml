@@ -6229,7 +6229,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of pending stream requests aborted when the session is closed.
     Pending streams are those which could not be created immediately because
-    there were too many active streams.
+    there were too many active streams. Pending requests that were already
+    failed with ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED (and retried by the
+    caller) because the session received an HTTP/3 GOAWAY before closing are not
+    counted.
   </summary>
 </histogram>
 

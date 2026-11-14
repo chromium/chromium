@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
@@ -239,6 +240,9 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
                                  base::TimeDelta latency);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HttpProxyConnectJobTest,
+                           QuicProxyCreateStreamCompleteErrors);
+
   enum State {
     STATE_BEGIN_CONNECT,
     STATE_TRANSPORT_CONNECT,
