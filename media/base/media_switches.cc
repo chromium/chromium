@@ -1286,6 +1286,11 @@ BASE_FEATURE(kAutoPictureInPictureAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextMenuPictureInPictureAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, an Android audio focus gain only resumes media that an audio
+// focus loss paused.
+BASE_FEATURE(kFocusGainResumesOnlyFocusLossPauses,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables fullscreen video Picture-in-Picture on Android.
 BASE_FEATURE(kFullscreenVideoPictureInPicture,
              base::FEATURE_ENABLED_BY_DEFAULT);

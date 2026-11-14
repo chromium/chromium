@@ -93,6 +93,7 @@ void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*) {
   }
 
   media_session_->Suspend(MediaSession::SuspendType::kSystem);
+  suspended_for_focus_loss_ = media_session_->IsSuspended();
 }
 
 void AudioFocusDelegateAndroid::OnResume(JNIEnv*) {
@@ -100,7 +101,23 @@ void AudioFocusDelegateAndroid::OnResume(JNIEnv*) {
     return;
   }
 
+  // Only resume media that OnSuspend() paused for an audio focus loss.
+  if (!suspended_for_focus_loss_ &&
+      base::FeatureList::IsEnabled(
+          media::kFocusGainResumesOnlyFocusLossPauses)) {
+    return;
+  }
+
   media_session_->Resume(MediaSession::SuspendType::kSystem);
+}
+
+void AudioFocusDelegateAndroid::MediaSessionInfoChanged(
+    const media_session::mojom::MediaSessionInfoPtr&) {
+  // A focus loss pause is over once the session is no longer suspended,
+  // whether it was resumed or stopped.
+  if (!media_session_->IsSuspended()) {
+    suspended_for_focus_loss_ = false;
+  }
 }
 
 void AudioFocusDelegateAndroid::OnStartDucking(JNIEnv*) {
