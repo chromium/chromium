@@ -449,6 +449,81 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void blueDot_replacesRefineButton() {
+        mProcessor.onNativeInitialized();
+        var template =
+                SuggestTemplateInfo.newBuilder()
+                        .setActionIcon(SuggestTemplateInfo.ActionIconType.BLUE_DOT)
+                        .build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "query")
+                        .setIsSearch(true)
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        // Nothing on the right reacts to taps.
+        assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
+        OmniboxDrawableState dot = mModel.get(BaseSuggestionViewProperties.END_ICON);
+        assertNotNull(dot);
+        assertEquals(R.drawable.ic_action_dot_24dp, dot.resourceIdForTesting);
+        assertFalse(dot.allowTint);
+    }
+
+    @Test
+    public void blueDot_shownForNonRefineableSuggestions() {
+        mProcessor.onNativeInitialized();
+        var template =
+                SuggestTemplateInfo.newBuilder()
+                        .setActionIcon(SuggestTemplateInfo.ActionIconType.BLUE_DOT)
+                        .build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "query")
+                        .setIsSearch(true)
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        assertFalse(mSuggestion.isRefineable());
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        OmniboxDrawableState dot = mModel.get(BaseSuggestionViewProperties.END_ICON);
+        assertNotNull(dot);
+        assertEquals(R.drawable.ic_action_dot_24dp, dot.resourceIdForTesting);
+    }
+
+    @Test
+    public void blueDot_shownWithRemoveButton() {
+        // Devices with a precision pointer show the remove button.
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mProcessor = new BasicSuggestionProcessor(mUiContext);
+        mProcessor.onNativeInitialized();
+        var template =
+                SuggestTemplateInfo.newBuilder()
+                        .setActionIcon(SuggestTemplateInfo.ActionIconType.BLUE_DOT)
+                        .build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_HISTORY, "query")
+                        .setIsSearch(true)
+                        .setDeletable(true)
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        // The remove button and the dot are both shown.
+        assertEquals(
+                mUiContext.resourceProvider.getString(
+                        R.string.accessibility_omnibox_remove_suggestion),
+                mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS)
+                        .get(0)
+                        .accessibilityDescription);
+        OmniboxDrawableState dot = mModel.get(BaseSuggestionViewProperties.END_ICON);
+        assertNotNull(dot);
+        assertEquals(R.drawable.ic_action_dot_24dp, dot.resourceIdForTesting);
+    }
+
+    @Test
     public void switchTabIcon_shownForSwitchToTabSuggestions() {
         mInput.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
 

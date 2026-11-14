@@ -40,6 +40,7 @@ import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.PageClassificationUtils;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionIconType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -159,6 +160,19 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             return;
         }
 
+        // The dot only marks the suggestion, so it isn't a button. It shows next to the remove
+        // button and when the suggestion can't be refined, and taps on it open the suggestion. It
+        // keeps its own accent color instead of the icon tint.
+        boolean showBlueDot = suggestion.getActionIconType() == ActionIconType.BLUE_DOT;
+        if (showBlueDot) {
+            model.set(
+                    BaseSuggestionViewProperties.END_ICON,
+                    OmniboxDrawableState.forSmallIcon(
+                            mUiContext.resourceProvider,
+                            R.drawable.ic_action_dot_24dp,
+                            /* allowTint= */ false));
+        }
+
         if (mShouldShowRemoveButton) {
             if (suggestion.isDeletable()) {
                 setActionButtons(
@@ -179,7 +193,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             return;
         }
 
-        if (!suggestion.isRefineable()) return;
+        // The dot replaces the refine button.
+        if (showBlueDot || !suggestion.isRefineable()) return;
 
         String iconString =
                 mUiContext.resourceProvider.getString(
@@ -282,6 +297,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.onSuggestionFocused(suggestion));
         setActionButtons(model, null);
+        model.set(BaseSuggestionViewProperties.END_ICON, null);
 
         model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, false);
         model.set(BaseSuggestionViewProperties.SHOW_DECORATION, true);

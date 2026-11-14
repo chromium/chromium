@@ -47,6 +47,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     public final ImageView decorationIcon;
     public final T contentView;
     public @Nullable ActionChipsView actionChipsView;
+    public @Nullable ImageView endIcon;
     public final RoundedCornerOutlineProvider decorationIconOutline;
     private final List<ActionButtonView> mActionButtons;
     private final SimpleSelectionController mActionButtonsHighlighter;
@@ -137,6 +138,19 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     }
 
     /**
+     * Returns the view for {@link BaseSuggestionViewProperties#END_ICON}, lazily creating and
+     * attaching it if it does not yet exist.
+     */
+    public ImageView ensureEndIcon() {
+        if (endIcon == null) {
+            endIcon = new ImageView(getContext());
+            endIcon.setScaleType(ImageView.ScaleType.CENTER);
+            addView(endIcon, LayoutParams.forViewType(SuggestionViewType.ACTION_BUTTON));
+        }
+        return endIcon;
+    }
+
+    /**
      * Prepare (truncate or add) Action views for the Suggestion.
      *
      * @param desiredViewCount Number of action views for this suggestion.
@@ -211,7 +225,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
 
             actionView.setLayoutParams(LayoutParams.forViewType(SuggestionViewType.ACTION_BUTTON));
             mActionButtons.add(actionView);
-            addView(actionView);
+            // Keep the end icon after the action buttons, at the end of the suggestion.
+            addView(actionView, endIcon == null ? -1 : indexOfChild(endIcon));
         }
     }
 
