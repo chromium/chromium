@@ -28,7 +28,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -60,7 +59,6 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
-#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/permissions/request_type.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -8587,6 +8585,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL eligible_url_2 = embedded_test_server()->GetURL("/eligible-2");
   const GURL active_ineligible_url =
       embedded_test_server()->GetURL("/ineligible-active");
+  base::HistogramTester histogram_tester;
 
   // Open an ineligible tab in the background, two eligible tabs, and a final
   // ineligible foreground tab so both active and background ineligible tabs are
@@ -8635,20 +8634,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(tabs[1]->url, eligible_url_1);
   EXPECT_FALSE(tabs[1]->recent_tab);
 
-  // Verify eligibility and `FetchRecentTabs()` did not pull
-  // AnnotatedPageContent.
-  auto* extraction_service =
-      page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(browser()->GetProfile());
-  ASSERT_NE(extraction_service, nullptr);
-  EXPECT_FALSE(extraction_service
-                   ->GetServerUploadEligibilityForPage(
-                       bg_ineligible_tab->GetContents()->GetPrimaryPage())
-                   .has_value());
-  EXPECT_FALSE(extraction_service
-                   ->GetServerUploadEligibilityForPage(
-                       fg_ineligible_tab->GetContents()->GetPrimaryPage())
-                   .has_value());
+  // Verify eligibility and `FetchRecentTabs()` did not request
+  // AnnotatedPageContent. Automatic on-load extraction can populate the
+  // extraction cache for any tab at any time, so check for on-demand
+  // extraction requests.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.OnDemand.EnabledReason", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -8657,6 +8648,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL restricted_url =
       embedded_test_server()->GetURL("/conditional-restricted");
   const GURL public_url = embedded_test_server()->GetURL("/conditional-public");
+  base::HistogramTester histogram_tester;
 
   // Open a `<meta>`-tag-restricted page directly in a background tab to verify
   // background load resolves initial `<meta>` eligibility without pulling APC.
@@ -8672,16 +8664,12 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(FetchRecentTabs().empty());
 
-  // Verify `<meta>` tag eligibility and `FetchRecentTabs()` did not trigger
-  // AnnotatedPageContent extraction.
-  auto* extraction_service =
-      page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(browser()->GetProfile());
-  ASSERT_NE(extraction_service, nullptr);
-  EXPECT_FALSE(extraction_service
-                   ->GetServerUploadEligibilityForPage(
-                       restricted_tab->GetContents()->GetPrimaryPage())
-                   .has_value());
+  // Verify `<meta>` tag eligibility and `FetchRecentTabs()` did not request
+  // AnnotatedPageContent. Automatic on-load extraction can populate the
+  // extraction cache for any tab at any time, so check for on-demand
+  // extraction requests.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.OnDemand.EnabledReason", 0);
 
   // Open a conditionally-eligible foreground tab whose `<meta>` tag permits
   // sharing.
