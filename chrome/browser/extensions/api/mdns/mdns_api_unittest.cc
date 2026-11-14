@@ -39,7 +39,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 using media_router::MockDnsSdRegistry;
 using testing::_;
 using testing::Return;
-using testing::ReturnRef;
 
 namespace extensions {
 namespace {
@@ -75,8 +74,7 @@ class MockedMDnsAPI : public MDnsAPI {
  public:
   MOCK_CONST_METHOD1(IsMDnsAllowed, bool(const ExtensionId& extension_id));
 
-  MOCK_METHOD0(GetEventListeners,
-               const extensions::EventListenerMap::ListenerList&());
+  MOCK_METHOD0(GetEventListeners, extensions::EventListenerMap::ListenerSpan());
 };
 
 std::unique_ptr<KeyedService> MockedMDnsAPITestingFactoryFunction(
@@ -290,8 +288,9 @@ TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {
   extensions::EventListenerInfo listener_info(
       kEventFilterServiceTypeKey, kExtId, GURL(), nullptr, browser_context());
 
-  EXPECT_CALL(*mdns_api_, GetEventListeners())
-      .WillRepeatedly(ReturnRef(listeners));
+  EXPECT_CALL(*mdns_api_, GetEventListeners()).WillRepeatedly([&listeners]() {
+    return extensions::EventListenerMap::ListenerSpan(listeners);
+  });
 
   // Listener #1 added with kService1.
   AddEventListener(kExtId, kService1, render_process_host(), &listeners);

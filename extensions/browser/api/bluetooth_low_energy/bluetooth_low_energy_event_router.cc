@@ -1471,7 +1471,7 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
   // only once.
   BluetoothPermissionRequest request(uuid.value());
   std::set<std::string> handled_extensions;
-  const EventListenerMap::ListenerList& listeners =
+  EventListenerMap::ListenerSpan listeners =
       EventRouter::Get(browser_context_)
           ->listeners()
           .GetEventListenersByName(event_name);

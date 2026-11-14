@@ -325,7 +325,7 @@ bool ShouldShowNotificationForVolume(
 
 std::set<GURL> GetEventListenerURLs(Profile* profile,
                                     const std::string& event_name) {
-  const extensions::EventListenerMap::ListenerList& listeners =
+  extensions::EventListenerMap::ListenerSpan listeners =
       extensions::EventRouter::Get(profile)
           ->listeners()
           .GetEventListenersByName(event_name);
@@ -1054,7 +1054,7 @@ void EventRouter::SendCrostiniEvent(fmp::CrostiniEventType event_type,
   }
 
   const std::string event_name(fmp::OnCrostiniChanged::kEventName);
-  const extensions::EventListenerMap::ListenerList& listeners =
+  extensions::EventListenerMap::ListenerSpan listeners =
       extensions::EventRouter::Get(profile_)
           ->listeners()
           .GetEventListenersByName(event_name);

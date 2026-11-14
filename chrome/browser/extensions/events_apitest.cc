@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     EventRouter* event_router = EventRouter::Get(profile());
     std::vector<const EventListener*> registered_listeners;
-    const EventListenerMap::ListenerList& all_listeners =
+    EventListenerMap::ListenerSpan all_listeners =
         event_router->listeners().GetEventListenersByName(
             "webNavigation.onBeforeNavigate");
     // Find registered listeners for the extension. There will be both active

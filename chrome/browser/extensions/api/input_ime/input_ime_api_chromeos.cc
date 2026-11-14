@@ -652,7 +652,7 @@ class ImeObserverChromeOS
     // the key events, and therefore, all key events will be eaten.
     // This is for error-tolerance, and it means that onKeyEvent will never wake
     // up lazy background page.
-    const extensions::EventListenerMap::ListenerList& listeners =
+    extensions::EventListenerMap::ListenerSpan listeners =
         extensions::EventRouter::Get(profile_)
             ->listeners()
             .GetEventListenersByName(input_ime::OnKeyEvent::kEventName);

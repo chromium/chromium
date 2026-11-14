@@ -1308,7 +1308,7 @@ void EventRouter::ClearRegisteredEventsForTest(
 
 bool EventRouter::HasLazyEventListenerForTesting(
     const std::string& event_name) {
-  const EventListenerMap::ListenerList& listeners =
+  EventListenerMap::ListenerSpan listeners =
       listeners_.GetEventListenersByName(event_name);
   return std::ranges::any_of(
       listeners, [](const std::unique_ptr<EventListener>& listener) {
@@ -1318,7 +1318,7 @@ bool EventRouter::HasLazyEventListenerForTesting(
 
 bool EventRouter::HasNonLazyEventListenerForTesting(
     const std::string& event_name) {
-  const EventListenerMap::ListenerList& listeners =
+  EventListenerMap::ListenerSpan listeners =
       listeners_.GetEventListenersByName(event_name);
   return std::ranges::any_of(
       listeners, [](const std::unique_ptr<EventListener>& listener) {
@@ -1329,7 +1329,7 @@ bool EventRouter::HasNonLazyEventListenerForTesting(
 bool EventRouter::HasLazyEventListenerWithFilterForTesting(
     const std::string& event_name,
     const base::DictValue& filter) {
-  const EventListenerMap::ListenerList& listeners =
+  EventListenerMap::ListenerSpan listeners =
       listeners_.GetEventListenersByName(event_name);
   return std::ranges::any_of(
       listeners, [&filter](const std::unique_ptr<EventListener>& listener) {

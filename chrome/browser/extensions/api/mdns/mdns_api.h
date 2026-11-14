@@ -61,7 +61,7 @@ class MDnsAPI : public BrowserContextKeyedAPI,
   virtual media_router::DnsSdRegistry* dns_sd_registry();
 
   // Gets the list of mDNS event listeners.
-  virtual const extensions::EventListenerMap::ListenerList& GetEventListeners();
+  virtual extensions::EventListenerMap::ListenerSpan GetEventListeners();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MDnsAPIDiscoveryTest,

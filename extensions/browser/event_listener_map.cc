@@ -163,14 +163,13 @@ EventListenerMap::EventListenerMap(Delegate* delegate) : delegate_(delegate) {}
 
 EventListenerMap::~EventListenerMap() = default;
 
-const EventListenerMap::ListenerList& EventListenerMap::GetEventListenersByName(
+EventListenerMap::ListenerSpan EventListenerMap::GetEventListenersByName(
     const std::string& event_name) const {
   auto it = listeners_.find(event_name);
   if (it != listeners_.end()) {
     return it->second;
   }
-  static const base::NoDestructor<ListenerList> empty_list;
-  return *empty_list;
+  return {};
 }
 
 bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {

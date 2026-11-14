@@ -191,7 +191,7 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
       ->BroadcastEvent(std::move(event));
 }
 
-const extensions::EventListenerMap::ListenerList& MDnsAPI::GetEventListeners() {
+extensions::EventListenerMap::ListenerSpan MDnsAPI::GetEventListeners() {
   return extensions::EventRouter::Get(browser_context_)
       ->listeners()
       .GetEventListenersByName(mdns::OnServiceList::kEventName);

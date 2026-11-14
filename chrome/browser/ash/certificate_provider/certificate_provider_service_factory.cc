@@ -291,11 +291,13 @@ void DefaultDelegate::OnExtensionUnloaded(
 base::flat_set<std::string> DefaultDelegate::GetSubscribedExtensions(
     const std::string& event_name) {
   std::vector<std::string> ids;
-  for (const std::unique_ptr<extensions::EventListener>& listener :
-       event_router_->listeners().GetEventListenersByName(event_name)) {
+  extensions::EventListenerMap::ListenerSpan listeners =
+      event_router_->listeners().GetEventListenersByName(event_name);
+  ids.reserve(listeners.size());
+  for (const std::unique_ptr<extensions::EventListener>& listener : listeners) {
     ids.push_back(listener->extension_id());
   }
-  return base::flat_set<std::string>(ids.begin(), ids.end());
+  return base::flat_set<std::string>(std::move(ids));
 }
 
 }  // namespace
