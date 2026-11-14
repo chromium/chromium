@@ -20,7 +20,6 @@
 -All/WebAppBrowserTest.ManifestShareTarget/*
 -All/WebAppBrowserTest.ManifestShortcut/*
 -All/WebAppWebDXManifestBrowserTest.UsageMeasured/*
--WebViewTest.SelectShowHide/*
 
 # TODO(https://crbug.com/582849700): Flaky on linux-arm64-wayland-rel-fyi.
 -MultiContentsViewWebContentsReLayoutBrowserTest.EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
