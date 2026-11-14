@@ -1,6 +1,6 @@
 {
-  "version": "96.8",
-  "log_list_timestamp": "2026-11-12T13:37:31Z",
+  "version": "97.1",
+  "log_list_timestamp": "2026-11-14T13:36:22Z",
   "operators": [
     {
       "name": "Google",
@@ -15,8 +15,12 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2026h2/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-09-30T22:19:27Z"
+            "readonly": {
+              "timestamp": "2026-11-13T17:30:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "y/1N4/rB/Ziykeo4ouNW+YI1fByDVKL8XmJXZNTerzU=",
+                "tree_size": 3501950757
+              }
             }
           },
           "temporal_interval": {
@@ -31,8 +35,12 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2027h1/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2025-12-28T00:30:00Z"
+            "readonly": {
+              "timestamp": "2026-11-13T17:30:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "X5UqMJVBWmftbNrjJR5B8fTQdsVUUWra4fepY7mufWQ=",
+                "tree_size": 1003958630
+              }
             }
           },
           "temporal_interval": {
@@ -47,8 +55,12 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h2/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-09-30T22:19:27Z"
+            "readonly": {
+              "timestamp": "2026-11-13T17:30:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "zWDZb2hACBCOUQKsQ9lmrhA1/71XWyFWNR4F2bH+s9A=",
+                "tree_size": 3037394949
+              }
             }
           },
           "temporal_interval": {
@@ -63,8 +75,12 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2027h1/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2025-12-28T00:30:00Z"
+            "readonly": {
+              "timestamp": "2026-11-13T17:30:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "mHWBORYgVpDCPUoNzH+wXh+YW8hgN5DnENseKxJdL9o=",
+                "tree_size": 844984485
+              }
             }
           },
           "temporal_interval": {
