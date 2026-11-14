@@ -15,9 +15,6 @@ import {getCss as getCrSharedStyle} from 'chrome://resources/cr_elements/cr_shar
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
-import {RouteObserverMixinLit} from '../router.js';
-import type {Route} from '../router.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {getCss as getSettingsSharedLit} from '../settings_shared_lit.css.js';
@@ -27,7 +24,7 @@ import {DefaultBrowserBrowserProxyImpl} from './default_browser_browser_proxy.js
 import {getHtml} from './default_browser_page.html.js';
 
 const SettingsDefaultBrowserPageElementBase =
-    RouteObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
+    WebUiListenerMixinLit(CrLitElement);
 
 export class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase implements SettingsPlugin {
@@ -50,8 +47,6 @@ export class SettingsDefaultBrowserPageElement extends
       isSecondaryInstall_: {type: Boolean},
       isUnknownError_: {type: Boolean},
       maySetDefaultBrowser_: {type: Boolean},
-      // Whether the description should use a more user-centric string.
-      userValueDefaultBrowserStringsEnabled_: {type: Boolean},
     };
   }
 
@@ -60,7 +55,6 @@ export class SettingsDefaultBrowserPageElement extends
   protected accessor isSecondaryInstall_: boolean = false;
   protected accessor isUnknownError_: boolean = false;
   protected accessor maySetDefaultBrowser_: boolean = false;
-  protected accessor userValueDefaultBrowserStringsEnabled_: boolean = false;
 
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
@@ -74,22 +68,6 @@ export class SettingsDefaultBrowserPageElement extends
 
     this.browserProxy_.requestDefaultBrowserState().then(
         this.updateDefaultBrowserState_.bind(this));
-  }
-
-  override currentRouteChanged(newRoute: Route) {
-    if (newRoute !== routes.DEFAULT_BROWSER) {
-      return;
-    }
-
-    // The feature flag state is fetched asynchronously on page navigation,
-    // instead of using loadTimeData, to support a Finch experiment with
-    // `starts_active = false`. This ensures that the user is activated in the
-    // experiment (e.g. the feature flag is checked) only when visiting the
-    // page.
-    this.browserProxy_.requestUserValueStringsFeatureState().then(
-        (isEnabled) => {
-          this.userValueDefaultBrowserStringsEnabled_ = isEnabled;
-        });
   }
 
   private updateDefaultBrowserState_(defaultBrowserState: DefaultBrowserInfo) {
@@ -113,25 +91,9 @@ export class SettingsDefaultBrowserPageElement extends
   }
 
   protected getMakeDefaultLabel(): string {
-    // When the UserValueDefaultBrowserStrings feature is enabled, show a
-    // more user-centric string.
-    // TODO(crbug.com/459593729): Clean up after launch by removing the old
-    // string and this conditional logic.
-    if (this.canPin_) {
-      return loadTimeData.getString(
-          this.userValueDefaultBrowserStringsEnabled_ ?
-              'defaultBrowserMakeDefaultAndPinUserValue' :
-              'defaultBrowserMakeDefaultAndPin');
-    }
-
-    // When the UserValueDefaultBrowserStrings feature is enabled, show a
-    // more user-centric string.
-    // TODO(crbug.com/459593729): Clean up after launch by removing the old
-    // string and this conditional logic.
     return loadTimeData.getString(
-        this.userValueDefaultBrowserStringsEnabled_ ?
-            'defaultBrowserMakeDefaultUserValue' :
-            'defaultBrowserMakeDefault');
+        this.canPin_ ? 'defaultBrowserMakeDefaultAndPin' :
+                       'defaultBrowserMakeDefault');
   }
 
   protected onSetDefaultBrowserClick_() {

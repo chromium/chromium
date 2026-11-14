@@ -9956,15 +9956,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "user-value-default-browser-strings",
-    "owners": [
-      "aisulu@google.com",
-      "arabm@google.com",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "variable-system-font-support-on-windows",
     "owners": [ "dileepmaurya@microsoft.com" ],
     "expiry_milestone": 155

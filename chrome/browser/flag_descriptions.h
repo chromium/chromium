@@ -5213,11 +5213,6 @@ inline constexpr char kUsePLinkInHelpDescription[] =
     "When enabled, Open-to-Content and P-links are used for Google help pages; "
     "Otherwise, the deprecated Open-to-Article is used";
 
-inline constexpr char kUserValueDefaultBrowserStringsName[] =
-    "Default Browser settings page - updated strings";
-inline constexpr char kUserValueDefaultBrowserStringsDescription[] =
-    "Improves the flow and the wording on the Default Browser settings page.";
-
 inline constexpr char kPredictableReportedQuotaName[] =
     "Predictable Reported Quota";
 inline constexpr char kPredictableReportedQuotaDescription[] =

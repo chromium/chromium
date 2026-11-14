@@ -811,16 +811,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
 void AddDefaultBrowserStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"defaultBrowser", IDS_SETTINGS_DEFAULT_BROWSER},
-      {"defaultBrowserDefault", IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT},
-
-      {"defaultBrowserDefaultThankYou",
-       IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT_THANK_YOU},
-      {"defaultBrowserMakeDefault", IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT},
-      {"defaultBrowserMakeDefaultUserValue",
+      {"defaultBrowserDefault", IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT_THANK_YOU},
+      {"defaultBrowserMakeDefault",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_USER_VALUE},
       {"defaultBrowserMakeDefaultAndPin",
-       IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN},
-      {"defaultBrowserMakeDefaultAndPinUserValue",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN_USER_VALUE},
       {"defaultBrowserMakeDefaultButton",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_BUTTON},

@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,8 +31,6 @@ namespace {
 
 const char kRequestDefaultBrowserStateCallback[] =
     "requestDefaultBrowserStateCallback";
-const char kRequestUserValueStringsFeatureStateCallback[] =
-    "requestUserValueStringsFeatureStateCallback";
 
 }  // namespace
 
@@ -114,27 +110,6 @@ class DefaultBrowserHandlerTest : public testing::Test {
     ASSERT_TRUE(call_data.arg2()->GetBool());
   }
 
-  void CallRequestUserValueStringsFeatureState() {
-    // Simulate the WebUI call to the handler.
-    base::ListValue args;
-    args.Append(kRequestUserValueStringsFeatureStateCallback);
-    test_web_ui()->HandleReceivedMessage("requestUserValueStringsFeatureState",
-                                         args);
-
-    WaitForSingleCallData();
-
-    // Verify the response sent back to the WebUI.
-    const content::TestWebUI::CallData& call_data = GetCallData();
-    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-    // Check the callback ID.
-    ASSERT_TRUE(call_data.arg1()->is_string());
-    EXPECT_EQ(kRequestUserValueStringsFeatureStateCallback,
-              call_data.arg1()->GetString());
-    // Check the success argument.
-    ASSERT_TRUE(call_data.arg2()->is_bool());
-    ASSERT_TRUE(call_data.arg2()->GetBool());
-  }
-
   void CallSetDefaultBrowser() {
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("setAsDefaultBrowser", empty_args);
@@ -211,29 +186,6 @@ TEST_F(DefaultBrowserHandlerTest, RequestDefaultBrowserState) {
   VerifyDefaultBrowserState(GetCallData().arg3(), /*expected_is_default=*/false,
                             /*expected_is_unknown_error=*/false,
                             /*expected_is_disabled_by_policy=*/false);
-}
-TEST_F(DefaultBrowserHandlerTest,
-       RequestUserValueStringsFeatureState_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUserValueDefaultBrowserStrings);
-
-  CallRequestUserValueStringsFeatureState();
-
-  // Check the returned feature state.
-  ASSERT_TRUE(GetCallData().arg3()->is_bool());
-  ASSERT_TRUE(GetCallData().arg3()->GetBool());
-}
-
-TEST_F(DefaultBrowserHandlerTest,
-       RequestUserValueStringsFeatureState_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kUserValueDefaultBrowserStrings);
-
-  CallRequestUserValueStringsFeatureState();
-
-  // Check the returned feature state.
-  ASSERT_TRUE(GetCallData().arg3()->is_bool());
-  ASSERT_FALSE(GetCallData().arg3()->GetBool());
 }
 
 TEST_F(DefaultBrowserHandlerTest, SetDefaultBrowser) {

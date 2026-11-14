@@ -12322,11 +12322,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kServiceWorkerSyntheticResponseDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kServiceWorkerSyntheticResponse)},
 
-    {"user-value-default-browser-strings",
-     flag_descriptions::kUserValueDefaultBrowserStringsName,
-     flag_descriptions::kUserValueDefaultBrowserStringsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kUserValueDefaultBrowserStrings)},
-
     {"mdm-errors-for-dasher-accounts-handling",
      flag_descriptions::kHandleMdmErrorsForDasherAccountsName,
      flag_descriptions::kHandleMdmErrorsForDasherAccountsDescription, kOsAll,

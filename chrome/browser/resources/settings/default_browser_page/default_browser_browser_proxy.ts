@@ -28,9 +28,6 @@ export interface DefaultBrowserBrowserProxy {
    */
   requestDefaultBrowserState(): Promise<DefaultBrowserInfo>;
 
-  // Get the current state of kUserValueDefaultBrowserStrings
-  requestUserValueStringsFeatureState(): Promise<boolean>;
-
   /*
    * Try to set the current browser as the default browser. The new status of
    * the settings will be sent to 'settings.updateDefaultBrowserState'.
@@ -42,10 +39,6 @@ export class DefaultBrowserBrowserProxyImpl implements
     DefaultBrowserBrowserProxy {
   requestDefaultBrowserState() {
     return sendWithPromise<DefaultBrowserInfo>('requestDefaultBrowserState');
-  }
-
-  requestUserValueStringsFeatureState() {
-    return sendWithPromise<boolean>('requestUserValueStringsFeatureState');
   }
 
   setAsDefaultBrowser(pin: boolean) {
