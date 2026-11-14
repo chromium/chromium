@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -2631,10 +2632,13 @@ TEST_F(TextFragmentAnchorTest,
   RunUntilTextFragmentFinalization();
 
   MockUnhandledTapNotifierImpl mock_notifier;
-  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      mojom::blink::UnhandledTapNotifier::Name_,
-      BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
-                    Unretained(&mock_notifier)));
+  auto& broker = GetDocument().GetFrame()->GetBrowserInterfaceBroker();
+  broker.SetBinderForTesting(mojom::blink::UnhandledTapNotifier::Name_,
+                             BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
+                                           Unretained(&mock_notifier)));
+  absl::Cleanup reset_binder = [&broker] {
+    broker.SetBinderForTesting(mojom::blink::UnhandledTapNotifier::Name_, {});
+  };
 
   Range* range = Range::Create(GetDocument());
   range->setStart(GetElementById("first"), 0, IGNORE_EXCEPTION_FOR_TESTING);
