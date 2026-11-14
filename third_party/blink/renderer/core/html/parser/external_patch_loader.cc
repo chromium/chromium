@@ -109,7 +109,8 @@ void ExternalPatchLoader::Cancel() {
 void ExternalPatchLoader::ResponseReceived(Resource* resource,
                                            const ResourceResponse& response) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
-  if (response.HttpStatusCode() != 200 || response.MimeType() != "text/html") {
+  if (response.HttpStatusCode() != 200 ||
+      response.HttpContentType() != "text/fragment") {
     ready_state_ = kErrorOccurred;
     return;
   }
