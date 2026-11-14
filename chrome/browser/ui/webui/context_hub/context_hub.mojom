@@ -505,6 +505,18 @@ interface Page {
   // Notifies the WebUI when entries are deleted from the memory bank. `ids` may
   // contain IDs that did not match an existing entry, which should be ignored.
   OnMemoryBankEntriesDeleted(array<int64> ids);
+
+  // Notifies all Context Hub WebUI pages in the profile (including those that
+  // didn't start the recording) when speech recognition via
+  // `SkillRecordingService` produces a transcript segment while a recording is
+  // active.
+  // `text` contains the transcribed speech content.
+  // `timestamp` is the elapsed time since the recording session started.
+  // `is_final` is true if the segment has been finalized, or false if it is
+  // an interim hypothesis that may be revised by subsequent updates.
+  [RuntimeFeature=kRecordReplay]
+  OnTranscriptUpdate(
+      string text, mojo_base.mojom.TimeDelta timestamp, bool is_final);
 };
 
 // Types of user actions that can be recorded during a skill recording session.

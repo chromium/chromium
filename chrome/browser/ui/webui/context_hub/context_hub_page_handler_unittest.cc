@@ -113,10 +113,16 @@
 #include "components/tabs/public/tab_interface.h"       // nogncheck
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
-#include "ui/base/clipboard/test/test_clipboard.h"      // nogncheck
+#include "ui/base/clipboard/test/test_clipboard.h"  // nogncheck
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"  // nogncheck
+#else
+#include "chrome/browser/speech/speech_recognition_service_factory.h"  // nogncheck
+#endif
 #endif
 
 namespace context_hub {
@@ -241,6 +247,10 @@ class MockPage : public browser::context_hub::mojom::Page {
               OnMemoryBankEntriesDeleted,
               (const std::vector<int64_t>&),
               (override));
+  MOCK_METHOD(void,
+              OnTranscriptUpdate,
+              (const std::string&, base::TimeDelta, bool),
+              (override));
 
  private:
   mojo::Receiver<browser::context_hub::mojom::Page> receiver_{this};
@@ -264,8 +274,9 @@ class ContextHubPageHandlerTest : public testing::Test {
                                  base::Time::Now());
 
     tab_groups::TabGroupSyncServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
+        browser_context,
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
           return std::make_unique<tab_groups::FakeTabGroupSyncService>();
         }));
     PersonalContextServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -303,6 +314,17 @@ class ContextHubPageHandlerTest : public testing::Test {
               std::make_unique<InMemoryTabGroupStore>(), std::move(backend),
               std::make_unique<InMemoryAutoTodosStore>());
         }));
+#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
+    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+        ->SetTestingFactory(
+            browser_context,
+            BrowserContextKeyedServiceFactory::TestingFactory());
+#else
+    SpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
+        browser_context, BrowserContextKeyedServiceFactory::TestingFactory());
+#endif
+#endif
   }
 
   void SetUp() override {
@@ -5056,6 +5078,16 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording) {
   service->BindScreenshotCapturedCallbackForTesting(2).Run(
       base::ok(std::move(oversized_screenshot)));
 
+  EXPECT_CALL(mock_page_,
+              OnTranscriptUpdate("click", base::Milliseconds(100), false));
+  EXPECT_CALL(mock_page_, OnTranscriptUpdate("click submit",
+                                             base::Milliseconds(250), true));
+  service->OnTranscriptUpdateForTesting("click", base::Milliseconds(100),
+                                        /*is_final=*/false);
+  service->OnTranscriptUpdateForTesting("click submit", base::Milliseconds(250),
+                                        /*is_final=*/true);
+  mock_page_.Flush();
+
   base::test::TestFuture<
       browser::context_hub::mojom::SkillRecordingSessionDataPtr>
       future;
@@ -5083,14 +5115,22 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording_ServiceDisabled) {
   disabled_feature_list.InitAndDisableFeature(
       browser::context_hub::mojom::kRecordReplay);
 
-  ASSERT_EQ(SkillRecordingServiceFactory::GetForProfile(&profile_), nullptr);
+  TestingProfile disabled_profile;
+  ASSERT_EQ(SkillRecordingServiceFactory::GetForProfile(&disabled_profile),
+            nullptr);
 
-  handler_->StartSkillRecording();
+  MockPage disabled_page;
+  ContextHubPageHandler disabled_handler(
+      disabled_page.BindAndGetRemote(),
+      mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
+      &disabled_profile, nullptr, std::make_unique<MockTabProvider>());
+
+  disabled_handler.StartSkillRecording();
 
   base::test::TestFuture<
       browser::context_hub::mojom::SkillRecordingSessionDataPtr>
       future;
-  handler_->StopSkillRecording(future.GetCallback());
+  disabled_handler.StopSkillRecording(future.GetCallback());
   auto session_data = future.Take();
   ASSERT_TRUE(session_data);
   EXPECT_TRUE(session_data->actions.empty());

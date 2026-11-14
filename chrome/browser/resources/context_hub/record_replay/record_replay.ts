@@ -21,6 +21,12 @@ const MS_PER_MINUTE = SECONDS_PER_MINUTE * MS_PER_SECOND;
 const TIME_UNIT_PAD_LENGTH = 2;
 const MS_PAD_LENGTH = 3;
 
+export interface TranscriptEntry {
+  text: string;
+  timestampStr: string;
+  isFinal: boolean;
+}
+
 export class RecordReplayElement extends CrLitElement {
   static get is() {
     return 'record-replay';
@@ -39,6 +45,7 @@ export class RecordReplayElement extends CrLitElement {
       recordReplayEnabled_: {type: Boolean},
       isRecording_: {type: Boolean},
       sessionData_: {type: Object},
+      transcripts_: {type: Array},
     };
   }
 
@@ -46,6 +53,47 @@ export class RecordReplayElement extends CrLitElement {
       loadTimeData.getBoolean('kRecordReplay');
   protected accessor isRecording_: boolean = false;
   protected accessor sessionData_: SkillRecordingSessionData|null = null;
+  protected accessor transcripts_: TranscriptEntry[] = [];
+
+  private listenerIds_: number[] = [];
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (!this.recordReplayEnabled_) {
+      return;
+    }
+    const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
+    this.listenerIds_.push(callbackRouter.onTranscriptUpdate.addListener(
+        (text: string, timestamp: TimeDelta, isFinal: boolean) => {
+          const tsStr = `[${this.formatTimestamp_(timestamp)}]`;
+          // If last transcript is not final, overwrite it, otherwise
+          // append.
+          const newTranscripts = [...this.transcripts_];
+          const last = newTranscripts.at(-1);
+          if (last && !last.isFinal) {
+            newTranscripts[newTranscripts.length - 1] = {
+              text,
+              timestampStr: tsStr,
+              isFinal,
+            };
+          } else {
+            newTranscripts.push({
+              text,
+              timestampStr: tsStr,
+              isFinal,
+            });
+          }
+          this.transcripts_ = newTranscripts;
+        }));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(id => {
+      browserProxyFactory.getInstance().callbackRouter.removeListener(id);
+    });
+    this.listenerIds_ = [];
+  }
 
   protected onStartRecordingClick_() {
     if (!this.recordReplayEnabled_ || this.isRecording_) {
@@ -54,6 +102,7 @@ export class RecordReplayElement extends CrLitElement {
 
     this.isRecording_ = true;
     this.sessionData_ = null;
+    this.transcripts_ = [];
     browserProxyFactory.getInstance().handler.startSkillRecording();
   }
 

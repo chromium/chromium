@@ -81,7 +81,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/context_hub/memory_banks_shortcut.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
-#include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
 #include "chrome/browser/glic/host/glic.mojom.h"                  // nogncheck
@@ -415,6 +414,11 @@ ContextHubPageHandler::ContextHubPageHandler(
   // the system temp directory until OS-level cleanup.
   GetClipboardFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PruneStaleClipboardBatchDirectories));
+
+  if (context_hub::SkillRecordingService* skill_service =
+          SkillRecordingServiceFactory::GetForProfile(profile_)) {
+    skill_recording_service_observation_.Observe(skill_service);
+  }
 #endif
 }
 
@@ -497,6 +501,14 @@ void ContextHubPageHandler::OnMemoryBankEntriesDeleted(
     const std::vector<int64_t>& ids) {
   page_->OnMemoryBankEntriesDeleted(ids);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextHubPageHandler::OnTranscriptUpdate(const std::string& text,
+                                               base::TimeDelta timestamp,
+                                               bool is_final) {
+  page_->OnTranscriptUpdate(text, timestamp, is_final);
+}
+#endif
 
 void ContextHubPageHandler::GenerateFirstPartyAutoTodos(
     GenerateFirstPartyAutoTodosCallback callback) {

@@ -32,6 +32,21 @@ ${this.recordReplayEnabled_ ? html`
       ` : ''}
     </div>
 
+    ${this.transcripts_.length > 0 ? html`
+      <div class="transcripts">
+        <h3>Live Transcript</h3>
+        <div class="transcript-box">
+          <ul class="transcript-list">
+            ${this.transcripts_.map(item => html`
+              <li class="transcript-item ${!item.isFinal ? 'interim' : ''}">
+                <strong>${item.timestampStr}</strong> ${item.text}
+              </li>
+            `)}
+          </ul>
+        </div>
+      </div>
+    ` : ''}
+
     ${this.sessionData_ && this.sessionData_.actions.length > 0 ? html`
       <div class="results">
         <h3>Recorded Actions</h3>

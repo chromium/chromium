@@ -13,6 +13,42 @@
   font-weight: bold;
 }
 
+.transcripts {
+  margin-block: 24px;
+}
+
+.transcripts h3 {
+  color: var(--cr-primary-text-color);
+  margin-top: 0;
+}
+
+.transcript-box {
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: var(--cr-card-border-radius);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.transcript-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.transcript-item {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.transcript-item.interim {
+  color: var(--cr-secondary-text-color);
+  font-style: italic;
+  font-weight: normal;
+}
+
 .results {
   max-height: 600px;
   overflow-y: auto;

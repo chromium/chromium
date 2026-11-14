@@ -28,6 +28,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/context_hub/record_replay/skill_recording_service.h"  // nogncheck
+#endif
+
 class GURL;
 class Profile;
 
@@ -43,8 +47,12 @@ namespace favicon_base {
 struct FaviconRawBitmapResult;
 }  // namespace favicon_base
 
-class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
-                              public context_hub::ContextHubService::Observer {
+class ContextHubPageHandler
+    : public browser::context_hub::mojom::PageHandler,
+#if !BUILDFLAG(IS_ANDROID)
+      public context_hub::SkillRecordingService::Observer,
+#endif
+      public context_hub::ContextHubService::Observer {
  public:
   class TabProvider {
    public:
@@ -217,6 +225,13 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void StopSkillRecording(StopSkillRecordingCallback callback) override;
 
  private:
+#if !BUILDFLAG(IS_ANDROID)
+  // context_hub::SkillRecordingService::Observer:
+  void OnTranscriptUpdate(const std::string& text,
+                          base::TimeDelta timestamp,
+                          bool is_final) override;
+#endif
+
   // Gathers the Topics, history visits since `window_start`, unresolvable
   // Topic count and stored feedback the fishfood feedback export is built
   // from, then runs `callback`. `callback` is dropped if this handler is
@@ -243,6 +258,11 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   base::ScopedObservation<context_hub::ContextHubService,
                           context_hub::ContextHubService::Observer>
       service_observation_{this};
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<context_hub::SkillRecordingService,
+                          context_hub::SkillRecordingService::Observer>
+      skill_recording_service_observation_{this};
+#endif
   std::unique_ptr<TabProvider> tab_provider_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

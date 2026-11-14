@@ -130,6 +130,7 @@ source_set("context_hub_page_handler") {
       "context_hub_tab_provider_desktop.cc",
       "context_hub_tab_provider_desktop.h",
     ]
+    public_deps += [ "//chrome/browser/context_hub/record_replay" ]
     deps += [
       "//base:i18n",
       "//chrome/browser/context_hub:memory_banks_shortcut",
@@ -220,6 +221,7 @@ source_set("unit_tests") {
       "//chrome/browser/context_hub:memory_banks_shortcut",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/speech",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/tabs:test_support",
