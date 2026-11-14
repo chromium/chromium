@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/payments/content/android/minimal_jni/PaymentHandlerHost_jni.h"
@@ -18,12 +19,11 @@ namespace payments {
 namespace android {
 
 // static
-static int64_t JNI_PaymentHandlerHost_Init(
+static jni_zero::JniUniquePtr<PaymentHandlerHost> JNI_PaymentHandlerHost_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& web_contents,
     const base::android::JavaRef<jobject>& listener) {
-  return reinterpret_cast<intptr_t>(
-      new PaymentHandlerHost(web_contents, listener));
+  return jni_zero::MakeUnique<PaymentHandlerHost>(web_contents, listener);
 }
 
 // static
@@ -31,8 +31,7 @@ base::WeakPtr<payments::PaymentHandlerHost>
 PaymentHandlerHost::FromJavaPaymentHandlerHost(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& payment_handler_host) {
-  return reinterpret_cast<PaymentHandlerHost*>(
-             Java_PaymentHandlerHost_getNativeBridge(env, payment_handler_host))
+  return Java_PaymentHandlerHost_getNativeBridge(env, payment_handler_host)
       ->payment_handler_host_.AsWeakPtr();
 }
 
@@ -48,10 +47,6 @@ PaymentHandlerHost::~PaymentHandlerHost() = default;
 
 bool PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const {
   return payment_handler_host_.is_waiting_for_payment_details_update();
-}
-
-void PaymentHandlerHost::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 void PaymentHandlerHost::UpdateWith(

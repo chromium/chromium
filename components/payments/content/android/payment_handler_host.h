@@ -65,9 +65,6 @@ class PaymentHandlerHost {
   // change is currently in progress.
   bool IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const;
 
-  // Destroys this object.
-  void Destroy(JNIEnv* env);
-
   // Notifies the payment handler that the merchant has updated the payment
   // details. The |response_buffer| should be a serialization of a valid
   // PaymentRequestDetailsUpdate.java object.

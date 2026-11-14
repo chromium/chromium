@@ -6,6 +6,10 @@ package org.chromium.components.payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -21,15 +25,19 @@ import java.nio.ByteBuffer;
 @JNINamespace("payments::android")
 @NullMarked
 public class PaymentHandlerHost {
+    @JniType("::payments::android::PaymentHandlerHost")
+    interface NativePaymentHandlerHost extends JniTypeToken {}
+
     /** Pointer to the native bridge. This Java object owns the native bridge. */
-    private long mNativePointer;
+    private final JniUniquePtr<NativePaymentHandlerHost> mNativePointer;
 
     /**
      * Instantiates the native bridge to the payment handler host. This Java object owns the native
      * bridge. The caller must call destroy() when finished using this Java object.
+     *
      * @param webContents The web contents in the same browser context as the payment handler. Used
-     *                    for logging in developer tools.
-     * @param listener    The object that can communicate to the merchant renderer process.
+     *     for logging in developer tools.
+     * @param listener The object that can communicate to the merchant renderer process.
      */
     public PaymentHandlerHost(WebContents webContents, PaymentRequestUpdateEventListener listener) {
         mNativePointer = PaymentHandlerHostJni.get().init(webContents, listener);
@@ -38,9 +46,10 @@ public class PaymentHandlerHost {
     /**
      * Checks whether any payment method, shipping address or shipping option change event is
      * ongoing.
+     *
      * @return True after payment handler called changePaymentMethod(), changeShippingAddress(), or
-     *         changeShippingOption() and before the merchant replies with either updateWith() or
-     *         onPaymentDetailsNotUpdated().
+     *     changeShippingOption() and before the merchant replies with either updateWith() or
+     *     onPaymentDetailsNotUpdated().
      */
     public boolean isWaitingForPaymentDetailsUpdate() {
         return PaymentHandlerHostJni.get().isWaitingForPaymentDetailsUpdate(mNativePointer);
@@ -48,17 +57,19 @@ public class PaymentHandlerHost {
 
     /**
      * Returns the pointer to the native bridge. The Java object owns this bridge.
+     *
      * @return The pointer to the native bridge payments::android::PaymentHandlerHost (not the
-     *         cross-platform payment handler host payments::PaymentHandlerHost).
+     *     cross-platform payment handler host payments::PaymentHandlerHost).
      */
     @CalledByNative
-    public long getNativeBridge() {
+    JniPtr<NativePaymentHandlerHost> getNativeBridge() {
         return mNativePointer;
     }
 
     /**
      * Notifies the payment handler that the merchant has updated the payment details in response to
      * the payment-method-change event or shipping-[address|option]-change events.
+     *
      * @param response The payment request details update response. Should not be null.
      */
     public void updateWith(PaymentRequestDetailsUpdate response) {
@@ -76,8 +87,7 @@ public class PaymentHandlerHost {
 
     /** Destroys the native bridge. This object shouldn't be used afterwards. */
     public void destroy() {
-        PaymentHandlerHostJni.get().destroy(mNativePointer);
-        mNativePointer = 0;
+        mNativePointer.destroy();
     }
 
     /**
@@ -88,39 +98,38 @@ public class PaymentHandlerHost {
     /* package */ interface Natives {
         /**
          * Initializes the native object. The Java caller owns the returned native object and must
-         * call destroy(nativePaymentHandlerHost) when done.
+         * call destroy() when done.
+         *
          * @param webContents The web contents in the same browser context as the payment handler.
-         *                    Used for logging in developer tools.
-         * @param listener    The object that can communicate to the merchant renderer process.
+         *     Used for logging in developer tools.
+         * @param listener The object that can communicate to the merchant renderer process.
          * @return The pointer to the native payment handler host bridge.
          */
-        long init(WebContents webContents, PaymentRequestUpdateEventListener listener);
+        JniUniquePtr<NativePaymentHandlerHost> init(
+                WebContents webContents, PaymentRequestUpdateEventListener listener);
 
         /**
          * Checks whether any payment method, shipping address, or shipping option change is
          * currently in progress.
-         * @param nativePaymentHandlerHost The pointer to the native payment handler host bridge.
+         *
+         * @param self The pointer to the native payment handler host bridge.
          */
-        boolean isWaitingForPaymentDetailsUpdate(long nativePaymentHandlerHost);
+        boolean isWaitingForPaymentDetailsUpdate(JniPtr<NativePaymentHandlerHost> self);
 
         /**
          * Notifies the payment handler that the merchant has updated the payment details.
-         * @param nativePaymentHandlerHost The pointer to the native payment handler host bridge.
+         *
+         * @param self The pointer to the native payment handler host bridge.
          * @param responseBuffer The serialized payment method change response from the merchant.
          */
-        void updateWith(long nativePaymentHandlerHost, ByteBuffer responseBuffer);
+        void updateWith(JniPtr<NativePaymentHandlerHost> self, ByteBuffer responseBuffer);
 
         /**
          * Notifies the payment handler that the merchant ignored the payment method, shipping
          * address, or shipping option change event.
-         * @param nativePaymentHandlerHost The pointer to the native payment handler host bridge.
+         *
+         * @param self The pointer to the native payment handler host bridge.
          */
-        void onPaymentDetailsNotUpdated(long nativePaymentHandlerHost);
-
-        /**
-         * Destroys the native payment handler host bridge.
-         * @param nativePaymentHandlerHost The pointer to the native payment handler host bridge.
-         */
-        void destroy(long nativePaymentHandlerHost);
+        void onPaymentDetailsNotUpdated(JniPtr<NativePaymentHandlerHost> self);
     }
 }
