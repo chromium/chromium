@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <span>  // Required by `webrtc::VideoEncoder`; nocheck
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -74,6 +75,9 @@ class PLATFORM_EXPORT StatsCollectingEncoder
       const webrtc::VideoFrame& frame,
       const std::vector<webrtc::VideoFrameType>* frame_types) override;
   void SetRates(const RateControlParameters& parameters) override;
+  void SetComplexity(std::span<const webrtc::VideoCodecComplexity>  // nocheck
+                         complexity_by_spatial_layer,
+                     ComplexityControlMode complexity_control_mode) override;
   void OnPacketLossRateUpdate(float packet_loss_rate) override;
   void OnRttUpdate(int64_t rtt_ms) override;
   EncoderInfo GetEncoderInfo() const override;

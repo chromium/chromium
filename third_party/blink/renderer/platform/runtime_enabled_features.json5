@@ -5754,6 +5754,12 @@
       name: "RTCEncodedVideoFrameConstructor",
       status: "experimental",
     },
+    // Enables the use of |RTCRtpEncodingParameters.encodingComplexity|
+    // Spec: https://github.com/w3c/webrtc-extensions/pull/252
+    {
+      name: "RTCEncodingComplexity",
+      status: "experimental",
+    },
     // Enables the use of jitterBufferTarget attribute in WebRTC.
     // Spec: https://w3c.github.io/webrtc-extensions/#dom-rtcrtpreceiver-jitterbuffertarget
     {

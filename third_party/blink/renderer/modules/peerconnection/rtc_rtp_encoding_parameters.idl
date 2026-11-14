@@ -16,6 +16,15 @@ dictionary RTCResolutionRestriction {
     unsigned long   maxHeight;
 };
 
+// https://github.com/w3c/webrtc-extensions/pull/252
+enum RTCEncodingComplexity {
+    "low",
+    "normal",
+    "high",
+    "very-high",
+    "maximum"
+};
+
 // https://w3c.github.io/webrtc-pc/#rtcrtpencodingparameters*
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
     boolean         active = true;
@@ -36,4 +45,7 @@ dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-codec
     [RuntimeEnabled=RTCRtpEncodingParametersCodec]
     RTCRtpCodec codec;
+    // https://github.com/w3c/webrtc-extensions/pull/252
+    [RuntimeEnabled=RTCEncodingComplexity]
+    RTCEncodingComplexity encodingComplexity;
 };

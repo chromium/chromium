@@ -1844,6 +1844,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_transport_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_complexity.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_complexity.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_detail_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_detail_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_type.cc",

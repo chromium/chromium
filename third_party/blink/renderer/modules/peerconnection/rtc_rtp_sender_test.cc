@@ -16,12 +16,16 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_complexity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_encoding_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_send_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -42,6 +46,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -139,8 +144,14 @@ class EncodingsFakeRTCRtpSenderPlatform : public FakeRTCRtpSenderPlatform {
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override {
     auto parameters = std::make_unique<webrtc::RtpParameters>();
     parameters->transaction_id = "1234";
-    // Add one encoding to test size matching and key_frame mapping.
-    parameters->encodings.emplace_back();
+    if (last_encodings_.empty()) {
+      // Add one encoding to test size matching and key_frame mapping.
+      parameters->encodings.emplace_back();
+    } else {
+      for (const auto& encoding : last_encodings_) {
+        parameters->encodings.push_back(encoding);
+      }
+    }
     return parameters;
   }
 
@@ -194,13 +205,14 @@ class RTCRtpSenderTest : public testing::Test {
 
   RTCRtpSender* CreateSender(
       RTCPeerConnection* pc,
-      std::unique_ptr<RTCRtpSenderPlatform> platform = nullptr) {
+      std::unique_ptr<RTCRtpSenderPlatform> platform = nullptr,
+      String kind = "video") {
     if (!platform) {
       platform = std::make_unique<FakeRTCRtpSenderPlatform>();
     }
     return MakeGarbageCollected<RTCRtpSender>(
-        pc, std::move(platform), "video", nullptr, MediaStreamVector(), false,
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+        pc, std::move(platform), std::move(kind), nullptr, MediaStreamVector(),
+        false, blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
  protected:
@@ -357,6 +369,142 @@ TEST_F(RTCRtpSenderTest, SetParametersAppliesEncodingOptionsKeyFrame) {
   EXPECT_TRUE(platform_ptr->set_parameters_called_);
   ASSERT_EQ(platform_ptr->last_encodings_.size(), 1u);
   EXPECT_TRUE(platform_ptr->last_encodings_[0].request_key_frame);
+}
+
+TEST_F(RTCRtpSenderTest, SetAndGetParametersEncodingComplexity) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  auto* platform_ptr = platform.get();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  const std::pair<V8RTCEncodingComplexity::Enum, webrtc::VideoCodecComplexity>
+      kTestCases[] = {
+          {V8RTCEncodingComplexity::Enum::kLow,
+           webrtc::VideoCodecComplexity::kComplexityLow},
+          {V8RTCEncodingComplexity::Enum::kNormal,
+           webrtc::VideoCodecComplexity::kComplexityNormal},
+          {V8RTCEncodingComplexity::Enum::kHigh,
+           webrtc::VideoCodecComplexity::kComplexityHigh},
+          {V8RTCEncodingComplexity::Enum::kVeryHigh,
+           webrtc::VideoCodecComplexity::kComplexityHigher},
+          {V8RTCEncodingComplexity::Enum::kMaximum,
+           webrtc::VideoCodecComplexity::kComplexityMax},
+      };
+
+  for (const auto& [idl_complexity, webrtc_complexity] : kTestCases) {
+    auto* parameters = sender->getParameters();
+    ASSERT_EQ(parameters->encodings().size(), 1u);
+    parameters->encodings()[0]->setEncodingComplexity(idl_complexity);
+
+    auto* options = RTCSetParameterOptions::Create();
+    auto promise = sender->setParameters(scope.GetScriptState(), parameters,
+                                         options, scope.GetExceptionState());
+
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+
+    ASSERT_EQ(platform_ptr->last_encodings_.size(), 1u);
+    EXPECT_EQ(platform_ptr->last_encodings_[0].encoding_complexity,
+              webrtc_complexity);
+
+    auto* updated_parameters = sender->getParameters();
+    ASSERT_EQ(updated_parameters->encodings().size(), 1u);
+    ASSERT_TRUE(updated_parameters->encodings()[0]->hasEncodingComplexity());
+    EXPECT_EQ(updated_parameters->encodings()[0]->encodingComplexity().AsEnum(),
+              idl_complexity);
+  }
+
+  // Clearing encodingComplexity resets native encoding_complexity to nullopt.
+  auto* parameters = sender->getParameters();
+  ASSERT_EQ(parameters->encodings().size(), 1u);
+  HeapVector<Member<RTCRtpEncodingParameters>> cleared_encodings;
+  cleared_encodings.push_back(RTCRtpEncodingParameters::Create());
+  parameters->setEncodings(cleared_encodings);
+
+  auto* options = RTCSetParameterOptions::Create();
+  auto promise = sender->setParameters(scope.GetScriptState(), parameters,
+                                       options, scope.GetExceptionState());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  ASSERT_EQ(platform_ptr->last_encodings_.size(), 1u);
+  EXPECT_EQ(platform_ptr->last_encodings_[0].encoding_complexity, std::nullopt);
+  EXPECT_FALSE(
+      sender->getParameters()->encodings()[0]->hasEncodingComplexity());
+}
+
+TEST_F(RTCRtpSenderTest, SetParametersEncodingComplexityIgnoredForAudio) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  auto* platform_ptr = platform.get();
+  auto* sender = CreateSender(pc, std::move(platform), "audio");
+
+  auto* parameters = sender->getParameters();
+  ASSERT_EQ(parameters->encodings().size(), 1u);
+  parameters->encodings()[0]->setEncodingComplexity(
+      V8RTCEncodingComplexity::Enum::kHigh);
+
+  auto* options = RTCSetParameterOptions::Create();
+  auto promise = sender->setParameters(scope.GetScriptState(), parameters,
+                                       options, scope.GetExceptionState());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  ASSERT_EQ(platform_ptr->last_encodings_.size(), 1u);
+  EXPECT_EQ(platform_ptr->last_encodings_[0].encoding_complexity, std::nullopt);
+  EXPECT_FALSE(
+      sender->getParameters()->encodings()[0]->hasEncodingComplexity());
+}
+
+TEST_F(RTCRtpSenderTest, EncodingComplexityGatedByRuntimeEnabledFeature) {
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+
+  v8::Local<v8::Object> js_dict = v8::Object::New(isolate);
+  v8::Local<v8::String> key = V8String(isolate, "encodingComplexity");
+  ASSERT_TRUE(js_dict->Set(context, key, V8String(isolate, "very-high"))
+                  .FromMaybe(false));
+
+  {
+    ScopedRTCEncodingComplexityForTest disabled(false);
+    auto* parsed = NativeValueTraits<RTCRtpEncodingParameters>::NativeValue(
+        isolate, js_dict, scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException());
+    EXPECT_FALSE(parsed->hasEncodingComplexity());
+
+    auto* dict_with_value = RTCRtpEncodingParameters::Create();
+    dict_with_value->setEncodingComplexity(
+        V8RTCEncodingComplexity::Enum::kHigh);
+    v8::Local<v8::Value> v8_val = ToV8Traits<RTCRtpEncodingParameters>::ToV8(
+        scope.GetScriptState(), dict_with_value);
+    ASSERT_TRUE(v8_val->IsObject());
+    EXPECT_FALSE(v8_val.As<v8::Object>()->Has(context, key).FromMaybe(true));
+  }
+
+  {
+    ScopedRTCEncodingComplexityForTest enabled(true);
+    auto* parsed = NativeValueTraits<RTCRtpEncodingParameters>::NativeValue(
+        isolate, js_dict, scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException());
+    ASSERT_TRUE(parsed->hasEncodingComplexity());
+    EXPECT_EQ(parsed->encodingComplexity().AsEnum(),
+              V8RTCEncodingComplexity::Enum::kVeryHigh);
+
+    v8::Local<v8::Value> v8_val = ToV8Traits<RTCRtpEncodingParameters>::ToV8(
+        scope.GetScriptState(), parsed);
+    ASSERT_TRUE(v8_val->IsObject());
+    EXPECT_TRUE(v8_val.As<v8::Object>()->Has(context, key).FromMaybe(false));
+  }
 }
 
 TEST_F(RTCRtpSenderTest, SetParametersFailsOnNativeRejection) {

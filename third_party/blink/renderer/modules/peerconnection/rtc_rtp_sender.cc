@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_degradation_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_complexity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_insertable_streams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_priority_type.h"
@@ -489,6 +490,40 @@ webrtc::Priority PriorityToEnum(V8RTCPriorityType::Enum priority) {
   NOTREACHED();
 }
 
+V8RTCEncodingComplexity::Enum EncodingComplexityFromEnum(
+    webrtc::VideoCodecComplexity complexity) {
+  switch (complexity) {
+    case webrtc::VideoCodecComplexity::kComplexityLow:
+      return V8RTCEncodingComplexity::Enum::kLow;
+    case webrtc::VideoCodecComplexity::kComplexityNormal:
+      return V8RTCEncodingComplexity::Enum::kNormal;
+    case webrtc::VideoCodecComplexity::kComplexityHigh:
+      return V8RTCEncodingComplexity::Enum::kHigh;
+    case webrtc::VideoCodecComplexity::kComplexityHigher:
+      return V8RTCEncodingComplexity::Enum::kVeryHigh;
+    case webrtc::VideoCodecComplexity::kComplexityMax:
+      return V8RTCEncodingComplexity::Enum::kMaximum;
+  }
+  NOTREACHED();
+}
+
+webrtc::VideoCodecComplexity EncodingComplexityToEnum(
+    V8RTCEncodingComplexity::Enum complexity) {
+  switch (complexity) {
+    case V8RTCEncodingComplexity::Enum::kLow:
+      return webrtc::VideoCodecComplexity::kComplexityLow;
+    case V8RTCEncodingComplexity::Enum::kNormal:
+      return webrtc::VideoCodecComplexity::kComplexityNormal;
+    case V8RTCEncodingComplexity::Enum::kHigh:
+      return webrtc::VideoCodecComplexity::kComplexityHigh;
+    case V8RTCEncodingComplexity::Enum::kVeryHigh:
+      return webrtc::VideoCodecComplexity::kComplexityHigher;
+    case V8RTCEncodingComplexity::Enum::kMaximum:
+      return webrtc::VideoCodecComplexity::kComplexityMax;
+  }
+  NOTREACHED();
+}
+
 std::tuple<Vector<webrtc::RtpEncodingParameters>,
            std::optional<webrtc::DegradationPreference>>
 ToRtpParameters(ExecutionContext* context,
@@ -620,6 +655,10 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
       WebRtcScalabilityMode scalability_mode =
           ScalabilityModeStringToUMAMode(*webrtc_encoding.scalability_mode);
       UMA_HISTOGRAM_ENUMERATION("WebRtcScalabilityMode", scalability_mode);
+    }
+    if (encoding->hasEncodingComplexity()) {
+      webrtc_encoding.encoding_complexity =
+          EncodingComplexityToEnum(encoding->encodingComplexity().AsEnum());
     }
   } else if (kind == "audio") {
     webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
@@ -834,6 +873,10 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
       if (webrtc_encoding.scalability_mode) {
         encoding->setScalabilityMode(
             String(webrtc_encoding.scalability_mode.value()));
+      }
+      if (webrtc_encoding.encoding_complexity) {
+        encoding->setEncodingComplexity(
+            EncodingComplexityFromEnum(*webrtc_encoding.encoding_complexity));
       }
     } else if (kind_ == "audio") {
       encoding->setAdaptivePtime(webrtc_encoding.adaptive_ptime);

@@ -163,6 +163,22 @@ String SerializeTransceiverKind(const RTCRtpTransceiverPlatform& transceiver) {
   }
 }
 
+String SerializeEncodingComplexity(webrtc::VideoCodecComplexity complexity) {
+  switch (complexity) {
+    case webrtc::VideoCodecComplexity::kComplexityLow:
+      return "low";
+    case webrtc::VideoCodecComplexity::kComplexityNormal:
+      return "normal";
+    case webrtc::VideoCodecComplexity::kComplexityHigh:
+      return "high";
+    case webrtc::VideoCodecComplexity::kComplexityHigher:
+      return "very-high";
+    case webrtc::VideoCodecComplexity::kComplexityMax:
+      return "maximum";
+  }
+  NOTREACHED();
+}
+
 std::unique_ptr<JSONArray> SerializeEncodingParameters(
     base::span<const webrtc::RtpEncodingParameters> send_encodings) {
   auto encodings = std::make_unique<JSONArray>();
@@ -190,6 +206,10 @@ std::unique_ptr<JSONArray> SerializeEncodingParameters(
     }
     if (encoding.scalability_mode) {
       obj->SetString("scalabilityMode", String(*encoding.scalability_mode));
+    }
+    if (encoding.encoding_complexity) {
+      obj->SetString("encodingComplexity", SerializeEncodingComplexity(
+                                               *encoding.encoding_complexity));
     }
     if (encoding.adaptive_ptime) {
       obj->SetBoolean("adpativePtime", true);
