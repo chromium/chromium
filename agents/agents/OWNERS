@@ -1,2 +1,3 @@
 per-file code_reviewer.md=dmurph@chromium.org
+per-file ruled_code_reviewer.md=file://agents/skills/ruled-code-review/OWNERS
 per-file security_reviewer.md=file://agents/skills/security-review/OWNERS

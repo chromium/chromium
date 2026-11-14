@@ -2,10 +2,10 @@
 name: code_reviewer
 description: >-
   Reviews Chromium code changes (local diffs, commits, branches, or Gerrit CLs)
-  at both architectural and detailed levels, delegating security-sensitive
-  changes to security_reviewer. Specify the target change and whether this
-  agent can modify the local checkout. By default, this agent treats the local
-  checkout as read-only.
+  at both architectural and detailed levels, delegating in-tree rules review to
+  ruled_code_reviewer and security-sensitive changes to security_reviewer.
+  Specify the target change and whether this agent can modify the local
+  checkout. By default, this agent treats the local checkout as read-only.
 mainAgent: true
 subagent: true
 tools:

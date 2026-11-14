@@ -65,6 +65,12 @@ addition to normal reviewing procedure, follow these principles:
 - **Consider alternatives:** Before you accept the current approach, think of
   alternative designs, simpler abstractions, or other available Chromium
   primitives to suggest.
+- **Delegate in-tree rules review:** A `ruled_code_reviewer` subagent exists to
+  check changes against directory-specific rules and review skills in
+  `DIR_METADATA`. Invoke `ruled_code_reviewer` (or run the
+  [`ruled-code-review` skill](/agents/skills/ruled-code-review/SKILL.md) in a
+  subagent) and incorporate its verified findings (citing specific rule IDs,
+  e.g. `[base/base-unretained]`) into your review.
 - **Delegate security review when relevant:** A `security_reviewer` subagent
   exists. Security-sensitive changes include Mojo IPCs, process boundaries,
   sandboxing, object lifetimes, origin handling, and vulnerability fixes. If the
