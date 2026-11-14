@@ -703,6 +703,10 @@ APIFW_FORWARD_KERNEL32(ReleaseSemaphore,
                        (LONG, lReleaseCount),
                        (LPLONG, lpPreviousCount))
 APIFW_FORWARD_KERNEL32(ResumeThread, (HANDLE, hThread))
+APIFW_FORWARD_KERNEL32(RtlAddFunctionTable,
+                       (PRUNTIME_FUNCTION, FunctionTable),
+                       (DWORD, EntryCount),
+                       (DWORD64, BaseAddress))
 APIFW_FORWARD_KERNEL32(SetConsoleCtrlHandler,
                        (PHANDLER_ROUTINE, HandlerRoutine),
                        (BOOL, Add))
@@ -854,6 +858,8 @@ APIFW_FORWARD_NTDLL(RtlFreeUnicodeString, (PUNICODE_STRING, UnicodeString))
 APIFW_FORWARD_NTDLL(RtlInitUnicodeString,
                     (PUNICODE_STRING, DestinationString),
                     (PCWSTR, SourceString))
+APIFW_FORWARD_NTDLL(RtlUnhandledExceptionFilter,
+                    (PEXCEPTION_POINTERS, ExceptionInfo))
 
 // --- winmm passthroughs ---
 

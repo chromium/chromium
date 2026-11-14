@@ -64,7 +64,13 @@
 ;
 ; String encoding
 ;
+; CodePage must be CP_UTF7 or CP_UTF8, not CP_ACP.
+; CP_UTF8 ignores WC_NO_BEST_FIT_CHARS | WC_COMPOSITECHECK | WC_DEFAULTCHAR |
+; WC_DISCARDNS | WC_SEPCHARS instead of rejecting them.
     WideCharToMultiByte
+; CodePage must be CP_UTF7 or CP_UTF8, not CP_ACP.
+; CP_UTF8 ignores MB_COMPOSITE | MB_PRECOMPOSED | MB_USEGLYPHCHARS
+; instead of rejecting them.
     MultiByteToWideChar
 
 ;
@@ -75,9 +81,13 @@
     ExitThread
     CreateThread
     CreateRemoteThread
+; lpAttributeList may contain only
+; PROC_THREAD_ATTRIBUTE_ENABLE_OPTIONAL_XSTATE_FEATURES (AMD64).
     CreateRemoteThreadEx
     TerminateThread
     InitializeProcThreadAttributeList
+; For thread creation, Attribute must be
+; PROC_THREAD_ATTRIBUTE_ENABLE_OPTIONAL_XSTATE_FEATURES (AMD64).
     UpdateProcThreadAttribute
     DeleteProcThreadAttributeList
 
@@ -173,9 +183,14 @@
 ; Miscellaneous
 ;
     RaiseException
+; pContextRecord and dwFlags are ignored.
     RaiseFailFastException
     GetStdHandle
     GetTickCount64
+
+;
+; XState (AMD64 only)
+;
     GetEnabledXStateFeatures
     GetXStateFeaturesMask
     LocateXStateFeature
@@ -186,6 +201,7 @@
     VirtualAlloc
     VirtualAllocEx
     VirtualAllocExNuma
+    VirtualAlloc2
     VirtualFree
     VirtualFreeEx
     VirtualProtect
@@ -194,8 +210,12 @@
     VirtualQueryEx
     MapViewOfFile
     MapViewOfFileEx
+    MapViewOfFileNuma2
+    MapViewOfFile3
     UnmapViewOfFile
     UnmapViewOfFileEx
+    UnmapViewOfFile2
+    QueryVirtualMemoryInformation
 
 ;
 ; Module
@@ -203,7 +223,11 @@
     DisableThreadLibraryCalls
     GetModuleHandleExW
     GetProcAddress
+; lpLibFileName must name a pre-staged DLL; directory components are ignored.
+; dwFlags may contain only DONT_RESOLVE_DLL_REFERENCES |
+; LOAD_LIBRARY_REQUIRE_SIGNED_TARGET.
     LoadLibraryExW
+; lpLibFileName must name a pre-staged DLL; directory components are ignored.
     LoadLibraryW
     FreeLibrary
 
@@ -263,7 +287,6 @@
     RtlPcToFileHeader
     RtlLookupFunctionEntry
     RtlCaptureContext
-    RtlUnhandledExceptionFilter
     RtlVirtualUnwind
 
 ;
@@ -289,18 +312,17 @@
 ;
     GetEnvironmentStringsW
     FreeEnvironmentStringsW
+; lpName must not name a pseudo-environment variable (e.g. "=C:").
     GetEnvironmentVariableW
 
 ;
 ; Stack trace
 ;
-    CaptureStackBackTrace
     RtlCaptureStackBackTrace
 
 ;
 ; Dynamic function tables
 ;
-    RtlAddFunctionTable
     RtlAddGrowableFunctionTable
     RtlGrowFunctionTable
     RtlDeleteGrowableFunctionTable

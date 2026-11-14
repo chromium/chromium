@@ -105,11 +105,14 @@ EXPORTS
   LeaveCriticalSection = kernel32.LeaveCriticalSection
   LocateXStateFeature = kernel32.LocateXStateFeature
   MapViewOfFile = kernel32.MapViewOfFile
+  MapViewOfFile3 = KernelBase.MapViewOfFile3
   MapViewOfFileEx = kernel32.MapViewOfFileEx
+  MapViewOfFileNuma2 = KernelBase.MapViewOfFileNuma2
   OutputDebugStringW = kernel32.OutputDebugStringW
   QueryDepthSList = kernel32.QueryDepthSList
   QueryPerformanceCounter = kernel32.QueryPerformanceCounter
   QueryPerformanceFrequency = kernel32.QueryPerformanceFrequency
+  QueryVirtualMemoryInformation = KernelBase.QueryVirtualMemoryInformation
   RaiseException = kernel32.RaiseException
   RaiseFailFastException = kernel32.RaiseFailFastException
   ReadFile = kernel32.ReadFile
@@ -119,7 +122,6 @@ EXPORTS
   RemoveVectoredContinueHandler = kernel32.RemoveVectoredContinueHandler
   RemoveVectoredExceptionHandler = kernel32.RemoveVectoredExceptionHandler
   ResetEvent = kernel32.ResetEvent
-  RtlAddFunctionTable = kernel32.RtlAddFunctionTable
   RtlAddGrowableFunctionTable = ntdll.RtlAddGrowableFunctionTable
   RtlCaptureContext = ntdll.RtlCaptureContext
   RtlCaptureStackBackTrace = kernel32.RtlCaptureStackBackTrace
@@ -130,7 +132,6 @@ EXPORTS
   RtlLookupFunctionEntry = ntdll.RtlLookupFunctionEntry
   RtlPcToFileHeader = kernel32.RtlPcToFileHeader
   RtlRaiseException = ntdll.RtlRaiseException
-  RtlUnhandledExceptionFilter = ntdll.RtlUnhandledExceptionFilter
   RtlUnwind = ntdll.RtlUnwind
   RtlUnwindEx = ntdll.RtlUnwindEx
   RtlVirtualUnwind = ntdll.RtlVirtualUnwind
@@ -156,9 +157,11 @@ EXPORTS
   TryEnterCriticalSection = kernel32.TryEnterCriticalSection
   UnhandledExceptionFilter = kernel32.UnhandledExceptionFilter
   UnmapViewOfFile = kernel32.UnmapViewOfFile
+  UnmapViewOfFile2 = KernelBase.UnmapViewOfFile2
   UnmapViewOfFileEx = kernel32.UnmapViewOfFileEx
   UpdateProcThreadAttribute = kernel32.UpdateProcThreadAttribute
   VirtualAlloc = kernel32.VirtualAlloc
+  VirtualAlloc2 = KernelBase.VirtualAlloc2
   VirtualAllocEx = kernel32.VirtualAllocEx
   VirtualAllocExNuma = kernel32.VirtualAllocExNuma
   VirtualFree = kernel32.VirtualFree
@@ -365,9 +368,11 @@ EXPORTS
   ResumeThread = ApifwResumeThread
   RoActivateInstance = ApifwRoActivateInstance
   RoGetActivationFactory = ApifwRoGetActivationFactory
+  RtlAddFunctionTable = ApifwRtlAddFunctionTable
   RtlFormatCurrentUserKeyPath = ApifwRtlFormatCurrentUserKeyPath
   RtlFreeUnicodeString = ApifwRtlFreeUnicodeString
   RtlInitUnicodeString = ApifwRtlInitUnicodeString
+  RtlUnhandledExceptionFilter = ApifwRtlUnhandledExceptionFilter
   SetConsoleCtrlHandler = ApifwSetConsoleCtrlHandler
   SetCurrentDirectoryW = ApifwSetCurrentDirectoryW
   SetDllDirectoryW = ApifwSetDllDirectoryW
@@ -710,6 +715,7 @@ EXPORTS
   SetThreadAffinityMask = ApifwNotReached
   SetThreadExecutionState = ApifwNotReached
   SetThreadpoolWait = ApifwNotReached
+  SetThreadStackGuarantee = ApifwNotReached
   shutdown = ApifwNotReached @22
   SizeofResource = ApifwNotReached
   socket = ApifwNotReached @23

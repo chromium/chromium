@@ -32,6 +32,8 @@ NtQuerySection(HANDLE SectionHandle,
 NTSTATUS WINAPI
 RtlFormatCurrentUserKeyPath(_Out_ PUNICODE_STRING CurrentUserKeyPath);
 
+LONG NTAPI RtlUnhandledExceptionFilter(PEXCEPTION_POINTERS ExceptionInfo);
+
 NTSYSAPI NTSTATUS NTAPI NtCreateKey(_Out_ PHANDLE KeyHandle,
                                     _In_ ACCESS_MASK DesiredAccess,
                                     _In_ POBJECT_ATTRIBUTES ObjectAttributes,
