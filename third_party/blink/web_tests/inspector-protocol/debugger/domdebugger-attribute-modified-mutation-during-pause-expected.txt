@@ -3,4 +3,10 @@ t after grow: updated-after-grow
 t after shrink: updated-after-shrink
 t after remove during set: updated-after-remove
 has t after shrink during remove: false
+New block before style copy: DIV
+New block attributes: []
+Paused before style copy: attribute-modified
+Paused on new block: true
+Source attribute storage mutated: 8 -> 72
+Block after style copy: <div style="color:red">text</div>
 
