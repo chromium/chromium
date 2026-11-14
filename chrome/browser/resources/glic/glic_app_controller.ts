@@ -140,6 +140,8 @@ export class GlicAppController implements WebviewDelegate {
   private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
   private loadingStageStartTimestampMs?: DOMHighResTimeStamp;
 
+  private maxWaitTimeMs = kMaxWaitTimeMs;
+
   private panelStateKind: PanelStateKind = PanelStateKind.kHidden;
 
   // Why the client is currently unusable, or undefined if it is not in a
@@ -903,7 +905,7 @@ export class GlicAppController implements WebviewDelegate {
 
   private startClientLoadTimeout(): void {
     // The web client is not yet ready, so wait for the remainder of
-    // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
+    // `maxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
       console.warn('Exceeded timeout waiting for client to load');
@@ -917,7 +919,22 @@ export class GlicAppController implements WebviewDelegate {
             LoadingStage.MAX_VALUE + 1);
       }
       this.trackLoadingStageEnd();
-    }, Math.max(0, kMaxWaitTimeMs - kMinHoldLoadingTimeMs));
+    }, Math.max(0, this.maxWaitTimeMs - kMinHoldLoadingTimeMs));
+  }
+
+  expireClientLoadTimeoutForTesting(): void {
+    assert(
+        this.state === WebUiState.kBeginLoad ||
+        this.state === WebUiState.kShowLoading ||
+        this.state === WebUiState.kFinishLoading ||
+        this.state === WebUiState.kGuestLoaded);
+    this.maxWaitTimeMs = 0;
+    if ((this.state === WebUiState.kFinishLoading ||
+         this.state === WebUiState.kGuestLoaded) &&
+        this.loadingTimer !== undefined) {
+      this.cancelTimeout();
+      this.startClientLoadTimeout();
+    }
   }
 
   // Show one webUI panel and hide the others. The widget is resized to fit the
@@ -986,7 +1003,7 @@ export class GlicAppController implements WebviewDelegate {
             WebUiErrorReason.TIMEOUT_WARMED,
             ClientLoadErrorReason.kWarmedTimeout);
       }
-    }, kMaxWaitTimeMs);
+    }, this.maxWaitTimeMs);
   }
 
   webClientStateChanged(state: WebClientState): void {

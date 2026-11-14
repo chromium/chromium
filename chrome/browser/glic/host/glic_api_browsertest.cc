@@ -3301,25 +3301,36 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
   }
 }
 
-// TODO(https://crbug.com/516659596): Re-enable on Linux builds.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
-    !defined(NDEBUG)
-#define MAYBE_testNoClientCreated DISABLED_testNoClientCreated
-#else
-#define MAYBE_testNoClientCreated testNoClientCreated
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
-#if defined(SLOW_BINARY)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#else
-  ASSERT_OK(OpenGlicForActiveTab());
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testNoClientCreated) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl* instance, OpenGlicForActiveTab());
   ExecuteJsTest();
+  ASSERT_FALSE(instance->host().IsWebClientConnected());
+  ASSERT_FALSE(instance->host().client_load_error_reason().has_value());
+
   if (ExpectsNoWebview()) {
+    auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+        instance->host().contents_manager());
+    ASSERT_TRUE(manager);
+    ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+    manager->loading_timer_for_testing().FireNow();
     ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
   } else {
+    content::WebContents* webui_contents = instance->host().webui_contents();
+    ASSERT_TRUE(webui_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(webui_contents));
+    ASSERT_TRUE(content::ExecJs(
+        webui_contents,
+        "window.appRouter.glicController."
+        "expireClientLoadTimeoutForTesting();"));
     ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+    EXPECT_THAT(histogram_tester.GetAllSamples("Glic.PanelWebUiState.Error"),
+                BucketsAre(Bucket(4 /*TIMEOUT_LOADING_CLIENT*/, 1)));
   }
-#endif
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return instance->host().client_load_error_reason() ==
+           ClientLoadErrorReason::kClientLoadTimeout;
+  }));
 }
 
 // TODO(crbug.com/565561978): Failing on ChromeOS, too.
