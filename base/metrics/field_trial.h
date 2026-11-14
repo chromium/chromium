@@ -83,6 +83,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -569,7 +570,8 @@ class BASE_EXPORT FieldTrialList {
   // to it through PopulateLaunchOptionsWithFieldTrialState(), an empty set will
   // be returned.
   // Must be called only after a call to CreateTrialsInChildProcess().
-  static std::set<std::string> GetActiveTrialsOfParentProcess();
+  using ActiveTrialNames = flat_set<std::string>;
+  static ActiveTrialNames GetActiveTrialsOfParentProcess();
 
   // Use a state string (re: AllStatesToString()) to augment the current list of
   // field trials to include the supplied trials, and using a 100% probability
@@ -772,6 +774,12 @@ class BASE_EXPORT FieldTrialList {
   // and duplicates its handle to a read-only handle, which gets stored in
   // |readonly_allocator_handle|.
   static void InstantiateFieldTrialAllocatorIfNeeded();
+
+  // Populates `allocator` with all registered field trials and feature
+  // overrides. Caller must hold `lock_` before calling this.
+  static void PopulateSharedMemoryAllocatorWhileLocked(
+      FieldTrialAllocator* allocator,
+      uint64_t generation_id);
 
   // Adds the field trial to the allocator. Caller must hold a lock before
   // calling this.

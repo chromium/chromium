@@ -33,7 +33,7 @@ ChildProcessFieldTrialSyncer* ChildProcessFieldTrialSyncer::CreateInstance(
 // static
 ChildProcessFieldTrialSyncer*
 ChildProcessFieldTrialSyncer::CreateInstanceForTesting(
-    const std::set<std::string>& initially_active_trials,
+    const base::FieldTrialList::ActiveTrialNames& initially_active_trials,
     FieldTrialActivatedCallback activated_callback) {
   CHECK(!g_instance);
   g_instance = new ChildProcessFieldTrialSyncer(std::move(activated_callback));
@@ -57,7 +57,7 @@ ChildProcessFieldTrialSyncer::ChildProcessFieldTrialSyncer(
 ChildProcessFieldTrialSyncer::~ChildProcessFieldTrialSyncer() = default;
 
 void ChildProcessFieldTrialSyncer::Init(
-    const std::set<std::string>& initially_active_trials) {
+    const base::FieldTrialList::ActiveTrialNames& initially_active_trials) {
   // Set up initial set of crash dump data for field trials in this process.
   variations::InitCrashKeys();
 

@@ -45,7 +45,7 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
         observed_trial_names.push_back(trial_name);
       });
 
-  std::set<std::string> initially_active_trials = {"A"};
+  base::FieldTrialList::ActiveTrialNames initially_active_trials = {"A"};
   ChildProcessFieldTrialSyncer::CreateInstanceForTesting(
       initially_active_trials, callback);
 

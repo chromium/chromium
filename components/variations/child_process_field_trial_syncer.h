@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VARIATIONS_CHILD_PROCESS_FIELD_TRIAL_SYNCER_H_
 #define COMPONENTS_VARIATIONS_CHILD_PROCESS_FIELD_TRIAL_SYNCER_H_
 
-#include <set>
 #include <string>
 
 #include "base/component_export.h"
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
 
   // Testing variant which allows specifying a set of initially active trials.
   static ChildProcessFieldTrialSyncer* CreateInstanceForTesting(
-      const std::set<std::string>& initially_active_trials,
+      const base::FieldTrialList::ActiveTrialNames& initially_active_trials,
       FieldTrialActivatedCallback activated_callback);
 
   ChildProcessFieldTrialSyncer(const ChildProcessFieldTrialSyncer&) = delete;
@@ -65,7 +64,8 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
   // Initializes field trial state change observation and invokes |callback_|
   // for any field trials that might have already been activated according to
   // `initially_active_trials`.
-  void Init(const std::set<std::string>& initially_active_trials);
+  void Init(
+      const base::FieldTrialList::ActiveTrialNames& initially_active_trials);
 
   // base::FieldTrialList::Observer:
   void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
