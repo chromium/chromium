@@ -3073,6 +3073,10 @@ TEST_F(URLCanonTest, OpaqueHost) {
       {"%zz", L"%zz", "%zz", Component(0, 3), true},
       // UTF-16 HIRAGANA LETTER A (codepoint U+3042, "\xe3\x81\x82" in UTF-8).
       {"\xe3\x81\x82", L"\x3042", "%E3%81%82", Component(0, 9), true},
+      // U+9500 ("\xe9\x94\x80" in UTF-8) must not truncate to NUL (0x00).
+      {"\xe9\x94\x80", L"\x9500", "%E9%94%80", Component(0, 9), true},
+      // U+012F ("\xc4\xaf" in UTF-8) must not truncate to '/' (0x2F).
+      {"\xc4\xaf", L"\x012f", "%C4%AF", Component(0, 6), true},
   };
 
   for (const auto& host_case : host_cases) {

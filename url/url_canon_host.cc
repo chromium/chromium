@@ -179,8 +179,14 @@ constexpr std::array<uint8_t, 128> kHostCharacterTable = {
 };
 // clang-format on
 
-bool IsForbiddenHostCodePoint(uint8_t ch) {
-  return ch <= 0x7F && (kHostCharacterTable[ch] & kForbiddenHost);
+bool IsForbiddenHostCodePoint(char16_t ch) {
+  // The forbidden host code points in the URL Standard are all ASCII, so
+  // non-ASCII characters are never forbidden here. Returning early also
+  // avoids narrowing |ch| to uint8_t for the table lookup below.
+  if (ch > 0x7F) {
+    return false;
+  }
+  return kHostCharacterTable[static_cast<uint8_t>(ch)] & kForbiddenHost;
 }
 
 // RFC1034 maximum FQDN length.
