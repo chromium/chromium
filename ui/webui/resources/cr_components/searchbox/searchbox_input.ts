@@ -101,6 +101,13 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       allowFilePaste: {type: Boolean},
       urlEmphasisEnabled: {type: Boolean, reflect: true},
       urlEmphasis: {type: Object},
+      /**
+       * The kind of text the input expects, for IMEs and software keyboards.
+       * If set, it's the `inputmode` of a `type="text"` input: Windows treats
+       * `type="search"` as a search field, and `type="url"` strips whitespace.
+       * Otherwise, the input is a search field.
+       */
+      textInputType: {type: String},
     };
   }
 
@@ -120,6 +127,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor allowFilePaste: boolean = false;
   accessor urlEmphasisEnabled: boolean = false;
   accessor urlEmphasis: UrlEmphasis|null = null;
+  accessor textInputType: ''|'url'|'search' = '';
 
   private lastInput_: Input = {text: '', inline: ''};
   // See `InputUpdate.additionalText`. Rendered by the #mirror.

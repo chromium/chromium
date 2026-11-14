@@ -59,6 +59,9 @@ struct OmniboxInputState {
   // searchbox icon when autocomplete results are cleared (e.g. on tab switch).
   // Only populated on tab switch when there is input in progress.
   searchbox.mojom.AutocompleteMatch? current_match;
+  // Whether the input expects URLs rather than search queries. See
+  // `OmniboxViewViews::GetPreferredTextInputType()`.
+  bool prefers_url_input;
 };
 
 // Browser-side handler for the Omnibox Popup.

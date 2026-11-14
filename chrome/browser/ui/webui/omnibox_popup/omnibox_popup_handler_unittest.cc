@@ -150,6 +150,7 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
         EXPECT_TRUE(state->is_tab_switch);
         EXPECT_TRUE(state->url_emphasis);
         EXPECT_TRUE(state->unelided_url_emphasis);
+        EXPECT_TRUE(state->prefers_url_input);
       });
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,

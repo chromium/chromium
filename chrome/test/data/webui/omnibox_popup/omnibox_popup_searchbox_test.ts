@@ -75,6 +75,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     urlEmphasis: null,
     unelidedUrlEmphasis: null,
     currentMatch: null,
+    prefersUrlInput: true,
     ...overrides,
   };
 }
@@ -746,6 +747,20 @@ suite('OmniboxPopupSearchboxTest', function() {
     undo();
     await microtasksFinished();
     assertEquals('abc', searchbox.$.input.inputElement.value);
+  });
+
+  test('ExpectsUrlsUnlessTheBrowserPrefersSearchQueries', async () => {
+    callbackRouter.setInputState(
+        createDefaultOmniboxInputState({prefersUrlInput: true}));
+    await microtasksFinished();
+    const input = searchbox.$.input.inputElement;
+    assertEquals('url', input.inputMode);
+
+    // E.g. on Windows for CJK input languages.
+    callbackRouter.setInputState(
+        createDefaultOmniboxInputState({prefersUrlInput: false}));
+    await microtasksFinished();
+    assertEquals('search', input.inputMode);
   });
 
   test('SendsCaretToOldTabOnTabSwitch', async () => {

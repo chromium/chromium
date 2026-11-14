@@ -19,7 +19,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
       page-url="${this.computeCurrentPageUrl_()}"
       .inputKeywordModel="${this.inputKeywordModel}"
       ?input-has-matches="${this.hasMatches()}"
-      @focusin="${this.onInputFocusin_}" @mousedown="${this.onInputMousedown_}"
+      .textInputType="${this.textInputType_}" @focusin="${this.onInputFocusin_}"
+      @mousedown="${this.onInputMousedown_}"
       @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
       @paste="${this.onInputPaste_}" @copy="${this.onInputCopy_}"
       @cut="${this.onInputCut_}">

@@ -225,6 +225,30 @@ suite('SearchboxInputTest', () => {
     assertEquals(5, input.inputElement.selectionEnd);
   });
 
+  test('Text input type', async () => {
+    // By default, the input is a search field.
+    input = await createInput();
+    assertEquals('search', input.inputElement.type);
+    assertFalse(input.inputElement.hasAttribute('inputmode'));
+
+    // Otherwise, it's a text field with the given input mode.
+    input.textInputType = 'url';
+    await input.updateComplete;
+    assertEquals('text', input.inputElement.type);
+    assertEquals('url', input.inputElement.inputMode);
+    input.textInputType = 'search';
+    await input.updateComplete;
+    assertEquals('text', input.inputElement.type);
+    assertEquals('search', input.inputElement.inputMode);
+
+    // Multi-line inputs only have the input mode.
+    input = await createInput({multiLineEnabled: true});
+    assertFalse(input.inputElement.hasAttribute('inputmode'));
+    input.textInputType = 'url';
+    await input.updateComplete;
+    assertEquals('url', input.inputElement.inputMode);
+  });
+
   test('Reports committed composition text unless blurred', async () => {
     input = await createInput();
     const updates: Array<{value: string, isComposing: boolean}> = [];

@@ -225,6 +225,9 @@ export class OmniboxPopupSearchboxElement extends
       isLensSearchEligible_: {
         type: Boolean,
       },
+      textInputType_: {
+        type: String,
+      },
     };
   }
 
@@ -322,6 +325,8 @@ export class OmniboxPopupSearchboxElement extends
   private accessor fullUrl_: string = '';
   private accessor permanentDisplayText_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
+  // Set by the browser, like the Views omnibox's text input type.
+  protected accessor textInputType_: 'url'|'search' = 'search';
   // True during an active IME (Input Method Editor) text composition session.
   // Used to suppress intermediate selection updates until composition finishes,
   // and to end the composition before showing another tab's text.
@@ -1483,6 +1488,7 @@ export class OmniboxPopupSearchboxElement extends
     this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
     this.permanentDisplayText_ = state.permanentDisplayText;
+    this.textInputType_ = state.prefersUrlInput ? 'url' : 'search';
     this.isComposing_ = false;
     const keywordChanged =
         this.inputKeywordModel?.keyword !== state.keywordModel?.keyword ||
