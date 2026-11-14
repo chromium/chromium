@@ -1546,26 +1546,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS
-  if (remove_mask & content::BrowsingDataRemover::
-                        DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS) {
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::STORAGE_ACCESS,
-        [&](const ContentSettingPatternSource& setting) {
-          return setting.metadata.decided_by_related_website_sets() &&
-                 std::ranges::any_of(
-                     filter_builder->GetOrigins(),
-                     [&](const url::Origin& origin) -> bool {
-                       return net::SchemefulSite(
-                                  setting.primary_pattern.ToRepresentativeUrl())
-                                  .IsSameSiteWith(origin) ||
-                              setting.secondary_pattern.Matches(
-                                  origin.GetURL());
-                     });
-        });
-  }
-
   if (remove_mask & constants::DATA_TYPE_SEARCH_ENGINE_CHOICE) {
     // Clear the search engine choice prefs.
     // TODO(b/312180262): Consider clearing other Guest preferences as well.

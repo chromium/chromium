@@ -77,7 +77,6 @@ constexpr base::TimeDelta kStorageAccessAPITopLevelUserInteractionBound =
 // this is only called when persisting a permission grant.
 bool IsUserDecidedPersistableOutcome(RequestOutcome outcome) {
   switch (outcome) {
-    case RequestOutcome::kGrantedByFirstPartySet:
     case RequestOutcome::kGrantedByAllowance:
     case RequestOutcome::kDismissedByUser:
     case RequestOutcome::kReusedPreviousDecision:
@@ -106,7 +105,6 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kDismissedByUser:
     case RequestOutcome::kReusedPreviousDecision:
       return true;
-    case RequestOutcome::kGrantedByFirstPartySet:
     case RequestOutcome::kGrantedByAllowance:
     case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kReusedImplicitGrant:
@@ -154,12 +152,6 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     base::Time now) {
   content_settings::ContentSettingConstraints constraints(now);
   switch (outcome) {
-    case RequestOutcome::kGrantedByFirstPartySet:
-      constraints.set_lifetime(
-          permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
-      constraints.set_decided_by_related_website_sets(true);
-      return constraints;
-
     case RequestOutcome::kGrantedByAllowance:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIImplicitPermissionLifetime);
@@ -546,25 +538,21 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
   RequestOutcome outcome =
       RequestOutcomeFromPrompt(decision.overall_decision, persist);
   if (outcome == RequestOutcome::kReusedPreviousDecision) {
-    // This could be an implicit, e.g. FPS or allowance based permission. Check
-    // if the exception has an ephemeral session model.
+    // This could be an implicit allowance-based permission. Check if the
+    // exception has an ephemeral session model.
     content_settings::SettingInfo info;
     HostContentSettingsMapFactory::GetForProfile(browser_context())
         ->GetContentSetting(request_data.requesting_origin,
                             request_data.embedding_origin,
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
-    if (info.metadata.decided_by_related_website_sets()) {
-      outcome = RequestOutcome::kReusedImplicitGrant;
-    } else {
-      switch (info.metadata.session_model()) {
-        case content_settings::mojom::SessionModel::USER_SESSION:
-          outcome = RequestOutcome::kReusedImplicitGrant;
-          break;
-        case content_settings::mojom::SessionModel::DURABLE:
-        case content_settings::mojom::SessionModel::ONE_TIME:
-          break;
-      }
+    switch (info.metadata.session_model()) {
+      case content_settings::mojom::SessionModel::USER_SESSION:
+        outcome = RequestOutcome::kReusedImplicitGrant;
+        break;
+      case content_settings::mojom::SessionModel::DURABLE:
+      case content_settings::mojom::SessionModel::ONE_TIME:
+        break;
     }
   }
   NotifyPermissionSetInternal(request_data, std::move(callback), persist,

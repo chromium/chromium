@@ -66,10 +66,8 @@ struct RuleMetaData {
   mojo_base.mojom.Time expiration;
   SessionModel session_model;
   mojo_base.mojom.TimeDelta lifetime;
-  // TODO(https://crbug.com/356148020): Migrate RWS-related metadata.
   TpcdMetadataRuleSource tpcd_metadata_rule_source;
   TpcdMetadataCohort tpcd_metadata_cohort;
-  bool decided_by_related_website_sets;
   bool autorevocation_bypassed_by_user;
 };
 

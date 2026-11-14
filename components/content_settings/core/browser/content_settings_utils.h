@@ -95,11 +95,6 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
                                         const PermissionSetting& setting,
                                         bool is_one_time = false);
 
-// Returns true if the type and metadata correspond
-// to a permission decision that was made by Related Website Sets.
-bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
-                                   const RuleMetaData& metadata);
-
 // Returns the list of ContentSettingsTypes that can be granted for a short
 // period of time. This means the following:
 // - Permission prompts will have a button that is labeled along the lines of

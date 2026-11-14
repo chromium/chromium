@@ -27,8 +27,6 @@ RuleMetaData& RuleMetaData::operator=(RuleMetaData&& other) = default;
 void RuleMetaData::SetFromConstraints(
     const ContentSettingConstraints& constraints) {
   session_model_ = constraints.session_model();
-  decided_by_related_website_sets_ =
-      constraints.decided_by_related_website_sets();
   SetExpirationAndLifetime(constraints.expiration(), constraints.lifetime());
 }
 

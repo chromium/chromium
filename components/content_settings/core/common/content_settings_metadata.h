@@ -96,14 +96,6 @@ class RuleMetaData {
   static base::TimeDelta ComputeLifetime(base::TimeDelta lifetime,
                                          base::Time expiration);
 
-  bool decided_by_related_website_sets() const {
-    return decided_by_related_website_sets_;
-  }
-  void set_decided_by_related_website_sets(
-      bool decided_by_related_website_sets) {
-    decided_by_related_website_sets_ = decided_by_related_website_sets;
-  }
-
   bool autorevocation_bypassed_by_user() const {
     return autorevocation_bypassed_by_user_;
   }
@@ -145,9 +137,6 @@ class RuleMetaData {
   mojom::TpcdMetadataCohort tpcd_metadata_cohort_ =
       mojom::TpcdMetadataCohort::DEFAULT;
   uint32_t tpcd_metadata_elected_dtrp_ = 0u;
-
-  // Set to true if the storage access was decided by a Related Website Set.
-  bool decided_by_related_website_sets_ = false;
 
   // Set to true if the user has explicitly "undone" the autorevocation using
   // the Safety Hub UI.

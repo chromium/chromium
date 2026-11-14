@@ -350,11 +350,13 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
     const base::DictValue& settings_dictionary = i.second.GetDict();
 
     // Check to see if the setting is expired or not. This may be due to a past
-    // expiration date or a SessionModel of UserSession.
+    // expiration date, a SessionModel of UserSession, or a deprecated Related
+    // Website Sets grant.
     base::Time expiration = GetExpiration(settings_dictionary);
     std::optional<mojom::SessionModel> session_model =
         GetSessionModel(settings_dictionary);
-    if (ShouldRemoveSetting(expiration, session_model)) {
+    if (ShouldRemoveSetting(expiration, session_model) ||
+        GetDecidedByRelatedWebsiteSets(settings_dictionary)) {
       expired_patterns_to_remove.push_back(pattern_str);
       continue;
     }
@@ -395,8 +397,6 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
           autorevocation_bypassed_by_user);
       metadata.SetExpirationAndLifetime(expiration, lifetime);
       metadata.set_session_model(session_model.value());
-      metadata.set_decided_by_related_website_sets(
-          GetDecidedByRelatedWebsiteSets(settings_dictionary));
 
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
@@ -560,11 +560,6 @@ void ContentSettingsPref::UpdatePref(
       if (!metadata.lifetime().is_zero()) {
         settings_dictionary->SetKey(
             kLifetimeKey, base::TimeDeltaToValue(metadata.lifetime()));
-      }
-      if (metadata.decided_by_related_website_sets()) {
-        settings_dictionary->SetKey(
-            kDecidedByRelatedWebsiteSets,
-            base::Value(metadata.decided_by_related_website_sets()));
       }
       if (metadata.autorevocation_bypassed_by_user()) {
         settings_dictionary->SetKey(

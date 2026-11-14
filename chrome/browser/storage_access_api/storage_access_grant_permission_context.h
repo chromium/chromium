@@ -23,7 +23,9 @@ struct PermissionPromptDecision;
 enum class RequestOutcome {
   // The request was granted because the requesting site and the top level site
   // were in the same First-Party Set.
-  kGrantedByFirstPartySet = 0,
+  // This variant is no longer used.
+  // kGrantedByFirstPartySet = 0,
+
   // The request was granted because the requesting site had not yet used up its
   // allowance of implicit grants (`kStorageAccessAPIImplicitGrantLimit`).
   kGrantedByAllowance = 1,
@@ -49,8 +51,7 @@ enum class RequestOutcome {
   kDeniedByTopLevelInteractionHeuristic = 8,
   // 3p cookies are already allowed by user agent, so there is no need to ask.
   kAllowedByCookieSettings = 9,
-  // The permission was previously granted without user action. E.g. through
-  // FPS.
+  // The permission was previously granted without user action.
   kReusedImplicitGrant = 10,
   // 3p cookies are blocked by user explicitly, so there is no need to ask.
   kDeniedByCookieSettings = 11,

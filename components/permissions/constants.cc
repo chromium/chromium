@@ -81,7 +81,4 @@ const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime =
 const base::TimeDelta kStorageAccessAPIImplicitPermissionLifetime =
     base::Hours(24);
 
-const base::TimeDelta kStorageAccessAPIRelatedWebsiteSetsLifetime =
-    base::Days(30);
-
 }  // namespace permissions

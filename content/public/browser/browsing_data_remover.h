@@ -114,11 +114,6 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 20;
 
-  // Permissions granted by Related Website Sets
-  // (https://github.com/WICG/first-party-sets).
-  static constexpr DataType DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS = 1
-                                                                         << 21;
-
   // Device bound sessions
   // (https://github.com/WICG/dbsc/blob/main/README.md)
   static constexpr DataType DATA_TYPE_DEVICE_BOUND_SESSIONS = 1 << 22;

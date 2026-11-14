@@ -41,7 +41,6 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -504,28 +503,6 @@ TEST_F(StorageAccessGrantPermissionContextTest, BlockReused) {
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
               UnorderedElementsAre(Pair(GetRequesterSite(), true)));
-}
-
-TEST_F(StorageAccessGrantPermissionContextTest, FpsGrantReused) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings::ContentSettingConstraints constraints;
-  constraints.set_decided_by_related_website_sets(true);
-  map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
-                                     ContentSettingsType::STORAGE_ACCESS,
-                                     CONTENT_SETTING_ALLOW, constraints);
-
-  EXPECT_TRUE(
-      RequestPermission(MakePermissionRequestData(/*user_gesture=*/true))
-          .Wait());
-
-  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-              ElementsAre(Pointee(
-                  DwaEntryMatches(RequestOutcome::kReusedImplicitGrant,
-                                  net::SchemefulSite(GetRequesterURL())))));
-
-  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
-                  ContentSettingsType::STORAGE_ACCESS),
-              IsEmpty());
 }
 
 TEST_F(StorageAccessGrantPermissionContextTest,

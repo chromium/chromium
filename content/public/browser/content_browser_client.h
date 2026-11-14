@@ -3249,7 +3249,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
       BrowsingDataRemover::DATA_TYPE_CACHE |
       BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
-      BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
       BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS |
       BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE |
       BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE |

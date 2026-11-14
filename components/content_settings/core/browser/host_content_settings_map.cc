@@ -323,8 +323,6 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
   for (const auto* info : *registry) {
     DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(info->type());
   }
-
-  DeleteStorageAccessRwsGrants();
 }
 
 // static
@@ -1421,15 +1419,4 @@ void HostContentSettingsMap::EnsureSettingsUpToDate(
   for (auto&& provider : user_modifiable_providers_) {
     provider->EnsureUpdatedSettings(barrier_closure);
   }
-}
-
-void HostContentSettingsMap::DeleteStorageAccessRwsGrants() {
-  if (is_off_the_record_) {
-    return;
-  }
-  ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::STORAGE_ACCESS,
-      [](const ContentSettingPatternSource& setting) {
-        return setting.metadata.decided_by_related_website_sets();
-      });
 }

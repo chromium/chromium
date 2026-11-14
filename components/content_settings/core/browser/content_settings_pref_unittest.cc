@@ -314,7 +314,6 @@ TEST_F(ContentSettingsPrefTest, ExpirationWhileReadingFromPrefs) {
   using CanonicalPatternToTag = std::pair<std::string, std::string>;
   std::vector<CanonicalPatternToTag> expected_patterns_to_tags = {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
-      {kTestPatternCanonicalDelta, kTestPatternCanonicalDelta},
   };
 
   // Create pre-existing entries: one that is expired, one that never
@@ -401,67 +400,6 @@ TEST_F(ContentSettingsPrefTest, LegacyLastModifiedLoad) {
   auto it = content_settings_pref->GetRuleIterator(false);
   base::Time retrieved_last_modified = it->Next()->metadata.last_modified();
   EXPECT_EQ(last_modified, retrieved_last_modified);
-}
-
-// Ensure that decided_by_related_website_sets can be written and read.
-TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
-  // Write pref.
-  {
-    auto content_settings_pref =
-        CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-    RuleMetaData metadata;
-    metadata.set_session_model(mojom::SessionModel::DURABLE);
-    metadata.set_decided_by_related_website_sets(true);
-    content_settings_pref->SetWebsiteSetting(
-        ContentSettingsPattern::FromString("http://example.com"),
-        ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        std::move(metadata));
-  }
-
-  // Read pref.
-  // Reset is needed because `ReadContentSettingsFromPref()` is called in the
-  // constructor of `ContentSettingsPref` and reusing the registrar causes a
-  // fatal error because it already had the pref registered.
-  registrar_.Reset();
-  registrar_.Init(&prefs_);
-  auto content_settings_pref =
-      CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-  auto rule_iterator = content_settings_pref->GetRuleIterator(
-      /*off_the_record=*/false);
-  ASSERT_TRUE(rule_iterator->HasNext());
-  auto rule = rule_iterator->Next();
-  EXPECT_EQ(
-      "http://example.com,*",
-      CreatePatternString(rule->primary_pattern, rule->secondary_pattern));
-  EXPECT_EQ(rule->value.GetInt(), CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::DURABLE);
-  EXPECT_EQ(rule->metadata.decided_by_related_website_sets(), true);
-  EXPECT_FALSE(rule_iterator->HasNext());
-}
-
-// Ensure that decided_by_related_website_sets is not written to JSON when it's
-// false.
-TEST_F(ContentSettingsPrefTest,
-       DecidedByRelatedWebsiteSetsFalseNotWrittenToJson) {
-  // Write pref.
-  {
-    auto content_settings_pref =
-        CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-    RuleMetaData metadata;
-    metadata.set_session_model(mojom::SessionModel::DURABLE);
-    metadata.set_decided_by_related_website_sets(false);
-    content_settings_pref->SetWebsiteSetting(
-        ContentSettingsPattern::FromString("http://example.com"),
-        ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        std::move(metadata));
-  }
-
-  // Read pref from dict and make sure `decided_by_related_website_sets` is not
-  // written when it's false.
-  auto& dict = prefs_.GetDict(kTestContentSettingPrefName);
-  EXPECT_EQ(dict.FindDict("http://example.com,*")
-                ->FindBool("decided_by_related_website_sets"),
-            std::nullopt);
 }
 
 TEST_F(ContentSettingsPrefTest, DeletePrefWithDeprecatedSessionModelValue) {

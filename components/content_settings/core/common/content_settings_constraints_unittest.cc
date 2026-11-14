@@ -25,7 +25,6 @@ TEST_F(ContentSettingConstraintsTest, Clone) {
   constraints.set_lifetime(base::Seconds(1234));
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
-  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints different = constraints.Clone();
 
@@ -34,8 +33,6 @@ TEST_F(ContentSettingConstraintsTest, Clone) {
   EXPECT_EQ(constraints.session_model(), different.session_model());
   EXPECT_EQ(constraints.track_last_visit_for_autoexpiration(),
             different.track_last_visit_for_autoexpiration());
-  EXPECT_EQ(constraints.decided_by_related_website_sets(),
-            different.decided_by_related_website_sets());
 
   different.set_lifetime(base::Days(1));
   EXPECT_NE(constraints, different);
@@ -46,7 +43,6 @@ TEST_F(ContentSettingConstraintsTest, MoveCtor) {
   constraints.set_lifetime(base::Seconds(1234));
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
-  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints clone = constraints.Clone();
   ContentSettingConstraints moved = std::move(constraints);
