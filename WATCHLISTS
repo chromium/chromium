@@ -2772,7 +2772,7 @@
     'android_side_panel': ['clhager@google.com',
                            'linyuh+watch@google.com',
                            'nemco+watch@google.com',
-                           'shuyng@google.com'],
+                           'shuyng+watch-android-side-panel@google.com'],
     'android_split_view': ['aishwaryarj+watch-android-split-view@google.com',
                            'linyuh+watch-android-split-view@google.com',
                            'shuyng+watch-android-split-view@google.com'],
