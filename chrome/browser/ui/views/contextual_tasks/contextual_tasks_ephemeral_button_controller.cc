@@ -80,6 +80,8 @@ bool IsContextualTasksPage(const GURL& url) {
 }  // namespace
 
 DEFINE_USER_DATA(ContextualTasksEphemeralButtonController);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContextualTasksEphemeralButtonController,
+                                      kRemoveForTaskMenuItem);
 
 ContextualTasksEphemeralButtonController::
     ContextualTasksEphemeralButtonController(
@@ -184,10 +186,8 @@ ContextualTasksEphemeralButtonController::
                         ? vector_icons::kCloseIcon
                         : vector_icons::kCloseOldIcon,
                     ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-                .SetProperty(
-                    views::kElementIdentifierKey,
-                    ContextualTasksEphemeralButtonMenuModel::
-                        kRemoveForTaskMenuItem)
+                .SetProperty(views::kElementIdentifierKey,
+                             kRemoveForTaskMenuItem)
                 .SetVisible(false)
                 .SetEnabled(false)
                 .Build());

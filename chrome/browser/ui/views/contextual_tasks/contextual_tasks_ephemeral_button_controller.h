@@ -27,6 +27,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -54,6 +55,7 @@ class ContextualTasksEphemeralButtonController
       public PinnedToolbarActionsModel::Observer {
  public:
   DECLARE_USER_DATA(ContextualTasksEphemeralButtonController);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRemoveForTaskMenuItem);
   explicit ContextualTasksEphemeralButtonController(
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksEphemeralButtonController() override;
