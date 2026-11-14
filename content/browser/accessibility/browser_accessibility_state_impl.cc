@@ -84,7 +84,7 @@ class AccessibilityDisabler
   // This destructor is run either when the WebContents to which this instance
   // is attached is destroyed or when `Remove()` is called.
   ~AccessibilityDisabler() override {
-    // If the the instance still has the on_destroyed_before_schedule_ callback,
+    // If the instance still has the on_destroyed_before_schedule_ callback,
     // then `Schedule()` has not yet been called. Run the callback now so that
     // the BrowserAccessibilityStateImpl can remove the WebContents from its
     // last_hidden_ collection.
