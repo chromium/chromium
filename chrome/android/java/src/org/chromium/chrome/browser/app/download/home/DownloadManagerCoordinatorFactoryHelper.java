@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactor
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -35,6 +34,7 @@ class DownloadManagerCoordinatorFactoryHelper {
      * Returns an instance of a {@link DownloadManagerCoordinator} to be used in the UI.
      *
      * @param activity The parent {@link Activity}.
+     * @param profile The {@link Profile} associated with the downloads.
      * @param config A {@link DownloadManagerUiConfig} to provide configuration params.
      * @param snackbarManager The {@link SnackbarManager} that should be used to show snackbars.
      * @param modalDialogManager The {@link ModalDialogManager} that should be used to show dialog.
@@ -42,20 +42,13 @@ class DownloadManagerCoordinatorFactoryHelper {
      */
     public static DownloadManagerCoordinator create(
             Activity activity,
+            Profile profile,
             DownloadManagerUiConfig config,
             SnackbarManager snackbarManager,
             @Nullable ModalDialogManager modalDialogManager) {
-        Profile profile =
-                config.otrProfileId != null
-                        ? ProfileManager.getLastUsedRegularProfile()
-                                .getOffTheRecordProfile(
-                                        config.otrProfileId, /* createIfNeeded= */ true)
-                        : ProfileManager.getLastUsedRegularProfile();
-        assert profile != null;
-
         DownloadStartupUtils.ensureDownloadSystemInitialized(
                 /* isFullBrowserStarted= */ true,
-                /* isOffTheRecord= */ config.otrProfileId != null);
+                /* isOffTheRecord= */ profile.isOffTheRecord());
 
         Callback<Context> settingsLaunchHelper =
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;

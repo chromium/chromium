@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -100,8 +99,7 @@ public class DownloadPageUnitTest {
         mActivityScenarios.getScenario().onActivity(activity -> mActivity = activity);
         when(mNativePageHost.getContext()).thenReturn(mActivity);
         when(mNativePageHost.createDefaultMarginAdapter(any())).thenReturn(mMarginAdapter);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        when(mProfile.getOffTheRecordProfile(mOtrProfileId, true)).thenReturn(mProfile);
+        when(mProfile.getOtrProfileId()).thenReturn(mOtrProfileId);
         TrackerFactory.setTrackerForTests(mTracker);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
         when(mFaviconHelperJni.init()).thenReturn(1L); // Can't be 0 otherwise assertion fails.
@@ -119,7 +117,7 @@ public class DownloadPageUnitTest {
                         mActivity,
                         mSnackbarManager,
                         mModalDialogManager,
-                        mOtrProfileId,
+                        mProfile,
                         mNativePageHost,
                         mMockBackPressManager);
     }

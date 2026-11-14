@@ -360,7 +360,7 @@ public class NativePageFactory {
                     mActivity,
                     mSnackbarManagerSupplier.get(),
                     mWindowAndroid.getModalDialogManager(),
-                    profile.getOtrProfileId(),
+                    profile,
                     new TabShim(
                             tab,
                             mBrowserControlsManager,

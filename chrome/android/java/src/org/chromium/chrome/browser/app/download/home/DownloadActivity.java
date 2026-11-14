@@ -80,7 +80,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(new WeakReference<>(this));
         mOtrProfileId = DownloadUtils.getOtrProfileIdFromIntent(getIntent());
 
-        assumeNonNull(mOtrProfileId);
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags(this)
                         .setOtrProfileId(mOtrProfileId)
@@ -96,9 +95,19 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         mModalDialogManager =
                 new ModalDialogManager(
                         new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
+        // TODO(crbug.com/40254448): Pass `profile` directly (and use `profile.getOtrProfileId()`)
+        // once DownloadActivityLauncher passes a ProfileToken via ProfileIntentUtils instead of
+        // EXTRA_OTR_PROFILE_ID.
+        Profile originalProfile = profile.getOriginalProfile();
+        Profile downloadProfile =
+                mOtrProfileId != null
+                        ? originalProfile.getOffTheRecordProfile(
+                                mOtrProfileId, /* createIfNeeded= */ true)
+                        : originalProfile;
+        assert downloadProfile != null;
         mDownloadCoordinator =
                 DownloadManagerCoordinatorFactoryHelper.create(
-                        this, config, getSnackbarManager(), mModalDialogManager);
+                        this, downloadProfile, config, getSnackbarManager(), mModalDialogManager);
         setContentView(mDownloadCoordinator.getView());
         assumeNonNull(mCurrentUrl);
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
