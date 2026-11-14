@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/page_context_util.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,8 @@
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -68,6 +71,30 @@ void IsUrlSupportedForPageContext(
       url, url, base::BindOnce([](actor::SafetyListManager::Decision decision) {
                   return decision != actor::SafetyListManager::Decision::kBlock;
                 }).Then(std::move(callback)));
+}
+
+std::optional<ToolResponse> CheckPageForCapture(
+    content::WebContents* focused_contents,
+    const base::WeakPtr<content::Page>& page,
+    bool is_url_supported) {
+  if (!is_url_supported) {
+    return ToolResponse::Error(actor::mojom::ActionResultCode::kUrlBlocked,
+                               "URL is not supported for page capture");
+  }
+  if (!focused_contents) {
+    return ToolResponse::Error(actor::mojom::ActionResultCode::kTabWentAway,
+                               "No active tab");
+  }
+  if (!page || &*page != &focused_contents->GetPrimaryPage()) {
+    return ToolResponse::Error(
+        actor::mojom::ActionResultCode::kScreenshotCapturePageChanged,
+        "Focused page changed during page capture");
+  }
+  if (focused_contents->IsCrashed()) {
+    return ToolResponse::Error(actor::mojom::ActionResultCode::kRendererCrashed,
+                               "Renderer crashed");
+  }
+  return std::nullopt;
 }
 
 actor::mojom::ActionResultCode ToScreenshotErrorCode(

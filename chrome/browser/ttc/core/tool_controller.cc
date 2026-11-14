@@ -19,8 +19,6 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -52,10 +50,8 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
-#include "chrome/browser/ttc/core/get_pointer_response.h"
+#include "chrome/browser/ttc/core/get_pointer_tool.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
-#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -166,7 +162,11 @@ std::optional<actor::ScrollPageToolRequest::Direction> ParseScrollDirection(
 }  // namespace
 
 ToolController::ToolController(SessionControllerImpl& session_controller)
-    : session_controller_(session_controller) {}
+    : session_controller_(session_controller) {
+  if (base::FeatureList::IsEnabled(kTtcGetPointer)) {
+    get_pointer_tool_ = std::make_unique<GetPointerTool>(session_controller);
+  }
+}
 
 ToolController::~ToolController() = default;
 
@@ -394,9 +394,8 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
     return;
   }
 
-  if (tool_request.name == "get_pointer" &&
-      base::FeatureList::IsEnabled(kTtcGetPointer)) {
-    GetPointer(std::move(callback));
+  if (tool_request.name == "get_pointer" && get_pointer_tool_) {
+    get_pointer_tool_->Run(std::move(callback));
     return;
   }
 
@@ -594,24 +593,8 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
     tools.push_back(std::move(close_window));
   }
 
-  if (base::FeatureList::IsEnabled(kTtcGetPointer)) {
-    ToolDefinition get_pointer;
-    get_pointer.name = "get_pointer";
-    get_pointer.description =
-        "Returns a small image of the active webpage around where the user's "
-        "pointer has been during their current request, with a crosshair "
-        "marking the pointed-at spot, plus the page element under it. Use it "
-        "when the user refers to something on screen with words like "
-        "\"this\", \"that\", \"here\" or \"there\" without naming it. The "
-        "element comes without a node id; to act on it, find it in the page "
-        "content by its label or text. If it returns no_active_pointer, the "
-        "user is not pointing at anything; answer from the page content or "
-        "ask.";
-    // The tool takes no arguments, so its schema is left empty. Like
-    // get_screenshot, the model speaks about what the tool returns.
-    get_pointer.behavior = ToolDefinition::Behavior::kBlocking;
-    get_pointer.verbalization = ToolDefinition::Verbalization::kStandard;
-    tools.push_back(std::move(get_pointer));
+  if (get_pointer_tool_) {
+    tools.push_back(GetPointerTool::GetDefinition());
   }
 
   return tools;
@@ -717,97 +700,6 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
       std::move(callback));
 }
 
-void ToolController::GetPointer(ToolResponseCallback callback) {
-  content::WebContents* contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (!contents) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-    return;
-  }
-
-  // The session has a tracker whenever the tool is offered.
-  std::vector<PointerTracker::Location> locations =
-      CHECK_DEREF(session_controller_->pointer_tracker())
-          .ResolveLocations(session_controller_->user_turn_start(),
-                            base::TimeTicks::Now());
-  if (locations.empty()) {
-    std::move(callback).Run(ToolResponse::Success(
-        base::DictValue().Set("status", "no_active_pointer")));
-    return;
-  }
-
-  content::Page& page = contents->GetPrimaryPage();
-  // The session this controller belongs to is owned by the TtcKeyedService.
-  const TtcKeyedService& ttc_service =
-      CHECK_DEREF(TtcKeyedService::Get(GetProfile()));
-  IsUrlSupportedForPageContext(
-      page.GetMainDocument().GetLastCommittedURL(),
-      ttc_service.enterprise_policy_checker(),
-      base::BindOnce(&ToolController::OnGetPointerUrlChecked,
-                     weak_factory_.GetWeakPtr(), page.GetWeakPtr(),
-                     std::move(locations), std::move(callback)));
-}
-
-void ToolController::OnGetPointerUrlChecked(
-    base::WeakPtr<content::Page> page,
-    std::vector<PointerTracker::Location> locations,
-    ToolResponseCallback callback,
-    bool is_url_supported) {
-  base::expected<content::WebContents*, ToolResponse> web_contents =
-      CheckPageForCapture(page, is_url_supported);
-  if (!web_contents.has_value()) {
-    std::move(callback).Run(std::move(web_contents.error()));
-    return;
-  }
-
-  pointer_capturer_ = std::make_unique<PointerContextCapturer>(
-      kTtcGetPointerCaptureTimeout.Get());
-  pointer_capturer_->Capture(
-      web_contents.value(),
-      base::BindOnce(&ToolController::OnGetPointerCaptured,
-                     weak_factory_.GetWeakPtr(), std::move(page),
-                     std::move(locations), std::move(callback)));
-}
-
-void ToolController::OnGetPointerCaptured(
-    base::WeakPtr<content::Page> page,
-    std::vector<PointerTracker::Location> locations,
-    ToolResponseCallback callback,
-    PointerContextCapturer::Result context) {
-  pointer_capturer_.reset();
-  if (!context.has_value()) {
-    std::move(callback).Run(std::move(context.error()));
-    return;
-  }
-  // The capturer does not notice the user switching to another tab.
-  if (std::optional<ToolResponse> error = CheckPageAfterCapture(page)) {
-    std::move(callback).Run(std::move(*error));
-    return;
-  }
-
-  // Making the image is CPU-bound, so not for this thread; the user is waiting
-  // on a spoken answer, so not to be put off either.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&BuildGetPointerResponse, std::move(context).value(),
-                     std::move(locations)),
-      base::BindOnce(&ToolController::OnGetPointerResponseBuilt,
-                     weak_factory_.GetWeakPtr(), std::move(page),
-                     std::move(callback)));
-}
-
-void ToolController::OnGetPointerResponseBuilt(
-    base::WeakPtr<content::Page> page,
-    ToolResponseCallback callback,
-    ToolResponse response) {
-  // Checked once more, since making the image took a while too.
-  if (std::optional<ToolResponse> error = CheckPageAfterCapture(page)) {
-    response = std::move(*error);
-  }
-  std::move(callback).Run(std::move(response));
-}
-
 // TODO(b/573253710): Migrate this to be an actor tool once ActorKeyedService
 // returns `ToolResponse`s.
 void ToolController::GetScreenshot(ToolResponseCallback callback) {
@@ -836,10 +728,11 @@ void ToolController::OnGetScreenshotUrlChecked(
     base::WeakPtr<content::Page> page,
     ToolResponseCallback callback,
     bool is_url_supported) {
-  base::expected<content::WebContents*, ToolResponse> web_contents =
-      CheckPageForCapture(page, is_url_supported);
-  if (!web_contents.has_value()) {
-    std::move(callback).Run(std::move(web_contents.error()));
+  content::WebContents* web_contents =
+      session_controller_->GetVoiceFocusedWebContents();
+  if (std::optional<ToolResponse> error =
+          CheckPageForCapture(web_contents, page, is_url_supported)) {
+    std::move(callback).Run(std::move(*error));
     return;
   }
 
@@ -861,7 +754,7 @@ void ToolController::OnGetScreenshotUrlChecked(
           /*progress_listener=*/nullptr,
           /*fetch_pdf_content_callback=*/base::NullCallback());
   screenshot_fetcher_->FetchStart(
-      *web_contents.value(), options,
+      *web_contents, options,
       base::BindOnce(&ToolController::OnGetScreenshotFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -1270,46 +1163,6 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
             actor_surface_handle, *target_language);
       },
       std::move(callback));
-}
-
-base::expected<content::WebContents*, ToolResponse>
-ToolController::CheckPageForCapture(const base::WeakPtr<content::Page>& page,
-                                    bool is_url_supported) {
-  if (!is_url_supported) {
-    return base::unexpected(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kUrlBlocked,
-                            "URL is not supported for page capture"));
-  }
-
-  content::WebContents* web_contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (!web_contents) {
-    return base::unexpected(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-  }
-
-  if (!page || &*page != &web_contents->GetPrimaryPage()) {
-    return base::unexpected(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCapturePageChanged,
-        "Focused page changed during page capture"));
-  }
-
-  if (web_contents->IsCrashed()) {
-    return base::unexpected(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kRendererCrashed, "Renderer crashed"));
-  }
-  return web_contents;
-}
-
-std::optional<ToolResponse> ToolController::CheckPageAfterCapture(
-    const base::WeakPtr<content::Page>& page) {
-  // The URL was found to be supported before the capture.
-  base::expected<content::WebContents*, ToolResponse> web_contents =
-      CheckPageForCapture(page, /*is_url_supported=*/true);
-  if (web_contents.has_value()) {
-    return std::nullopt;
-  }
-  return std::move(web_contents.error());
 }
 
 void ToolController::PerformActionOnTrackedContents(

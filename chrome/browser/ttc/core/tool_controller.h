@@ -20,8 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
-#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ttc/app/public/tool_types.h"
 
@@ -33,7 +31,6 @@ class ToolRequest;
 
 namespace content {
 class Page;
-class WebContents;
 }  // namespace content
 
 namespace page_content_annotations {
@@ -44,6 +41,7 @@ struct FetchPageContextErrorDetails;
 
 namespace ttc {
 
+class GetPointerTool;
 class SessionControllerImpl;
 
 // Executes the session's tool calls in an actor task.
@@ -100,18 +98,6 @@ class ToolController {
   void CreateNewWindow(ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,
                         ToolResponseCallback callback);
-  void GetPointer(ToolResponseCallback callback);
-  void OnGetPointerUrlChecked(base::WeakPtr<content::Page> page,
-                              std::vector<PointerTracker::Location> locations,
-                              ToolResponseCallback callback,
-                              bool is_url_supported);
-  void OnGetPointerCaptured(base::WeakPtr<content::Page> page,
-                            std::vector<PointerTracker::Location> locations,
-                            ToolResponseCallback callback,
-                            PointerContextCapturer::Result context);
-  void OnGetPointerResponseBuilt(base::WeakPtr<content::Page> page,
-                                 ToolResponseCallback callback,
-                                 ToolResponse response);
   void GetScreenshot(ToolResponseCallback callback);
   void OnGetScreenshotUrlChecked(base::WeakPtr<content::Page> page,
                                  ToolResponseCallback callback,
@@ -148,23 +134,6 @@ class ToolController {
   void TranslatePage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
 
-  // For the tools that capture the page, once its URL has been checked (see
-  // IsUrlSupportedForPageContext()): returns the contents to capture, or the
-  // error to answer with if the URL is not supported, `page`, whose URL it
-  // was, is no longer the page the session is focused on, or its renderer has
-  // crashed.
-  base::expected<content::WebContents*, ToolResponse> CheckPageForCapture(
-      const base::WeakPtr<content::Page>& page,
-      bool is_url_supported);
-
-  // For get_pointer, once `page` has been captured: returns the error to
-  // answer with if the user has since left `page`, since what was captured is
-  // then no longer what they are pointing at, and the page they are on now has
-  // not been checked, or if its renderer has crashed. Returns nullopt if they
-  // are still on it.
-  std::optional<ToolResponse> CheckPageAfterCapture(
-      const base::WeakPtr<content::Page>& page);
-
   // Runs the tool request returned by `create_action` against the contents
   // tracked by the session (see
   // SessionControllerImpl::GetVoiceFocusedWebContents()), replying to
@@ -199,8 +168,8 @@ class ToolController {
   std::unique_ptr<page_content_annotations::PageContextFetcher>
       screenshot_fetcher_;
 
-  // Set while get_pointer is capturing the page.
-  std::unique_ptr<PointerContextCapturer> pointer_capturer_;
+  // Null unless the get_pointer tool is enabled.
+  std::unique_ptr<GetPointerTool> get_pointer_tool_;
 
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };

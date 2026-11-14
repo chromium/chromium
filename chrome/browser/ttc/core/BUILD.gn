@@ -110,6 +110,8 @@ source_set("impl") {
     "eval_audio_controller.h",
     "get_pointer_response.cc",
     "get_pointer_response.h",
+    "get_pointer_tool.cc",
+    "get_pointer_tool.h",
     "hotl/hotl_transcript_matcher.cc",
     "hotl/hotl_transcript_matcher.h",
     "page_context.cc",

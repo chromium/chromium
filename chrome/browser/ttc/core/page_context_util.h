@@ -5,14 +5,23 @@
 #ifndef CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_UTIL_H_
 #define CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_UTIL_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
+#include "components/ttc/app/public/tool_types.h"
 
 class GURL;
 
 namespace actor {
 class EnterprisePolicyChecker;
 }
+
+namespace content {
+class Page;
+class WebContents;
+}  // namespace content
 
 namespace page_content_annotations {
 enum class FetchPageContextError;
@@ -34,6 +43,22 @@ void IsUrlSupportedForPageContext(
     const GURL& url,
     const actor::EnterprisePolicyChecker* enterprise_policy_checker,
     base::OnceCallback<void(bool)> callback);
+
+// For the tools that capture the page, once its URL has been checked (see
+// IsUrlSupportedForPageContext()): returns the error to answer with if the URL
+// is not supported, if `page`, whose URL it was, is no longer the primary page
+// of `focused_contents`, the contents the session is focused on now, which may
+// be null, or if its renderer has crashed. Returns nullopt if `page` may be
+// captured.
+//
+// TODO(crbug.com/571268337): Centralize this. What TTC requests page context
+// through (APC, text, screenshots) should also say whether the current page
+// may be captured, e.g. by an IsCurrentPageEligible() method that a tool asks
+// before it captures.
+std::optional<ToolResponse> CheckPageForCapture(
+    content::WebContents* focused_contents,
+    const base::WeakPtr<content::Page>& page,
+    bool is_url_supported);
 
 // Returns the tool error for a screenshot whose page context fetch failed
 // with `error`.
