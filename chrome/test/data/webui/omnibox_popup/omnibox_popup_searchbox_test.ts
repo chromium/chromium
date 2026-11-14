@@ -10,7 +10,7 @@ import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -8592,6 +8592,10 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     async function assertDropdownStaysBounded() {
       assertFalse(wrapper.hasAttribute('unbounded'));
+      assertFalse(searchbox.$.input.hasAttribute('clip-selection-listbox'));
+      assertEquals(
+          '-10000px',
+          getComputedStyle(searchbox.$.input.$.selectionListbox).left);
 
       searchbox.dropdownIsVisible = true;
       await microtasksFinished();
@@ -8693,6 +8697,13 @@ suite('OmniboxPopupSearchboxTest', function() {
       await microtasksFinished();
       assertDeepEquals(['show', 'hide'], calls);
       assertFalse(unbounded);
+    });
+
+    test('ClipsSelectionListboxWhenUnboundedSupported', () => {
+      assertTrue(searchbox.$.input.hasAttribute('clip-selection-listbox'));
+      assertNotEquals(
+          '-10000px',
+          getComputedStyle(searchbox.$.input.$.selectionListbox).left);
     });
 
     test('ParamOffLeavesDropdownBounded', async () => {

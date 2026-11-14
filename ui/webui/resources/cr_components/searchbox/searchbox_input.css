@@ -327,3 +327,15 @@ cr-searchbox-icon,
   left: -10000px;
   position: absolute;
 }
+
+/* Clip in place instead of moving offscreen, because an offscreen listbox
+   stretches a surface that sizes itself to its content (such as an unbounded
+   element). */
+:host([clip-selection-listbox]) #selectionListbox {
+  clip-path: inset(50%);
+  height: 1px;
+  left: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 1px;
+}

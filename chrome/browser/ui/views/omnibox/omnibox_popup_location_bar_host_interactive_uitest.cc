@@ -510,6 +510,20 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   EXPECT_GT(unbounded_window->GetBoundsInScreen().height(),
             location_bar()->GetBoundsInScreen().height());
 #endif
+
+  // Arrowing unhides the screen-reader #selectionListbox; it must not stretch
+  // the unbounded wrapper (regression test for its `left: -10000px`).
+  PressKey(ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN);
+  ASSERT_TRUE(WaitForJs(
+      "!crInput.shadowRoot.querySelector('#selectionListbox').hidden"));
+  EXPECT_EQ(true, Eval(R"(
+    return wrapper.matches(':unbounded') &&
+           wrapper.getBoundingClientRect().width <
+               sb.getBoundingClientRect().width + 50;)"));
+#if defined(USE_AURA)
+  EXPECT_LT(unbounded_window->GetBoundsInScreen().width(),
+            location_bar()->GetBoundsInScreen().width() + 200);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
