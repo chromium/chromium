@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/actor/core/actor_features.h"
@@ -1172,7 +1173,29 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
       response, actor::mojom::ActionResultCode::kTranslateUnsupportedLanguage);
 }
 
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, EnterAndExitFullscreen) {
+class ToolControllerFullscreenBrowserTest : public ToolControllerBrowserTest {
+ public:
+  ToolControllerFullscreenBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // With this feature, a tab that goes fullscreen also asks the OS to make
+    // its window fullscreen, which on Android desktop takes the window out of
+    // the desktop. If the tab leaves fullscreen right away, as it does in this
+    // test, the window can be left there (crbug.com/585678116), and a test
+    // that ends that way leaves the device's desktop deactivated: windows that
+    // later tests open then never become active (crbug.com/585643190). This
+    // test is about the tools, not the OS, so keep fullscreen inside the
+    // window.
+    in_window_fullscreen_.InitAndDisableFeature(
+        features::kDisplayEdgeToEdgeFullscreen);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList in_window_fullscreen_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolControllerFullscreenBrowserTest,
+                       EnterAndExitFullscreen) {
   // Navigate to an actual web page so that on Android the tab and view
   // hierarchy are attached before exercising fullscreen.
   ASSERT_TRUE(content::NavigateToURL(
