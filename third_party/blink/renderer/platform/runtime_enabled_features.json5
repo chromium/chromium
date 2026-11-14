@@ -6618,6 +6618,10 @@
       status: "stable",
     },
     {
+      name: "SvgImageDeferShutdown",
+      status: "stable",
+    },
+    {
       name: "SvgImageNonUniformScalingFix",
       status: "stable",
     },

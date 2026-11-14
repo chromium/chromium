@@ -8,7 +8,6 @@
 #include <cstddef>
 
 #include "base/auto_reset.h"
-#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
@@ -300,9 +299,7 @@ class CORE_EXPORT ImageResourceContent final
 
   bool is_broken_ = false;
 
-#if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;
-#endif
 };
 
 template <>

@@ -16,21 +16,28 @@
 namespace blink::test {
 
 TaskEnvironment::~TaskEnvironment() {
-  // Since `SimpleFontData` is associated with `v8::isolate`, it must be
-  // destroyed before `main_thread_isolate_.reset()`.
-  FontCache::Get().Invalidate();
-
-  // Evict MemoryCache resources before GC. Strong references in the cache
-  // (e.g., data URI resources) can keep objects like IsolatedSVGDocuments and
-  // their PerformanceMonitors alive, preventing cleanup before the main thread
-  // overrider is reset below.
+  // Evict MemoryCache resources (e.g., cached data URIs keeping
+  // `IsolatedSVGDocumentHost`s alive) and run a full GC before `RunUntilIdle()`
+  // so unreachable objects from the test run their prefinalizers/destructors
+  // (e.g., cancelling Mojo watchers) before pending tasks are drained.
+  // Sweeping an `SVGImage` posts a deferred
+  // `IsolatedSVGDocumentHost::Shutdown()` task (which may in turn release
+  // nested `SVGImage`s), so keep draining tasks, evicting cached resources, and
+  // collecting garbage in a loop until the main thread stays idle before
+  // resetting `main_thread_overrider_` and `main_thread_isolate_`.
   MemoryCache::Get()->EvictResources();
-
-  // Run a full GC before resetting the main thread overrider. This ensures that
-  // we can properly clean up objects like PerformanceMonitor that need to call
-  // MainThreadImpl::RemoveTaskTimeObserver().
   ThreadState::Current()->CollectAllGarbageForTesting();
-  RunUntilIdle();
+  do {
+    RunUntilIdle();
+    MemoryCache::Get()->EvictResources();
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  } while (!MainThreadIsIdle());
+
+  // Since `SimpleFontData` is associated with `v8::isolate`, invalidate
+  // `FontCache` after draining cleanup tasks (such as deferred
+  // `IsolatedSVGDocumentHost::Shutdown()`) so `main_thread_isolate_.reset()`'s
+  // GC destroys any `SimpleFontData` before the isolate is torn down.
+  FontCache::Get().Invalidate();
 
   main_thread_overrider_.reset();
   main_thread_isolate_.reset();
