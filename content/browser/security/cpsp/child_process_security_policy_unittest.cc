@@ -4208,7 +4208,14 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
 // Tests that processes are only allowed to commit and access data for content
 // in their own shard (see BrowserContext::SetSitesForEmbedderShard()).
-TEST_P(ChildProcessSecurityPolicyTest, Shards) {
+// TODO(crbug.com/585637933): Fails on Android when run in a batch after
+// other tests; passes when retried alone.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Shards DISABLED_Shards
+#else
+#define MAYBE_Shards Shards
+#endif
+TEST_P(ChildProcessSecurityPolicyTest, MAYBE_Shards) {
   // TODO(crbug.com/576113096): Support shards in the Rust ProcessState.
   if (IsRustProcessStateEnabled()) {
     GTEST_SKIP() << "Shards are not supported by the Rust ProcessState yet.";
