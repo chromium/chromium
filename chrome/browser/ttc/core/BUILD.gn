@@ -322,6 +322,7 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core:page_content",
     "//components/ttc/app/public",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",

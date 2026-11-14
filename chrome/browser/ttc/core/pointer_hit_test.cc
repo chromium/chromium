@@ -21,6 +21,7 @@ namespace ttc {
 
 namespace {
 
+using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentAttributes;
 using optimization_guide::proto::ContentNode;
 
@@ -36,14 +37,39 @@ constexpr size_t kMaxTextBytes = 128;
 // a thing on it. To be tuned once there are evals of the tool.
 constexpr double kBackgroundViewportFraction = 0.5;
 
+// Whether `node` is an iframe whose document has another origin than the
+// page's main document. The model is not given the content of such frames, so
+// what the pointer is on in one must not be described to it either. A frame
+// whose content was left out or could not be had, or whose origin is unknown,
+// counts as one.
+bool IsCrossOriginFrame(const ContentNode& node,
+                        const AnnotatedPageContent& page_content) {
+  const ContentAttributes& attributes = node.content_attributes();
+  if (attributes.attribute_type() !=
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+    return false;
+  }
+  if (!attributes.iframe_data().has_frame_data()) {
+    return true;
+  }
+  return !IsSameSecurityOrigin(
+      attributes.iframe_data().frame_data().security_origin(),
+      page_content.main_frame_data().security_origin());
+}
+
 // Returns the start of the text of `root` and its descendants, in document
-// order. Iterative because the tree comes from a renderer and may be deep.
-std::string CollectText(const ContentNode& root) {
+// order, leaving out that of frames of other origins. Iterative because the
+// tree comes from a renderer and may be deep.
+std::string CollectText(const ContentNode& root,
+                        const AnnotatedPageContent& page_content) {
   std::string text;
   std::vector<const ContentNode*> stack = {&root};
   while (!stack.empty() && text.size() < kMaxTextBytes) {
     const ContentNode* node = stack.back();
     stack.pop_back();
+    if (IsCrossOriginFrame(*node, page_content)) {
+      continue;
+    }
     const ContentAttributes& attributes = node->content_attributes();
     std::string_view raw_piece;
     if (attributes.has_text_data()) {
@@ -72,14 +98,21 @@ std::string CollectText(const ContentNode& root) {
 // `target` otherwise: the hit test finds the innermost node, e.g. a button's
 // text, but the control is what the user means and what tools act on. Looks
 // no further than `target`'s own document.
-const ContentNode& FindControlOrSelf(const ContentNode& root,
-                                     const ContentNode& target) {
+//
+// `target` is looked for below `root`, without entering frames of other
+// origins; returns nullptr if it is not found there.
+const ContentNode* FindControlOrSelf(const ContentNode& root,
+                                     const ContentNode& target,
+                                     const AnnotatedPageContent& page_content) {
   // Depth-first, keeping the path from `root` to the node being visited.
   std::vector<const ContentNode*> path;
   std::vector<std::pair<const ContentNode*, size_t>> stack = {{&root, 0}};
   while (!stack.empty()) {
     const auto [node, depth] = stack.back();
     stack.pop_back();
+    if (IsCrossOriginFrame(*node, page_content)) {
+      continue;
+    }
     path.resize(depth);
     path.push_back(node);
     if (node != &target) {
@@ -92,17 +125,17 @@ const ContentNode& FindControlOrSelf(const ContentNode& root,
       switch (ancestor->content_attributes().attribute_type()) {
         case optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR:
         case optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL:
-          return *ancestor;
+          return ancestor;
         case optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME:
           // The rest of the path is in other documents.
-          return target;
+          return &target;
         default:
           break;
       }
     }
-    break;
+    return &target;
   }
-  return target;
+  return nullptr;
 }
 
 // Whether a node is the page's background rather than something on it: a
@@ -153,8 +186,23 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
   if (!target) {
     return std::nullopt;
   }
-  const ContentNode& node =
-      FindControlOrSelf(page_content.root_node(), *target->node);
+  const ContentNode* found =
+      FindControlOrSelf(page_content.root_node(), *target->node, page_content);
+  // The hit test looks in an open popup, e.g. a <select>'s, first. A popup
+  // that the page's main document opened is the page's own content; one
+  // opened from a frame might be of another origin, so is left alone.
+  if (!found && page_content.has_popup_window() &&
+      page_content.popup_window().opener_document_id().serialized_token() ==
+          page_content.main_frame_data()
+              .document_identifier()
+              .serialized_token()) {
+    found = FindControlOrSelf(page_content.popup_window().root_node(),
+                              *target->node, page_content);
+  }
+  if (!found) {
+    return std::nullopt;
+  }
+  const ContentNode& node = *found;
   const ContentAttributes& attributes = node.content_attributes();
   if (IsBackground(attributes, page_content.root_node().content_attributes())) {
     return std::nullopt;
@@ -170,7 +218,7 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
   if (!attributes.label().empty()) {
     description.Set("label", attributes.label());
   }
-  if (std::string text = CollectText(node); !text.empty()) {
+  if (std::string text = CollectText(node, page_content); !text.empty()) {
     description.Set("text", std::move(text));
   }
   const auto& box = attributes.geometry().visible_bounding_box();
@@ -182,6 +230,15 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
                                 .Set("width", bounds.width())
                                 .Set("height", bounds.height()));
   return description;
+}
+
+bool IsSameSecurityOrigin(const optimization_guide::proto::SecurityOrigin& a,
+                          const optimization_guide::proto::SecurityOrigin& b) {
+  // The value is a scheme, host and port for an origin that has them and a
+  // nonce for an opaque one, so it only means something together with which
+  // of the two the origin is.
+  return !a.value().empty() && a.opaque() == b.opaque() &&
+         a.value() == b.value();
 }
 
 }  // namespace ttc

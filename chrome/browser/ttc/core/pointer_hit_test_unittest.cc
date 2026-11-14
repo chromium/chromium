@@ -6,12 +6,16 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/values.h"
+#include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ttc {
 namespace {
@@ -19,6 +23,7 @@ namespace {
 using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentAttributeType;
 using optimization_guide::proto::ContentNode;
+using optimization_guide::proto::SecurityOrigin;
 
 // The page content's geometry is in device pixels; the tests use a 2x display.
 constexpr float kScaleFactor = 2.0f;
@@ -41,16 +46,57 @@ void InitNode(ContentNode* node,
   attributes->mutable_interaction_info()->set_document_scoped_z_order(z_order);
 }
 
+// The origin of the main document of the pages that the tests make.
+url::Origin PageOrigin() {
+  return url::Origin::Create(GURL("https://page.test"));
+}
+
+// `origin` as the page content records it.
+SecurityOrigin Serialize(const url::Origin& origin) {
+  SecurityOrigin serialized;
+  optimization_guide::SecurityOriginSerializer::Serialize(origin, &serialized);
+  return serialized;
+}
+
 // A page of 800x600 device pixels with a root node to add content to.
 AnnotatedPageContent MakePage() {
   AnnotatedPageContent page;
   page.mutable_main_frame_data()
       ->mutable_document_identifier()
       ->set_serialized_token("main-document");
+  *page.mutable_main_frame_data()->mutable_security_origin() =
+      Serialize(PageOrigin());
   InitNode(page.mutable_root_node(),
            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT, 1,
            gfx::Rect(0, 0, 800, 600), 1);
   return page;
+}
+
+// Adds to `parent` an iframe at (100,100) of 400x400 device pixels, whose
+// document is of `origin` and has a link with text at (120,120) of 100x40.
+// Returns the iframe.
+ContentNode* AddIframeWithLink(ContentNode* parent, const url::Origin& origin) {
+  ContentNode* iframe = parent->add_children_nodes();
+  InitNode(iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME, 20,
+           gfx::Rect(100, 100, 400, 400), 2);
+  auto* frame_data = iframe->mutable_content_attributes()
+                         ->mutable_iframe_data()
+                         ->mutable_frame_data();
+  frame_data->mutable_document_identifier()->set_serialized_token(
+      "iframe-document");
+  *frame_data->mutable_security_origin() = Serialize(origin);
+  // Z-orders are per document.
+  ContentNode* iframe_root = iframe->add_children_nodes();
+  InitNode(iframe_root, optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT, 1,
+           gfx::Rect(100, 100, 400, 400), 1);
+  ContentNode* link = iframe_root->add_children_nodes();
+  InitNode(link, optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR, 5,
+           gfx::Rect(120, 120, 100, 40), 2);
+  link->add_children_nodes()
+      ->mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content("In the frame");
+  return iframe;
 }
 
 TEST(PointerHitTestTest, DescribesTheElementAtThePoint) {
@@ -151,21 +197,7 @@ TEST(PointerHitTestTest, PartOfAControlIsTheControl) {
 // frontmost element wins.
 TEST(PointerHitTestTest, ElementInIframeHasItsDocumentsId) {
   AnnotatedPageContent page = MakePage();
-  ContentNode* iframe = page.mutable_root_node()->add_children_nodes();
-  InitNode(iframe, optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME, 20,
-           gfx::Rect(100, 100, 400, 400), 2);
-  iframe->mutable_content_attributes()
-      ->mutable_iframe_data()
-      ->mutable_frame_data()
-      ->mutable_document_identifier()
-      ->set_serialized_token("iframe-document");
-  // Z-orders are per document.
-  ContentNode* iframe_root = iframe->add_children_nodes();
-  InitNode(iframe_root, optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT, 1,
-           gfx::Rect(100, 100, 400, 400), 1);
-  ContentNode* link = iframe_root->add_children_nodes();
-  InitNode(link, optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR, 5,
-           gfx::Rect(120, 120, 100, 40), 2);
+  AddIframeWithLink(page.mutable_root_node(), PageOrigin());
 
   std::optional<base::DictValue> description =
       DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor);
@@ -176,6 +208,111 @@ TEST(PointerHitTestTest, ElementInIframeHasItsDocumentsId) {
 
   // Elsewhere in the iframe there is only its document.
   EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(200, 200), kScaleFactor));
+}
+
+// The model is not given the content of frames of other origins than the
+// page's, so nothing in one is described: not the element at the point, and
+// not its text as part of an element around the frame.
+TEST(PointerHitTestTest, NothingFromFramesOfOtherOrigins) {
+  AnnotatedPageContent page = MakePage();
+  ContentNode* card = page.mutable_root_node()->add_children_nodes();
+  InitNode(card, optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER, 10,
+           gfx::Rect(80, 80, 440, 440), 2);
+  card->add_children_nodes()
+      ->mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content("Sponsored");
+  ContentNode* iframe =
+      AddIframeWithLink(card, url::Origin::Create(GURL("https://other.test")));
+  iframe->mutable_content_attributes()
+      ->mutable_interaction_info()
+      ->set_document_scoped_z_order(3);
+
+  // On the link in the frame, and elsewhere in the frame.
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor));
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(200, 200), kScaleFactor));
+
+  // On the card beside the frame: the card, without the frame's text.
+  std::optional<base::DictValue> description =
+      DescribeNodeAtPoint(page, gfx::PointF(45, 45), kScaleFactor);
+  ASSERT_TRUE(description);
+  EXPECT_EQ(description->FindInt("dom_node_id"), 10);
+  EXPECT_EQ(*description->FindString("text"), "Sponsored");
+
+  // A frame with an opaque origin, e.g. a sandboxed one of the page's own
+  // site, or whose content was left out, is of another origin too.
+  auto* iframe_data =
+      iframe->mutable_content_attributes()->mutable_iframe_data();
+  SecurityOrigin* frame_origin =
+      iframe_data->mutable_frame_data()->mutable_security_origin();
+  *frame_origin = Serialize(PageOrigin());
+  EXPECT_TRUE(DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor));
+  *frame_origin = Serialize(PageOrigin().DeriveNewOpaqueOrigin());
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor));
+  iframe_data->mutable_redacted_frame_metadata();
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor));
+  // So is one that nothing is known of, e.g. because it went away.
+  iframe->mutable_content_attributes()->clear_iframe_data();
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(70, 70), kScaleFactor));
+}
+
+// The hit test looks in an open popup, e.g. a <select>'s, first. What is in it
+// is described if the page's main document opened it, but not if a frame did,
+// since the frame may be of another origin.
+TEST(PointerHitTestTest, PopupIsDescribedIfTheMainDocumentOpenedIt) {
+  AnnotatedPageContent page = MakePage();
+  auto* popup = page.mutable_popup_window();
+  popup->mutable_opener_document_id()->set_serialized_token("main-document");
+  InitNode(popup->mutable_root_node(),
+           optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT, 1,
+           gfx::Rect(100, 100, 200, 200), 1);
+  ContentNode* option = popup->mutable_root_node()->add_children_nodes();
+  InitNode(option, optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT, 7,
+           gfx::Rect(100, 100, 200, 40), 2);
+  option->mutable_content_attributes()->mutable_text_data()->set_text_content(
+      "Option");
+
+  std::optional<base::DictValue> description =
+      DescribeNodeAtPoint(page, gfx::PointF(60, 60), kScaleFactor);
+  ASSERT_TRUE(description);
+  EXPECT_EQ(*description->FindString("text"), "Option");
+
+  popup->mutable_opener_document_id()->set_serialized_token("iframe-document");
+  EXPECT_FALSE(DescribeNodeAtPoint(page, gfx::PointF(60, 60), kScaleFactor));
+}
+
+// Origins as the page content records them compare as the origins that they
+// were serialized from do.
+TEST(PointerHitTestTest, SameSecurityOriginAgreesWithUrlOrigin) {
+  const url::Origin site = url::Origin::Create(GURL("https://a.test"));
+  const url::Origin opaque;
+  const std::vector<url::Origin> origins = {
+      site,
+      url::Origin::Create(GURL("https://a.test/path?query")),
+      url::Origin::Create(GURL("https://a.test:444")),
+      url::Origin::Create(GURL("http://a.test")),
+      url::Origin::Create(GURL("https://sub.a.test")),
+      url::Origin::Create(GURL("https://b.test")),
+      url::Origin::Create(GURL("file:///tmp/page.html")),
+      opaque,
+      // A copy of an opaque origin is the same origin: it has its nonce.
+      url::Origin(opaque),
+      url::Origin(),
+      site.DeriveNewOpaqueOrigin(),
+      url::Origin::Create(GURL("data:text/html,page")),
+  };
+  for (const url::Origin& a : origins) {
+    for (const url::Origin& b : origins) {
+      EXPECT_EQ(IsSameSecurityOrigin(Serialize(a), Serialize(b)),
+                a.IsSameOriginWith(b))
+          << a << " and " << b;
+    }
+  }
+
+  // An origin that was not recorded is the same as none, itself included.
+  EXPECT_FALSE(IsSameSecurityOrigin(SecurityOrigin(), SecurityOrigin()));
+  EXPECT_FALSE(IsSameSecurityOrigin(SecurityOrigin(), Serialize(site)));
+  EXPECT_FALSE(IsSameSecurityOrigin(Serialize(site), SecurityOrigin()));
 }
 
 }  // namespace
