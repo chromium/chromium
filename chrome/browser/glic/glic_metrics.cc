@@ -310,21 +310,6 @@ void GlicMetrics::LogClosedCaptionsShown() {
   base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);
 }
 
-void GlicMetrics::OnShareImageStarted() {
-  share_image_start_time_ = base::TimeTicks::Now();
-}
-
-void GlicMetrics::OnShareImageComplete(ShareImageResult result) {
-  if (!share_image_start_time_.is_null() &&
-      result == ShareImageResult::kSentImageToClient) {
-    base::UmaHistogramMediumTimes(
-        "Glic.TabContext.ShareImageDuration",
-        base::TimeTicks::Now() - share_image_start_time_);
-    share_image_start_time_ = base::TimeTicks();
-  }
-  base::UmaHistogramEnumeration("Glic.TabContext.ShareImageResult", result);
-}
-
 void GlicMetrics::LogGetContextFromFocusedTabError(
     GlicGetContextFromTabError error) {
   std::string_view mode_string = GetInputModeString(input_mode_);

@@ -1733,7 +1733,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="kFailedLiveModeActive"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/context/glic_share_image_handler.h:ShareImageResult) -->
 
 <!-- LINT.IfChange(SkillBuilderEvent) -->
 

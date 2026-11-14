@@ -24,46 +24,6 @@ class Profile;
 namespace glic {
 class GlicEnabling;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-
-// LINT.IfChange(ShareImageResult)
-enum class ShareImageResult {
-  kSentImageToClient = 0,
-  kFailedNoTab = 1,
-  kFailedNoFrame = 2,
-  kFailedNoBrowser = 3,
-  kFailedTimedOut = 4,
-  kFailedNoImage = 5,
-  kFailedReplacedByNewShare = 6,
-  kFailedNoTabContext = 7,
-  kFailedSawNavigation = 8,
-  kFailedDiscardedContents = 9,
-  kFailedDetachedTab = 10,
-  kFailedClipboardCopyPolicy = 11,
-  kFailedClipboardPastePolicy = 12,
-  kFailedNoInstance = 13,
-  kFailedClientUnreadied = 14,
-  kFailedTimedOutNoInstance = 15,
-  kFailedTimedOutNoWebClient = 16,
-  kFailedTimedOutDidNotCompleteOnboarding = 17,
-  kFailedLostInstance = 18,
-  kFailedSawNavigationDidNotCompleteOnboarding = 19,
-  kFailedUnknown = 20,
-  kFailedInvalidConversationId = 21,
-  kFailedInvokeInProgress = 22,
-  kFailedInvalidConfiguration = 23,
-  kFailedNoClientFrame = 24,
-  kFailedNoClipboardMetadata = 25,
-  kFailedCancelled = 26,
-  kFailedProfileNotEnabled = 27,
-  kFailedSuperseded = 28,
-  kFailedLiveModeActive = 29,
-  kMaxValue = kFailedLiveModeActive,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)
-
 // LINT.IfChange(EntryPointStatus)
 enum class EntryPointStatus {
   kBeforeFreNotEligible = 0,
@@ -186,12 +146,6 @@ class GlicMetrics {
   // Called when a response is received with closed captions showing.
   void LogClosedCaptionsShown();
 
-  // Called when an attempt to share an image with glic is begun.
-  void OnShareImageStarted();
-
-  // Called when an attempt to share an image with glic completes.
-  void OnShareImageComplete(ShareImageResult result);
-
   // Called when a tab is activated via the glic page.
   void OnActivateTabFromInstance(tabs::TabInterface* tab);
 
@@ -295,9 +249,6 @@ class GlicMetrics {
 
   // Start time of the in-flight context upload, if any.
   std::optional<base::TimeTicks> last_upload_start_time_;
-
-  // The time the last attempt to share an image started.
-  base::TimeTicks share_image_start_time_;
 };
 
 // Records the hotkey cleared preference metric.

@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_types.h"
-#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
@@ -40,6 +40,45 @@ namespace glic {
 
 class GlicKeyedService;
 class GlicInstance;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+
+// LINT.IfChange(ShareImageResult)
+enum class ShareImageResult {
+  kSentImageToClient = 0,
+  kFailedNoTab = 1,
+  kFailedNoFrame = 2,
+  kFailedNoBrowser = 3,
+  kFailedTimedOut = 4,
+  kFailedNoImage = 5,
+  kFailedReplacedByNewShare = 6,
+  kFailedNoTabContext = 7,
+  kFailedSawNavigation = 8,
+  kFailedDiscardedContents = 9,
+  kFailedDetachedTab = 10,
+  kFailedClipboardCopyPolicy = 11,
+  kFailedClipboardPastePolicy = 12,
+  kFailedNoInstance = 13,
+  kFailedClientUnreadied = 14,
+  kFailedTimedOutNoInstance = 15,
+  kFailedTimedOutNoWebClient = 16,
+  kFailedTimedOutDidNotCompleteOnboarding = 17,
+  kFailedLostInstance = 18,
+  kFailedSawNavigationDidNotCompleteOnboarding = 19,
+  kFailedUnknown = 20,
+  kFailedInvalidConversationId = 21,
+  kFailedInvokeInProgress = 22,
+  kFailedInvalidConfiguration = 23,
+  kFailedNoClientFrame = 24,
+  kFailedNoClipboardMetadata = 25,
+  kFailedCancelled = 26,
+  kFailedProfileNotEnabled = 27,
+  kFailedSuperseded = 28,
+  kFailedLiveModeActive = 29,
+  kMaxValue = kFailedLiveModeActive,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)
 
 // Manages the capturing of context images (i.e., images for which the user has
 // opened the context menu), and sending to the web client as additional data.
@@ -90,6 +129,9 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // Called when the end result of sharing is known. Sends context on success.
   void ShareComplete(ShareImageResult result);
 
+  // Records share image completion metrics.
+  void RecordShareImageComplete(ShareImageResult result);
+
   // A helper function to stop observation (since we want to do this before
   // calling Reset).
   void StopObservingNavigation();
@@ -116,6 +158,7 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   raw_ref<GlicKeyedService> service_;  // owns this
 
   bool is_share_in_progress_ = false;
+  base::TimeTicks share_image_start_time_;
 
   tabs::TabHandle tab_handle_;
   content::GlobalRenderFrameHostId render_frame_host_id_;
