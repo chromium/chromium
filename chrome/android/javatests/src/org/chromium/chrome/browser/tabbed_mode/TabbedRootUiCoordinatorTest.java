@@ -50,7 +50,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -871,12 +870,12 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/583352331
     public void testSendTabToSelfOmniboxIphOnTabSwitch() {
         String url = mActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE);
         setUpSendTabToSelfOmniboxIph(url);
 
         mPage = mActivityTestRule.startOnUrl(url);
+        Tab firstTab = mPage.getTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     verify(mTracker, never())
@@ -890,7 +889,15 @@ public class TabbedRootUiCoordinatorTest {
                             .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
                 });
 
-        mPage = ntp.openRegularTabSwitcher().selectTabAtIndex(0, WebPageStation.newBuilder());
+        if (ntp.getActivity().isTablet()) {
+            // Hub exit can race the toolbar unhiding, see https://crbug.com/583352331.
+            mPage =
+                    ntp.expectTabStrip()
+                            .expectTab(firstTab.getId())
+                            .select(WebPageStation.newBuilder());
+        } else {
+            mPage = ntp.openRegularTabSwitcher().selectTabAtIndex(0, WebPageStation.newBuilder());
+        }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     verify(mTracker).shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
