@@ -9,10 +9,13 @@
 #include <utility>
 
 #include "base/base_switches.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -23,8 +26,8 @@
 #include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
@@ -73,6 +76,39 @@ const char kActivationMarker = '*';
 
 // Constants for the field trial allocator.
 const char kAllocatorName[] = "FieldTrialAllocator";
+
+// Metadata stored as the first iterable object in a FieldTrialAllocator
+// segment. Tracks the monotonically increasing generation identifier for
+// runtime-mutable field trial updates without modifying the generic
+// PersistentMemoryAllocator header shared with persistent histogram (.pma)
+// files.
+class alignas(8) FieldTrialAllocatorMetadata {
+ public:
+  // SHA1(FieldTrialAllocatorMetadata): Increment this if structure changes!
+  static constexpr uint32_t kPersistentTypeId = 0x405CA2E0 + 1;
+
+  // Expected size for 32/64-bit check.
+  static constexpr size_t kExpectedInstanceSize = 8;
+
+  uint64_t GetGenerationId() const {
+    return generation_id_.load(std::memory_order_acquire);
+  }
+
+  void SetGenerationId(uint64_t generation_id) {
+    generation_id_.store(generation_id, std::memory_order_release);
+  }
+
+  uint64_t LoadRelaxed() const {
+    return generation_id_.load(std::memory_order_relaxed);
+  }
+
+ private:
+  static_assert(std::atomic<uint64_t>::is_always_lock_free);
+
+  // Monotonically increasing sequence number identifying the generation of the
+  // variations data stored in this segment.
+  std::atomic<uint64_t> generation_id_{0};
+};
 
 // We allocate 256 KiB to hold all the field trial data. This should be enough,
 // as most people use 3 - 25 KiB for field trials (as of 11/25/2016).
@@ -425,6 +461,102 @@ void FieldTrial::GetStateWhileLocked(PickleState* field_trial_state) {
 }
 
 //------------------------------------------------------------------------------
+// FieldTrialAllocator methods.
+
+FieldTrialAllocator::FieldTrialAllocator(WritableSharedMemoryMapping memory,
+                                         uint64_t id,
+                                         std::string_view name)
+    : PersistentMemoryAllocator(Memory(memory.data(), MEM_SHARED),
+                                memory.size(),
+                                0,
+                                id,
+                                name,
+                                kReadWrite),
+      shared_memory_(std::move(memory)) {}
+
+FieldTrialAllocator::FieldTrialAllocator(ReadOnlySharedMemoryMapping memory,
+                                         uint64_t id,
+                                         std::string_view name)
+    : PersistentMemoryAllocator(
+          Memory(const_cast<uint8_t*>(memory.data()), MEM_SHARED),
+          memory.size(),
+          0,
+          id,
+          name,
+          kReadOnly),
+      shared_memory_(std::move(memory)) {}
+
+FieldTrialAllocator::~FieldTrialAllocator() = default;
+
+bool FieldTrialAllocator::InitializeGenerationId(
+    uint64_t initial_generation_id) {
+  CHECK(!IsReadonly());
+#if DCHECK_IS_ON()
+  Iterator iter(this);
+  uint32_t existing_type = 0;
+  DCHECK_EQ(iter.GetNext(&existing_type), kReferenceNull);
+#endif
+  auto* metadata = New<FieldTrialAllocatorMetadata>();
+  if (!metadata) {
+    return false;
+  }
+  CHECK_EQ(reinterpret_cast<uintptr_t>(metadata) %
+               alignof(FieldTrialAllocatorMetadata),
+           0u);
+  metadata->SetGenerationId(initial_generation_id);
+  Reference ref = GetAsReference(metadata);
+  MakeIterable(ref);
+  return true;
+}
+
+std::optional<uint64_t> FieldTrialAllocator::GetGenerationId() const {
+  Iterator iter(this);
+  uint32_t type_id = 0;
+  Reference ref = iter.GetNext(&type_id);
+  if (ref == kReferenceNull ||
+      type_id != FieldTrialAllocatorMetadata::kPersistentTypeId) {
+    return std::nullopt;
+  }
+  const auto* metadata = GetAsObject<FieldTrialAllocatorMetadata>(ref);
+  if (!metadata) {
+    return std::nullopt;
+  }
+  return metadata->GetGenerationId();
+}
+
+bool FieldTrialAllocator::SetGenerationId(uint64_t generation_id) {
+  CHECK(!IsReadonly());
+  Iterator iter(this);
+  uint32_t type_id = 0;
+  Reference ref = iter.GetNext(&type_id);
+  if (ref == kReferenceNull ||
+      type_id != FieldTrialAllocatorMetadata::kPersistentTypeId) {
+    return false;
+  }
+  auto* metadata = GetAsObject<FieldTrialAllocatorMetadata>(ref);
+  if (!metadata) {
+    return false;
+  }
+  CHECK_GE(generation_id, metadata->LoadRelaxed());
+  metadata->SetGenerationId(generation_id);
+  return true;
+}
+
+void FieldTrialAllocator::ResetGenerationIdForTesting() {
+  CHECK(!IsReadonly());
+  Iterator iter(this);
+  uint32_t type_id = 0;
+  Reference ref = iter.GetNext(&type_id);
+  if (ref == kReferenceNull ||
+      type_id != FieldTrialAllocatorMetadata::kPersistentTypeId) {
+    return;
+  }
+  if (auto* metadata = GetAsObject<FieldTrialAllocatorMetadata>(ref)) {
+    metadata->SetGenerationId(0);
+  }
+}
+
+//------------------------------------------------------------------------------
 // FieldTrialList methods and members.
 
 // static
@@ -732,6 +864,42 @@ FieldTrialList::DuplicateFieldTrialSharedMemoryForTesting() {
 }
 
 // static
+uint64_t FieldTrialList::GetGenerationId() {
+  if (!global_) {
+    return 0;
+  }
+  AutoLock auto_lock(global_->lock_);
+  return global_->generation_id_;
+}
+
+// static
+void FieldTrialList::SetGenerationId(uint64_t generation_id) {
+  if (!global_) {
+    return;
+  }
+  AutoLock auto_lock(global_->lock_);
+  CHECK_GE(generation_id, global_->generation_id_);
+  global_->generation_id_ = generation_id;
+  if (global_->field_trial_allocator_ &&
+      !global_->field_trial_allocator_->IsReadonly()) {
+    CHECK(global_->field_trial_allocator_->SetGenerationId(generation_id));
+  }
+}
+
+// static
+void FieldTrialList::ResetGenerationIdForTesting() {
+  if (!global_) {
+    return;
+  }
+  AutoLock auto_lock(global_->lock_);
+  global_->generation_id_ = 0;
+  if (global_->field_trial_allocator_ &&
+      !global_->field_trial_allocator_->IsReadonly()) {
+    global_->field_trial_allocator_->ResetGenerationIdForTesting();  // IN-TEST
+  }
+}
+
+// static
 FieldTrial* FieldTrialList::CreateFieldTrial(std::string_view name,
                                              std::string_view group_name,
                                              bool is_low_anonymity,
@@ -1032,10 +1200,15 @@ bool FieldTrialList::CreateTrialsFromSharedMemoryRegion(
 // static
 bool FieldTrialList::CreateTrialsFromSharedMemoryMapping(
     ReadOnlySharedMemoryMapping shm_mapping) {
-  global_->field_trial_allocator_ =
-      std::make_unique<ReadOnlySharedPersistentMemoryAllocator>(
-          std::move(shm_mapping), 0, kAllocatorName);
+  global_->field_trial_allocator_ = std::make_unique<FieldTrialAllocator>(
+      std::move(shm_mapping), 0, kAllocatorName);
   FieldTrialAllocator* shalloc = global_->field_trial_allocator_.get();
+  const uint64_t generation_id = shalloc->GetGenerationId().value_or(0);
+  {
+    AutoLock auto_lock(global_->lock_);
+    CHECK_GE(generation_id, global_->generation_id_);
+    global_->generation_id_ = generation_id;
+  }
   FieldTrialAllocator::Iterator mem_iter(shalloc);
 
   const internal::FieldTrialEntry* entry;
@@ -1081,9 +1254,10 @@ void FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded() {
     OnOutOfMemory(kFieldTrialAllocationSize);
   }
 
-  global_->field_trial_allocator_ =
-      std::make_unique<WritableSharedPersistentMemoryAllocator>(
-          std::move(shm.mapping), 0, kAllocatorName);
+  global_->field_trial_allocator_ = std::make_unique<FieldTrialAllocator>(
+      std::move(shm.mapping), 0, kAllocatorName);
+  CHECK(global_->field_trial_allocator_->InitializeGenerationId(
+      global_->generation_id_));
   global_->field_trial_allocator_->CreateTrackingHistograms(kAllocatorName);
 
   // Add all existing field trials.

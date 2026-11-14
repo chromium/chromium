@@ -976,6 +976,72 @@ TEST_F(FieldTrialListTest, AddTrialsToAllocator) {
   EXPECT_EQ(save_string, check_string);
 }
 
+TEST_F(FieldTrialListTest, GenerationId) {
+  base::ReadOnlySharedMemoryRegion shm_region;
+  {
+    test::ScopedFeatureList scoped_feature_list1;
+    scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
+
+    EXPECT_EQ(0U, FieldTrialList::GetGenerationId());
+
+    // Setting generation ID before allocator creation preserves it into the
+    // newly created shared memory allocator.
+    FieldTrialList::SetGenerationId(7U);
+    EXPECT_EQ(7U, FieldTrialList::GetGenerationId());
+
+    FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+    FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
+    EXPECT_EQ(7U, FieldTrialList::GetGenerationId());
+    EXPECT_EQ(
+        7U, FieldTrialList::global_->field_trial_allocator_->GetGenerationId());
+
+    // Updating generation ID after allocator instantiation updates the shared
+    // memory metadata inherited by child processes.
+    FieldTrialList::SetGenerationId(19U);
+    EXPECT_EQ(19U, FieldTrialList::GetGenerationId());
+    EXPECT_EQ(
+        19U,
+        FieldTrialList::global_->field_trial_allocator_->GetGenerationId());
+
+    // Decreasing the generation ID is disallowed.
+    EXPECT_CHECK_DEATH(FieldTrialList::SetGenerationId(18U));
+
+    shm_region = FieldTrialList::DuplicateFieldTrialSharedMemoryForTesting();
+    ASSERT_TRUE(shm_region.IsValid());
+  }
+
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithEmptyFeatureAndFieldTrialLists();
+  EXPECT_EQ(0U, FieldTrialList::GetGenerationId());
+
+  base::ReadOnlySharedMemoryMapping shm_mapping = shm_region.Map();
+  ASSERT_TRUE(shm_mapping.IsValid());
+  ASSERT_TRUE(FieldTrialList::CreateTrialsFromSharedMemoryMapping(
+      std::move(shm_mapping)));
+  EXPECT_EQ(19U, FieldTrialList::GetGenerationId());
+
+  // Mutating generation metadata on a read-only child allocator is disallowed.
+  EXPECT_CHECK_DEATH(
+      FieldTrialList::global_->field_trial_allocator_->SetGenerationId(20U));
+
+  // An uninitialized standalone FieldTrialAllocator has no generation metadata
+  // until InitializeGenerationId() is called.
+  base::MappedReadOnlyRegion standalone_shm =
+      base::ReadOnlySharedMemoryRegion::Create(4 << 10);
+  ASSERT_TRUE(standalone_shm.IsValid());
+  FieldTrialAllocator standalone_allocator(std::move(standalone_shm.mapping), 1,
+                                           "");
+  EXPECT_EQ(std::nullopt, standalone_allocator.GetGenerationId());
+  EXPECT_FALSE(standalone_allocator.SetGenerationId(5U));
+  ASSERT_TRUE(standalone_allocator.InitializeGenerationId(0U));
+  EXPECT_EQ(0U, standalone_allocator.GetGenerationId());
+  ASSERT_TRUE(standalone_allocator.SetGenerationId(5U));
+  EXPECT_EQ(5U, standalone_allocator.GetGenerationId());
+
+  FieldTrialList::ResetGenerationIdForTesting();
+  EXPECT_EQ(0U, FieldTrialList::GetGenerationId());
+}
+
 TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
   constexpr char kTrialName[] = "trial";
   base::ReadOnlySharedMemoryRegion shm_region;
