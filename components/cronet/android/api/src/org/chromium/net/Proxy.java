@@ -61,7 +61,7 @@ public final class Proxy {
         /**
          * Represents an HTTP CONNECT request being sent to the proxy server.
          *
-         * <p>All methods may be called synchronously or asynchronously, on any thread.
+         * <p>All methods may be called synchronously or asynchronously.
          */
         public abstract static class Request implements AutoCloseable {
             /**
