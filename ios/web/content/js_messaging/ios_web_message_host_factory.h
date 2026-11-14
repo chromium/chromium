@@ -6,6 +6,7 @@
 #define IOS_WEB_CONTENT_JS_MESSAGING_IOS_WEB_MESSAGE_HOST_FACTORY_H_
 
 #import "base/functional/callback.h"
+#import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "components/js_injection/browser/web_message_host_factory.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -26,6 +27,7 @@ class IOSWebMessageHostFactory : public js_injection::WebMessageHostFactory {
   ~IOSWebMessageHostFactory() override;
 
   // js_injection::WebMessageHostFactory:
+  base::WeakPtr<js_injection::WebMessageHostFactory> GetWeakPtr() override;
   std::unique_ptr<js_injection::WebMessageHost> CreateHost(
       const std::string& top_level_origin_string,
       const std::string& origin_string,
@@ -35,6 +37,8 @@ class IOSWebMessageHostFactory : public js_injection::WebMessageHostFactory {
  private:
   // Called with each message received from JavaScript.
   WebMessageCallback message_callback_;
+
+  base::WeakPtrFactory<IOSWebMessageHostFactory> weak_factory_{this};
 };
 
 }  // namespace web

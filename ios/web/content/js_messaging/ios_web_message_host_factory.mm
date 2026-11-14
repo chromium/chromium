@@ -85,6 +85,11 @@ IOSWebMessageHostFactory::IOSWebMessageHostFactory(
 
 IOSWebMessageHostFactory::~IOSWebMessageHostFactory() = default;
 
+base::WeakPtr<js_injection::WebMessageHostFactory>
+IOSWebMessageHostFactory::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 std::unique_ptr<js_injection::WebMessageHost>
 IOSWebMessageHostFactory::CreateHost(
     const std::string& top_level_origin_string,
