@@ -4,9 +4,14 @@
 
 #include "remoting/protocol/stream_packet_socket.h"
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -96,10 +101,13 @@ StreamPacketSocket::PendingPacket::~PendingPacket() = default;
 
 StreamPacketSocket::StreamPacketSocket() = default;
 
-StreamPacketSocket::~StreamPacketSocket() = default;
+StreamPacketSocket::~StreamPacketSocket() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 bool StreamPacketSocket::Init(std::unique_ptr<net::StreamSocket> socket,
                               StreamPacketProcessor* packet_processor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(socket);
   DCHECK(packet_processor);
   socket_ = std::move(socket);
@@ -117,6 +125,7 @@ bool StreamPacketSocket::InitClientTcp(
     const webrtc::SocketAddress& local_address,
     const webrtc::SocketAddress& remote_address,
     const webrtc::PacketSocketTcpOptions& tcp_options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int tls_opts =
       tcp_options.opts & (webrtc::PacketSocketFactory::OPT_TLS |
                           webrtc::PacketSocketFactory::OPT_TLS_FAKE |
@@ -175,16 +184,19 @@ bool StreamPacketSocket::InitClientTcp(
 }
 
 webrtc::SocketAddress StreamPacketSocket::GetLocalAddress() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetAddress(&net::StreamSocket::GetLocalAddress, socket_.get());
 }
 
 webrtc::SocketAddress StreamPacketSocket::GetRemoteAddress() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetAddress(&net::StreamSocket::GetPeerAddress, socket_.get());
 }
 
 int StreamPacketSocket::Send(const void* data,
                              size_t data_size,
                              const webrtc::AsyncSocketPacketOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != STATE_CONNECTED) {
     SetError(ENOTCONN);
     return -1;
@@ -197,14 +209,20 @@ int StreamPacketSocket::Send(const void* data,
 
   auto packet = packet_processor_->Pack(
       UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), data_size)));
-  if (!packet) {
+  // Reject empty packets since StreamSocket::Write() requires a positive length
+  // and BytesRemaining() > 0 is used below to detect unsent data.
+  if (!packet || packet->size() == 0) {
     SetError(EINVAL);
     return -1;
   }
-  send_queue_.emplace_back(
-      base::MakeRefCounted<net::DrainableIOBuffer>(packet, packet->size()),
-      options);
+  auto buffer =
+      base::MakeRefCounted<net::DrainableIOBuffer>(packet, packet->size());
+  send_queue_.emplace_back(buffer, options);
   DoWrite();
+  if (buffer->BytesRemaining() > 0 && state_ != STATE_CONNECTED) {
+    DCHECK_NE(error_, 0);
+    return -1;
+  }
   return data_size;
 }
 
@@ -213,6 +231,7 @@ int StreamPacketSocket::SendTo(
     size_t data_size,
     const webrtc::SocketAddress& address,
     const webrtc::AsyncSocketPacketOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != STATE_CONNECTED || address != GetRemoteAddress()) {
     LOG(ERROR) << "The socket is not connected to the remote address.";
     SetError(ENOTCONN);
@@ -223,6 +242,8 @@ int StreamPacketSocket::SendTo(
 }
 
 int StreamPacketSocket::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  close_weak_factory_.InvalidateWeakPtrs();
   socket_.reset();
   state_ = STATE_CLOSED;
   send_queue_.clear();
@@ -232,16 +253,19 @@ int StreamPacketSocket::Close() {
 }
 
 webrtc::AsyncPacketSocket::State StreamPacketSocket::GetState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_;
 }
 
 int StreamPacketSocket::GetOption(webrtc::Socket::Option option, int* value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This method is never called by libjingle.
   NOTIMPLEMENTED();
   return -1;
 }
 
 int StreamPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!socket_) {
     return -1;
   }
@@ -285,48 +309,76 @@ int StreamPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
 }
 
 int StreamPacketSocket::GetError() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return error_;
 }
 
 void StreamPacketSocket::SetError(int error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   error_ = error;
 }
 
 void StreamPacketSocket::OnConnectCompleted(int result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result != net::OK) {
     CloseWithNetError(result);
     return;
   }
   state_ = STATE_CONNECTED;
+  base::WeakPtr<StreamPacketSocket> self = weak_factory_.GetWeakPtr();
   NotifyConnect(this);
+  if (!self || state_ != STATE_CONNECTED) {
+    return;
+  }
   DoRead();
 }
 
 void StreamPacketSocket::DoWrite() {
-  if (!socket_ || send_pending_ || send_queue_.empty()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_do_write_) {
     return;
   }
 
-  while (!send_queue_.empty()) {
-    PendingPacket& packet = send_queue_.front();
-    int result = socket_->Write(
-        packet.data.get(), packet.data->BytesRemaining(),
-        base::BindOnce(&StreamPacketSocket::OnAsyncWriteCompleted,
-                       base::Unretained(this)),
-        kTrafficAnnotation);
-    if (result == net::ERR_IO_PENDING) {
-      send_pending_ = true;
-      return;
+  // Manage `in_do_write_` manually instead of using `base::AutoReset` because
+  // an observer callback may destroy `this`, and `AutoReset` would write to
+  // destroyed memory on unwind.
+  in_do_write_ = true;
+  base::WeakPtr<StreamPacketSocket> self = weak_factory_.GetWeakPtr();
+  // `NotifyReadyToSend()` may re-entrantly enqueue more packets via `Send()`.
+  // Keep draining until listeners stop enqueueing, a write goes pending, or the
+  // socket closes.
+  do {
+    while (socket_ && !send_pending_ && !send_queue_.empty()) {
+      PendingPacket& packet = send_queue_.front();
+      int result = socket_->Write(
+          packet.data.get(), packet.data->BytesRemaining(),
+          base::BindOnce(&StreamPacketSocket::OnAsyncWriteCompleted,
+                         base::Unretained(this)),
+          kTrafficAnnotation);
+      if (result == net::ERR_IO_PENDING) {
+        send_pending_ = true;
+        break;
+      }
+      if (!HandleWriteResult(result)) {
+        break;
+      }
     }
-    if (!HandleWriteResult(result)) {
-      return;
-    }
-  }
 
-  NotifyReadyToSend(this);
+    if (!self) {
+      return;
+    }
+    if (socket_ && !send_pending_ && send_queue_.empty()) {
+      NotifyReadyToSend(this);
+      if (!self) {
+        return;
+      }
+    }
+  } while (socket_ && !send_pending_ && !send_queue_.empty());
+  in_do_write_ = false;
 }
 
 bool StreamPacketSocket::HandleWriteResult(int result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(net::ERR_IO_PENDING, result);
   send_pending_ = false;
   if (result < 0) {
@@ -343,23 +395,39 @@ bool StreamPacketSocket::HandleWriteResult(int result) {
     const webrtc::SentPacketInfo sent_packet(packet.options.packet_id,
                                              webrtc::TimeMillis());
     send_queue_.pop_front();
+    base::WeakPtr<StreamPacketSocket> self = weak_factory_.GetWeakPtr();
     NotifySentPacket(this, sent_packet);
+    if (!self || state_ != STATE_CONNECTED) {
+      return false;
+    }
   }
   return true;
 }
 
 void StreamPacketSocket::OnAsyncWriteCompleted(int result) {
-  if (HandleWriteResult(result)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!in_do_write_);
+  // Managed manually instead of via `base::AutoReset` in case `this` is
+  // destroyed during `HandleWriteResult()` observer notifications.
+  in_do_write_ = true;
+  base::WeakPtr<StreamPacketSocket> self = weak_factory_.GetWeakPtr();
+  bool ok = HandleWriteResult(result);
+  if (!self) {
+    return;
+  }
+  in_do_write_ = false;
+  if (ok) {
     DoWrite();
   }
 }
 
 void StreamPacketSocket::DoRead() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!socket_) {
     LOG(ERROR) << "Can't read more data since the socket no longer exists.";
     return;
   }
-  while (true) {
+  while (socket_) {
     if (!read_buffer_.get()) {
       read_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
       read_buffer_->SetCapacity(kReadBufferSize);
@@ -382,6 +450,7 @@ void StreamPacketSocket::DoRead() {
 }
 
 bool StreamPacketSocket::HandleReadResult(int result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result < 0) {
     CloseWithNetError(result);
     return false;
@@ -391,8 +460,10 @@ bool StreamPacketSocket::HandleReadResult(int result) {
     return false;
   }
 
-  read_buffer_->set_offset(read_buffer_->offset() + result);
-  base::span<uint8_t> span = read_buffer_->span_before_offset();
+  base::WeakPtr<StreamPacketSocket> self = weak_factory_.GetWeakPtr();
+  scoped_refptr<net::GrowableIOBuffer> read_buffer = read_buffer_;
+  read_buffer->set_offset(read_buffer->offset() + result);
+  base::span<uint8_t> span = read_buffer->span_before_offset();
   while (!span.empty()) {
     size_t bytes_consumed = 0;
     auto packet = packet_processor_->Unpack(span, &bytes_consumed);
@@ -400,6 +471,9 @@ bool StreamPacketSocket::HandleReadResult(int result) {
       NotifyPacketReceived(webrtc::ReceivedIpPacket(
           packet->span(), GetRemoteAddress(),
           webrtc::Timestamp::Micros(webrtc::TimeMicros())));
+      if (!self || state_ != STATE_CONNECTED) {
+        return false;
+      }
     }
     if (!bytes_consumed) {
       break;
@@ -408,24 +482,28 @@ bool StreamPacketSocket::HandleReadResult(int result) {
   }
   // We've consumed all complete packets from the buffer; now move any remaining
   // bytes to the head of the buffer and set offset to reflect this.
-  if (!span.empty()) {
-    read_buffer_->everything().copy_prefix_from(span);
-    read_buffer_->set_offset(span.size());
-  }
+  read_buffer->everything().copy_prefix_from(span);
+  read_buffer->set_offset(span.size());
 
   return true;
 }
 
 void StreamPacketSocket::OnAsyncReadCompleted(int result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (HandleReadResult(result)) {
     DoRead();
   }
 }
 
 void StreamPacketSocket::CloseWithNetError(int net_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(0, net_error);
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
+  if (state_ == STATE_CLOSED) {
+    return;
+  }
   LOG(ERROR) << "Stream socket received net error: " << net_error;
+
   switch (net_error) {
     case net::ERR_SOCKET_NOT_CONNECTED:
       error_ = ENOTCONN;
@@ -437,9 +515,19 @@ void StreamPacketSocket::CloseWithNetError(int net_error) {
     default:
       error_ = EINVAL;
   }
-
   Close();
-  NotifyClosed(error_);
+
+  // Notify listeners asynchronously so active Send() or read callbacks unwind
+  // first.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&StreamPacketSocket::RunNotifyClosed,
+                                close_weak_factory_.GetWeakPtr(), error_));
+}
+
+void StreamPacketSocket::RunNotifyClosed(int error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, STATE_CLOSED);
+  NotifyClosed(error);
 }
 
 }  // namespace remoting::protocol
