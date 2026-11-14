@@ -57,6 +57,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kIndigo,
     AccessPoint::kSkills,
     AccessPoint::kPasswordManagerCard,
+    AccessPoint::kOtherDeviceTabsMenu,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -279,6 +280,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "PasswordManagerCard";
       case AccessPoint::kEnterpriseProxy:
         return "EnterpriseProxy";
+      case AccessPoint::kOtherDeviceTabsMenu:
+        return "OtherDeviceTabsMenu";
     }
   }
 };

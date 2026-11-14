@@ -203,6 +203,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
+    case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

@@ -180,6 +180,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kGeminiExternalAppStoreEvent:
     case AccessPoint::kPasswordManagerCard:
     case AccessPoint::kEnterpriseProxy:
+    case AccessPoint::kOtherDeviceTabsMenu:
       return access_point;
   }
 
@@ -803,6 +804,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromPasswordManagerCard"));
       break;
+    case AccessPoint::kOtherDeviceTabsMenu:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromOtherDeviceTabsMenu"));
+      break;
   }
 }
 
@@ -1008,6 +1013,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAppSwitcherAISummarization:
     case AccessPoint::kGeminiExternalAppStoreEvent:
     case AccessPoint::kEnterpriseProxy:
+    case AccessPoint::kOtherDeviceTabsMenu:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

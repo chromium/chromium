@@ -37392,6 +37392,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromOtherDeviceTabsMenu">
+  <owner>ankushkush@google.com</owner>
+  <owner>chrome-sync-dev@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kOtherDeviceTabsMenu.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromOverflowMenu">
   <owner>jlebel@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>

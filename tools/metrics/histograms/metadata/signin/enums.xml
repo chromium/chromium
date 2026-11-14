@@ -1404,6 +1404,7 @@ chromium-metrics-reviews@google.com.
   <int value="113" label="Gemini External App Store Event (iOS only)"/>
   <int value="114" label="Password Manager card (Desktop only)"/>
   <int value="115" label="Enterprise proxy (iOS only)"/>
+  <int value="116" label="Other device tabs menu (Desktop only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

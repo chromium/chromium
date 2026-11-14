@@ -386,10 +386,13 @@ enum class AccessPoint : int {
   kPasswordManagerCard = 114,
   // Triggered by an enterprise proxy authentication challenge. iOS only.
   kEnterpriseProxy = 115,
+  // Triggered from the "Sync history to see other device tabs" item in the
+  // "Other device tabs" app menu. Desktop only.
+  kOtherDeviceTabsMenu = 116,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kEnterpriseProxy,  // This must be last.
+  kMaxValue = kOtherDeviceTabsMenu,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
