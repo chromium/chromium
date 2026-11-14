@@ -1026,12 +1026,13 @@ void ContextualTasksComposeboxHandler::HandleFileUpload(bool is_image) {
   }
   file_types.include_all_files = true;
 
+  const GURL upload_destination(lens::features::GetLensComposeboxEndpointUrl());
   file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE,
                            /*title=*/std::u16string(),
                            /*default_path=*/base::FilePath(), &file_types,
                            /*file_type_index=*/0,
                            /*default_extension=*/base::FilePath::StringType(),
-                           parent_window);
+                           parent_window, &upload_destination);
 }
 
 void ContextualTasksComposeboxHandler::FileSelected(

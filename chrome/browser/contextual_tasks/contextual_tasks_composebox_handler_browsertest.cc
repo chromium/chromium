@@ -75,6 +75,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -89,6 +90,7 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -4044,6 +4046,22 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
         std::nullopt);
   }
   EXPECT_EQ(handler_->GetNumContextUploading(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       HandleFileUpload_PassesUploadDestinationCaller) {
+  content::SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::CancellingSelectFileDialogFactory>(
+          &dialog_params));
+
+  handler_->HandleFileUpload(/*is_image=*/false);
+  ui::SelectFileDialog::SetFactory(nullptr);
+
+  EXPECT_EQ(dialog_params.type, ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE);
+  ASSERT_TRUE(dialog_params.caller.has_value());
+  EXPECT_EQ(*dialog_params.caller,
+            GURL(lens::features::GetLensComposeboxEndpointUrl()));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
