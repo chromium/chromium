@@ -405,6 +405,18 @@ void ContextualTasksEphemeralButtonController::OnEntryHidden(
 }
 
 void ContextualTasksEphemeralButtonController::OnActionsChanged() {
+  // `MaybeNotifyVisibilityShouldChange()` only syncs the ephemeral state when
+  // the button is or was showing ephemerally. A button that was pinned while
+  // popped out keeps its ephemeral state (see
+  // `UpdateEphemeralStateInToolbar()`) and is no longer tracked as visible, so
+  // sync explicitly when the action is unpinned. Otherwise the stale state
+  // would keep the unpinned button in the toolbar.
+  if (contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
+      browser_window_interface_ &&
+      !contextual_tasks::GetEffectivePinState(
+          browser_window_interface_->GetProfile())) {
+    UpdateEphemeralStateInToolbar(ShouldShowEphemeralButton());
+  }
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -1045,6 +1057,18 @@ void ContextualTasksEphemeralButtonController::UpdateEphemeralStateInToolbar(
           ToolbarButtonProvider::From(browser_window_interface_)) {
     if (auto* pinned_toolbar_actions =
             toolbar_button_provider->GetPinnedToolbarActions()) {
+      if (!show && browser_window_interface_->GetProfile() &&
+          contextual_tasks::GetEffectivePinState(
+              browser_window_interface_->GetProfile()) &&
+          !pinned_toolbar_actions->IsActionPinned(
+              kActionSidePanelShowContextualTasks)) {
+        // `OnActionsChanged()` runs before `PinnedToolbarActionsContainer`
+        // processes the pin change; clearing ephemeral state before the
+        // container promotes the popped-out button to `pinned_buttons_` would
+        // queue the popped-out button for removal instead of pinning it in
+        // place.
+        return;
+      }
       pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
           kActionSidePanelShowContextualTasks, show);
     }
