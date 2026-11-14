@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 namespace network {
@@ -28,6 +28,7 @@ namespace guest_view {
 // defined in extensions/common/api/web_request/web_request_resource_type.cc
 enum class RequestResourceType : uint8_t {
   kMainFrame,
+  kMinValue = kMainFrame,
   kSubFrame,
   kStylesheet,
   kScript,
@@ -42,7 +43,10 @@ enum class RequestResourceType : uint8_t {
   kWebTransport,
   kWebBundle,
   kOther,
+  kMaxValue = kOther,
 };
+
+using RequestResourceTypeSet = base::EnumSet<RequestResourceType>;
 
 struct BeforeSendHeadersParams {
   BeforeSendHeadersParams();
@@ -52,7 +56,7 @@ struct BeforeSendHeadersParams {
   BeforeSendHeadersParams& operator=(const BeforeSendHeadersParams&) = delete;
   BeforeSendHeadersParams& operator=(BeforeSendHeadersParams&& other);
 
-  absl::flat_hash_set<RequestResourceType> resource_types;
+  RequestResourceTypeSet resource_types;
   bool include_sub_frame_requests = true;
   net::HttpRequestHeaders add_headers;
 
@@ -69,7 +73,7 @@ struct OriginCheckParams {
   OriginCheckParams& operator=(const OriginCheckParams&) = delete;
   OriginCheckParams& operator=(OriginCheckParams&& other);
 
-  absl::flat_hash_set<RequestResourceType> resource_types;
+  RequestResourceTypeSet resource_types;
   std::vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
       allowed_origin_patterns;
 

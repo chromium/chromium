@@ -101,7 +101,7 @@ ParseBeforeSendHeadersParams(const base::DictValue& create_params) {
       if (!parsed_resource_type) {
         return base::unexpected("Invalid resourceType provided.");
       }
-      params->resource_types.insert(*parsed_resource_type);
+      params->resource_types.Put(*parsed_resource_type);
     }
   }
   auto include_sub_frame_requests =
@@ -164,7 +164,7 @@ ParseOriginCheckParams(const base::DictValue& create_params) {
       if (!parsed_resource_type) {
         return base::unexpected("Invalid resourceType provided.");
       }
-      params->resource_types.insert(*parsed_resource_type);
+      params->resource_types.Put(*parsed_resource_type);
     }
   }
   const auto* allowed_origins =
@@ -296,7 +296,7 @@ bool SlimWebViewGuest::HasAllowedOrigins() const {
 bool SlimWebViewGuest::HasAllowedOrigins(
     RequestResourceType resource_type) const {
   return allowed_origins_params_ &&
-         allowed_origins_params_->resource_types.contains(resource_type);
+         allowed_origins_params_->resource_types.Has(resource_type);
 }
 
 base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
@@ -314,7 +314,7 @@ base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
   if (!allowed_origins_params_) {
     return base::ok();
   }
-  if (!allowed_origins_params_->resource_types.contains(resource_type)) {
+  if (!allowed_origins_params_->resource_types.Has(resource_type)) {
     return base::ok();
   }
   url::Origin candidate_origin = url::Origin::Create(url);

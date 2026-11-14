@@ -136,7 +136,7 @@ class URLLoaderFactoryProxy
     bool should_add_headers = false;
     if (guest_) {
       const auto& params = guest_->before_send_headers_params();
-      if (params.has_value() && params->resource_types.contains(type) &&
+      if (params.has_value() && params->resource_types.Has(type) &&
           (params->include_sub_frame_requests || !is_subframe_request_)) {
         should_add_headers = true;
       }
