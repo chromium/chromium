@@ -313,7 +313,7 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
                      std::vector<ChromeRootCertConstraints>>;
 
   // Additional data about classical anchors that isn't represented in
-  // bssl::TrustAnchor.
+  // bssl::CertificateTrust.
   struct NET_EXPORT AnchorExtraData {
     AnchorExtraData();
     ~AnchorExtraData();
@@ -328,7 +328,7 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   };
 
   // Additional data about MTC anchors that isn't represented in
-  // bssl::MTCAnchor.
+  // bssl::CertificateTrust.
   struct NET_EXPORT MtcAnchorExtraData {
     explicit MtcAnchorExtraData(Signer signer_config);
     ~MtcAnchorExtraData();
@@ -418,9 +418,8 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       const bssl::ParsedCertificate* cert) override;
 
   // Returns true if the trust store contains the given bssl::ParsedCertificate
-  // (matches by DER).
+  // (matches by DER, or by CA ID for MTC CA certificates).
   bool Contains(const bssl::ParsedCertificate* cert) const;
-  bool ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const;
 
   // Returns the crs_root_id for `path`, or nullopt if unknown.
   std::optional<int32_t> GetCrsRootIdForCert(
@@ -450,15 +449,15 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const;
 
   // Returns true if the MTC cosigner policy, when evaluated at `current_time`,
-  // is satisfied for `target_cert`, which has a valid CA signature from
-  // `mtc_anchor` and valid co-signatures from the mirrors with cosigner IDs
-  // specified in `valid_additional_cosigners`.
+  // is satisfied for `target_cert`, which has a valid CA signature from the
+  // MTC CA certificate `mtc_ca_cert` and valid co-signatures from the mirrors
+  // with cosigner IDs specified in `valid_additional_cosigners`.
   // This method only evaluates the policy, the signatures must have been
   // checked already by the caller.
   bool IsMtcCosignerPolicySatisfied(
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
-      const bssl::MTCAnchor* mtc_anchor,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners,
       const NetLogWithSource& net_log) const;
 
@@ -480,11 +479,11 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 
   static ConstraintOverrideMap InitializeConstraintsOverrides();
   std::optional<int32_t> GetCrsRootIdForMTC(
-      const bssl::MTCAnchor* mtc_anchor) const;
+      const bssl::ParsedCertificate* mtc_ca_cert) const;
   std::optional<int32_t> GetCrsRootIdForClassicalCert(
       const bssl::ParsedCertificate* cert) const;
   base::span<const ChromeRootCertConstraints> GetConstraintsForMTC(
-      const bssl::MTCAnchor* mtc_anchor) const;
+      const bssl::ParsedCertificate* mtc_ca_cert) const;
   base::span<const ChromeRootCertConstraints> GetConstraintsForClassicalCert(
       const bssl::ParsedCertificate* cert) const;
 

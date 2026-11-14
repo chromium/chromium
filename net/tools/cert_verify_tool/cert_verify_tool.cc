@@ -205,10 +205,6 @@ class DummySystemTrustStore : public net::SystemTrustStore {
     return false;
   }
 
-  bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const override {
-    return false;
-  }
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   net::PlatformTrustStore* GetPlatformTrustStore() override { return nullptr; }
 
@@ -245,7 +241,7 @@ class DummySystemTrustStore : public net::SystemTrustStore {
   bool IsMtcCosignerPolicySatisfied(
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
-      const bssl::MTCAnchor* mtc_anchor,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners,
       const net::NetLogWithSource& net_log) const override {
     return false;
@@ -519,8 +515,9 @@ int main(int argc, char** argv) {
   scoped_refptr<net::CRLSet> crl_set = net::CRLSet::BuiltinCRLSet();
   if (!crlset_path.empty()) {
     std::string crl_set_bytes;
-    if (!ReadFromFile(crlset_path, &crl_set_bytes))
+    if (!ReadFromFile(crlset_path, &crl_set_bytes)) {
       return 1;
+    }
     if (!net::CRLSet::Parse(crl_set_bytes, &crl_set)) {
       std::cerr << "Error parsing CRLSet\n";
       return 1;
@@ -534,10 +531,12 @@ int main(int argc, char** argv) {
   std::vector<CertInput> intermediate_der_certs;
   CertInput target_der_cert;
 
-  if (!roots_path.empty())
+  if (!roots_path.empty()) {
     ReadCertificatesFromFile(roots_path, &root_der_certs);
-  if (!intermediates_path.empty())
+  }
+  if (!intermediates_path.empty()) {
     ReadCertificatesFromFile(intermediates_path, &intermediate_der_certs);
+  }
 
   if (!ReadChainFromFile(target_path, &target_der_cert,
                          &intermediate_der_certs)) {
@@ -642,8 +641,9 @@ int main(int argc, char** argv) {
   for (const std::string& impl_name : impl_names) {
     auto verify_impl = CreateCertVerifyImplFromName(
         impl_name, passed_net_fetcher, crl_set, root_store_type);
-    if (verify_impl)
+    if (verify_impl) {
       impls.push_back(std::move(verify_impl));
+    }
   }
 
   // Sequentially run the chain with each of the selected verifier
@@ -651,8 +651,9 @@ int main(int argc, char** argv) {
   bool all_impls_success = true;
 
   for (size_t i = 0; i < impls.size(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       std::cout << "\n";
+    }
 
     std::cout << impls[i]->GetName() << ":\n";
     if (!impls[i]->VerifyCert(target_der_cert, hostname, intermediate_der_certs,

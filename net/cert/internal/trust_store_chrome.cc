@@ -402,7 +402,6 @@ TrustStoreChrome::TrustStoreChrome(
     const ChromeRootStoreMtcMetadata* mtc_metadata,
     ConstraintOverrideMap override_constraints)
     : override_constraints_(std::move(override_constraints)) {
-
   for (const auto& anchor : root_store_data.trust_anchors()) {
     if (anchor.crs_root_id || !anchor.constraints.empty()) {
       TrustStoreChrome::AnchorExtraData trust_store_anchor_data;
@@ -603,16 +602,19 @@ std::shared_ptr<const bssl::MTCAnchor> TrustStoreChrome::GetTrustedMTCIssuerOf(
 }
 
 bool TrustStoreChrome::Contains(const bssl::ParsedCertificate* cert) const {
+  if (cert->mtc_ca_info()) {
+    // MTC CAs are trusted if and only if they have `mtc_anchor_extra_data_`.
+    // TODO(crbug.com/575507260): Match MTC CA certificates by DER, like other
+    // certificates.
+    return GetMTCAnchorData(cert->mtc_ca_info()->ca_id);
+  }
   return trust_store_.Contains(cert);
 }
 
-bool TrustStoreChrome::ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const {
-  return trust_store_.ContainsMTCAnchor(anchor);
-}
-
 std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForMTC(
-    const bssl::MTCAnchor* mtc_anchor) const {
-  const MtcAnchorExtraData* anchor_data = GetMTCAnchorData(mtc_anchor->ca_id());
+    const bssl::ParsedCertificate* mtc_ca_cert) const {
+  const MtcAnchorExtraData* anchor_data =
+      GetMTCAnchorData(mtc_ca_cert->mtc_ca_info()->ca_id);
   if (!anchor_data) {
     return {};
   }
@@ -632,19 +634,18 @@ std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForClassicalCert(
 
 std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForCert(
     const bssl::CertPathBuilderResultPath* path) const {
-  if (std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
-          path->trust_anchor.MTCAnchor();
-      mtc_anchor) {
-    return GetCrsRootIdForMTC(mtc_anchor.get());
-  } else {
-    return GetCrsRootIdForClassicalCert(path->certs.back().get());
+  const bssl::ParsedCertificate* root = path->certs.back().get();
+  if (root->mtc_ca_info()) {
+    return GetCrsRootIdForMTC(root);
   }
+  return GetCrsRootIdForClassicalCert(root);
 }
 
 base::span<const ChromeRootCertConstraints>
 TrustStoreChrome::GetConstraintsForMTC(
-    const bssl::MTCAnchor* mtc_anchor) const {
-  const MtcAnchorExtraData* anchor_data = GetMTCAnchorData(mtc_anchor->ca_id());
+    const bssl::ParsedCertificate* mtc_ca_cert) const {
+  const MtcAnchorExtraData* anchor_data =
+      GetMTCAnchorData(mtc_ca_cert->mtc_ca_info()->ca_id);
   if (!anchor_data) {
     return {};
   }
@@ -676,13 +677,11 @@ TrustStoreChrome::GetConstraintsForClassicalCert(
 base::span<const ChromeRootCertConstraints>
 TrustStoreChrome::GetConstraintsForCert(
     const bssl::CertPathBuilderResultPath* path) const {
-  if (std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
-          path->trust_anchor.MTCAnchor();
-      mtc_anchor) {
-    return GetConstraintsForMTC(mtc_anchor.get());
-  } else {
-    return GetConstraintsForClassicalCert(path->certs.back().get());
+  const bssl::ParsedCertificate* root = path->certs.back().get();
+  if (root->mtc_ca_info()) {
+    return GetConstraintsForMTC(root);
   }
+  return GetConstraintsForClassicalCert(root);
 }
 
 const TrustStoreChrome::AnchorExtraData* TrustStoreChrome::GetAnchorData(
@@ -837,7 +836,7 @@ constexpr base::TimeDelta kMaxSignerSetAge = base::Days(70);
 bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
     const bssl::ParsedCertificate& target_cert,
     base::Time current_time,
-    const bssl::MTCAnchor* mtc_anchor,
+    const bssl::ParsedCertificate& mtc_ca_cert,
     base::span<const std::vector<uint8_t>> valid_additional_cosigners,
     const NetLogWithSource& net_log) const {
   absl::flat_hash_map<std::vector<uint8_t>, std::string> cosigner_status;
@@ -875,7 +874,7 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
   }
 
   const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
-      GetMTCAnchorData(mtc_anchor->ca_id());
+      GetMTCAnchorData(mtc_ca_cert.mtc_ca_info()->ca_id);
   if (!mtc_anchor_data) {
     NetLogCosignerPolicyResult(false, "CA data missing",
                                valid_additional_cosigners, cosigner_status,

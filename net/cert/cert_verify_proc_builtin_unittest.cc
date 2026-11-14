@@ -216,20 +216,12 @@ class MockSystemTrustStore : public SystemTrustStore {
     return mock_is_known_root_;
   }
 
-  bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const override {
-    return mock_is_known_mtc_anchor_;
-  }
-
   void AddTrustStore(bssl::TrustStore* store) {
     trust_store_.AddTrustStore(store);
   }
 
   void SetMockIsKnownRoot(bool is_known_root) {
     mock_is_known_root_ = is_known_root;
-  }
-
-  void SetMockIsKnownMtcAnchor(bool is_known_root) {
-    mock_is_known_mtc_anchor_ = is_known_root;
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -320,7 +312,7 @@ class MockSystemTrustStore : public SystemTrustStore {
   bool IsMtcCosignerPolicySatisfied(
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
-      const bssl::MTCAnchor* mtc_anchor,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners,
       const NetLogWithSource& net_log) const override {
     got_valid_additional_cosigners_ =
@@ -359,7 +351,6 @@ class MockSystemTrustStore : public SystemTrustStore {
  private:
   bssl::TrustStoreCollection trust_store_;
   bool mock_is_known_root_ = false;
-  bool mock_is_known_mtc_anchor_ = false;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t mock_crs_version_ = 0;
   std::optional<base::Time> mock_signer_set_timestamp_;
@@ -585,10 +576,6 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     mock_system_trust_store_->SetMockIsKnownRoot(is_known_root);
   }
 
-  void SetMockIsKnownMtcAnchor(bool is_known_root) {
-    mock_system_trust_store_->SetMockIsKnownMtcAnchor(is_known_root);
-  }
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void SetMockIsLocallyTrustedRoot(bool is_locally_trusted_root) {
     mock_system_trust_store_->SetMockIsLocallyTrustedRoot(
@@ -700,8 +687,8 @@ TEST_F(CertVerifyProcBuiltinTest, CertNetFetcherShouldBypassHSTS) {
 
     // Verify the certificate with soft-fail revocation checking.
     Verify(chain.get(), "www.example.com",
-           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
-           &verify_result, &verify_net_log_source, verify_callback.callback());
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, &verify_result,
+           &verify_net_log_source, verify_callback.callback());
 
     // The CRL fetch should not use HSTS, and thus should succeed, which will
     // cause the certificate to be marked as revoked. (If the CRL fetch were to
@@ -800,10 +787,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
       X509Certificate::CreateFromBytes(*leaf_der);
   ASSERT_TRUE(chain);
 
-  // MTCs don't use IsKnownRoot, so this returning true shouldn't mark it as a
-  // known root.
-  SetMockIsKnownRoot(true);
-  SetMockIsKnownMtcAnchor(false);
+  SetMockIsKnownRoot(false);
 
   {
     CertVerifyResult verify_result;
@@ -839,8 +823,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
   }
 
-  SetMockIsKnownRoot(false);
-  SetMockIsKnownMtcAnchor(true);
+  SetMockIsKnownRoot(true);
 
   {
     CertVerifyResult verify_result;
@@ -997,7 +980,6 @@ TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
   ASSERT_TRUE(leaf);
 
   SetMockIsKnownRoot(false);
-  SetMockIsKnownMtcAnchor(false);
 
   bssl::TrustStoreInMemory trust_store;
   auto mtc_anchor = CreateMTCAnchor(
@@ -1127,15 +1109,11 @@ TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
       X509Certificate::CreateFromBytes(*leaf_with_mirror_only_der);
   ASSERT_TRUE(leaf_with_mirror_only);
 
-  // MTCs don't use IsKnownRoot, so this returning true shouldn't mark it as a
-  // known root.
-  SetMockIsKnownRoot(true);
-
   // If the MTC CA is not a known one, can verify successfully without
   // checking cosigner policy. Setting the IsMtcCosignerPolicySatisfied
   // result to false doesn't affect the result for the first round of tests
-  // with SetMockIsKnownMtcAnchor(false) since it won't be called.
-  SetMockIsKnownMtcAnchor(false);
+  // with SetMockIsKnownRoot(false) since it won't be called.
+  SetMockIsKnownRoot(false);
   SetMockIsMtcCosignerPolicySatisfied(false);
 
   {
@@ -1222,11 +1200,10 @@ TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
                       .size());
   }
 
-  // Second round of tests, with KnownMtcAnchor=true.
+  // Second round of tests, with IsKnownRoot=true.
   // These tests check that GetMtcMirrorKey and IsMtcCosignerPolicySatisfied
   // are correctly used.
-  SetMockIsKnownRoot(false);
-  SetMockIsKnownMtcAnchor(true);
+  SetMockIsKnownRoot(true);
 
   {
     // MTC validation should fail when mirror policy is enforced and not
@@ -1404,7 +1381,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
             *mtc_log.CreateSignaturelessCertificate(leaf_index));
     ASSERT_TRUE(landmark_relative_cert);
     {
-      SetMockIsKnownMtcAnchor(false);
+      SetMockIsKnownRoot(false);
       CertVerifyResult verify_result;
       NetLogSource verify_net_log_source;
       TestCompletionCallback callback;
@@ -1415,7 +1392,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
       EXPECT_THAT(error, IsError(test.expected_result_for_local_root));
     }
     {
-      SetMockIsKnownMtcAnchor(true);
+      SetMockIsKnownRoot(true);
       CertVerifyResult verify_result;
       NetLogSource verify_net_log_source;
       TestCompletionCallback callback;
@@ -1432,7 +1409,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
             *mtc_log.CreateStandaloneCertificate(leaf_index, {&ca_cosigner}));
     ASSERT_TRUE(standalone_cert);
     {
-      SetMockIsKnownMtcAnchor(false);
+      SetMockIsKnownRoot(false);
       CertVerifyResult verify_result;
       NetLogSource verify_net_log_source;
       TestCompletionCallback callback;
@@ -1443,7 +1420,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
       EXPECT_THAT(error, IsError(test.expected_result_for_local_root));
     }
     {
-      SetMockIsKnownMtcAnchor(true);
+      SetMockIsKnownRoot(true);
       CertVerifyResult verify_result;
       NetLogSource verify_net_log_source;
       TestCompletionCallback callback;
@@ -1657,7 +1634,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcCrsAnchorUsageHistogram) {
     for (bool is_known_root : {false, true}) {
       SCOPED_TRACE(is_known_root);
       SetMockCRSVersion(1);
-      SetMockIsKnownMtcAnchor(is_known_root);
+      SetMockIsKnownRoot(is_known_root);
       base::HistogramTester histograms;
       CertVerifyResult verify_result;
       NetLogSource verify_net_log_source;
@@ -1864,7 +1841,7 @@ TEST_F(CertVerifyProcBuiltinMtcTest,
   ASSERT_TRUE(chain);
 
   struct {
-    bool is_known_mtc_anchor;
+    bool is_known_root;
     int flags;
     int expected_error;
   } kTests[] = {
@@ -1874,10 +1851,9 @@ TEST_F(CertVerifyProcBuiltinMtcTest,
       {true, CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS, OK},
   };
   for (const auto& test : kTests) {
-    SCOPED_TRACE(testing::Message()
-                 << "is_known_mtc_anchor=" << test.is_known_mtc_anchor
-                 << " flags=" << test.flags);
-    SetMockIsKnownMtcAnchor(test.is_known_mtc_anchor);
+    SCOPED_TRACE(testing::Message() << "is_known_root=" << test.is_known_root
+                                    << " flags=" << test.flags);
+    SetMockIsKnownRoot(test.is_known_root);
 
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
@@ -3001,8 +2977,8 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
     CertVerifyResult verify_result;
     TestCompletionCallback verify_callback;
     Verify(chain.get(), "www.example.com",
-           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
-           &verify_result, &verify_net_log_source, verify_callback.callback());
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, &verify_result,
+           &verify_net_log_source, verify_callback.callback());
 
     int error = verify_callback.WaitForResult();
     EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
@@ -3015,8 +2991,8 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
     CertVerifyResult verify_result;
     TestCompletionCallback verify_callback;
     Verify(chain.get(), "www.example.com",
-           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
-           &verify_result, &verify_net_log_source, verify_callback.callback());
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, &verify_result,
+           &verify_net_log_source, verify_callback.callback());
 
     int error = verify_callback.WaitForResult();
     // CRLs are not checked for chains issued by known roots, so verification
@@ -3078,8 +3054,8 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
-         CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
-         &verify_result, &verify_net_log_source, verify_callback.callback());
+         CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, &verify_result,
+         &verify_net_log_source, verify_callback.callback());
 
   for (int i = 0; i < expected_request_count; i++) {
     // Wait for request #|i| to be made.
@@ -3150,8 +3126,8 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
-         CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
-         &verify_result, &verify_net_log_source, verify_callback.callback());
+         CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, &verify_result,
+         &verify_net_log_source, verify_callback.callback());
 
   for (int i = 0; i < expected_request_count; i++) {
     // Wait for request #|i| to be made.
@@ -3213,8 +3189,8 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
-         /*flags=*/0,
-         &verify_result, &verify_net_log_source, verify_callback.callback());
+         /*flags=*/0, &verify_result, &verify_net_log_source,
+         verify_callback.callback());
 
   // EV doesn't do revocation checking, therefore verification result
   // should be OK and EV.
@@ -3898,6 +3874,50 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinAndMaxVersion) {
 
     int error = callback.WaitForResult();
     EXPECT_THAT(error, IsOk());
+  }
+}
+
+// Tests that serial number constraints are enforced for traditional roots, the
+// same as for MTC CAs.
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSerialNumber) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  constexpr uint64_t kLeafSerial = 1000;
+  leaf->SetSerialNumber(kLeafSerial);
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  struct TestCase {
+    StaticChromeRootCertConstraints constraint;
+    bool expected_verification_success;
+  };
+  const TestCase tests[] = {
+      {{.serial_not_after = kLeafSerial}, true},
+      {{.serial_not_after = kLeafSerial - 1}, false},
+      {{.serial_after = kLeafSerial - 1}, true},
+      {{.serial_after = kLeafSerial}, false},
+  };
+  for (const auto& test : tests) {
+    SCOPED_TRACE(testing::Message()
+                 << "serial_not_after="
+                 << test.constraint.serial_not_after.value_or(0)
+                 << " serial_after="
+                 << test.constraint.serial_after.value_or(0));
+    SetMockChromeRootConstraints({test.constraint});
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    if (test.expected_verification_success) {
+      EXPECT_THAT(error, IsOk());
+    } else {
+      EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    }
   }
 }
 
@@ -5037,8 +5057,8 @@ TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
-         /*flags=*/0,
-         &verify_result, &verify_net_log_source, verify_callback.callback());
+         /*flags=*/0, &verify_result, &verify_net_log_source,
+         verify_callback.callback());
 
   // Wait for trust_store.SyncGetIssuersOf to be called.
   trust_store.sync_get_issuer_started_event_.Wait();

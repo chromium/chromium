@@ -48,8 +48,8 @@ class SystemTrustStore {
   // system trust store and is a "standard" one. The meaning of "standard" is
   // that it is one of default trust anchors for the system, as opposed to a
   // user-installed one. (It may *also* be trusted as a user-installed root.)
+  // This includes MTC CA certificates for MTC CAs in the Chrome Root Store.
   virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
-  virtual bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Returns the PlatformTrustStore that can be used to look for
@@ -80,9 +80,6 @@ class SystemTrustStore {
 
   // Returns the Chrome Root Store constraints for `path`, or returns an empty
   // span if the certificate is not constrained.
-  // (If the bssl::TrustAnchor is changed to also contain the root certificate,
-  // this could be updated to take a TrustAnchor object instead. See this TODO:
-  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/boringssl/src/pki/trust_store.h;l=207;drc=f359b2876732d31100187ef4ad0d462864b168c2)
   virtual base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::CertPathBuilderResultPath* path) const = 0;
 
@@ -95,7 +92,7 @@ class SystemTrustStore {
   virtual bool IsMtcCosignerPolicySatisfied(
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
-      const bssl::MTCAnchor* mtc_anchor,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners,
       const NetLogWithSource& net_log) const = 0;
 

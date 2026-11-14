@@ -233,8 +233,7 @@ base::DictValue NetLogPathBuilderResultPath(
     const bssl::CertPathBuilderResultPath& result_path) {
   base::DictValue dict;
   dict.Set("is_valid", result_path.IsValid());
-  dict.Set("last_cert_trust",
-           result_path.trust_anchor.CertTrust().ToDebugString());
+  dict.Set("last_cert_trust", result_path.last_cert_trust.ToDebugString());
   dict.Set("certificates", PEMCertValueList(result_path.certs));
   // TODO(crbug.com/40479281): netlog user_constrained_policy_set.
   std::string errors_string =
@@ -372,21 +371,10 @@ class CertVerifyProcTrustStore {
     return system_trust_store_->IsKnownRoot(trust_anchor);
   }
 
-  bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const {
-    return system_trust_store_->IsKnownMtcAnchor(anchor);
-  }
-
   bool IsPathIssuedByKnownRoot(
       const bssl::CertPathBuilderResultPath& path) const {
     const bssl::ParsedCertificate* trusted_cert = path.GetTrustedCert();
-    if (!trusted_cert) {
-      return false;
-    }
-    if (path.trust_anchor.MTCAnchor()) {
-      return IsKnownMtcAnchor(path.trust_anchor.MTCAnchor().get());
-    } else {
-      return IsKnownRoot(trusted_cert);
-    }
+    return trusted_cert && IsKnownRoot(trusted_cert);
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -408,11 +396,11 @@ class CertVerifyProcTrustStore {
   bool IsMtcCosignerPolicySatisfied(
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
-      const bssl::MTCAnchor* mtc_anchor,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners,
       const NetLogWithSource& net_log) const {
     return system_trust_store_->IsMtcCosignerPolicySatisfied(
-        target_cert, current_time, mtc_anchor, valid_additional_cosigners,
+        target_cert, current_time, mtc_ca_cert, valid_additional_cosigners,
         net_log);
   }
 
@@ -568,14 +556,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         signature_algorithm, errors);
   }
 
-  bool IsCosignatureVerificationResultAcceptable(
-      const bssl::MTCAnchor* mtc_anchor,
+  bool IsMTCCosignatureVerificationResultAcceptable(
+      const bssl::ParsedCertificate& mtc_ca_cert,
       std::vector<std::vector<uint8_t>> valid_additional_cosigners) override {
-    CHECK(mtc_anchor);
     // This method is called before CheckPathAfterVerificationImpl, so the
-    // PathBuilderDelegateDataImpl isn't initialized yet. Check
-    // IsKnownMtcAnchor directly.
-    if (!trust_store_->IsKnownMtcAnchor(mtc_anchor)) {
+    // PathBuilderDelegateDataImpl isn't initialized yet. Check IsKnownRoot
+    // directly.
+    if (!trust_store_->IsKnownRoot(&mtc_ca_cert)) {
       // Cosigner policy only applies to publicly trusted MTCs, only a valid CA
       // signature is required for private PKIs.
       net_log_->AddEvent(net::NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED,
@@ -590,7 +577,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     return trust_store_->IsMtcCosignerPolicySatisfied(
-        *target_, current_time_, mtc_anchor, valid_additional_cosigners,
+        *target_, current_time_, mtc_ca_cert, valid_additional_cosigners,
         *net_log_);
 #else
     return false;
@@ -612,9 +599,15 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     PathBuilderDelegateDataImpl* delegate_data =
         PathBuilderDelegateDataImpl::Create(path, trust_store_);
 
+    // An MTC CA's trust anchor is the MTC CA certificate, so the path is an MTC
+    // if its trusted certificate is an MTC CA certificate.
+    const bssl::ParsedCertificate* trusted_cert = path->GetTrustedCert();
+    const bssl::ParsedCertificate* mtc_ca_cert =
+        trusted_cert && trusted_cert->mtc_ca_info() ? trusted_cert : nullptr;
+
     scoped_refptr<X509Certificate> cert_for_ct_verify;
     // Only check CT if the path ends in a traditional (non-MTC) anchor.
-    if (!path->trust_anchor.MTCAnchor()) {
+    if (!mtc_ca_cert) {
       // TODO(https://crbug.com/1211074, https://crbug.com/848277): making a
       // temporary X509Certificate just to pass into CTVerifier and
       // CTPolicyEnforcer is silly, refactor so they take CRYPTO_BUFFER or
@@ -678,12 +671,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         break;
     }
 
-    const bool is_mtc = path->trust_anchor.MTCAnchor() != nullptr;
-    if (is_mtc) {
+    if (mtc_ca_cert) {
       // Check MTC revocation and policies from SignerSet configuration.
       // (Note that cosigner policy is checked separately by
       // IsCosignatureVerificationResultAcceptable when necessary.)
-      CheckMTCRevocationAndPolicy(path, delegate_data);
+      CheckMTCRevocationAndPolicy(path, *mtc_ca_cert, delegate_data);
     }
 
     if (policy.check_revocation) {
@@ -700,7 +692,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         &delegate_data->stapled_ocsp_verify_result);
 
     // MTCs don't use traditional certificate transparency.
-    if (is_mtc) {
+    if (mtc_ca_cert) {
       return;
     }
 
@@ -709,13 +701,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
   void CheckMTCRevocationAndPolicy(
       bssl::CertPathBuilderResultPath* path,
+      const bssl::ParsedCertificate& mtc_ca_cert,
       const PathBuilderDelegateDataImpl* delegate_data) {
     // Revocation information for MTCs is distributed in the PKI Metadata
     // Fastpush component, which is part of the Chrome Root Store.
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    const bssl::MTCAnchor* mtc_anchor = path->trust_anchor.MTCAnchor().get();
     const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
-        trust_store_->GetMTCAnchorData(mtc_anchor->ca_id());
+        trust_store_->GetMTCAnchorData(mtc_ca_cert.mtc_ca_info()->ca_id);
     if (!mtc_anchor_data) {
       return;
     }
@@ -755,8 +747,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return;
     }
     // CQRP policy specifies a maximum allowable log number. The
-    // IsKnownMtcAnchor check is probably redundant here since only a known
-    // anchor would have a result in GetMTCAnchorData, but it is more
+    // is_issued_by_known_root check is probably redundant here since only a
+    // known anchor would have a result in GetMTCAnchorData, but it is more
     // future-proof to check.
     if (delegate_data->is_issued_by_known_root &&
         log_number > kCqrpMaxMtcLogNumber) {
@@ -944,9 +936,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
-    if (path->trust_anchor.MTCAnchor() &&
-        (constraint.serial_not_after.has_value() ||
-         constraint.serial_after.has_value())) {
+    if (constraint.serial_not_after.has_value() ||
+        constraint.serial_after.has_value()) {
       const auto& leaf = path->certs.front();
       uint64_t serial;
       if (!bssl::der::ParseUint64(leaf->tbs().serial_number, &serial)) {
@@ -970,9 +961,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   void CheckChromeRootConstraints(bssl::CertPathBuilderResultPath* path) {
     // If the root is trusted locally, do not enforce CRS constraints, even if
     // some exist.
-    // TODO(crbug.com/452986180): If we ever add support for user-added MTC
-    // anchors, need to check for them here, like
-    // IsNonChromeRootStoreTrustAnchor.
     if (trust_store_->IsNonChromeRootStoreTrustAnchor(
             path->certs.back().get())) {
       return;
@@ -1545,8 +1533,7 @@ scoped_refptr<X509Certificate> CreateVerifiedCertChain(
 // may be re-tried with different parameters for EV and for accepting SHA1
 // certificates.
 struct BuildPathAttempt {
-  BuildPathAttempt(VerificationType verification_type,
-                   bool use_system_time)
+  BuildPathAttempt(VerificationType verification_type, bool use_system_time)
       : verification_type(verification_type),
         use_system_time(use_system_time) {}
 

@@ -210,7 +210,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
             bssl::MakeSpan(kMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(mtc_ca_key),
             std::vector<bssl::LogTrustedSubtrees>());
-    EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
+    EXPECT_TRUE(system_trust_store->IsKnownRoot(mtc_anchor->AsCert().get()));
   }
   {
     // The draft-05 issuer is ignored, since draft-05 is no longer supported.
@@ -220,7 +220,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
             bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(mtc_ca_key),
             std::vector<bssl::LogTrustedSubtrees>());
-    EXPECT_FALSE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
+    EXPECT_FALSE(system_trust_store->IsKnownRoot(mtc_anchor->AsCert().get()));
   }
 
   {
@@ -237,7 +237,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
             bssl::MakeSpan(kUnknownMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(mtc_ca_key),
             std::vector<bssl::LogTrustedSubtrees>());
-    EXPECT_FALSE(system_trust_store->IsKnownMtcAnchor(mtc_anchor2.get()));
+    EXPECT_FALSE(system_trust_store->IsKnownRoot(mtc_anchor2->AsCert().get()));
   }
 }
 #endif  // CHROME_ROOT_STORE_SUPPORTED
