@@ -74,6 +74,14 @@ public interface ControlContainer extends TabStripTransitionDelegate {
     void setCompositorBackgroundInitialized();
 
     /**
+     * Sets the top margin for the control container, deferring the update while a temporary startup
+     * background drawable is active until it is cleared.
+     *
+     * @param topMargin The top margin in pixels.
+     */
+    void setTopMargin(int topMargin);
+
+    /**
      * Returns an instance of the underlying view's layout params that can be mutated; changes will
      * take effect with the next layout pass. A layout pass is requested with each call to this
      * method.

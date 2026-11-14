@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
@@ -77,9 +78,11 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager;
@@ -1593,5 +1596,175 @@ public class ToolbarManagerUnitTest {
         Tab webTab = mockTab(/* isNtp= */ false);
         mActivityTabProvider.setForTesting(webTab);
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testControlContainerTopMargin_TopScalpNonScrollableAndScrollable() {
+        int statusBarHeight = 60;
+        int toolbarHeight = 56;
+        BrowserControlsStateProvider.Observer observer =
+                mToolbarManager.getBrowserControlsObserverForTesting();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mControlContainer.getLayoutParams();
+        assertEquals(0, layoutParams.topMargin);
+
+        // Non-scrollable TOP_SCALP (minHeight == statusBarHeight) at ControlsPosition.TOP:
+        // onTopControlsHeightChanged updates topMargin even without onControlsOffsetChanged.
+        when(mControlsSizer.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(statusBarHeight);
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, statusBarHeight);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        // Reset via hidden TOP_SCALP (e.g., customized-background NTP where topMargin becomes 0).
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP)).thenReturn(0);
+        observer.onTopControlsHeightChanged(toolbarHeight, 0);
+        assertEquals(0, layoutParams.topMargin);
+
+        // Scrollable TOP_SCALP (minHeight == 0, e.g., switching from customized-background NTP to
+        // a viewport-fit=cover web tab where offsets stay 0 and onControlsOffsetChanged does not
+        // fire): onTopControlsHeightChanged updates topMargin to statusBarHeight.
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(statusBarHeight);
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, 0);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        // Scrolled web page (topOffset == -30): onControlsOffsetChanged keeps topMargin anchored
+        // at statusBarHeight.
+        observer.onControlsOffsetChanged(
+                /* topOffset= */ -30,
+                /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        // Animated height change (e.g., status indicator sliding in below TOP_SCALP):
+        // onTopControlsHeightChanged defers the margin update until onControlsOffsetChanged
+        // delivers animation frames so the visible toolbar does not jump prematurely.
+        int statusIndicatorHeight = 24;
+        int combinedHeight = statusBarHeight + statusIndicatorHeight;
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(true);
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(combinedHeight);
+        observer.onTopControlsHeightChanged(combinedHeight + toolbarHeight, combinedHeight);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        observer.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ combinedHeight,
+                /* topControlsMinHeightChanged= */ true,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+        assertEquals(combinedHeight, layoutParams.topMargin);
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(false);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testControlContainerTopMargin_TopScalpHiddenAndBottomControlsPosition() {
+        int statusBarHeight = 60;
+        int toolbarHeight = 56;
+        BrowserControlsStateProvider.Observer observer =
+                mToolbarManager.getBrowserControlsObserverForTesting();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mControlContainer.getLayoutParams();
+
+        // Start with visible TOP_SCALP at ControlsPosition.TOP.
+        when(mControlsSizer.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(statusBarHeight);
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, 0);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        // Hidden TOP_SCALP (customized-background NTP / fullscreen / bottom split-screen).
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP)).thenReturn(0);
+        observer.onTopControlsHeightChanged(toolbarHeight, 0);
+        assertEquals(0, layoutParams.topMargin);
+
+        // Restore visible TOP_SCALP.
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(statusBarHeight);
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, 0);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+
+        // Animated switch ControlsPosition.TOP -> ControlsPosition.BOTTOM (where
+        // onControlsOffsetChanged is skipped): onTopControlsHeightChanged defers while animating,
+        // and onControlsPositionChanged updates topMargin to 0.
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(true);
+        when(mControlsSizer.getControlsPosition()).thenReturn(ControlsPosition.BOTTOM);
+        observer.onTopControlsHeightChanged(statusBarHeight, statusBarHeight);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+        observer.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        assertEquals(0, layoutParams.topMargin);
+
+        // Non-animated height changes while at ControlsPosition.BOTTOM must keep topMargin == 0.
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(false);
+        observer.onTopControlsHeightChanged(statusBarHeight, statusBarHeight);
+        assertEquals(0, layoutParams.topMargin);
+
+        // Animated switch ControlsPosition.BOTTOM -> ControlsPosition.TOP without
+        // onControlsOffsetChanged: onTopControlsHeightChanged defers while animating, and
+        // onControlsPositionChanged updates topMargin to statusBarHeight.
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(true);
+        when(mControlsSizer.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, statusBarHeight);
+        assertEquals(0, layoutParams.topMargin);
+        observer.onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
+        when(mControlsSizer.shouldAnimateBrowserControlsHeightChanges()).thenReturn(false);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testControlContainerTopMargin_TopScalpFlagDisabled() {
+        verifyControlContainerTopMarginOnlyUpdatesOnOffsetChanged();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false")
+    public void testControlContainerTopMargin_RefactorOnlyArmDisabled() {
+        verifyControlContainerTopMarginOnlyUpdatesOnOffsetChanged();
+    }
+
+    private void verifyControlContainerTopMarginOnlyUpdatesOnOffsetChanged() {
+        int statusBarHeight = 60;
+        int toolbarHeight = 56;
+        BrowserControlsStateProvider.Observer observer =
+                mToolbarManager.getBrowserControlsObserverForTesting();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mControlContainer.getLayoutParams();
+
+        when(mControlsSizer.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP))
+                .thenReturn(statusBarHeight);
+
+        // When EdgeToEdgeUtils.isTopEdgeToEdgeEnabled() is false, height and position changes do
+        // not update topMargin.
+        observer.onTopControlsHeightChanged(statusBarHeight + toolbarHeight, statusBarHeight);
+        assertEquals(0, layoutParams.topMargin);
+
+        observer.onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(0, layoutParams.topMargin);
+
+        // onControlsOffsetChanged continues to update topMargin as before.
+        observer.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ statusBarHeight,
+                /* topControlsMinHeightChanged= */ true,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+        assertEquals(statusBarHeight, layoutParams.topMargin);
     }
 }

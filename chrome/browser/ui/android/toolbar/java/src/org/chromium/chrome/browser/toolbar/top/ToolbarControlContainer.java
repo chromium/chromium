@@ -26,6 +26,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -166,6 +167,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private int mTopMarginNarrowWidth;
     private int mLastVerticalTabsTopMargin;
     private @Nullable TopControlsStacker mTopControlsStacker;
+    private @Nullable OnLayoutChangeListener mTopMarginLayoutChangeListener;
+    private @Nullable Integer mPendingTopMargin;
 
     /**
      * Constructs a new control container.
@@ -318,6 +321,49 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public void setCompositorBackgroundInitialized() {
         mIsCompositorInitialized = true;
         updateBackgroundColor();
+        if (mPendingTopMargin != null) {
+            setTopMargin(mPendingTopMargin);
+        }
+    }
+
+    @Override
+    public void setTopMargin(int topMargin) {
+        // https://crbug.com/40736668: Wait until the temporary startup background is cleared so
+        // that the height won't be measured by the background image.
+        if (hasTempStartupBackground()) {
+            mPendingTopMargin = topMargin;
+            if (mTopMarginLayoutChangeListener == null) {
+                mTopMarginLayoutChangeListener =
+                        (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                            if (!hasTempStartupBackground() && mPendingTopMargin != null) {
+                                setTopMargin(mPendingTopMargin);
+                            }
+                        };
+                addOnLayoutChangeListener(mTopMarginLayoutChangeListener);
+            }
+            return;
+        }
+
+        clearPendingTopMargin();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
+        if (layoutParams == null || layoutParams.topMargin == topMargin) {
+            return;
+        }
+
+        layoutParams.topMargin = topMargin;
+        setLayoutParams(layoutParams);
+    }
+
+    private boolean hasTempStartupBackground() {
+        return !mIsCompositorInitialized && getBackground() != null;
+    }
+
+    private void clearPendingTopMargin() {
+        mPendingTopMargin = null;
+        if (mTopMarginLayoutChangeListener != null) {
+            removeOnLayoutChangeListener(mTopMarginLayoutChangeListener);
+            mTopMarginLayoutChangeListener = null;
+        }
     }
 
     @Override
@@ -422,6 +468,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         mVerticalTabsContainerWidthSupplier.removeObserver(mVerticalTabsWidthObserver);
         mVerticalTabsContainerWidthSupplier = ObservableSuppliers.createNonNull(0);
+        clearPendingTopMargin();
     }
 
     @Override

@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.core.graphics.Insets;
 import androidx.test.filters.MediumTest;
@@ -46,6 +47,8 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
@@ -58,6 +61,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -575,5 +580,84 @@ public class EdgeToEdgeInstrumentationTest {
                         NtpCustomizationConfigManager.getInstance().resetForTesting();
                     });
         }
+    }
+
+    /**
+     * Verifies that when top edge-to-edge is enabled, switching directly from a
+     * customized-background NTP tab (where TOP_SCALP is hidden and control container topMargin is
+     * 0) back to an already-loaded viewport-fit=cover tab (where TOP_SCALP is scrollable and
+     * onControlsOffsetChanged does not fire) restores the control container's topMargin so the
+     * toolbar does not overlap the status bar.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true",
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    public void testTopEdgeToEdge_controlContainerTopMarginRestoredOnDirectTabSwitch() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NtpCustomizationConfigManager.getInstance()
+                            .setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
+                });
+
+        // 1. Load an opted-in viewport-fit=cover web page in the initial tab.
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mEdgeToEdgeController.isDrawingToTopEdge(), is(true));
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(false));
+                });
+        int systemTopInset =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mEdgeToEdgeController.getSystemTopInsetPx());
+        assertTrue("Expected positive systemTopInset on phone", systemTopInset > 0);
+
+        View controlContainer =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivity.findViewById(R.id.control_container));
+        View toolbar =
+                ThreadUtils.runOnUiThreadBlocking(() -> mActivity.findViewById(R.id.toolbar));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ((MarginLayoutParams) controlContainer.getLayoutParams()).topMargin,
+                            is(systemTopInset));
+                    Criteria.checkThat(toolbar.getPaddingTop(), is(0));
+                });
+
+        // 2. Open a new customized-background NTP tab on top; TOP_SCALP hides and topMargin
+        // becomes 0 while internal toolbar padding handles the status bar inset.
+        Tab ntpTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mActivity.getTabCreator(false).launchNtp(TabLaunchType.FROM_STARTUP);
+                            return mActivity.getActivityTab();
+                        });
+        NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(true));
+                    Criteria.checkThat(
+                            ((MarginLayoutParams) controlContainer.getLayoutParams()).topMargin,
+                            is(0));
+                    Criteria.checkThat(toolbar.getPaddingTop(), is(systemTopInset));
+                });
+
+        // 3. Close the customized NTP tab directly (without entering the Tab Switcher Hub) so the
+        // already-loaded viewport-fit=cover tab becomes active without an offset delta.
+        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(false));
+                    Criteria.checkThat(
+                            ((MarginLayoutParams) controlContainer.getLayoutParams()).topMargin,
+                            is(systemTopInset));
+                    Criteria.checkThat(toolbar.getPaddingTop(), is(0));
+                });
     }
 }

@@ -27,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnClickListener;
-import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -246,6 +245,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -1730,8 +1730,6 @@ public class ToolbarManager
 
         mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
-                    private @Nullable OnLayoutChangeListener mLayoutChangeListener;
-
                     @Override
                     public void onControlsOffsetChanged(
                             int topOffset,
@@ -1742,37 +1740,34 @@ public class ToolbarManager
                             boolean bottomControlsMinHeightChanged,
                             boolean requestNewFrame,
                             boolean isVisibilityForced) {
-                        // Controls need to be offset to match the composited layer, which is
-                        // anchored below the minimum height. In other words, the top of the toolbar
-                        // composited layer is anchored at the bottom of the minimum height.
-                        // https://crbug.com/40736668 wait until the background is cleared so that
-                        // the height won't be measured by the background image.
-                        if (mControlContainer.getBackground() == null) {
-                            setControlContainerTopMargin(getToolbarExtraYOffset());
-                        } else if (mLayoutChangeListener == null) {
-                            mLayoutChangeListener =
-                                    (view,
-                                            left,
-                                            top,
-                                            right,
-                                            bottom,
-                                            oldLeft,
-                                            oldTop,
-                                            oldRight,
-                                            oldBottom) -> {
-                                        if (mControlContainer.getBackground() == null) {
-                                            setControlContainerTopMargin(getToolbarExtraYOffset());
-                                            mControlContainer.removeOnLayoutChangeListener(
-                                                    mLayoutChangeListener);
-                                            mLayoutChangeListener = null;
-                                        }
-                                    };
-                            mControlContainer.addOnLayoutChangeListener(mLayoutChangeListener);
+                        // Offset the control container to align with the composited toolbar layer
+                        // below any visible top control layers stacked above the tab strip (e.g.,
+                        // top scalp, status indicator).
+                        mControlContainer.setTopMargin(getToolbarExtraYOffset());
+                    }
+
+                    @Override
+                    public void onTopControlsHeightChanged(
+                            int topControlsHeight, int topControlsMinHeight) {
+                        // If height animations are enabled, #onControlsOffsetChanged will update
+                        // the margin once animation frames arrive; updating synchronously here
+                        // would jump the visible toolbar before the animation starts.
+                        if (EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                                && !mBrowserControlsSizer
+                                        .shouldAnimateBrowserControlsHeightChanges()) {
+                            mControlContainer.setTopMargin(getToolbarExtraYOffset());
                         }
                     }
 
                     @Override
                     public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
+                        // Update even when #shouldAnimateBrowserControlsHeightChanges() is true:
+                        // during animated position switches, ToolbarPositionController hides
+                        // mControlContainer first and BrowserControlsManager#setControlsPosition
+                        // skips #onControlsOffsetChanged.
+                        if (EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()) {
+                            mControlContainer.setTopMargin(getToolbarExtraYOffset());
+                        }
                         Tab currentTab = mActivityTabProvider.get();
                         applyIncognitoNtpAccessibilityOrder(currentTab);
                     }
@@ -3920,22 +3915,6 @@ public class ToolbarManager
         mLocationBar.maybeShowOrClearCursorInLocationBar();
     }
 
-    /**
-     * Sets the top margin for the control container.
-     *
-     * @param margin The margin in pixels.
-     */
-    private void setControlContainerTopMargin(int margin) {
-        final ViewGroup.MarginLayoutParams layoutParams =
-                ((ViewGroup.MarginLayoutParams) mControlContainer.getLayoutParams());
-        if (layoutParams.topMargin == margin) {
-            return;
-        }
-
-        layoutParams.topMargin = margin;
-        mControlContainer.setLayoutParams(layoutParams);
-    }
-
     @VisibleForTesting
     boolean isSendTabToSelfAvailable(GURL url) {
         Profile profile = mProfileSupplier.get();
@@ -4250,6 +4229,10 @@ public class ToolbarManager
 
     @Nullable HubExitNavigationHelper getHubExitNavigationHelperForTesting() {
         return mHubExitNavigationHelper;
+    }
+
+    BrowserControlsStateProvider.Observer getBrowserControlsObserverForTesting() {
+        return mBrowserControlsObserver;
     }
 
     private static class WebappRegistryAppInstalledDelegate

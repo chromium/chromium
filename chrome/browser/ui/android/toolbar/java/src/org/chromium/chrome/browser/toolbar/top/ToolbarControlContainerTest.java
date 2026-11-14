@@ -107,6 +107,7 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -2193,5 +2194,94 @@ public class ToolbarControlContainerTest {
         adapter.createNativeResource();
 
         assertEquals(0, mControlContainer.getToolbarTopOffsetInCapture());
+    }
+
+    @Test
+    public void testSetTopMargin_DeferredWhileTempStartupBackgroundActive() {
+        initControlContainer(R.layout.toolbar_phone);
+        CoordinatorLayout parent = new CoordinatorLayout(mActivity);
+        mActivity.setContentView(parent);
+        CoordinatorLayout.LayoutParams layoutParams =
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        parent.addView(mControlContainer, layoutParams);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(0, layoutParams.topMargin);
+
+        // Subcase A: Defer while pre-compositor startup background is non-null, reuse listener on
+        // subsequent updates, and apply + unregister on layout once cleared.
+        mControlContainer.setBackgroundColor(Color.RED);
+        mControlContainer.setTopMargin(60);
+        assertEquals(0, layoutParams.topMargin);
+
+        ViewUtils.requestLayout(mControlContainer, "ToolbarControlContainerTest");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(0, layoutParams.topMargin);
+
+        mControlContainer.setTopMargin(76);
+        assertEquals(0, layoutParams.topMargin);
+
+        mControlContainer.setBackground(null);
+        ViewUtils.requestLayout(mControlContainer, "ToolbarControlContainerTest");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(76, layoutParams.topMargin);
+
+        // Listener was unregistered: mutating topMargin and laying out again does not overwrite it.
+        layoutParams.topMargin = 12;
+        ViewUtils.requestLayout(mControlContainer, "ToolbarControlContainerTest");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(12, layoutParams.topMargin);
+
+        // Subcase B: Direct setTopMargin after background is cleared applies immediately and
+        // unregisters pending listener before layout.
+        mControlContainer.setBackgroundColor(Color.RED);
+        mControlContainer.setTopMargin(120);
+        assertEquals(12, layoutParams.topMargin);
+
+        mControlContainer.setBackground(null);
+        mControlContainer.setTopMargin(96);
+        assertEquals(96, layoutParams.topMargin);
+
+        layoutParams.topMargin = 20;
+        ViewUtils.requestLayout(mControlContainer, "ToolbarControlContainerTest");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(20, layoutParams.topMargin);
+
+        // Subcase C: destroy() clears pending margin and unregisters listener.
+        mControlContainer.setBackgroundColor(Color.RED);
+        mControlContainer.setTopMargin(150);
+        assertEquals(20, layoutParams.topMargin);
+
+        mControlContainer.destroy();
+        mControlContainer.setBackground(null);
+        ViewUtils.requestLayout(mControlContainer, "ToolbarControlContainerTest");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(20, layoutParams.topMargin);
+    }
+
+    @Test
+    public void testSetTopMargin_CompositorBackgroundInitializedAndRuntimeBackground() {
+        initControlContainer(R.layout.toolbar_phone);
+        CoordinatorLayout.LayoutParams layoutParams =
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mControlContainer.setLayoutParams(layoutParams);
+
+        // Pre-compositor startup background defers topMargin.
+        mControlContainer.setBackgroundColor(Color.RED);
+        mControlContainer.setTopMargin(60);
+        assertEquals(0, layoutParams.topMargin);
+
+        // Once compositor background initializes, pending topMargin applies immediately.
+        mControlContainer.setCompositorBackgroundInitialized();
+        assertEquals(60, layoutParams.topMargin);
+
+        // Runtime backgrounds set after compositor init (e.g. mini-origin bar or vertical tabs)
+        // must not defer topMargin updates.
+        mControlContainer.setBackgroundColor(Color.BLUE);
+        mControlContainer.setTopMargin(0);
+        assertEquals(0, layoutParams.topMargin);
+        mControlContainer.setTopMargin(48);
+        assertEquals(48, layoutParams.topMargin);
     }
 }
