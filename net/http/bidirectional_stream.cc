@@ -396,7 +396,8 @@ void BidirectionalStream::OnStreamFailed(
 }
 
 void BidirectionalStream::OnCertificateError(int result,
-                                             const SSLInfo& ssl_info) {
+                                             const SSLInfo& ssl_info,
+                                             const ProxyInfo& used_proxy_info) {
   DCHECK_LT(result, 0);
   DCHECK_NE(result, ERR_IO_PENDING);
   DCHECK(stream_request_);
@@ -413,7 +414,8 @@ void BidirectionalStream::OnNeedsProxyAuth(
   NotifyFailed(ERR_PROXY_AUTH_REQUESTED);
 }
 
-void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
+void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info,
+                                            const ProxyInfo& used_proxy_info) {
   DCHECK(stream_request_);
 
   // BidirectionalStream doesn't support client auth. It ignores client auth

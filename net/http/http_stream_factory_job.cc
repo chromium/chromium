@@ -532,6 +532,8 @@ void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
   DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!spdy_session_request_);
 
+  MaybeCopyConnectionAttemptsFromHandle();
+
   delegate_->OnNeedsClientAuth(this, cert_info);
   // |this| may be deleted after this call.
 }

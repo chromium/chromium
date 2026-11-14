@@ -994,17 +994,29 @@ void HttpNetworkTransaction::OnStreamFailed(
   OnIOComplete(result);
 }
 
-void HttpNetworkTransaction::OnCertificateError(int result,
-                                                const SSLInfo& ssl_info) {
+void HttpNetworkTransaction::OnCertificateError(
+    int result,
+    const SSLInfo& ssl_info,
+    const ProxyInfo& used_proxy_info) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   DCHECK_NE(OK, result);
   DCHECK(stream_request_.get());
   DCHECK(!stream_.get());
 
+  int rv = SetProxyInfo(used_proxy_info);
+  if (rv != OK) {
+    // Fail the request without exposing the certificate error.
+    SetProxyInfoInResponse(used_proxy_info, &response_);
+    OnIOComplete(rv);
+    return;
+  }
+
   response_.ssl_info = ssl_info;
   if (ssl_info.cert) {
     observed_bad_certs_.emplace_back(ssl_info.cert, ssl_info.cert_status);
   }
+
+  SetProxyInfoInResponse(used_proxy_info, &response_);
 
   // TODO(mbelshe):  For now, we're going to pass the error through, and that
   // will close the stream_request in all cases.  This means that we're always
@@ -1048,10 +1060,21 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   DoCallback(OK);
 }
 
-void HttpNetworkTransaction::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
+void HttpNetworkTransaction::OnNeedsClientAuth(
+    SSLCertRequestInfo* cert_info,
+    const ProxyInfo& used_proxy_info) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
 
+  int rv = SetProxyInfo(used_proxy_info);
+  if (rv != OK) {
+    // Fail the request without exposing the client certificate request.
+    SetProxyInfoInResponse(used_proxy_info, &response_);
+    OnIOComplete(rv);
+    return;
+  }
+
   response_.cert_request_info = cert_info;
+  SetProxyInfoInResponse(used_proxy_info, &response_);
   OnIOComplete(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
 }
 

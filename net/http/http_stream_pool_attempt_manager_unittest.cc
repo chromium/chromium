@@ -363,8 +363,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     SetResult(status);
   }
 
-  void OnCertificateError(int status, const SSLInfo& ssl_info) override {
+  void OnCertificateError(int status,
+                          const SSLInfo& ssl_info,
+                          const ProxyInfo& used_proxy_info) override {
     cert_error_ssl_info_ = ssl_info;
+    used_proxy_info_ = used_proxy_info;
     SetResult(status);
   }
 
@@ -374,9 +377,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     NOTREACHED();
   }
 
-  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info,
+                         const ProxyInfo& used_proxy_info) override {
     CHECK(!cert_info_);
     cert_info_ = cert_info;
+    used_proxy_info_ = used_proxy_info;
     SetResult(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   }
 
@@ -1127,11 +1132,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CertificateError) {
       requester1.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
   ASSERT_EQ(requester1.connection_attempts().size(), 1u);
   ASSERT_EQ(requester1.connection_attempts()[0].result, ERR_CERT_DATE_INVALID);
+  EXPECT_TRUE(requester1.used_proxy_info().is_direct());
 
   ASSERT_TRUE(
       requester2.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
   ASSERT_EQ(requester2.connection_attempts().size(), 1u);
   ASSERT_EQ(requester2.connection_attempts()[0].result, ERR_CERT_DATE_INVALID);
+  EXPECT_TRUE(requester2.used_proxy_info().is_direct());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, NeedsClientAuth) {
@@ -1168,8 +1175,16 @@ TEST_F(HttpStreamPoolAttemptManagerTest, NeedsClientAuth) {
   RunUntilIdle();
   EXPECT_EQ(requester1.cert_info()->host_and_port,
             HostPortPair::FromSchemeHostPort(kDestination));
+  ASSERT_EQ(requester1.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester1.connection_attempts()[0].result,
+            ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  EXPECT_TRUE(requester1.used_proxy_info().is_direct());
   EXPECT_EQ(requester2.cert_info()->host_and_port,
             HostPortPair::FromSchemeHostPort(kDestination));
+  ASSERT_EQ(requester2.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester2.connection_attempts()[0].result,
+            ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  EXPECT_TRUE(requester2.used_proxy_info().is_direct());
 }
 
 // Tests that after a fatal error (e.g., the server required a client cert),

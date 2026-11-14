@@ -533,7 +533,7 @@ void HttpStreamFactory::JobController::OnCertificateError(
     BindJob(job);
   }
 
-  delegate_->OnCertificateError(status, ssl_info);
+  delegate_->OnCertificateError(status, ssl_info, job->proxy_info());
 }
 
 void HttpStreamFactory::JobController::OnNeedsClientAuth(
@@ -554,7 +554,7 @@ void HttpStreamFactory::JobController::OnNeedsClientAuth(
     BindJob(job);
   }
 
-  delegate_->OnNeedsClientAuth(cert_info);
+  delegate_->OnNeedsClientAuth(cert_info, job->proxy_info());
 }
 
 void HttpStreamFactory::JobController::OnNeedsProxyAuth(

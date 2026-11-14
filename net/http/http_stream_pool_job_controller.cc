@@ -698,12 +698,12 @@ void HttpStreamPool::JobController::CallOnStreamFailed(
 void HttpStreamPool::JobController::CallOnCertificateError(
     int status,
     const SSLInfo& ssl_info) {
-  delegate_->OnCertificateError(status, ssl_info);
+  delegate_->OnCertificateError(status, ssl_info, proxy_info_);
 }
 
 void HttpStreamPool::JobController::CallOnNeedsClientAuth(
     SSLCertRequestInfo* cert_info) {
-  delegate_->OnNeedsClientAuth(cert_info);
+  delegate_->OnNeedsClientAuth(cert_info, proxy_info_);
 }
 
 void HttpStreamPool::JobController::ResetJobAndInvokePreconnectCallback(

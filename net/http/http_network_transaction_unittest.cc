@@ -27471,6 +27471,119 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest, DontCreateReportProxy) {
 }
 
 TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       DontCreateReportProxyCertificateError) {
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes[] = {
+      MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+  };
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_CERT_AUTHORITY_INVALID);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CERT_AUTHORITY_INVALID));
+  EXPECT_TRUE(trans->GetResponseInfo()->WasFetchedViaProxy());
+
+  trans.reset();
+
+  EXPECT_EQ(0u, network_error_logging_service()->errors().size());
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       DontCreateReportProxyClientAuth) {
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes[] = {
+      MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+  };
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  EXPECT_TRUE(trans->GetResponseInfo()->WasFetchedViaProxy());
+
+  trans.reset();
+
+  EXPECT_EQ(0u, network_error_logging_service()->errors().size());
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       CreateReportClientAuthMultipleAddresses) {
+  const IPAddress kFirstAddress(1, 2, 3, 4);
+  const IPAddress kSecondAddress(5, 6, 7, 8);
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).GetHost(),
+                                                "1.2.3.4,5.6.7.8");
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+  StaticSocketDataProvider data2;
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  TestCompletionCallback callback;
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+
+  ConnectionAttempts attempts = trans->GetConnectionAttempts();
+  ASSERT_EQ(2u, attempts.size());
+  EXPECT_EQ(IPEndPoint(kFirstAddress, 443), attempts[0].endpoint);
+  EXPECT_THAT(attempts[0].result, IsError(ERR_CONNECTION_REFUSED));
+  EXPECT_EQ(IPEndPoint(kSecondAddress, 443), attempts[1].endpoint);
+  EXPECT_THAT(attempts[1].result, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+
+  trans.reset();
+
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  const NetworkErrorLoggingService::RequestDetails& error =
+      network_error_logging_service()->errors()[0];
+  EXPECT_EQ(0, error.status_code);
+  EXPECT_EQ(ERR_SSL_CLIENT_AUTH_CERT_NEEDED, error.type);
+  EXPECT_EQ(kSecondAddress, error.server_ip);
+  EXPECT_THAT(error.other_server_ips, testing::ElementsAre(kFirstAddress));
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
        ReportContainsUploadDepth) {
   reporting_upload_depth_ = 7;
   request_.reporting_upload_depth = reporting_upload_depth_;

@@ -82,7 +82,11 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
                                 ResolveErrorInfo resolve_error_info) = 0;
 
     // Called when we have a certificate error for the request.
-    virtual void OnCertificateError(int status, const SSLInfo& ssl_info) = 0;
+    // `used_proxy_info` indicates the actual ProxyInfo used for this stream,
+    // since the HttpStreamRequest performs the proxy resolution.
+    virtual void OnCertificateError(int status,
+                                    const SSLInfo& ssl_info,
+                                    const ProxyInfo& used_proxy_info) = 0;
 
     // This is the failure case where we need proxy authentication during
     // proxy tunnel establishment.  For the tunnel case, we were unable to
@@ -106,7 +110,10 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // Ownership of |cert_info| is retained by the HttpStreamRequest.  The
     // delegate may take a reference if it needs the cert_info beyond the
     // lifetime of this callback.
-    virtual void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) = 0;
+    // `used_proxy_info` indicates the actual ProxyInfo used for this stream,
+    // since the HttpStreamRequest performs the proxy resolution.
+    virtual void OnNeedsClientAuth(SSLCertRequestInfo* cert_info,
+                                   const ProxyInfo& used_proxy_info) = 0;
 
     // Called when finding all QUIC alternative services are marked broken for
     // the origin in this request which advertises supporting QUIC.

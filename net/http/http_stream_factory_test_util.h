@@ -75,11 +75,14 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
                       const NetErrorDetails& net_error_details,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override;
-  void OnCertificateError(int status, const SSLInfo& ssl_info) override;
+  void OnCertificateError(int status,
+                          const SSLInfo& ssl_info,
+                          const ProxyInfo& used_proxy_info) override;
   void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override;
-  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override;
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info,
+                         const ProxyInfo& used_proxy_info) override;
   void OnQuicBroken() override;
 
   // Waits until the request is complete. Returns the HttpStream if one was

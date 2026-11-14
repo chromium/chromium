@@ -67,7 +67,8 @@ void MockHttpStreamRequestDelegate::OnStreamFailed(
 
 void MockHttpStreamRequestDelegate::OnCertificateError(
     int status,
-    const SSLInfo& ssl_info) {
+    const SSLInfo& ssl_info,
+    const ProxyInfo& used_proxy_info) {
   NOTREACHED();
 }
 
@@ -79,7 +80,8 @@ void MockHttpStreamRequestDelegate::OnNeedsProxyAuth(
 }
 
 void MockHttpStreamRequestDelegate::OnNeedsClientAuth(
-    SSLCertRequestInfo* cert_info) {
+    SSLCertRequestInfo* cert_info,
+    const ProxyInfo& used_proxy_info) {
   NOTREACHED();
 }
 
