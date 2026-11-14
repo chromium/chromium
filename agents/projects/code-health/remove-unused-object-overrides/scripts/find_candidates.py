@@ -6,6 +6,7 @@
 import os
 import re
 import sys
+import subprocess
 
 # Add general hub utilities to path
 sys.path.append(
@@ -25,6 +26,11 @@ OVERRIDE_PATTERN = re.compile(
     r'@Override\s+public\s+(?:boolean\s+equals\s*\(\s*'
     r'(?:@Nullable\s+)?Object\b|int\s+hashCode\s*\(\s*\)|'
     r'String\s+toString\s*\(\s*\))'
+)
+
+EQUALS_HASHCODE_PATTERN = re.compile(
+    r'@Override\s+public\s+(?:boolean\s+equals\s*\(\s*'
+    r'(?:@Nullable\s+)?Object\b|int\s+hashCode\s*\(\s*\))'
 )
 
 
@@ -48,6 +54,25 @@ def check_file(file_path, search_root):
     if any(file_path.endswith(suffix) for suffix in test_suffixes):
         return None
 
+    excluded_paths = [
+        'components/autofill',
+        'components/payments',
+        'components/password_manager',
+        'components/sync',
+        'components/signin',
+    ]
+    rel_path = (
+        os.path.relpath(file_path, search_root)
+        if os.path.isabs(file_path)
+        else file_path
+    )
+    path_normalized = rel_path.replace(os.sep, '/')
+    if any(
+        path_normalized.startswith(excluded + '/')
+        for excluded in excluded_paths
+    ):
+        return None
+
     if os.path.isabs(file_path) or os.path.exists(file_path):
         full_path = file_path
     else:
@@ -55,10 +80,60 @@ def check_file(file_path, search_root):
     try:
         with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
             raw_content = f.read()
+
             syntax_content = strip_strings(strip_comments(raw_content))
+
+            if (
+                '@CalledByNative' in syntax_content
+                or '@NativeMethods' in syntax_content
+                or '@JniType' in syntax_content
+                or re.search(
+                    r'\bimplements\b[^{]*\bParcelable\b', syntax_content
+                )
+                or re.search(
+                    r'\bextends\b\s+[A-Za-z0-9_.]*Exception\b', syntax_content
+                )
+            ):
+                return None
 
             matches = OVERRIDE_PATTERN.findall(syntax_content)
             if matches:
+                class_name = os.path.splitext(os.path.basename(file_path))[0]
+                var_name = (
+                    class_name[0].lower() + class_name[1:] if class_name else ""
+                )
+
+                # Classes that only override toString() are not affected by
+                # collection usage, so only check equals()/hashCode().
+                if class_name and EQUALS_HASHCODE_PATTERN.search(
+                    syntax_content
+                ):
+                    grep_pattern = (
+                        rf"(?:Collection|List|Set|Map|Queue|Deque)<[^>]*\b{class_name}\b\s*[,>]|"
+                        rf"\.(?:indexOf|contains|containsKey|containsValue|"
+                        rf"remove|removeAll|retainAll)\([^)]*"
+                        rf"\b(?:m?{class_name}|{var_name})\b"
+                    )
+                    try:
+                        result = subprocess.run(
+                            [
+                                'git',
+                                'grep',
+                                '-P',
+                                '-q',
+                                grep_pattern,
+                                '--',
+                                ':/*.java',
+                            ],
+                            cwd=search_root,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                        )
+                        if result.returncode == 0:
+                            return None
+                    except Exception:
+                        pass
+
                 return {
                     'issues': (
                         'remove-unused-object-overrides-candidates: '

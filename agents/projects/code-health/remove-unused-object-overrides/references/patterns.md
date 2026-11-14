@@ -11,12 +11,14 @@ test-repair strategies when removing unreferenced `equals()`, `hashCode()`, and
 In Java, `equals()` and `hashCode()` are tied together by the Object contract.
 Always keep or delete them as a pair:
 
-- **Delete Both:** If `equals()` is not needed in production logic (or is only
-  called in unit tests where `refEq()` or field assertions can replace it),
-  delete both `equals()` and `hashCode()`. Never delete just one.
-- **Keep Both:** If production logic requires value equality (such as `HashMap`
-  keys, state comparison, or snapshot tokens), keep both `equals()` and
-  `hashCode()`.
+- **Delete Both:** If neither `equals()` nor `hashCode()` is needed in
+  production logic or asserted in unit tests, delete both `equals()` and
+  `hashCode()`. Never delete just one.
+- **Keep Both:** If production logic requires value equality (such as
+  collections, state comparison, snapshot tokens) or if unit tests assert value
+  equality (an `assertEquals` or Mockito verification comparing two different
+  instances), keep both `equals()` and `hashCode()`. Do not delete them and
+  substitute `refEq()` or custom field assertion helpers.
 
 ### Rule 2: Exhaustive Audit of All Indirect & Hashing Invocations
 
@@ -88,12 +90,32 @@ public class TabActionButtonData {
 ### Pattern 2: Test-Only `equals()` Verification with Mockito
 
 When a method is called in production with a newly allocated object and verified
-in unit tests:
+in unit tests, the Mockito verification is a caller that requires value
+equality. A broken `verify(...)` after removing `equals()` means callers need
+it, so keep both `equals()` and `hashCode()`. Do **not** delete them and
+substitute `refEq()` or custom field assertion helpers; that is prohibited.
 
-#### Bad Pattern
+#### Bad Pattern (Prohibited)
 
 ```java
-// Production class has equals() solely so Mockito verify() works:
+// Production: equals() and hashCode() deleted from PriceTabData.
+static class PriceTabData {
+    public final int bindingTabId;
+    public final PriceDrop priceDrop;
+
+    PriceTabData(int bindingTabId, PriceDrop priceDrop) { ... }
+}
+
+// Unit test rewritten with refEq() as a workaround:
+import static org.mockito.ArgumentMatchers.refEq;
+
+verify(mController).showPriceWelcomeMessage(refEq(mPriceTabData));
+```
+
+#### Good Pattern
+
+```java
+// Production class keeps BOTH equals() and hashCode():
 static class PriceTabData {
     public final int bindingTabId;
     public final PriceDrop priceDrop;
@@ -102,56 +124,43 @@ static class PriceTabData {
 
     @Override
     public boolean equals(Object obj) { ... }
+
+    @Override
+    public int hashCode() { ... }
 }
 
-// Unit test:
+// Unit test is unchanged:
 verify(mController).showPriceWelcomeMessage(mPriceTabData);
-```
-
-#### Good Pattern
-
-```java
-// Production class has NEITHER equals nor hashCode:
-static class PriceTabData {
-    public final int bindingTabId;
-    public final PriceDrop priceDrop;
-
-    PriceTabData(int bindingTabId, PriceDrop priceDrop) {
-        this.bindingTabId = bindingTabId;
-        this.priceDrop = priceDrop;
-    }
-}
-
-// Unit test uses Mockito's reflection matcher:
-import static org.mockito.ArgumentMatchers.refEq;
-
-verify(mController).showPriceWelcomeMessage(refEq(mPriceTabData));
 ```
 
 ### Pattern 3: Test-Only `equals()` with JUnit `assertEquals()`
 
-When unit tests compare objects with `assertEquals(expected, actual)`:
+When unit tests compare objects with `assertEquals(expected, actual)` and the
+two are different instances, the test is a caller that requires value equality.
+Keep both `equals()` and `hashCode()`. Do **not** delete them and replace the
+assertion with a custom field assertion helper; that is prohibited.
 
-#### Bad Pattern
-
-```java
-// In Test:
-assertEquals(new TitleData("Bar", 3, R.plurals.text), model.get(TITLE_DATA));
-```
-
-#### Good Pattern
+#### Bad Pattern (Prohibited)
 
 ```java
-// In Test:
+// Production: equals() and hashCode() deleted from TitleData.
+
+// In Test: custom field assertion helper written as a workaround.
 private static void assertTitleData(TitleData expected, TitleData actual) {
     assertNotNull("Expected non-null TitleData", actual);
     assertEquals(expected.title, actual.title);
     assertEquals(expected.numTabs, actual.numTabs);
     assertEquals(expected.rowAccessibilityTextResId, actual.rowAccessibilityTextResId);
 }
-
-// Call site:
 assertTitleData(new TitleData("Bar", 3, R.plurals.text), model.get(TITLE_DATA));
+```
+
+#### Good Pattern
+
+```java
+// Production: keep both equals() and hashCode() on TitleData.
+// In Test:
+assertEquals(new TitleData("Bar", 3, R.plurals.text), model.get(TITLE_DATA));
 ```
 
 ### Pattern 4: Dead `toString()` Overrides
@@ -171,4 +180,5 @@ public class LayoutTab {
 
 #### Good Pattern
 
-Delete `toString()`. IDEs and debuggers inspect `mId` directly.
+Delete `toString()` once the usage checklist finds no caller. IDEs and debuggers
+inspect `mId` directly.
