@@ -21,12 +21,15 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/public/dns_config_overrides.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -1788,6 +1791,124 @@ TEST(URLRequestContextConfigTest,
                 "{\"QUIC\":{\"initial_delay_for_broken_alternative_service_"
                 "seconds\":5}}"),
             base::Seconds(300));
+}
+
+std::optional<bool> CanUseInsecureDnsTransactions(
+    const std::string& options_json) {
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          /*enable_quic=*/true,
+          /*enable_spdy=*/true,
+          /*enable_brotli=*/false,
+          URLRequestContextConfig::HttpCacheType::DISABLED,
+          /*http_cache_max_size=*/0,
+          /*load_disable_cache=*/false,
+          /*storage_path=*/"",
+          /*accept_language=*/"",
+          /*user_agent=*/"", options_json, std::unique_ptr<net::CertVerifier>(),
+          /*enable_network_quality_estimator=*/false,
+          /*bypass_public_key_pinning_for_local_trust_anchors=*/true,
+          /*network_thread_priority=*/std::nullopt,
+          /*proxy_options=*/std::optional<cronet::proto::ProxyOptions>());
+
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
+  builder.set_proxy_config_service(
+      std::make_unique<net::ProxyConfigServiceFixed>(
+          net::ProxyConfigWithAnnotation::CreateDirect()));
+
+  std::unique_ptr<net::URLRequestContext> context(builder.Build());
+  net::DnsConfigOverrides overrides;
+  overrides.nameservers = {
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 53)};
+  context->host_resolver()->GetManagerForTesting()->SetDnsConfigOverrides(
+      overrides);
+  return context->host_resolver()->GetDnsConfigAsValue().FindBool(
+      "can_use_insecure_dns_transactions");
+}
+
+TEST(URLRequestContextConfigTest, AsyncDns_FeatureEnabled_OptionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kCronetEnableAsyncDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_EQ(CanUseInsecureDnsTransactions("{\"AsyncDNS\":{\"enable\":true}}"),
+            true);
+}
+
+TEST(URLRequestContextConfigTest, AsyncDns_FeatureEnabled_OptionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kCronetEnableAsyncDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_EQ(CanUseInsecureDnsTransactions("{\"AsyncDNS\":{\"enable\":false}}"),
+            false);
+}
+
+TEST(URLRequestContextConfigTest, AsyncDns_FeatureDisabled_OptionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kCronetEnableAsyncDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_EQ(CanUseInsecureDnsTransactions("{\"AsyncDNS\":{\"enable\":true}}"),
+            false);
+}
+
+bool IsHostCachePersistenceEnabled(const std::string& options_json) {
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          /*enable_quic=*/true,
+          /*enable_spdy=*/true,
+          /*enable_brotli=*/false,
+          URLRequestContextConfig::HttpCacheType::DISABLED,
+          /*http_cache_max_size=*/0,
+          /*load_disable_cache=*/false,
+          /*storage_path=*/"",
+          /*accept_language=*/"",
+          /*user_agent=*/"", options_json, std::unique_ptr<net::CertVerifier>(),
+          /*enable_network_quality_estimator=*/false,
+          /*bypass_public_key_pinning_for_local_trust_anchors=*/true,
+          /*network_thread_priority=*/std::nullopt,
+          /*proxy_options=*/std::optional<cronet::proto::ProxyOptions>());
+
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
+  return config->enable_host_cache_persistence;
+}
+
+TEST(URLRequestContextConfigTest, StaleDns_FeatureEnabled_OptionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kCronetEnableStaleDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_TRUE(IsHostCachePersistenceEnabled(
+      "{\"StaleDNS\":{\"enable\":true,\"persist_to_disk\":true}}"));
+}
+
+TEST(URLRequestContextConfigTest, StaleDns_FeatureEnabled_OptionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kCronetEnableStaleDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_FALSE(IsHostCachePersistenceEnabled(
+      "{\"StaleDNS\":{\"enable\":false,\"persist_to_disk\":true}}"));
+}
+
+TEST(URLRequestContextConfigTest, StaleDns_FeatureDisabled_OptionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kCronetEnableStaleDns);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  EXPECT_FALSE(IsHostCachePersistenceEnabled(
+      "{\"StaleDNS\":{\"enable\":true,\"persist_to_disk\":true}}"));
 }
 
 }  // namespace cronet

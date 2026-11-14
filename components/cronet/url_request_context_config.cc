@@ -98,6 +98,16 @@ BASE_FEATURE_PARAM(bool,
                    "no_system",
                    false);
 
+// Controls whether AsyncDNS can be enabled via Cronet experimental options.
+// Disabling this feature flag force-disables AsyncDNS regardless of
+// experimental options.
+BASE_FEATURE(kCronetEnableAsyncDns, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether StaleDNS can be enabled via Cronet experimental options.
+// Disabling this feature flag force-disables StaleDNS regardless of
+// experimental options.
+BASE_FEATURE(kCronetEnableStaleDns, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(
     kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake,
     base::FEATURE_DISABLED_BY_DEFAULT);
@@ -677,6 +687,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       }
       const base::DictValue& async_dns_args = iter->second.GetDict();
       async_dns_enable =
+          base::FeatureList::IsEnabled(kCronetEnableAsyncDns) &&
           async_dns_args.FindBool(kAsyncDnsEnable).value_or(async_dns_enable);
     } else if (iter->first == kStaleDnsFieldTrialName) {
       if (!iter->second.is_dict()) {
@@ -687,6 +698,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       }
       const base::DictValue& stale_dns_args = iter->second.GetDict();
       stale_dns_enable =
+          base::FeatureList::IsEnabled(kCronetEnableStaleDns) &&
           stale_dns_args.FindBool(kStaleDnsEnable).value_or(false);
 
       if (stale_dns_enable) {
