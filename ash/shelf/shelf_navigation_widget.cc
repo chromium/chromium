@@ -41,6 +41,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -110,21 +111,30 @@ bool IsHomeButtonShown() {
 
 // An implicit animation observer that hides a view once the view's opacity
 // animation finishes.
-// It deletes itself when the animation is done.
+// It deletes itself when the animation is done. If the view is deleted before
+// the animation is done, it deletes itself then instead, as the animation might
+// otherwise never complete and leak the observer.
 class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
  public:
-  explicit AnimationObserverToHideView(views::View* view) : view_(view) {}
+  explicit AnimationObserverToHideView(views::View* view)
+      : view_tracker_(view) {
+    view_tracker_.SetIsDeletingCallback(base::BindOnce(
+        [](AnimationObserverToHideView* observer) { delete observer; },
+        base::Unretained(this)));
+  }
   ~AnimationObserverToHideView() override = default;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
-    if (view_->layer()->GetTargetOpacity() == 0.0f)
-      view_->SetVisible(false);
+    views::View* const view = view_tracker_.view();
+    if (view && view->layer()->GetTargetOpacity() == 0.0f) {
+      view->SetVisible(false);
+    }
     delete this;
   }
 
  private:
-  const raw_ptr<views::View, LeakedDanglingUntriaged> view_;
+  views::ViewTracker view_tracker_;
 };
 
 // Tracks the animation smoothness of a view's bounds animation using
