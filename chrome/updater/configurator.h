@@ -116,11 +116,11 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
   scoped_refptr<update_client::CrxCache> crx_cache_;
-
-  // Declared before `event_logger_` because constructing the event logger
-  // calls `IsMachineExternallyManaged()`, which reads this member.
   const std::optional<bool> is_managed_device_;
-  scoped_refptr<UpdaterEventLogger> event_logger_;
+
+  // Null if remote event logging isn't allowed. Declared after the members that
+  // it uses, so that it is destroyed before them.
+  std::unique_ptr<RemoteEventLogging> remote_event_logging_;
 };
 
 }  // namespace updater

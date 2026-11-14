@@ -22,7 +22,6 @@
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -79,22 +78,17 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
 #else
         return std::nullopt;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-      }()),
-      event_logger_(
-          RemoteEventLoggingAllowed(
-              scope,
-              persisted_data_->GetAppIds(),
-              external_constants->GetEventLoggingPermissionProvider())
-              ? UpdaterEventLogger::Create(
-                    std::make_unique<RemoteLoggingDelegate>(
-                        scope,
-                        external_constants->EventLoggingURL(),
-                        IsCloudManaged(),
-                        base::WrapRefCounted(this),
-                        std::make_unique<base::DefaultClock>()),
-                    persisted_data_->GetNextAllowedLoggingAttemptTime(),
-                    /*auto_flush=*/false)
-              : nullptr) {
+      }()) {
+  if (RemoteEventLoggingAllowed(
+          scope, persisted_data_->GetAppIds(),
+          external_constants->GetEventLoggingPermissionProvider())) {
+    // `base::Unretained` is safe because this object owns
+    // `remote_event_logging_`, which only runs the callback while it is alive.
+    remote_event_logging_ = std::make_unique<RemoteEventLogging>(
+        scope, IsCloudManaged(), *this, external_constants->EventLoggingURL(),
+        base::BindRepeating(&Configurator::GetNetworkFetcherFactory,
+                            base::Unretained(this)));
+  }
 #if BUILDFLAG(IS_LINUX)
   // On Linux creating the NetworkFetcherFactory requires performing blocking IO
   // to load an external library. This should be done when the configurator is
@@ -252,7 +246,8 @@ scoped_refptr<PersistedData> Configurator::GetUpdaterPersistedData() const {
 
 scoped_refptr<UpdaterEventLogger> Configurator::GetEventLogger() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return event_logger_;
+  return remote_event_logging_ ? remote_event_logging_->event_logger()
+                               : nullptr;
 }
 
 bool Configurator::IsPerUserInstall() const {

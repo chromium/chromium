@@ -354,20 +354,9 @@ class UpdateServiceImplInstallTrackingTest : public ::testing::Test {
       GTEST_SKIP();
     }
 #endif  // BUILDFLAG(IS_POSIX)
-    // An empty update URL makes network requests fail immediately, and a
-    // nonexistent permission provider prevents `Configurator` from creating a
-    // `RemoteLoggingDelegate` reference cycle on Chrome-branded builds when
-    // the host has Chrome usage stats enabled.
-    // TODO(crbug.com/585592019): Remove the permission provider override once
-    // `Configurator` and `RemoteLoggingDelegate` no longer form a cycle.
+    // An empty update URL makes network requests fail immediately.
     base::DictValue overrides;
     overrides.Set(kDevOverrideKeyUrl, base::ListValue());
-    overrides.Set(kDevOverrideKeyEventLoggingPermissionProviderAppId,
-                  "nonexistent");
-#if BUILDFLAG(IS_MAC)
-    overrides.Set(kDevOverrideKeyEventLoggingPermissionProviderDirectoryName,
-                  "nonexistent");
-#endif
 
     // In-memory prefs don't take the inter-process `GlobalPrefs` lock, so a
     // `Configurator` leaked by a test here can't make updaters started by
