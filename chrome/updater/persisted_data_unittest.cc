@@ -11,9 +11,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/test_scope.h"
@@ -178,6 +181,26 @@ TEST_F(PersistedDataTest, RegisterApp_SetFirstActive) {
   metadata->RegisterApp(data);
   EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
   EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
+}
+
+TEST_F(PersistedDataTest, PingFreshness) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+  EXPECT_TRUE(metadata->GetPingFreshness("someappid").empty());
+  EXPECT_TRUE(metadata->GetPingFreshnessWriteTime("someappid").is_null());
+
+  base::RunLoop run_loop;
+  metadata->SetDateLastData({"someappid"}, 3383, run_loop.QuitClosure());
+  run_loop.Run();
+  const std::string ping_freshness = metadata->GetPingFreshness("someappid");
+  ASSERT_FALSE(ping_freshness.empty());
+  EXPECT_FALSE(metadata->GetPingFreshnessWriteTime("someappid").is_null());
+
+  metadata->RotatePingFreshness("someappid");
+  EXPECT_NE(metadata->GetPingFreshness("someappid"), ping_freshness);
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -5,6 +5,7 @@
 #include "components/update_client/persisted_data.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -13,6 +14,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/values_util.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -31,6 +34,36 @@ namespace update_client {
 namespace {
 
 constexpr char kThrottleUpdatesUntilPreference[] = "updateclientthrottleuntil";
+
+// Keys of the PingFreshness and its write time in an app key.
+constexpr char kPingFreshnessKey[] = "pf";
+constexpr char kPingFreshnessWriteTimeKey[] = "pf_time";
+
+// Returns the app key for `id` in `root`, or nullptr if there is none. `root`
+// is the value of the `kPersistedDataPreference` pref.
+const base::DictValue* FindAppKey(const base::DictValue& root,
+                                  const std::string& id) {
+  const base::DictValue* apps = root.FindDict("apps");
+  return apps ? apps->FindDict(base::ToLowerASCII(id)) : nullptr;
+}
+
+base::DictValue* FindAppKey(base::DictValue& root, const std::string& id) {
+  base::DictValue* apps = root.FindDict("apps");
+  return apps ? apps->FindDict(base::ToLowerASCII(id)) : nullptr;
+}
+
+// Returns true if `app_key` holds a PingFreshness.
+bool HasPingFreshness(const base::DictValue& app_key) {
+  const std::string* ping_freshness = app_key.FindString(kPingFreshnessKey);
+  return ping_freshness && !ping_freshness->empty();
+}
+
+// Writes a new random PingFreshness and its `write_time` into `app_key`.
+void WriteNewPingFreshness(base::DictValue& app_key, base::Time write_time) {
+  app_key.Set(kPingFreshnessKey,
+              base::Uuid::GenerateRandomV4().AsLowercaseString());
+  app_key.Set(kPingFreshnessWriteTimeKey, base::TimeToValue(write_time));
+}
 
 class PersistedDataImpl : public PersistedData {
  public:
@@ -54,6 +87,8 @@ class PersistedDataImpl : public PersistedData {
   int GetDateLastRollCall(const std::string& id) const override;
   int GetDateLastActive(const std::string& id) const override;
   std::string GetPingFreshness(const std::string& id) const override;
+  base::Time GetPingFreshnessWriteTime(const std::string& id) const override;
+  void RotatePingFreshness(const std::string& id) override;
   void SetDateLastData(const std::vector<std::string>& ids,
                        int datenum,
                        base::OnceClosure callback) override;
@@ -141,14 +176,7 @@ const base::DictValue* PersistedDataImpl::GetAppKey(
     return nullptr;
   }
   const base::Value& dict = pref_service->GetValue(kPersistedDataPreference);
-  if (!dict.is_dict()) {
-    return nullptr;
-  }
-  const base::DictValue* apps = dict.GetDict().FindDict("apps");
-  if (!apps) {
-    return nullptr;
-  }
-  return apps->FindDict(base::ToLowerASCII(id));
+  return dict.is_dict() ? FindAppKey(dict.GetDict(), id) : nullptr;
 }
 
 int PersistedDataImpl::GetInt(const std::string& id,
@@ -185,8 +213,30 @@ int PersistedDataImpl::GetDateLastActive(const std::string& id) const {
 }
 
 std::string PersistedDataImpl::GetPingFreshness(const std::string& id) const {
-  std::string result = GetString(id, "pf");
+  std::string result = GetString(id, kPingFreshnessKey);
   return !result.empty() ? base::StrCat({"{", result, "}"}) : result;
+}
+
+base::Time PersistedDataImpl::GetPingFreshnessWriteTime(
+    const std::string& id) const {
+  const base::DictValue* app_key = GetAppKey(id);
+  if (!app_key || !HasPingFreshness(*app_key)) {
+    return base::Time();
+  }
+  return base::ValueToTime(app_key->Find(kPingFreshnessWriteTimeKey))
+      .value_or(base::Time());
+}
+
+void PersistedDataImpl::RotatePingFreshness(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  PrefService* pref_service = pref_service_provider_.Run();
+  const base::DictValue* app_key = GetAppKey(id);
+  if (!pref_service || !app_key || !HasPingFreshness(*app_key)) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
+  WriteNewPingFreshness(*GetOrCreateAppKey(id, update.Get()),
+                        base::Time::Now());
 }
 
 int PersistedDataImpl::GetInstallDate(const std::string& id) const {
@@ -233,10 +283,11 @@ void PersistedDataImpl::SetDateLastDataHelper(
     return;
   }
   ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
+  const base::Time now = base::Time::Now();
   for (const auto& id : ids) {
     base::DictValue* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->Set("dlrc", datenum);
-    app_key->Set("pf", base::Uuid::GenerateRandomV4().AsLowercaseString());
+    WriteNewPingFreshness(*app_key, now);
     if (GetInstallDate(id) == kDateFirstTime) {
       app_key->Set("installdate", datenum);
     }
@@ -439,6 +490,38 @@ void RegisterPersistedDataPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kLastUpdateCheckErrorPreference, 0);
   registry->RegisterIntegerPref(kLastUpdateCheckErrorCategoryPreference, 0);
   registry->RegisterIntegerPref(kLastUpdateCheckErrorExtraCode1Preference, 0);
+}
+
+PingFreshnessState GetPingFreshnessState(const PersistedData& persisted_data,
+                                         const std::string& id,
+                                         base::Time now) {
+  if (persisted_data.GetPingFreshness(id).empty()) {
+    return PingFreshnessState::kNone;
+  }
+  const base::Time write_time = persisted_data.GetPingFreshnessWriteTime(id);
+  if (write_time.is_null()) {
+    return PingFreshnessState::kUnknownWriteTime;
+  }
+  if (write_time > now) {
+    return PingFreshnessState::kFutureWriteTime;
+  }
+  return now - write_time < kPingFreshnessMaxAge ? PingFreshnessState::kFresh
+                                                 : PingFreshnessState::kExpired;
+}
+
+void SetPingFreshnessWriteTimeForTesting(PrefService& pref_service,
+                                         const std::string& id,
+                                         std::optional<base::Time> write_time) {
+  ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
+  base::DictValue* app_key = FindAppKey(update.Get(), id);
+  if (!app_key || !HasPingFreshness(*app_key)) {
+    return;
+  }
+  if (write_time) {
+    app_key->Set(kPingFreshnessWriteTimeKey, base::TimeToValue(*write_time));
+  } else {
+    app_key->Remove(kPingFreshnessWriteTimeKey);
+  }
 }
 
 }  // namespace update_client

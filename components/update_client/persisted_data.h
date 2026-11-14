@@ -6,15 +6,16 @@
 #define COMPONENTS_UPDATE_CLIENT_PERSISTED_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 namespace base {
-class Time;
 class Version;
 }  // namespace base
 
@@ -35,8 +36,7 @@ class ActivityDataService;
 struct CategorizedError;
 
 // A PersistedData is a wrapper layer around a PrefService, designed to maintain
-// update data that outlives the browser process and isn't exposed outside of
-// update_client.
+// update data that outlives the browser process.
 //
 // The public methods of this class should be called only on the sequence that
 // initializes it - which also has to match the sequence the PrefService has
@@ -60,17 +60,25 @@ class PersistedData {
   // -2 indicates that the |id| has an unknown value of last active date.
   virtual int GetDateLastActive(const std::string& id) const = 0;
 
-  // Returns the PingFreshness (a random token that is written into the profile
-  // data whenever the DateLastRollCall it is modified) for the specified |id|.
-  // "" indicates that there is no recorded freshness value for the |id|.
+  // Returns the PingFreshness for `id`, or "" if `id` has none. The
+  // PingFreshness is a random token, which `SetDateLastData()` writes and
+  // `RotatePingFreshness()` replaces.
   virtual std::string GetPingFreshness(const std::string& id) const = 0;
 
-  // Records the DateLastRollcall for the specified `ids`. Also records
+  // Returns when the PingFreshness for `id` was written, or a null time if `id`
+  // has no PingFreshness or its write time is unknown.
+  virtual base::Time GetPingFreshnessWriteTime(const std::string& id) const = 0;
+
+  // Replaces the PingFreshness for `id` with a new random value and sets its
+  // write time to now. Does nothing if `id` has no PingFreshness.
+  virtual void RotatePingFreshness(const std::string& id) = 0;
+
+  // Records the DateLastRollCall for the specified `ids`. Also records
   // DateLastActive, if the ids have active bits currently set, and then clears
-  // those bits. Rotates PingFreshness. Then, calls `callback` on the calling
-  // sequence. Calls with a negative `datenum` or that occur prior to the
-  // initialization of the persisted data store will simply post the callback
-  // immediately.
+  // those bits. Writes a new PingFreshness and its write time. Then, calls
+  // `callback` on the calling sequence. Calls with a negative `datenum` or that
+  // occur prior to the initialization of the persisted data store will simply
+  // post the callback immediately.
   virtual void SetDateLastData(const std::vector<std::string>& ids,
                                int datenum,
                                base::OnceClosure callback) = 0;
@@ -166,6 +174,35 @@ std::unique_ptr<PersistedData> CreatePersistedData(
 
 // Register prefs for a PersistedData returned by CreatePersistedData.
 void RegisterPersistedDataPrefs(PrefRegistrySimple* registry);
+
+// The age at which `GetPingFreshnessState()` considers a PingFreshness expired.
+inline constexpr base::TimeDelta kPingFreshnessMaxAge = base::Hours(53);
+
+// The state of an app's PingFreshness, as `GetPingFreshnessState()` returns it.
+enum class PingFreshnessState {
+  // No PingFreshness, for example because no update check has succeeded yet.
+  kNone,
+  // Younger than `kPingFreshnessMaxAge`.
+  kFresh,
+  // At least `kPingFreshnessMaxAge` old.
+  kExpired,
+  // Written at an unknown time, for example by an older version.
+  kUnknownWriteTime,
+  // Written in the future, for example because the clock was set back.
+  kFutureWriteTime,
+};
+
+// Returns the state of the PingFreshness for `id` in `persisted_data` at `now`.
+PingFreshnessState GetPingFreshnessState(const PersistedData& persisted_data,
+                                         const std::string& id,
+                                         base::Time now);
+
+// Sets the write time of the PingFreshness for `id` in `pref_service` to
+// `write_time`, or removes the write time if `write_time` is `std::nullopt`.
+// Does nothing if `id` has no PingFreshness.
+void SetPingFreshnessWriteTimeForTesting(PrefService& pref_service,
+                                         const std::string& id,
+                                         std::optional<base::Time> write_time);
 
 }  // namespace update_client
 

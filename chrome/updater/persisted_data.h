@@ -182,6 +182,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   void SetCohortHint(const std::string& id,
                      const std::string& cohort_hint) override;
   std::string GetPingFreshness(const std::string& id) const override;
+  base::Time GetPingFreshnessWriteTime(const std::string& id) const override;
+  void RotatePingFreshness(const std::string& id) override;
   void SetDateLastData(const std::vector<std::string>& ids,
                        int datenum,
                        base::OnceClosure callback) override;

@@ -4,14 +4,19 @@
 
 #include "components/update_client/persisted_data.h"
 
-#include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/test/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/update_client_errors.h"
@@ -156,6 +161,9 @@ TEST(PersistedDataTest, NullPtrPrefService) {
 
   const std::string pf2 = metadata->GetPingFreshness("someappid");
   EXPECT_TRUE(pf2.empty());
+  EXPECT_TRUE(metadata->GetPingFreshnessWriteTime("someappid").is_null());
+  metadata->RotatePingFreshness("someappid");
+  EXPECT_TRUE(metadata->GetPingFreshness("someappid").empty());
 
   EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
   metadata->SetProductVersion("someappid", base::Version("1.0"));
@@ -334,6 +342,144 @@ TEST(PersistedDataTest, LastUpdateCheckError) {
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorCategoryPreference), 0);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorPreference), 0);
   EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorExtraCode1Preference), 0);
+}
+
+class PersistedDataPingFreshnessTest : public testing::Test {
+ protected:
+  PersistedDataPingFreshnessTest() {
+    RegisterPersistedDataPrefs(pref_service_.registry());
+    metadata_ = CreatePersistedData(
+        base::BindRepeating([](PrefService* pref) { return pref; },
+                            &pref_service_),
+        nullptr);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<PersistedData> metadata_;
+};
+
+TEST_F(PersistedDataPingFreshnessTest, WriteTime) {
+  EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+
+  // SetDateLastData() writes a PingFreshness and its write time for each app.
+  const base::Time first_write_time = base::Time::Now();
+  test::SetDateLastData(metadata_.get(), {"someappid", "someotherappid"}, 3383);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
+            first_write_time);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someotherappid"),
+            first_write_time);
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  test::SetDateLastData(metadata_.get(), {"someappid"}, 3384);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
+            base::Time::Now());
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someotherappid"),
+            first_write_time);
+}
+
+TEST_F(PersistedDataPingFreshnessTest, CorruptedWriteTime) {
+  test::SetDateLastData(metadata_.get(), {"someappid"}, 3383);
+  ASSERT_FALSE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+  {
+    ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+    base::DictValue* app = update->FindDictByDottedPath("apps.someappid");
+    ASSERT_TRUE(app);
+    app->Set("pf_time", "not a time");
+  }
+  EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+  EXPECT_FALSE(metadata_->GetPingFreshness("someappid").empty());
+}
+
+TEST_F(PersistedDataPingFreshnessTest, Rotate) {
+  // There is nothing to rotate until a PingFreshness is written. Rotation
+  // doesn't create an entry for the app either.
+  metadata_->RotatePingFreshness("someappid");
+  EXPECT_TRUE(metadata_->GetPingFreshness("someappid").empty());
+  EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+  EXPECT_EQ(metadata_->GetInstallDate("someappid"), -2);
+
+  test::SetDateLastData(metadata_.get(), {"someappid", "someotherappid"}, 3383);
+  const std::string pf1 = metadata_->GetPingFreshness("someappid");
+  ASSERT_FALSE(pf1.empty());
+  const std::string other_pf = metadata_->GetPingFreshness("someotherappid");
+  ASSERT_FALSE(other_pf.empty());
+  const base::Time other_write_time =
+      metadata_->GetPingFreshnessWriteTime("someotherappid");
+
+  // Rotation replaces even a fresh PingFreshness.
+  task_environment_.FastForwardBy(base::Hours(1));
+  metadata_->RotatePingFreshness("someappid");
+  const std::string pf2 = metadata_->GetPingFreshness("someappid");
+  EXPECT_FALSE(pf2.empty());
+  EXPECT_NE(pf2, pf1);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
+            base::Time::Now());
+
+  // Rotation leaves the dates and other apps unchanged.
+  EXPECT_EQ(metadata_->GetDateLastRollCall("someappid"), 3383);
+  EXPECT_EQ(metadata_->GetInstallDate("someappid"), 3383);
+  EXPECT_EQ(metadata_->GetPingFreshness("someotherappid"), other_pf);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someotherappid"),
+            other_write_time);
+
+  // Rotating a PingFreshness without a write time gives it one.
+  SetPingFreshnessWriteTimeForTesting(pref_service_, "someappid", std::nullopt);
+  task_environment_.FastForwardBy(base::Hours(1));
+  metadata_->RotatePingFreshness("someappid");
+  EXPECT_NE(metadata_->GetPingFreshness("someappid"), pf2);
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
+            base::Time::Now());
+}
+
+TEST_F(PersistedDataPingFreshnessTest, AppDataWithoutPingFreshness) {
+  // The app has data, but no update check has succeeded yet.
+  metadata_->SetCohort("someappid", "c1");
+  EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now()),
+            PingFreshnessState::kNone);
+
+  metadata_->RotatePingFreshness("someappid");
+  EXPECT_TRUE(metadata_->GetPingFreshness("someappid").empty());
+  EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
+}
+
+TEST_F(PersistedDataPingFreshnessTest, State) {
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now()),
+            PingFreshnessState::kNone);
+
+  test::SetDateLastData(metadata_.get(), {"someappid"}, 3383);
+  const base::Time write_time =
+      metadata_->GetPingFreshnessWriteTime("someappid");
+  ASSERT_FALSE(write_time.is_null());
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", write_time),
+            PingFreshnessState::kFresh);
+  EXPECT_EQ(GetPingFreshnessState(
+                *metadata_, "someappid",
+                write_time + kPingFreshnessMaxAge - base::Seconds(1)),
+            PingFreshnessState::kFresh);
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid",
+                                  write_time + kPingFreshnessMaxAge),
+            PingFreshnessState::kExpired);
+}
+
+TEST_F(PersistedDataPingFreshnessTest, StateOfUnknownOrFutureWriteTime) {
+  test::SetDateLastData(metadata_.get(), {"someappid"}, 3383);
+  const base::Time now = base::Time::Now();
+
+  // Older versions don't record the write time.
+  SetPingFreshnessWriteTimeForTesting(pref_service_, "someappid", std::nullopt);
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", now),
+            PingFreshnessState::kUnknownWriteTime);
+
+  // The clock was set back after the PingFreshness was written.
+  SetPingFreshnessWriteTimeForTesting(pref_service_, "someappid",
+                                      now + base::Minutes(1));
+  EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
+            now + base::Minutes(1));
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", now),
+            PingFreshnessState::kFutureWriteTime);
 }
 
 }  // namespace update_client

@@ -54,6 +54,8 @@ class PingPersistedData : public update_client::PersistedData {
   void SetCohortHint(const std::string& id,
                      const std::string& cohort_hint) override;
   std::string GetPingFreshness(const std::string& id) const override;
+  base::Time GetPingFreshnessWriteTime(const std::string& id) const override;
+  void RotatePingFreshness(const std::string& id) override;
   void SetDateLastData(const std::vector<std::string>& ids,
                        int datenum,
                        base::OnceClosure callback) override;
@@ -180,6 +182,17 @@ void PingPersistedData::SetCohortHint(const std::string& id,
 }
 
 std::string PingPersistedData::GetPingFreshness(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTREACHED();
+}
+
+base::Time PingPersistedData::GetPingFreshnessWriteTime(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTREACHED();
+}
+
+void PingPersistedData::RotatePingFreshness(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }

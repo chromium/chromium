@@ -428,6 +428,17 @@ std::string PersistedData::GetPingFreshness(const std::string& id) const {
   return delegate_->GetPingFreshness(id);
 }
 
+base::Time PersistedData::GetPingFreshnessWriteTime(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetPingFreshnessWriteTime(id);
+}
+
+void PersistedData::RotatePingFreshness(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->RotatePingFreshness(id);
+}
+
 void PersistedData::SetDateLastData(const std::vector<std::string>& ids,
                                     int datenum,
                                     base::OnceClosure callback) {
