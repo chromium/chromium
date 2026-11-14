@@ -20,24 +20,36 @@ suite('TranslatedSelectionMapper', () => {
 
   // The reading mode content is:
   // <div>                    contentContainer
-  //   <p>                    block 10
-  //     "Hello "             text 11
-  //     <a>"world"</a>       link 12 with text 13
+  //   <p>                    block1
+  //     "Hello "             textInBlock1
+  //     <a>"world"</a>       linkInBlock1 with textInLink1
   //   </p>
-  //   "\n"                   whitespace between blocks
-  //   <p>"Second"</p>        block 20 with text 21
-  //   <span>"Loose"</span>   span 40 with text 41, which isn't in a block
-  //   <p>"Third"</p>         block 30 with text 31
+  //   "\n"                   whitespaceBetweenBlocks
+  //   <p>"Second"</p>        block2 with textInBlock2
+  //   <span>"Loose"</span>   spanOutsideBlocks with textOutsideBlocks
+  //   <p>"Third"</p>         block3 with textInBlock3
   // </div>
   let contentContainer: HTMLElement;
-  let block10: HTMLElement;
-  let text11: Text;
-  let text13: Text;
-  let whitespace: Text;
-  let block20: HTMLElement;
-  let text21: Text;
-  let text41: Text;
-  let text31: Text;
+  let block1: HTMLElement;
+  let textInBlock1: Text;
+  let textInLink1: Text;
+  let whitespaceBetweenBlocks: Text;
+  let block2: HTMLElement;
+  let textInBlock2: Text;
+  let textOutsideBlocks: Text;
+  let textInBlock3: Text;
+
+  // The AXNodeIDs of the nodes above.
+  const block1AxId = 10;
+  const textInBlock1AxId = 11;
+  const linkInBlock1AxId = 12;
+  const textInLink1AxId = 13;
+  const block2AxId = 20;
+  const textInBlock2AxId = 21;
+  const block3AxId = 30;
+  const textInBlock3AxId = 31;
+  const spanOutsideBlocksAxId = 40;
+  const textOutsideBlocksAxId = 41;
 
   function createText(text: string, axId: number): Text {
     const node = document.createTextNode(text);
@@ -85,25 +97,31 @@ suite('TranslatedSelectionMapper', () => {
     visualBrowserProxy.pdf = true;
     mapper = new TranslatedSelectionMapper();
 
-    text11 = createText('Hello ', 11);
-    text13 = createText('world', 13);
-    block10 =
-        createElement('p', 10, [text11, createElement('a', 12, [text13])]);
-    whitespace = document.createTextNode('\n');
-    text21 = createText('Second', 21);
-    block20 = createElement('p', 20, [text21]);
-    text41 = createText('Loose', 41);
-    const span40 = createElement('span', 40, [text41]);
-    text31 = createText('Third', 31);
-    const block30 = createElement('p', 30, [text31]);
+    textInBlock1 = createText('Hello ', textInBlock1AxId);
+    textInLink1 = createText('world', textInLink1AxId);
+    const linkInBlock1 = createElement('a', linkInBlock1AxId, [textInLink1]);
+    block1 = createElement('p', block1AxId, [textInBlock1, linkInBlock1]);
+    whitespaceBetweenBlocks = document.createTextNode('\n');
+    textInBlock2 = createText('Second', textInBlock2AxId);
+    block2 = createElement('p', block2AxId, [textInBlock2]);
+    textOutsideBlocks = createText('Loose', textOutsideBlocksAxId);
+    const spanOutsideBlocks =
+        createElement('span', spanOutsideBlocksAxId, [textOutsideBlocks]);
+    textInBlock3 = createText('Third', textInBlock3AxId);
+    const block3 = createElement('p', block3AxId, [textInBlock3]);
     contentContainer = document.createElement('div');
-    contentContainer.append(block10, whitespace, block20, span40, block30);
+    contentContainer.append(
+        block1, whitespaceBetweenBlocks, block2, spanOutsideBlocks, block3);
     document.body.appendChild(contentContainer);
 
-    nodeStore.registerTextInBlock(11, 10, text11.length);
-    nodeStore.registerTextInBlock(13, 10, text13.length);
-    nodeStore.registerTextInBlock(21, 20, text21.length);
-    nodeStore.registerTextInBlock(31, 30, text31.length);
+    nodeStore.registerTextInBlock(
+        textInBlock1AxId, block1AxId, textInBlock1.length);
+    nodeStore.registerTextInBlock(
+        textInLink1AxId, block1AxId, textInLink1.length);
+    nodeStore.registerTextInBlock(
+        textInBlock2AxId, block2AxId, textInBlock2.length);
+    nodeStore.registerTextInBlock(
+        textInBlock3AxId, block3AxId, textInBlock3.length);
   });
 
   teardown(() => {
@@ -111,136 +129,164 @@ suite('TranslatedSelectionMapper', () => {
   });
 
   suite('getAxSelection', () => {
+    // The AX selections of all of the text in block 1, in blocks 1 through 2,
+    // in block 2, and in blocks 2 through 3.
+    let block1Selection: SelectionWithIds;
+    let blocks1To2Selection: SelectionWithIds;
+    let block2Selection: SelectionWithIds;
+    let blocks2To3Selection: SelectionWithIds;
+
+    setup(() => {
+      block1Selection =
+          selectIds(textInBlock1AxId, 0, textInLink1AxId, textInLink1.length);
+      blocks1To2Selection =
+          selectIds(textInBlock1AxId, 0, textInBlock2AxId, textInBlock2.length);
+      block2Selection =
+          selectIds(textInBlock2AxId, 0, textInBlock2AxId, textInBlock2.length);
+      blocks2To3Selection =
+          selectIds(textInBlock2AxId, 0, textInBlock3AxId, textInBlock3.length);
+    });
+
     test('selects all text in the block with the selection', () => {
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
-              select(text11, 1, text11, 3), contentContainer));
+              select(textInBlock1, 1, textInBlock1, 3), contentContainer));
     });
 
     test('selects all text in the blocks across the selection', () => {
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
-              select(text13, 2, text21, 3), contentContainer));
+              select(textInLink1, 2, textInBlock2, 3), contentContainer));
     });
 
     test('returns a forward selection for a backward selection', () => {
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
-              select(text21, 3, text11, 1), contentContainer));
+              select(textInBlock2, 3, textInBlock1, 1), contentContainer));
     });
 
     test('handles element endpoints', () => {
-      // From before block 10 to after block 20.
+      // From before block 1 to after block 2.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
               select(contentContainer, 0, contentContainer, 3),
               contentContainer));
     });
 
     test('handles element endpoints in different blocks', () => {
-      // From the start of block 10 to inside text 21.
+      // From the start of block 1 to inside textInBlock2.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
-              select(block10, 0, text21, 3), contentContainer));
-      // From inside text 13 to the end of block 20.
+              select(block1, 0, textInBlock2, 3), contentContainer));
+      // From inside textInLink1 to the end of block 2.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
-              select(text13, 2, block20, 1), contentContainer));
-      // Backward, from the end of block 20 to inside text 11.
+              select(textInLink1, 2, block2, 1), contentContainer));
+      // Backward, from the end of block 2 to inside textInBlock1.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          blocks1To2Selection,
           mapper.getAxSelection(
-              select(block20, 1, text11, 1), contentContainer));
+              select(block2, 1, textInBlock1, 1), contentContainer));
     });
 
     test('handles element endpoints that contain the other endpoint', () => {
-      // From inside text 13 to the end of block 10, which contains text 13.
+      // From inside textInLink1 to the end of block 1, which contains
+      // textInLink1.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
-              select(text13, 2, block10, 2), contentContainer));
-      // From the start of block 20 to inside text 21, which block 20 contains.
+              select(textInLink1, 2, block1, 2), contentContainer));
+      // From the start of block 2 to inside textInBlock2, which block 2
+      // contains.
       assertDeepEquals(
-          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          block2Selection,
           mapper.getAxSelection(
-              select(block20, 0, text21, 3), contentContainer));
+              select(block2, 0, textInBlock2, 3), contentContainer));
       // TODO(crbug.com/578130985): Also test backward selections, e.g. from
-      // inside text 13 to the start of block 10, or from the end of block 20 to
-      // inside text 21. isBackwardSelection treats them as forward when one
-      // endpoint's node contains the other's, so they currently return null.
+      // inside textInLink1 to the start of block 1, or from the end of block 2
+      // to inside textInBlock2. isBackwardSelection treats them as forward
+      // when one endpoint's node contains the other's, so they currently
+      // return null.
     });
 
     test('skips blocks without selected text', () => {
-      // Starts at the end of block 10.
+      // Starts at the end of block 1.
       assertDeepEquals(
-          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 31, focusOffset: 5},
+          blocks2To3Selection,
           mapper.getAxSelection(
-              select(text13, text13.length, text31, 2), contentContainer));
-      // Ends at the start of block 20.
+              select(textInLink1, textInLink1.length, textInBlock3, 2),
+              contentContainer));
+      // Ends at the start of block 2.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
-              select(text11, 1, text21, 0), contentContainer));
+              select(textInBlock1, 1, textInBlock2, 0), contentContainer));
     });
 
     test('handles endpoints in whitespace between blocks', () => {
-      // Ends in the whitespace after block 10.
+      // Ends in the whitespace after block 1.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
-              select(text11, 1, whitespace, 1), contentContainer));
-      // Starts in the whitespace before block 20.
+              select(textInBlock1, 1, whitespaceBetweenBlocks, 1),
+              contentContainer));
+      // Starts in the whitespace before block 2.
       assertDeepEquals(
-          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          block2Selection,
           mapper.getAxSelection(
-              select(whitespace, 0, text21, 3), contentContainer));
+              select(whitespaceBetweenBlocks, 0, textInBlock2, 3),
+              contentContainer));
     });
 
     test('handles endpoints in whitespace in another block', () => {
-      const leading = document.createTextNode('  ');
-      block20.prepend(leading);
+      const leadingWhitespaceInBlock2 = document.createTextNode('  ');
+      block2.prepend(leadingWhitespaceInBlock2);
 
-      // Ends in the whitespace at the start of block 20, so block 20 isn't
+      // Ends in the whitespace at the start of block 2, so block 2 isn't
       // included.
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
-              select(text11, 1, leading, 1), contentContainer));
-      // Starts in the same whitespace, so block 20 is included because its
+              select(textInBlock1, 1, leadingWhitespaceInBlock2, 1),
+              contentContainer));
+      // Starts in the same whitespace, so block 2 is included because its
       // text is selected.
       assertDeepEquals(
-          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 31, focusOffset: 5},
+          blocks2To3Selection,
           mapper.getAxSelection(
-              select(leading, 1, text31, 2), contentContainer));
+              select(leadingWhitespaceInBlock2, 1, textInBlock3, 2),
+              contentContainer));
     });
 
     test('returns null if no text is selected', () => {
       // Collapsed.
       assertNull(mapper.getAxSelection(
-          select(text11, 2, text11, 2), contentContainer));
+          select(textInBlock1, 2, textInBlock1, 2), contentContainer));
       // Only whitespace between blocks.
       assertNull(mapper.getAxSelection(
-          select(whitespace, 0, whitespace, 1), contentContainer));
+          select(whitespaceBetweenBlocks, 0, whitespaceBetweenBlocks, 1),
+          contentContainer));
     });
 
     test('returns null if only text outside of blocks is selected', () => {
       assertNull(mapper.getAxSelection(
-          select(text41, 0, text41, 3), contentContainer));
+          select(textOutsideBlocks, 0, textOutsideBlocks, 3),
+          contentContainer));
     });
 
     test('maps translated text by its block', () => {
       // Translation replaces the text nodes but keeps the block element.
       const translated = document.createTextNode('Bonjour le monde');
-      block10.replaceChildren(translated);
+      block1.replaceChildren(translated);
 
       assertDeepEquals(
-          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          block1Selection,
           mapper.getAxSelection(
               select(translated, 0, translated, 7), contentContainer));
     });
@@ -251,40 +297,42 @@ suite('TranslatedSelectionMapper', () => {
       assertSelection(
           select(contentContainer, 0, contentContainer, 3),
           mapper.getBlockAlignedSelection(
-              select(text13, 1, text21, 2), contentContainer));
+              select(textInLink1, 1, textInBlock2, 2), contentContainer));
     });
 
     test('keeps the direction of the selection', () => {
       assertSelection(
           select(contentContainer, 3, contentContainer, 0),
           mapper.getBlockAlignedSelection(
-              select(text21, 2, text13, 1), contentContainer));
+              select(textInBlock2, 2, textInLink1, 1), contentContainer));
     });
 
     test('handles element endpoints', () => {
-      // From the start of block 10 to inside text 21.
+      // From the start of block 1 to inside textInBlock2.
       assertSelection(
           select(contentContainer, 0, contentContainer, 3),
           mapper.getBlockAlignedSelection(
-              select(block10, 0, text21, 3), contentContainer));
-      // Backward, from the end of block 20 to inside text 11.
+              select(block1, 0, textInBlock2, 3), contentContainer));
+      // Backward, from the end of block 2 to inside textInBlock1.
       assertSelection(
           select(contentContainer, 3, contentContainer, 0),
           mapper.getBlockAlignedSelection(
-              select(block20, 1, text11, 1), contentContainer));
-      // From inside text 13 to the end of block 10, which contains text 13.
+              select(block2, 1, textInBlock1, 1), contentContainer));
+      // From inside textInLink1 to the end of block 1, which contains
+      // textInLink1.
       assertSelection(
           select(contentContainer, 0, contentContainer, 1),
           mapper.getBlockAlignedSelection(
-              select(text13, 2, block10, 2), contentContainer));
+              select(textInLink1, 2, block1, 2), contentContainer));
       // TODO(crbug.com/578130985): Also test backward selections where one
-      // endpoint's node contains the other's, e.g. from inside text 13 to the
-      // start of block 10.
+      // endpoint's node contains the other's, e.g. from inside textInLink1 to
+      // the start of block 1.
     });
 
     test('returns null if no text is selected', () => {
       assertNull(mapper.getBlockAlignedSelection(
-          select(whitespace, 0, whitespace, 1), contentContainer));
+          select(whitespaceBetweenBlocks, 0, whitespaceBetweenBlocks, 1),
+          contentContainer));
     });
 
     test('handles triple-click selections', () => {
@@ -293,71 +341,78 @@ suite('TranslatedSelectionMapper', () => {
       assertSelection(
           select(contentContainer, 0, contentContainer, 1),
           mapper.getBlockAlignedSelection(
-              select(text11, 0, block20, 0), contentContainer));
+              select(textInBlock1, 0, block2, 0), contentContainer));
       // It can also put both endpoints in the paragraph's element.
       assertSelection(
           select(contentContainer, 0, contentContainer, 1),
           mapper.getBlockAlignedSelection(
-              select(block10, 0, block10, 2), contentContainer));
+              select(block1, 0, block1, 2), contentContainer));
       // The last paragraph has no next block, so the selection can end after it
       // in its parent.
       assertSelection(
           select(contentContainer, 4, contentContainer, 5),
           mapper.getBlockAlignedSelection(
-              select(text31, 0, contentContainer, 5), contentContainer));
+              select(textInBlock3, 0, contentContainer, 5), contentContainer));
     });
 
     test('maps translated text by its block', () => {
       // Translation replaces the text nodes with text nodes that aren't in the
       // NodeStore, sometimes wrapped in other elements, but keeps the block
       // elements.
-      const translated10 = document.createTextNode('Bonjour le monde');
+      const translatedTextInBlock1 =
+          document.createTextNode('Bonjour le monde');
       const font = document.createElement('font');
-      font.appendChild(translated10);
-      block10.replaceChildren(font);
-      const translated20 = document.createTextNode('Seconde');
-      block20.replaceChildren(translated20);
+      font.appendChild(translatedTextInBlock1);
+      block1.replaceChildren(font);
+      const translatedTextInBlock2 = document.createTextNode('Seconde');
+      block2.replaceChildren(translatedTextInBlock2);
 
       assertSelection(
           select(contentContainer, 0, contentContainer, 3),
           mapper.getBlockAlignedSelection(
-              select(translated10, 3, translated20, 2), contentContainer));
+              select(translatedTextInBlock1, 3, translatedTextInBlock2, 2),
+              contentContainer));
       // Backward.
       assertSelection(
           select(contentContainer, 3, contentContainer, 0),
           mapper.getBlockAlignedSelection(
-              select(translated20, 2, translated10, 3), contentContainer));
+              select(translatedTextInBlock2, 2, translatedTextInBlock1, 3),
+              contentContainer));
     });
   });
 
   suite('getReadingModeSelection', () => {
     test('selects the whole block with the selection', () => {
       const result = mapper.getReadingModeSelection(
-          selectIds(11, 1, 11, 3), contentContainer);
+          selectIds(textInBlock1AxId, 1, textInBlock1AxId, 3),
+          contentContainer);
 
       assertSelection(select(contentContainer, 0, contentContainer, 1), result);
       // The first block is the anchor's child at the anchor offset.
       assertTrue(!!result);
-      assertEquals(block10, result.anchorNode.childNodes[result.anchorOffset]);
+      assertEquals(block1, result.anchorNode.childNodes[result.anchorOffset]);
     });
 
     test('selects the whole blocks across the selection', () => {
+      // From block 1 through block 3.
       assertSelection(
           select(contentContainer, 0, contentContainer, 5),
           mapper.getReadingModeSelection(
-              selectIds(13, 2, 31, 1), contentContainer));
+              selectIds(textInLink1AxId, 2, textInBlock3AxId, 1),
+              contentContainer));
     });
 
     test('stays valid when the blocks are translated', () => {
       const result = mapper.getReadingModeSelection(
-          selectIds(11, 1, 11, 3), contentContainer);
+          selectIds(textInBlock1AxId, 1, textInBlock1AxId, 3),
+          contentContainer);
       assertTrue(!!result);
       const selection = document.getSelection()!;
       selection.setBaseAndExtent(
           result.anchorNode, result.anchorOffset, result.focusNode,
           result.focusOffset);
 
-      block10.replaceChildren(document.createTextNode('Bonjour le monde'));
+      block1.replaceChildren(document.createTextNode('Bonjour le monde'));
 
       assertEquals(contentContainer, selection.anchorNode);
       assertEquals(0, selection.anchorOffset);
@@ -367,30 +422,33 @@ suite('TranslatedSelectionMapper', () => {
     });
 
     test('returns null if no text is selected', () => {
-      // From the end of text 11 to the start of text 13.
+      // From the end of textInBlock1 to the start of textInLink1.
       assertNull(mapper.getReadingModeSelection(
-          selectIds(11, text11.length, 13, 0), contentContainer));
+          selectIds(textInBlock1AxId, textInBlock1.length, textInLink1AxId, 0),
+          contentContainer));
     });
 
     test('returns null if an endpoint has no node id', () => {
       assertNull(mapper.getReadingModeSelection(
-          {anchorOffset: 1, focusNodeId: 11, focusOffset: 3},
+          {anchorOffset: 1, focusNodeId: textInBlock1AxId, focusOffset: 3},
           contentContainer));
       assertNull(mapper.getReadingModeSelection(
-          {anchorNodeId: 11, anchorOffset: 1, focusOffset: 3},
+          {anchorNodeId: textInBlock1AxId, anchorOffset: 1, focusOffset: 3},
           contentContainer));
     });
 
     test('returns null if the text is not in a block', () => {
       assertNull(mapper.getReadingModeSelection(
-          selectIds(41, 0, 41, 3), contentContainer));
+          selectIds(textOutsideBlocksAxId, 0, textOutsideBlocksAxId, 3),
+          contentContainer));
     });
 
     test('returns null if a block is not shown', () => {
-      block20.remove();
+      block2.remove();
 
       assertNull(mapper.getReadingModeSelection(
-          selectIds(21, 0, 21, 3), contentContainer));
+          selectIds(textInBlock2AxId, 0, textInBlock2AxId, 3),
+          contentContainer));
     });
   });
 
@@ -401,17 +459,18 @@ suite('TranslatedSelectionMapper', () => {
 
     test('getAxSelection returns null', () => {
       assertNull(mapper.getAxSelection(
-          select(text11, 1, text11, 3), contentContainer));
+          select(textInBlock1, 1, textInBlock1, 3), contentContainer));
     });
 
     test('getBlockAlignedSelection returns null', () => {
       assertNull(mapper.getBlockAlignedSelection(
-          select(text13, 1, text21, 2), contentContainer));
+          select(textInLink1, 1, textInBlock2, 2), contentContainer));
     });
 
     test('getReadingModeSelection returns null', () => {
       assertNull(mapper.getReadingModeSelection(
-          selectIds(11, 1, 11, 3), contentContainer));
+          selectIds(textInBlock1AxId, 1, textInBlock1AxId, 3),
+          contentContainer));
     });
   });
 
@@ -422,17 +481,18 @@ suite('TranslatedSelectionMapper', () => {
 
     test('getAxSelection returns null', () => {
       assertNull(mapper.getAxSelection(
-          select(text11, 1, text11, 3), contentContainer));
+          select(textInBlock1, 1, textInBlock1, 3), contentContainer));
     });
 
     test('getBlockAlignedSelection returns null', () => {
       assertNull(mapper.getBlockAlignedSelection(
-          select(text13, 1, text21, 2), contentContainer));
+          select(textInLink1, 1, textInBlock2, 2), contentContainer));
     });
 
     test('getReadingModeSelection returns null', () => {
       assertNull(mapper.getReadingModeSelection(
-          selectIds(11, 1, 11, 3), contentContainer));
+          selectIds(textInBlock1AxId, 1, textInBlock1AxId, 3),
+          contentContainer));
     });
   });
 });
