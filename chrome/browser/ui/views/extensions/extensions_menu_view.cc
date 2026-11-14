@@ -9,12 +9,12 @@
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -97,7 +97,10 @@ ExtensionsMenuView::ExtensionsMenuView(
           extensions::SitePermissionsHelper::SiteInteraction::kGranted} {
   toolbar_model_observation_.Observe(toolbar_model_.get());
   if (!extensions_container_->GetActiveWebContents()) {
-    browser_->GetTabStripModel()->AddObserver(this);
+    active_tab_subscription_ =
+        browser_->RegisterActiveTabDidChange(base::BindRepeating(
+            &ExtensionsMenuView::OnActiveTabChanged, base::Unretained(this)));
+    UpdateActiveTabSubscription(browser_->GetActiveTabInterface());
   }
   set_margins(gfx::Insets(0));
 
@@ -136,9 +139,6 @@ ExtensionsMenuView::~ExtensionsMenuView() {
   }
   g_extensions_dialog = nullptr;
   extensions_menu_items_.clear();
-
-  // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
-  // directly within TabStripModelObserver::~TabStripModelObserver().
 }
 
 void ExtensionsMenuView::Populate() {
@@ -439,16 +439,20 @@ std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   return std::u16string();
 }
 
-void ExtensionsMenuView::OnTabChangedAt(tabs::TabInterface* tab,
-                                        TabChangeType change_type) {
+void ExtensionsMenuView::OnActiveTabChanged(BrowserWindowInterface* browser) {
+  UpdateActiveTabSubscription(browser->GetActiveTabInterface());
   Update();
 }
 
-void ExtensionsMenuView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  Update();
+void ExtensionsMenuView::UpdateActiveTabSubscription(tabs::TabInterface* tab) {
+  active_tab_ui_subscription_ = base::CallbackListSubscription();
+  if (tab) {
+    if (TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab)) {
+      active_tab_ui_subscription_ =
+          tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
+              &ExtensionsMenuView::Update, base::Unretained(this)));
+    }
+  }
 }
 
 void ExtensionsMenuView::OnToolbarActionAdded(
@@ -537,7 +541,8 @@ content::WebContents* ExtensionsMenuView::GetActiveWebContents() const {
   if (auto* web_contents = extensions_container_->GetActiveWebContents()) {
     return web_contents;
   }
-  return browser_->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* const active_tab = browser_->GetActiveTabInterface();
+  return active_tab ? active_tab->GetContents() : nullptr;
 }
 
 // static

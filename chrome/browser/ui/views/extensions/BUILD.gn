@@ -674,8 +674,8 @@ source_set("extensions_menu_view") {
   sources = [ "extensions_menu_view.cc" ]
   public_deps = [
     "//base",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/toolbar",
+    "//components/tabs:public",
     "//extensions/browser",
     "//ui/base/metadata",
     "//ui/views",
@@ -686,10 +686,9 @@ source_set("extensions_menu_view") {
     ":extensions_menu_item_view",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
-    "//chrome/browser/ui/tabs:tab_enums",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views:bubble_menu_item_factory",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/controls",
