@@ -189,7 +189,6 @@ class Combobox::ComboboxMenuView : public views::View {
     scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
         views::ScrollView::ScrollWithLayers::kEnabled));
     scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    scroll_view_->layer()->SetFillsBoundsOpaquely(false);
     scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
     scroll_view_->SetDrawOverflowIndicator(false);
     scroll_view_->SetBackgroundColor(std::nullopt);

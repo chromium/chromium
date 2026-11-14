@@ -348,7 +348,6 @@ void ScrollableShelfView::Init() {
   // RootView which is beneath |translucent_background_| in ShelfWidget.
   // As a result, the child view will not show.
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  layer()->SetFillsBoundsOpaquely(false);
 
   // Initialize the shelf container view.
   // Note that |shelf_container_view_| should be under the arrow buttons. It

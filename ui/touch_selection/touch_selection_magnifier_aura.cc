@@ -298,7 +298,6 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // layer.
   magnifier_layer_ = std::make_unique<LayerNotDrawn>();
   magnifier_layer_->SetName("TouchSelectionMagnifierAura:MagnifierLayer");
-  magnifier_layer_->SetFillsBoundsOpaquely(false);
 
   // Create the zoom layer, which will show the zoomed contents.
   zoom_layer_ = std::make_unique<LayerSolidColor>();

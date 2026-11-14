@@ -194,7 +194,6 @@ void HoldingSpaceTrayIcon::InitLayout() {
   SetPreferredSize(gfx::Size(preview_size, preview_size));
 
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  layer()->SetFillsBoundsOpaquely(false);
   const int radius = ShelfConfig::Get()->control_border_radius();
   gfx::RoundedCornersF rounded_corners(radius);
   layer()->SetRoundedCornerRadius(rounded_corners);
