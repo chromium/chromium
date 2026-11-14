@@ -237,6 +237,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h:AccountMoveDecision) -->
 
+<!-- LINT.IfChange(AccountPreviewAsyncPreferredAccountResult) -->
+
+<enum name="AccountPreviewAsyncPreferredAccountResult">
+  <int value="0" label="Cached"/>
+  <int value="1" label="Fetched"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Cancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_service_impl.h:AsyncPreferredAccountResult) -->
+
 <!-- LINT.IfChange(AccountPreviewDataFetchState) -->
 
 <enum name="AccountPreviewDataFetchState">

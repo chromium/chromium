@@ -1171,6 +1171,9 @@ TEST_F(AccountPreviewDataServiceTest,
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
   histograms.ExpectTotalCount("Signin.AccountPreview.AllFetchTriggerCause", 0);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCached, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1205,6 +1208,9 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewDataServiceImpl::FetchTriggerCause::
           kPreferredAccountMissingForAsyncFetch,
       1);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1242,6 +1248,9 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewDataServiceImpl::FetchTriggerCause::
           kPreferredAccountMissingForAsyncFetch,
       1);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1251,6 +1260,7 @@ TEST_F(AccountPreviewDataServiceTest,
   network_delay_helper_->SetNetworkCallsDelayed(true);
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  ConsentLevel::kSignin);
+  base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>>
       reentrant_future;
   bool callback_ran = false;
@@ -1272,6 +1282,10 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(callback_ran);
   EXPECT_EQ(std::nullopt, reentrant_future.Get());
   EXPECT_TRUE(callback_ran);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1281,6 +1295,7 @@ TEST_F(AccountPreviewDataServiceTest,
   network_delay_helper_->SetNetworkCallsDelayed(true);
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  ConsentLevel::kSignin);
+  base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
   service_->GetPreferredAccountForSigninAsync(future.GetCallback(),
                                               kDefaultAsyncFetchTimeout);
@@ -1289,6 +1304,10 @@ TEST_F(AccountPreviewDataServiceTest,
   service_->OnIdentityManagerShutdown(identity_test_env_.identity_manager());
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(std::nullopt, future.Get());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1302,11 +1321,14 @@ TEST_F(AccountPreviewDataServiceTest,
   dict.Set("gaia_id", "gaia_id");
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
+  base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
   service_->GetPreferredAccountForSigninAsync(future.GetCallback(),
                                               kDefaultAsyncFetchTimeout);
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(std::nullopt, future.Get());
+  histograms.ExpectTotalCount(
+      "Signin.AccountPreview.AsyncPreferredAccountResult", 0);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1352,6 +1374,9 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewDataServiceImpl::FetchTriggerCause::
           kPreferredAccountMissingForAsyncFetch,
       1);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
 }
 
 TEST_F(
@@ -1374,6 +1399,7 @@ TEST_F(
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
+  base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
   service_->GetPreferredAccountForSigninAsync(future.GetCallback(),
                                               kDefaultAsyncFetchTimeout);
@@ -1382,6 +1408,10 @@ TEST_F(
   identity_test_env_.ReloadAccountsFromDisk();
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(std::nullopt, future.Get());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      1);
 
   // Subsequent requests when tokens are already loaded and no accounts exist
   // also resolve asynchronously with `std::nullopt`.
@@ -1390,6 +1420,37 @@ TEST_F(
                                               kDefaultAsyncFetchTimeout);
   EXPECT_FALSE(second_future.IsReady());
   EXPECT_EQ(std::nullopt, second_future.Get());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      2);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninAsyncCancelledWhenRateLimited) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFRE};
+
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  run_loop.Run();
+
+  test_url_loader_factory_.ClearResponses();
+  ASSERT_TRUE(service_->IsRateLimitedForTesting());
+  ASSERT_EQ(std::nullopt, service_->GetPreferredAccountForSignin());
+
+  base::HistogramTester histograms;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback(),
+                                              kDefaultAsyncFetchTimeout);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(std::nullopt, future.Get());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1462,6 +1523,9 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewDataServiceImpl::FetchTriggerCause::
           kPreferredAccountMissingForAsyncFetch,
       1);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kTimeout, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1473,6 +1537,7 @@ TEST_F(AccountPreviewDataServiceTest,
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
 
+  base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> short_future;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> long_future;
   service_->GetPreferredAccountForSigninAsync(short_future.GetCallback(),
@@ -1487,6 +1552,9 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_TRUE(short_future.IsReady());
   EXPECT_EQ(std::nullopt, short_future.Get());
   EXPECT_FALSE(long_future.IsReady());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kTimeout, 1);
 
   // Complete the fetch before the longer timeout expires.
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1494,6 +1562,14 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_THAT(long_future.Get(),
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kTimeout, 1);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
+  histograms.ExpectTotalCount(
+      "Signin.AccountPreview.AsyncPreferredAccountResult", 2);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
