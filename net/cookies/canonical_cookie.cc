@@ -523,13 +523,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
 
   if (collect_metrics) {
-    // These metrics capture whether or not a cookie has a Non-ASCII character
-    // in it, except if kDisallowNonAsciiCookies is enabled.
-    base::UmaHistogramBoolean("Cookie.HasNonASCII.Name.Subsampled",
-                              !base::IsStringASCII(parsed_cookie.Name()));
-    base::UmaHistogramBoolean("Cookie.HasNonASCII.Value.Subsampled",
-                              !base::IsStringASCII(parsed_cookie.Value()));
-
     // Check for "__" prefixed names, excluding the cookie prefixes.
     bool name_prefixed_with_underscores =
         (prefix == CookiePrefix::kNone) &&

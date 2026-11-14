@@ -406,27 +406,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.HasNonASCII.{CookieField}.Subsampled" enum="Boolean"
-    expires_after="2025-07-27">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    If a cookie's {CookieField} field contains a non-ASCII character.
-    Informally, this indicates if the field contains a (non-ASCII) Unicode
-    character. Logged whenever a cookie is created via
-    CanonicalCookie::Create(). When kDisallowNonAsciiCookies is enabled and a
-    cookie's {CookieField} field contains a non-ASCII character, this metric
-    will not be recorded.
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-  <token key="CookieField">
-    <variant name="Name"/>
-    <variant name="Value"/>
-  </token>
-</histogram>
-
 <histogram name="Cookie.IncludedRequestEffectiveSameSite.Subsampled"
     enum="CookieEffectiveSameSite" expires_after="2026-10-25">
   <owner>miketaylr@chromium.org</owner>
