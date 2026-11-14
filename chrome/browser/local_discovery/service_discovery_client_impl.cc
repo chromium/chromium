@@ -128,7 +128,9 @@ void ServiceWatcherImpl::OnRecordUpdate(
     const net::RecordParsed* record) {
   CHECK(started_, base::NotFatalUntil::M161);
   if (record->type() == net::dns_protocol::kTypePTR) {
-    CHECK(record->name() == GetServiceType(), base::NotFatalUntil::M161);
+    // TODO(crbug.com/584611417): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(record->name() == GetServiceType());
     const net::PtrRecordRdata* rdata = record->rdata<net::PtrRecordRdata>();
 
     switch (update) {
