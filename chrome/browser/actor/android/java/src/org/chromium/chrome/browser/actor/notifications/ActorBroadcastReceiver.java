@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServi
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 /** Handles broadcast intents for Actor tasks from notifications. */
 @NullMarked
@@ -39,8 +38,7 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
             if (fgsManager != null) {
                 fgsManager.cancelOptInNotification();
             } else {
-                BaseNotificationManagerProxyFactory.create()
-                        .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+                ActorNotificationService.cancelOptInNotifications();
             }
             return;
         }

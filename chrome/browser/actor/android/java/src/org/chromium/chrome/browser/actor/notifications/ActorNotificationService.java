@@ -54,9 +54,12 @@ public class ActorNotificationService {
     public static final long LIVE_NOTIFICATION_DEMOTION_DELAY_MS = TimeUnit.SECONDS.toMillis(30);
     private static long sDemotionDelayMs = LIVE_NOTIFICATION_DEMOTION_DELAY_MS;
 
-    // Tag for a task notification that is no longer pinned. Android cancels the previously pinned
-    // untagged key asynchronously and never treats a tagged notification as a foreground service
-    // notification.
+    /**
+     * Tag for a notification that is no longer pinned to the foreground service (or is posted
+     * unpinned while another notification holds the service). Android cancels the previously pinned
+     * untagged key asynchronously and never treats a tagged notification as a foreground service
+     * notification.
+     */
     @VisibleForTesting public static final String UNPINNED_NOTIFICATION_TAG = "actor_unpinned";
 
     private final Map<Integer, ActorTask> mTaskCache = new HashMap<>();
@@ -147,6 +150,40 @@ public class ActorNotificationService {
         if (mUnpinnedTagTaskIds.remove(taskId)) {
             mNotificationManager.cancel(UNPINNED_NOTIFICATION_TAG, taskId);
         }
+    }
+
+    /**
+     * Posts an unpinned opt-in notification under {@link #UNPINNED_NOTIFICATION_TAG}, optionally
+     * cancelling the pinned (untagged) notification.
+     *
+     * @param isSilent Whether the notification should be silent.
+     * @param cancelPinned Whether to cancel the untagged pinned opt-in notification.
+     * @return The built {@link NotificationWrapper}.
+     */
+    public NotificationWrapper postUnpinnedOptInNotification(
+            boolean isSilent, boolean cancelPinned) {
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildOptInNotification(/* isPinned= */ false, isSilent);
+        mNotificationManager.notify(wrapper);
+        if (cancelPinned) {
+            mNotificationManager.cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        }
+        return wrapper;
+    }
+
+    /** Cancels the unpinned (tagged) opt-in notification. */
+    public void cancelUnpinnedOptInNotification() {
+        mNotificationManager.cancel(
+                UNPINNED_NOTIFICATION_TAG, ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+    }
+
+    /** Cancels both pinned (untagged) and unpinned (tagged) opt-in notifications. */
+    public static void cancelOptInNotifications() {
+        BaseNotificationManagerProxy notificationManager =
+                BaseNotificationManagerProxyFactory.create();
+        notificationManager.cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        notificationManager.cancel(
+                UNPINNED_NOTIFICATION_TAG, ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
     }
 
     /**

@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.ArrayList;
@@ -2436,5 +2437,47 @@ public class ActorNotificationServiceTest {
             }
         }
         return promotedTaskIds;
+    }
+
+    @Test
+    public void testOptInNotificationMethods_PostAndCancel() {
+        Intent newTabIntent = new Intent("NEW_TAB_ACTION");
+        when(mServiceController.createTrustedPendingActorTaskNewTabIntent())
+                .thenReturn(newTabIntent);
+
+        NotificationWrapper wrapper =
+                mNotificationService.postUnpinnedOptInNotification(
+                        /* isSilent= */ true, /* cancelPinned= */ true);
+        assertNotNull(wrapper);
+        assertTrue(wrapper.isSilent());
+        assertEquals(1, mMockNotificationManager.getNotifications().size());
+        assertEquals(
+                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID,
+                mMockNotificationManager.getNotifications().get(0).id);
+        assertEquals(
+                ActorNotificationService.UNPINNED_NOTIFICATION_TAG,
+                mMockNotificationManager.getNotifications().get(0).tag);
+
+        mNotificationService.cancelUnpinnedOptInNotification();
+        assertEquals(0, mMockNotificationManager.getNotifications().size());
+
+        mMockNotificationManager.notify(
+                new NotificationWrapper(
+                        new Notification(),
+                        new NotificationMetadata(
+                                0,
+                                /* notificationTag= */ null,
+                                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID)));
+        mMockNotificationManager.notify(
+                new NotificationWrapper(
+                        new Notification(),
+                        new NotificationMetadata(
+                                0,
+                                ActorNotificationService.UNPINNED_NOTIFICATION_TAG,
+                                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID)));
+        assertEquals(2, mMockNotificationManager.getNotifications().size());
+
+        ActorNotificationService.cancelOptInNotifications();
+        assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 }

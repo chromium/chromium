@@ -194,6 +194,9 @@ public class ActorForegroundServiceManagerIntegrationTest {
                 .when(mServiceController.createTrustedBringTabToFrontIntent(any()))
                 .thenReturn(new Intent());
         lenient()
+                .when(mServiceController.createTrustedPendingActorTaskNewTabIntent())
+                .thenReturn(new Intent());
+        lenient()
                 .doAnswer(
                         invocation -> {
                             int newNotificationId = invocation.getArgument(0);

@@ -76,7 +76,7 @@ class GlicExperimentalOptInBridge {
 
     /**
      * Handles cancellation of the background opt-in notification (e.g. when the user taps "No
-     * thanks", an active task preempts it, or the foreground service is destroyed) by clearing
+     * thanks", swipes the notification away, or the foreground service is destroyed) by clearing
      * showing state and notifying native to fail the deferred opt-in request and stop the timeout
      * timer.
      */

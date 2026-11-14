@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -88,6 +88,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     private int mPinnedNotificationId = INVALID_NOTIFICATION_ID;
     private @Nullable Notification mPinnedNotification;
     private boolean mHasOptInNotification;
+    private boolean mIsOptInNotificationShown;
     private @Nullable Runnable mOptInCancelCallback;
 
     private @Nullable Runnable mStopCallbackForTesting;
@@ -308,8 +309,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     public void unpinOptInNotification() {
         if (!mHasOptInNotification) return;
         clearOptInState();
-        BaseNotificationManagerProxyFactory.create()
-                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        ActorNotificationService.cancelOptInNotifications();
         maybeStopServiceNow();
     }
 
@@ -320,8 +320,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     public void cancelOptInNotification() {
         boolean hadOptIn = mHasOptInNotification;
         Runnable cancelCallback = clearOptInState();
-        BaseNotificationManagerProxyFactory.create()
-                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        ActorNotificationService.cancelOptInNotifications();
         if (!hadOptIn) return;
         maybeStopServiceNow();
         if (cancelCallback != null) {
@@ -336,8 +335,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     public void onServiceDestroyed() {
         if (!mHasOptInNotification) return;
         Runnable cancelCallback = clearOptInState();
-        BaseNotificationManagerProxyFactory.create()
-                .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
+        ActorNotificationService.cancelOptInNotifications();
         if (cancelCallback != null) {
             cancelCallback.run();
         }
@@ -345,26 +343,34 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
     private @Nullable Runnable clearOptInState() {
         mHasOptInNotification = false;
+        mIsOptInNotificationShown = false;
         Runnable callback = mOptInCancelCallback;
         mOptInCancelCallback = null;
         return callback;
     }
 
-    private void maybeClearPreemptedOptInNotification(
-            int notificationId, int unpinnedNotificationId) {
-        if (unpinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID
-                || (notificationId != ActorNotificationFactory.OPT_IN_NOTIFICATION_ID
-                        && hasOptInNotification()
-                        && hasActiveOrPendingTasks())) {
-            // TODO(crbug.com/583955325): Post the opt-in notification as a regular (unpinned)
-            // notification when an active or pending task already holds the foreground service
-            // instead of failing fast.
-            Runnable cancelCallback = clearOptInState();
-            BaseNotificationManagerProxyFactory.create()
-                    .cancel(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID);
-            if (cancelCallback != null) {
-                cancelCallback.run();
-            }
+    private void maybePostUnpinnedOptInNotification(int unpinnedNotificationId) {
+        if (!hasOptInNotification()
+                || mPinnedNotificationId == INVALID_NOTIFICATION_ID
+                || mPinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID
+                || mNotificationService == null) {
+            return;
+        }
+        boolean wasUnpinnedFromService =
+                unpinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID;
+        if (mIsOptInNotificationShown && !wasUnpinnedFromService) {
+            return;
+        }
+        boolean wasAlreadyShown = mIsOptInNotificationShown;
+        mIsOptInNotificationShown = true;
+        NotificationWrapper wrapper =
+                mNotificationService.postUnpinnedOptInNotification(
+                        /* isSilent= */ wasAlreadyShown, wasUnpinnedFromService);
+        if (!wasAlreadyShown) {
+            NotificationUmaTracker.getInstance()
+                    .onNotificationShown(
+                            NotificationUmaTracker.SystemNotificationType.ACTOR,
+                            wrapper.getNotification());
         }
     }
 
@@ -435,9 +441,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                                 .getNotification();
                 startOrUpdateForegroundService(
                         ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID, placeholder);
-            } else {
-                maybeClearPreemptedOptInNotification(
-                        mPinnedNotificationId, INVALID_NOTIFICATION_ID);
             }
         } else if (hasOptInNotification() && !mNotificationService.hasPendingDemotions()) {
             if (!mStartForegroundCalled && !canStartForeground()) {
@@ -447,16 +450,13 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mStopServiceDelayed = false;
 
             if (mPinnedNotificationId != ActorNotificationFactory.OPT_IN_NOTIFICATION_ID) {
+                boolean wasAlreadyShown = mIsOptInNotificationShown;
                 Notification notification =
-                        ActorNotificationFactory.buildOptInNotification().getNotification();
+                        ActorNotificationFactory.buildOptInNotification(
+                                        /* isPinned= */ true, /* isSilent= */ wasAlreadyShown)
+                                .getNotification();
                 startOrUpdateForegroundService(
                         ActorNotificationFactory.OPT_IN_NOTIFICATION_ID, notification);
-                if (mPinnedNotificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID) {
-                    NotificationUmaTracker.getInstance()
-                            .onNotificationShown(
-                                    NotificationUmaTracker.SystemNotificationType.ACTOR,
-                                    notification);
-                }
             }
         } else {
             // No active or pending tasks. Update the foreground service with the latest
@@ -490,6 +490,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 postMaybeStopServiceRunnable();
             }
         }
+        maybePostUnpinnedOptInNotification(INVALID_NOTIFICATION_ID);
     }
 
     @VisibleForTesting
@@ -515,7 +516,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         }
 
         if (mPinnedNotificationId == notificationId && mPinnedNotification == notification) {
-            maybeClearPreemptedOptInNotification(notificationId, INVALID_NOTIFICATION_ID);
             return;
         }
 
@@ -536,7 +536,21 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotificationId = notificationId;
         mPinnedNotification = notification;
 
-        maybeClearPreemptedOptInNotification(notificationId, unpinnedNotificationId);
+        maybePostUnpinnedOptInNotification(unpinnedNotificationId);
+
+        if (notificationId == ActorNotificationFactory.OPT_IN_NOTIFICATION_ID) {
+            boolean wasAlreadyShown = mIsOptInNotificationShown;
+            mIsOptInNotificationShown = true;
+            if (wasAlreadyShown) {
+                if (mNotificationService != null) {
+                    mNotificationService.cancelUnpinnedOptInNotification();
+                }
+            } else {
+                NotificationUmaTracker.getInstance()
+                        .onNotificationShown(
+                                NotificationUmaTracker.SystemNotificationType.ACTOR, notification);
+            }
+        }
 
         if (mNotificationService == null) return;
         if (isTaskNotificationId(notificationId)) {
@@ -704,6 +718,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
         mHasOptInNotification = false;
+        mIsOptInNotificationShown = false;
         mOptInCancelCallback = null;
         mHandler.removeCallbacks(mMaybeStopServiceRunnable);
     }

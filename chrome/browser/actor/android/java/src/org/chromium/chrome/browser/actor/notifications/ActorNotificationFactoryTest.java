@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor.notifications;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -879,11 +881,14 @@ public class ActorNotificationFactoryTest {
         when(mServiceController.createTrustedPendingActorTaskNewTabIntent())
                 .thenReturn(newTabIntent);
 
-        NotificationWrapper wrapper = ActorNotificationFactory.buildOptInNotification();
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildOptInNotification(
+                        /* isPinned= */ true, /* isSilent= */ false);
 
         assertNotNull(wrapper);
         assertEquals(ActorNotificationFactory.OPT_IN_NOTIFICATION_ID, wrapper.getMetadata().id);
         assertNull(wrapper.getMetadata().tag);
+        assertFalse(wrapper.isSilent());
 
         Notification notification = wrapper.getNotification();
         assertNotNull(notification);
@@ -900,10 +905,19 @@ public class ActorNotificationFactoryTest {
         assertFalse(
                 notification.extras.getBoolean(
                         ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
-        assertEquals(0, notification.flags & Notification.FLAG_ONGOING_EVENT);
-        assertTrue((notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
-        assertTrue((notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
+        assertTrue((notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertEquals(0, notification.flags & Notification.FLAG_AUTO_CANCEL);
+        assertEquals(0, notification.flags & Notification.FLAG_ONLY_ALERT_ONCE);
+        assertNotEquals(Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
         assertNotNull(notification.contentIntent);
+        assertNotNull(notification.deleteIntent);
+        PendingIntent forwardedDeleteIntent =
+                NotificationIntentInterceptor.getPendingIntentForTesting(
+                        shadowOf(notification.deleteIntent).getSavedIntent());
+        assertNotNull(forwardedDeleteIntent);
+        assertEquals(
+                NotificationConstants.ACTION_ACTOR_CANCEL,
+                shadowOf(forwardedDeleteIntent).getSavedIntent().getAction());
         assertSmallIcon(notification);
         assertNotNull(notification.actions);
         assertEquals(2, notification.actions.length);
@@ -913,6 +927,77 @@ public class ActorNotificationFactoryTest {
         assertNotNull(notification.actions[0].actionIntent);
         assertEquals(mContext.getString(R.string.no_thanks), notification.actions[1].title);
         assertNotNull(notification.actions[1].actionIntent);
+
+        NotificationWrapper unpinnedNonSilentWrapper =
+                ActorNotificationFactory.buildOptInNotification(
+                        /* isPinned= */ false, /* isSilent= */ false);
+        assertNotNull(unpinnedNonSilentWrapper);
+        assertEquals(
+                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID,
+                unpinnedNonSilentWrapper.getMetadata().id);
+        assertEquals(
+                ActorNotificationService.UNPINNED_NOTIFICATION_TAG,
+                unpinnedNonSilentWrapper.getMetadata().tag);
+        assertFalse(unpinnedNonSilentWrapper.isSilent());
+        Notification unpinnedNonSilentNotification = unpinnedNonSilentWrapper.getNotification();
+        assertEquals(0, unpinnedNonSilentNotification.flags & Notification.FLAG_ONGOING_EVENT);
+        assertTrue((unpinnedNonSilentNotification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertEquals(0, unpinnedNonSilentNotification.flags & Notification.FLAG_ONLY_ALERT_ONCE);
+        assertNotEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                unpinnedNonSilentNotification.getGroupAlertBehavior());
+        assertNotNull(unpinnedNonSilentNotification.deleteIntent);
+        PendingIntent unpinnedNonSilentForwardedDelete =
+                NotificationIntentInterceptor.getPendingIntentForTesting(
+                        shadowOf(unpinnedNonSilentNotification.deleteIntent).getSavedIntent());
+        assertNotNull(unpinnedNonSilentForwardedDelete);
+        assertEquals(
+                NotificationConstants.ACTION_ACTOR_CANCEL,
+                shadowOf(unpinnedNonSilentForwardedDelete).getSavedIntent().getAction());
+
+        NotificationWrapper unpinnedSilentWrapper =
+                ActorNotificationFactory.buildOptInNotification(
+                        /* isPinned= */ false, /* isSilent= */ true);
+        assertNotNull(unpinnedSilentWrapper);
+        assertEquals(
+                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID,
+                unpinnedSilentWrapper.getMetadata().id);
+        assertEquals(
+                ActorNotificationService.UNPINNED_NOTIFICATION_TAG,
+                unpinnedSilentWrapper.getMetadata().tag);
+        assertTrue(unpinnedSilentWrapper.isSilent());
+        Notification unpinnedSilentNotification = unpinnedSilentWrapper.getNotification();
+        assertEquals(0, unpinnedSilentNotification.flags & Notification.FLAG_ONGOING_EVENT);
+        assertTrue((unpinnedSilentNotification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertTrue((unpinnedSilentNotification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
+        assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                unpinnedSilentNotification.getGroupAlertBehavior());
+        assertNotNull(unpinnedSilentNotification.deleteIntent);
+        PendingIntent unpinnedSilentForwardedDelete =
+                NotificationIntentInterceptor.getPendingIntentForTesting(
+                        shadowOf(unpinnedSilentNotification.deleteIntent).getSavedIntent());
+        assertNotNull(unpinnedSilentForwardedDelete);
+        assertEquals(
+                NotificationConstants.ACTION_ACTOR_CANCEL,
+                shadowOf(unpinnedSilentForwardedDelete).getSavedIntent().getAction());
+
+        NotificationWrapper pinnedSilentWrapper =
+                ActorNotificationFactory.buildOptInNotification(
+                        /* isPinned= */ true, /* isSilent= */ true);
+        assertNotNull(pinnedSilentWrapper);
+        assertEquals(
+                ActorNotificationFactory.OPT_IN_NOTIFICATION_ID,
+                pinnedSilentWrapper.getMetadata().id);
+        assertNull(pinnedSilentWrapper.getMetadata().tag);
+        assertTrue(pinnedSilentWrapper.isSilent());
+        Notification pinnedSilentNotification = pinnedSilentWrapper.getNotification();
+        assertTrue((pinnedSilentNotification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertEquals(0, pinnedSilentNotification.flags & Notification.FLAG_AUTO_CANCEL);
+        assertTrue((pinnedSilentNotification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
+        assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                pinnedSilentNotification.getGroupAlertBehavior());
     }
 
     private void assertSmallIcon(Notification notification) {

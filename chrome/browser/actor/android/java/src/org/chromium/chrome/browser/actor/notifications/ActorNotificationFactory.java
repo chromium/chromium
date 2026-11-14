@@ -368,9 +368,14 @@ public class ActorNotificationFactory {
      * Builds the system notification shown when a remote experimental triggering opt-in request
      * arrives while Chrome is in the background.
      *
+     * @param isPinned Whether the notification is pinned to the foreground service (untagged) or
+     *     posted unpinned (tagged under {@link
+     *     ActorNotificationService#UNPINNED_NOTIFICATION_TAG}).
+     * @param isSilent Whether the notification should be silent (e.g. when transitioning between
+     *     pinned and unpinned states after already alerting the user).
      * @return The built {@link NotificationWrapper}.
      */
-    public static NotificationWrapper buildOptInNotification() {
+    public static NotificationWrapper buildOptInNotification(boolean isPinned, boolean isSilent) {
         Intent intent =
                 ActorForegroundServiceController.get().createTrustedPendingActorTaskNewTabIntent();
         Context context = ContextUtils.getApplicationContext();
@@ -390,34 +395,42 @@ public class ActorNotificationFactory {
         String title = context.getString(R.string.glic_experimental_opt_in_notification_title);
         String body = context.getString(R.string.glic_experimental_opt_in_notification_body);
 
+        String notificationTag =
+                isPinned ? null : ActorNotificationService.UNPINNED_NOTIFICATION_TAG;
         NotificationMetadata metadata =
                 new NotificationMetadata(
                         NotificationUmaTracker.SystemNotificationType.ACTOR,
-                        /* notificationTag= */ null,
+                        notificationTag,
                         OPT_IN_NOTIFICATION_ID);
-        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
-                .setSmallIcon(R.drawable.ic_chrome)
-                .setLocalOnly(true)
-                .setAutoCancel(true)
-                .setOngoing(false)
-                .setOnlyAlertOnce(true)
-                .setPriorityBeforeO(Notification.PRIORITY_HIGH)
-                .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(contentIntent)
-                .addAction(
-                        R.drawable.ic_chrome,
-                        context.getString(R.string.glic_experimental_opt_in_notification_action),
-                        contentIntent,
-                        NotificationUmaTracker.ActionType.ACTOR_VIEW)
-                .addAction(
-                        /* icon= */ 0,
-                        context.getString(R.string.no_thanks),
-                        cancelPendingIntent,
-                        NotificationUmaTracker.ActionType.ACTOR_CANCEL)
-                .buildNotificationWrapper();
+        NotificationWrapperBuilder builder =
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
+                        .setSmallIcon(R.drawable.ic_chrome)
+                        .setLocalOnly(true)
+                        .setAutoCancel(!isPinned)
+                        .setOngoing(isPinned)
+                        .setSilent(isSilent)
+                        .setPriorityBeforeO(Notification.PRIORITY_HIGH)
+                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                        .setContentTitle(title)
+                        .setContentText(body)
+                        .setBigTextStyle(body)
+                        .setContentIntent(contentIntent)
+                        .setDeleteIntent(cancelPendingIntent)
+                        .addAction(
+                                R.drawable.ic_chrome,
+                                context.getString(
+                                        R.string.glic_experimental_opt_in_notification_action),
+                                contentIntent,
+                                NotificationUmaTracker.ActionType.ACTOR_VIEW)
+                        .addAction(
+                                /* icon= */ 0,
+                                context.getString(R.string.no_thanks),
+                                cancelPendingIntent,
+                                NotificationUmaTracker.ActionType.ACTOR_CANCEL);
+        if (isSilent) {
+            builder.setOnlyAlertOnce(true);
+        }
+        return builder.buildNotificationWrapper();
     }
 }
