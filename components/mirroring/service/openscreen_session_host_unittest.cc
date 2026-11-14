@@ -656,7 +656,74 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  void SwitchSourceTab() {
+  // The source stops remoting before the receiver replies to the remoting
+  // OFFER. The OFFER cannot be recalled, so mirroring keeps running and no
+  // OFFER is sent until the receiver replies.
+  void CancelRemotingBeforeAnswer() {
+    ASSERT_EQ(cast_mode_, "remoting");
+    const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
+    EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer)).Times(0);
+    EXPECT_CALL(*this, OnRemotingStateChanged(false));
+    EXPECT_CALL(remoting_source_, OnStopped(reason));
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_)).Times(0);
+    remoter_->Stop(reason);
+    task_environment_.RunUntilIdle();
+    if (video_host_) {
+      EXPECT_FALSE(video_host_->paused());
+    }
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
+  // The receiver accepts a remoting OFFER that the source cancelled. The
+  // receiver is then in remoting mode, so expect a mirroring OFFER and no
+  // start of remoting.
+  void AcceptCancelledRemotingOffer() {
+    ASSERT_EQ(cast_mode_, "remoting");
+    EXPECT_CALL(*this, OnError(_)).Times(0);
+    EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
+    EXPECT_CALL(remoting_source_, OnStarted()).Times(0);
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_)).Times(0);
+    GenerateAndReplyWithAnswer();
+    task_environment_.RunUntilIdle();
+    cast_mode_ = "mirroring";
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
+  // A remoting OFFER that the source cancelled times out. Mirroring never
+  // stopped, so expect no OFFER and no error, and expect that remoting can
+  // start again.
+  void TimeOutCancelledRemotingOffer() {
+    ASSERT_EQ(cast_mode_, "remoting");
+    EXPECT_CALL(*this, LogErrorMessage(_));
+    EXPECT_CALL(*this, DidStop()).Times(0);
+    EXPECT_CALL(*this, OnError(_)).Times(0);
+    EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer)).Times(0);
+    EXPECT_CALL(remoting_source_, OnStartFailed(_)).Times(0);
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_));
+    session_host_->OnError(session_host_->session_.get(),
+                           openscreen::Error::Code::kAnswerTimeout);
+    task_environment_.RunUntilIdle();
+    cast_mode_ = "mirroring";
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
+  // Replies to a mirroring OFFER, and expects that remoting can start again.
+  void RestartMirroringAndExpectSinkAvailable() {
+    ASSERT_EQ(cast_mode_, "mirroring");
+    EXPECT_CALL(*this, OnError(_)).Times(0);
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_));
+    GenerateAndReplyWithAnswer();
+    task_environment_.RunUntilIdle();
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
+  // `remoter_already_stopped` is true if the source cancelled a remoting OFFER
+  // that is still in flight.
+  void SwitchSourceTab(bool remoter_already_stopped = false) {
     ExpectStreamsToStart();
     EXPECT_CALL(*video_host_, OnStopped());
     EXPECT_CALL(*this, OnConnectToRemotingSource());
@@ -669,8 +736,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
       EXPECT_CALL(*this,
                   OnOutboundMessage(SenderMessage::Type::kGetCapabilities))
           .Times(0);
-      const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
-      EXPECT_CALL(remoting_source_, OnStopped(reason));
+      if (!remoter_already_stopped) {
+        const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
+        EXPECT_CALL(remoting_source_, OnStopped(reason));
+      }
     }
 
     ASSERT_TRUE(session_host_);
@@ -1080,6 +1149,44 @@ TEST_F(OpenscreenSessionHostTest,
   StopSession();
 }
 
+TEST_F(OpenscreenSessionHostTest, CancelRemotingThenReceiverAcceptsOffer) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  CancelRemotingBeforeAnswer();
+  AcceptCancelledRemotingOffer();
+  RestartMirroringAndExpectSinkAvailable();
+  CaptureOneVideoFrame();
+
+  // Remoting can start again.
+  StartRemoting();
+  RemotingStarted();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, CancelRemotingThenOfferTimesOut) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  CancelRemotingBeforeAnswer();
+  TimeOutCancelledRemotingOffer();
+  CaptureOneVideoFrame();
+
+  // Remoting can start again.
+  StartRemoting();
+  RemotingStarted();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, CancelRemotingForRemotePlayback) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO, true);
+  StartSession();
+  StartRemoting();
+  StopRemotingAndStopSession();
+}
+
 TEST_F(OpenscreenSessionHostTest, StopsSessionOnNonAnswerErrorDuringRemoting) {
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
@@ -1110,6 +1217,18 @@ TEST_F(OpenscreenSessionHostTest, SwitchSourceTabFromRemoting) {
   StartRemoting();
   RemotingStarted();
   SwitchSourceTab();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, SwitchSourceTabAfterCancellingRemoting) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  CancelRemotingBeforeAnswer();
+
+  // The tab switch does not wait for the receiver to reply.
+  SwitchSourceTab(/*remoter_already_stopped=*/true);
   StopSession();
 }
 

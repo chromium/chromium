@@ -341,8 +341,20 @@ void OpenscreenSessionHost::OnNegotiated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const PendingOfferMode negotiated_mode =
       std::exchange(pending_offer_mode_, PendingOfferMode::kNone);
+  const bool remoting_offer_cancelled =
+      std::exchange(remoting_offer_cancelled_, false);
   offering_fallback_codecs_ = false;
   if (state_ == State::kStopped) {
+    return;
+  }
+
+  if (negotiated_mode == PendingOfferMode::kRemoting &&
+      remoting_offer_cancelled) {
+    // The receiver accepted a remoting OFFER that the source cancelled while
+    // it was in flight, so the receiver is in remoting mode. Drop the
+    // remoting `senders` and negotiate mirroring again.
+    StopStreaming();
+    NegotiateMirroring();
     return;
   }
 
@@ -619,8 +631,7 @@ void OpenscreenSessionHost::OnError(
     // remoting, report the error so that the session can fallback to
     // mirroring.
     case openscreen::Error::Code::kRemotingNotSupported:
-      if (state_ == State::kRemoting ||
-          pending_offer_mode_ == PendingOfferMode::kRemoting) {
+      if (pending_offer_mode_ == PendingOfferMode::kRemoting) {
         ReportAndLogError(SessionError::ANSWER_NOT_OK, error.ToString());
         return;
       }
@@ -753,33 +764,22 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
       pending_offer_mode_ != PendingOfferMode::kRemoting) {
     return;
   }
-  pending_offer_mode_ = PendingOfferMode::kNone;
 
-  // Stop session instead of switching to mirroring when in Remote Playback
-  // mode.
-  if (session_params_.is_remote_playback) {
-    StopSession();
-    return;
-  }
-
-  // If a remoting OFFER failed or was cancelled before OnNegotiated()
-  // transitioned `state_` to `kRemoting`, mirroring is still active as long as
-  // its senders were not torn down (e.g. by a tab switch or hardware encoder
-  // error).
-  if (state_ == State::kMirroring && !switching_tab_source_ &&
-      (audio_sender_ || video_sender_)) {
+  // A remoting OFFER that is in flight cannot be recalled. Keep mirroring and
+  // wait: OnNegotiated() or ReportAndLogError() finishes the cancellation when
+  // the receiver replies or the OFFER times out. Remote Playback has no
+  // mirroring to keep, and a tab switch restarts mirroring anyway, so neither
+  // waits.
+  if (pending_offer_mode_ == PendingOfferMode::kRemoting &&
+      !session_params_.is_remote_playback && !switching_tab_source_) {
+    remoting_offer_cancelled_ = true;
     if (observer_) {
       observer_->OnRemotingStateChanged(false);
     }
-    if (media_remoter_) {
-      media_remoter_->OnMirroringResumed(false);
-    }
     return;
   }
 
-  StopStreaming();
-  state_ = State::kMirroring;
-  Negotiate();
+  StopRemotingAndMaybeResumeMirroring();
 }
 
 std::unique_ptr<media::mojom::RemotingDataStreamSender>
@@ -817,6 +817,12 @@ void OpenscreenSessionHost::SwitchSourceTab() {
     switching_tab_source_ = true;
     video_capture_client_.reset();
     media_remoter_->Stop(media::mojom::RemotingStopReason::LOCAL_PLAYBACK);
+    // media_remoter_->Stop() calls RestartMirroringStreaming() unless the
+    // remoter already stopped, which is the case when the source cancelled a
+    // remoting OFFER that is still in flight.
+    if (pending_offer_mode_ == PendingOfferMode::kRemoting) {
+      StopRemotingAndMaybeResumeMirroring();
+    }
     return;
   }
 
@@ -867,11 +873,18 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
                                 error);
   logger_.LogError(error, message);
 
-  if ((state_ == State::kRemoting ||
-       pending_offer_mode_ == PendingOfferMode::kRemoting) &&
+  // An ANSWER error can only belong to the OFFER that is in flight. If that is
+  // a remoting OFFER, the start of remoting failed.
+  if (pending_offer_mode_ == PendingOfferMode::kRemoting &&
       IsAnswerError(error)) {
-    // Try to fallback to mirroring.
-    media_remoter_->OnRemotingFailed();
+    pending_offer_mode_ = PendingOfferMode::kNone;
+    // The remoter only needs to hear about the failure if the source is still
+    // waiting for remoting to start. It calls RestartMirroringStreaming(),
+    // which has nothing to do now that no remoting OFFER is in flight.
+    if (!std::exchange(remoting_offer_cancelled_, false)) {
+      media_remoter_->OnRemotingFailed();
+    }
+    StopRemotingAndMaybeResumeMirroring();
     return;
   }
 
@@ -929,6 +942,7 @@ void OpenscreenSessionHost::StopSession() {
 
   state_ = State::kStopped;
   pending_offer_mode_ = PendingOfferMode::kNone;
+  remoting_offer_cancelled_ = false;
   offering_fallback_codecs_ = false;
   StopStreaming();
 
@@ -1397,6 +1411,7 @@ void OpenscreenSessionHost::NegotiateRemoting() {
   last_offered_audio_config_ = audio_config;
   last_offered_video_configs_ = {video_config};
   pending_offer_mode_ = PendingOfferMode::kRemoting;
+  remoting_offer_cancelled_ = false;
 
   session_->NegotiateRemoting(ToOpenscreenAudioConfig(audio_config),
                               ToOpenscreenVideoConfig(video_config));
@@ -1404,6 +1419,42 @@ void OpenscreenSessionHost::NegotiateRemoting() {
   if (observer_) {
     observer_->OnRemotingStateChanged(true);
   }
+}
+
+void OpenscreenSessionHost::StopRemotingAndMaybeResumeMirroring() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Called while remoting, while a remoting OFFER is in flight, or right after
+  // a remoting OFFER failed (see ReportAndLogError()). A mirroring OFFER is
+  // never in flight here.
+  CHECK(state_ == State::kMirroring || state_ == State::kRemoting);
+  CHECK_NE(pending_offer_mode_, PendingOfferMode::kMirroring);
+  pending_offer_mode_ = PendingOfferMode::kNone;
+  remoting_offer_cancelled_ = false;
+
+  // Stop session instead of switching to mirroring when in Remote Playback
+  // mode.
+  if (session_params_.is_remote_playback) {
+    StopSession();
+    return;
+  }
+
+  // If a remoting OFFER failed before OnNegotiated() transitioned `state_` to
+  // `kRemoting`, mirroring is still active as long as its senders were not
+  // torn down (e.g. by a tab switch or hardware encoder error).
+  if (state_ == State::kMirroring && !switching_tab_source_ &&
+      (audio_sender_ || video_sender_)) {
+    if (observer_) {
+      observer_->OnRemotingStateChanged(false);
+    }
+    if (media_remoter_) {
+      media_remoter_->OnMirroringResumed(false);
+    }
+    return;
+  }
+
+  StopStreaming();
+  state_ = State::kMirroring;
+  NegotiateMirroring();
 }
 
 void OpenscreenSessionHost::InitMediaRemoter(
