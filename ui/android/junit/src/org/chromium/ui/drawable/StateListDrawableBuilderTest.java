@@ -4,6 +4,7 @@
 
 package org.chromium.ui.drawable;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -14,14 +15,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.shadows.ShadowAnimatedStateListDrawable;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowAppCompatResources.class, ShadowAnimatedStateListDrawable.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class StateListDrawableBuilderTest {
     private static final int[] CHECKED_STATE = new int[] {android.R.attr.state_checked};
     private static final int[] WILDCARD_STATE = new int[0];
@@ -36,12 +35,10 @@ public class StateListDrawableBuilderTest {
         b.addState(DEFAULT_DRAWABLE, WILDCARD_STATE);
         StateListDrawable result = b.build();
         assertEquals(result.getClass(), AnimatedStateListDrawable.class);
-        ShadowAnimatedStateListDrawable drawable = Shadow.extract(result);
-        assertEquals(
-                CHECKED_DRAWABLE,
-                shadowOf(drawable.getDrawableForState(CHECKED_STATE)).getCreatedFromResId());
-        assertEquals(
-                DEFAULT_DRAWABLE,
-                shadowOf(drawable.getDrawableForState(WILDCARD_STATE)).getCreatedFromResId());
+        assertEquals(2, result.getStateCount());
+        assertArrayEquals(CHECKED_STATE, result.getStateSet(0));
+        assertEquals(CHECKED_DRAWABLE, shadowOf(result.getStateDrawable(0)).getCreatedFromResId());
+        assertArrayEquals(WILDCARD_STATE, result.getStateSet(1));
+        assertEquals(DEFAULT_DRAWABLE, shadowOf(result.getStateDrawable(1)).getCreatedFromResId());
     }
 }
