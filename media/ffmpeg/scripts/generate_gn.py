@@ -109,6 +109,7 @@ def CleanObjectFiles(object_files):
         'libavformat/oggparsedaala.o',
         'libavformat/oggparsedirac.o',
         'libavformat/oggparsespeex.o',
+        'libavformat/oggparsetheora.o',
         # The following files are removed to trim down on binary size.
         # TODO(ihf): Warning, it is *easy* right now to remove more files
         # than is healthy and end up with a library that the linker does
