@@ -104,6 +104,12 @@
 // Wrapper around the becomeFirstResponder method of the webview.
 - (BOOL)becomeFirstResponder;
 
+// Sets the zoom size (as a percentage, e.g. 150 for 150%) on the web
+// view if supported. Returns whether the zoom was set. This could be false if
+// setting zoom state is not supported by the current
+// `web::provider::SetZoomForWebView()`.
+- (BOOL)setZoomSize:(int)size;
+
 @end
 
 #endif  // IOS_WEB_PUBLIC_UI_CRW_WEB_VIEW_PROXY_H_

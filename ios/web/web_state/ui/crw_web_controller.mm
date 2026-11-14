@@ -25,6 +25,7 @@
 #import "base/trace_event/trace_event.h"
 #import "build/branding_buildflags.h"
 #import "build/config/ios/buildflags.h"
+#import "ios/public/provider/web/zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
@@ -1176,6 +1177,10 @@ JavaScriptCompletionBlock WrapCompletionBlock(
 
 - (UIColor*)underPageBackgroundColor {
   return self.webView.underPageBackgroundColor;
+}
+
+- (BOOL)setZoomSize:(int)size {
+  return web::provider::SetZoomForWebView(self.webView, size);
 }
 
 #pragma mark - JavaScript

@@ -234,6 +234,10 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView becomeFirstResponder];
 }
 
+- (BOOL)setZoomSize:(int)size {
+  return [_webController setZoomSize:size];
+}
+
 - (BOOL)isWebPageInFullscreenMode {
   return [_webController isWebPageInFullscreenMode];
 }

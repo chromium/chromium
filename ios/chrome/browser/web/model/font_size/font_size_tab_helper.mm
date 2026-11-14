@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/device_form_factor.h"
 
@@ -95,6 +96,10 @@ bool FontSizeTabHelper::IsTextZoomEnabled() {
 // static
 void FontSizeTabHelper::SetTextZoomForWebState(web::WebState* web_state,
                                                int size) {
+  if ([web_state->GetWebViewProxy() setZoomSize:size]) {
+    return;
+  }
+
   FontSizeJavaScriptFeature::GetInstance()->AdjustFontSize(web_state, size);
 }
 

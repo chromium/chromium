@@ -17,6 +17,7 @@ source_set("ui") {
     "//build:branding_buildflags",
     "//build/config/ios:buildflags",
     "//ios/net",
+    "//ios/public/provider/web:zoom",
     "//ios/third_party/webkit",
     "//ios/web:core",
     "//ios/web/annotations",

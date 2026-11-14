@@ -277,6 +277,12 @@ class WebStateImpl;
 // Returns the under page background color.
 - (UIColor*)underPageBackgroundColor;
 
+// Sets the zoom size (as a percentage, e.g. 150 for 150%) on the
+// contained web view, if supported. Returns whether the zoom was set. This
+// could be false if setting zoom state is not supported by the current
+// `web::provider::SetZoomForWebView()`.
+- (BOOL)setZoomSize:(int)size;
+
 #pragma mark Fullscreen Message Handlers
 
 // Handles the viewport fit value, `isCover` is true when the "viewport-fit" is
