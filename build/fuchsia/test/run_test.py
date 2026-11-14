@@ -102,18 +102,11 @@ def main():
         default=False,
         help='Use an existing device.',
     )
-    # TODO(crbug.com/346624801): Remove --orchestrate once all callers stop
-    # passing it.
     parser.add_argument(
         '--orchestrate',
         action='store_true',
-        help='Deprecated and ignored; orchestrate is used by default.',
-    )
-    parser.add_argument(
-        '--no-orchestrate',
-        action='store_true',
         default=False,
-        help='Do not use orchestrate; fall back to home-built test runners.',
+        help='Use orchestrate to run tests.',
     )
 
     # Register arguments
@@ -136,9 +129,8 @@ def main():
     runner_args.device = runner_args.device or bool(runner_args.target_id)
 
     use_orchestrate = (
-        not runner_args.no_orchestrate
+        runner_args.orchestrate
         and not runner_args.device
-        and not runner_args.everlasting
         and get_host_arch() in {'x64', 'arm64'}
         and support_orchestrate(runner_args.test_type)
     )
@@ -176,15 +168,7 @@ def main():
                     '--test-name',
                     runner_args.test_type,
                 ]
-                if runner_args.code_coverage_dir:
-                    target_cmd.extend(
-                        ['--code-coverage-dir', runner_args.code_coverage_dir]
-                    )
-                if runner_args.test_realm:
-                    target_cmd.extend(['--test-realm', runner_args.test_realm])
-                for pkg_dep in runner_args.package_deps or []:
-                    target_cmd.extend(['--package-deps', pkg_dep])
-                packages = runner_args.package_deps or read_package_paths(
+                packages = read_package_paths(
                     runner_args.out_dir, runner_args.test_type
                 )
             target_cmd.extend(['--out-dir', runner_args.out_dir])

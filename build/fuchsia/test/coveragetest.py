@@ -32,7 +32,6 @@ TESTED_FILES = [
     'monitors.py',
     'orchestrate_runner.py',
     'run_executable_test.py',
-    'run_test.py',
     'serial_boot_device.py',
     'test_env_setup.py',
     'version.py',
