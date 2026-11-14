@@ -859,6 +859,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
   HeapTaskRunnerTimer<WebGLRenderingContextBase> restore_timer_;
 
   bool destruction_in_progress_ = false;
+  // Tracks whether ActivateContext() was ever called for this context, so
+  // Dispose() does not restore an evicted context when disposing an
+  // uninitialized context whose initial CreateDrawingBuffer() failed.
+  bool was_activated_ = false;
   bool marked_canvas_dirty_;
   // For performance reasons we must separately track whether we've
   // copied WebGL's drawing buffer to the canvas's backing store, for

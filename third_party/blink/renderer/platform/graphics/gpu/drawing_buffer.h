@@ -245,6 +245,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // operations.
   void SetDrawBuffer(GLenum draw_buffer);
 
+  // Returns the compositing layer for this buffer, or nullptr once
+  // BeginDestruction() has started.
   cc::Layer* CcLayer();
 
   gpu::gles2::GLES2Interface* ContextGL();

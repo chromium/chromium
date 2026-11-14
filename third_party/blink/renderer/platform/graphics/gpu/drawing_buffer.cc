@@ -49,6 +49,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
+#include "cc/trees/layer_tree_host.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -417,8 +418,9 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
 }
 
 bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
-  return client_->DrawingBufferClientIsBoundForDraw() &&
-         DefaultBufferRequiresAlphaChannelToBePreserved();
+  return client_ && !destruction_in_progress_ &&
+         DefaultBufferRequiresAlphaChannelToBePreserved() &&
+         client_->DrawingBufferClientIsBoundForDraw();
 }
 
 bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
@@ -1394,6 +1396,9 @@ void DrawingBuffer::OnMemoryDump(
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {
+  if (destruction_in_progress_) {
+    return nullptr;
+  }
   if (!layer_) {
     layer_ = cc::TextureLayer::Create(this);
     if (client_) {
@@ -1411,8 +1416,14 @@ cc::Layer* DrawingBuffer::CcLayer() {
 }
 
 void DrawingBuffer::ClearCcLayer() {
-  if (layer_)
-    layer_->ClearTexture();
+  if (layer_) {
+    if (auto* host = layer_->layer_tree_host();
+        host && host->in_will_commit()) {
+      host->ScheduleLayerForPostCommitDisposal(layer_);
+    }
+    layer_->ClearClient();
+    layer_ = nullptr;
+  }
 
   gl_->Flush();
 }
@@ -1420,6 +1431,7 @@ void DrawingBuffer::ClearCcLayer() {
 void DrawingBuffer::BeginDestruction() {
   DCHECK(!destruction_in_progress_);
   destruction_in_progress_ = true;
+  client_ = nullptr;
 
   ClearCcLayer();
   if (color_buffer_pool_) {
@@ -1456,8 +1468,6 @@ void DrawingBuffer::BeginDestruction() {
   depth_stencil_buffer_ = 0;
   multisample_fbo_ = 0;
   fbo_ = 0;
-
-  client_ = nullptr;
 }
 
 bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
@@ -1909,13 +1919,16 @@ void DrawingBuffer::ReallocateDepthStencilRenderbuffer(const gfx::Size& size) {
 void DrawingBuffer::RestoreFramebufferBindings() {
   // Can be called with ScopedDrawingBufferBinder on the stack after
   // context loss. Null checking client_ is insufficient.
-  if (destruction_in_progress_) {
+  if (!client_ || destruction_in_progress_) {
     return;
   }
   client_->DrawingBufferClientRestoreFramebufferBinding();
 }
 
 void DrawingBuffer::RestoreAllState() {
+  if (!client_ || destruction_in_progress_) {
+    return;
+  }
   client_->DrawingBufferClientRestoreScissorTest();
   client_->DrawingBufferClientRestoreMaskAndClearValues();
   client_->DrawingBufferClientRestorePixelPackParameters();
@@ -2425,7 +2438,7 @@ DrawingBuffer::ScopedStateRestorer::ScopedStateRestorer(
   drawing_buffer_->state_restorer_ = this;
 
   Client* client = drawing_buffer_->client_;
-  if (!client) {
+  if (!client || drawing_buffer_->destruction_in_progress_) {
     return;
   }
   client->DrawingBufferClientInterruptPixelLocalStorage();

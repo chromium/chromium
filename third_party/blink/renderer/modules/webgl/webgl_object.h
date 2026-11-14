@@ -54,10 +54,12 @@ GLuint ObjectNonZero(const T* object) {
 class WebGLObject : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
-  // WebGLObjects are pre-finalized, and the WebGLRenderingContextBase
-  // is specifically not. This is done in order to allow WebGLObjects to
-  // refer back to their owning context in their destructor to delete their
-  // resources if they are GC'd before the context is.
+  // WebGLObjects are pre-finalized so they can refer back to their owning
+  // context to delete their GL resources if they are GC'd before the context
+  // is. When both die in the same GC cycle, WebGLObjects created after the
+  // context have their pre-finalizers invoked first (LIFO), and DeleteObject()
+  // also checks GetContextGeneration() in case the context was already lost or
+  // disposed.
   USING_PRE_FINALIZER(WebGLObject, Dispose);
 
  public:
