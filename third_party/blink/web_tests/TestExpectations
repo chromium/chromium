@@ -2837,7 +2837,6 @@ crbug.com/579016479 external/wpt/css/css-anchor-position/position-area-overflow-
 crbug.com/579026174 external/wpt/css/css-content/pseudo-element-image-set.html [ Failure ]
 crbug.com/579016295 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
 crbug.com/579026174 external/wpt/css/css-images/object-fit-none-svg-width-only.html [ Failure ]
-crbug.com/579026179 external/wpt/css/css-position/crashtests/inline-containing-block-dynamic-change.html [ Crash Pass ]
 crbug.com/579030527 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-shrink-to-fit-ancestor-relayout.html [ Failure ]
 crbug.com/579016027 external/wpt/css/css-text/line-breaking/line-breaking-text-001.html [ Failure ]
 crbug.com/579016027 external/wpt/css/css-text/white-space/tab-stop-threshold-007.html [ Failure ]
