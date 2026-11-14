@@ -184,6 +184,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
                                views::View* starting_view,
                                bool visible) override;
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewHierarchyChanged(
+      views::View* observed_view,
+      const views::ViewHierarchyChangedDetails& details) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
   // ui::EventObserver:
@@ -225,6 +228,11 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // or the organizer tray covers, which also sends events there to the view
   // beneath.
   void UpdatePopupOcclusion();
+
+  // Returns whether the top container is parented to the browser view, where
+  // the vertical tab strip and the organizer tray draw above it. False in
+  // immersive fullscreen, and if there is no browser view.
+  bool IsTopContainerInBrowserView();
 
   // Called when a modal dialog, e.g. a native file dialog, is shown over the
   // browser window or the popup, and when it closes. While it's shown, the
@@ -298,7 +306,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       occluding_view_observations_{this};
 #if BUILDFLAG(IS_CHROMEOS)
   // Observed while shown: the immersive reveal moves the top container
-  // without resizing the location bar.
+  // without resizing the location bar, and immersive fullscreen reparents it.
   base::ScopedObservation<views::View, views::ViewObserver>
       top_container_observation_{this};
 #endif

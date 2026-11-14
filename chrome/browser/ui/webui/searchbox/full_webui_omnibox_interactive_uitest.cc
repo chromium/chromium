@@ -3943,6 +3943,64 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckPopupState(OmniboxPopupState::kFull));
 }
 
+// Verifies that in immersive fullscreen, the expanded vertical tab strip
+// doesn't clip a collapsed popup. Top chrome then sits in an overlay above the
+// strip, so clipping would show the location bar beneath instead of the strip.
+// See crbug.com/585588827.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    ExpandedVerticalTabsDoNotClipPopupInImmersiveFullscreen) {
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock;
+  auto get_strip = [this]() {
+    return BrowserElementsViews::From(browser())->RetrieveView(
+        kVerticalTabStripRegionRetrievalId);
+  };
+  RunTestSequence(
+      EnableVerticalTabs(),
+      CheckResult(
+          [this]() {
+            return tabs::VerticalTabStripStateController::From(browser())
+                ->IsCollapsed();
+          },
+          false, "CheckStripExpanded"),
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      InputWebUIText("test draft"), WaitForWebUIInputValue("test draft"),
+      // Entering fullscreen blurs the omnibox and keeps a collapsed popup open
+      // for the draft while top chrome moves into the immersive overlay.
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForVisibleOmniboxUnfocused(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForImmersiveTopChromeHidden(), Do([&]() {
+        revealed_lock =
+            ImmersiveModeController::From(browser())->GetRevealedLock(
+                ImmersiveModeController::ANIMATE_REVEAL_NO);
+      }),
+      PollUntil(
+          [this]() {
+            return ImmersiveModeController::From(browser())->IsRevealed();
+          },
+          "WaitForTopChromeRevealed"),
+      // The strip lies under the revealed location bar and the popup.
+      PollUntil(
+          [this, get_strip]() {
+            views::Widget* popup_widget = GetPopupWidget(browser());
+            views::View* strip = get_strip();
+            return popup_widget && popup_widget->IsVisible() && strip &&
+                   strip->IsDrawn() &&
+                   strip->GetBoundsInScreen().Intersects(
+                       popup_widget->GetWindowBoundsInScreen());
+          },
+          "WaitForStripUnderPopup"),
+      CheckPopupState(OmniboxPopupState::kFull),
+      Do([this]() { RunScheduledLayouts(); }),
+      CheckResult(
+          [this]() {
+            return GetPopupWidget(browser())->GetLayer()->clip_rect();
+          },
+          gfx::Rect(), "CheckPopupUnclipped"));
+}
+
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        FullscreenBlursFocusedOmnibox) {
   RunTestSequence(
