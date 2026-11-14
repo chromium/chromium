@@ -181,6 +181,9 @@ suite('ComposePage', function() {
     assertEquals(
         loadTimeData.getString('composeLearnMorePageURL'), learnMoreLink.href);
 
+    // Prevent the link from opening a new tab, which backgrounds the test tab
+    // and slows down remaining test code.
+    learnMoreLink.addEventListener('click', e => e.preventDefault());
     learnMoreLink.click();
     await assertFeatureInteractionMetrics(
         AiPageComposeInteractions.LEARN_MORE_LINK_CLICKED,
