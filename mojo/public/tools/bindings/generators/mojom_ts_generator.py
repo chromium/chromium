@@ -184,13 +184,16 @@ def _GetWebUiModulePath(module):
   """Returns the path to a WebUI module, from the perspective of a WebUI page
   that makes it available. This is based on the corresponding mojom target's
   webui_module_path value. Returns None if the target specifies no module
-  path. Otherwise, returned paths always end in a '/' and begin with either
+  path, or 'REPO_PATHS' if the target opts into repository-relative module
+  paths. Otherwise, returned paths always end in a '/' and begin with either
   `chrome://resources/` or a '/'."""
   path = module.metadata.get('webui_module_path')
   if path is None:
     return None
   if path == '' or path == '/':
     return '/'
+  if path == 'REPO_PATHS':
+    return path
   if _IsAbsoluteChromeResourcesPath(path):
     return path.rstrip('/') + '/'
   return '/{}/'.format(path.strip('/'))
@@ -737,12 +740,26 @@ class Generator(generator.Generator):
 
   def _GetJsModuleImports(self):
     imports = dict()
+    this_module_path = _GetWebUiModulePath(self.module)
 
     for spec, kind in self.module.imported_kinds.items():
       base_path = _GetWebUiModulePath(kind.module)
       assert base_path is not None, (
         "No WebUI bindings found for dependency {0!r} imported by {1!r}".format(
           kind.module, self.module
+        )
+      )
+      if this_module_path == 'REPO_PATHS':
+        dep_path = "{}-webui.js".format(kind.module.path)
+        if dep_path not in imports:
+          imports[dep_path] = []
+        imports[dep_path].append(kind)
+        continue
+      assert base_path != 'REPO_PATHS', (
+        'Module {!r} (webui_module_path={!r}) imports {!r} which uses '
+        'webui_module_path = "REPO_PATHS". Update the importing mojom target '
+        'to also use webui_module_path = "REPO_PATHS".'.format(
+          self.module.path, this_module_path, kind.module.path
         )
       )
       import_full_path = '{}{}-webui.js'.format(

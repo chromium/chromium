@@ -59,6 +59,12 @@ class MojomTsGeneratorTest(unittest.TestCase):
       ),
       'chrome://resources/mojo/url/mojom/',
     )
+    self.assertEqual(
+      mojom_ts_generator._GetWebUiModulePath(
+        _MockModule('a.mojom', webui_module_path='REPO_PATHS')
+      ),
+      'REPO_PATHS',
+    )
 
   def test_root_module_imports(self):
     shared_module = _MockModule(
@@ -174,6 +180,47 @@ class MojomTsGeneratorTest(unittest.TestCase):
     )
     generator = mojom_ts_generator.Generator(module)
     with self.assertRaises(AssertionError):
+      generator._GetJsModuleImports()
+
+  def test_repo_paths_module_imports(self):
+    shared_module = _MockModule(
+      'mojo/public/mojom/base/time.mojom',
+      webui_module_path='chrome://resources/mojo/mojo/public/mojom/base',
+    )
+    dependency_module = _MockModule(
+      'chrome/browser/foo/bar.mojom', webui_module_path='REPO_PATHS'
+    )
+    time_kind = _MockKind('Time', shared_module)
+    bar_kind = _MockKind('Bar', dependency_module)
+
+    module = _MockModule(
+      'chrome/browser/ui/webui/baz/baz.mojom',
+      webui_module_path='REPO_PATHS',
+      imported_kinds={'time': time_kind, 'bar': bar_kind},
+    )
+    generator = mojom_ts_generator.Generator(module)
+    self.assertEqual(
+      generator._GetJsModuleImports(),
+      {
+        'mojo/public/mojom/base/time.mojom-webui.js': [time_kind],
+        'chrome/browser/foo/bar.mojom-webui.js': [bar_kind],
+      },
+    )
+
+  def test_non_repo_paths_module_importing_repo_paths_dependency_fails(self):
+    repo_paths_dependency_module = _MockModule(
+      'components/tab_groups/public/mojom/tab_group_types.mojom',
+      webui_module_path='REPO_PATHS',
+    )
+    color_kind = _MockKind('Color', repo_paths_dependency_module)
+
+    legacy_module = _MockModule(
+      'chrome/browser/ui/webui/foo/foo.mojom',
+      webui_module_path='/',
+      imported_kinds={'color': color_kind},
+    )
+    generator = mojom_ts_generator.Generator(legacy_module)
+    with self.assertRaisesRegex(AssertionError, 'webui_module_path'):
       generator._GetJsModuleImports()
 
 
