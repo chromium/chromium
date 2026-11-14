@@ -16,7 +16,6 @@ build_webui("build") {
     "device_info.ts",
     "reporting_history.ts",
   ]
-  ts_files = [ "browser_proxy.ts" ]
 
   ts_composite = true
   ts_deps = [

@@ -12,8 +12,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {DialogArgs} from './app_install.mojom-webui.js';
+import {browserProxyFactory} from './app_install.mojom-webui.js';
 import {getTemplate} from './app_install_dialog.html.js';
-import {BrowserProxy} from './browser_proxy.js';
 
 window.addEventListener('load', () => {
   ColorChangeUpdater.forDocument().start();
@@ -67,7 +67,7 @@ class AppInstallDialogElement extends HTMLElement {
     return getTemplate();
   }
 
-  private proxy = BrowserProxy.getInstance();
+  private proxy = browserProxyFactory.getInstance();
   private initialStatePromise: Promise<DialogState>;
   private dialogStateDataMap: Record<DialogState, StateData>;
   private dialogArgs?: DialogArgs;

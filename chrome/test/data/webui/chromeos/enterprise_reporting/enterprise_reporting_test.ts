@@ -6,9 +6,8 @@
  * @fileoverview Unittests for the chrome://enterprise-reporting element.
  */
 
-import {EnterpriseReportingBrowserProxy} from 'chrome://enterprise-reporting/browser_proxy.js';
 import type {ErpHistoryData, ErpHistoryEvent, ErpHistoryEventParameter, PageRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
+import {browserProxyFactory, PageHandlerRemote} from 'chrome://enterprise-reporting/enterprise_reporting.mojom-webui.js';
 import {ReportingHistoryElement} from 'chrome://enterprise-reporting/reporting_history.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -114,13 +113,11 @@ suite('enterprise_reporting', function() {
   }
 
   setup(() => {
-    handler = installMock(
-        PageHandlerRemote,
-        (mock: PageHandlerRemote) =>
-            EnterpriseReportingBrowserProxy.createInstanceForTest(
-                mock, new PageCallbackRouter()));
-    callbackRouterRemote = EnterpriseReportingBrowserProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+    handler = installMock(PageHandlerRemote, (mock: PageHandlerRemote) => {
+      const {instance, remote} = browserProxyFactory.createForTest(mock);
+      browserProxyFactory.setInstance(instance);
+      callbackRouterRemote = remote;
+    });
   });
 
   teardown(async () => {
