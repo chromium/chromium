@@ -8,11 +8,15 @@
 #include <vector>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/check.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -26,21 +30,15 @@ namespace {
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kMimeTypeTextUriList[] = "text/uri-list";
 
-storage::FileSystemContext* GetFileSystemContext() {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  if (!primary_profile)
-    return nullptr;
-
-  return file_manager::util::GetFileManagerFileSystemContext(primary_profile);
-}
-
 }  // namespace
 
 std::vector<storage::FileSystemURL> GetFileSystemUrlsFromPickle(
+    content::BrowserContext* browser_context,
     const base::Pickle& pickle) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
-  storage::FileSystemContext* file_system_context = GetFileSystemContext();
+  storage::FileSystemContext* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(browser_context);
   if (!file_system_context) {
     return file_system_urls;
   }
@@ -91,7 +89,14 @@ std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
 
 bool ChromeDataExchangeDelegate::HasUrlsInPickle(
     const base::Pickle& pickle) const {
-  return !GetFileSystemUrlsFromPickle(pickle).empty();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  content::BrowserContext* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(primary_context);
+  return !GetFileSystemUrlsFromPickle(primary_context, pickle).empty();
 }
 
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(

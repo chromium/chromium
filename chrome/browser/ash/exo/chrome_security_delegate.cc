@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
@@ -24,9 +25,13 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
@@ -111,8 +116,11 @@ base::FilePath GetVmMount(const std::string& vm_name) {
 }
 
 // Translate |vm_paths| from |source| VM to host paths.
-std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
-                                        std::vector<ui::FileInfo> vm_paths) {
+std::vector<FileInfo> TranslateVMToHost(
+    content::BrowserContext* browser_context,
+    const std::string& vm_name,
+    std::vector<ui::FileInfo> vm_paths) {
+  CHECK(browser_context);
   // Do not expose any paths to unknown VMs or to ArcVm.
   // Arc doesn't currently support drag-drop or clipboard via exo.
   // If Arc ever adds support, we must map paths correctly like other VMs.
@@ -122,7 +130,7 @@ std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
     return {};
   }
   std::vector<FileInfo> file_infos;
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  Profile* primary_profile = Profile::FromBrowserContext(browser_context);
   bool is_crostini = vm_name == crostini::kCrostiniDefaultVmName;
 
   for (ui::FileInfo& info : vm_paths) {
@@ -174,10 +182,12 @@ std::vector<FileInfo> CrackPaths(std::vector<base::FilePath> paths) {
 // Share |files| with |target| VM and invoke |callback| with translated file:
 // URLs.
 void ShareAndTranslateHostToVM(
+    content::BrowserContext* browser_context,
     const std::string& vm_name,
     const std::vector<FileInfo>& file_infos,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  CHECK(browser_context);
+  Profile* primary_profile = Profile::FromBrowserContext(browser_context);
   bool is_crostini = vm_name == crostini::kCrostiniDefaultVmName;
 
   const std::string vm_prefix =
@@ -259,9 +269,11 @@ void ShareAndTranslateHostToVM(
 
 // static
 std::vector<base::FilePath> TranslateVMPathsToHost(
+    content::BrowserContext* browser_context,
     const std::string& vm_name,
     const std::vector<ui::FileInfo>& vm_paths) {
-  std::vector<FileInfo> translated = TranslateVMToHost(vm_name, vm_paths);
+  std::vector<FileInfo> translated =
+      TranslateVMToHost(browser_context, vm_name, vm_paths);
   std::vector<base::FilePath> result;
   for (auto& info : translated) {
     result.push_back(std::move(info.path));
@@ -271,10 +283,12 @@ std::vector<base::FilePath> TranslateVMPathsToHost(
 
 // static
 void ShareWithVMAndTranslateToFileUrls(
+    content::BrowserContext* browser_context,
     const std::string& vm_name,
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  ShareAndTranslateHostToVM(vm_name, CrackPaths(files), std::move(callback));
+  ShareAndTranslateHostToVM(browser_context, vm_name, CrackPaths(files),
+                            std::move(callback));
 }
 
 ChromeSecurityDelegate::ChromeSecurityDelegate() {
@@ -329,9 +343,17 @@ bool ChromeSecurityDelegate::CanSetSystemModal() const {
 std::vector<ui::FileInfo> ChromeSecurityDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  content::BrowserContext* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(primary_context);
+
   std::vector<ui::FileInfo> result;
   std::vector<FileInfo> file_infos = TranslateVMToHost(
-      GetVmName(source),
+      primary_context, GetVmName(source),
       ui::URIListToFileInfos(std::string(data.begin(), data.end())));
   for (auto& info : file_infos) {
     result.push_back(ui::FileInfo(std::move(info.path), base::FilePath()));
@@ -343,21 +365,37 @@ void ChromeSecurityDelegate::SendFileInfo(
     ui::EndpointType target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  content::BrowserContext* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(primary_context);
+
   std::vector<base::FilePath> paths;
   for (const auto& file : files) {
     paths.push_back(file.path);
   }
 
   ShareAndTranslateHostToVM(
-      GetVmName(target), CrackPaths(std::move(paths)),
+      primary_context, GetVmName(target), CrackPaths(std::move(paths)),
       base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 
 void ChromeSecurityDelegate::SendPickle(ui::EndpointType target,
                                         const base::Pickle& pickle,
                                         SendDataCallback callback) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  content::BrowserContext* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(primary_context);
+
   std::vector<storage::FileSystemURL> file_system_urls =
-      GetFileSystemUrlsFromPickle(pickle);
+      GetFileSystemUrlsFromPickle(primary_context, pickle);
   // ARC FileSystemURLs are converted to Content URLs.
   if (target == ui::EndpointType::kArc) {
     if (file_system_urls.empty()) {
@@ -365,7 +403,7 @@ void ChromeSecurityDelegate::SendPickle(ui::EndpointType target,
       return;
     }
     arc::ConvertToContentUrlsAndShare(
-        ProfileManager::GetPrimaryUserProfile(), file_system_urls,
+        Profile::FromBrowserContext(primary_context), file_system_urls,
         base::BindOnce(&SendArcUrls, std::move(callback)));
     return;
   }
@@ -383,7 +421,7 @@ void ChromeSecurityDelegate::SendPickle(ui::EndpointType target,
   }
 
   ShareAndTranslateHostToVM(
-      GetVmName(target), std::move(file_infos),
+      primary_context, GetVmName(target), std::move(file_infos),
       base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 

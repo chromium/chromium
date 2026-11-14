@@ -81,8 +81,16 @@ class DialogListener : public ui::SelectFileDialog::Listener {
 
 void DialogListener::MultiFilesSelected(
     const std::vector<ui::SelectedFileInfo>& files) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  content::BrowserContext* primary_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(primary_context);
   ShareWithVMAndTranslateToFileUrls(
-      signal_.vm_name(), ui::SelectedFileInfoListToFilePathList(files),
+      primary_context, signal_.vm_name(),
+      ui::SelectedFileInfoListToFilePathList(files),
       base::BindOnce(
           [](vm_tools::cicerone::FileSelectedSignal signal,
              std::vector<std::string> file_urls) {
@@ -303,7 +311,7 @@ void VmApplicationsServiceProvider::SelectFile(
     }
     // Translate to path in host and DLP component type if possible.
     std::vector<base::FilePath> paths =
-        TranslateVMPathsToHost(request.vm_name(), file_infos);
+        TranslateVMPathsToHost(profile, request.vm_name(), file_infos);
     default_path =
         !paths.empty() ? std::move(paths[0]) : std::move(file_infos[0].path);
   }

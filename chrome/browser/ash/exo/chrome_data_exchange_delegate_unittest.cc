@@ -4,28 +4,28 @@
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/exo/shell_surface_util.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_manager_impl.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -42,29 +42,36 @@
 
 namespace ash {
 
+namespace {
+
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("12345"));
+
+}  // namespace
+
 class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
+  ChromeDataExchangeDelegateTest() = default;
+  ChromeDataExchangeDelegateTest(const ChromeDataExchangeDelegateTest&) =
+      delete;
+  ChromeDataExchangeDelegateTest& operator=(
+      const ChromeDataExchangeDelegateTest&) = delete;
+  ~ChromeDataExchangeDelegateTest() override = default;
+
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
-    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
-                    .AddRegularUser(account_id));
-    user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-
-    {
-      ash::ScopedAccountIdAnnotator annotator(
-          profile_manager_->profile_manager(), account_id);
-      profile_ =
-          profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-    }
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kTestAccountId)));
+    ASSERT_TRUE(profile_);
 
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
@@ -86,20 +93,19 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_ = nullptr;
-    profile_manager_.reset();
-    user_manager_.Reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager user_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
   aura::test::TestWindowDelegate delegate_;
-  raw_ptr<storage::ExternalMountPoints> mount_points_;
+  raw_ptr<storage::ExternalMountPoints> mount_points_ = nullptr;
   std::string myfiles_mount_name_;
   base::FilePath myfiles_dir_;
 };

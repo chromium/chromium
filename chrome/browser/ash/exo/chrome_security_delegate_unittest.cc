@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ash/exo/chrome_security_delegate.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
@@ -23,11 +26,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
-#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -35,13 +38,10 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_manager_impl.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -59,52 +59,65 @@ namespace ash {
 
 namespace {
 
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("12345"));
+
 std::vector<uint8_t> Data(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-void Capture(std::string* result, scoped_refptr<base::RefCountedMemory> data) {
-  *result = std::string(base::as_string_view(*data));
+std::string SendFileInfoUTF8(const exo::SecurityDelegate& delegate,
+                             ui::EndpointType target,
+                             const std::vector<ui::FileInfo>& files) {
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+  delegate.SendFileInfo(target, files, future.GetCallback());
+  scoped_refptr<base::RefCountedMemory> data = future.Take();
+  CHECK(data);
+  return std::string(base::as_string_view(*data));
 }
 
-void CaptureUTF16(std::string* result,
-                  scoped_refptr<base::RefCountedMemory> data) {
+std::string SendFileInfoUTF16(const exo::SecurityDelegate& delegate,
+                              ui::EndpointType target,
+                              const std::vector<ui::FileInfo>& files) {
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+  delegate.SendFileInfo(target, files, future.GetCallback());
+  scoped_refptr<base::RefCountedMemory> data = future.Take();
+  CHECK(data);
   base::span<const uint8_t> bytes = *data;
   std::u16string str(bytes.size() / 2u, u'\0');
   base::as_writable_byte_span(str).copy_from(bytes);
-  *result = base::UTF16ToUTF8(str);
+  return base::UTF16ToUTF8(str);
 }
 
 }  // namespace
 
 class ChromeSecurityDelegateTest : public testing::Test {
  public:
+  ChromeSecurityDelegateTest() = default;
+  ChromeSecurityDelegateTest(const ChromeSecurityDelegateTest&) = delete;
+  ChromeSecurityDelegateTest& operator=(const ChromeSecurityDelegateTest&) =
+      delete;
+  ~ChromeSecurityDelegateTest() override = default;
+
   void SetUp() override {
     ChunneldClient::InitializeFake();
     CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
 
-    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
-    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
-                    .AddRegularUser(account_id));
-    user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-
-    {
-      ash::ScopedAccountIdAnnotator annotator(
-          profile_manager_->profile_manager(), account_id);
-      profile_ =
-          profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-    }
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kTestAccountId)));
+    ASSERT_TRUE(profile_);
 
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
@@ -145,8 +158,7 @@ class ChromeSecurityDelegateTest : public testing::Test {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_ = nullptr;
-    profile_manager_.reset();
-    user_manager_.Reset();
+    user_session_test_environment_.reset();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     CiceroneClient::Shutdown();
@@ -157,12 +169,12 @@ class ChromeSecurityDelegateTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager user_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
 
-  raw_ptr<storage::ExternalMountPoints> mount_points_;
+  raw_ptr<storage::ExternalMountPoints> mount_points_ = nullptr;
   std::string myfiles_mount_name_;
   base::FilePath myfiles_dir_;
   std::string crostini_mount_name_;
@@ -334,85 +346,66 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoConvertPaths) {
   ui::FileInfo file2(myfiles_dir_.Append("file2"), base::FilePath());
 
   // Unknown VMs should be ignored.
-  std::string data;
-  security_delegate.SendFileInfo(ui::EndpointType::kUnknownVm, {file1},
-                                 base::BindOnce(&CaptureUTF16, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("", data);
+  EXPECT_EQ("", SendFileInfoUTF16(security_delegate,
+                                  ui::EndpointType::kUnknownVm, {file1}));
 
   // Arc should convert path to UTF16 URL.
-  security_delegate.SendFileInfo(ui::EndpointType::kArc, {file1},
-                                 base::BindOnce(&CaptureUTF16, &data));
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "content://org.chromium.arc.volumeprovider/"
       "0000000000000000000000000000CAFEF00D2019/file1",
-      data);
+      SendFileInfoUTF16(security_delegate, ui::EndpointType::kArc, {file1}));
 
   // Arc should join lines with CRLF.
-  security_delegate.SendFileInfo(ui::EndpointType::kArc, {file1, file2},
-                                 base::BindOnce(&CaptureUTF16, &data));
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "content://org.chromium.arc.volumeprovider/"
       "0000000000000000000000000000CAFEF00D2019/file1"
       "\r\n"
       "content://org.chromium.arc.volumeprovider/"
       "0000000000000000000000000000CAFEF00D2019/file2",
-      data);
+      SendFileInfoUTF16(security_delegate, ui::EndpointType::kArc,
+                        {file1, file2}));
 
   // Crostini should convert path to inside VM, and share the path.
   guest_os::GuestOsSecurityDelegate crostini_security_delegate("termina");
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///mnt/chromeos/MyFiles/file1", data);
+  EXPECT_EQ("file:///mnt/chromeos/MyFiles/file1",
+            SendFileInfoUTF8(crostini_security_delegate,
+                             ui::EndpointType::kCrostini, {file1}));
 
   // Crostini should join lines with CRLF.
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini,
-                                          {file1, file2},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "file:///mnt/chromeos/MyFiles/file1"
       "\r\n"
       "file:///mnt/chromeos/MyFiles/file2",
-      data);
+      SendFileInfoUTF8(crostini_security_delegate, ui::EndpointType::kCrostini,
+                       {file1, file2}));
 
   // Bruschetta should convert path to inside VM, and share the path.
   guest_os::GuestOsSecurityDelegate bru_security_delegate("bru");
-  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                     base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///mnt/shared/MyFiles/file1", data);
+  EXPECT_EQ("file:///mnt/shared/MyFiles/file1",
+            SendFileInfoUTF8(bru_security_delegate, ui::EndpointType::kCrostini,
+                             {file1}));
 
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///etc/hosts", data);
+  EXPECT_EQ("file:///etc/hosts",
+            SendFileInfoUTF8(crostini_security_delegate,
+                             ui::EndpointType::kCrostini, {file1}));
 
   // Crostini should ignore vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("", data);
+  EXPECT_EQ("", SendFileInfoUTF8(crostini_security_delegate,
+                                 ui::EndpointType::kCrostini, {file1}));
 
   // Bruschetta should handle vmfile:bru:/etc/hosts.
   file1.path = base::FilePath("vmfile:bru:/etc/hosts");
-  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                     base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///etc/hosts", data);
+  EXPECT_EQ("file:///etc/hosts",
+            SendFileInfoUTF8(bru_security_delegate, ui::EndpointType::kCrostini,
+                             {file1}));
 
   // Bruschetta should ignore vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  bru_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file1},
-                                     base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("", data);
+  EXPECT_EQ("", SendFileInfoUTF8(bru_security_delegate,
+                                 ui::EndpointType::kCrostini, {file1}));
 }
 
 TEST_F(ChromeSecurityDelegateTest, SendFileInfoSharePathsCrostini) {
@@ -426,19 +419,16 @@ TEST_F(ChromeSecurityDelegateTest, SendFileInfoSharePathsCrostini) {
                                           shared_path);
   ui::FileInfo file(shared_path, base::FilePath());
   EXPECT_FALSE(FakeSeneschalClient::Get()->share_path_called());
-  std::string data;
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///mnt/chromeos/MyFiles/shared", data);
+  EXPECT_EQ("file:///mnt/chromeos/MyFiles/shared",
+            SendFileInfoUTF8(crostini_security_delegate,
+                             ui::EndpointType::kCrostini, {file}));
   EXPECT_FALSE(FakeSeneschalClient::Get()->share_path_called());
 
   // A path which is not already shared should be shared.
   file = ui::FileInfo(myfiles_dir_.Append("file"), base::FilePath());
-  crostini_security_delegate.SendFileInfo(ui::EndpointType::kCrostini, {file},
-                                          base::BindOnce(&Capture, &data));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ("file:///mnt/chromeos/MyFiles/file", data);
+  EXPECT_EQ("file:///mnt/chromeos/MyFiles/file",
+            SendFileInfoUTF8(crostini_security_delegate,
+                             ui::EndpointType::kCrostini, {file}));
   EXPECT_TRUE(FakeSeneschalClient::Get()->share_path_called());
 }
 

@@ -20,12 +20,12 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/profiles",
-  "+chrome/test/base",
+  "+chrome/browser/profiles/profile.h",
 ]
 
 specific_include_rules = {
   ".*test\\.cc": [
-    "+chrome/browser/ash/login/users/scoped_account_id_annotator.h",
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+    "+chrome/test/base",
   ]
 }

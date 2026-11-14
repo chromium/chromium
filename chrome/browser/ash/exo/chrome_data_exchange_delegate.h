@@ -9,10 +9,15 @@
 #include "components/exo/data_exchange_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 // Get all FileSystemURLs in `pickle`.
 std::vector<storage::FileSystemURL> GetFileSystemUrlsFromPickle(
+    content::BrowserContext* browser_context,
     const base::Pickle& pickle);
 
 class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {

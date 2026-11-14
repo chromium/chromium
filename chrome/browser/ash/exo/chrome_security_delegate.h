@@ -9,6 +9,10 @@
 #include "components/exo/security_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 BASE_DECLARE_FEATURE(kChromeSecurityDelegateIgnoreArcVm);
@@ -16,6 +20,7 @@ BASE_DECLARE_FEATURE(kChromeSecurityDelegateIgnoreArcVm);
 // Translate paths from |source| VM to valid paths in the host. Invalid paths
 // are ignored.
 std::vector<base::FilePath> TranslateVMPathsToHost(
+    content::BrowserContext* browser_context,
     const std::string& vm_name,
     const std::vector<ui::FileInfo>& vm_paths);
 
@@ -23,6 +28,7 @@ std::vector<base::FilePath> TranslateVMPathsToHost(
 // which can be used inside the vm. |callback| is invoked with translated
 // "file://" URLs.
 void ShareWithVMAndTranslateToFileUrls(
+    content::BrowserContext* browser_context,
     const std::string& vm_name,
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(std::vector<std::string>)> callback);
