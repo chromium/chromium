@@ -1912,7 +1912,7 @@ Your Google account may have other forms of browsing history like searches and a
         Filter by date
       </message>
       <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters.">
-        Clear all
+        Clear filters
       </message>
       <message name="IDS_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate users about the app history filter.">
         Search by app, date, and more.
