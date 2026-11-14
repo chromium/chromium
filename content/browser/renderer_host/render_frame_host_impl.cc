@@ -37,7 +37,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/process/kill.h"
 #include "base/process/memory.h"
@@ -6614,13 +6613,6 @@ void RenderFrameHostImpl::DidCallFocus() {
     return;
   }
   delegate_->DidCallFocus();
-}
-
-void RenderFrameHostImpl::CancelInitialHistoryLoad() {
-  // A Javascript navigation interrupted the initial history load.  Check if an
-  // initial subframe cross-process navigation needs to be canceled as a result.
-  // TODO(creis, clamy): Cancel any cross-process navigation.
-  NOTIMPLEMENTED();
 }
 
 void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(

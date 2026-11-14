@@ -205,8 +205,6 @@ class MockFrameHost : public mojom::FrameHost {
   void DidChangeName(const std::string& name,
                      const std::string& unique_name) override {}
 
-  void CancelInitialHistoryLoad() override {}
-
   void UpdateEncoding(const std::string& encoding_name) override {}
 
   void UpdateState(const blink::PageState& state) override {

@@ -5772,19 +5772,11 @@ void RenderFrameImpl::BeginNavigation(
     }
   }
 
-  if (is_history_navigation_in_new_child_frame) {
-    // Don't do this if |info| also says it is a client redirect, in which
-    // case JavaScript on the page is trying to interrupt the history
-    // navigation.
-    if (info->is_client_redirect) {
-      // Client redirects during an initial history load should attempt to
-      // cancel the history navigation.  They will create a provisional
-      // document loader, causing the history load to be ignored in
-      // NavigateInternal, and this IPC will try to cancel any cross-process
-      // history load.
-      is_history_navigation_in_new_child_frame = false;
-      GetFrameHost()->CancelInitialHistoryLoad();
-    }
+  // Don't treat this as a history navigation if `info` also says it is a client
+  // redirect, in which case JavaScript on the page is trying to interrupt the
+  // history navigation.
+  if (is_history_navigation_in_new_child_frame && info->is_client_redirect) {
+    is_history_navigation_in_new_child_frame = false;
   }
 
   // Use the frame's original request's URL rather than the document's URL for

@@ -3544,7 +3544,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ResourceLoadInfoPtr resource_load_info) override;
   void DidChangeName(const std::string& name,
                      const std::string& unique_name) override;
-  void CancelInitialHistoryLoad() override;
   void DidInferColorScheme(
       blink::mojom::PreferredColorScheme color_scheme) override;
   void UpdateEncoding(const std::string& encoding) override;
