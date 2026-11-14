@@ -943,6 +943,12 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
         &service_ptr_.ExtractAsDangling()->render_frame_host());
   }
 
+  void RequestDevice(
+      blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
+      blink::mojom::WebBluetoothService::RequestDeviceCallback callback) {
+    service_ptr_->RequestDevice(std::move(options), std::move(callback));
+  }
+
   void ForgetDevice(
       const blink::WebBluetoothDeviceId& device_id,
       blink::mojom::WebBluetoothService::ForgetDeviceCallback callback) {
@@ -1131,6 +1137,48 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDeviceReset) {
   // The second request bailed out due to synchronous destruction; its
   // callback was dropped without running.
   EXPECT_FALSE(future2.IsReady());
+}
+
+TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRunBluetoothChooserBailOut) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+  browser_client_.bluetooth_delegate()->set_run_bluetooth_chooser_callback(
+      base::BindLambdaForTesting(
+          [this](RenderFrameHost* frame,
+                 const BluetoothChooser::EventHandler& event_handler)
+              -> std::unique_ptr<BluetoothChooser> {
+            DeleteService();
+            event_handler.Run(BluetoothChooserEvent::CANCELLED, std::string());
+            return nullptr;
+          }));
+
+  auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options->accept_all_devices = true;
+  base::MockCallback<WebBluetoothServiceImpl::RequestDeviceCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  RequestDevice(std::move(options), callback.Get());
+
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       CancelledSynchronouslyDuringRunBluetoothChooser) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+  EXPECT_CALL(*adapter_, IsPowered()).Times(0);
+  browser_client_.bluetooth_delegate()->set_run_bluetooth_chooser_callback(
+      base::BindLambdaForTesting(
+          [](RenderFrameHost* frame,
+             const BluetoothChooser::EventHandler& event_handler) {
+            event_handler.Run(BluetoothChooserEvent::CANCELLED, std::string());
+            return std::make_unique<BluetoothChooser>();
+          }));
+
+  auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options->accept_all_devices = true;
+  TestFuture<WebBluetoothResult, blink::mojom::WebBluetoothDevicePtr> future;
+  RequestDevice(std::move(options), future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), WebBluetoothResult::CHOOSER_CANCELLED);
+  EXPECT_FALSE(future.Get<1>());
 }
 
 TEST_F(WebBluetoothServiceImplTest, RequestDeviceWithoutUserActivation) {
