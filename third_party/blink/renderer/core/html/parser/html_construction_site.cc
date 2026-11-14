@@ -1219,10 +1219,10 @@ Element* HTMLConstructionSite::CreateElement(
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   // If sanitizer_ is set and if santizer_ would not allow the "is" attribute,
   // then we will just pretend to not have seen it.
-  Document& creation_document = (sanitizer_ && document.IsActive() &&
-                                 !sanitizer_->IsElementAllowed(tag_name))
-                                    ? document.EnsureTemplateDocument()
-                                    : document;
+  Document& creation_document =
+      (sanitizer_ && !sanitizer_->IsElementAllowed(tag_name))
+          ? document.EnsureTemplateDocument()
+          : document;
   bool sanitizer_allows_is_attribute =
       !sanitizer_ || sanitizer_->AllowIsAttribute(tag_name);
   const AtomicString& is = (is_attribute && sanitizer_allows_is_attribute)
@@ -1245,6 +1245,9 @@ Element* HTMLConstructionSite::CreateElement(
       }
       intended_parent = parent_item->NextItemInStack()->GetNode();
     }
+  }
+  if (intended_parent == open_elements_.RootNode() && root_insertion_point_) {
+    intended_parent = root_insertion_point_->target.Get();
   }
   if (intended_parent != open_elements_.RootNode()) {
     if (auto* tmpl = DynamicTo<HTMLTemplateElement>(intended_parent)) {
