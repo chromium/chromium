@@ -23,6 +23,7 @@ namespace gpu {
 
 const uint32_t ImplementationBase::kMaxSizeOfSimpleResult;
 const uint32_t ImplementationBase::kStartingOffset;
+const unsigned int ImplementationBase::kAlignment;
 
 ImplementationBase::ImplementationBase(CommandBufferHelper* helper,
                                        TransferBufferInterface* transfer_buffer,

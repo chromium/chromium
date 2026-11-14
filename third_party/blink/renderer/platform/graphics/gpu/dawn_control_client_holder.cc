@@ -68,6 +68,13 @@ void DawnControlClientHolder::Destroy() {
     }
   }
   DestroyMappableBuffers();
+
+  // Disconnect the wire client synchronously so any trailing JavaScript that
+  // executes after `ContextDestroyed()` (e.g. in a frame that just removed
+  // itself) becomes a no-op and cannot allocate shared memory. This cannot
+  // re-enter page script because `ExecutionContext` destruction has already
+  // started, so Blink WebGPU callbacks early-out.
+  api_channel_->Disconnect();
   MarkContextLost();
 
   // Destroy the WebGPU context.
@@ -103,10 +110,8 @@ wgpu::Instance DawnControlClientHolder::GetWGPUInstance() const {
 }
 
 void DawnControlClientHolder::MarkContextLost() {
-  if (context_lost_) {
-    return;
-  }
-  api_channel_->Disconnect();
+  // Disconnecting `api_channel_` on GPU context loss is handled by
+  // `WebGPUImplementation::OnGpuControlLostContext()`.
   context_lost_ = true;
 }
 

@@ -59,11 +59,8 @@ class DawnClientSerializer : public dawn::wire::CommandSerializer {
   // dawn::wire::CommandSerializer implementation
   bool Flush() final;
 
-  // Found dangling on `linux-rel` in
-  // `gpu_tests.context_lost_integration_test.ContextLostIntegrationTest.
-  // ContextLost_WebGPUStressRequestDeviceAndRemoveLoop`
-  raw_ptr<WebGPUImplementation, DanglingUntriaged> client_;
-  raw_ptr<WebGPUCmdHelper, DanglingUntriaged> helper_;
+  raw_ptr<WebGPUImplementation> client_;
+  raw_ptr<WebGPUCmdHelper> helper_;
 
   raw_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
   uint32_t put_offset_ = 0;

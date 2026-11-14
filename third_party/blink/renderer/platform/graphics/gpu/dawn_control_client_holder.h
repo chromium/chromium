@@ -73,7 +73,6 @@ class PLATFORM_EXPORT DawnControlClientHolder
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
   wgpu::Instance GetWGPUInstance() const;
-  void MarkContextLost();
   bool IsContextLost() const;
   std::unique_ptr<WebGpuSharedImageLease> LeaseSharedImage(
       viz::SharedImageFormat format,
@@ -96,6 +95,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   friend class RefCounted<DawnControlClientHolder>;
   ~DawnControlClientHolder();
 
+  void MarkContextLost();
   void DestroyMappableBuffers();
 
   bool context_lost_ = false;

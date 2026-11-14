@@ -70,11 +70,17 @@ WGPUInstance DawnWireServices::GetWGPUInstance() const {
 void DawnWireServices::Disconnect() {
   {
     base::AutoLock lock(lock_);
+    if (disconnected_) {
+      return;
+    }
     disconnected_ = true;
   }
-  wire_client_.Disconnect();
+  // Disconnect command-buffer-backed services before `wire_client_` because
+  // `wire_client_.Disconnect()` synchronously invokes callbacks that may tear
+  // down `WebGPUImplementation` and `WebGPUCmdHelper`.
   serializer_.Disconnect();
   memory_transfer_service_.Disconnect();
+  wire_client_.Disconnect();
 }
 
 void DawnWireServices::HandleCommands(
@@ -148,13 +154,14 @@ void DawnWireServices::FreeMappedResources(WebGPUCmdHelper* helper) {
 WebGPUImplementation::WebGPUImplementation(
     WebGPUCmdHelper* helper,
     TransferBufferInterface* transfer_buffer,
-    GpuControl* gpu_control)
+    GpuControl* gpu_control,
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
-      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+      main_task_runner_(std::move(main_task_runner)) {}
 
 WebGPUImplementation::~WebGPUImplementation() {
-  LoseContext();
+  lost_ = true;
 
   // Before destroying WebGPUImplementation, all mappable buffers
   // must be destroyed first. This means that all shared memory mappings are
@@ -164,6 +171,7 @@ WebGPUImplementation::~WebGPUImplementation() {
   // blocks that are no longer in use as free.
 #if BUILDFLAG(USE_DAWN)
   if (dawn_wire_) {
+    dawn_wire_->Disconnect();
     dawn_wire_->FreeMappedResources(helper_);
     dawn_wire_.reset();
   }
@@ -176,15 +184,6 @@ WebGPUImplementation::~WebGPUImplementation() {
   helper_->Finish();
 }
 
-void WebGPUImplementation::LoseContext() {
-  lost_ = true;
-#if BUILDFLAG(USE_DAWN)
-  if (dawn_wire_) {
-    dawn_wire_->Disconnect();
-  }
-#endif
-}
-
 gpu::ContextResult WebGPUImplementation::Initialize(
     const SharedMemoryLimits& limits) {
   TRACE_EVENT0("gpu", "WebGPUImplementation::Initialize");
@@ -193,6 +192,7 @@ gpu::ContextResult WebGPUImplementation::Initialize(
     return result;
   }
 
+#if BUILDFLAG(USE_DAWN)
   std::unique_ptr<TransferBuffer> transfer_buffer =
       std::make_unique<TransferBuffer>(helper_);
   if (!transfer_buffer->Initialize(
@@ -202,7 +202,6 @@ gpu::ContextResult WebGPUImplementation::Initialize(
     return gpu::ContextResult::kFatalFailure;
   }
 
-#if BUILDFLAG(USE_DAWN)
   dawn_wire_ = base::MakeRefCounted<DawnWireServices>(
       this, helper_, mapped_memory_.get(), std::move(transfer_buffer));
 #endif
@@ -292,7 +291,17 @@ void WebGPUImplementation::SetGLError(GLenum error,
 
 // GpuControlClient implementation.
 void WebGPUImplementation::OnGpuControlLostContext() {
-  LoseContext();
+  lost_ = true;
+#if BUILDFLAG(USE_DAWN)
+  if (dawn_wire_) {
+    // Post `Disconnect` to `main_task_runner_` so Dawn callbacks (such as
+    // `device.lost`) run in a fresh call stack and cannot re-entrantly destroy
+    // `this`.
+    CHECK(main_task_runner_);
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DawnWireServices::Disconnect, dawn_wire_));
+  }
+#endif
 
   // This should never occur more than once.
   DCHECK(!lost_context_callback_run_);

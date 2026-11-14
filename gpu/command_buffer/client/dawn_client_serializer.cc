@@ -38,10 +38,6 @@ size_t DawnClientSerializer::GetMaximumAllocationSize() const {
 
 std::optional<std::span<volatile std::byte>>
 DawnClientSerializer::GetCommandSpace(size_t size) {
-  // Note: Dawn will never call this function with |size| >
-  // GetMaximumAllocationSize().
-  DCHECK_LE(size, GetMaximumAllocationSize());
-
   // The buffer size must be initialized before any commands are serialized.
   DCHECK_NE(buffer_initial_size_, 0u);
 
@@ -59,9 +55,13 @@ DawnClientSerializer::GetCommandSpace(size_t size) {
   }
 
   if (!transfer_buffer_) {
-    // The serializer hit a fatal error and was disconnected.
+    // The serializer was disconnected.
     return std::nullopt;
   }
+
+  // Note: Dawn will never call this function with |size| >
+  // GetMaximumAllocationSize().
+  DCHECK_LE(size, GetMaximumAllocationSize());
 
   // Otherwise, flush and reset the command stream.
   Flush();
@@ -75,8 +75,8 @@ DawnClientSerializer::GetCommandSpace(size_t size) {
 
   if (!buffer_.valid() || buffer_.size() < size) {
     DLOG(ERROR) << "Dawn wire transfer buffer allocation failed";
-    Disconnect();
     client_->OnGpuControlLostContextMaybeReentrant();
+    Disconnect();
     return std::nullopt;
   }
 
@@ -132,6 +132,8 @@ void DawnClientSerializer::Disconnect() {
     helper_->Finish();
     transfer_buffer = nullptr;
   }
+  client_ = nullptr;
+  helper_ = nullptr;
 }
 
 bool DawnClientSerializer::Flush() {
