@@ -84,13 +84,16 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
 # for v8_context_snapshot_generator there, and loads the target's snapshot.
 # Mac builds on Linux hosts stay off: they skip the context snapshot to avoid
 # building Blink twice (see v8_context_snapshot.gni), and the generator would
-# bring that cost back. See //tools/code_cache_generator/README.md.
+# bring that cost back. ChromeOS device builds (cros:target, cros:host,
+# cros:v8_snapshot) also stay off, because they would need a second Blink build
+# in cros:v8_snapshot. See //tools/code_cache_generator/README.md.
 # TODO(crbug.com/399764218): Enable this build-step on other cross-compiled
 # builds.
 if (enable_webui_generate_code_cache) {
   enable_webui_generate_code_cache =
       optimize_webui && !is_msan &&
-      ((host_toolchain == current_toolchain && (is_linux || is_win)) ||
+      ((host_toolchain == current_toolchain &&
+        (is_linux || is_chromeos || is_win)) ||
        (is_mac && host_os == "mac" && current_toolchain == default_toolchain))
 }
 
