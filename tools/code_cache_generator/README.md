@@ -39,8 +39,6 @@ machines:
 | Target | Build machine | Cache shipped in |
 | --- | --- | --- |
 | Linux, Windows | Same OS and CPU as the target | `resources.pak` |
-| ChromeOS on a Linux machine (linux-chromeos) | Linux, same CPU as the target | `resources.pak` |
-| ChromeOS devices (cros toolchains) | Linux | Not generated |
 | Mac, either CPU | Any Mac, including an arm64 Mac building x64 | `webui_code_cache.<arch>.pak` |
 | Mac | Linux | Not generated |
 | Other cross builds | Any | Not generated |
