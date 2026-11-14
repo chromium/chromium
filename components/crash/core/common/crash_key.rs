@@ -33,6 +33,7 @@
 
 use std::cell::UnsafeCell;
 use std::ffi::{c_char, c_void, CStr};
+use std::fmt::{self, Display};
 use std::sync::atomic::{AtomicBool, AtomicPtr, AtomicU32, Ordering};
 
 chromium::import! {
@@ -157,22 +158,32 @@ impl<const N: usize> CrashKeyString<N> {
         self.name
     }
 
+    /// Stores the `Display` representation of `value` in the crash key, e.g.
+    /// `KEY.set("text")`, `KEY.set(42)`, or
+    /// `KEY.set(format_args!("{id}:{name}"))`.
+    ///
     /// # Thread safety
     ///
     /// Can be called from any thread. If another thread is writing to the same
     /// crash key at the same time, this write is dropped rather than waiting,
     /// so setting a crash key never blocks.
-    pub fn set(&'static self, value: &str) {
+    pub fn set(&'static self, value: impl Display) {
         let Some(_lock) = self.try_lock_writer() else {
             return;
         };
-        let value = truncate_to_char_boundary(value, N).as_bytes();
-        debug_assert!(!value.contains(&0), "Crash key values must not contain NUL characters.");
         // SAFETY: `writer_lock` is held, so nothing else is writing to
         // `self.value`.
-        unsafe { (&mut *self.value.get())[..value.len()].copy_from_slice(value) };
-        // `value.len()` is at most `N`, which is at most 1024.
-        self.header.size.store(value.len() as u32, Ordering::Release);
+        let buffer = unsafe { &mut *self.value.get() };
+        let mut writer = TruncatingWriter { buffer, len: 0 };
+        // An error just means that the value was truncated.
+        let _ = fmt::write(&mut writer, format_args!("{value}"));
+        let len = writer.len;
+        debug_assert!(
+            !buffer[..len].contains(&0),
+            "Crash key values must not contain NUL characters."
+        );
+        // `len` is at most `N`, which is at most 1024.
+        self.header.size.store(len as u32, Ordering::Release);
         self.register();
     }
 
@@ -239,6 +250,29 @@ struct WriterLockGuard<'a> {
 impl Drop for WriterLockGuard<'_> {
     fn drop(&mut self) {
         self.lock.store(false, Ordering::Release);
+    }
+}
+
+/// Formats into a fixed-size buffer, truncating at a character boundary once
+/// the buffer is full.
+struct TruncatingWriter<'a> {
+    buffer: &'a mut [u8],
+    /// The number of bytes of `buffer` that have been written.
+    len: usize,
+}
+
+impl fmt::Write for TruncatingWriter<'_> {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        let available = self.buffer.len() - self.len;
+        let truncated = truncate_to_char_boundary(s, available);
+        self.buffer[self.len..self.len + truncated.len()].copy_from_slice(truncated.as_bytes());
+        self.len += truncated.len();
+        // Stop formatting once the buffer is full.
+        if truncated.len() < s.len() {
+            Err(fmt::Error)
+        } else {
+            Ok(())
+        }
     }
 }
 

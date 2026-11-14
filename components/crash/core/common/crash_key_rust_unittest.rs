@@ -92,14 +92,14 @@ fn test_truncation() {
     static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-truncation");
     let annotation = as_annotation(&KEY);
 
-    KEY.set(&"x".repeat(100));
+    KEY.set("x".repeat(100));
     expect_eq!(ffi::AnnotationValue(annotation), "x".repeat(32));
 
     // Truncation doesn't split multi-byte characters: 16 two-byte characters
     // fit exactly, but a leading one-byte character leaves room for only 15.
-    KEY.set(&"\u{e9}".repeat(20));
+    KEY.set("\u{e9}".repeat(20));
     expect_eq!(ffi::AnnotationValue(annotation), "\u{e9}".repeat(16));
-    KEY.set(&format!("x{}", "\u{e9}".repeat(20)));
+    KEY.set(format!("x{}", "\u{e9}".repeat(20)));
     expect_eq!(ffi::AnnotationValue(annotation), format!("x{}", "\u{e9}".repeat(15)));
 }
 
@@ -120,4 +120,31 @@ fn test_concurrent_writes() {
     // one of the written values rather than a mix of them.
     let value = ffi::AnnotationValue(as_annotation(&KEY));
     expect_true!(values.contains(&value), "Unexpected value: {value}");
+}
+
+#[gtest(RustCrashKeyTest, SetDisplay)]
+fn test_set_display() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-set-display");
+    let annotation = as_annotation(&KEY);
+
+    KEY.set(42);
+    expect_eq!(ffi::AnnotationValue(annotation), "42");
+    KEY.set(true);
+    expect_eq!(ffi::AnnotationValue(annotation), "true");
+    KEY.set(String::from("owned"));
+    expect_eq!(ffi::AnnotationValue(annotation), "owned");
+    let (id, name) = (7, "seven");
+    KEY.set(format_args!("{id}:{name}"));
+    expect_eq!(ffi::AnnotationValue(annotation), "7:seven");
+}
+
+#[gtest(RustCrashKeyTest, SetDisplayTruncation)]
+fn test_set_display_truncation() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-set-display-truncation");
+    let annotation = as_annotation(&KEY);
+
+    let first = "x".repeat(20);
+    let second = "\u{e9}".repeat(10);
+    KEY.set(format_args!("{first}{second}"));
+    expect_eq!(ffi::AnnotationValue(annotation), format!("{first}{}", "\u{e9}".repeat(6)));
 }
