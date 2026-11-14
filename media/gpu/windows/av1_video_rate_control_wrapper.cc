@@ -4,7 +4,7 @@
 
 #include "av1_video_rate_control_wrapper.h"
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 
 namespace media {
@@ -46,19 +46,19 @@ aom::AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
   rc_config.ss_number_layers = config.ss_number_layers;
   rc_config.ts_number_layers = config.ts_number_layers;
   for (int tid = 0; tid < config.ts_number_layers; ++tid) {
-    UNSAFE_TODO(rc_config.ts_rate_decimator[tid]) =
+    base::span(rc_config.ts_rate_decimator)[tid] =
         config.ts_rate_decimator[tid];
   }
   for (int sid = 0; sid < config.ss_number_layers; ++sid) {
-    UNSAFE_TODO(rc_config.scaling_factor_num[sid]) =
+    base::span(rc_config.scaling_factor_num)[sid] =
         config.scaling_factor_num[sid];
-    UNSAFE_TODO(rc_config.scaling_factor_den[sid]) =
+    base::span(rc_config.scaling_factor_den)[sid] =
         config.scaling_factor_den[sid];
     for (int tid = 0; tid < config.ts_number_layers; ++tid) {
       const int i = sid * config.ts_number_layers + tid;
-      UNSAFE_TODO(rc_config.max_quantizers[i]) = config.max_quantizers[i];
-      UNSAFE_TODO(rc_config.min_quantizers[i]) = config.min_quantizers[i];
-      UNSAFE_TODO(rc_config.layer_target_bitrate[i]) =
+      base::span(rc_config.max_quantizers)[i] = config.max_quantizers[i];
+      base::span(rc_config.min_quantizers)[i] = config.min_quantizers[i];
+      base::span(rc_config.layer_target_bitrate)[i] =
           config.layer_target_bitrate[i];
     }
   }
