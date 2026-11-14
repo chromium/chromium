@@ -132,6 +132,7 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
   // Drag variables.
   WebDragSource* __strong _dragSource;
   NSDragOperation _dragOperation;
+  BOOL _allowExternalDrag;
 
   NSWindow* __weak _trackedWindow;
   BOOL _willSetWebContentsOccludedAfterDelay;
@@ -319,6 +320,15 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
   }
 
   _dragOperation = operationMask;
+  // An empty `dropData` is valid and used in situations where internal UI
+  // elements (e.g. WebUI tiles or cards being reordered) are dragged within the
+  // page without exporting any payload to external drop targets.
+  _allowExternalDrag = !dropData.url_infos.empty() ||
+                       !dropData.file_contents.empty() ||
+                       dropData.download_metadata.has_value() ||
+                       (dropData.html && !dropData.html->empty()) ||
+                       (dropData.text && !dropData.text->empty()) ||
+                       !dropData.custom_data.empty();
 
   // Start the drag session. This hands control to AppKit, which queries each
   // item's pasteboard writer (the primary WebDragSource and the URL-only
@@ -336,6 +346,9 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 
 - (NSDragOperation)draggingSession:(NSDraggingSession*)session
     sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
+  if (context == NSDraggingContextOutsideApplication && !_allowExternalDrag) {
+    return NSDragOperationNone;
+  }
   return _dragOperation;
 }
 
@@ -369,7 +382,8 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
   gfx::PointF screen_point_f =
       GetSanitizedFlippedPoint(screenPoint, screenFrame.size.height);
 
-  _host->EndDrag(operation, local_point_f, screen_point_f);
+  _host->EndDrag(ui::DragDropTypes::NSDragOperationToDragOperation(operation),
+                 local_point_f, screen_point_f);
 
   // The drag is complete. Disconnect the drag source.
   [_dragSource webContentsIsGone];
