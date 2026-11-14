@@ -80,6 +80,11 @@ class CORE_EXPORT PerformanceObserver final
 
   static PerformanceEntryType supportedEntryTypeMask(ScriptState*);
 
+  // Read scroll records already in the compositor buffer before adding or
+  // updating an observer. Existing scroll observers receive them; new ones
+  // receive them only with buffered: true.
+  void ImportScrollTimingRecords();
+
   Member<V8PerformanceObserverCallback> callback_;
   WeakMember<Performance> performance_;
   PerformanceEntryVector performance_entries_;

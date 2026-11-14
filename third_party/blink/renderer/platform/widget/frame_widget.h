@@ -381,6 +381,10 @@ class PLATFORM_EXPORT FrameWidget {
 
   virtual void OnFirstContentfulPaint() = 0;
 
+  // Imports published Scroll Timing records into the local root's Performance
+  // Timeline, regardless of observation or history capacity.
+  virtual void ImportScrollTimingRecords() = 0;
+
   // Whether or not the widget is in the process of handling input events.
   virtual bool HandlingInputEvent() = 0;
 

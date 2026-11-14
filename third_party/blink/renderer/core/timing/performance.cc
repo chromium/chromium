@@ -1570,6 +1570,7 @@ void Performance::ClearForWindowReuse() {
   largest_contentful_paint_buffer_.clear();
   first_input_timing_ = nullptr;
   navigation_timing_ = nullptr;
+  scroll_timing_buffer_.clear();
 }
 
 void Performance::OnDeclarativePerformanceObserverHostDisconnected() {

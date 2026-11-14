@@ -4,20 +4,39 @@
 
 #include "third_party/blink/renderer/core/timing/performance_scroll_timing.h"
 
+#include <limits>
+
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
+#include "cc/metrics/scroll_timing_buffer.h"
+#include "cc/trees/compositor_commit_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/events/types/scroll_input_type.h"
 
 namespace blink {
@@ -249,5 +268,249 @@ TEST_F(PerformanceScrollTimingTest, AddScrollTimingDropsDisconnectedTarget) {
   EXPECT_EQ(nullptr,
             static_cast<PerformanceScrollTiming*>(entries[0].Get())->target());
 }
+
+class ScrollTimingWidgetIntegrationTest : public SimTest {
+ protected:
+  ScrollTimingWidgetIntegrationTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    SimTest::SetUp();
+    SimRequest request("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    request.Complete(kPage);
+    Compositor().BeginFrame();
+
+    // SimTest's single-threaded compositor has no Scroll Timing buffer, so
+    // attach one whose producer the test controls.
+    producer_ = cc::ScrollTimingBuffer::Create();
+    ASSERT_TRUE(producer_);
+    GetWebFrameWidget()
+        .LayerTreeHostForTesting()
+        ->InitializeScrollTimingBufferConsumer(producer_->TakeReadOnlyRegion());
+  }
+
+  WindowPerformance* GetPerformance() {
+    return DOMWindowPerformance::performance(Window());
+  }
+
+  PerformanceEntryVector Entries() {
+    return GetPerformance()->getBufferedEntriesByType(
+        performance_entry_names::kScroll);
+  }
+
+  Node* EntryTarget(wtf_size_t index) {
+    return static_cast<PerformanceScrollTiming*>(Entries()[index].Get())
+        ->target();
+  }
+
+  cc::ElementId ScrollerId(Document& document) {
+    return document.getElementById(AtomicString("scroller"))
+        ->GetLayoutBox()
+        ->GetScrollableArea()
+        ->GetScrollElementId();
+  }
+  cc::ElementId ScrollerId() { return ScrollerId(GetDocument()); }
+
+  cc::ElementId ViewportId() {
+    return WebView().GetPage()->GetVisualViewport().GetScrollElementId();
+  }
+
+  void Publish(cc::ElementId id,
+               base::TimeTicks start_time = base::TimeTicks::Now()) {
+    producer_->Push({
+        .start_time = start_time,
+        .end_time = start_time + base::Milliseconds(10),
+        .input_type = ui::ScrollInputType::kWheel,
+        .element_id = id,
+    });
+  }
+
+  void NotifyScrollEnd() {
+    cc::CompositorCommitData data;
+    data.scroll_end_data.done_containers.insert(ScrollerId());
+    GetWebFrameWidget().UpdateCompositorScrollState(data);
+  }
+
+  double Eval(const char* script) {
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(GetDocument().GetFrame());
+    ScriptState::Scope scope(script_state);
+    v8::Local<v8::Value> result = MainFrame().ExecuteScriptAndReturnValue(
+        WebScriptSource(WebString::FromUtf8(script)));
+    CHECK(!result.IsEmpty());
+    return result->NumberValue(script_state->GetContext()).ToChecked();
+  }
+
+  // Starts a buffered observer that records its latest callback in
+  // `delivered` and `dropped`.
+  void ObserveDroppedEntries() {
+    Eval(R"JS(
+      var delivered = 0, dropped = -1;
+      var observer = new PerformanceObserver((list, observer, options) => {
+        delivered = list.getEntries().length;
+        dropped = options.droppedEntriesCount;
+        window.dispatchEvent(new Event('scrolltimingdelivered'));
+      });
+      observer.observe({type: 'scroll', buffered: true});
+      0;
+    )JS");
+    MakeGarbageCollected<WaitForEvent>(&Window(),
+                                       AtomicString("scrolltimingdelivered"));
+  }
+
+  static constexpr char kPage[] = R"HTML(
+    <!doctype html>
+    <div id="scroller" style="overflow:scroll;width:100px;height:100px">
+      <div style="height:1000px"></div>
+    </div>
+  )HTML";
+
+  ScopedScrollPerformanceTimingForTest scroll_performance_timing_{true};
+  std::unique_ptr<cc::ScrollTimingBuffer> producer_;
+};
+
+TEST_F(ScrollTimingWidgetIntegrationTest, ObserveImportsBeforeRegistration) {
+  Publish(ScrollerId());
+  EXPECT_EQ(0, Eval(R"JS(
+    var a = new PerformanceObserver(() => {});
+    a.observe({type: 'scroll'});
+    a.takeRecords().length;
+  )JS"));
+  Publish(ScrollerId());
+  EXPECT_EQ(2, Eval(R"JS(
+    var b = new PerformanceObserver(() => {});
+    b.observe({type: 'scroll', buffered: true});
+    b.takeRecords().length;
+  )JS"));
+  EXPECT_EQ(1, Eval("a.takeRecords().length"));
+}
+
+TEST_F(ScrollTimingWidgetIntegrationTest, FilterChangeImportsForObservers) {
+  Eval(R"JS(
+    var a = new PerformanceObserver(() => {});
+    a.observe({entryTypes: ['scroll']});
+    0;
+  )JS");
+  Publish(ScrollerId());
+  Eval("a.observe({entryTypes: ['mark']}); 0");
+  EXPECT_EQ(1, Eval("a.takeRecords().length"));
+}
+
+TEST_F(ScrollTimingWidgetIntegrationTest, HistoryCountsOnlyBlinkDrops) {
+  constexpr uint32_t kCapacity = cc::ScrollTimingBuffer::kCapacity;
+  constexpr uint32_t kOverwritten = 10;
+  for (uint32_t i = 0; i < kCapacity + kOverwritten; ++i) {
+    Publish(ScrollerId());
+  }
+  ObserveDroppedEntries();
+  const auto history = Entries();
+  EXPECT_EQ(kCapacity, Eval("delivered"));
+  EXPECT_EQ(0, Eval("dropped"));
+
+  // A full history still delivers live entries and counts the history drop.
+  Eval("dropped = -1; observer.observe({type: 'scroll'}); 0");
+  Publish(ScrollerId());
+  NotifyScrollEnd();
+  MakeGarbageCollected<WaitForEvent>(&Window(),
+                                     AtomicString("scrolltimingdelivered"));
+  EXPECT_EQ(1, Eval("delivered"));
+  EXPECT_EQ(1, Eval("dropped"));
+  EXPECT_EQ(history, Entries());
+}
+
+TEST_F(ScrollTimingWidgetIntegrationTest, ScrollEndReadsAndRetries) {
+  Publish(cc::ElementId(std::numeric_limits<uint64_t>::max() - 1));
+  Publish(ScrollerId());
+  NotifyScrollEnd();
+  ASSERT_EQ(1u, Entries().size());
+  EXPECT_EQ(GetElementById("scroller"), EntryTarget(0));
+
+  task_environment().FastForwardBy(base::Milliseconds(50));
+  // A later scroll end does not postpone the pending retry.
+  NotifyScrollEnd();
+  Publish(ViewportId());
+  task_environment().FastForwardBy(base::Milliseconds(49));
+  EXPECT_EQ(1u, Entries().size());
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  ASSERT_EQ(2u, Entries().size());
+  EXPECT_EQ(&GetDocument(), EntryTarget(1));
+
+  NotifyScrollEnd();
+  Publish(ScrollerId());
+  GetWebFrameWidget().widget_base_for_testing()->WasHidden();
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(2u, Entries().size());
+}
+
+TEST_F(ScrollTimingWidgetIntegrationTest, NavigationDiscardsEarlierRecords) {
+  // The viewport ID persists across navigation.
+  for (uint32_t i = 0; i <= cc::ScrollTimingBuffer::kCapacity; ++i) {
+    Publish(ViewportId());
+  }
+  const base::TimeTicks before_navigation = base::TimeTicks::Now();
+  task_environment().AdvanceClock(base::Milliseconds(1));
+
+  SimRequest request("https://example.com/next", "text/html");
+  LoadURL("https://example.com/next");
+  request.Complete(kPage);
+  Compositor().BeginFrame();
+
+  // A gesture that started before the navigation is rejected even if it is
+  // published afterwards.
+  Publish(ViewportId(), before_navigation);
+  Publish(ViewportId());
+  ObserveDroppedEntries();
+  EXPECT_EQ(1, Eval("delivered"));
+  EXPECT_EQ(0, Eval("dropped"));
+  ASSERT_EQ(1u, Entries().size());
+  EXPECT_EQ(&GetDocument(), EntryTarget(0));
+}
+
+class ScrollTimingChildFrameTest
+    : public ScrollTimingWidgetIntegrationTest,
+      public testing::WithParamInterface<const char*> {};
+
+TEST_P(ScrollTimingChildFrameTest, ChildFrameTargetsDoNotReachLocalRoot) {
+  SimRequest child_request(GetParam(), "text/html");
+  Eval(Format(R"JS(
+    var child = document.createElement('iframe');
+    child.src = '{}';
+    document.body.append(child);
+    0;
+  )JS",
+              GetParam())
+           .Utf8()
+           .c_str());
+  child_request.Complete(kPage);
+  Compositor().BeginFrame();
+  Document* child_document =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild())
+          ->GetDocument();
+
+  Publish(ScrollerId(*child_document));
+  EXPECT_EQ(0, Eval(R"JS(
+    var observer = new PerformanceObserver(() => {});
+    observer.observe({type: 'scroll', buffered: true});
+    observer.takeRecords().length;
+  )JS"));
+  EXPECT_TRUE(Entries().empty());
+
+  Publish(ScrollerId(*child_document));
+  Publish(ScrollerId());
+  NotifyScrollEnd();
+  ASSERT_EQ(1u, Entries().size());
+  EXPECT_EQ(GetElementById("scroller"), EntryTarget(0));
+  EXPECT_EQ(1, Eval("observer.takeRecords().length"));
+  EXPECT_TRUE(DOMWindowPerformance::performance(*child_document->domWindow())
+                  ->getBufferedEntriesByType(performance_entry_names::kScroll)
+                  .empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ScrollTimingChildFrameTest,
+                         testing::Values("https://example.com/child",
+                                         "https://sub.example.com/child",
+                                         "https://other.test/child"));
 
 }  // namespace blink

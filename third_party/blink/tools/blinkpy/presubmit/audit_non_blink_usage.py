@@ -1343,6 +1343,8 @@ _CONFIG = [
         'allowed': [
             'cc::CompositorCommitData',
             'cc::InputHandlerScrollResult',
+            'cc::ScrollTimingBufferConsumer',
+            'cc::ScrollTimingInfo',
             'cc::SwapPromise',
             'stylus_handwriting::win::IsStylusHandwritingWinEnabled',
             'stylus_handwriting::win::ProximateBoundsCollectionHalfLimit',
@@ -1359,6 +1361,7 @@ _CONFIG = [
         ],
         'allowed': [
             'cc::CompositorCommitData',
+            'cc::ScrollTimingBufferConsumer',
             'viz::CompositorFrame',
             'viz::ReturnedResource',
             'viz::TransferableResource',

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 namespace blink {
 
@@ -252,6 +254,9 @@ void PerformanceObserver::observe(ScriptState* script_state,
                 mojom::ConsoleMessageLevel::kWarning, message));
       }
     }
+    if ((entry_types | filter_options_) & PerformanceEntry::kScroll) {
+      ImportScrollTimingRecords();
+    }
     filter_options_ = entry_types;
   } else {
     if (!observer_init->hasType()) {
@@ -283,6 +288,9 @@ void PerformanceObserver::observe(ScriptState* script_state,
                 mojom::ConsoleMessageLevel::kWarning, message));
       }
       return;
+    }
+    if (entry_type == PerformanceEntry::kScroll) {
+      ImportScrollTimingRecords();
     }
     if (observer_init->buffered()) {
       // Append all entries of this type to the current performance_entries_
@@ -385,6 +393,19 @@ bool PerformanceObserver::CanObserve(const PerformanceEntry& entry) const {
 
 bool PerformanceObserver::HasPendingActivity() const {
   return is_registered_;
+}
+
+void PerformanceObserver::ImportScrollTimingRecords() {
+  // TODO(crbug.com/504094429): Support child-frame timelines before letting
+  // child observers read the widget's shared buffer.
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  LocalFrame* frame = window ? window->GetFrame() : nullptr;
+  if (!frame || !frame->IsLocalRoot()) {
+    return;
+  }
+  if (FrameWidget* widget = frame->GetWidgetForLocalRoot()) {
+    widget->ImportScrollTimingRecords();
+  }
 }
 
 void PerformanceObserver::Deliver(std::optional<int> dropped_entries_count) {

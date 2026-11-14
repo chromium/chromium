@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
@@ -99,6 +100,10 @@
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
+namespace cc {
+class ScrollTimingBufferConsumer;
+}  // namespace cc
+
 namespace gfx {
 class Point;
 class PointF;
@@ -106,6 +111,7 @@ class PointF;
 
 namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
+class Document;
 class ExecutionContext;
 class HitTestResult;
 class HTMLElement;
@@ -385,6 +391,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                           const AtomicString& end_mark,
                           base::TimeTicks end_time,
                           LocalDOMWindow* window) override;
+  void ImportScrollTimingRecords() override;
   // TODO(https://crbug.com/515098190): Below are not FrameWidget overrides.
 
   void SetVirtualKeyboardResizeHeightForTesting(int);
@@ -1090,6 +1097,17 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SendScrollSnapChangingEventIfNeeded(
       const cc::CompositorCommitData& commit_data);
 
+  void ReadScrollTimingRecordsOnScrollEnd();
+  cc::ScrollTimingBufferConsumer* ScrollTimingConsumer() const;
+  // Reads published Scroll Timing records into the local root's Performance
+  // Timeline and returns whether it read. Unless `force`, skips the read when
+  // the history is full and nothing observes scroll entries.
+  bool ReadScrollTimingRecords(bool force);
+  // Called when the local root's document changes (e.g. the local root
+  // navigates; navigations of its subframes don't call this). Discards unread
+  // records and rejects later ones whose gesture started before now.
+  void ResetScrollTimingForNewDocument();
+
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 
   enum DragAction { kDragEnter, kDragOver };
@@ -1326,6 +1344,12 @@ class CORE_EXPORT WebFrameWidgetImpl
   Member<ScreenMetricsEmulator> device_emulator_;
 
   Member<AnimationFrameTimingMonitor> animation_frame_timing_monitor_;
+
+  // Receiving document; see ResetScrollTimingForNewDocument().
+  WeakMember<Document> scroll_timing_document_;
+  base::TimeTicks scroll_timing_cutoff_;
+  // Delayed read for records published after a scroll-end notification.
+  TaskHandle scroll_timing_retry_;
 
   // keyPress events to be suppressed if the associated keyDown event was
   // handled.

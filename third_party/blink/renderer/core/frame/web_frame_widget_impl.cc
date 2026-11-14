@@ -52,6 +52,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -115,6 +117,7 @@
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
@@ -288,6 +291,8 @@ using ::ui::mojom::blink::DragOperation;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr base::TimeDelta kWindowingControlsChangeTimeout = base::Seconds(5);
 #endif
+
+constexpr base::TimeDelta kScrollTimingRetryDelay = base::Milliseconds(100);
 
 void ForEachLocalFrameControlledByWidget(
     LocalFrame* frame,
@@ -574,6 +579,7 @@ void WebFrameWidgetImpl::Close(DetachReason detach_reason) {
     animation_frame_timing_monitor_.Clear();
   }
 
+  scroll_timing_retry_.Cancel();
   mutator_dispatcher_ = nullptr;
   local_root_ = nullptr;
   // Shut down the widget, but potentially delay the release of the resources
@@ -1658,8 +1664,90 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   }
 
   if (commit_data.scroll_end_data.done_containers.size()) {
+    ReadScrollTimingRecordsOnScrollEnd();
     SendEndOfScrollEvents(commit_data);
   }
+}
+
+void WebFrameWidgetImpl::ReadScrollTimingRecordsOnScrollEnd() {
+  if (!ReadScrollTimingRecords(/*force=*/false) ||
+      scroll_timing_retry_.IsActive()) {
+    return;
+  }
+  CHECK(local_root_);
+  CHECK(local_root_->GetFrame());
+  // Records for the ended scroll are published after its presentation.
+  scroll_timing_retry_ = PostDelayedCancellableTask(
+      *local_root_->GetFrame()->GetTaskRunner(TaskType::kPerformanceTimeline),
+      FROM_HERE,
+      BindOnce(base::IgnoreResult(&WebFrameWidgetImpl::ReadScrollTimingRecords),
+               WrapWeakPersistent(this), /*force=*/false),
+      kScrollTimingRetryDelay);
+}
+
+cc::ScrollTimingBufferConsumer* WebFrameWidgetImpl::ScrollTimingConsumer()
+    const {
+  cc::LayerTreeHost* host =
+      widget_base_ ? widget_base_->LayerTreeHost() : nullptr;
+  return host ? host->scroll_timing_buffer_consumer() : nullptr;
+}
+
+bool WebFrameWidgetImpl::ReadScrollTimingRecords(bool force) {
+  cc::ScrollTimingBufferConsumer* consumer = ScrollTimingConsumer();
+  if (!consumer) {
+    return false;
+  }
+  CHECK(local_root_);
+  CHECK(local_root_->GetFrame());
+  Document* document = local_root_->GetFrame()->GetDocument();
+  if (!document || document != scroll_timing_document_) {
+    // The unread records may belong to a previous document.
+    ResetScrollTimingForNewDocument();
+    return false;
+  }
+  if (!document->IsActive() ||
+      document->domWindow()->IsContextFrozenOrPaused()) {
+    return false;
+  }
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*document->domWindow());
+  if (!force && performance->IsScrollTimingBufferFull() &&
+      !performance->HasObserverFor(PerformanceEntry::kScroll)) {
+    return false;
+  }
+
+  cc::ScrollTimingBufferConsumer::Snapshot snapshot = consumer->ReadRecords();
+  for (const cc::ScrollTimingInfo& record : snapshot.records) {
+    if (record.start_time < scroll_timing_cutoff_) {
+      continue;
+    }
+    // Unresolved targets may belong to another document. Never attribute
+    // another document's scrolls to the current timeline.
+    Node* target =
+        View()->FindNodeFromScrollableCompositorElementId(record.element_id);
+    if (!target || &target->GetDocument() != document) {
+      continue;
+    }
+    performance->AddScrollTiming(record.start_time, record.end_time,
+                                 record.input_type, target);
+  }
+  return true;
+}
+
+void WebFrameWidgetImpl::ResetScrollTimingForNewDocument() {
+  CHECK(local_root_);
+  CHECK(local_root_->GetFrame());
+  scroll_timing_retry_.Cancel();
+  scroll_timing_document_ = local_root_->GetFrame()->GetDocument();
+  // Gestures that started earlier may have scrolled a previous document.
+  scroll_timing_cutoff_ = base::TimeTicks::Now();
+  if (cc::ScrollTimingBufferConsumer* consumer = ScrollTimingConsumer()) {
+    consumer->ReadRecords();
+  }
+}
+
+void WebFrameWidgetImpl::ImportScrollTimingRecords() {
+  ReadScrollTimingRecords(/*force=*/true);
 }
 
 void WebFrameWidgetImpl::UpdateAnimatedImageState(
@@ -1758,6 +1846,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(device_emulator_);
   visitor->Trace(animation_frame_timing_monitor_);
   visitor->Trace(unbounded_surface_state_);
+  visitor->Trace(scroll_timing_document_);
   AnimationFrameTimingMonitor::Client::Trace(visitor);
 }
 
@@ -2847,6 +2936,7 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
       previous_widget ? static_cast<WebFrameWidgetImpl*>(previous_widget)
                             ->widget_base_.get()
                       : nullptr);
+  ResetScrollTimingForNewDocument();
 
   probe::DidInitializeFrameWidget(local_root_->GetFrame());
   local_root_->GetFrame()->NotifyFrameWidgetCreated();
@@ -4837,6 +4927,7 @@ void WebFrameWidgetImpl::DidNavigate() {
   if (RuntimeEnabledFeatures::UnboundedElementEnabled()) {
     OnDismissed();
   }
+  ResetScrollTimingForNewDocument();
 }
 
 void WebFrameWidgetImpl::FlushInputForTesting(base::OnceClosure done_callback) {
@@ -5927,6 +6018,7 @@ void WebFrameWidgetImpl::WasHidden() {
     animation_frame_timing_monitor_->Shutdown();
     animation_frame_timing_monitor_.Clear();
   }
+  scroll_timing_retry_.Cancel();
 
   if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
       unbounded_surface_state_) {
