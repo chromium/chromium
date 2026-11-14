@@ -667,6 +667,7 @@ void PictureInPictureWindowManager::CreateWindowInternal(
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
   video_web_contents_observer_.reset();
+  document_web_contents_observer_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Close the standalone Document PiP window, if one is open. The host itself

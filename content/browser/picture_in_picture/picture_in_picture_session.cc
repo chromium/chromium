@@ -45,6 +45,10 @@ void PictureInPictureSession::Update(
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
+  if (is_stopping_) {
+    return;
+  }
+
   NotifyPictureInPictureStateChanged(false);
   player_id_ =
       MediaPlayerId(service_->render_frame_host().GetGlobalId(), player_id);
@@ -61,13 +65,19 @@ void PictureInPictureSession::Update(
 
 void PictureInPictureSession::UpdateMediaPosition(
     const media_session::MediaPosition& media_position) {
+  if (is_stopping_) {
+    return;
+  }
+
   GetController().SetMediaPosition(media_position);
 }
 
 void PictureInPictureSession::OnPlayerGone() {
-  if (!is_stopping_) {
-    NotifyPictureInPictureStateChanged(false);
+  if (is_stopping_) {
+    return;
   }
+
+  NotifyPictureInPictureStateChanged(false);
   player_id_.reset();
   GetController().SetPlaybackControlsVisibility(false);
 }
@@ -82,6 +92,10 @@ void PictureInPictureSession::NotifyPictureInPictureStateChanged(
 }
 
 void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {
+  if (is_stopping_) {
+    return;
+  }
+
   observer_->OnWindowSizeChanged(size);
 }
 
@@ -101,6 +115,7 @@ void PictureInPictureSession::Disconnect() {
 
   is_stopping_ = true;
   NotifyPictureInPictureStateChanged(false);
+  receiver_.reset();
   observer_->OnStopped();
 }
 
@@ -112,9 +127,7 @@ void PictureInPictureSession::Shutdown() {
 }
 
 void PictureInPictureSession::StopInternal(StopCallback callback) {
-  // TODO(crbug.com/568395724): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(!is_stopping_);
+  CHECK(!is_stopping_, base::NotFatalUntil::M162);
 
   is_stopping_ = true;
   NotifyPictureInPictureStateChanged(false);
@@ -125,6 +138,8 @@ void PictureInPictureSession::StopInternal(StopCallback callback) {
     std::move(callback).Run();
   else
     observer_->OnStopped();
+
+  receiver_.reset();
 
   // |this| will be deleted after this call.
   GetWebContentsImpl()->ExitPictureInPicture();

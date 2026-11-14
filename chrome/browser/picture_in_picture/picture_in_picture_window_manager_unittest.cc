@@ -868,4 +868,49 @@ TEST_F(PictureInPictureWindowManagerTest,
       gfx::Rect(10, 20, 100, 100), display::Display(1));
 }
 
+TEST_F(PictureInPictureWindowManagerTest,
+       DestroyingPreviousDocumentPipOpenerDoesNotClearActiveVideoPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  // Destroying the Document PiP opener while Document PiP is active should
+  // clear the active controller.
+  std::unique_ptr<content::WebContents> document_pip_opener =
+      CreateTestWebContents();
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      document_pip_opener.get(), child_web_contents());
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+  EXPECT_EQ(document_pip_opener.get(),
+            picture_in_picture_window_manager->GetWebContents());
+  document_pip_opener.reset();
+  EXPECT_FALSE(picture_in_picture_window_manager->IsInPictureInPicture());
+
+  // When Document PiP is replaced by Video PiP on another WebContents,
+  // destroying the former Document PiP opener must not clear the active Video
+  // PiP controller.
+  document_pip_opener = CreateTestWebContents();
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      document_pip_opener.get(), child_web_contents());
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+  EXPECT_EQ(document_pip_opener.get(),
+            picture_in_picture_window_manager->GetWebContents());
+
+  EXPECT_CALL(*mock_video_picture_in_picture_controller(),
+              SetOnWindowCreatedNotifyObserversCallback);
+  EXPECT_EQ(content::PictureInPictureResult::kSuccess,
+            picture_in_picture_window_manager->EnterVideoPictureInPicture(
+                web_contents()));
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+  EXPECT_EQ(web_contents(),
+            picture_in_picture_window_manager->GetWebContents());
+
+  document_pip_opener.reset();
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+  EXPECT_EQ(web_contents(),
+            picture_in_picture_window_manager->GetWebContents());
+
+  EXPECT_TRUE(picture_in_picture_window_manager->ExitPictureInPicture());
+  EXPECT_FALSE(picture_in_picture_window_manager->IsInPictureInPicture());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

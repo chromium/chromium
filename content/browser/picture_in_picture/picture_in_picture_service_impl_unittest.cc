@@ -14,6 +14,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/media/session/media_session_impl.h"
+#include "content/browser/picture_in_picture/picture_in_picture_session.h"
 #include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -171,6 +173,12 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
 
+  mojo::PendingAssociatedRemote<media::mojom::MediaPlayer>
+  BindMediaPlayerReceiverAndPassRemoteForPipe() {
+    receiver_.reset();
+    return receiver_.BindNewEndpointAndPassRemote();
+  }
+
   mojo::AssociatedReceiver<media::mojom::MediaPlayer>& receiver() {
     return receiver_;
   }
@@ -213,9 +221,8 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
     contents()->SetDelegate(&delegate_);
 
-    mojo::Remote<blink::mojom::PictureInPictureService> service_remote;
     service_impl_ = PictureInPictureServiceImpl::CreateForTesting(
-        render_frame_host, service_remote.BindNewPipeAndPassReceiver());
+        render_frame_host, service_remote_.BindNewPipeAndPassReceiver());
 
     surface_id_ = viz::SurfaceId(
         viz::FrameSinkId(1, 1),
@@ -233,6 +240,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
   void TearDown() override {
     service_impl_ = nullptr;
+    service_remote_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
@@ -356,6 +364,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
  private:
   PictureInPictureTestBrowserClient browser_client_;
   PictureInPictureDelegate delegate_;
+  mojo::Remote<blink::mojom::PictureInPictureService> service_remote_;
   // Will be deleted when the frame is destroyed.
   raw_ptr<PictureInPictureServiceImpl> service_impl_;
   // Required to pass a valid PendingRemote to StartSession() in the tests.
@@ -1012,6 +1021,94 @@ TEST_F(PictureInPictureServiceImplTest, Bind_BlockedByPermissionsPolicy) {
       bad_message::BadMessageReason::
           BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY,
       1);
+}
+
+TEST_F(PictureInPictureServiceImplTest,
+       StopClosesReceiverAndIgnoresSubsequentCalls) {
+  auto* controller = GetController();
+  MediaSessionImpl* media_session = MediaSessionImpl::Get(contents());
+
+  DummyPictureInPictureSessionObserver observer;
+  mojo::Receiver<blink::mojom::PictureInPictureSessionObserver>
+      observer_receiver(&observer);
+  mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
+      observer_remote;
+  observer_receiver.Bind(observer_remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(delegate(), IsPictureInPictureEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
+      .WillRepeatedly(testing::Return(PictureInPictureResult::kSuccess));
+
+  mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
+  gfx::Size window_size_out;
+  service().StartSession(player_id(), BindMediaPlayerReceiverAndPassRemote(),
+                         surface_id(), window_size(), show_play_pause_button(),
+                         std::move(observer_remote), source_bounds(),
+                         /*request_immersive=*/false, spatial_format(),
+                         BindSession(session_remote, window_size_out));
+
+  ASSERT_TRUE(session_remote);
+  PictureInPictureSession* session = controller->active_session_for_testing();
+  ASSERT_TRUE(session);
+  EXPECT_EQ(MediaPlayerId(main_test_rfh()->GetGlobalId(), player_id()),
+            session->player_id());
+  EXPECT_TRUE(media_session->IsSuspended());
+  EXPECT_EQ(main_test_rfh(), media_session->GetRoutedFrame());
+
+  // Updating an active session before `Stop()` should succeed and update the
+  // active player id and window bounds.
+  PictureInPictureMediaPlayerReceiver updated_player_receiver;
+  constexpr uint32_t kUpdatedPlayerId = 31;
+  const gfx::Size kUpdatedSize(64, 64);
+  session_remote->Update(
+      kUpdatedPlayerId,
+      updated_player_receiver.BindMediaPlayerReceiverAndPassRemoteForPipe(),
+      surface_id(), kUpdatedSize, show_play_pause_button());
+  session_remote.FlushForTesting();
+  const MediaPlayerId expected_updated_id(main_test_rfh()->GetGlobalId(),
+                                          kUpdatedPlayerId);
+  EXPECT_EQ(expected_updated_id, session->player_id());
+  EXPECT_EQ(kUpdatedSize, controller->GetSize());
+  EXPECT_TRUE(media_session->IsSuspended());
+  EXPECT_EQ(main_test_rfh(), media_session->GetRoutedFrame());
+
+  // Queue `Stop()` followed by `Update()` and a second `Stop()` on the session
+  // remote when the delegate does not synchronously destroy the session.
+  PictureInPictureMediaPlayerReceiver post_stop_player_receiver;
+  bool stop_callback_called = false;
+  bool second_stop_callback_called = false;
+  session_remote->Stop(
+      base::BindLambdaForTesting([&]() { stop_callback_called = true; }));
+  constexpr uint32_t kPostStopPlayerId = 32;
+  const gfx::Size kPostStopSize(128, 128);
+  session_remote->Update(
+      kPostStopPlayerId,
+      post_stop_player_receiver.BindMediaPlayerReceiverAndPassRemoteForPipe(),
+      surface_id(), kPostStopSize, show_play_pause_button());
+  session_remote->Stop(base::BindLambdaForTesting(
+      [&]() { second_stop_callback_called = true; }));
+  session_remote.FlushForTesting();
+
+  EXPECT_TRUE(stop_callback_called);
+  EXPECT_FALSE(second_stop_callback_called);
+  EXPECT_FALSE(session_remote.is_connected());
+  ASSERT_EQ(session, controller->active_session_for_testing());
+  EXPECT_EQ(expected_updated_id, session->player_id());
+  EXPECT_EQ(kUpdatedSize, controller->GetSize());
+  EXPECT_FALSE(media_session->IsSuspended());
+  EXPECT_EQ(nullptr, media_session->GetRoutedFrame());
+
+  // Direct `Update()` calls on the stopped session must also be ignored without
+  // re-registering a player in Picture-in-Picture.
+  blink::mojom::PictureInPictureSession* mojom_session = session;
+  mojom_session->Update(kPostStopPlayerId,
+                        BindMediaPlayerReceiverAndPassRemote(), surface_id(),
+                        kPostStopSize, show_play_pause_button());
+  EXPECT_EQ(expected_updated_id, session->player_id());
+  EXPECT_EQ(kUpdatedSize, controller->GetSize());
+  EXPECT_FALSE(media_session->IsSuspended());
+  EXPECT_EQ(nullptr, media_session->GetRoutedFrame());
 }
 
 }  // namespace content
