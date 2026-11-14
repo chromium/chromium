@@ -92,6 +92,7 @@ class OmniboxPopupViewViews : public views::View,
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection new_selection) override;
   void OnMatchIconUpdated(size_t match_index) override;
+  void OnMatchRichImageUpdated(size_t match_index) override;
   void OnContentsChanged() override;
   void OnCharTyped(base::TimeTicks timestamp) override {}
 

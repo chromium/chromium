@@ -95,6 +95,10 @@ class OmniboxEditModel {
     // Invoked when the icon used for the given match has been updated.
     virtual void OnMatchIconUpdated(size_t index) = 0;
 
+    // Invoked when the rich suggestion image for the given match has changed.
+    // Observers that do not support row-scoped updates refresh all contents.
+    virtual void OnMatchRichImageUpdated(size_t index);
+
     // Called when the results changed and the entire popup needs to be redrawn,
     // opened, or closed.
     virtual void OnContentsChanged() = 0;

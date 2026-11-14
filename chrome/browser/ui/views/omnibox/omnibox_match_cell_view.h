@@ -68,6 +68,7 @@ class OmniboxMatchCellView : public views::View {
   ~OmniboxMatchCellView() override;
 
   views::ImageView* icon() { return icon_view_; }
+  views::ImageView* image() { return answer_image_view_; }
   OmniboxTextView* content() { return content_view_; }
   OmniboxTextView* description() { return description_view_; }
   OmniboxTextView* separator() { return separator_view_; }

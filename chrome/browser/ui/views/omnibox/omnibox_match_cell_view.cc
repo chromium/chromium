@@ -402,11 +402,12 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
     // answer_image_view_ size proportional to the image size preserves
     // the aspect ratio.
     if (width == height) {
-      return;
+      width = height = kUniformRowHeightIconSize;
+    } else {
+      const int max = std::max(width, height);
+      width = kUniformRowHeightIconSize * width / max;
+      height = kUniformRowHeightIconSize * height / max;
     }
-    const int max = std::max(width, height);
-    width = kUniformRowHeightIconSize * width / max;
-    height = kUniformRowHeightIconSize * height / max;
     answer_image_view_->SetImageSize(gfx::Size(width, height));
   }
 }

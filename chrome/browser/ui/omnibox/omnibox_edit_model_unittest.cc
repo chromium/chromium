@@ -953,6 +953,36 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
+TEST_F(OmniboxEditModelPopupTest, RichSuggestionImageNotifiesObservers) {
+  class RichImageObserver : public TestObserver {
+   public:
+    MOCK_METHOD(void, OnMatchRichImageUpdated, (size_t), (override));
+  };
+
+  TestObserver legacy_observer;
+  RichImageObserver rich_image_observer;
+  model()->AddObserver(&legacy_observer);
+  model()->AddObserver(&rich_image_observer);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+
+  EXPECT_CALL(legacy_observer, OnContentsChanged()).Times(1);
+  EXPECT_CALL(rich_image_observer, OnContentsChanged()).Times(0);
+  EXPECT_CALL(rich_image_observer, OnMatchRichImageUpdated(1))
+      .WillOnce([&](size_t index) {
+        const SkBitmap* cached_bitmap =
+            model()->GetPopupRichSuggestionBitmap(index);
+        ASSERT_TRUE(cached_bitmap);
+        EXPECT_EQ(SK_ColorRED, cached_bitmap->getColor(0, 0));
+      });
+  model()->SetPopupRichSuggestionBitmap(1, bitmap);
+
+  model()->RemoveObserver(&rich_image_observer);
+  model()->RemoveObserver(&legacy_observer);
+}
+
 // This verifies that the new treatment of the user's selected match in
 // |SetSelectedLine()| with removed
 // |AutocompleteResult::Selection::empty()| is correct in the face of various

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_grouped_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
@@ -646,6 +647,24 @@ void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
 }
 
 void OmniboxPopupViewViews::OnContentsChanged() {
+  UpdatePopupAppearance();
+}
+
+void OmniboxPopupViewViews::OnMatchRichImageUpdated(size_t match_index) {
+  if (IsOpen() && HasMatchAt(match_index) &&
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kAim &&
+      !omnibox_view_->IsImeShowingPopup() &&
+      OmniboxMatchCellView::ShouldDisplayImage(GetMatchAtIndex(match_index))) {
+    OmniboxResultView* result_view = result_view_at(match_index);
+    const SkBitmap* bitmap =
+        controller()->edit_model()->GetPopupRichSuggestionBitmap(match_index);
+    if (result_view && bitmap) {
+      result_view->SetRichSuggestionImage(
+          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+      return;
+    }
+  }
   UpdatePopupAppearance();
 }
 

@@ -262,6 +262,10 @@ OmniboxEditModel::State::~State() = default;
 
 // OmniboxEditModel -----------------------------------------------------------
 
+void OmniboxEditModel::Observer::OnMatchRichImageUpdated(size_t index) {
+  OnContentsChanged();
+}
+
 OmniboxEditModel::OmniboxEditModel(OmniboxController* controller)
     : controller_(controller) {}
 
@@ -2386,7 +2390,7 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
                                                     const SkBitmap& bitmap) {
   DCHECK(popup_view_);
   rich_suggestion_bitmaps_[result_index] = bitmap;
-  observers_.Notify(&Observer::OnContentsChanged);
+  observers_.Notify(&Observer::OnMatchRichImageUpdated, result_index);
 }
 
 void OmniboxEditModel::SetIconBitmap(const GURL& icon_url,

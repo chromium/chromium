@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 
+#include "base/base64.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
@@ -23,6 +29,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -45,19 +52,24 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -176,6 +188,185 @@ class TestAXEventObserver : public views::AXUpdateObserver {
 };
 
 }  // namespace
+
+class OmniboxRichSuggestionImageTest : public OmniboxPopupViewViewsTest {
+ public:
+  OmniboxRichSuggestionImageTest() {
+    feature_list_.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxPopup);
+  }
+
+ protected:
+  class MatchUpdateObserver : public views::ViewObserver {
+   public:
+    void OnViewPropertyChanged(views::View* observed_view,
+                               const void* key,
+                               int64_t old_value) override {
+      // SetMatch updates the cell's flex specification on every full refresh.
+      if (key == views::kFlexBehaviorKey) {
+        ++count;
+      }
+    }
+    int count = 0;
+  };
+
+  void AppendRichMatch(size_t index, const GURL& image_url) {
+    AutocompleteMatch match(
+        provider_.get(), 2000, true,
+        omnibox::AutocompleteMatchType::kSearchSuggestEntity);
+    match.contents = index == 0 ? u"first entity" : u"second entity";
+    match.contents_class = {{0, ACMatchClassification::NONE}};
+    match.fill_into_edit = u"foo";
+    match.destination_url = GURL(index == 0 ? "https://example.test/first"
+                                            : "https://example.test/second");
+    match.image_url = image_url;
+    EXPECT_EQ(index, controller()->autocomplete_controller()->InjectAdHocMatch(
+                         std::move(match)));
+  }
+
+  void SetRichMatches(size_t count, const GURL& image_url = GURL("data:,")) {
+    controller()->autocomplete_controller()->Stop(
+        AutocompleteStopReason::kClobbered);
+    for (size_t i = 0; i < count; ++i) {
+      AppendRichMatch(i, image_url);
+    }
+  }
+
+  views::ImageView* image_at(size_t index) {
+    return GetResultViewAt(index)->suggestion_view_for_testing()->image();
+  }
+
+  void DeliverImage(size_t index, SkColor color, gfx::Size size) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size.width(), size.height());
+    bitmap.eraseColor(color);
+    edit_model()->SetPopupRichSuggestionBitmap(index, bitmap);
+  }
+
+ private:
+  scoped_refptr<FakeAutocompleteProvider> provider_ =
+      base::MakeRefCounted<FakeAutocompleteProvider>(
+          AutocompleteProvider::Type::kSearch);
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxRichSuggestionImageTest,
+                       CachedImagesDoNotMultiplyFullUpdates) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  auto png = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                               /*discard_transparency=*/false);
+  ASSERT_TRUE(png);
+  const GURL image_url("data:image/png;base64," + base::Base64Encode(*png));
+  auto* service = BitmapFetcherServiceFactory::GetForBrowserContext(
+      browser()->GetProfile());
+  ASSERT_TRUE(service);
+  base::RunLoop run_loop;
+  service->RequestImage(image_url,
+                        base::BindLambdaForTesting([&](SkBitmap image) {
+                          EXPECT_FALSE(image.drawsNothing());
+                          run_loop.Quit();
+                        }));
+  run_loop.Run();
+  ASSERT_TRUE(service->IsCached(image_url));
+
+  CreatePopupForTestQuery();
+  SetRichMatches(1, image_url);
+  ASSERT_TRUE(GetResultViewAt(0));
+  MatchUpdateObserver observer;
+  base::ScopedObservation<views::View, views::ViewObserver> observation(
+      &observer);
+  observation.Observe(GetResultViewAt(0)->suggestion_view_for_testing());
+
+  popup_view()->UpdatePopupAppearance();
+  ASSERT_EQ(1, observer.count);
+  observer.count = 0;
+
+  AppendRichMatch(1, image_url);
+  EXPECT_EQ(1, observer.count);
+  EXPECT_EQ(SK_ColorRED, image_at(0)->GetImage().bitmap()->getColor(0, 0));
+  EXPECT_EQ(SK_ColorRED, image_at(1)->GetImage().bitmap()->getColor(0, 0));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxRichSuggestionImageTest, UpdatesOnlyAffectedRow) {
+  CreatePopupForTestQuery();
+  SetRichMatches(2);
+  ASSERT_TRUE(controller()->IsPopupOpen());
+  ASSERT_TRUE(GetResultViewAt(1));
+
+  MatchUpdateObserver observer;
+  base::ScopedObservation<views::View, views::ViewObserver> observation(
+      &observer);
+  observation.Observe(GetResultViewAt(1)->suggestion_view_for_testing());
+  const gfx::Size square_size = image_at(0)->GetPreferredSize();
+
+  // Synchronous delivery, as with a cache hit, must not reset other rows.
+  DeliverImage(0, SK_ColorRED, gfx::Size(32, 32));
+  EXPECT_EQ(SK_ColorRED, image_at(0)->GetImage().bitmap()->getColor(0, 0));
+  EXPECT_EQ(square_size, image_at(0)->GetPreferredSize());
+  EXPECT_EQ(0, observer.count);
+
+  // A later image must preserve its aspect ratio without changing popup bounds.
+  views::test::RunScheduledLayout(popup_view());
+  const gfx::Rect popup_bounds = GetPopupWidget()->GetWindowBoundsInScreen();
+  DeliverImage(0, SK_ColorBLUE, gfx::Size(64, 32));
+  views::test::RunScheduledLayout(popup_view());
+  EXPECT_EQ(SK_ColorBLUE, image_at(0)->GetImage().bitmap()->getColor(0, 0));
+  EXPECT_EQ(square_size.width(), image_at(0)->GetPreferredSize().width());
+  EXPECT_EQ(square_size.height() / 2, image_at(0)->GetPreferredSize().height());
+  EXPECT_EQ(popup_bounds, GetPopupWidget()->GetWindowBoundsInScreen());
+
+  // Replacing a rectangular image with a square must restore the square size.
+  DeliverImage(0, SK_ColorGREEN, gfx::Size(32, 32));
+  EXPECT_EQ(square_size, image_at(0)->GetPreferredSize());
+  DeliverImage(1, SK_ColorBLUE, gfx::Size(32, 64));
+  EXPECT_EQ(SK_ColorGREEN, image_at(0)->GetImage().bitmap()->getColor(0, 0));
+  EXPECT_EQ(SK_ColorBLUE, image_at(1)->GetImage().bitmap()->getColor(0, 0));
+  EXPECT_EQ(square_size.width() / 2, image_at(1)->GetPreferredSize().width());
+  EXPECT_EQ(square_size.height(), image_at(1)->GetPreferredSize().height());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxRichSuggestionImageTest,
+                       StaleIndexFallsBackToFullUpdate) {
+  CreatePopupForTestQuery();
+  SetRichMatches(2);
+  SetRichMatches(1);
+  ASSERT_TRUE(GetResultViewAt(0));
+  ASSERT_FALSE(GetResultViewAt(1));
+
+  MatchUpdateObserver observer;
+  base::ScopedObservation<views::View, views::ViewObserver> observation(
+      &observer);
+  observation.Observe(GetResultViewAt(0)->suggestion_view_for_testing());
+  DeliverImage(1, SK_ColorRED, gfx::Size(32, 32));
+  EXPECT_GT(observer.count, 0);
+  EXPECT_TRUE(controller()->IsPopupOpen());
+  EXPECT_FALSE(GetResultViewAt(1));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxRichSuggestionImageTest, ImageAfterPopupClosed) {
+  CreatePopupForTestQuery();
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
+  ASSERT_FALSE(controller()->IsPopupOpen());
+
+  DeliverImage(0, SK_ColorRED, gfx::Size(32, 32));
+  EXPECT_FALSE(controller()->IsPopupOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxRichSuggestionImageTest,
+                       NonImageSuggestionFallsBackToFullUpdate) {
+  CreatePopupForTestQuery();
+  SetRichMatches(1, GURL());
+  ASSERT_TRUE(GetResultViewAt(0));
+
+  MatchUpdateObserver observer;
+  base::ScopedObservation<views::View, views::ViewObserver> observation(
+      &observer);
+  observation.Observe(GetResultViewAt(0)->suggestion_view_for_testing());
+  DeliverImage(0, SK_ColorRED, gfx::Size(32, 32));
+  EXPECT_GT(observer.count, 0);
+}
 
 // Tests widget alignment of the different popup types.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, PopupAlignment) {

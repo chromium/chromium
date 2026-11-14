@@ -84,6 +84,10 @@ class OmniboxResultView : public views::View {
   // Stores the image in a local data member and schedules a repaint.
   void SetRichSuggestionImage(const gfx::ImageSkia& image);
 
+  OmniboxMatchCellView* suggestion_view_for_testing() {
+    return suggestion_view_;
+  }
+
   void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
