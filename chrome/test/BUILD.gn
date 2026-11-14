@@ -1179,6 +1179,8 @@ if (is_android) {
       "//chrome/browser/android/customtabs:java",
       "//chrome/browser/android/metrics:base_java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/tabpersistence:java",
+      "//chrome/browser/ui/android/multiwindow:java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/crash/android:java",
       "//components/module_installer/android:module_installer_java",

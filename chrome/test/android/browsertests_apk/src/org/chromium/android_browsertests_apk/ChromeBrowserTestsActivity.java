@@ -9,10 +9,14 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.gtest_apk.NativeTestIntent;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.multiwindow.MultiInstancePersistentStore;
+import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
@@ -25,8 +29,34 @@ import java.io.File;
 public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     private static final String TAG = "browser_test";
 
+    // Whether the windows and tabs that earlier tests left on record have been cleared. That is
+    // done only for the first activity of the test process, not for windows that the test opens
+    // or for an activity that is recreated, so that it does not wipe what the test itself made.
+    private static boolean sWindowStateCleared;
+
     private final NativeTest mTest = new NativeTest();
     private boolean mTeardownStarted;
+
+    @Override
+    protected void onPreCreate() {
+        // The browser keeps track of its windows, and of their tabs, outside the user data dir,
+        // so deleting that dir does not make it forget them. A window that a test closed stays on
+        // record as a recently closed one, and the next test would take it over instead of
+        // starting with a new window, and get its tabs. Forget the windows here, as this activity
+        // is given its window before performPreInflationStartup() runs.
+        if (!sWindowStateCleared
+                && !getIntent().getBooleanExtra(NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR, false)) {
+            MultiInstancePersistentStore.resetForTesting();
+            File[] tabStateFiles = TabStateDirectory.getOrCreateBaseStateDirectory().listFiles();
+            if (tabStateFiles != null) {
+                for (File file : tabStateFiles) {
+                    FileUtils.recursivelyDeleteFile(file, FileUtils.DELETE_ALL);
+                }
+            }
+        }
+        sWindowStateCleared = true;
+        super.onPreCreate();
+    }
 
     @Override
     public void performPreInflationStartup() {
