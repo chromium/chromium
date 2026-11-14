@@ -1395,10 +1395,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Must be declared after `session_key_`, as its initialization depends on it.
   const EchMode ech_mode_;
 
-  // The list of TLS Trust Anchor IDs, each in binary representation, advertised
-  // by the server in DNS.
-  std::vector<std::vector<uint8_t>> trust_anchor_ids_;
-
   const bool allow_server_preferred_address_;
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;

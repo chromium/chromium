@@ -90,11 +90,9 @@ QuicSessionPool::AsyncDnsJob::UsableEndpoint::operator=(UsableEndpoint&&) =
 
 bool QuicSessionPool::AsyncDnsJob::Candidate::operator==(
     const Candidate& other) const {
-  return std::tie(ip_endpoint, quic_version, metadata.ech_config_list,
-                  metadata.trust_anchor_ids) ==
+  return std::tie(ip_endpoint, quic_version, metadata.ech_config_list) ==
          std::tie(other.ip_endpoint, other.quic_version,
-                  other.metadata.ech_config_list,
-                  other.metadata.trust_anchor_ids);
+                  other.metadata.ech_config_list);
 }
 
 QuicSessionPool::AsyncDnsJob::AttemptParams::AttemptParams() = default;

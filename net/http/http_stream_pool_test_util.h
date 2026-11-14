@@ -264,9 +264,6 @@ class ServiceEndpointBuilder {
   ServiceEndpointBuilder& set_ech_config_list(
       std::vector<uint8_t> ech_config_list);
 
-  ServiceEndpointBuilder& set_trust_anchor_ids(
-      std::vector<std::vector<uint8_t>> trust_anchor_ids);
-
   ServiceEndpoint endpoint() const { return endpoint_; }
 
  private:

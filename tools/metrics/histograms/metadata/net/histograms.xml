@@ -6979,29 +6979,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs{IsResumption}"
-    units="Milliseconds" expires_after="2026-08-02">
-  <owner>estark@chromium.org</owner>
-  <owner>davidben@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The elapsed time between starting the crypto handshake, and receiving
-    confirmation from the server, measured only for servers that advertise TLS
-    Trust Anchor IDs in DNS, {IsResumption}.
-
-    Warning: this histogram was expired from 2025-10-26 to 2026-02-12; data may
-    be missing.
-  </summary>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
-  </token>
-</histogram>
-
 <histogram name="Net.QuicSession.HandshakeTimeout.PathDegradingDetected"
     enum="BooleanDetected" expires_after="2027-04-04">
   <owner>dschinazi@chromium.org</owner>

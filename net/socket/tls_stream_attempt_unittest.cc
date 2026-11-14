@@ -165,7 +165,6 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
   std::optional<int> result_;
 };
 
-
 }  // namespace
 
 class TlsStreamAttemptTest : public TestWithTaskEnvironment {
@@ -545,7 +544,6 @@ TEST_F(TlsStreamAttemptTest, EchOk) {
 }
 
 TEST_F(TlsStreamAttemptTest, EchRetryOk) {
-
   std::vector<uint8_t> ech_config_list;
   ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
                               &ech_config_list));
@@ -661,7 +659,6 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsInitialSuccess) {
 
     SetTrustedTrustAnchorIDs({id1, id2, id3, id4});
     ServiceEndpoint service_endpoint;
-    service_endpoint.metadata.trust_anchor_ids = {id1, id3};
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -715,12 +712,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsNoTrustAnchorIDsConfigured) {
       {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs}, {});
 #endif
 
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id3 = {0x03, 0x03};
-  const std::vector<uint8_t> id4 = {0x04, 0x04};
-
   ServiceEndpoint service_endpoint;
-  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);

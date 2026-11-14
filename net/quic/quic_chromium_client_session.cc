@@ -363,7 +363,6 @@ base::DictValue NetLogQuicClientSessionParams(
     int cert_verify_flags,
     bool require_confirmation,
     base::span<const uint8_t> ech_config_list,
-    const std::vector<std::vector<uint8_t>>& server_trust_anchor_ids,
     const quic::QuicSSLConfig& ssl_config) {
   auto dict =
       base::DictValue()
@@ -390,10 +389,6 @@ base::DictValue NetLogQuicClientSessionParams(
   }
   if (!ech_config_list.empty()) {
     dict.Set("ech_config_list", NetLogBinaryValue(ech_config_list));
-  }
-  if (!server_trust_anchor_ids.empty()) {
-    dict.Set("trust_anchor_ids_from_dns",
-             x509_util::TrustAnchorIDsToString(server_trust_anchor_ids));
   }
   if (ssl_config.trust_anchor_ids.has_value()) {
     dict.Set(
@@ -1159,7 +1154,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(metadata.ech_config_list),
       ech_mode_(GetEchModeForHost(ssl_config_service, session_key_.host())),
-      trust_anchor_ids_(metadata.trust_anchor_ids),
       allow_server_preferred_address_(allow_server_preferred_address),
       session_creation_initiator_(session_creation_initiator),
       quic_connection_reuse_details_(quic_connection_reuse_details) {
@@ -1181,7 +1175,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
         net_log, &session_key_, connection_id(),
         connection->client_connection_id(), supported_versions(),
         cert_verify_flags, require_confirmation_, ech_config_list_,
-        trust_anchor_ids_, GetSSLConfig());
+        GetSSLConfig());
   });
   // Associate the owned NetLog with the parent NetLog.
   net_log.AddEventReferencingSource(NetLogEventType::QUIC_SESSION_CREATED,
@@ -3308,14 +3302,6 @@ static std::vector<std::vector<uint8_t>> ServerTrustAnchorIDs(SSL* ssl) {
       UNSAFE_BUFFERS(base::span(peer_trust_anchors, peer_trust_anchors_len)));
 }
 
-// Generates histogram names for histograms that have variants split by
-// session resumption.
-static std::string HistogramNameForResumptionVariant(std::string_view prefix,
-                                                     bool is_resumption) {
-  return base::StrCat(
-      {prefix, is_resumption ? ".Resumption" : ".NewConnection"});
-}
-
 void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
     const quic::ProofVerifyDetails& verify_details) {
   const ProofVerifyDetailsChromium* verify_details_chromium =
@@ -4232,7 +4218,6 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
       connect_timing_.connect_end - connect_timing_.connect_start;
   UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime",
                       handshake_confirmed_time);
-  const bool is_resumption = SSL_session_reused(crypto_stream_->GetSsl());
 
   if (SSL_server_sent_requested_padding(crypto_stream_->GetSsl())) {
     UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.ServerPadding",
@@ -4262,20 +4247,6 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   if (!ech_config_list_.empty()) {
     UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.ECH",
                         handshake_confirmed_time);
-  }
-
-  // Also record the handshake time when Trust Anchor IDs was advertised in DNS.
-  // The Trust Anchor IDs experiment does not change DNS behavior, so this
-  // measures the same servers in both experiment and control groups.
-  if (!trust_anchor_ids_.empty()) {
-    base::UmaHistogramTimes(
-        "Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs",
-        handshake_confirmed_time);
-    base::UmaHistogramTimes(
-        HistogramNameForResumptionVariant(
-            "Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs",
-            is_resumption),
-        handshake_confirmed_time);
   }
 
   // Track how long it has taken to finish handshake after we have finished

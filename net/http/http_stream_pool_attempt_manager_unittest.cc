@@ -8026,10 +8026,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
 
   resolver()
       ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_v4("192.0.2.1")
-                         .set_trust_anchor_ids({{0x02, 0x02}, {0x05, 0x06}})
-                         .endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CompleteStartSynchronously(OK);
 
   StreamRequester requester;
@@ -8058,10 +8055,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
 
   resolver()
       ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_v4("192.0.2.1")
-                         .set_trust_anchor_ids({{0x02, 0x02}, {0x05, 0x06}})
-                         .endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CompleteStartSynchronously(OK);
 
   StreamRequester requester;
@@ -8092,10 +8086,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsEnabledWithECHDisabled) {
 
   resolver()
       ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_v4("192.0.2.1")
-                         .set_trust_anchor_ids({{0x02, 0x02}, {0x05, 0x06}})
-                         .endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CompleteStartSynchronously(OK);
 
   StreamRequester requester;

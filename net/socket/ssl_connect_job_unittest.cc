@@ -1195,8 +1195,6 @@ TEST_P(SSLConnectJobTest, NoAdditionalDnsAliases) {
 // sub-flags.
 TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
   HostResolverEndpointResult endpoint;
-  endpoint.metadata.trust_anchor_ids = {
-      {0x01, 0x02, 0x03}, {0x04, 0x04}, {0x05, 0x05, 0x05}};
   endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
   host_resolver_.rules()->AddRule(
       "host",
@@ -1265,7 +1263,6 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
     ASSERT_EQ(1u, events.size());
     EXPECT_FALSE(
         events[0].params.contains("selected_trust_anchor_ids_for_retry"));
-    EXPECT_FALSE(events[0].params.contains("trust_anchor_ids_from_dns"));
     if (!expect_any) {
       EXPECT_FALSE(events[0].params.contains("selected_trust_anchor_ids"));
     } else {
