@@ -2255,7 +2255,7 @@ void TestLauncher::RunTests() {
                       original_test_names.end());
   }
 
-  broken_threshold_ = std::max(static_cast<size_t>(20), tests_.size() / 10);
+  broken_threshold_ = std::max(static_cast<size_t>(20), test_names.size() / 10);
 
   test_started_count_ = test_names.size();
 
