@@ -2329,6 +2329,10 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  // Fullscreen requests from unfocused views are rejected, and browser tests
+  // that run in parallel can't rely on OS-level window activation.
+  contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
+
   // Normally, fullscreen should work, as long as there is a user gesture.
   EXPECT_EQ(true, content::EvalJs(contents,
                                   "document.body.webkitRequestFullscreen();"
