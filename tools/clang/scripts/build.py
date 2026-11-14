@@ -106,6 +106,7 @@ BUG_REPORT_URL = (
 
 LIBXML2_VERSION = 'libxml2-v2.9.12'
 ZSTD_VERSION = 'zstd-1.5.5'
+MIMALLOC_VERSION = 'mimalloc-3.5.0'
 
 # This must be less than or equal to the lowest target used in Chromium. See
 # e.g. mac_deployment_target in //build/config/mac/mac_sdk.gni and min_version
@@ -748,6 +749,65 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
   return extra_cmake_flags, extra_cflags
 
 
+class MimallocDirs:
+  """
+  The set of directories where mimalloc is located.
+
+  Includes the directories where the source is unpacked and where it is built.
+  """
+
+  def __init__(self):
+    self.unzip_dir = LLVM_BUILD_TOOLS_DIR
+    # When unpacked in `unzip_dir`, this will be the directory where the
+    # sources are found.
+    self.src_dir = os.path.join(self.unzip_dir, MIMALLOC_VERSION)
+    # The lib is built in a directory under its sources.
+    self.build_dir = os.path.join(self.src_dir, 'cmake_build')
+
+
+def BuildMimalloc(cc, cxx, cmake_sysroot, mac_deployment_target):
+  """Download and build mimalloc.
+
+  Returns CMake args that make LLVM's build link mimalloc into clang and lld,
+  so that they use it instead of the C library's allocator."""
+  # The .tar.gz on GCS was uploaded as follows.
+  # $ VER=3.5.0
+  # $ curl -L -o mimalloc-$VER.tar.gz \
+  #   https://github.com/microsoft/mimalloc/archive/refs/tags/v$VER.tar.gz
+  # $ gsutil cp -n mimalloc-$VER.tar.gz gs://chromium-browser-clang/tools
+
+  dirs = MimallocDirs()
+  if os.path.exists(dirs.src_dir):
+    RmTree(dirs.src_dir)
+  zip_name = MIMALLOC_VERSION + '.tar.gz'
+  DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, dirs.unzip_dir)
+  os.mkdir(dirs.build_dir)
+  os.chdir(dirs.build_dir)
+
+  cmake_args = GetThirdPartyCMakeArgs(
+    cc, cxx, cmake_sysroot, mac_deployment_target
+  ) + [
+    '-DMI_BUILD_SHARED=OFF',
+    '-DMI_BUILD_OBJECT=OFF',
+    '-DMI_BUILD_TESTS=OFF',
+    # Make the library define malloc(), free(), operator new, etc.
+    '-DMI_OVERRIDE=ON',
+  ]
+  RunCommand(['cmake', '-GNinja'] + cmake_args + ['..'], setenv=True)
+  RunCommand(['ninja', 'mimalloc-static'], setenv=True)
+
+  mimalloc_lib = os.path.join(dirs.build_dir, 'libmimalloc.a')
+  # LLVM's CMake build has no option for using mimalloc on non-Windows. Per
+  # https://reviews.llvm.org/D101427, linking the static library into an
+  # executable is all that's needed. mimalloc.cmake does that for clang and
+  # lld only; see there for why.
+  return [
+    '-DCMAKE_PROJECT_LLVM_INCLUDE='
+    + os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts', 'mimalloc.cmake'),
+    '-DCHROMIUM_MIMALLOC_LIB=' + mimalloc_lib,
+  ]
+
+
 def DownloadPinnedClang():
   PINNED_CLANG_VERSION = 'llvmorg-24-init-7747-g62397f8b-27'
   DownloadAndUnpackPackage(
@@ -1082,6 +1142,12 @@ def main():
     help='Disable zstd in the build',
   )
   parser.add_argument(
+    '--without-mimalloc',
+    dest='with_mimalloc',
+    action='store_false',
+    help='Disable using mimalloc as allocator in the build (linux only)',
+  )
+  parser.add_argument(
     '--preserve-gcs-signature',
     action='store_true',
     help='By default, this script removes gcs hash files '
@@ -1375,6 +1441,18 @@ def main():
     cflags += zstd_cflags
     cxxflags += zstd_cflags
 
+  # CMake args that are only used for the final compiler, not for the
+  # bootstrap or instrumented compilers.
+  final_cmake_args = []
+  if args.with_mimalloc and sys.platform.startswith('linux'):
+    # Use mimalloc instead of glibc's allocator in clang and lld. It makes
+    # them faster (about 10% for both when measured on 8-core x64 VMs), at the
+    # cost of somewhat higher peak memory use.
+    with timer.time('mimalloc build'):
+      final_cmake_args += BuildMimalloc(
+        cc, cxx, cmake_sysroot, deployment_target
+      )
+
   lit_excludes = []
   if sys.platform.startswith('linux'):
     lit_excludes += [
@@ -1665,14 +1743,18 @@ def main():
   if libtool is not None:
     base_cmake_args.append('-DCMAKE_LIBTOOL=' + libtool)
   final_install_dir = args.install_dir if args.install_dir else LLVM_BUILD_DIR
-  cmake_args = base_cmake_args + [
-    '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-    '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
-    '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
-    '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
-    '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-    '-DCMAKE_INSTALL_PREFIX=' + final_install_dir,
-  ]
+  cmake_args = (
+    base_cmake_args
+    + [
+      '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
+      '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+      '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_INSTALL_PREFIX=' + final_install_dir,
+    ]
+    + final_cmake_args
+  )
   if not args.no_tools:
     cmake_args.extend(
       [
