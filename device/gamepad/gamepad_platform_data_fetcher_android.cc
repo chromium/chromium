@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,8 +50,9 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
   // identify the gamepad and the value is the earliest
   // base::android::android_info::SdkVersion where the gamepad is known to be
   // mapped correctly.
-  const base::flat_map<GamepadId, base::android::android_info::SdkVersion>
-      kManualAssessmentResult = {
+  static constexpr auto kManualAssessmentResult =
+      base::MakeFixedFlatMap<GamepadId,
+                             base::android::android_info::SdkVersion>({
           // Stadia Controller USB
           {GamepadId::kGoogleProduct9400,
            base::android::android_info::SDK_VERSION_OREO},
@@ -84,7 +86,7 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
           // Switch Pro Controller
           {GamepadId::kNintendoProduct2009,
            base::android::android_info::SDK_VERSION_R},
-      };
+      });
 
   auto find_it = kManualAssessmentResult.find(gamepad_id);
 
