@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OnDeviceInternalsEventLogElement} from './event_log.js';
 
 export function getHtml(this: OnDeviceInternalsEventLogElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="main">
   <h2>Event Logs</h2>
@@ -28,10 +27,10 @@ export function getHtml(this: OnDeviceInternalsEventLogElement) {
             <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
           </td>
           <td class="message">${item.message}</td>
-        </tr>`)}
+        </tr>
+      `)}
     </tbody>
   </table>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

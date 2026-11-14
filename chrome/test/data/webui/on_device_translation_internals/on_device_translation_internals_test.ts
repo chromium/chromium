@@ -80,10 +80,10 @@ suite('OnDeviceTranslationInternalsTest', function() {
     assertEquals('Installing', packageStatusElements[2]!.textContent);
     assertEquals('Installed', packageStatusElements[3]!.textContent);
     assertEquals(4, buttons.length);
-    assertEquals('Install', buttons[0]!.textContent);
-    assertEquals('Install', buttons[1]!.textContent);
-    assertEquals('Uninstall', buttons[2]!.textContent);
-    assertEquals('Uninstall', buttons[3]!.textContent);
+    assertEquals('Install', buttons[0]!.textContent.trim());
+    assertEquals('Install', buttons[1]!.textContent.trim());
+    assertEquals('Uninstall', buttons[2]!.textContent.trim());
+    assertEquals('Uninstall', buttons[3]!.textContent.trim());
   });
 
   // Test that the install button triggers the installLanguagePackage method
@@ -105,13 +105,13 @@ suite('OnDeviceTranslationInternalsTest', function() {
 
     const buttons = packageTable.querySelectorAll('button');
     assertEquals(2, buttons.length);
-    assertEquals('Install', buttons[0]!.textContent);
+    assertEquals('Install', buttons[0]!.textContent.trim());
     buttons[0]!.click();
     assertEquals(0, await handler.whenCalled('installLanguagePackage'));
 
     handler.resetResolver('installLanguagePackage');
 
-    assertEquals('Install', buttons[1]!.textContent);
+    assertEquals('Install', buttons[1]!.textContent.trim());
     buttons[1]!.click();
     assertEquals(1, await handler.whenCalled('installLanguagePackage'));
   });
@@ -135,13 +135,13 @@ suite('OnDeviceTranslationInternalsTest', function() {
 
     const buttons = packageTable.querySelectorAll('button');
     assertEquals(2, buttons.length);
-    assertEquals('Uninstall', buttons[0]!.textContent);
+    assertEquals('Uninstall', buttons[0]!.textContent.trim());
     buttons[0]!.click();
     assertEquals(0, await handler.whenCalled('uninstallLanguagePackage'));
 
     handler.resetResolver('uninstallLanguagePackage');
 
-    assertEquals('Uninstall', buttons[1]!.textContent);
+    assertEquals('Uninstall', buttons[1]!.textContent.trim());
     buttons[1]!.click();
     assertEquals(1, await handler.whenCalled('uninstallLanguagePackage'));
   });
@@ -177,8 +177,8 @@ suite('OnDeviceTranslationInternalsTest', function() {
       assertEquals('Installed', packageStatusElements[0]!.textContent);
       assertEquals('Not installed', packageStatusElements[1]!.textContent);
       assertEquals(2, buttons.length);
-      assertEquals('Uninstall', buttons[0]!.textContent);
-      assertEquals('Install', buttons[1]!.textContent);
+      assertEquals('Uninstall', buttons[0]!.textContent.trim());
+      assertEquals('Install', buttons[1]!.textContent.trim());
     }
 
     page.onLanguagePackStatus([
@@ -207,8 +207,8 @@ suite('OnDeviceTranslationInternalsTest', function() {
       assertEquals('Installed', packageStatusElements[0]!.textContent);
       assertEquals('Installing', packageStatusElements[1]!.textContent);
       assertEquals(2, buttons.length);
-      assertEquals('Uninstall', buttons[0]!.textContent);
-      assertEquals('Uninstall', buttons[1]!.textContent);
+      assertEquals('Uninstall', buttons[0]!.textContent.trim());
+      assertEquals('Uninstall', buttons[1]!.textContent.trim());
     }
   });
 });

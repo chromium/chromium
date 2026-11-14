@@ -7,10 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ToolsElement} from './tools.js';
 
 export function getHtml(this: ToolsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="performance-class">
-  Device performance class: <strong>${this.performanceClassText_}</strong>
+  Device performance class:
+  <strong>${this.performanceClassText_}</strong>
 </div>
 
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
@@ -33,7 +33,8 @@ export function getHtml(this: ToolsElement) {
     Use ChromeOS Platform Model
   </cr-checkbox>
   <select id="performanceHintSelect" class="md-select"
-      value="${this.performanceHint_}" @change="${this.onPerformanceHintChange_}">
+      value="${this.performanceHint_}"
+      @change="${this.onPerformanceHintChange_}">
     <option value="kHighestQuality">Highest Quality</option>
     <option value="kFastestInference">Fastest Inference</option>
   </select>
@@ -74,12 +75,11 @@ export function getHtml(this: ToolsElement) {
     placeholder="Place control tokens {$SYSTEM, $MODEL, $USER, $END} on their own lines, in between lines of text."
     .value="${this.text_}" @value-changed="${this.onTextValueChanged_}">
 </cr-textarea>
-<div class="multimodal-buttons" >
+<div class="multimodal-buttons">
   <div class="image-buttons" ?hidden="${!this.imagesEnabled_()}">
     <div class="image-error">${this.imageError_}</div>
     <div ?hidden="${!!this.imageFile_}">
-      <cr-button class="floating-button"
-          ?disabled="${!this.canUploadFile_()}"
+      <cr-button class="floating-button" ?disabled="${!this.canUploadFile_()}"
           @click="${this.onAddImageClick_}">
         <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
         Add image
@@ -96,8 +96,7 @@ export function getHtml(this: ToolsElement) {
   <div class="audio-buttons" ?hidden="${!this.audioEnabled_()}">
     <div class="audio-error">${this.audioError_}</div>
     <div ?hidden="${!!this.audioFile_}">
-      <cr-button class="floating-button"
-          ?disabled="${!this.canUploadFile_()}"
+      <cr-button class="floating-button" ?disabled="${!this.canUploadFile_()}"
           @click="${this.onAddAudioClick_}">
         <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
         Add audio
@@ -131,7 +130,8 @@ ${this.currentResponse_ ? html`
         class="${this.currentResponse_.responseClass}"><!--
         -->${this.currentResponse_.response}</div>
     <div class="throbber"
-        ?hidden="${this.currentResponse_.response.length > 0}"></div>
+        ?hidden="${this.currentResponse_.response.length > 0}">
+    </div>
   </div>
 ` : ''}
 ${this.responses_.map(item => html`
@@ -141,5 +141,4 @@ ${this.responses_.map(item => html`
   </div>
 `)}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

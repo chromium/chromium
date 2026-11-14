@@ -8,8 +8,7 @@ import type {InfobarInternalsAppElement} from './app.js';
 
 export function getHtml(this: InfobarInternalsAppElement) {
   return html`<!--_html_template_start_-->
-<cr-toolbar page-name="InfoBar Internals" role="banner"
-    .showSearch="${false}">
+<cr-toolbar page-name="InfoBar Internals" role="banner" .showSearch="${false}">
 </cr-toolbar>
 
 <main id="container">
@@ -43,12 +42,10 @@ export function getHtml(this: InfobarInternalsAppElement) {
 
   <cr-action-menu id="menu" aria-roledescription="Infobar list">
     <div class="menu-search">
-      <cr-search-field label="Search infobars"
-          clear-label="Clear search"
+      <cr-search-field label="Search infobars" clear-label="Clear search"
           @search-changed="${this.onSearchChanged}">
       </cr-search-field>
-      <cr-button class="select-all-button"
-          @click="${this.onSelectAllClick}">
+      <cr-button class="select-all-button" @click="${this.onSelectAllClick}">
         ${this.areAllFilteredSelected() ? 'Deselect all' : 'Select all'}
       </cr-button>
     </div>
@@ -59,8 +56,7 @@ export function getHtml(this: InfobarInternalsAppElement) {
         </div>
       ` : ''}
       ${this.getFilteredInfobars().map(infobar => html`
-        <cr-checkbox class="dropdown-item"
-            data-type="${infobar.type}"
+        <cr-checkbox class="dropdown-item" data-type="${infobar.type}"
             ?checked="${this.isSelected(infobar.type)}"
             @change="${this.onSelectionChange}">
           ${infobar.name}
@@ -92,12 +88,10 @@ export function getHtml(this: InfobarInternalsAppElement) {
             </div>
             <div class="actions">
               ${infobar.actions.map((action, index) => html`
-                <cr-button
-                  class="${index === 0 ? 'action-button' : ''}"
-                  data-type="${infobar.type}"
-                  data-name="${infobar.name}"
-                  data-action="${action.action}"
-                  @click="${this.onActionClick}">
+                <cr-button class="${index === 0 ? 'action-button' : ''}"
+                    data-type="${infobar.type}" data-name="${infobar.name}"
+                    data-action="${action.action}"
+                    @click="${this.onActionClick}">
                   ${action.label}
                 </cr-button>
               `)}

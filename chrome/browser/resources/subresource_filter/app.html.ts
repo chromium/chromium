@@ -27,6 +27,5 @@ export function getHtml(this: SubresourceInternalsAppElement) {
       </cr-checkbox>
     </div>
   </section>
-</div>
-  `;
+</div>`;
 }

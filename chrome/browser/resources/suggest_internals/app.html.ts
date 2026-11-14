@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar page-name="Suggest Debug Tool" search-prompt="Filter requests"
     clear-label="Clear filter" @search-changed="${this.onSearchChanged_}"
@@ -25,12 +24,14 @@ export function getHtml(this: AppElement) {
         @click="${this.onImportClick_}">
       Import
       <cr-icon
-          icon="${this.webuiRoundedIconsEnabled_
-              ? 'suggest:upload-2-filled'
-              : 'suggest:file-upload-old'}" slot="suffix-icon"></cr-icon>
+          icon="${this.webuiRoundedIconsEnabled_ ?
+              'suggest:upload-2-filled' :
+              'suggest:file-upload-old'}"
+          slot="suffix-icon">
+      </cr-icon>
     </cr-button>
     <input id="fileInput" type="file" accept=".json" style="display: none;"
-      @change="${this.onImportFileChange_}">
+        @change="${this.onImportFileChange_}">
     <cr-button title="Clear the result list" @click="${this.onClearClick_}">
       Clear
       <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
@@ -45,10 +46,9 @@ export function getHtml(this: AppElement) {
         @chip-click="${this.onChipClick_}">
     </suggest-request>
   ` : ''}
-  ${this.requests_.filter(
-        request => this.requestFilter_(request)).map(request => html`
-    <suggest-request .request="${request}"
-        @show-toast="${this.onShowToast_}"
+  ${this.requests_.filter(request => this.requestFilter_(request))
+      .map(request => html`
+    <suggest-request .request="${request}" @show-toast="${this.onShowToast_}"
         @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
         @chip-click="${this.onChipClick_}">
     </suggest-request>
@@ -61,10 +61,8 @@ export function getHtml(this: AppElement) {
   <div slot="body">
     <cr-input type="text" label="Delay" value="${this.responseDelay_}"
         @value-changed="${this.onResponseDelayValueChanged_}"
-        placeholder="optional delay in milliseconds"
-        pattern="[0-9]+"
-        error-message="must be a positive integer"
-        auto-validate>
+        placeholder="optional delay in milliseconds" pattern="[0-9]+"
+        error-message="must be a positive integer" auto-validate>
     </cr-input>
     <cr-textarea label="Response" value="${this.responseText_}"
         @value-changed="${this.onResponseTextValueChanged_}" autogrow>
@@ -84,5 +82,4 @@ export function getHtml(this: AppElement) {
   <div>${this.toastMessage_}</div>
 </cr-toast>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -20,18 +20,21 @@ export interface PatternSourceData {
 }
 
 export function getHtml(data: PatternSourceData) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="content-setting">
   <div class="patterns">
     <div class="pattern">
       <span class="pattern-type">Primary</span>
-      <span class="block id-primary-pattern" title="${data.primaryPattern}">${data.primaryPattern}</span>
+      <span class="block id-primary-pattern" title="${data.primaryPattern}">
+        ${data.primaryPattern}
+      </span>
     </div>
 
     <div class="pattern">
       <span class="block pattern-type">Secondary</span>
-      <span class="block id-secondary-pattern" title="${data.secondaryPattern}">${data.secondaryPattern}</span>
+      <span class="block id-secondary-pattern" title="${data.secondaryPattern}">
+        ${data.secondaryPattern}
+      </span>
     </div>
 
     <div class="pattern">
@@ -58,7 +61,8 @@ export function getHtml(data: PatternSourceData) {
     <div>
       <span class="label">Last Modified:</span>
       <span class="value id-last-modified">
-        <mojo-timestamp ts="${data.lastModified.internalValue}"></mojo-timestamp>
+        <mojo-timestamp ts="${data.lastModified.internalValue}">
+        </mojo-timestamp>
       </span>
     </div>
     <div>
@@ -88,11 +92,11 @@ export function getHtml(data: PatternSourceData) {
     <div>
       <span class="label">Lifetime:</span>
       <span class="value id-lifetime">
-        <mojo-timedelta duration="${data.lifetime.microseconds}"></mojo-timedelta>
+        <mojo-timedelta duration="${data.lifetime.microseconds}">
+        </mojo-timedelta>
       </span>
     </div>
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

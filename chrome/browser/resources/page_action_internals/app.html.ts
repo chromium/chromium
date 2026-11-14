@@ -24,14 +24,11 @@ export function getHtml(this: PageActionInternalsAppElement) {
 
     <div class="form-group">
       <label for="pageActionIcon">Page Action Icon (Omnibox):</label>
-      <select
-        id="pageActionIcon"
-        class="md-select"
-        .value="${this.pageActionIcon !== null ?
-          String(this.pageActionIcon) :
-          'none'}"
-        @change="${this.onPageActionIconChange}"
-      >
+      <select id="pageActionIcon" class="md-select"
+          .value="${this.pageActionIcon !== null ?
+              String(this.pageActionIcon) :
+              'none'}"
+          @change="${this.onPageActionIconChange}">
         <option value="none">None</option>
         <option value="${String(IconType.kInfo)}">Info (Blue)</option>
         <option value="${String(IconType.kOrangeAFavicon)}">
@@ -41,28 +38,20 @@ export function getHtml(this: PageActionInternalsAppElement) {
     </div>
 
     <div class="form-group">
-      <cr-checkbox
-        ?checked="${this.showChip}"
-        @checked-changed="${this.onShowChipCheckedChanged}"
-      >
+      <cr-checkbox ?checked="${this.showChip}"
+          @checked-changed="${this.onShowChipCheckedChanged}">
         Show Chip (Omnibox text label)
       </cr-checkbox>
     </div>
 
-    ${this.showChip
-      ? html`
-          <div class="form-group">
-            <label for="chipText">Chip Text:</label>
-            <cr-input
-              id="chipText"
-              class="stroked"
-              .value="${this.chipText}"
-              @value-changed="${this.onChipTextValueChanged}"
-            >
-            </cr-input>
-          </div>
-        `
-      : ''}
+    ${this.showChip ? html`
+      <div class="form-group">
+        <label for="chipText">Chip Text:</label>
+        <cr-input id="chipText" class="stroked" .value="${this.chipText}"
+            @value-changed="${this.onChipTextValueChanged}">
+        </cr-input>
+      </div>
+    ` : ''}
   </div>
 
   <div class="form-section">
@@ -70,25 +59,17 @@ export function getHtml(this: PageActionInternalsAppElement) {
 
     <div class="form-group">
       <label for="messageText">Message Text:</label>
-      <cr-input
-        id="messageText"
-        class="stroked"
-        .value="${this.messageText}"
-        @value-changed="${this.onMessageTextValueChanged}"
-      >
+      <cr-input id="messageText" class="stroked" .value="${this.messageText}"
+          @value-changed="${this.onMessageTextValueChanged}">
       </cr-input>
     </div>
 
     <div class="form-group">
       <label for="bubbleIcon">Bubble Icon (Left side):</label>
-      <select
-        id="bubbleIcon"
-        class="md-select"
-        .value="${this.bubbleIcon !== null ?
-          String(this.bubbleIcon) :
-          'none'}"
-        @change="${this.onBubbleIconChange}"
-      >
+      <select id="bubbleIcon" class="md-select"
+          .value="${
+              this.bubbleIcon !== null ? String(this.bubbleIcon) : 'none'}"
+          @change="${this.onBubbleIconChange}">
         <option value="none">None</option>
         <option value="${String(IconType.kInfo)}">Info (Blue)</option>
         <option value="${String(IconType.kOrangeAFavicon)}">
@@ -99,14 +80,10 @@ export function getHtml(this: PageActionInternalsAppElement) {
 
     <div class="form-group">
       <label for="actionIcon">Action Icon (Right side):</label>
-      <select
-        id="actionIcon"
-        class="md-select"
-        .value="${this.actionIcon !== null ?
-          String(this.actionIcon) :
-          'none'}"
-        @change="${this.onActionIconChange}"
-      >
+      <select id="actionIcon" class="md-select"
+          .value="${
+              this.actionIcon !== null ? String(this.actionIcon) : 'none'}"
+          @change="${this.onActionIconChange}">
         <option value="none">None</option>
         <option value="${String(ActionButtonType.kClose)}">
           Close Button
@@ -118,90 +95,69 @@ export function getHtml(this: PageActionInternalsAppElement) {
     </div>
 
     <div class="form-group">
-      <cr-checkbox
-        ?checked="${this.hasDrawer}"
-        @checked-changed="${this.onHasDrawerCheckedChanged}"
-      >
+      <cr-checkbox ?checked="${this.hasDrawer}"
+          @checked-changed="${this.onHasDrawerCheckedChanged}">
         Include Expandable Drawer (Bottom section)
       </cr-checkbox>
     </div>
 
-    ${this.hasDrawer
-      ? html`
-          <div class="drawer-config">
-            <div class="form-group">
-              <label for="drawerHeading">Drawer Heading:</label>
-              <cr-input
-                id="drawerHeading"
-                class="stroked"
-                .value="${this.drawerHeading}"
-                @value-changed="${this.onDrawerHeadingValueChanged}"
-              >
-              </cr-input>
-            </div>
+    ${this.hasDrawer ? html`
+      <div class="drawer-config">
+        <div class="form-group">
+          <label for="drawerHeading">Drawer Heading:</label>
+          <cr-input id="drawerHeading" class="stroked"
+              .value="${this.drawerHeading}"
+              @value-changed="${this.onDrawerHeadingValueChanged}">
+          </cr-input>
+        </div>
 
-            <div class="form-group">
-              <label for="drawerIcon">Drawer Items Icon:</label>
-              <select
-                id="drawerIcon"
-                class="md-select"
-                .value="${this.drawerIcon !== null ?
-                  String(this.drawerIcon) :
-                  'none'}"
-                @change="${this.onDrawerIconChange}"
-              >
-                <option value="none">None</option>
-                <option value="${String(IconType.kInfo)}">
-                  Info (Blue)
-                </option>
-                <option value="${String(IconType.kOrangeAFavicon)}">
-                  Orange 'A' Favicon
-                </option>
-              </select>
-            </div>
+        <div class="form-group">
+          <label for="drawerIcon">Drawer Items Icon:</label>
+          <select id="drawerIcon" class="md-select"
+              .value="${
+                  this.drawerIcon !== null ? String(this.drawerIcon) : 'none'}"
+              @change="${this.onDrawerIconChange}">
+            <option value="none">None</option>
+            <option value="${String(IconType.kInfo)}">
+              Info (Blue)
+            </option>
+            <option value="${String(IconType.kOrangeAFavicon)}">
+              Orange 'A' Favicon
+            </option>
+          </select>
+        </div>
 
-            <div class="form-group">
-              <label>Drawer Items (Arbitrary number):</label>
-              <div class="drawer-items-list">
-                ${this.drawerItems.map(
-                  (item, index) => html`
-                    <div class="drawer-item-row">
-                      <cr-input
-                        class="stroked"
-                        .value="${item}"
-                        data-index="${index}"
-                        @value-changed="${this.onDrawerItemValueChanged}"
-                      >
-                      </cr-input>
-                      <cr-button
-                        data-index="${index}"
-                        @click="${this.onRemoveDrawerItemClick}"
-                      >
-                        Remove
-                      </cr-button>
-                    </div>
-                  `,
-                )}
-              </div>
-              <div>
-                <cr-button @click="${this.onAddDrawerItemClick}">
-                  + Add Item
+        <div class="form-group">
+          <label>Drawer Items (Arbitrary number):</label>
+          <div class="drawer-items-list">
+            ${this.drawerItems.map((item, index) => html`
+              <div class="drawer-item-row">
+                <cr-input class="stroked" .value="${item}" data-index="${index}"
+                    @value-changed="${this.onDrawerItemValueChanged}">
+                </cr-input>
+                <cr-button data-index="${index}"
+                    @click="${this.onRemoveDrawerItemClick}">
+                  Remove
                 </cr-button>
               </div>
-            </div>
+            `)}
           </div>
-        `
-      : ''}
+          <div>
+            <cr-button @click="${this.onAddDrawerItemClick}">
+              + Add Item
+            </cr-button>
+          </div>
+        </div>
+      </div>
+    ` : ''}
   </div>
 
   <div class="actions-section">
     <cr-button class="action-button" @click="${this.onShowPageActionClick}">
       Show Page Action
     </cr-button>
-    <cr-button
-      class="action-button"
-      @click="${this.onShowAnchoredMessageClick}"
-    >
+    <cr-button class="action-button"
+        @click="${this.onShowAnchoredMessageClick}">
       Show Anchored Message
     </cr-button>
     <cr-button @click="${this.onHideClick}"> Hide/Dismiss </cr-button>

@@ -7,16 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UserEducationInternalsElement} from './user_education_internals.ts';
 
 export function getHtml(this: UserEducationInternalsElement) {
-  // clang-format off
   return html`
-<cr-toolbar id="toolbar" page-name="IPH Tester"
-    clear-label="Clear Search"
-    search-prompt="Search IPH and Tutorials"
-    autofocus
-    @search-changed="${this.onSearchChanged_}"
-    role="banner"
-    @narrow-changed="${this.onNarrowChanged_}"
-    narrow-threshold="920">
+<cr-toolbar id="toolbar" page-name="IPH Tester" clear-label="Clear Search"
+    search-prompt="Search IPH and Tutorials" autofocus
+    @search-changed="${this.onSearchChanged_}" role="banner"
+    @narrow-changed="${this.onNarrowChanged_}" narrow-threshold="920">
 </cr-toolbar>
 <div id="container" class="cr-scrollable">
   <div class="cr-scrollable-top-shadow"></div>
@@ -25,8 +20,7 @@ export function getHtml(this: UserEducationInternalsElement) {
       <h2>Navigation</h2>
       <cr-menu-selector id="menu" selectable="a" attr-for-selected="index"
           @iron-activate="${this.onSelectorIronActivate_}"
-          @click="${this.onLinkClick_}"
-          selected-attribute="selected">
+          @click="${this.onLinkClick_}" selected-attribute="selected">
         <a role="menuitem" index="-1" class="cr-nav-menu-item">
           Show All
         </a>
@@ -56,8 +50,7 @@ export function getHtml(this: UserEducationInternalsElement) {
   </div>
   <div id="main">
     <cr-toast id="errorMessageToast" duration="5000">
-      <cr-icon id="errorMessageIcon" class="error-outline"
-          icon="cr:error">
+      <cr-icon id="errorMessageIcon" class="error-outline" icon="cr:error">
       </cr-icon>
       <span id="errorMessage">${this.featurePromoErrorMessage_}</span>
     </cr-toast>
@@ -84,12 +77,11 @@ export function getHtml(this: UserEducationInternalsElement) {
         <div id="iph" class="promo-list">
           <h2>Feature Promos</h2>
           ${this.featurePromos_.map(item => html`
-            <user-education-internals-card
-                id="${item.internalName}"
-                ?hidden="${!this.promoFilter_(item)}"
-                .promo="${item}"
+            <user-education-internals-card id="${item.internalName}"
+                ?hidden="${!this.promoFilter_(item)}" .promo="${item}"
                 .actions="${this.getPromoActions_()}">
-            </user-education-internals-card>`)}
+            </user-education-internals-card>
+          `)}
           <p class="if-empty">
             No IPH match the search filter.
           </p>
@@ -97,12 +89,11 @@ export function getHtml(this: UserEducationInternalsElement) {
         <div id="tutorials" class="promo-list">
           <h2>Tutorials</h2>
           ${this.tutorials_.map(item => html`
-            <user-education-internals-card
-                id="${item.internalName}"
-                ?hidden="${!this.promoFilter_(item)}"
-                .promo="${item}"
+            <user-education-internals-card id="${item.internalName}"
+                ?hidden="${!this.promoFilter_(item)}" .promo="${item}"
                 .actions="${this.getTutorialActions_()}">
-            </user-education-internals-card>`)}
+            </user-education-internals-card>
+          `)}
           <p class="if-empty">
             No Tutorials match the search filter.
           </p>
@@ -110,12 +101,11 @@ export function getHtml(this: UserEducationInternalsElement) {
         <div id="newBadges" class="promo-list">
           <h2>"New" Badges</h2>
           ${this.newBadges_.map(item => html`
-            <user-education-internals-card
-                id="${item.internalName}"
-                ?hidden="${!this.promoFilter_(item)}"
-                .promo="${item}"
+            <user-education-internals-card id="${item.internalName}"
+                ?hidden="${!this.promoFilter_(item)}" .promo="${item}"
                 .actions="${this.getNewBadgeActions_()}">
-            </user-education-internals-card>`)}
+            </user-education-internals-card>
+          `)}
           <p class="if-empty">
             No "New" Badges match the search filter.
           </p>
@@ -123,12 +113,11 @@ export function getHtml(this: UserEducationInternalsElement) {
         <div id="nonIphPromos" class="promo-list">
           <h2>Non-IPH Promos</h2>
           ${this.nonIphPromos_.map(item => html`
-            <user-education-internals-card
-                id="${item.internalName}"
-                ?hidden="${!this.promoFilter_(item)}"
-                .promo="${item}"
+            <user-education-internals-card id="${item.internalName}"
+                ?hidden="${!this.promoFilter_(item)}" .promo="${item}"
                 .actions="${this.getNonIphPromoActions_()}">
-            </user-education-internals-card>`)}
+            </user-education-internals-card>
+          `)}
           <p class="if-empty">
             No non-IPH promos match the search filter.
           </p>
@@ -136,134 +125,135 @@ export function getHtml(this: UserEducationInternalsElement) {
         <div id="ntpPromos" class="promo-list">
           <h2>NTP Promos</h2>
           <div id="ntpPromoPreferences">
-            <cr-expand-button
-                ?expanded="${this.ntpPromoPreferencesExpanded_}"
-                @expanded-changed="${this.onNtpPromoPreferencesExpandedChanged_}">
-              <div id="label"><h3>NTP Promo Preferences</h3></div>
+            <cr-expand-button ?expanded="${this.ntpPromoPreferencesExpanded_}"
+                @expanded-changed="${
+                    this.onNtpPromoPreferencesExpandedChanged_}">
+              <div id="label">
+                <h3>NTP Promo Preferences</h3>
+              </div>
             </cr-expand-button>
             <div id="ntpPromoPrefData"
                 ?hidden="${!this.ntpPromoPreferencesExpanded_}">
               ${this.ntpPromoPreferences_.map(item => html`
-                <p><b>${item.name}</b> ${item.value}</p>`)}
+                <p>
+                  <b>${item.name}</b> ${item.value}
+                </p>
+              `)}
               <p>
                 Clicking the button below will reset all NTP promo preferences
                 not tied to feature flags. These changes may not be reflected on
                 NTP tabs that are already open.
               </p>
-              <cr-button
-                  id="clearNtpPromoPreferences"
+              <cr-button id="clearNtpPromoPreferences"
                   @click="${this.onClearNtpPromoPreferencesClick_}">
                 Clear All
               </cr-button>
             </div>
           </div>
           ${this.ntpPromos_.map(item => html`
-            <user-education-internals-card
-                id="${item.internalName}"
-                ?hidden="${!this.promoFilter_(item)}"
-                .promo="${item}"
+            <user-education-internals-card id="${item.internalName}"
+                ?hidden="${!this.promoFilter_(item)}" .promo="${item}"
                 .actions="${this.getNtpPromoActions_()}">
-            </user-education-internals-card>`)}
+            </user-education-internals-card>
+          `)}
           <p class="if-empty">
             No NTP Promos match the search filter.
           </p>
         </div>
         <div id="whatsNew" class="promo-list">
           <h2>What's New</h2>
-          <if expr="not is_chromeos">
-            <div class="whats-new-section">
-              <h3>Version Override</h3>
-              <p>
-                Providing a version override here will be used on the What's New
-                page until reset by quitting the browser.
-              </p>
-              <cr-input type="number" id="whatsNewVersionOverride"
-                  label="What's New Version Override (current: ${
-                      this.whatsNewVersionToRequest_})"
-                  min="${this.currentChromeVersion_ - 10}"
-                  max="${this.currentChromeVersion_ + 10}"
-                  error-message="Number must be within 10 of the current Chrome version (${
-                      this.currentChromeVersion_})"
-                  .value="${this.whatsNewVersionToRequest_.toString()}">
-                <cr-button slot="suffix"
-                    @click="${this.onWhatsNewVersionOverrideClick_}">
-                  Set
-                </cr-button>
-              </cr-input>
-              <div class="note">
-                <p>
-                  Note that this will not reflect the experimental features of a
-                  different version or allow testing browser commands that do
-                  not exist in this version.
-                </p>
-              </div>
-              <h3>Staging Environment</h3>
-              <cr-button id="launch-whats-new-staging"
-                  @click="${this.onLaunchWhatsNewStagingClick_}">
-                Launch staging
+<if expr="not is_chromeos">
+          <div class="whats-new-section">
+            <h3>Version Override</h3>
+            <p>
+              Providing a version override here will be used on the What's New
+              page until reset by quitting the browser.
+            </p>
+            <cr-input type="number" id="whatsNewVersionOverride"
+                label="What's New Version Override (current: ${
+                    this.whatsNewVersionToRequest_})"
+                min="${this.currentChromeVersion_ - 10}"
+                max="${this.currentChromeVersion_ + 10}"
+                error-message="Number must be within 10 of the current Chrome version (${
+                    this.currentChromeVersion_})"
+                .value="${this.whatsNewVersionToRequest_.toString()}">
+              <cr-button slot="suffix"
+                  @click="${this.onWhatsNewVersionOverrideClick_}">
+                Set
               </cr-button>
-              <div class="note">
-                <p>
-                  Note: This button will only request the staging page once.
-                  Closing the tab or opening another What's New page may request
-                  from the production environment again.
-                </p>
-                <p>
-                  Consider using the
-                  <span class="inline-code">--whats-new-use-staging</span>
-                  command-line switch instead. This switch will force the
-                  staging environment for the duration of the browser session.
-                </p>
-              </div>
-              <h3>Reset Data</h3>
+            </cr-input>
+            <div class="note">
               <p>
-                Clicking the button below will reset all What's New preference
-                data (module order, edition usage, and version history).
-              </p>
-              <cr-button id="clearWhatsNewData"
-                  @click="${this.onClearWhatsNewDataClick_}">
-                Clear All What's New Data
-              </cr-button>
-              <h3>Debug Info</h3>
-              <p>
-                To view debug information for What's New, open the page and run
-                <span class="inline-code">
-                  chromeWhatsNew.debugInfo()
-                </span>
-                in the javascript console.
-              </p>
-              <h3>Browser Commands</h3>
-              <p>
-                To test a browser command for What's New, open the page and run
-                <span class="inline-code">
-                  chromeWhatsNew.triggerBrowserCommand(number)
-                </span>
-                in the javascript console.
+                Note that this will not reflect the experimental features of a
+                different version or allow testing browser commands that do
+                not exist in this version.
               </p>
             </div>
-          </if>
+            <h3>Staging Environment</h3>
+            <cr-button id="launch-whats-new-staging"
+                @click="${this.onLaunchWhatsNewStagingClick_}">
+              Launch staging
+            </cr-button>
+            <div class="note">
+              <p>
+                Note: This button will only request the staging page once.
+                Closing the tab or opening another What's New page may request
+                from the production environment again.
+              </p>
+              <p>
+                Consider using the
+                <span class="inline-code">--whats-new-use-staging</span>
+                command-line switch instead. This switch will force the
+                staging environment for the duration of the browser session.
+              </p>
+            </div>
+            <h3>Reset Data</h3>
+            <p>
+              Clicking the button below will reset all What's New preference
+              data (module order, edition usage, and version history).
+            </p>
+            <cr-button id="clearWhatsNewData"
+                @click="${this.onClearWhatsNewDataClick_}">
+              Clear All What's New Data
+            </cr-button>
+            <h3>Debug Info</h3>
+            <p>
+              To view debug information for What's New, open the page and run
+              <span class="inline-code">
+                chromeWhatsNew.debugInfo()
+              </span>
+              in the javascript console.
+            </p>
+            <h3>Browser Commands</h3>
+            <p>
+              To test a browser command for What's New, open the page and run
+              <span class="inline-code">
+                chromeWhatsNew.triggerBrowserCommand(number)
+              </span>
+              in the javascript console.
+            </p>
+          </div>
+</if>
           ${this.whatsNewModules_.length > 0 ? html`
-            <h3 class="whats-new-section">Modules</h3>` :
-            ''}
+            <h3 class="whats-new-section">Modules</h3>
+          ` : ''}
           ${this.whatsNewModules_.map(item => html`
-            <user-education-whats-new-internals-card
-                id="${item.moduleName}"
-                ?hidden="${!this.whatsNewFilter_(item)}"
-                .item="${item}"
+            <user-education-whats-new-internals-card id="${item.moduleName}"
+                ?hidden="${!this.whatsNewFilter_(item)}" .item="${item}"
                 type="module"
                 @clear-whats-new-data="${this.onModuleClearWhatsNewData_}">
-            </user-education-whats-new-internals-card>`)}
+            </user-education-whats-new-internals-card>
+          `)}
           ${this.whatsNewEditions_.length > 0 ? html`
-            <h3 class="whats-new-section">Editions</h3>` :
-            ''}
+            <h3 class="whats-new-section">Editions</h3>
+          ` : ''}
           ${this.whatsNewEditions_.map(item => html`
-            <user-education-whats-new-internals-card
-                id="${item.editionName}"
-                ?hidden="${!this.whatsNewFilter_(item)}"
-                .item="${item}"
+            <user-education-whats-new-internals-card id="${item.editionName}"
+                ?hidden="${!this.whatsNewFilter_(item)}" .item="${item}"
                 type="edition"
                 @clear-whats-new-data="${this.onEditionClearWhatsNewData_}">
-            </user-education-whats-new-internals-card>`)}
+            </user-education-whats-new-internals-card>
+          `)}
           <p class="if-empty">
             No What's New Editions match the search filter.
           </p>
@@ -297,8 +287,7 @@ export function getHtml(this: UserEducationInternalsElement) {
             </li>
           </ul>
           <div id="session">
-            <cr-expand-button
-                ?expanded="${this.sessionExpanded_}"
+            <cr-expand-button ?expanded="${this.sessionExpanded_}"
                 @expanded-changed="${this.onSessionExpandedChanged_}">
               <div id="label">
                 <h3>Session, Grace Period, and Cooldown data:</h3>
@@ -306,7 +295,10 @@ export function getHtml(this: UserEducationInternalsElement) {
             </cr-expand-button>
             <div id="sessionData" ?hidden="${!this.sessionExpanded_}">
               ${this.sessionData_.map(item => html`
-                <p><b>${item.name}</b> ${item.value}</p>`)}
+                <p>
+                  <b>${item.name}</b> ${item.value}
+                </p>
+              `)}
             </div>
             <p>
               <cr-button id="forceNewSession"
@@ -331,5 +323,4 @@ export function getHtml(this: UserEducationInternalsElement) {
   </div>
   <div id="right" ?hidden="${this.narrow_}"></div>
 </div>`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LogListElement} from './log_list.js';
 
 export function getHtml(this: LogListElement) {
-  // clang-format off
   return html`
 <div class="filter-container">
   <label id="autofill-filter" class="chip filter-chip">
@@ -40,5 +39,4 @@ ${this.getFilteredLogEntries_().map((item, index) => html`
     <div class="log-entry-row log-url">${item.formUrl}</div>
   </div>
 `)}`;
-  // clang-format on
 }

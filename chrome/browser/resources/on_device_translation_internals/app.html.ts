@@ -11,15 +11,16 @@ export function getHtml(this: OnDeviceTranslationInternalsAppElement) {
 <h1>On Device Translation Internals</h1>
 <h2>Language Packages</h2>
 <table class="package-table">
-${this.languagePackStatus_.map((item, index) => html`
-  <tr class="package-tr">
-    <th class="package-name">${item.name}</th>
-    <td class="package-status">${this.getStatusString_(item.status)}</td>
-    <td>
-      <button @click="${this.onButtonClick_}"
-        data-index="${index}">${this.getButtonString_(item.status)}</button>
-    </td>
-  </tr>`)}
-</table>
-`;
+  ${this.languagePackStatus_.map((item, index) => html`
+    <tr class="package-tr">
+      <th class="package-name">${item.name}</th>
+      <td class="package-status">${this.getStatusString_(item.status)}</td>
+      <td>
+        <button @click="${this.onButtonClick_}" data-index="${index}">
+          ${this.getButtonString_(item.status)}
+        </button>
+      </td>
+    </tr>
+  `)}
+</table>`;
 }

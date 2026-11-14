@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WebnnInternalsInfoPageElement} from './info_page.js';
 
 export function getHtml(this: WebnnInternalsInfoPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="cr-centered-card-container">
   <div class="card">
@@ -64,5 +63,4 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

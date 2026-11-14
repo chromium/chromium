@@ -90,9 +90,10 @@ suite('ContentSettingsElementTest', function() {
         'http://google.com', 'https://[*.]example.com:102');
     await element.configure(pageHandler, cs);
     assertEquals(
-        getField('.id-primary-pattern').textContent, 'http://google.com');
+        getField('.id-primary-pattern').textContent.trim(),
+        'http://google.com');
     assertEquals(
-        getField('.id-secondary-pattern').textContent,
+        getField('.id-secondary-pattern').textContent.trim(),
         'https://[*.]example.com:102');
     assertValue(getField('.id-incognito'), 'true');
     assertValue(getField('.id-session-model'), '0');

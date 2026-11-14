@@ -5,7 +5,6 @@
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(settings: string[]) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-frame-list id="cs-page">
   ${settings.map((setting, index) => html`
@@ -25,5 +24,4 @@ export function getHtml(settings: string[]) {
   `)}
 </cr-frame-list>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

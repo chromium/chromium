@@ -8,10 +8,8 @@ import type {NewTabButtonElement} from './new_tab_button.js';
 
 export function getHtml(this: NewTabButtonElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button id="button"
-    aria-label="$i18n{newTabButtonAccName}"
-    title="$i18n{newTabButtonAccName}"
-    @click="${this.onClick}"
+<cr-icon-button id="button" aria-label="$i18n{newTabButtonAccName}"
+    title="$i18n{newTabButtonAccName}" @click="${this.onClick}"
     @pointerenter="${this.onHoveredPointerenter}"
     @pointerleave="${this.onHoveredPointerleave}"
     @pointercancel="${this.onHoveredPointercancel}"

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CriticalActionsAppElement} from './app.js';
 
 export function getHtml(this: CriticalActionsAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <header class="flex-center">
   <h1 class="flex-center">
@@ -39,19 +38,21 @@ ${!this.isFeatureEnabled_ ? html`
         target="_blank">
       Open in chrome://flags &rsaquo;
     </a>
-  </div>` : ''}
+  </div>
+` : ''}
 
 <div class="toolbar flex-center">
   <div class="filters-group flex-center">
     <div class="search-box flex-center">
       <input type="search" class="search-input"
           placeholder="Search ID, Conversation, Task, Metadata..."
-          .value="${this.searchQuery_}"
-          @input="${this.onSearchInput_}">
+          .value="${this.searchQuery_}" @input="${this.onSearchInput_}">
     </div>
 
     <select
-        .value="${this.actionTypeFilter_ === null ? '-1' : this.actionTypeFilter_.toString()}"
+        .value="${this.actionTypeFilter_ === null ?
+            '-1' :
+            this.actionTypeFilter_.toString()}"
         @change="${this.onActionTypeChange_}">
       <option value="-1">All Action Types</option>
       <option value="1">FormFill</option>
@@ -91,17 +92,18 @@ ${!this.isFeatureEnabled_ ? html`
     </thead>
     <tbody>
       ${this.entries_.map(entry => html`
-        <critical-action-row
-            .item="${entry}"
+        <critical-action-row .item="${entry}"
             @delete-entry="${this.onDeleteEntry_}">
-        </critical-action-row>`)}
+        </critical-action-row>
+      `)}
     </tbody>
   </table>
 
   ${this.entries_.length === 0 ? html`
     <div class="empty-state">
       No critical action records found in the database.
-    </div>` : ''}
+    </div>
+  ` : ''}
 </div>
 
 <div class="pagination-bar flex-center">
@@ -111,13 +113,11 @@ ${!this.isFeatureEnabled_ ? html`
 
   <div class="pagination-controls flex-center">
     <button class="page-btn" title="First Page"
-        ?disabled="${this.isFirstPage_()}"
-        @click="${this.onFirstPageClick_}">
+        ?disabled="${this.isFirstPage_()}" @click="${this.onFirstPageClick_}">
       &laquo;
     </button>
     <button class="page-btn" title="Previous Page"
-        ?disabled="${this.isFirstPage_()}"
-        @click="${this.onPrevPageClick_}">
+        ?disabled="${this.isFirstPage_()}" @click="${this.onPrevPageClick_}">
       &lsaquo; Prev
     </button>
 
@@ -125,18 +125,15 @@ ${!this.isFeatureEnabled_ ? html`
       ${this.pageIndex_ + 1} / ${this.computeTotalPages_()}
     </span>
 
-    <button class="page-btn" title="Next Page"
-        ?disabled="${this.isLastPage_()}"
+    <button class="page-btn" title="Next Page" ?disabled="${this.isLastPage_()}"
         @click="${this.onNextPageClick_}">
       Next &rsaquo;
     </button>
-    <button class="page-btn" title="Last Page"
-        ?disabled="${this.isLastPage_()}"
+    <button class="page-btn" title="Last Page" ?disabled="${this.isLastPage_()}"
         @click="${this.onLastPageClick_}">
       &raquo;
     </button>
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

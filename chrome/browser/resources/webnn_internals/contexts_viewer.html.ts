@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WebnnInternalsContextsViewerElement} from './contexts_viewer.js';
 
 export function getHtml(this: WebnnInternalsContextsViewerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="cr-centered-card-container">
   ${this.contexts_.length > 0 ? html`
@@ -71,5 +70,4 @@ export function getHtml(this: WebnnInternalsContextsViewerElement) {
   `}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

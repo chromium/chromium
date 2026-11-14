@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WebAppInternalsAppElement} from './app.js';
 
 export function getHtml(this: WebAppInternalsAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <button id="download-button" @click="${this.onDownloadButtonClick_}">
   Download
@@ -31,5 +30,4 @@ export function getHtml(this: WebAppInternalsAppElement) {
 </div>
 <pre id="json">${this.getFormattedJson_()}</pre>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

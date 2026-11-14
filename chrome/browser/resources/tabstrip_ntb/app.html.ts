@@ -7,7 +7,5 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabstripNtbAppElement} from './app.js';
 
 export function getHtml(this: TabstripNtbAppElement) {
-  return html`
-    <new-tab-button></new-tab-button>
-  `;
+  return html`<new-tab-button></new-tab-button>`;
 }

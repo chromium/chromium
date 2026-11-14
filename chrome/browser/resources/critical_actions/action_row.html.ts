@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CriticalActionRowElement} from './action_row.js';
 
 export function getHtml(this: CriticalActionRowElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <td class="uuid-cell" title="${this.item.criticalActionId}">
   ${this.item.criticalActionId}
@@ -39,8 +38,11 @@ export function getHtml(this: CriticalActionRowElement) {
       ${this.isExpanded_ ? '▲ Hide JSON' : this.item.metadata}
     </div>
     ${this.isExpanded_ ? html`
-      <pre class="metadata-full">${this.formatJson_()}</pre>` : ''}
-  ` : html`-`}
+      <pre class="metadata-full">${this.formatJson_()}</pre>
+    ` : ''}
+  ` : html`
+    -
+  `}
 </td>
 <td>
   <button class="row-delete-btn" title="Delete record"
@@ -49,5 +51,4 @@ export function getHtml(this: CriticalActionRowElement) {
   </button>
 </td>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

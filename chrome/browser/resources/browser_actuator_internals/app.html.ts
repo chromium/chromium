@@ -19,13 +19,11 @@ export function getHtml(this: BrowserActuatorInternalsAppElement) {
       <p class="subtitle hint">Reload the page to see new data.</p>
     </div>
     <div class="header-actions">
-      <button id="export-btn"
-          ?disabled="${this.sessions_.length === 0}"
+      <button id="export-btn" ?disabled="${this.sessions_.length === 0}"
           @click="${this.onExportClick_}">
         Export JSON
       </button>
-      <button id="copy-btn"
-          ?disabled="${this.sessions_.length === 0}"
+      <button id="copy-btn" ?disabled="${this.sessions_.length === 0}"
           @click="${this.onCopyClick_}">
         Copy JSON
       </button>

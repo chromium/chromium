@@ -10,110 +10,91 @@ import type {WatermarkAppElement} from './app.js';
 // TODO(crbug.com/434714853): Replace with i18n strings
 
 export function getHtml(this: WatermarkAppElement) {
-  // clang-format off
   return html`
-    <div class="controls-card">
-      <div class="card-header">
-        <div class="header-text">
-          <h1>Watermark Customization</h1>
-          <p>Customize the watermark style and text, and test it live</p>
-        </div>
-      </div>
+<div class="controls-card">
+  <div class="card-header">
+    <div class="header-text">
+      <h1>Watermark Customization</h1>
+      <p>Customize the watermark style and text, and test it live</p>
+    </div>
+  </div>
 
-      <div class="card-header">
-        <div class="header-text">
-          <h2>Watermark style</h2>
-        </div>
-        <cr-button @click="${this.onCopyJsonClick_}">
-            Copy style as JSON
-        </cr-button>
-      </div>
+  <div class="card-header">
+    <div class="header-text">
+      <h2>Watermark style</h2>
+    </div>
+    <cr-button @click="${this.onCopyJsonClick_}">
+      Copy style as JSON
+    </cr-button>
+  </div>
 
-      <div class="control-row">
-        <span>Font size</span>
-        <div class="number-control-container">
-          <cr-input
-              id="fontSizeInput"
-              class="font-size-input stroked"
-              aria-label="Font size"
-              type="number"
-              min="${FONT_SIZE_MIN}"
-              max="${FONT_SIZE_MAX}"
-              .value="${this.fontSize_.toString()}"
-              ?invalid="${this.isFontSizeInvalid_}"
-              @keydown="${this.onFontSizeInputKeydown_}"
-              @value-changed="${this.onFontSizeValueChanged_}">
-          </cr-input>
-          <div class="spinner-buttons">
-            <button
-              class="spinner-btn up"
-              ?disabled="${this.fontSize_ >= FONT_SIZE_MAX}"
-              @click="${this.onIncrementFontSizeClick_}"
-              @mousedown="${this.onFontSizeInputMousedown_}">
-            </button>
-            <button
-              class="spinner-btn down"
-              ?disabled="${this.fontSize_ <= FONT_SIZE_MIN}"
-              @click="${this.onDecrementFontSizeClick_}"
-              @mousedown="${this.onFontSizeInputMousedown_}">
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="fontSizeInputError"
-        class="${this.isFontSizeInvalid_ ? 'visible' : ''}">
-        <span>
-          Font size should be between ${FONT_SIZE_MIN} and ${FONT_SIZE_MAX}
-        </span>
-      </div>
-
-      <div class="control-row">
-        <span>White outline opacity</span>
-        <div class="slider-container">
-          <cr-slider id="outlineOpacitySlider" aria-label="White outline opacity"
-              min="0" max="100"
-              .value="${this.outlineOpacity_}"
-              .ticks="${this.opacityTicks_}"
-              @cr-slider-value-changed="${this.onOutlineOpacityCrSliderValueChanged_}">
-          </cr-slider>
-          <span class="slider-percentage">${this.outlineOpacity_}%</span>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <span>Dark fill opacity</span>
-        <div class="slider-container">
-          <cr-slider id="fillOpacitySlider" aria-label="Dark fill opacity"
-              min="0" max="100"
-              .value="${this.fillOpacity_}"
-              .ticks="${this.opacityTicks_}"
-              @cr-slider-value-changed="${this.onFillOpacityCrSliderValueChanged_}">
-          </cr-slider>
-          <span class="slider-percentage">${this.fillOpacity_}%</span>
-        </div>
-      </div>
-
-      <div class="card-header">
-        <div class="header-text">
-          <h2>Watermark text</h2>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <cr-textarea
-            id="watermarkTextInput"
-            class="text-input"
-            aria-label="Watermark text"
-            rows="2"
-            .value="${this.watermarkText_}"
-            autogrow
-            maxlength="512"
-            @value-changed="${this.onWatermarkTextValueChanged_}">
-        </cr-textarea>
+  <div class="control-row">
+    <span>Font size</span>
+    <div class="number-control-container">
+      <cr-input id="fontSizeInput" class="font-size-input stroked"
+          aria-label="Font size" type="number" min="${FONT_SIZE_MIN}"
+          max="${FONT_SIZE_MAX}" .value="${this.fontSize_.toString()}"
+          ?invalid="${this.isFontSizeInvalid_}"
+          @keydown="${this.onFontSizeInputKeydown_}"
+          @value-changed="${this.onFontSizeValueChanged_}">
+      </cr-input>
+      <div class="spinner-buttons">
+        <button class="spinner-btn up"
+            ?disabled="${this.fontSize_ >= FONT_SIZE_MAX}"
+            @click="${this.onIncrementFontSizeClick_}"
+            @mousedown="${this.onFontSizeInputMousedown_}">
+        </button>
+        <button class="spinner-btn down"
+            ?disabled="${this.fontSize_ <= FONT_SIZE_MIN}"
+            @click="${this.onDecrementFontSizeClick_}"
+            @mousedown="${this.onFontSizeInputMousedown_}">
+        </button>
       </div>
     </div>
-  `;
-  // clang-format on
+  </div>
+
+  <div id="fontSizeInputError"
+      class="${this.isFontSizeInvalid_ ? 'visible' : ''}">
+    <span>
+      Font size should be between ${FONT_SIZE_MIN} and ${FONT_SIZE_MAX}
+    </span>
+  </div>
+
+  <div class="control-row">
+    <span>White outline opacity</span>
+    <div class="slider-container">
+      <cr-slider id="outlineOpacitySlider" aria-label="White outline opacity"
+          min="0" max="100" .value="${this.outlineOpacity_}"
+          .ticks="${this.opacityTicks_}" @cr-slider-value-changed="${
+              this.onOutlineOpacityCrSliderValueChanged_}">
+      </cr-slider>
+      <span class="slider-percentage">${this.outlineOpacity_}%</span>
+    </div>
+  </div>
+
+  <div class="control-row">
+    <span>Dark fill opacity</span>
+    <div class="slider-container">
+      <cr-slider id="fillOpacitySlider" aria-label="Dark fill opacity" min="0"
+          max="100" .value="${this.fillOpacity_}" .ticks="${this.opacityTicks_}"
+          @cr-slider-value-changed="${this.onFillOpacityCrSliderValueChanged_}">
+      </cr-slider>
+      <span class="slider-percentage">${this.fillOpacity_}%</span>
+    </div>
+  </div>
+
+  <div class="card-header">
+    <div class="header-text">
+      <h2>Watermark text</h2>
+    </div>
+  </div>
+
+  <div class="control-row">
+    <cr-textarea id="watermarkTextInput" class="text-input"
+        aria-label="Watermark text" rows="2" .value="${this.watermarkText_}"
+        autogrow maxlength="512"
+        @value-changed="${this.onWatermarkTextValueChanged_}">
+    </cr-textarea>
+  </div>
+</div>`;
 }

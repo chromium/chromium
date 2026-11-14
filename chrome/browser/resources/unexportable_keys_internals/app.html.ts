@@ -22,12 +22,9 @@ export function getHtml(this: UnexportableKeysInternalsAppElement) {
 <table>
   <tr>
     ${this.columns_.map(col => html`
-      <th class="sort-header"
-          data-sort-key="${col.key}"
-          @click="${this.onSortClick_}"
-          @keydown="${this.onSortKeydown_}"
-          tabindex="0"
-          aria-sort="${this.getSortAttribute_(col.key)}">
+      <th class="sort-header" data-sort-key="${col.key}"
+          @click="${this.onSortClick_}" @keydown="${this.onSortKeydown_}"
+          tabindex="0" aria-sort="${this.getSortAttribute_(col.key)}">
         ${col.label}
       </th>
     `)}

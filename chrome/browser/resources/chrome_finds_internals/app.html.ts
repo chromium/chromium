@@ -12,10 +12,16 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
 
 <section id="instructions">
   <h2>Instructions</h2>
-  <p>Use this page to inspect and trigger different aspects of the Finds Service:</p>
+  <p>
+    Use this page to inspect and trigger different aspects of the Finds Service:
+  </p>
   <ul>
-    <li><strong>Trigger Finds Service</strong>: Executes the full Finds service workflow.</li>
-    <li><strong>Dump History to JSON</strong>: Queries and displays the raw history entries that would be provided to the model.</li>
+    <li>
+      <strong>Trigger Finds Service</strong>: Executes the full Finds service workflow.
+    </li>
+    <li>
+      <strong>Dump History to JSON</strong>: Queries and displays the raw history entries that would be provided to the model.
+    </li>
   </ul>
 </section>
 
@@ -28,20 +34,20 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
           @change="${this.onHistoryCountChange_}" min="0">
     </label>
   </div>
-    <cr-button id="run-finds-model-btn" class="action-button"
-        @click="${this.onRunFindsModelClick_}">
-      Trigger Finds Service
-    </cr-button>
-    <cr-button id="dump-history-btn" @click="${this.onDumpHistoryClick_}">
-      Dump History to JSON
-    </cr-button>
+  <cr-button id="run-finds-model-btn" class="action-button"
+      @click="${this.onRunFindsModelClick_}">
+    Trigger Finds Service
+  </cr-button>
+  <cr-button id="dump-history-btn" @click="${this.onDumpHistoryClick_}">
+    Dump History to JSON
+  </cr-button>
 </section>
 
 <section id="history-dump-section" ?hidden="${!this.historyJson_}">
   <h2>History Dump</h2>
   <div id="history-dump-container">
-    <textarea id="history-json-output" rows="10"
-        readonly .value="${this.historyJson_}">
+    <textarea id="history-json-output" rows="10" readonly
+        .value="${this.historyJson_}">
     </textarea>
     <div class="button-row">
       <cr-button id="copy-history-btn" @click="${this.onCopyHistoryClick_}">
@@ -58,6 +64,5 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
       <div class="log-entry">${log}</div>
     `)}
   </div>
-</section>
-`;
+</section>`;
 }

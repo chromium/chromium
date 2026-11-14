@@ -7,15 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ColorPipelineInternalsAppElement} from './app.ts';
 
 export function getHtml(this: ColorPipelineInternalsAppElement) {
-  // clang-format off
   return html`
 <cr-toolbar id="toolbar" page-name="Color Pipeline" autofocus
-    clear-label="Clear Search"
-    search-prompt="Search Colors"
-    @search-changed="${this.onSearchChanged_}"
-    role="banner"
-    @narrow-changed="${this.onNarrowChanged_}"
-    narrow-threshold="780">
+    clear-label="Clear Search" search-prompt="Search Colors"
+    @search-changed="${this.onSearchChanged_}" role="banner"
+    @narrow-changed="${this.onNarrowChanged_}" narrow-threshold="780">
 </cr-toolbar>
 <div id="container" class="cr-scrollable">
   <div class="cr-scrollable-top-shadow"></div>
@@ -24,8 +20,7 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
       <h2>Navigation</h2>
       <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
           @iron-activate="${this.onSelectorIronActivate_}"
-          @click="${this.onLinkClick_}"
-          selected-attribute="selected">
+          @click="${this.onLinkClick_}" selected-attribute="selected">
         ${this.sections_.map(section => html`
           <a role="menuitem" href="#${section.title}" class="cr-nav-menu-item">
             ${section.title}
@@ -52,12 +47,11 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
           <a name="${section.title}"></a>
           <h2>${section.title}</h2>
           ${section.entries.map(entry => html`
-            <div class="entry"
-                ?hidden="${!this.entryFilter_(entry)}"
+            <div class="entry" ?hidden="${!this.entryFilter_(entry)}"
                 style="${this.getEntryStyle_(entry)}"
                 @mouseenter="${this.onColorMouseenter_}"
                 @mouseleave="${this.onColorMouseleave_}">
-                <p>${this.getEntryName_(entry)}</p>
+              <p>${this.getEntryName_(entry)}</p>
             </div>
           `)}
         </div>
@@ -78,5 +72,4 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
     </div>
   </div>
 </div>`;
-  // clang-format on
 }
