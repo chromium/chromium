@@ -8,7 +8,9 @@
 #include <unordered_set>
 
 #include "base/barrier_closure.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
@@ -87,8 +89,17 @@ void WebAppIsolationDelegateImpl::ClearAppResourcesOnUninstall(
 
   auto barrier_closure = base::BarrierClosure(2, std::move(callback));
 
-  RemoveIsolatedWebAppBrowsingData(&profile_.get(), iwa_origin,
-                                   barrier_closure);
+  RemoveIsolatedWebAppBrowsingData(
+      &profile_.get(), iwa_origin,
+      base::BindOnce(
+          [](base::WeakPtr<ControlledFramePartitionsManager> manager,
+             const webapps::AppId& app_id) {
+            if (manager) {
+              manager->ClearInMemoryPartitions(app_id);
+            }
+          },
+          controlled_frame_partitions_manager_.GetWeakPtr(), app_id)
+          .Then(barrier_closure));
   CloseAndDeleteBundle(&profile_.get(), location, barrier_closure);
 }
 
@@ -121,6 +132,7 @@ WebAppIsolationDelegateImpl::WebAppIsolationDelegateImpl(
     Profile* profile,
     ui::UnownedUserDataHost& unowned_user_data_host)
     : profile_(*profile),
+      controlled_frame_partitions_manager_(*profile_, unowned_user_data_host),
       command_scheduler_(*profile_, unowned_user_data_host),
       dev_install_manager_(*profile_, unowned_user_data_host),
       policy_manager_(&*profile_, unowned_user_data_host),

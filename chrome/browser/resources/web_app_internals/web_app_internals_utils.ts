@@ -22,6 +22,7 @@ export interface DebugData {
   ShouldGarbageCollectStoragePartitions: boolean;
   IsolatedWebAppUpdateManager: Record<string, unknown>;
   IsolatedWebAppPolicyManager: Record<string, unknown>;
+  ControlledFramePartitionsManager: Record<string, unknown>;
   IwaKeyDistributionInfoProvider: Record<string, unknown>;
   WebAppDirectoryDiskState: Record<string, unknown>;
 
@@ -52,6 +53,7 @@ const DebugDataKeyOrder: ReadonlyArray<keyof DebugData> = [
   'ShouldGarbageCollectStoragePartitions',
   'IsolatedWebAppUpdateManager',
   'IsolatedWebAppPolicyManager',
+  'ControlledFramePartitionsManager',
   'IwaBundleCacheManager',
   'IwaKeyDistributionInfoProvider',
   'WebAppDirectoryDiskState',

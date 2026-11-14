@@ -105,14 +105,25 @@ suite('WebAppInternalsUtilsTest', function() {
 
     test('canonical key ordering', function() {
       const input = {
+        WebAppDirectoryDiskState: {},
+        ControlledFramePartitionsManager: {},
         IconErrorLog: [],
+        IsolatedWebAppPolicyManager: {},
         InstalledWebApps: {'!Index': {}, Details: []},
         LockManager: {},
       };
       const json = JSON.stringify(input, debugDataJsonReplacer, 2);
       const keys = Object.keys(JSON.parse(json));
       assertDeepEquals(
-          ['InstalledWebApps', 'LockManager', 'IconErrorLog'], keys);
+          [
+            'InstalledWebApps',
+            'LockManager',
+            'IconErrorLog',
+            'IsolatedWebAppPolicyManager',
+            'ControlledFramePartitionsManager',
+            'WebAppDirectoryDiskState',
+          ],
+          keys);
     });
   });
 });

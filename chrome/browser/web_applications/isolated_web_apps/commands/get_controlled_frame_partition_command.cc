@@ -7,14 +7,17 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/controlled_frame_partitions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -33,10 +36,10 @@ GetControlledFramePartitionWithLock(Profile* profile,
   debug_info.Set("in_memory", in_memory);
 
   if (in_memory) {
-    std::optional<content::StoragePartitionConfig> config =
-        lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
-            url_info, partition_name);
-    return config;
+    WebAppProvider& provider =
+        CHECK_DEREF(WebAppProvider::GetForWebApps(profile));
+    return ControlledFramePartitionsManager::From(provider)
+        .SaveAndGetInMemoryPartitionConfig(url_info, partition_name);
   }
 
   content::StoragePartitionConfig storage_partition_config =

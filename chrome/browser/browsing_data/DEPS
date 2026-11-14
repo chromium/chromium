@@ -159,6 +159,7 @@ include_rules = [
   "+chrome/browser/user_education/user_education_service.h",
   "+chrome/browser/user_education/user_education_service_factory.h",
   "+chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h",
+  "+chrome/browser/web_applications/isolated_web_apps/controlled_frame_partitions_manager.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h",
   "+chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h",
   "+chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h",

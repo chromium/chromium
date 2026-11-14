@@ -27,7 +27,6 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -51,10 +50,6 @@ struct ShareTarget;
 }  // namespace proto
 }  // namespace apps
 
-namespace content {
-class StoragePartitionConfig;
-}  // namespace content
-
 namespace webapps {
 enum class WebappInstallSource;
 }  // namespace webapps
@@ -64,7 +59,6 @@ namespace proto {
 enum InstallState : int;
 }
 
-class IsolatedWebAppUrlInfo;
 class WebApp;
 class WebAppCommandScheduler;
 class WebAppProvider;
@@ -504,22 +498,6 @@ class WebAppRegistrar {
   std::optional<proto::os_state::WebAppOsIntegration>
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;
 
-  // Returns the StoragePartitionConfig of all StoragePartitions used by
-  // `app_id` if `app_id` is an Isolated Web App; both the primary and any
-  // <controlledframe> StoragePartitions will be returned. Returns an empty
-  // vector if the app is not an Isolated Web App.
-  std::vector<content::StoragePartitionConfig>
-  GetIsolatedWebAppStoragePartitionConfigs(const webapps::AppId& app_id) const;
-
-  // Saves a record of the |partition_name| in
-  // |isolated_web_app_in_memory_controlled_frame_partitions_|.
-  // Then returns the StoragePartitionConfig of the in-memory
-  // Controlled Frame partition.
-  std::optional<content::StoragePartitionConfig>
-  SaveAndGetInMemoryControlledFramePartitionConfig(
-      const IsolatedWebAppUrlInfo& url_info,
-      const std::string& partition_name);
-
   // Returns if the given app_id would ever be eligible to capture links in
   // its scope. This returns false for apps that aren't installed.
   bool CanCaptureLinksInScope(const webapps::AppId& app_id) const;
@@ -770,12 +748,6 @@ class WebAppRegistrar {
 #if DCHECK_IS_ON()
   int mutations_count_ = 0;
 #endif
-
-  // Keeps a record of in-memory (non-persistent) Storage Partitions created by
-  // Isolated Web Apps' Controlled Frames. This table will expire on browser
-  // shutdown same as in-memory Storage Partitions.
-  base::flat_map<webapps::AppId, base::flat_set<std::string>>
-      isolated_web_app_in_memory_controlled_frame_partitions_;
 
   base::WeakPtrFactory<WebAppRegistrar> weak_factory_{this};
 };

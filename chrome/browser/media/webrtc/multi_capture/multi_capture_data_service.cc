@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 
 namespace multi_capture {
 

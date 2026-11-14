@@ -16,11 +16,9 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
-#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -34,7 +32,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -56,8 +53,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/isolated_web_apps_policy.h"
-#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
@@ -1221,62 +1216,6 @@ int WebAppRegistrar::CountUserInstalledDiyApps() const {
       .value();
 }
 
-std::vector<content::StoragePartitionConfig>
-WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
-    const webapps::AppId& app_id) const {
-  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
-    return {};
-  }
-  // Note: This function is called after is_uninstalling is set to true; hence
-  // we cannot use filters here.
-  const auto* iwa = GetAppById(app_id);
-  if (!iwa || !iwa->isolation_data()) {
-    return {};
-  }
-
-  auto url_info = *IsolatedWebAppUrlInfo::Create(iwa->scope());
-
-  // Start with IWA's base on-disk partition.
-  std::vector<content::StoragePartitionConfig> partitions = {
-      url_info.storage_partition_config(profile_)};
-
-  auto collect_partitions = [&](const auto& partitions, bool in_memory) {
-    return base::ToVector(partitions, [&](const std::string& partition) {
-      return url_info.GetStoragePartitionConfigForControlledFrame(
-          profile_, partition, in_memory);
-    });
-  };
-
-  // Get all on-disk Controlled Frame partitions.
-  base::Extend(
-      partitions,
-      collect_partitions(iwa->isolation_data()->controlled_frame_partitions(),
-                         /*in_memory=*/false));
-  // Get all in-memory Controlled Frame partitions.
-  if (auto* stored_partitions = base::FindOrNull(
-          isolated_web_app_in_memory_controlled_frame_partitions_, app_id)) {
-    base::Extend(partitions,
-                 collect_partitions(*stored_partitions, /*in_memory=*/true));
-  }
-
-  return partitions;
-}
-
-std::optional<content::StoragePartitionConfig>
-WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
-    const IsolatedWebAppUrlInfo& url_info,
-    const std::string& partition_name) {
-  if (!AppMatches(url_info.app_id(), WebAppFilter::IsIsolatedApp())) {
-    return std::nullopt;
-  }
-
-  isolated_web_app_in_memory_controlled_frame_partitions_[url_info.app_id()]
-      .insert(partition_name);
-
-  return url_info.GetStoragePartitionConfigForControlledFrame(
-      profile_, partition_name, true);
-}
-
 bool WebAppRegistrar::CanCaptureLinksInScope(
     const webapps::AppId& app_id) const {
   if (IsAppCapturingSettingForcedOff(app_id)) {
@@ -1996,17 +1935,6 @@ base::Value WebAppRegistrar::AsDebugValue() const {
                                base::ToString(run_on_os_login_mode.value));
     run_on_os_login_fields.Set("user_controllable",
                                run_on_os_login_mode.user_controllable);
-
-    base::ListValue* in_mem_controlled_frame_partitions =
-        app_debug_dict.EnsureDict("isolated_data_in_memory")
-            ->EnsureList("controlled_frame_partitions (in-memory)");
-    auto it = isolated_web_app_in_memory_controlled_frame_partitions_.find(
-        web_app->app_id());
-    if (it != isolated_web_app_in_memory_controlled_frame_partitions_.end()) {
-      for (const std::string& partition : it->second) {
-        in_mem_controlled_frame_partitions->Append(partition);
-      }
-    }
 
     web_app_details.Append(std::move(app_debug_value));
   }

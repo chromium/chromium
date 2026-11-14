@@ -25,10 +25,12 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
+#include "chrome/browser/web_applications/isolated_web_apps/controlled_frame_partitions_manager.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/webapps/common/web_app_id.h"
@@ -144,7 +146,8 @@ void GetIsolatedWebAppSizeJob::Start(WithAppResources* lock_with_app_resources,
                               weak_factory_.GetWeakPtr())
                    .Then(barrier.CreateClosure()));
   for (const content::StoragePartitionConfig& storage_partition_config :
-       web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(app_id_)) {
+       GetIsolatedWebAppStoragePartitionConfigs(
+           CHECK_DEREF(WebAppProvider::GetForWebApps(profile_)), app_id_)) {
     if (storage_partition_config.in_memory()) {
       continue;
     }

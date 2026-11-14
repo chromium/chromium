@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/isolated_web_apps/controlled_frame_partitions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
@@ -57,6 +58,7 @@ class WebAppIsolationDelegateImpl : public WebAppIsolationDelegate {
                               ui::UnownedUserDataHost& unowned_user_data_host);
 
   const raw_ref<Profile> profile_;
+  ControlledFramePartitionsManager controlled_frame_partitions_manager_;
   IwaCommandScheduler command_scheduler_;
   IsolatedWebAppDevInstallManager dev_install_manager_;
   IsolatedWebAppPolicyManager policy_manager_;
