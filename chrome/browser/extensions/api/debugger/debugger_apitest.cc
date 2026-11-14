@@ -125,12 +125,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1350,41 +1346,30 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToEmptyUrls) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
-                                    public DebuggerExtensionApiTest {
+class DebuggerExtensionApiPdfTest : public DebuggerExtensionApiTest {
  public:
-  DebuggerExtensionApiPdfTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
-    if (IsParamFeatureEnabled()) {
-      factory_.emplace();
-    }
-  }
-
   testing::AssertionResult LoadPdf(const GURL& pdf_url) {
     if (!ui_test_utils::NavigateToURL(browser(), pdf_url)) {
       return testing::AssertionFailure() << "NavigateToURL failed";
     }
     content::WebContents* web_contents = GetActiveWebContents();
-    if (IsParamFeatureEnabled()) {
-      return factory_->GetTestMimeHandlerStreamManager(web_contents)
-          ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame());
-    }
-    return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
+    return factory_.GetTestMimeHandlerStreamManager(web_contents)
+        ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame());
   }
 
  private:
-  std::optional<pdf::TestMimeHandlerStreamManagerFactory> factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 // Test that the debuggers can attach to the PDF embedder frame.
-IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiPdfTest, AttachToPdf) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
 }
 
 // Test that extensions cannot attach directly or via Target.setAutoAttach to
 // the inner PDF extension frame or PDF content frame, while still being able to
 // attach to the outer PDF embedder tab.
-IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiPdfTest,
                        CannotAttachToInnerPdfFrames) {
   TestExtensionDir test_extension_dir;
   test_extension_dir.WriteManifest(
@@ -1413,10 +1398,6 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
   ASSERT_TRUE(pdf_extension_host);
   ASSERT_TRUE(pdf_content_host);
 
-  const std::string expected_direct_attach_error =
-      IsParamFeatureEnabled() ? "Cannot attach to this target."
-                              : manifest_errors::kCannotAccessExtensionUrl;
-
   // Direct attachment to the PDF extension frame must be rejected.
   {
     auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
@@ -1426,7 +1407,7 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
         base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
                            pdf_extension_host->GetId().c_str()),
         profile()));
-    EXPECT_EQ(expected_direct_attach_error, attach_function->GetError());
+    EXPECT_EQ("Cannot attach to this target.", attach_function->GetError());
     EXPECT_FALSE(pdf_extension_host->IsAttached());
   }
 
@@ -1439,7 +1420,7 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
         base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
                            pdf_content_host->GetId().c_str()),
         profile()));
-    EXPECT_EQ(expected_direct_attach_error, attach_function->GetError());
+    EXPECT_EQ("Cannot attach to this target.", attach_function->GetError());
     EXPECT_FALSE(pdf_content_host->IsAttached());
   }
 
@@ -1488,35 +1469,13 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
       profile()));
 }
 
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
-
-class DebuggerExtensionApiOopifPdfTest : public DebuggerExtensionApiTest {
- public:
-  DebuggerExtensionApiOopifPdfTest() {
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
-  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() {
-    return factory_.GetTestMimeHandlerStreamManager(GetActiveWebContents());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  pdf::TestMimeHandlerStreamManagerFactory factory_;
-};
-
 // Test that the inner PDF frames, i.e. the PDF extension frame and the PDF
 // content frame, aren't visible targets, while the PDF embedder frame is.
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiPdfTest, GetTargets) {
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
 
   // Load a full-page PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
-  content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(
-      web_contents->GetPrimaryMainFrame()));
+  ASSERT_TRUE(LoadPdf(pdf_url));
 
   // Get targets.
   base::ListValue targets = RunGetTargets(profile());

@@ -53,10 +53,6 @@ source_set("browser_tests") {
 
   if (enable_pdf) {
     sources += [ "mime_handler_fallback_browsertest.cc" ]
-    deps += [
-      "//chrome/browser/pdf:pdf_extension_test_utils",
-      "//extensions/browser/mime_handler",
-      "//pdf:features",
-    ]
+    deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
   }
 }

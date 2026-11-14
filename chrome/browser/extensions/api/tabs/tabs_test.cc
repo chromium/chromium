@@ -161,11 +161,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "pdf/pdf_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -2590,17 +2586,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
-class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
-                            public PDFExtensionTestBase {
- public:
-  ExtensionApiPdfTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
-};
+using ExtensionApiPdfTest = PDFExtensionTestBase;
 
 // Regression test for crbug.com/40085816.
-IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   content::WebContents* first_web_contents = GetActiveWebContents();
   ASSERT_TRUE(first_web_contents);
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -2610,32 +2599,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
       "/extensions/api_test/tabs/pdf_extension_test.html");
   content::TestNavigationManager navigation_manager(
       second_web_contents, GURL("http://www.facebook.com:83"));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(LoadPdfInFirstChild(url));
 
-  // Ensure the PDF has loaded, and get the WebContents to click.
-  auto* web_contents_for_click = second_web_contents;
-  if (UseOopif()) {
-    ASSERT_TRUE(GetTestMimeHandlerStreamManager(second_web_contents)
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    ASSERT_TRUE(
-        pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents));
-
-    auto inner_web_contents = web_contents_for_click->GetInnerWebContents();
-    ASSERT_EQ(1U, inner_web_contents.size());
-    // With MimeHandlerViewInCrossProcessFrame input should directly route to
-    // the guest WebContents as there is no longer a BrowserPlugin involved.
-    web_contents_for_click = inner_web_contents[0];
-  }
-
-  // (400, 300) in `web_contents_for_click` translates to a different coordinate
+  // (400, 300) in `second_web_contents` translates to a different coordinate
   // in the PDF Viewer. The exact coordinate depends on the PDF Viewer's UI
   // layout. In the test PDF embedded in pdf_extension_test.html, the entire PDF
   // content area is a giant link to http://www.facebook.com:83. As long as this
   // click hits that link target, it triggers the navigation required for test.
-  content::SimulateMouseClickAt(web_contents_for_click, 0,
+  content::SimulateMouseClickAt(second_web_contents, 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(400, 300));
 
@@ -2656,10 +2627,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   // avoid a race during browser teardown (see crbug.com/41412718).
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionApiPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // Tests how chrome.windows.create behaves when setSelfAsOpener parameter is

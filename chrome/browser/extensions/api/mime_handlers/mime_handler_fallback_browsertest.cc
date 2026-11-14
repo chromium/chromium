@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -41,7 +40,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -69,11 +67,9 @@ GURL PdfExtensionIndexUrl() {
 
 }  // namespace
 
-class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
-                                       public ExtensionApiTest {
+class MimeHandlerFallbackBrowserTest : public ExtensionApiTest {
  public:
-  MimeHandlerFallbackBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
+  MimeHandlerFallbackBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{extensions_features::kApiMimeHandler},
         /*disabled_features=*/{});
@@ -135,15 +131,11 @@ class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
   }
 
   // Builds a `TestNavigationObserver` waiting for the built-in PDF
-  // extension's index document to commit. Watches both existing and
-  // newly-created `WebContents`: under OOPIF the document commits in
-  // the embedder's `WebContents`; under legacy MimeHandlerView it
-  // commits in a guest `WebContents` created during the swap.
+  // extension's index document to commit.
   std::unique_ptr<content::TestNavigationObserver> MakePdfExtensionObserver() {
     auto observer = std::make_unique<content::TestNavigationObserver>(
         PdfExtensionIndexUrl());
     observer->WatchExistingWebContents();
-    observer->StartWatchingNewWebContents();
     return observer;
   }
 
@@ -174,9 +166,8 @@ class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
 // Generic MIME handler for application/pdf auto-aborts. The frame-scoped
 // re-navigation causes the built-in PDF viewer to take over the same URL,
 // and the hand-off must not fetch the document again: one request for the
-// initial load and none for the fallback. The legacy GuestView path keeps
-// no body cache, so it still re-fetches.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+// initial load and none for the fallback.
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackSwapsToPdfViewerForTopLevelEmbedder) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
@@ -191,25 +182,15 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents))
       << "Generic handler aborted but built-in PDF viewer never loaded.";
 
-  constexpr int kExpectedServerRequestCountWithoutRefetch = 1;
-  // If OOPIF PDF is disabled, network request is done twice - once when the
-  // pdf file is loaded and second time when abort and fallback is triggered as
-  // there is no fallback without network request cache path.
-  EXPECT_EQ(IsParamFeatureEnabled()
-                ? kExpectedServerRequestCountWithoutRefetch
-                : kExpectedServerRequestCountWithoutRefetch + 1,
-            pdf_request_count());
+  EXPECT_EQ(1, pdf_request_count());
   EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
 }
 
 // `MimeHandlerStreamManager` calls `LoadURLWithParams()` with
 // `BYPASSING_CACHE`, so the MIME handler URL interceptor serves the cached
 // body and the fallback makes no network round trip.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackBypassesServiceWorker) {
-  if (!IsParamFeatureEnabled()) {
-    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
-  }
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -242,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 // a reload classification it is misclassified as a same-document scroll: the
 // response throttle never re-runs and the built-in PDF viewer never takes
 // over. The user-visible URL, fragment included, must survive the fallback.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackSwapsToPdfViewerForFragmentedUrl) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
@@ -267,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 // to the built-in PDF viewer; the outer main frame's document must not
 // be re-navigated. The fallback re-navigation is scoped to the embedder
 // iframe's `FrameTreeNodeId`, so siblings and ancestors stay put.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackLeavesMainFrameIntactForIframeEmbedder) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
@@ -299,14 +280,9 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
 // Abort from a generic handler hosted by an <embed> element must hand the
 // cached response body to the built-in PDF viewer as a completed load, not just
-// load the viewer shell. The cached-body routing exists only in the OOPIF PDF
-// stream pipeline; the legacy MimeHandlerView GuestView path drops the cache
-// and re-fetches, so there is nothing to verify there.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+// load the viewer shell.
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackRendersPdfViewerForEmbedElement) {
-  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
-    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
-  }
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -335,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 // iframe swaps to the built-in PDF viewer; the other keeps the 3p
 // handler. URL-keyed state would alias the two embedders and produce a
 // different outcome.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackDistinguishesConcurrentIframesSameUrl) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
@@ -386,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
 // Calling abortAndFallbackToNativeHandler from the built-in PDF
 // extension must reject with an error and not navigate.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        BuiltInExtensionRejectsAbortAndFallback) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -472,12 +448,8 @@ class MimeHandlerFallbackRedirectBrowserTest
 // A fallback with a cached body never reaches the network, so a redirect can
 // only occur once the cache gives up. Cap it so the refetch happens, and check
 // the redirected document commits.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackRedirectBrowserTest,
                        DegradedFallbackFollowsCrossOriginRedirect) {
-  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
-    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
-  }
-
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* const web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -540,11 +512,8 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
 // A navigation that replaces the fallback while the fallback still waits for
 // the body should load from the network. The fallback should not be pending
 // once the replacement finishes.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackRedirectBrowserTest,
                        AbortAndFallbackReplacedBeforeStartKeepsNextLoad) {
-  if (!IsParamFeatureEnabled()) {
-    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
-  }
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -594,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
 // Without a replayable body cache the request really is sent again, and this
 // path never reaches the form-resubmission prompt. So the degraded fallback
 // must not repeat the POST.
-IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(MimeHandlerFallbackBrowserTest,
                        DegradedFallbackDoesNotResubmitPost) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* web_contents =
@@ -619,8 +588,5 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
   EXPECT_FALSE(
       web_contents->GetController().GetLastCommittedEntry()->GetHasPostData());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MimeHandlerFallbackBrowserTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MimeHandlerFallbackRedirectBrowserTest);
 
 }  // namespace extensions
