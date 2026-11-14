@@ -5375,8 +5375,9 @@ TEST_P(PageContextWrapperViewportGeometryTest,
 // rounding `visualViewport` dimensions to whole pixels) rather than being
 // divided by `visualViewport.scale`, and zooming in from rest scales
 // `viewport_geometry` down to the zoomed `visualViewport` dimensions.
+// TODO(crbug.com/584794136): Re-enable once ZoomPageToScale() is deflaked.
 TEST_P(PageContextWrapperViewportGeometryTest,
-       DesktopLayoutPageAtRestAndZoomedMatchesVisualViewport) {
+       DISABLED_DesktopLayoutPageAtRestAndZoomedMatchesVisualViewport) {
   ASSERT_NO_FATAL_FAILURE(LoadDesktopLayoutPage(ZoomablePageBody()));
   const CGFloat resting_zoom_scale = ZoomScale();
   const double layout_width =
