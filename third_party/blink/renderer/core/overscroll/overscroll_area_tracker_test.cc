@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -651,7 +652,7 @@ TEST_F(OverscrollAreaTrackerTest, BackdropClickDismiss) {
         left: -50%;
         top: -50%;
       }
-      #menu::overscroll-backdrop {
+      #menu::backdrop {
         background-color: rgba(0,0,0,0.5);
       }
     </style>
@@ -680,7 +681,7 @@ TEST_F(OverscrollAreaTrackerTest, BackdropClickDismiss) {
 
   EXPECT_NE(scrollable_area->GetScrollOffset(), ScrollOffset());
 
-  PseudoElement* backdrop = menu->GetPseudoElement(kPseudoIdOverscrollBackdrop);
+  PseudoElement* backdrop = menu->GetPseudoElement(kPseudoIdBackdrop);
   ASSERT_TRUE(backdrop);
 
   PointerEventInit* init = PointerEventInit::Create();
@@ -1787,13 +1788,15 @@ TEST_F(OverscrollAreaTrackerPageTest, StyleRecalcContextContainerChild) {
       StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
 }
 
-// The UA style sheet is parsed once per process, so a container can have a
-// non-none overscroll container type even though the feature is disabled for
-// its document. Such a container must not cause any area registration.
+// The UA style sheet unconditionally sets -internal-overscroll-container on
+// [overscrollcontainer]. Verify that when the feature is disabled for a
+// document, neither overscroll container style/containment nor area
+// registration or area style adjustment takes effect.
 TEST_F(OverscrollAreaTrackerPageTest,
        StyleRecalcContextContainerChildFeatureDisabled) {
   ScopedOverscrollAreasForTest disabled(false);
   SetBodyInnerHTML(R"HTML(
+    <style>#area::backdrop { display: block; }</style>
     <div id="container" overscrollcontainer>
       <div id="area" overscrollarea></div>
     </div>
@@ -1802,15 +1805,162 @@ TEST_F(OverscrollAreaTrackerPageTest,
   Element* container = GetElementById("container");
   Element* area = GetElementById("area");
 
-  // The UA sheet was parsed with the feature enabled by the fixture.
-  ASSERT_NE(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+  EXPECT_EQ(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
             EOverscrollContainerType::kNone);
+  EXPECT_FALSE(container->GetComputedStyle()->ContainsLayout());
+  EXPECT_FALSE(container->GetLayoutObject()->IsOverscrollContainer());
 
   EXPECT_FALSE(
       StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
   EXPECT_FALSE(area->IsValidOverscrollArea());
+  EXPECT_EQ(area->GetComputedStyle()->GetPosition(), EPosition::kStatic);
+  EXPECT_FALSE(area->GetComputedStyle()->IsInert());
   EXPECT_FALSE(container->GetOverscrollAreaTracker());
-  EXPECT_FALSE(area->GetPseudoElement(kPseudoIdOverscrollBackdrop));
+  EXPECT_FALSE(area->GetPseudoElement(kPseudoIdBackdrop));
+}
+
+// Verify MatchedPropertiesCache does not reuse post-adjustment
+// [overscrollcontainer] or [overscrollarea] styles across runtime feature /
+// Origin Trial state changes within the same document.
+TEST_F(OverscrollAreaTrackerPageTest,
+       FeatureToggleDoesNotReuseCachedContainerOrAreaStyle) {
+  static constexpr char kMarkup[] = R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="area"></button>
+  )HTML";
+
+  {
+    ScopedOverscrollAreasForTest disabled(false);
+    SetBodyInnerHTML(kMarkup);
+    Element* container = GetElementById("container");
+    Element* area = GetElementById("area");
+    EXPECT_EQ(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+              EOverscrollContainerType::kNone);
+    EXPECT_FALSE(container->GetComputedStyle()->ContainsLayout());
+    EXPECT_FALSE(area->IsValidOverscrollArea());
+    EXPECT_EQ(area->GetComputedStyle()->GetPosition(), EPosition::kStatic);
+    EXPECT_FALSE(area->GetComputedStyle()->IsInert());
+  }
+
+  SetBodyInnerHTML(kMarkup);
+  {
+    Element* container = GetElementById("container");
+    Element* area = GetElementById("area");
+    EXPECT_EQ(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+              EOverscrollContainerType::kAuto);
+    EXPECT_TRUE(container->GetComputedStyle()->ContainsLayout());
+    EXPECT_TRUE(area->IsValidOverscrollArea());
+    EXPECT_EQ(area->GetComputedStyle()->GetPosition(), EPosition::kAbsolute);
+    EXPECT_TRUE(area->GetComputedStyle()->IsInert());
+  }
+
+  SetBodyInnerHTML("");
+  {
+    ScopedOverscrollAreasForTest disabled(false);
+    SetBodyInnerHTML(kMarkup);
+    Element* container = GetElementById("container");
+    Element* area = GetElementById("area");
+    EXPECT_EQ(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+              EOverscrollContainerType::kNone);
+    EXPECT_FALSE(container->GetComputedStyle()->ContainsLayout());
+    EXPECT_FALSE(area->IsValidOverscrollArea());
+    EXPECT_EQ(area->GetComputedStyle()->GetPosition(), EPosition::kStatic);
+    EXPECT_FALSE(area->GetComputedStyle()->IsInert());
+  }
+}
+
+// When OverscrollAreas is enabled via Origin Trial, the UA style sheet was
+// already parsed with the runtime flag disabled. Verify that the UA
+// [overscrollcontainer] and ::backdrop rules (:overscroll-closed /
+// :overscroll-open) are preserved and both container and area receive the
+// expected styles.
+TEST_F(OverscrollAreaTrackerPageTest,
+       BackdropUAStyleWhenUASheetParsedWithFeatureDisabled) {
+  CSSDefaultStyleSheets::TestingScope ua_style_sheets_scope;
+  {
+    ScopedOverscrollAreasForTest disabled(false);
+    // Destroying TestingScope calls CSSDefaultStyleSheets::Reset() while the
+    // feature flag is disabled.
+    {
+      CSSDefaultStyleSheets::TestingScope reset_with_feature_disabled;
+    }
+
+    SetBodyInnerHTML(R"HTML(
+      <div id="probe_container" overscrollcontainer>
+        <div id="probe_area" overscrollarea></div>
+      </div>
+      <button command="toggle-overscroll" commandfor="probe_area"></button>
+    )HTML");
+    Element* probe_container = GetElementById("probe_container");
+    Element* probe_area = GetElementById("probe_area");
+    EXPECT_EQ(
+        probe_container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+        EOverscrollContainerType::kNone);
+    EXPECT_FALSE(probe_container->GetComputedStyle()->ContainsLayout());
+    EXPECT_FALSE(probe_area->IsValidOverscrollArea());
+    EXPECT_EQ(probe_area->GetComputedStyle()->GetPosition(),
+              EPosition::kStatic);
+    EXPECT_FALSE(probe_area->GetComputedStyle()->IsInert());
+
+    DummyExceptionStateForTesting closed_exception;
+    GetDocument().QuerySelector(AtomicString(":overscroll-closed"),
+                                closed_exception);
+    EXPECT_TRUE(closed_exception.HadException());
+
+    DummyExceptionStateForTesting open_exception;
+    GetDocument().QuerySelector(AtomicString(":overscroll-open"),
+                                open_exception);
+    EXPECT_TRUE(open_exception.HadException());
+  }
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+      }
+      #area {
+        width: 100%;
+        height: 100%;
+        right: 100%;
+      }
+      #content {
+        height: 600px;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea></div>
+      <div id="content"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="area"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* area = GetElementById("area");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(area);
+  EXPECT_EQ(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+            EOverscrollContainerType::kAuto);
+  EXPECT_TRUE(container->GetComputedStyle()->ContainsLayout());
+  EXPECT_TRUE(area->IsValidOverscrollArea());
+  EXPECT_EQ(area->GetComputedStyle()->GetPosition(), EPosition::kAbsolute);
+  EXPECT_TRUE(area->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(area->GetPseudoElement(kPseudoIdBackdrop));
+
+  auto* tracker = container->GetOverscrollAreaTracker();
+  ASSERT_TRUE(tracker);
+  tracker->OpenArea(area);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(area->GetComputedStyle()->IsInert());
+  PseudoElement* backdrop = area->GetPseudoElement(kPseudoIdBackdrop);
+  ASSERT_TRUE(backdrop);
+  EXPECT_EQ(backdrop->ComputedStyleRef().Display(), EDisplay::kBlock);
+  EXPECT_EQ(backdrop->ComputedStyleRef().GetPosition(), EPosition::kAbsolute);
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerSubtreeTracking) {

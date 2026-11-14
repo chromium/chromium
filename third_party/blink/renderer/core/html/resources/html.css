@@ -2678,14 +2678,17 @@ select optgroup optgroup {
   -internal-overscroll-container: auto;
 }
 
-[overscrollcontainer] > [overscrollarea]::overscroll-backdrop {
+/* Keep [overscrollarea] on these selectors so RuleSet buckets them in
+   attr_rules_ rather than default_html_style_'s universal bucket. */
+[overscrollarea]:overscroll-closed::backdrop,
+[overscrollarea]:overscroll-open::backdrop {
   display: none;
   position: absolute;
   inset: 0;
   background-color: rgba(0,0,0,0.1);
 }
 
-[overscrollcontainer] > [overscrollarea]:overscroll-open::overscroll-backdrop {
+[overscrollarea]:overscroll-open::backdrop {
   display: block;
   /* ::overscroll-backdrop inherits pointer-events from [overscrollarea], not
      from its layout parent ::-internal-overscroll-area-parent (which has

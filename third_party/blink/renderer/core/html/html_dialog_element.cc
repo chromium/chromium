@@ -277,11 +277,21 @@ namespace {
 const HTMLDialogElement* FindNearestDialog(const Node& target_node,
                                            double client_x,
                                            double client_y) {
+  const Node* start_node = &target_node;
   const HTMLDialogElement* dialog = DynamicTo<HTMLDialogElement>(target_node);
   if (!dialog && target_node.IsBackdropPseudoElement()) {
-    DCHECK(RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled());
-    dialog =
-        DynamicTo<HTMLDialogElement>(FlatTreeTraversal::Parent(target_node));
+    DCHECK(RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled() ||
+           RuntimeEnabledFeatures::OverscrollAreasEnabled(
+               target_node.GetExecutionContext()));
+    const ContainerNode* originating = FlatTreeTraversal::Parent(target_node);
+    dialog = DynamicTo<HTMLDialogElement>(originating);
+    if (!(dialog && dialog->IsOpenAndActive() && dialog->IsModal())) {
+      // A non-modal dialog (or other element) can generate an overscroll
+      // ::backdrop. A click on ::backdrop is outside its originating element,
+      // so start the ancestor search above the originating element.
+      start_node =
+          originating ? FlatTreeTraversal::Parent(*originating) : nullptr;
+    }
   }
 
   // First check if this is a click on a dialog's backdrop, which will show up
@@ -294,7 +304,7 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
     }
   }
   // Otherwise, walk up the tree looking for an open dialog.
-  for (const Node* node = &target_node; node;
+  for (const Node* node = start_node; node;
        node = FlatTreeTraversal::Parent(*node)) {
     if (auto* open_dialog = DynamicTo<HTMLDialogElement>(node);
         open_dialog && open_dialog->IsOpenAndActive()) {

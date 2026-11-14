@@ -110,7 +110,6 @@ class CORE_EXPORT PseudoElement : public Element {
   virtual Node* InnerNodeForHitTesting();
 
   bool SupportsHitTesting() const;
-  static bool SupportsHitTesting(PseudoId pseudo_id);
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 

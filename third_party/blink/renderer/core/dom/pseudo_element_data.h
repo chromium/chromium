@@ -92,7 +92,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_button_inline_end_);
     visitor->Trace(generated_scroll_button_block_end_);
     visitor->Trace(backdrop_);
-    visitor->Trace(overscroll_backdrop_);
     visitor->Trace(skeleton_);
     visitor->Trace(transition_data_);
     visitor->Trace(column_pseudo_elements_);
@@ -117,7 +116,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_scroll_button_inline_end_;
   Member<PseudoElement> generated_scroll_button_block_end_;
   Member<PseudoElement> backdrop_;
-  Member<PseudoElement> overscroll_backdrop_;
   Member<PseudoElement> skeleton_;
 
   Member<TransitionPseudoElementData> transition_data_;
@@ -133,8 +131,8 @@ inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
          generated_expand_icon_ || generated_picker_icon_ ||
          generated_interest_button_ || generated_marker_ || backdrop_ ||
-         overscroll_backdrop_ || skeleton_ || generated_first_letter_ ||
-         transition_data_ || generated_overscroll_area_parent_ ||
+         skeleton_ || generated_first_letter_ || transition_data_ ||
+         generated_overscroll_area_parent_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_button_block_start_ ||
@@ -153,7 +151,6 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdInterestButton, nullptr);
   SetPseudoElement(kPseudoIdMarker, nullptr);
   SetPseudoElement(kPseudoIdBackdrop, nullptr);
-  SetPseudoElement(kPseudoIdOverscrollBackdrop, nullptr);
   SetPseudoElement(kPseudoIdFirstLetter, nullptr);
   SetPseudoElement(kPseudoIdScrollMarkerGroupBefore, nullptr);
   SetPseudoElement(kPseudoIdScrollMarkerGroupAfter, nullptr);
@@ -245,10 +242,6 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = backdrop_;
       backdrop_ = element;
       break;
-    case kPseudoIdOverscrollBackdrop:
-      previous_element = overscroll_backdrop_;
-      overscroll_backdrop_ = element;
-      break;
     case kPseudoIdSkeleton:
       previous_element = skeleton_;
       skeleton_ = element;
@@ -336,9 +329,6 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdBackdrop == pseudo_id) {
     return backdrop_.Get();
   }
-  if (kPseudoIdOverscrollBackdrop == pseudo_id) {
-    return overscroll_backdrop_.Get();
-  }
   if (kPseudoIdSkeleton == pseudo_id) {
     return backdrop_.Get();
   }
@@ -386,9 +376,6 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(generated_first_letter_);
   if (backdrop_)
     result.push_back(backdrop_);
-  if (overscroll_backdrop_) {
-    result.push_back(overscroll_backdrop_);
-  }
   if (skeleton_) {
     result.push_back(skeleton_);
   }

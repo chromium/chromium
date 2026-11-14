@@ -5414,12 +5414,13 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
-  // If we are moving the ::backdrop element to the top layer while laying out
-  // its originating element, it means we will add a layout-dirty box as a
-  // preceding sibling of the originating element's box which means we will not
-  // reach the box for ::backdrop during layout. Don't skip style recalc for
-  // children of containers in the top layer for this reason.
-  if (style.IsRenderedInTopLayer(*this)) {
+  // If we are moving the ::backdrop element to the top layer (or to an
+  // ::-internal-overscroll-area-parent) while laying out its originating
+  // element, it means we will add a layout-dirty box as a preceding sibling of
+  // the originating element's box which means we will not reach the box for
+  // ::backdrop during layout. Don't skip style recalc for children of
+  // containers in the top layer or overscroll areas for this reason.
+  if (style.IsRenderedInTopLayer(*this) || IsValidOverscrollArea()) {
     return false;
   }
 
@@ -5638,7 +5639,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // TODO: When the OverlayProperty feature flag is removed,
     // this can probably be moved inside the if.
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
-    UpdateOverscrollBackdropPseudoElement(child_change, child_recalc_context);
 
     // ::marker ignores the ComputedStyle bits and checks IsDisplayListItem().
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
@@ -6455,8 +6455,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
         RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                        local_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
-        RebuildPseudoElementLayoutTree(kPseudoIdOverscrollBackdrop,
-                                       *child_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdScrollMarker, *child_attacher);
         RebuildColumnLayoutTrees(*child_attacher);
       }
@@ -11102,43 +11100,6 @@ void Element::UpdateBackdropPseudoElement(
   }
 }
 
-bool Element::ShouldUpdateOverscrollBackdropPseudoElement(
-    const StyleRecalcChange change) {
-  // This runs for many elements during style recalc, so there is no feature
-  // check here: the pseudo element can only exist, or be generated, for
-  // registered overscroll areas, which requires the feature to be enabled.
-  PseudoElement* element =
-      GetPseudoElement(PseudoId::kPseudoIdOverscrollBackdrop,
-                       /* pseudo_argument */ g_null_atom);
-  bool generate_pseudo =
-      CanGeneratePseudoElement(PseudoId::kPseudoIdOverscrollBackdrop);
-
-  if (element) {
-    return !generate_pseudo || change.ShouldUpdatePseudoElement(*element);
-  }
-
-  return generate_pseudo;
-}
-
-void Element::UpdateOverscrollBackdropPseudoElement(
-    const StyleRecalcChange change,
-    const StyleRecalcContext& style_recalc_context) {
-  if (!ShouldUpdateOverscrollBackdropPseudoElement(change)) {
-    return;
-  }
-
-  if (GetDocument().GetStyleEngine().GetInterleavingRecalcRoot() != this) {
-    UpdatePseudoElement(PseudoId::kPseudoIdOverscrollBackdrop, change,
-                        style_recalc_context);
-    return;
-  }
-
-  if (PostStyleUpdateScope::PseudoData* pseudo_data =
-          PostStyleUpdateScope::CurrentPseudoData()) {
-    pseudo_data->AddPendingBackdrop(/* originating_element */ *this);
-  }
-}
-
 void Element::ApplyPendingBackdropPseudoElementUpdate() {
   // Mark for style recalc, in order to trigger creation of a ::backdrop pseudo-
   // element if needed. There's no way of telling if there'll be any need for it
@@ -11967,21 +11928,20 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       }
     }
     if (pseudo_id == kPseudoIdBackdrop) {
-      if (!IsInTopLayer()) {
+      if (IsInTopLayer()) {
+        if (!RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+          return true;
+        }
+        if (style->Overlay() == EOverlay::kNone) {
+          return false;
+        }
+      } else if (IsValidOverscrollArea()) {
+        // Registering an overscroll area requires the feature to be enabled.
+        DCHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
+            GetExecutionContext()));
+      } else {
         return false;
       }
-      if (!RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
-        return true;
-      }
-    }
-    if (pseudo_id == kPseudoIdOverscrollBackdrop) {
-      if (!IsValidOverscrollArea()) {
-        return false;
-      }
-      // Registering an overscroll area requires the feature to be enabled.
-      DCHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
-          GetExecutionContext()));
-      return true;
     }
     return style->CanGeneratePseudoElement(pseudo_id);
   }

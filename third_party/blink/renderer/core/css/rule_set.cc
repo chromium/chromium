@@ -293,7 +293,6 @@ bool ShouldStopExtractingAtPseudoElement(
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoOverscrollAreaParent:
-    case CSSSelector::kPseudoOverscrollBackdrop:
     case CSSSelector::kPseudoSkeleton:
       return true;
     case CSSSelector::kPseudoCue:

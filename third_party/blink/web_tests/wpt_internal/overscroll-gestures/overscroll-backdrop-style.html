@@ -15,10 +15,27 @@
     height: 200px;
     overflow: auto;
   }
-  #menu {
+  #menu, #live_dialog, #live_pop, #cq_menu {
     width: 100%;
     height: 100%;
     right: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #live_dialog:not([open]), #live_pop:not(:popover-open) {
+    display: block;
+    position: absolute;
+    inset: auto;
+    right: 100%;
+  }
+  #cq_menu {
+    container-type: size;
+  }
+  @container (min-width: 50px) {
+    #cq_child {
+      color: rgb(0, 128, 0);
+    }
   }
   #content {
     height: 600px;
@@ -27,47 +44,165 @@
 
 <div id="container" overscrollcontainer>
   <div id="menu" overscrollarea></div>
+  <dialog id="modal_dialog" overscrollarea></dialog>
+  <div id="pop" popover overscrollarea></div>
+  <dialog id="live_dialog" overscrollarea></dialog>
+  <div id="live_pop" popover="manual" overscrollarea></div>
+  <div id="cq_menu" overscrollarea><span id="cq_child">text</span></div>
   <div id="content"></div>
 </div>
 <button id=button command="toggle-overscroll" commandfor="menu"></button>
+<button command="toggle-overscroll" commandfor="modal_dialog"></button>
+<button command="toggle-overscroll" commandfor="pop"></button>
+<button id="live_dialog_btn" command="toggle-overscroll" commandfor="live_dialog"></button>
+<button id="live_pop_btn" command="toggle-overscroll" commandfor="live_pop"></button>
+<button id="cq_btn" command="toggle-overscroll" commandfor="cq_menu"></button>
 
 <script>
 function click(target) {
   let event_received = new Promise(resolve => {
     target.addEventListener("click", resolve, { once: true });
   });
-  return Promise.all([test_driver.click(button), event_received]);
+  return Promise.all([test_driver.click(target), event_received]);
 }
 
-promise_test(async () => {
-  // Initially the menu is closed, backdrop should be display: none.
-  assert_equals(getComputedStyle(menu, '::overscroll-backdrop').display, "none", "backdrop initially none (closed)");
-
+function toggleOverscroll(invoker) {
   let event_promises = [
     new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
     new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
   ];
+  return Promise.all([click(invoker), ...event_promises]);
+}
+
+function waitForFrames() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+promise_test(async () => {
+  // Initially the menu is closed, backdrop should be display: none.
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "none", "backdrop initially none (closed)");
 
   // Click the button to open the menu.
-  await click(button);
-  await Promise.all(event_promises);
+  await toggleOverscroll(button);
 
   // The backdrop should now be visible.
-  let backdrop_style = getComputedStyle(menu, '::overscroll-backdrop');
+  let backdrop_style = getComputedStyle(menu, '::backdrop');
   assert_equals(backdrop_style.display, "block", "backdrop is block (open)");
+  assert_equals(backdrop_style.position, "absolute", "backdrop is position: absolute");
   assert_equals(backdrop_style.backgroundColor, "rgba(0, 0, 0, 0.1)", "backdrop is rgba(0, 0, 0, 0.1)");
   assert_equals(backdrop_style.opacity, "1", "backdrop opacity is 1");
 
-  let event_promises2 = [
-    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
-    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
-  ];
-
   // Click the button again to close the menu.
-  await click(button);
-  await Promise.all(event_promises2);
+  await toggleOverscroll(button);
 
   // The backdrop should be none again.
-  assert_equals(getComputedStyle(menu, '::overscroll-backdrop').display, "none", "backdrop is none again (closed)");
-}, "::overscroll-backdrop pseudo element is generated and styled correctly for overscroll targets");
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "none", "backdrop is none again (closed)");
+}, "::backdrop pseudo element is generated and styled correctly for overscroll targets");
+
+test(() => {
+  assert_equals(getComputedStyle(modal_dialog, '::backdrop').display, "none",
+                "closed overscroll dialog backdrop is display: none");
+
+  modal_dialog.showModal();
+  let dialog_backdrop = getComputedStyle(modal_dialog, '::backdrop');
+  assert_equals(dialog_backdrop.display, "block",
+                "modal dialog backdrop is display: block");
+  assert_equals(dialog_backdrop.position, "fixed",
+                "modal dialog backdrop uses top-layer position: fixed");
+  assert_equals(dialog_backdrop.backgroundColor, "rgba(0, 0, 0, 0.1)",
+                "modal dialog backdrop uses dialog UA background-color");
+
+  modal_dialog.close();
+  assert_equals(getComputedStyle(modal_dialog, '::backdrop').display, "none",
+                "closed dialog returns to overscroll closed backdrop style");
+
+  assert_equals(getComputedStyle(pop, '::backdrop').display, "none",
+                "closed overscroll popover backdrop is display: none");
+
+  pop.showPopover();
+  let pop_backdrop = getComputedStyle(pop, '::backdrop');
+  assert_equals(pop_backdrop.display, "block",
+                "open popover backdrop is display: block");
+  assert_equals(pop_backdrop.position, "fixed",
+                "open popover backdrop uses top-layer position: fixed");
+  assert_equals(pop_backdrop.backgroundColor, "rgba(0, 0, 0, 0)",
+                "open popover backdrop remains transparent");
+  assert_equals(pop_backdrop.pointerEvents, "none",
+                "open popover backdrop preserves pointer-events: none");
+
+  pop.hidePopover();
+  assert_equals(getComputedStyle(pop, '::backdrop').display, "none",
+                "hidden popover returns to overscroll closed backdrop style");
+}, "Top-layer dialog and popover with overscrollarea preserve top-layer ::backdrop UA styles");
+
+promise_test(async (t) => {
+  t.add_cleanup(() => {
+    if (live_dialog.open) {
+      live_dialog.close();
+    }
+    if (live_pop.matches(':popover-open')) {
+      live_pop.hidePopover();
+    }
+  });
+
+  // Open live_dialog as an overscroll area so a live ::backdrop PseudoElement
+  // and LayoutObject exist under ::-internal-overscroll-area-parent.
+  await toggleOverscroll(live_dialog_btn);
+  assert_true(live_dialog.matches(':overscroll-open'), "live_dialog is overscroll-open");
+  assert_equals(getComputedStyle(live_dialog, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(live_dialog, '::backdrop').position, "absolute");
+
+  // Promote live_dialog to the top layer while its overscroll ::backdrop is live.
+  live_dialog.showModal();
+  await waitForFrames();
+  assert_false(live_dialog.matches(':overscroll-open'), "top-layer dialog is not an overscroll area");
+  assert_equals(getComputedStyle(live_dialog, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(live_dialog, '::backdrop').position, "fixed");
+
+  // Exit top layer and verify it returns to overscroll ::backdrop behavior.
+  live_dialog.close();
+  await waitForFrames();
+  assert_equals(getComputedStyle(live_dialog, '::backdrop').display, "none");
+
+  // Same live ::backdrop reparenting transition for a popover.
+  await toggleOverscroll(live_pop_btn);
+  assert_true(live_pop.matches(':overscroll-open'), "live_pop is overscroll-open");
+  assert_equals(getComputedStyle(live_pop, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(live_pop, '::backdrop').position, "absolute");
+
+  live_pop.showPopover();
+  await waitForFrames();
+  assert_false(live_pop.matches(':overscroll-open'), "top-layer popover is not an overscroll area");
+  assert_equals(getComputedStyle(live_pop, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(live_pop, '::backdrop').position, "fixed");
+  assert_equals(getComputedStyle(live_pop, '::backdrop').pointerEvents, "none");
+
+  live_pop.hidePopover();
+  await waitForFrames();
+  assert_equals(getComputedStyle(live_pop, '::backdrop').display, "none");
+}, "Live overscroll ::backdrop cleanly reparents when entering and leaving the top layer");
+
+promise_test(async () => {
+  assert_equals(getComputedStyle(cq_menu, '::backdrop').display, "none");
+  await toggleOverscroll(cq_btn);
+  assert_equals(getComputedStyle(cq_menu, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(cq_child).color, "rgb(0, 128, 0)");
+  await toggleOverscroll(cq_btn);
+  assert_equals(getComputedStyle(cq_menu, '::backdrop').display, "none");
+}, "Overscroll area with container-type: size updates ::backdrop and container query descendants cleanly");
+
+promise_test(async (t) => {
+  const styleEl = document.createElement('style');
+  styleEl.textContent = '#menu::backdrop { position: fixed; inset: 0; }';
+  document.head.appendChild(styleEl);
+  t.add_cleanup(() => styleEl.remove());
+
+  await toggleOverscroll(button);
+  await waitForFrames();
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "block");
+  assert_equals(getComputedStyle(menu, '::backdrop').position, "fixed");
+
+  await toggleOverscroll(button);
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "none");
+}, "Author position: fixed on overscroll ::backdrop does not violate paint property invariants");
 </script>

@@ -2141,7 +2141,6 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style>
       #menu::backdrop { display: block; }
-      #menu::overscroll-backdrop { display: block; }
       </style>
       <div id="container" overscrollcontainer>
         <div id="menu" overscrollarea></div>
@@ -2154,12 +2153,16 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
     Element* menu = GetElementById("menu");
     ASSERT_NE(menu, nullptr);
 
-    // ::overscroll-backdrop should be generated.
-    EXPECT_NE(menu->GetPseudoElement(PseudoId::kPseudoIdOverscrollBackdrop),
-              nullptr);
-
-    // ::backdrop should NOT be generated.
-    EXPECT_EQ(menu->GetPseudoElement(PseudoId::kPseudoIdBackdrop), nullptr);
+    // ::backdrop should be generated under ::-internal-overscroll-area-parent.
+    PseudoElement* backdrop =
+        menu->GetPseudoElement(PseudoId::kPseudoIdBackdrop);
+    ASSERT_NE(backdrop, nullptr);
+    PseudoElement* overscroll_parent =
+        menu->GetPseudoElement(PseudoId::kPseudoIdOverscrollAreaParent);
+    ASSERT_NE(overscroll_parent, nullptr);
+    ASSERT_NE(backdrop->GetLayoutObject(), nullptr);
+    EXPECT_EQ(backdrop->GetLayoutObject()->Parent(),
+              overscroll_parent->GetLayoutObject());
   }
 
   {
@@ -2168,7 +2171,6 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style>
       #menu::backdrop { display: block; }
-      #menu::overscroll-backdrop { display: block; }
       </style>
       <div id="container" overscrollcontainer>
         <div id="menu" overscrollarea></div>
@@ -2181,9 +2183,7 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
     Element* menu = GetElementById("menu");
     ASSERT_NE(menu, nullptr);
 
-    // Neither should be generated when disabled.
-    EXPECT_EQ(menu->GetPseudoElement(PseudoId::kPseudoIdOverscrollBackdrop),
-              nullptr);
+    // ::backdrop should NOT be generated when OverscrollAreas is disabled.
     EXPECT_EQ(menu->GetPseudoElement(PseudoId::kPseudoIdBackdrop), nullptr);
   }
 }
@@ -2207,7 +2207,7 @@ TEST_F(ElementTest, OverscrollBackdropClickDisposeCrash) {
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
-    #menu::overscroll-backdrop { display: block; }
+    #menu::backdrop { display: block; }
     </style>
     <div id="container" overscrollcontainer>
       <div id="menu" overscrollarea></div>
@@ -2220,8 +2220,7 @@ TEST_F(ElementTest, OverscrollBackdropClickDisposeCrash) {
   Element* menu = GetElementById("menu");
   ASSERT_NE(menu, nullptr);
 
-  PseudoElement* backdrop =
-      menu->GetPseudoElement(PseudoId::kPseudoIdOverscrollBackdrop);
+  PseudoElement* backdrop = menu->GetPseudoElement(PseudoId::kPseudoIdBackdrop);
   ASSERT_NE(backdrop, nullptr);
 
   auto* listener = MakeGarbageCollected<DetachOriginatingElementListener>(menu);

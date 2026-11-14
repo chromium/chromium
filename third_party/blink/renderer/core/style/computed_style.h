@@ -2535,11 +2535,6 @@ class ComputedStyle final : public ComputedStyleBase {
       return IsDisplayListItem() && (HasPseudoElementStyle(kPseudoIdMarker) ||
                                      ListStyleType() || GeneratesMarkerImage());
     }
-    // ::backdrop is generated for top layer elements (where Overlay is not
-    // none).
-    if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone) {
-      return false;
-    }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
       return HasScrollMarkerGroupBefore() && IsScrollContainer();
     }

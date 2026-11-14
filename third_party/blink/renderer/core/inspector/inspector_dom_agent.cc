@@ -328,8 +328,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
     case kPseudoIdOverscrollAreaParent:
       return protocol::DOM::PseudoTypeEnum::OverscrollAreaParent;
-    case kPseudoIdOverscrollBackdrop:
-      return protocol::DOM::PseudoTypeEnum::OverscrollBackdrop;
     case kPseudoIdSkeleton:
       return protocol::DOM::PseudoTypeEnum::Skeleton;
     case kAfterLastInternalPseudoId:
@@ -464,9 +462,6 @@ PseudoId InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(
   }
   if (type == protocol::DOM::PseudoTypeEnum::InterestButton) {
     return kPseudoIdInterestButton;
-  }
-  if (type == protocol::DOM::PseudoTypeEnum::OverscrollBackdrop) {
-    return kPseudoIdOverscrollBackdrop;
   }
   NOTREACHED();
 }

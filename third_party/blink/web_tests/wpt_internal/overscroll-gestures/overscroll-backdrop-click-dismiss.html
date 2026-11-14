@@ -16,29 +16,59 @@
     position: relative;
     background: red;
   }
-  #menu {
+  #menu, #nonmodal_dialog, #inner_menu {
     position: absolute;
     bottom: 100%;
     width: 200px;
     height: 100px;
+    margin: 0;
+    padding: 0;
+    border: 0;
     background: blue;
   }
-  #menu::overscroll-backdrop {
+  #menu::backdrop {
     display: block;
     background: green;
   }
-  #content {
+  #content, #inner_content {
     height: 200px;
+  }
+  #outer_dialog {
+    position: static;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #inner_container {
+    width: 200px;
+    height: 200px;
+    overflow: clip;
+    position: relative;
+    background: yellow;
   }
 </style>
 
 <div id="container" overscrollcontainer>
   <div id="menu" overscrollarea></div>
+  <dialog id="nonmodal_dialog" closedby="any" overscrollarea></dialog>
   <div id="content"></div>
 </div>
 <button command="toggle-overscroll" commandfor="menu"></button>
+<button command="toggle-overscroll" commandfor="nonmodal_dialog"></button>
+
+<dialog id="outer_dialog" closedby="any">
+  <div id="inner_container" overscrollcontainer>
+    <div id="inner_menu" overscrollarea></div>
+    <div id="inner_content"></div>
+  </div>
+  <button command="toggle-overscroll" commandfor="inner_menu"></button>
+</dialog>
 
 <script>
+function waitForFrames() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
 promise_test(async () => {
   const container = document.getElementById('container');
   const menu = document.getElementById('menu');
@@ -50,7 +80,7 @@ promise_test(async () => {
   menu.scrollIntoView();
 
   // Wait for layout/scroll to settle.
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await waitForFrames();
 
   // Verify it is open (Menu should be at the top of the viewport).
   assert_equals(menu.getBoundingClientRect().top, 0, "Menu should be at the top of the viewport when open");
@@ -65,9 +95,68 @@ promise_test(async () => {
   await actions.send();
 
   // Wait for click to be processed and dismiss scroll to settle.
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await waitForFrames();
 
   // Verify it is closed (Menu should be offscreen again).
   assert_equals(menu.getBoundingClientRect().top, -100, "Menu should be hidden again after backdrop click");
 }, "Clicking on overscroll backdrop dismisses all overscroll areas");
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const dialog = document.getElementById('nonmodal_dialog');
+  t.add_cleanup(() => {
+    if (dialog.open) {
+      dialog.close();
+    }
+  });
+
+  dialog.show();
+  await waitForFrames();
+  assert_true(dialog.open, "Non-modal dialog is open");
+  assert_equals(dialog.getBoundingClientRect().top, -100, "Dialog should be offscreen initially");
+
+  dialog.scrollIntoView();
+  await waitForFrames();
+  assert_equals(dialog.getBoundingClientRect().top, 0, "Dialog should be scrolled into view when overscroll-open");
+  assert_true(dialog.matches(':overscroll-open'), "Dialog matches :overscroll-open");
+
+  let actions = new test_driver.Actions()
+      .pointerMove(0, 50, {origin: container})
+      .pointerDown()
+      .pointerUp();
+  await actions.send();
+  await waitForFrames();
+
+  assert_false(dialog.open, "Clicking overscroll ::backdrop light-dismisses non-modal dialog with closedby=any");
+  assert_false(dialog.matches(':overscroll-open'), "Overscroll area is no longer open");
+}, "Clicking overscroll ::backdrop of non-modal <dialog open closedby=any overscrollarea> light-dismisses the dialog");
+
+promise_test(async (t) => {
+  const outerDialog = document.getElementById('outer_dialog');
+  const innerContainer = document.getElementById('inner_container');
+  const innerMenu = document.getElementById('inner_menu');
+  t.add_cleanup(() => {
+    if (outerDialog.open) {
+      outerDialog.close();
+    }
+  });
+
+  outerDialog.show();
+  await waitForFrames();
+  assert_true(outerDialog.open, "Outer dialog is open");
+
+  innerMenu.scrollIntoView();
+  await waitForFrames();
+  assert_true(innerMenu.matches(':overscroll-open'), "Inner overscroll area is open");
+
+  let actions = new test_driver.Actions()
+      .pointerMove(0, 50, {origin: innerContainer})
+      .pointerDown()
+      .pointerUp();
+  await actions.send();
+  await waitForFrames();
+
+  assert_false(innerMenu.matches(':overscroll-open'), "Inner overscroll area is dismissed");
+  assert_true(outerDialog.open, "Enclosing <dialog open closedby=any> remains open when inner overscroll ::backdrop is clicked");
+}, "Clicking inner overscroll ::backdrop inside <dialog open closedby=any> does not light-dismiss outer dialog");
 </script>

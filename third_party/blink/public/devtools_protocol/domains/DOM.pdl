@@ -79,7 +79,6 @@ domain DOM
       select-listbox
       permission-icon
       overscroll-area-parent
-      overscroll-backdrop
       skeleton
 
   # Shadow root type.

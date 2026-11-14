@@ -1377,6 +1377,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetSubtreeIsSticky(true);
   }
 
+  if (builder.InternalOverscrollContainer() !=
+          EInternalOverscrollContainer::kNone &&
+      !RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          state.GetDocument().GetExecutionContext())) {
+    builder.SetInternalOverscrollContainer(EInternalOverscrollContainer::kNone);
+  }
   // If this node is an overscroll container, it marks the creation of an
   // overscroll container subtree for overscroll gestures and inertness.
   // Descendants will inherit this bit so they can quickly identify whether
@@ -1671,8 +1677,10 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     return {ElementType::kIsNotElement};
   }
 
-  // Overscroll areas are forced to be out of flow positioned.
-  if (element.IsValidOverscrollArea()) {
+  // Overscroll areas are forced to be out of flow positioned, and overscroll
+  // containers depend on the OverscrollAreas runtime feature flag.
+  if (element.IsValidOverscrollArea() ||
+      element.FastHasAttribute(html_names::kOverscrollcontainerAttr)) {
     return {ElementType::kIsNotElement};
   }
 

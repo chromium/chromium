@@ -459,7 +459,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   if (auto* scroll_parent_scroll_translation =
           transform_node.ScrollParentScrollTranslation()) {
-    // Fixed-position or overscroll-backdrop can cause different topologies of
+    // Fixed-position or overscroll ::backdrop can cause different topologies of
     // the transform tree and the scroll tree. This ensures the ancestor scroll
     // nodes of the scroll node for a descendant transform node below is
     // created.

@@ -853,7 +853,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
                                                      ->FirstFragment()
                                                      .PaintProperties()
                                                      ->ScrollTranslation();
-      } else if (box->IsBackdropForOverscrollAreaParent()) {
+      } else if (box->Style().GetPosition() == EPosition::kAbsolute &&
+                 box->IsBackdropForOverscrollAreaParent()) {
         Element& overscroll_target =
             To<PseudoElement>(box->GetNode())->UltimateOriginatingElement();
         PseudoElement* overscroll_area_parent =

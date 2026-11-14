@@ -273,7 +273,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   }
 
   // This is different from NearestScrollTranslationNode in that for a
-  // fixed-position or overscroll-backdrop paint offset translation, this
+  // fixed-position or overscroll ::backdrop paint offset translation, this
   // returns ScrollParentScrollTranslation() instead of the ancestor scroll
   // translation because a scroll gesture on such elements should scroll their
   // scroll parent.

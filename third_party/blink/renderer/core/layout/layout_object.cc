@@ -5993,7 +5993,15 @@ void LayoutObject::InvalidateSubtreePositionTry(bool mark_style_dirty) {
 bool LayoutObject::IsBackdropForOverscrollAreaParent() const {
   NOT_DESTROYED();
   const auto* pseudo = DynamicTo<PseudoElement>(GetNode());
-  return pseudo && pseudo->GetPseudoId() == kPseudoIdOverscrollBackdrop;
+  if (!pseudo || pseudo->GetPseudoId() != kPseudoIdBackdrop) {
+    return false;
+  }
+  const LayoutObject* parent = Parent();
+  const PseudoElement* overscroll_parent =
+      pseudo->UltimateOriginatingElement().GetPseudoElement(
+          kPseudoIdOverscrollAreaParent);
+  return parent && overscroll_parent &&
+         overscroll_parent->GetLayoutObject() == parent;
 }
 
 bool LayoutObject::IsCanvasOrInCanvasSubtree() const {

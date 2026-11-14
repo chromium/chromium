@@ -5165,7 +5165,6 @@
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
-      runtime_flag: "OverscrollAreas",
     },
     {
       name: "-internal-unbounded",
