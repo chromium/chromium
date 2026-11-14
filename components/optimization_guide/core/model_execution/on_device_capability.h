@@ -346,6 +346,9 @@ class OnDeviceSession {
   // Return the capabilities for the current session.
   virtual on_device_model::Capabilities GetCapabilities() const = 0;
 
+  // Returns the base model backing this session, or `kUnknown`.
+  virtual OnDeviceBaseModel GetBaseModel() const;
+
   // Returns the feature_metadata from the
   // OnDeviceModelExecutionFeatureConfig.
   virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
@@ -360,9 +363,29 @@ class OnDeviceSession {
   virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
 };
 
-// Interface for managing and controlling installed on-device models.
+// Interface for managing and observing installed on-device models.
 class OnDeviceModelControl {
  public:
+  // Persistent base model status in prefs; do not renumber.
+  enum class ModelInstallState {
+    // Never completed installation (including initial registration/download).
+    kNeverInstalled = 0,
+    // Model weights are ready on disk (`OnAssetReady()`).
+    kInstalled = 1,
+    // Previously installed and later uninstalled.
+    kUninstalled = 2,
+    kMaxValue = kUninstalled,
+  };
+
+  // Observes base model lifecycle events without replaying history.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a newly downloaded `base_model` transitions to `kInstalled`.
+    virtual void OnModelInstalled(OnDeviceBaseModel base_model);
+    // Called when an installed `base_model` finishes uninstalling.
+    virtual void OnModelUninstalled(OnDeviceBaseModel base_model);
+  };
+
   // A base model whose weights component is installed on disk.
   struct InstalledModel {
     bool operator==(const InstalledModel& other) const = default;
@@ -389,6 +412,13 @@ class OnDeviceModelControl {
   // replies on the calling sequence with installed base models and their sizes
   // already computed.
   virtual void GetInstalledModels(InstalledModelsCallback callback) = 0;
+
+  // Returns the ledger-tracked installation status for `base_model`.
+  virtual ModelInstallState GetModelInstallState(
+      OnDeviceBaseModel base_model) const = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 // Provides capability information about the on-device models to be served by

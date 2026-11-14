@@ -59,6 +59,7 @@ constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
 // Keys for the ledger dictionary.
 constexpr char kAssetIdKey[] = "asset_id";
 constexpr char kRequestedVersionKey[] = "requested_version";
+constexpr char kInstallStateKey[] = "install_state";
 
 // We use a dummy "requested version" for the ledger when we've started an
 // uninstall of a version. This means it may still require cleanup, but we
@@ -131,7 +132,7 @@ void ManifestAssetManager::ComponentContext::SetAssetId(
   asset_id_ = asset_id;
 }
 
-void ManifestAssetManager::ComponentContext::SetUninstallComplete() {
+bool ManifestAssetManager::ComponentContext::SetUninstallComplete() {
   // A registration could be mid-flight if this was uninstalled externally.
   // We still expect the new registration to finish in that case.
   if (state_ != ComponentState::kRegistering) {
@@ -140,6 +141,12 @@ void ManifestAssetManager::ComponentContext::SetUninstallComplete() {
   }
   install_dir_ = std::nullopt;
   version_ = std::nullopt;
+  // Keep `kNeverInstalled` when cleaning up incomplete registrations.
+  if (install_state_ == OnDeviceModelControl::ModelInstallState::kInstalled) {
+    install_state_ = OnDeviceModelControl::ModelInstallState::kUninstalled;
+    return true;
+  }
+  return false;
 }
 
 void ManifestAssetManager::ComponentContext::SetRegistering(
@@ -169,7 +176,8 @@ void ManifestAssetManager::ComponentContext::SetReadySoon() {
   state_ = ComponentState::kReady;
 }
 
-void ManifestAssetManager::ComponentContext::SetReady(
+OnDeviceModelControl::ModelInstallState
+ManifestAssetManager::ComponentContext::SetReady(
     const base::FilePath& install_dir,
     const base::Version& version) {
   CHECK(state_ == ComponentState::kReady ||
@@ -179,6 +187,8 @@ void ManifestAssetManager::ComponentContext::SetReady(
   state_ = ComponentState::kReady;
   install_dir_ = install_dir;
   version_ = version;
+  return std::exchange(install_state_,
+                       OnDeviceModelControl::ModelInstallState::kInstalled);
 }
 
 void ManifestAssetManager::ComponentContext::SetUninstalling() {
@@ -209,6 +219,22 @@ ManifestAssetManager::ComponentContext::FromValue(
   if (const std::string* v = value.FindString(kRequestedVersionKey)) {
     context.requested_version_ = *v;
   }
+  if (std::optional<int> state = value.FindInt(kInstallStateKey)) {
+    // Already migrated; read the persisted `ModelInstallState`.
+    if (*state >= 0 &&
+        *state <= static_cast<int>(
+                      OnDeviceModelControl::ModelInstallState::kMaxValue)) {
+      context.install_state_ =
+          static_cast<OnDeviceModelControl::ModelInstallState>(*state);
+    }
+    return context;
+  }
+  // Populate missing `install_state` as `kInstalled` for active entries.
+  if (!context.requested_version_.empty() &&
+      context.requested_version_ != kUninstallingVersion) {
+    context.install_state_ =
+        OnDeviceModelControl::ModelInstallState::kInstalled;
+  }
   return context;
 }
 
@@ -216,6 +242,7 @@ base::DictValue ManifestAssetManager::ComponentContext::ToValue() const {
   base::DictValue dict;
   dict.Set(kAssetIdKey, asset_id_);
   dict.Set(kRequestedVersionKey, requested_version_);
+  dict.Set(kInstallStateKey, static_cast<int>(install_state_));
   return dict;
 }
 
@@ -287,12 +314,32 @@ void ManifestAssetManager::AssetLedger::SaveContexts(
   }
 }
 
-void ManifestAssetManager::AssetLedger::RemoveContext(
-    const std::string& public_key) {
-  component_contexts_.erase(public_key);
-  ScopedDictPrefUpdate update(
-      &*local_state_, model_execution::prefs::localstate::kManifestAssetLedger);
-  update->Remove(public_key);
+OnDeviceModelControl::ModelInstallState
+ManifestAssetManager::AssetLedger::GetModelInstallState(
+    const PrefService& local_state,
+    OnDeviceBaseModel model) {
+  if (model == OnDeviceBaseModel::kUnknown) {
+    return ModelInstallState::kNeverInstalled;
+  }
+  ModelInstallState result = ModelInstallState::kNeverInstalled;
+  for (const auto [_, value] : local_state.GetDict(
+           model_execution::prefs::localstate::kManifestAssetLedger)) {
+    const base::DictValue* dict = value.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    ComponentContext context = ComponentContext::FromValue(*dict);
+    if (ConvertComponentKeyToEnum(context.asset_id()) != model) {
+      continue;
+    }
+    if (context.install_state() == ModelInstallState::kInstalled) {
+      return ModelInstallState::kInstalled;
+    }
+    if (context.install_state() == ModelInstallState::kUninstalled) {
+      result = ModelInstallState::kUninstalled;
+    }
+  }
+  return result;
 }
 
 ManifestAssetManager::ManifestAssetManager(
@@ -300,11 +347,13 @@ ManifestAssetManager::ManifestAssetManager(
     UsageTracker& usage_tracker,
     ManifestAssetManagerDelegate& delegate,
     component_updater::ComponentUpdateService* component_update_service,
+    base::ObserverList<OnDeviceModelControl::Observer>& model_observers,
     std::unique_ptr<ManifestSolutionFactory> factory)
     : local_state_(local_state),
       usage_tracker_(usage_tracker),
       delegate_(delegate),
       component_update_service_(component_update_service),
+      model_observers_(model_observers),
       ledger_(local_state),
       disk_space_status_(delegate) {
   // Load persistent state from the ledger immediately on startup.
@@ -443,11 +492,21 @@ void ManifestAssetManager::UpdateSolutionFactory(
                                  .path = factory_->manifest().GetDirectory()});
 
   // Make sure the ledger tracks all assets in the new manifest.
+  std::vector<std::string> keys_to_save;
   for (const auto& [asset_id, component] :
        factory_->manifest().GetAssets().on_demand_components()) {
     ComponentContext& context =
         *ledger_.GetOrCreateContext(component.public_key());
+    if (context.asset_id() != asset_id &&
+        (context.NeedsCleanup() ||
+         context.install_state() !=
+             OnDeviceModelControl::ModelInstallState::kNeverInstalled)) {
+      keys_to_save.push_back(component.public_key());
+    }
     context.SetAssetId(asset_id);
+  }
+  if (!keys_to_save.empty()) {
+    ledger_.SaveContexts(keys_to_save);
   }
 
   RecomputeAssetPriorities();
@@ -771,19 +830,19 @@ void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
   }
   // The uninstall may have been requested by this manager or by something
   // else (e.g. the component updater unregistering the component).
-  context->SetUninstallComplete();
+  const bool was_installed = context->SetUninstallComplete();
+  ledger_.SaveContexts({public_key});
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);
   if (component) {
-    // The manifest might need this component. Keep tracking it in the ledger,
-    // and check if we should install it again.
-    ledger_.SaveContexts({public_key});
     UpdateRegistrations();
-    return;
   }
-  // The component is not in the manifest or on disk, so we can remove it from
-  // the ledger.
-  ledger_.RemoveContext(public_key);
+  const OnDeviceBaseModel model_enum =
+      ConvertComponentKeyToEnum(context->asset_id());
+  if (was_installed && model_enum != OnDeviceBaseModel::kUnknown) {
+    model_observers_->Notify(
+        &OnDeviceModelControl::Observer::OnModelUninstalled, model_enum);
+  }
 }
 
 void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
@@ -839,7 +898,12 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
   bool is_new_installation =
       (context->state() == ComponentState::kRegistered ||
        context->state() == ComponentState::kOnDemandDownloading);
-  context->SetReady(install_dir, version);
+  const OnDeviceModelControl::ModelInstallState previous_install_state =
+      context->SetReady(install_dir, version);
+  if (previous_install_state !=
+      OnDeviceModelControl::ModelInstallState::kInstalled) {
+    ledger_.SaveContexts({public_key});
+  }
 
   OnDeviceBaseModel model_enum = ConvertComponentKeyToEnum(context->asset_id());
   base::UmaHistogramEnumeration(
@@ -850,6 +914,12 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
   }
 
   NotifyFactory(public_key, *context);
+  if (is_new_installation && model_enum != OnDeviceBaseModel::kUnknown &&
+      previous_install_state !=
+          OnDeviceModelControl::ModelInstallState::kInstalled) {
+    model_observers_->Notify(&OnDeviceModelControl::Observer::OnModelInstalled,
+                             model_enum);
+  }
 }
 
 void ManifestAssetManager::NotifyFactory(const std::string& public_key,
@@ -874,6 +944,9 @@ std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
   for (const auto& [public_key, context] : ledger_.contexts()) {
     const proto::OnDemandComponent* component =
         factory_->manifest().GetAssetByPublicKey(public_key);
+    if (!component && !context.NeedsCleanup()) {
+      continue;
+    }
     auto asset_info = context.ToBrokerAssetInfo(component);
 
     // Fetch initial download progress if available.
@@ -931,6 +1004,12 @@ ManifestAssetManager::GetInstalledBaseModels() const {
   }
 
   return std::move(models_by_base_model).extract();
+}
+
+OnDeviceModelControl::ModelInstallState
+ManifestAssetManager::GetModelInstallState(const PrefService& local_state,
+                                           OnDeviceBaseModel base_model) {
+  return AssetLedger::GetModelInstallState(local_state, base_model);
 }
 
 }  // namespace optimization_guide

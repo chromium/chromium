@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_validation.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -224,7 +225,7 @@ void ManifestBrokerState::OnManifestUpdated() {
   if (!asset_manager_) {
     asset_manager_ = std::make_unique<ManifestAssetManager>(
         *local_state_, usage_tracker_, *delegate_, component_update_service_,
-        std::move(factory));
+        model_observers_, std::move(factory));
   } else {
     asset_manager_->UpdateSolutionFactory(std::move(factory));
   }
@@ -399,6 +400,21 @@ void ManifestBrokerState::GetInstalledModels(InstalledModelsCallback callback) {
             std::move(callback));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+OnDeviceModelControl::ModelInstallState
+ManifestBrokerState::GetModelInstallState(OnDeviceBaseModel base_model) const {
+  return ManifestAssetManager::GetModelInstallState(*local_state_, base_model);
+}
+
+void ManifestBrokerState::AddObserver(
+    OnDeviceModelControl::Observer* observer) {
+  model_observers_.AddObserver(observer);
+}
+
+void ManifestBrokerState::RemoveObserver(
+    OnDeviceModelControl::Observer* observer) {
+  model_observers_.RemoveObserver(observer);
 }
 
 void ManifestBrokerState::ResetModelCrashCount() {

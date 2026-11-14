@@ -39,6 +39,11 @@ class FakeOnDeviceModelControl : public OnDeviceModelControl {
     models_ = std::move(models);
   }
 
+  const std::vector<OnDeviceBaseModel>& uninstalled_models() const {
+    return uninstalled_models_;
+  }
+
+  // OnDeviceModelControl:
   void UninstallModels() override { models_.clear(); }
 
   void UninstallCapability(OnDeviceBaseModel base_model) override {
@@ -52,9 +57,23 @@ class FakeOnDeviceModelControl : public OnDeviceModelControl {
     std::move(callback).Run(models_);
   }
 
-  const std::vector<OnDeviceBaseModel>& uninstalled_models() const {
-    return uninstalled_models_;
+  ModelInstallState GetModelInstallState(
+      OnDeviceBaseModel base_model) const override {
+    for (const auto& model : models_) {
+      if (model.base_model == base_model) {
+        return ModelInstallState::kInstalled;
+      }
+    }
+    for (OnDeviceBaseModel uninstalled : uninstalled_models_) {
+      if (uninstalled == base_model) {
+        return ModelInstallState::kUninstalled;
+      }
+    }
+    return ModelInstallState::kNeverInstalled;
   }
+
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 
  private:
   std::vector<InstalledModel> models_;

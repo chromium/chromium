@@ -152,6 +152,16 @@ OptimizationGuideModelStreamingExecutionResult::
     OptimizationGuideModelStreamingExecutionResult(
         OptimizationGuideModelStreamingExecutionResult&& src) = default;
 
+OnDeviceBaseModel OnDeviceSession::GetBaseModel() const {
+  return OnDeviceBaseModel::kUnknown;
+}
+
+void OnDeviceModelControl::Observer::OnModelInstalled(
+    OnDeviceBaseModel base_model) {}
+
+void OnDeviceModelControl::Observer::OnModelUninstalled(
+    OnDeviceBaseModel base_model) {}
+
 OnDeviceCapability::OnDeviceCapability() = default;
 OnDeviceCapability::~OnDeviceCapability() = default;
 

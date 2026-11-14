@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/broker_init.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
@@ -66,6 +67,10 @@ class ManifestBrokerState final : public OnDeviceCapability,
   // OnDeviceModelControl
   void UninstallCapability(OnDeviceBaseModel base_model) override;
   void GetInstalledModels(InstalledModelsCallback callback) override;
+  ModelInstallState GetModelInstallState(
+      OnDeviceBaseModel base_model) const override;
+  void AddObserver(OnDeviceModelControl::Observer* observer) override;
+  void RemoveObserver(OnDeviceModelControl::Observer* observer) override;
 
   // mojom::ModelBrokerDebug, OnDeviceModelControl
   void UninstallModels() override;
@@ -127,6 +132,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   BrokerInit broker_init_;
   ManifestMonitor manifest_monitor_;
   ManifestValidator manifest_validator_;
+  base::ObserverList<OnDeviceModelControl::Observer> model_observers_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;
   mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   mojo::RemoteSet<mojom::ModelBrokerDebugObserver> debug_observers_;

@@ -305,6 +305,10 @@ on_device_model::Capabilities SessionImpl::GetCapabilities() const {
   return capabilities_;
 }
 
+OnDeviceBaseModel SessionImpl::GetBaseModel() const {
+  return base_model_;
+}
+
 std::unique_ptr<OnDeviceSession> SessionImpl::Clone() {
   auto session =
       std::make_unique<SessionImpl>(feature_, sampling_params_, base_model_);
