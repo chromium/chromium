@@ -95,7 +95,7 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
   }
 
   override accessor inert: boolean = false;
-  protected accessor config_: LhsRailConfig =
+  private accessor config_: LhsRailConfig =
       loadTimeData.getValue('lhsRailConfig');
   protected accessor suppressPointerHover_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();

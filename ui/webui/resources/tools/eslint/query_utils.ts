@@ -23,6 +23,10 @@ export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
 export const PROPERTIES_METHOD_PROPERTY_SELECTOR =
     'ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property';
 
+export const THIS_MEMBER_EXPRESSION_QUERY = esquery.parse(
+    'MemberExpression[object.type="ThisExpression"], ' +
+    'MemberExpression[object.type="Identifier"][object.name="this"]');
+
 export function isCrLitElementType(
     type: ts.Type, checker: ts.TypeChecker,
     visited: Set<ts.Type> = new Set()): boolean {
@@ -323,15 +327,38 @@ export function extractTemplateFromFile(
     templateFile: ts.SourceFile,
     context: TSESLint.RuleContext<string, readonly unknown[]>):
     TSESTree.BlockStatement|null {
+  return extractTemplatesFromFile(templateFile, context)[0] || null;
+}
+
+export function extractTemplatesFromFile(
+    templateFile: ts.SourceFile,
+    context: TSESLint.RuleContext<string, readonly unknown[]>,
+    sourceFiles: ts.SourceFile[] = []): TSESTree.BlockStatement[] {
   const templateAst = parseSourceFile(templateFile, context);
+  const blocks: TSESTree.BlockStatement[] = [];
+  const templateDir = path.posix.dirname(templateFile.fileName);
   for (const statement of templateAst.body) {
+    if (isType(statement, Node.ImportDeclaration) &&
+        statement.importKind === 'value' && statement.specifiers.length > 0 &&
+        statement.source.value.endsWith('.html.js')) {
+      const subTemplateFilename = path.posix.join(
+          templateDir,
+          statement.source.value.replace(/\.html\.js$/, '.html.ts'));
+      const subTemplateFile =
+          sourceFiles.find(f => f.fileName === subTemplateFilename);
+      if (subTemplateFile) {
+        blocks.push(
+            ...extractTemplatesFromFile(subTemplateFile, context, sourceFiles));
+      }
+      continue;
+    }
     const decl = isType(statement, Node.ExportNamedDeclaration) ?
         statement.declaration :
         statement;
     if (decl && isType(decl, Node.FunctionDeclaration) &&
         decl.id?.name === 'getHtml') {
-      return decl.body;
+      blocks.push(decl.body);
     }
   }
-  return null;
+  return blocks;
 }

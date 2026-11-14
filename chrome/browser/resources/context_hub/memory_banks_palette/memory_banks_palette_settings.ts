@@ -130,7 +130,7 @@ export class MemoryBanksPaletteSettingsElement extends CrLitElement {
   accessor suggestedShortcutDisplayText: string = '';
   accessor isRecording: boolean = false;
   /** Live preview of the modifier keys held while recording. */
-  protected accessor preview: string = '';
+  private accessor preview: string = '';
   protected accessor error: string = '';
 
   private isSaving: boolean = false;
