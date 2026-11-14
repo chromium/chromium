@@ -513,6 +513,10 @@ const URL_TYPE = 'url';
 const WEEK_TYPE = 'week';
 const TEXT_TYPE = 'text';
 
+// Default button labels matching Blink when the `value` attribute is omitted.
+const DEFAULT_SUBMIT_LABEL = 'Submit';
+const DEFAULT_RESET_LABEL = 'Reset';
+
 // Attribute keys.
 const ATTR_KEY_ARIA_DISABLED = 'aria-disabled';
 const ATTR_KEY_ARIA_HASPOPUP = 'aria-haspopup';
@@ -531,6 +535,7 @@ const ATTR_KEY_ONKEYPRESS = 'onkeypress';
 const ATTR_KEY_HREF = 'href';
 const ATTR_KEY_ACTION = 'action';
 const ATTR_KEY_NAME = 'name';
+const ATTR_KEY_VALUE = 'value';
 
 // Attribute and style values.
 const ATTR_VALUE_TRUE = 'true';
@@ -2223,32 +2228,22 @@ function applyTextTransformAndMasking(
 }
 
 /**
- * Generates attributes for a text node.
+ * Generates text attributes for `textContent` styled by `stylingElement`.
  *
- * @param domNode The text node to process.
+ * @param textContent The raw text string to process.
+ * @param stylingElement The element providing computed text styles.
  * @param styleCache The style cache to use for computing styles.
- * @return The populated PageContentAttributes or null if content is empty.
+ * @return The populated PageContentAttributes or null if content is empty or
+ *     collapsible whitespace.
  */
-function getAttributesForTextNode(
-    domNode: Node, styleCache?: StyleCache): PageContentAttributes|null {
-  const textContent = domNode.textContent;
+function getTextAttributes(
+    textContent: string, stylingElement: Element,
+    styleCache?: StyleCache): PageContentAttributes|null {
   if (!textContent) {
     return null;
   }
 
-  const parentElement = safeParentElement(domNode);
-  if (!parentElement) {
-    // Can't compute the attributes for a text node that doesn't have a parent
-    // which is unexpected.
-    return null;
-  }
-
-  // TODO(crbug.com/507100154): Avoid cache thrashing when accessing
-  // the parent element style.
-  // The parent element must match the latest walked node for the
-  // style cache to work. The parent and latest walked node can
-  // differ when text nodes have siblings.
-  const style = getComputedStyleForElement(parentElement, styleCache);
+  const style = getComputedStyleForElement(stylingElement, styleCache);
   if (!style) {
     return null;
   }
@@ -2284,6 +2279,36 @@ function getAttributesForTextNode(
       },
     },
   };
+}
+
+/**
+ * Generates attributes for a text node.
+ *
+ * @param domNode The text node to process.
+ * @param styleCache The style cache to use for computing styles.
+ * @return The populated PageContentAttributes or null if content is empty or
+ *     collapsible whitespace.
+ */
+function getAttributesForTextNode(
+    domNode: Node, styleCache?: StyleCache): PageContentAttributes|null {
+  const textContent = domNode.textContent;
+  if (!textContent) {
+    return null;
+  }
+
+  const parentElement = safeParentElement(domNode);
+  if (!parentElement) {
+    // Can't compute the attributes for a text node that doesn't have a parent
+    // which is unexpected.
+    return null;
+  }
+
+  // TODO(crbug.com/507100154): Avoid cache thrashing when accessing
+  // the parent element style.
+  // The parent element must match the latest walked node for the
+  // style cache to work. The parent and latest walked node can
+  // differ when text nodes have siblings.
+  return getTextAttributes(textContent, parentElement, styleCache);
 }
 
 // TODO(crbug.com/476341187): Carry status information when the max depth is
@@ -2996,12 +3021,48 @@ function getBasicContentForNonGenericElement(
     case TAG_SELECT:
     case TAG_BUTTON:
     case TAG_FIELDSET: {
+      const formControlData = getFormControlData(domNode, tagName, styleCache);
+      const childrenNodes: PageContentNode[] = [];
+      // Synthesize a child text node for button/submit/reset inputs to match
+      // Blink. WebKit draws their label as an anonymous render text with no
+      // DOM node, so the tree walk never sees it. `getFormControlData()` omits
+      // `fieldValue` only for password-redacted fields, so the `fieldValue`
+      // check also skips the label of redacted inputs.
+      if (tagName === TAG_INPUT && depth + APC_NODE_DEPTH_COST <= maxDepth &&
+          formControlData.fieldValue !== undefined &&
+          (formControlData.formControlType === FormControlType.INPUT_SUBMIT ||
+           formControlData.formControlType === FormControlType.INPUT_BUTTON ||
+           formControlData.formControlType === FormControlType.INPUT_RESET)) {
+        let defaultLabel = '';
+        if (formControlData.formControlType === FormControlType.INPUT_SUBMIT) {
+          // TODO(crbug.com/540909383): WebKit chooses and localizes the default
+          // label, and page JS cannot read it (`value` is empty and the label
+          // has no DOM node). Determine whether to match the localized string
+          // instead of this English fallback.
+          defaultLabel = DEFAULT_SUBMIT_LABEL;
+        } else if (
+            formControlData.formControlType === FormControlType.INPUT_RESET) {
+          defaultLabel = DEFAULT_RESET_LABEL;
+        }
+
+        const labelText = safeHasAttribute(domNode, ATTR_KEY_VALUE) ?
+            formControlData.fieldValue :
+            defaultLabel;
+        const textAttributes =
+            getTextAttributes(labelText, domNode, styleCache);
+        if (textAttributes) {
+          childrenNodes.push({
+            childrenNodes: [],
+            contentAttributes: textAttributes,
+          });
+        }
+      }
       return {
-        childrenNodes: [],
+        childrenNodes: childrenNodes,
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.FORM_CONTROL,
-          formControlData: getFormControlData(domNode, tagName, styleCache),
+          formControlData: formControlData,
         },
       };
     }
@@ -4108,6 +4169,31 @@ function maybeGenerateContentNode(
           element, contentNode.contentAttributes, parentContext, actionableMode,
           includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
           extractPasswordScreenshotRedactions, styleCache);
+      // Synthesized button <input> label TEXT nodes have no DOM node for
+      // TreeWalker to visit, so copy the host <input>'s geometry here.
+      if (actionableMode && contentNode.childrenNodes.length > 0 &&
+          contentNode.contentAttributes.attributeType ===
+              PageContentAttributeType.FORM_CONTROL &&
+          contentNode.contentAttributes.geometry) {
+        const parentGeometry = contentNode.contentAttributes.geometry;
+        for (const child of contentNode.childrenNodes) {
+          if (child.contentAttributes.attributeType ===
+                  PageContentAttributeType.TEXT &&
+              !child.contentAttributes.geometry) {
+            // WebKit draws the button label as an anonymous render text that
+            // page JS cannot measure; approximate the synthesized label's
+            // bounds with the host <input>'s boxes.
+            child.contentAttributes.geometry = {
+              outerBoundingBox: {...parentGeometry.outerBoundingBox},
+              ...(parentGeometry.visibleBoundingBox ? {
+                visibleBoundingBox: {...parentGeometry.visibleBoundingBox},
+              } :
+                                                      {}),
+              cssPosition: PageContentCssPosition.STATIC,
+            };
+          }
+        }
+      }
       return {node: contentNode, nextClippingContext};
     }
   }

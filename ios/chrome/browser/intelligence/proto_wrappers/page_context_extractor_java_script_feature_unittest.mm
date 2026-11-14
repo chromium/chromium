@@ -3710,3 +3710,211 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_FALSE(
       (*select_options)[2].GetDict().FindBool("isSelected").value_or(true));
 }
+
+// Tests that button, submit, and reset input elements synthesize a child TEXT
+// node matching Blink, while skipping explicit empty values, collapsible
+// whitespace, and password-redacted inputs.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_ButtonChildTextNode) {
+  NSString* html =
+      @"<html>"
+       "  <head>"
+       "    <meta name=\"viewport\""
+       "          content=\"width=device-width, initial-scale=1.0\">"
+       "  </head>"
+       "  <body style=\"margin: 0; padding: 20px;\">"
+       "    <form role=\"search\">"
+       "      <button value=\"Ignored\""
+       "              style=\"width: 150px; height: 40px; display: block;\">"
+       "Convert Now</button>"
+       "      <input type=\"button\" value=\"Click Me\""
+       "             style=\"width: 150px; height: 40px; display: block;"
+       "                    font-weight: bold; color: rgb(255, 0, 0);\">"
+       "      <input type=\"submit\" value=\"Submit Form\""
+       "             style=\"width: 150px; height: 40px; display: block;"
+       "                    text-transform: uppercase;\">"
+       "      <input type=\"submit\""
+       "             style=\"width: 150px; height: 40px; display: block;\">"
+       "      <input type=\"reset\""
+       "             style=\"width: 150px; height: 40px; display: block;\">"
+       "      <input type=\"button\""
+       "             style=\"width: 150px; height: 40px; display: block;\">"
+       "      <input type=\"submit\" value=\"\""
+       "             style=\"width: 150px; height: 40px; display: block;\">"
+       "      <input type=\"button\" value=\"   \""
+       "             style=\"width: 150px; height: 40px; display: block;"
+       "                    white-space: nowrap;\">"
+       "      <input type=\"submit\" value=\"secret\""
+       "             style=\"width: 150px; height: 40px; display: block;"
+       "                    -webkit-text-security: disc;\">"
+       "      <input type=\"checkbox\" value=\"checkbox_value\">"
+       "    </form>"
+       "  </body>"
+       "</html>";
+  web::test::LoadHtml(html, test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::ListValue* root_children =
+      result_value->GetDict().FindListByDottedPath("rootNode.childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_EQ(root_children->size(), 1u);
+
+  const base::DictValue& form_node = (*root_children)[0].GetDict();
+  const base::ListValue* form_children = form_node.FindList("childrenNodes");
+  ASSERT_TRUE(form_children);
+  ASSERT_EQ(form_children->size(), 10u);
+
+  auto expect_single_text_child =
+      [](const base::DictValue& control_node,
+         std::string_view expected_text) -> const base::DictValue* {
+    const base::ListValue* children = control_node.FindList("childrenNodes");
+    if (!children || children->size() != 1u) {
+      ADD_FAILURE() << "Expected 1 child text node for '" << expected_text
+                    << "', got " << (children ? children->size() : 0u);
+      return nullptr;
+    }
+    const base::DictValue& text_node = (*children)[0].GetDict();
+    const std::string* text_content = text_node.FindStringByDottedPath(
+        "contentAttributes.textInfo.textContent");
+    EXPECT_TRUE(text_content);
+    if (text_content) {
+      EXPECT_EQ(*text_content, expected_text);
+    }
+    const base::ListValue* roles =
+        text_node.FindListByDottedPath("contentAttributes.annotatedRoles");
+    EXPECT_TRUE(roles && roles->empty());
+    EXPECT_TRUE(
+        text_node.FindDictByDottedPath("contentAttributes.textInfo.textStyle"));
+    EXPECT_TRUE(text_node.FindDictByDottedPath(
+        "contentAttributes.geometry.visibleBoundingBox"));
+    return &text_node;
+  };
+
+  // Check <button> node and its DOM child text node.
+  ASSERT_TRUE(
+      expect_single_text_child((*form_children)[0].GetDict(), "Convert Now"));
+
+  // Check styled <input type="button"> node and its synthesized child text
+  // node, including computed emphasis and color.
+  const base::DictValue* button_input_text_node =
+      expect_single_text_child((*form_children)[1].GetDict(), "Click Me");
+  ASSERT_TRUE(button_input_text_node);
+  EXPECT_EQ(button_input_text_node->FindBoolByDottedPath(
+                "contentAttributes.textInfo.textStyle.hasEmphasis"),
+            true);
+  // Red: (255, 0, 0) -> (255 << 24) | (255 << 16) = 4294901760.
+  const std::string* button_input_color =
+      button_input_text_node->FindStringByDottedPath(
+          "contentAttributes.textInfo.textStyle.color");
+  ASSERT_TRUE(button_input_color);
+  EXPECT_EQ(*button_input_color, "4294901760");
+
+  // Check <input type="submit"> with explicit value and CSS text-transform.
+  ASSERT_TRUE(
+      expect_single_text_child((*form_children)[2].GetDict(), "SUBMIT FORM"));
+
+  // Check <input type="submit"> without value uses default "Submit" text.
+  ASSERT_TRUE(
+      expect_single_text_child((*form_children)[3].GetDict(), "Submit"));
+
+  // Check <input type="reset"> without value uses default "Reset" text.
+  ASSERT_TRUE(expect_single_text_child((*form_children)[4].GetDict(), "Reset"));
+
+  // Check empty, whitespace-only, and redacted button inputs, and a non-button
+  // input with a value, emit no child text node.
+  for (size_t index : {5u, 6u, 7u, 8u, 9u}) {
+    const base::ListValue* children =
+        (*form_children)[index].GetDict().FindList("childrenNodes");
+    ASSERT_TRUE(children) << "index " << index;
+    EXPECT_TRUE(children->empty()) << "index " << index;
+  }
+}
+
+// Tests that a button input one level above `maxDepth` synthesizes a child
+// TEXT node while a button input sitting at `maxDepth` does not exceed the
+// recursion budget.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_ButtonChildTextNodeRespectsMaxDepth) {
+  // Each <section> becomes a CONTAINER node costing APC_NODE_DEPTH_COST (2).
+  // After 93 <section> ancestors (depth 186), `Shallow` is at depth 188 so its
+  // child TEXT node at depth 190 (`maxDepth`) is emitted. Inside the 94th
+  // <section> (depth 188), `Deep` is at depth 190 (`maxDepth`), so its child
+  // TEXT node at depth 192 must be skipped.
+  constexpr int kSectionAncestorCount = 93;
+  std::string html = "<html><body>";
+  for (int i = 0; i < kSectionAncestorCount; ++i) {
+    html += "<section>";
+  }
+  html += "<input type=\"submit\" value=\"Shallow\""
+          "       style=\"width: 100px; height: 30px; display: block;\">"
+          "<section>"
+          "  <input type=\"submit\" value=\"Deep\""
+          "         style=\"width: 100px; height: 30px; display: block;\">"
+          "</section>";
+  for (int i = 0; i < kSectionAncestorCount; ++i) {
+    html += "</section>";
+  }
+  html += "</body></html>";
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  const base::DictValue* current = result_value->GetDict().FindDict("rootNode");
+  ASSERT_TRUE(current);
+  for (int i = 0; i < kSectionAncestorCount; ++i) {
+    const base::ListValue* children = current->FindList("childrenNodes");
+    ASSERT_TRUE(children) << "depth step " << i;
+    ASSERT_EQ(children->size(), 1u) << "depth step " << i;
+    current = &(*children)[0].GetDict();
+  }
+
+  const base::ListValue* level_93_children = current->FindList("childrenNodes");
+  ASSERT_TRUE(level_93_children);
+  ASSERT_EQ(level_93_children->size(), 2u);
+
+  const base::DictValue& shallow_input = (*level_93_children)[0].GetDict();
+  const base::ListValue* shallow_children =
+      shallow_input.FindList("childrenNodes");
+  ASSERT_TRUE(shallow_children);
+  ASSERT_EQ(shallow_children->size(), 1u);
+  const base::DictValue& shallow_text_node = (*shallow_children)[0].GetDict();
+  const std::string* shallow_text = shallow_text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(shallow_text);
+  EXPECT_EQ(*shallow_text, "Shallow");
+  EXPECT_FALSE(
+      shallow_text_node.FindDictByDottedPath("contentAttributes.geometry"));
+
+  const base::ListValue* level_94_children =
+      (*level_93_children)[1].GetDict().FindList("childrenNodes");
+  ASSERT_TRUE(level_94_children);
+  ASSERT_EQ(level_94_children->size(), 1u);
+  const base::DictValue& deep_input = (*level_94_children)[0].GetDict();
+  const std::string* field_value = deep_input.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldValue");
+  ASSERT_TRUE(field_value);
+  EXPECT_EQ(*field_value, "Deep");
+
+  const base::ListValue* deep_children = deep_input.FindList("childrenNodes");
+  ASSERT_TRUE(deep_children);
+  EXPECT_TRUE(deep_children->empty());
+}
