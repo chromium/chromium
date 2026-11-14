@@ -90,13 +90,15 @@ source_set("start_host_main_headers") {
 }
 
 if (is_linux) {
-  source_set("start_host_as_root") {
+  source_set("start_host_linux") {
     sources = [
-      "start_host_as_root.cc",
-      "start_host_as_root.h",
+      "start_host_linux.cc",
+      "start_host_linux.h",
     ]
     deps = [
+      ":common",
       "//base",
+      "//remoting/base:os_utils",
       "//remoting/host/linux:host_types",
     ]
   }
@@ -154,7 +156,7 @@ source_set("start_host_main") {
 
   if (is_linux) {
     deps += [
-      ":start_host_as_root",
+      ":start_host_linux",
       "//remoting/host/linux:host_types",
     ]
   }

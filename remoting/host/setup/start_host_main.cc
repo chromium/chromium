@@ -8,6 +8,8 @@
 #include <stdio.h>
 
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -51,8 +53,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/host_types.h"
-#include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
-#include "remoting/host/setup/start_host_as_root.h"
+#include "remoting/host/setup/start_host_linux.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -454,72 +455,46 @@ int StartHostMain(int argc, char** argv) {
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
-#if BUILDFLAG(IS_LINUX)
-  const HostType* host_type = nullptr;
-  if (command_line->HasSwitch(kHostTypeSwitchName)) {
-    std::string host_type_name =
-        command_line->GetSwitchValueASCII(kHostTypeSwitchName);
-    host_type = HostType::Find(host_type_name);
-    if (!host_type) {
-      std::cerr << "Invalid host type: " << host_type_name << "\n\n";
-      PrintDefaultHelpMessage(argv[0]);
-      return 1;
-    }
-  }
-
-  // If the host type is not specified, DaemonController uses the configured
-  // host type, so that the configured host is set up again with its host type
-  // instead of the default one.
-  if (host_type) {
-    DaemonController::SetHostTypeForSetup(*host_type);
-  }
-  bool is_multi_process = DaemonController::Create()->is_multi_process();
-
-  // If the user is trying to set up a multi-process host unelevated, we just
-  // replace the current process with a sudo command to elevate.
-  if (is_multi_process && getuid() != 0) {
-    std::vector<const char*> sudo_argv;
-    sudo_argv.push_back("sudo");
-    // Use '-k' to prevent silently piggybacking off a recent sudo session.
-    sudo_argv.push_back("-k");
-    // Use '--' to prevent any subsequent arguments from being interpreted as
-    // sudo options.
-    sudo_argv.push_back("--");
-    for (const auto& arg : command_line->argv()) {
-      sudo_argv.push_back(arg.c_str());
-    }
-    sudo_argv.push_back(nullptr);  // NULL-terminated
-    execvp(sudo_argv[0], const_cast<char**>(sudo_argv.data()));
-    // If execvp returns, it failed.
-    PLOG(ERROR) << "Failed to re-run with sudo";
+  if (command_line->HasSwitch("help") || command_line->HasSwitch("h") ||
+      command_line->HasSwitch("?") || !command_line->GetArgs().empty()) {
+    PrintDefaultHelpMessage(argv[0]);
     return 1;
   }
 
-  // Minimize the amount of code that runs as root on Posix systems.
-  // Note that StartHostAsRoot() is only for the single-process host. For the
-  // multi-process host, we just set up everything as root using the common
-  // code path.
-  if (getuid() == 0 && !is_multi_process) {
-    // `host_type` is only null here if the configured host type, if any, is
-    // single-process, which is also the default host type (see
-    // DaemonController::Create()).
-    return remoting::StartHostAsRoot(
-        host_type ? *host_type : HostType::GetDefaultHostType());
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_LINUX)
-  if (command_line->HasSwitch("no-start")) {
-    // On Linux, registering the host with systemd and starting it is the only
-    // reason start_host requires root. The --no-start options skips that final
-    // step, allowing it to be run non-interactively if the parent process has
-    // root and can do complete the setup itself. Since this functionality is
-    // Linux-specific, it isn't plumbed through the platform-independent daemon
-    // controller code, and must be configured on the Linux delegate explicitly.
-    DaemonControllerDelegateLinuxSingleProcess::set_start_host_after_setup(
-        false);
-    // Remove the switch from the command line to simplify arg count checks.
-    command_line->RemoveSwitch("no-start");
+  if (!ValidateUserSwitches(*command_line)) {
+    return 1;
+  }
+
+  std::string local_user_name = GetLocalUserNameForStartHost(*command_line);
+  const HostType* host_type =
+      ResolveTargetHostType(*command_line, local_user_name);
+  if (!host_type) {
+    return 1;
+  }
+
+  if (host_type->is_multi_process()) {
+    if (getuid() != 0) {
+      // Multi-process hosts write to /etc/chrome-remote-desktop/ and manage
+      // system units, so elevate the whole start-host command.
+      ReExecStartHostWithSudo(*command_line, local_user_name);
+      return 1;
+    }
+    if (!ConfigureMultiProcessHostSetupAsRoot(*command_line, *host_type,
+                                              local_user_name)) {
+      return 1;
+    }
+  } else {
+    if (getuid() == 0) {
+      // Single-process hosts store configs in ~<user>/.config/ and should not
+      // run HostStarter as root: spawn an unprivileged `--no-start` child for
+      // HostStarter and start the systemd unit here as root.
+      return StartSingleProcessHostAsRoot(*command_line, *host_type,
+                                          local_user_name);
+    }
+    if (!ConfigureSingleProcessHostSetupAsUser(*command_line, *host_type)) {
+      return 1;
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN)
@@ -531,12 +506,6 @@ int StartHostMain(int argc, char** argv) {
     return 1;
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-  if (command_line->HasSwitch("help") || command_line->HasSwitch("h") ||
-      command_line->HasSwitch("?") || !command_line->GetArgs().empty()) {
-    PrintDefaultHelpMessage(argv[0]);
-    return 1;
-  }
 
   HostStarter::Params params;
   bool use_corp_machine_flow = command_line->HasSwitch(kCorpUserSwitchName);

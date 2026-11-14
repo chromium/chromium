@@ -104,20 +104,18 @@ TEST_F(HostTypeTest, IsUnitActive_FalseForStoppedOrStoppingUnit) {
 TEST_F(HostTypeTest, GetConfigured_ValidRecord) {
   WriteRecord(R"({"hostType": "gdm-managed"})");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 
   WriteRecord(R"({"hostType": "single-process"})");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, ""), ValueIs(single_process()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(single_process()));
 }
 
 TEST_F(HostTypeTest, GetConfigured_RecordWinsOverHostConfigs) {
   WriteRecord(R"({"hostType": "single-process"})");
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(single_process()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(single_process()));
 }
 
 TEST_F(HostTypeTest, GetConfigured_RecordIgnoresUnitState) {
@@ -126,24 +124,22 @@ TEST_F(HostTypeTest, GetConfigured_RecordIgnoresUnitState) {
   WriteRecord(R"({"hostType": "gdm-managed"})");
   env_->SetUnitActive(kSingleProcessUnit);
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, GetConfigured_NoRecord_UsesFallback) {
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName), ValueIs(nullptr));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(nullptr));
 
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, GetConfigured_RecordDirectoryAbsent_UsesFallback) {
   FakeHostTypeEnvironment env(
       temp_dir_.GetPath().Append("missing").Append("session_routing.json"));
 
-  EXPECT_THAT(HostType::GetConfigured(env, kUserName), ValueIs(nullptr));
+  EXPECT_THAT(HostType::GetConfigured(env), ValueIs(nullptr));
 }
 
 TEST_F(HostTypeTest, GetConfigured_MalformedRecord_Fails) {
@@ -151,7 +147,7 @@ TEST_F(HostTypeTest, GetConfigured_MalformedRecord_Fails) {
     SCOPED_TRACE(content);
     WriteRecord(content);
 
-    EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
+    EXPECT_THAT(HostType::GetConfigured(*env_),
                 ErrorIs(AllOf(HasSubstr("It is not a JSON dictionary."),
                               HasSubstr("Fix or delete the file"))));
   }
@@ -161,7 +157,7 @@ TEST_F(HostTypeTest, GetConfigured_MalformedRecord_Fails) {
     WriteRecord(content);
 
     EXPECT_THAT(
-        HostType::GetConfigured(*env_, kUserName),
+        HostType::GetConfigured(*env_),
         ErrorIs(AllOf(HasSubstr(R"(It has no string "hostType" field.)"),
                       HasSubstr("Fix or delete the file"))));
   }
@@ -170,14 +166,14 @@ TEST_F(HostTypeTest, GetConfigured_MalformedRecord_Fails) {
 TEST_F(HostTypeTest, GetConfigured_UnknownHostType_Fails) {
   WriteRecord(R"({"hostType": "unknown"})");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
+  EXPECT_THAT(HostType::GetConfigured(*env_),
               ErrorIs(HasSubstr("Unknown host type 'unknown'")));
 }
 
 TEST_F(HostTypeTest, GetConfigured_InsecureRecord_Fails) {
   WriteFileWithMode(record_path_, R"({"hostType": "gdm-managed"})", 0666);
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
+  EXPECT_THAT(HostType::GetConfigured(*env_),
               ErrorIs(AllOf(HasSubstr("Failed to read it securely"),
                             HasSubstr("is writable by group or others"))));
 }
@@ -189,7 +185,7 @@ TEST_F(HostTypeTest, GetConfigured_InsecureRecordDirectory_Fails) {
   FakeHostTypeEnvironment env(directory.Append("session_routing.json"));
 
   // Even without a record, since an attacker could add one.
-  EXPECT_THAT(HostType::GetConfigured(env, kUserName),
+  EXPECT_THAT(HostType::GetConfigured(env),
               ErrorIs(AllOf(HasSubstr("Failed to read it securely"),
                             HasSubstr("is writable by group or others"))));
 }
@@ -199,7 +195,7 @@ TEST_F(HostTypeTest, GetConfigured_SymlinkedRecord_Fails) {
   WriteFileWithMode(target, R"({"hostType": "gdm-managed"})");
   ASSERT_TRUE(base::CreateSymbolicLink(target, record_path_));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
+  EXPECT_THAT(HostType::GetConfigured(*env_),
               ErrorIs(AllOf(HasSubstr("Failed to read it securely"),
                             HasSubstr("is a symbolic link"))));
 }
@@ -208,26 +204,23 @@ TEST_F(HostTypeTest, GetConfigured_OversizedRecord_Fails) {
   WriteRecord(base::StrCat({R"({"hostType": "gdm-managed", "padding": ")",
                             std::string(4096, 'a'), R"("})"}));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
+  EXPECT_THAT(HostType::GetConfigured(*env_),
               ErrorIs(AllOf(HasSubstr("Failed to read it securely"),
                             HasSubstr("exceeds the size limit"))));
 }
 
 TEST_F(HostTypeTest, GetFallbackConfigured_NoHostConfig_ReturnsNull) {
   // Active units and a routing file without a host config are leftovers.
-  env_->SetUnitActive(kSingleProcessUnit);
   env_->SetUnitActive(kMultiProcessUnit);
   WriteRoutingConfig("{}");
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName), nullptr);
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, ""), nullptr);
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), nullptr);
 }
 
 TEST_F(HostTypeTest, GetFallbackConfigured_MultiProcessConfig_GdmManaged) {
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName), gdm_managed());
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, ""), gdm_managed());
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), gdm_managed());
 }
 
 // gdm-managed is the only multi-process host type for now, so it is also used
@@ -236,17 +229,20 @@ TEST_F(HostTypeTest, GetFallbackConfigured_RoutingFile_InterimGdmManaged) {
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
   WriteRoutingConfig("{}");
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName), gdm_managed());
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), gdm_managed());
 }
 
-TEST_F(HostTypeTest, GetFallbackConfigured_SingleProcessUnitEnabled) {
+TEST_F(HostTypeTest, GetFallbackConfigured_SingleProcessUnitEnabledOrActive) {
   env_->SetUnitEnabled(kSingleProcessUnit);
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), single_process());
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName),
-            single_process());
-  // Only the given user's unit is checked.
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, ""), nullptr);
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, "otheruser"), nullptr);
+  FakeHostTypeEnvironment active_env(
+      temp_dir_.GetPath().Append("active").Append("session_routing.json"));
+  active_env.SetUnitActive("chrome-remote-desktop@otheruser.service");
+  EXPECT_EQ(HostType::GetFallbackConfigured(active_env), single_process());
+
+  active_env.SetListUnitsFails();
+  EXPECT_EQ(HostType::GetFallbackConfigured(active_env), nullptr);
 }
 
 TEST_F(HostTypeTest,
@@ -255,7 +251,7 @@ TEST_F(HostTypeTest,
   env_->SetUnitEnabled(kMultiProcessUnit);
   env_->SetUnitEnabled(kSingleProcessUnit);
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName), gdm_managed());
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), gdm_managed());
 }
 
 // E.g. after `migrate-host single-process --keep-config`.
@@ -264,17 +260,13 @@ TEST_F(HostTypeTest,
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
   env_->SetUnitEnabled(kSingleProcessUnit);
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, kUserName),
-            single_process());
-  // Without the user, the single-process host can't be found.
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_, ""), gdm_managed());
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), single_process());
 }
 
 TEST_F(HostTypeTest, GetFallbackConfigured_DoesNotWriteRecord) {
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 
   EXPECT_FALSE(base::PathExists(record_path_));
 }
@@ -286,14 +278,12 @@ TEST_F(HostTypeTest, WriteHostTypeRecord_RoundTrips) {
   int mode = 0;
   ASSERT_TRUE(base::GetPosixFilePermissions(record_path_, &mode));
   EXPECT_EQ(mode, 0644);
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 
   // Overwrites the existing record.
   EXPECT_TRUE(single_process()->WriteHostTypeRecord(*env_));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(single_process()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(single_process()));
 }
 
 TEST_F(HostTypeTest, WriteHostTypeRecord_CreatesDirectory) {
@@ -305,7 +295,7 @@ TEST_F(HostTypeTest, WriteHostTypeRecord_CreatesDirectory) {
   int mode = 0;
   ASSERT_TRUE(base::GetPosixFilePermissions(directory, &mode));
   EXPECT_EQ(mode, 0755);
-  EXPECT_THAT(HostType::GetConfigured(env, kUserName), ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(env), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, WriteHostTypeRecord_FailsIfDirectoryInsecure) {
@@ -328,22 +318,19 @@ TEST_F(HostTypeTest, WriteHostTypeRecord_ReplacesSymlink) {
 
   EXPECT_FALSE(base::IsLink(record_path_));
   EXPECT_EQ(ReadContent(target), "target");
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, StartHook_WritesRecord) {
   EXPECT_TRUE(gdm_managed()->RunStartHostHook(
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 
   EXPECT_TRUE(single_process()->RunStartHostHook(
       HostTypeContext(*env_, kUserName, /*is_corp_host=*/false)));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(single_process()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(single_process()));
 }
 
 TEST_F(HostTypeTest, StartHook_InvalidContext_DoesNotWriteRecord) {
@@ -356,8 +343,7 @@ TEST_F(HostTypeTest, StartHook_InvalidContext_DoesNotWriteRecord) {
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
   EXPECT_THAT(log, ElementsAre("fake.ValidateStartHostHookContext"));
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, StartHook_RecordWrittenBeforeStateIsChanged) {
@@ -382,8 +368,7 @@ TEST_F(HostTypeTest, StartHook_FailedSetUp_RecordNamesTargetHostType) {
 
   // The record names gdm-managed, so running its start hook again (e.g. with
   // start-host) repairs the setup.
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, StartHook_InsecureRecordDirectory_ChangesNothing) {
@@ -406,8 +391,7 @@ TEST_F(HostTypeTest, StopHook_KeepsRecord) {
   EXPECT_TRUE(gdm_managed()->RunStopHostHook(
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
-  EXPECT_THAT(HostType::GetConfigured(*env_, kUserName),
-              ValueIs(gdm_managed()));
+  EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
 }
 
 TEST_F(HostTypeTest, SingleProcessStartHook_StartsUnit) {
@@ -717,23 +701,6 @@ TEST_F(HostTypeTest, GdmManagedStartHook_AlreadySetUp_OnlyStartsHostUnit) {
   EXPECT_THAT(env_->unit_operations(),
               ElementsAre(base::StrCat({"enable ", kMultiProcessUnit})));
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-}
-
-TEST_F(HostTypeTest, NeedsStartHostHook_SingleProcess) {
-  EXPECT_FALSE(single_process()->NeedsStartHostHook(*env_));
-
-  env_->SetUnitEnabled(kMultiProcessUnit);
-  EXPECT_TRUE(single_process()->NeedsStartHostHook(*env_));
-}
-
-TEST_F(HostTypeTest, NeedsStartHostHook_SingleProcess_MultiProcessUnitActive) {
-  env_->SetUnitActive(kMultiProcessUnit);
-
-  EXPECT_TRUE(single_process()->NeedsStartHostHook(*env_));
-}
-
-TEST_F(HostTypeTest, NeedsStartHostHook_MultiProcess) {
-  EXPECT_TRUE(gdm_managed()->NeedsStartHostHook(*env_));
 }
 
 TEST_F(HostTypeTest, IsUserNameSafeForUnitName) {

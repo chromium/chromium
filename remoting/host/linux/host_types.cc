@@ -151,9 +151,6 @@ class SingleProcessHostType : public HostType {
   std::string_view description() const override;
   bool is_multi_process() const override;
   bool requires_local_user() const override;
-  bool ValidateStartHostHookContext(
-      const HostTypeContext& context) const override;
-  bool NeedsStartHostHook(const HostTypeEnvironment& env) const override;
 
  protected:
   bool StartHostUnit(const HostTypeContext& context) const override;
@@ -218,35 +215,10 @@ bool SingleProcessHostType::requires_local_user() const {
   return true;
 }
 
-bool SingleProcessHostType::ValidateStartHostHookContext(
-    const HostTypeContext& context) const {
-  if (context.local_user_name.empty()) {
-    std::cerr << "Cannot start the single-process host, since the local user "
-                 "is unknown.\n";
-    return false;
-  }
-  if (!IsUserNameSafeForUnitName(context.local_user_name)) {
-    std::cerr << "Cannot start the single-process host, since the username '"
-              << context.local_user_name << "' is not supported.\n";
-    return false;
-  }
-  return true;
-}
-
-bool SingleProcessHostType::NeedsStartHostHook(
-    const HostTypeEnvironment& env) const {
-  // The start hook is only needed to stop leftover units (see SetUpState()).
-  return env.IsUnitEnabled(kMultiProcessHostUnit) ||
-         env.IsUnitActive(kMultiProcessHostUnit);
-}
-
 bool SingleProcessHostType::StartHostUnit(
     const HostTypeContext& context) const {
-  if (context.local_user_name.empty()) {
-    std::cerr << "Cannot start the single-process host, since the local user "
-                 "is unknown.\n";
-    return false;
-  }
+  // Checked by ValidateStartHostHookContext().
+  CHECK(!context.local_user_name.empty());
   return StartUnit(*context.env, GetSingleProcessUnit(context.local_user_name));
 }
 
@@ -371,8 +343,7 @@ void HostType::PrintHostTypeHelp() {
 
 // static
 base::expected<const HostType*, std::string> HostType::GetConfigured(
-    const HostTypeEnvironment& env,
-    std::string_view local_user_name) {
+    const HostTypeEnvironment& env) {
   base::FilePath path = env.GetHostTypeRecordPath();
   // The record decides which host type root sets up, so it must only be
   // writable by root.
@@ -384,7 +355,7 @@ base::expected<const HostType*, std::string> HostType::GetConfigured(
                             content.error().ToString()})));
   }
   if (!content->has_value()) {
-    return base::ok(GetFallbackConfigured(env, local_user_name));
+    return base::ok(GetFallbackConfigured(env));
   }
   std::optional<base::Value> json =
       base::JSONReader::Read(**content, base::JSON_PARSE_RFC);
@@ -408,8 +379,7 @@ base::expected<const HostType*, std::string> HostType::GetConfigured(
 
 // static
 const HostType* HostType::GetFallbackConfigured(
-    const HostTypeEnvironment& env,
-    std::string_view local_user_name) {
+    const HostTypeEnvironment& env) {
   // TODO(crbug.com/493980875): Return the host type that uses the session
   // routing config file if it exists, once there is one.
   const HostType& multi_process_host_type = GetGdmManagedHostType();
@@ -421,12 +391,13 @@ const HostType* HostType::GetFallbackConfigured(
     return &multi_process_host_type;
   }
 
-  // 2. The single-process host unit of `local_user_name` is enabled. It stays
-  //    enabled when the single-process host is stopped or deleted, and takes
+  // 2. Any single-process host unit is enabled or active. It stays enabled
+  //    when the single-process host is stopped or deleted, and takes
   //    precedence over a multi-process host config that is left over from
   //    `migrate-host --keep-config`.
-  if (IsUserNameSafeForUnitName(local_user_name) &&
-      env.IsUnitEnabled(GetSingleProcessUnit(local_user_name))) {
+  std::optional<std::vector<std::string>> single_process_units =
+      env.ListEnabledOrActiveUnits(GetSingleProcessUnit("*"));
+  if (single_process_units.has_value() && !single_process_units->empty()) {
     return &GetSingleProcessHostType();
   }
 
@@ -442,6 +413,18 @@ const HostType* HostType::GetFallbackConfigured(
 
 bool HostType::ValidateStartHostHookContext(
     const HostTypeContext& context) const {
+  if (!requires_local_user()) {
+    return true;
+  }
+  if (context.local_user_name.empty()) {
+    std::cerr << "The " << name() << " host type requires a local user.\n";
+    return false;
+  }
+  if (!IsUserNameSafeForUnitName(context.local_user_name)) {
+    std::cerr << "The " << name() << " host type doesn't support the username '"
+              << context.local_user_name << "'.\n";
+    return false;
+  }
   return true;
 }
 
@@ -489,10 +472,6 @@ bool HostType::WriteHostTypeRecord(const HostTypeEnvironment& env) const {
     std::cerr << "Failed to set the permissions of " << path << ".\n";
     return false;
   }
-  return true;
-}
-
-bool HostType::NeedsStartHostHook(const HostTypeEnvironment& env) const {
   return true;
 }
 

@@ -19,6 +19,11 @@ class HostTypeEnvironment;
 // The systemd unit of the multi-process host.
 inline constexpr char kMultiProcessHostUnit[] = "chrome-remote-desktop.service";
 
+// The path of the installed migrate-host tool, which switches the host type of
+// a configured host.
+inline constexpr char kMigrateHostPath[] =
+    "/opt/google/chrome-remote-desktop/migrate-host";
+
 // Context passed to the HostType hooks.
 struct HostTypeContext {
   HostTypeContext(HostTypeEnvironment& env,
@@ -65,22 +70,20 @@ class HostType {
   // Returns the host type that is set up on this computer, whether or not its
   // host is running, or nullptr if none is. Reads the host type record (see
   // WriteHostTypeRecord()), or falls back to GetFallbackConfigured() if no
-  // record exists. Returns an error if the record is invalid or insecure.
-  // `local_user_name` (may be empty) is only used by GetFallbackConfigured().
-  // Performs blocking operations.
+  // record exists (e.g. hosts set up before the record was introduced, or
+  // unprivileged single-process setups). Returns an error if the record is
+  // invalid or insecure. Performs blocking operations.
   static base::expected<const HostType*, std::string> GetConfigured(
-      const HostTypeEnvironment& env,
-      std::string_view local_user_name);
+      const HostTypeEnvironment& env);
 
   // Infers the configured host type from the host config files and the state
   // of the host units when there is no host type record, e.g. for hosts set up
-  // before the record was introduced (see WriteHostTypeRecord()).
-  // `local_user_name` may be empty, in which case per-user units are not
-  // checked. Returns nullptr if no host is configured. Performs blocking
-  // operations.
-  static const HostType* GetFallbackConfigured(
-      const HostTypeEnvironment& env,
-      std::string_view local_user_name);
+  // before the record was introduced (see WriteHostTypeRecord()) or
+  // unprivileged single-process setups (see RunStartHostHook()). Checks
+  // whether any `chrome-remote-desktop@*.service` unit is enabled or active
+  // for single-process hosts. Returns nullptr if no host is configured.
+  // Performs blocking operations.
+  static const HostType* GetFallbackConfigured(const HostTypeEnvironment& env);
 
   virtual ~HostType() = default;
 
@@ -102,7 +105,9 @@ class HostType {
   // rest of RunStartHostHook(), which calls this first, this doesn't check or
   // change the system state, so it can also be called before anything is
   // changed, e.g. before the host config is written. The default
-  // implementation returns true.
+  // implementation checks that, if this host type requires a local user (see
+  // requires_local_user()), `context.local_user_name` can be used in unit
+  // names (see IsUserNameSafeForUnitName()).
   virtual bool ValidateStartHostHookContext(
       const HostTypeContext& context) const;
 
@@ -114,24 +119,10 @@ class HostType {
   // operations.
   bool WriteHostTypeRecord(const HostTypeEnvironment& env) const;
 
-  // Returns whether start-host must run this host type's start hook, as root,
-  // to set it up, e.g. because the hook would stop leftover units of other
-  // host types. If not, start-host can set up the single-process host as the
-  // user; the host script then enables and starts the host unit, which still
-  // asks for root through polkit or sudo. Performs blocking operations. The
-  // default implementation returns true.
-  virtual bool NeedsStartHostHook(const HostTypeEnvironment& env) const;
-
-  // Validates `context` (see ValidateStartHostHookContext()), records this
-  // host type as the configured one (see WriteHostTypeRecord()), then sets up
-  // the state of this host type and enables and starts its host unit. Called
-  // as root when setting up this host type, after the host config has been
-  // written. It also stops leftover units of other host types, but doesn't run
-  // their stop hooks, since switching the host type of a running host is left
-  // to migrate-host. The record is written before any state is changed, so if
-  // a later step fails, it still names this host type. It may be run again on
-  // a host that is already set up with this host type, e.g. to repair it.
-  // Returns false on failure. Performs blocking operations.
+  // Called when setting up a host of this type as root (unprivileged
+  // single-process setup starts the unit via the host script instead).
+  // Validates `context`, sets up host-type state, starts the host unit, and
+  // records this host type. Returns false on failure.
   bool RunStartHostHook(const HostTypeContext& context) const;
 
   // Stops and disables the host unit of this host type, then cleans up its
