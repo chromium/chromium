@@ -34,7 +34,6 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
@@ -119,8 +118,6 @@
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -146,7 +143,6 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/download_manager.h"
@@ -164,9 +160,6 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/load_flags.h"
@@ -176,7 +169,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/buildflags.h"
-#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -231,8 +223,6 @@
 #endif
 
 using content::WebContents;
-using extensions::MimeHandlerViewGuest;
-using extensions::TestMimeHandlerViewGuest;
 using web_app::WebAppProvider;
 using webapps::AppId;
 
@@ -555,16 +545,6 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
   ~PdfPluginContextMenuBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    PDFExtensionTestBase::SetUpOnMainThread();
-
-    if (!UseOopif()) {
-      test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-          browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
-                                       ->CreateGuestViewManagerDelegate());
-    }
-  }
-
  protected:
   struct PdfInfo {
     // The selected text in the PDF when context menu is created.
@@ -573,10 +553,6 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // Whether the PDF has copy permission.
     bool can_copy;
   };
-
-  guest_view::TestGuestViewManager* test_guest_view_manager() const {
-    return test_guest_view_manager_;
-  }
 
   // Creates a context menu with the given `info`:
   std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenuWithPdfInfo(
@@ -597,31 +573,12 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     }
     EXPECT_NE(extension_frame_, web_contents->GetPrimaryMainFrame());
 
-    // The target frame for the context menu.
-    content::RenderFrameHost* target_frame;
-
-    if (UseOopif()) {
-      // In OOPIF PDF viewer, the target frame should be the PDF plugin frame.
-      target_frame =
-          pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
-      if (!target_frame) {
-        ADD_FAILURE() << "Failed to get PDF plugin frame.";
-        return nullptr;
-      }
-    } else {
-      content::BrowserPluginGuestManager* guest_manager =
-          web_contents->GetBrowserContext()->GetGuestManager();
-      WebContents* guest_contents =
-          guest_manager->GetFullPageGuest(web_contents);
-      if (!guest_contents) {
-        ADD_FAILURE() << "Failed to get guest WebContents.";
-        return nullptr;
-      }
-      EXPECT_EQ(extension_frame_, guest_contents->GetPrimaryMainFrame());
-
-      // In GuestView PDF viewer, the target frame should be the PDF extension
-      // frame.
-      target_frame = extension_frame_;
+    // The target frame for the context menu should be the PDF plugin frame.
+    content::RenderFrameHost* target_frame =
+        pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+    if (!target_frame) {
+      ADD_FAILURE() << "Failed to get PDF plugin frame.";
+      return nullptr;
     }
 
     content::ContextMenuParams params;
@@ -656,34 +613,16 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
     WebContents* web_contents = GetActiveWebContents();
 
-    if (!UseOopif()) {
-      // Prepare to load a pdf plugin inside.
-      TestMimeHandlerViewGuest::RegisterTestGuestViewType(
-          test_guest_view_manager_);
-    }
-
     ASSERT_TRUE(content::ExecJs(web_contents,
                                 "var l = document.getElementById('link1');"
                                 "l.click();"));
 
     // Wait for the pdf content frame to be created and get the pdf extension
     // frame.
-    content::RenderFrameHost* frame;
-    if (UseOopif()) {
-      ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
-                      ->WaitUntilPdfLoadedInFirstChild());
-      frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
-    } else {
-      auto* guest_view =
-          test_guest_view_manager_->WaitForSingleGuestViewCreated();
-      ASSERT_TRUE(guest_view);
-      TestMimeHandlerViewGuest* guest =
-          static_cast<TestMimeHandlerViewGuest*>(guest_view);
-
-      // Wait for the guest to be attached to the embedder.
-      guest->WaitForGuestAttached();
-      frame = guest_view->GetGuestMainFrame();
-    }
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+    content::RenderFrameHost* frame =
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
 
     ASSERT_TRUE(frame);
     ASSERT_NE(web_contents->GetPrimaryMainFrame(), frame);
@@ -738,19 +677,6 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
  private:
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
       extension_frame_ = nullptr;
-  guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, AcrossTasksDanglingUntriaged>
-      test_guest_view_manager_;
-};
-
-class PdfPluginContextMenuBrowserTestWithOopifOverride
-    : public base::test::WithFeatureOverride,
-      public PdfPluginContextMenuBrowserTest {
- public:
-  PdfPluginContextMenuBrowserTestWithOopifOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -3543,22 +3469,9 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 #if BUILDFLAG(ENABLE_PDF)
-class OopifPdfExtensionContextMenuBrowserTest : public PDFExtensionTestBase {
- public:
-  OopifPdfExtensionContextMenuBrowserTest() = default;
+using PdfExtensionContextMenuBrowserTest = PDFExtensionTestBase;
 
-  OopifPdfExtensionContextMenuBrowserTest(
-      const OopifPdfExtensionContextMenuBrowserTest&) = delete;
-  OopifPdfExtensionContextMenuBrowserTest& operator=(
-      const OopifPdfExtensionContextMenuBrowserTest&) = delete;
-
-  ~OopifPdfExtensionContextMenuBrowserTest() override = default;
-
-  bool UseOopif() const override { return true; }
-};
-
-IN_PROC_BROWSER_TEST_F(OopifPdfExtensionContextMenuBrowserTest,
-                       DeveloperItems) {
+IN_PROC_BROWSER_TEST_F(PdfExtensionContextMenuBrowserTest, DeveloperItems) {
   GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
@@ -3635,7 +3548,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
                        FullPagePdfHasPageItems) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
@@ -3644,7 +3557,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   ASSERT_TRUE(menu->IsItemPresent(IDC_RELOAD));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
                        FullPagePdfFullscreenItems) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
@@ -3664,8 +3577,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECCW));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
-                       CopyWithoutText) {
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, CopyWithoutText) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
 
@@ -3673,8 +3585,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
-                       CopyText) {
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, CopyText) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
       SetupAndCreateMenuWithPdfInfo(
           {/*selection_text=*/u"text", /*can_copy=*/true});
@@ -3685,7 +3596,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   ASSERT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPY));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
                        CopyTextWithRestriction) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
       SetupAndCreateMenuWithPdfInfo(
@@ -3697,20 +3608,17 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPY));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
                        IframedPdfHasNoPageItems) {
-  if (UseOopif()) {
-    // Create the manager first, since the following HTML page doesn't wait for
-    // the PDF navigation to complete.
-    CreateTestMimeHandlerStreamManager(
-        browser()->GetTabStripModel()->GetActiveWebContents());
-  }
+  // Create the manager first, since the following HTML page doesn't wait for
+  // the PDF navigation to complete.
+  CreateTestMimeHandlerStreamManager(
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   TestContextMenuOfPdfInsideWebPage(FILE_PATH_LITERAL("test-iframe-pdf.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
-                       RotateInFullPagePdf) {
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, RotateInFullPagePdf) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
   content::RenderFrameHost* target_rfh =
@@ -3719,23 +3627,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   TestRotate(std::move(menu), target_rfh);
 }
 
-class OopifPdfPluginContextMenuBrowserTest
-    : public PdfPluginContextMenuBrowserTest {
- public:
-  OopifPdfPluginContextMenuBrowserTest() = default;
-
-  OopifPdfPluginContextMenuBrowserTest(const PdfPluginContextMenuBrowserTest&) =
-      delete;
-  OopifPdfPluginContextMenuBrowserTest& operator=(
-      const OopifPdfPluginContextMenuBrowserTest&) = delete;
-
-  ~OopifPdfPluginContextMenuBrowserTest() override = default;
-
-  bool UseOopif() const override { return true; }
-};
-
-IN_PROC_BROWSER_TEST_F(OopifPdfPluginContextMenuBrowserTest,
-                       RotateInEmbeddedPdf) {
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, RotateInEmbeddedPdf) {
   // Load a page with a PDF file inside.
   const GURL page_url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
@@ -3765,11 +3657,6 @@ IN_PROC_BROWSER_TEST_F(OopifPdfPluginContextMenuBrowserTest,
 
   TestRotate(std::move(menu), target_rfh);
 }
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PdfPluginContextMenuBrowserTestWithOopifOverride);
 
 #endif  // BUILDFLAG(ENABLE_PDF)
 

@@ -448,7 +448,6 @@ if (!is_android) {
       "//components/spellcheck/browser",
       "//content/public/browser",
       "//content/test:test_support",
-      "//pdf:features",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/events:test_support",

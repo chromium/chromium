@@ -5147,7 +5147,7 @@ class ChromeDriverPdfTest(ChromeDriverBaseTestWithWebServer):
   """Regression test for crbug.com/396611138"""
 
   def testPdfWindows(self):
-    driver = self.CreateDriver(chrome_switches=['disable-features=PdfOopif'])
+    driver = self.CreateDriver()
     # Open an additional tab for PDF.
     new_tab = driver.NewWindow(window_type='tab')
     driver.SwitchToWindow(new_tab['handle'])

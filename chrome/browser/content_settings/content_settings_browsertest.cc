@@ -1538,8 +1538,6 @@ IN_PROC_BROWSER_TEST_P(ContentSettingsWithPrerenderingBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
 class ContentSettingsPdfTest : public PDFExtensionTestBase {
  public:
-  bool UseOopif() const override { return true; }
-
   testing::AssertionResult IsJavaScriptEnabled(content::RenderFrameHost* host) {
     return content::ExecJs(
         host, "",

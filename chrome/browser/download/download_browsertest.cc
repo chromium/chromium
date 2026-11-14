@@ -179,7 +179,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
@@ -199,24 +198,6 @@ using net::URLRequestMockHTTPJob;
 using net::test_server::EmbeddedTestServer;
 
 namespace {
-
-class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
- public:
-  // Observes navigation for the specified |web_contents|.
-  explicit InnerWebContentsAttachedWaiter(WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  void InnerWebContentsAttached(
-      WebContents* inner_web_contents,
-      content::RenderFrameHost* render_frame_host) override {
-    run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-};
 
 void VerifyNewDownloadId(uint32_t expected_download_id, uint32_t download_id) {
   ASSERT_EQ(expected_download_id, download_id);
@@ -2287,9 +2268,7 @@ class DownloadTestSplitCacheEnabled : public DownloadTest {
 };
 
 #if BUILDFLAG(ENABLE_PDF)
-class PdfDownloadTestSplitCacheEnabled
-    : public DownloadTestSplitCacheEnabled,
-      public testing::WithParamInterface<bool> {
+class PdfDownloadTestSplitCacheEnabled : public DownloadTestSplitCacheEnabled {
  public:
   PdfDownloadTestSplitCacheEnabled() {
     // When `kPdfGetSaveDataInBlocks` is enabled, PDFs are saved to disk from
@@ -2297,18 +2276,9 @@ class PdfDownloadTestSplitCacheEnabled
     // the feature is disabled.
     // TODO(crbug.com/394111292): Remove affected tests when the feature is
     // launched.
-    std::vector<base::test::FeatureRef> disabled(
-        {chrome_pdf::features::kPdfGetSaveDataInBlocks});
-    std::vector<base::test::FeatureRef> enabled;
-    if (UseOopif()) {
-      enabled.push_back(chrome_pdf::features::kPdfOopif);
-    } else {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    pdf_feature_list_.InitWithFeatures(enabled, disabled);
+    pdf_feature_list_.InitAndDisableFeature(
+        chrome_pdf::features::kPdfGetSaveDataInBlocks);
   }
-
-  bool UseOopif() const { return GetParam(); }
 
   pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() {
     return factory_.GetTestMimeHandlerStreamManager(
@@ -2385,7 +2355,7 @@ class PdfDownloadTestSplitCacheEnabled
 };
 
 // Test that the PDF can be saved from the primary frame's context menu.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromPrimaryFrameContextMenuBrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2406,7 +2376,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Same as above but using a renderer-initiated navigation from a cross-origin
 // document.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromPrimaryFrameContextMenuRendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2430,7 +2400,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that the PDF can be saved from the PDf extension frame's context menu.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromExtensionFrameContextMenuBrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2453,7 +2423,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 // Same as above but using a renderer-initiated navigation from a cross-origin
 // document.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromExtensionFrameContextMenuRendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2480,7 +2450,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Test that the PDF can be saved from the PDF content frame's context menu.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromContentFrameContextMenuBrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2504,7 +2474,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Same as above but using a renderer-initiated navigation from a cross-origin
 // document.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PdfDownloadTestSplitCacheEnabled,
     SaveMainFramePdfFromContentFrameContextMenuRendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2530,7 +2500,7 @@ IN_PROC_BROWSER_TEST_P(
       content_host, url, url::Origin::Create(initial_url));
 }
 
-IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
+IN_PROC_BROWSER_TEST_F(PdfDownloadTestSplitCacheEnabled,
                        SaveSubframePdfFromPdfUIIsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
@@ -2559,39 +2529,14 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
   // Navigate the subframe and get the `RenderFrameHost` needed for
   // `pdf::PDFDocumentHelper`.
-  content::RenderFrameHost* document_frame;
-  if (UseOopif()) {
-    content::NavigateIframeToURL(web_contents,
-                                 /*iframe_id=*/"test", subframe_url);
-    ASSERT_TRUE(
-        GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
+  content::NavigateIframeToURL(web_contents,
+                               /*iframe_id=*/"test", subframe_url);
+  ASSERT_TRUE(
+      GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
-    document_frame =
-        pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
-    ASSERT_TRUE(document_frame);
-  } else {
-    InnerWebContentsAttachedWaiter waiter(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    waiter.Wait();
-
-    std::vector<content::WebContents*> inner_web_contents_vector =
-        web_contents->GetInnerWebContents();
-    ASSERT_EQ(1u, inner_web_contents_vector.size());
-    content::WebContents* inner_web_contents =
-        inner_web_contents_vector.front();
-
-    // Wait for the page to finish loading.
-    if (inner_web_contents->IsLoading()) {
-      content::TestNavigationObserver inner_navigation_waiter(
-          inner_web_contents);
-      inner_navigation_waiter.Wait();
-      ASSERT_TRUE(!inner_web_contents->IsLoading());
-    }
-
-    document_frame = inner_web_contents->GetPrimaryMainFrame();
-  }
+  content::RenderFrameHost* document_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(document_frame);
 
   // Stop the server. This makes sure we really are pulling from the cache for
   // the download request.
@@ -2808,7 +2753,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
+IN_PROC_BROWSER_TEST_F(PdfDownloadTestSplitCacheEnabled,
                        SaveSubframePdfFromContextMenuIsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
@@ -2835,41 +2780,15 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
   GURL subframe_url(https_test_server()->GetURL("b.test", "/pdf/test.pdf"));
 
-  // Get the `RenderFrameHost` intended to handle the save. For OOPIF PDF
-  // viewer, this will be the PDF content `RenderFrameHost`. For GuestView PDF
-  // viewer, this will be the PDF extension `RenderFrameHost`.
-  content::RenderFrameHost* target_frame;
-  if (UseOopif()) {
-    content::NavigateIframeToURL(web_contents,
-                                 /*iframe_id=*/"test", subframe_url);
-    ASSERT_TRUE(
-        GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
+  // Get the PDF content `RenderFrameHost` intended to handle the save.
+  content::NavigateIframeToURL(web_contents,
+                               /*iframe_id=*/"test", subframe_url);
+  ASSERT_TRUE(
+      GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
-    target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
-    ASSERT_TRUE(target_frame);
-  } else {
-    InnerWebContentsAttachedWaiter waiter(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    waiter.Wait();
-
-    std::vector<content::WebContents*> inner_web_contents_vector =
-        web_contents->GetInnerWebContents();
-    ASSERT_EQ(1u, inner_web_contents_vector.size());
-    content::WebContents* inner_web_contents =
-        inner_web_contents_vector.front();
-
-    // Wait for the page to finish loading.
-    if (inner_web_contents->IsLoading()) {
-      content::TestNavigationObserver inner_navigation_waiter(
-          inner_web_contents);
-      inner_navigation_waiter.Wait();
-      ASSERT_TRUE(!inner_web_contents->IsLoading());
-    }
-
-    target_frame = inner_web_contents->GetPrimaryMainFrame();
-  }
+  content::RenderFrameHost* target_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(target_frame);
 
   // Stop the server. This makes sure we really are pulling from the cache for
   // the download request.
@@ -2927,7 +2846,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 // and openable by the browser, and PDFs fit the bill.
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && \
     BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
+IN_PROC_BROWSER_TEST_F(PdfDownloadTestSplitCacheEnabled,
                        OpenDownloadInMostRecentBrowser) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
@@ -2976,16 +2895,6 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
       TabStripModel::kNoTab);
 }
 #endif
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PdfDownloadTestSplitCacheEnabled,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "PdfOopifEnabled"
-                                             : "PdfOopifDisabled";
-                         });
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 class DownloadTestWithHistogramTester : public DownloadTest {
