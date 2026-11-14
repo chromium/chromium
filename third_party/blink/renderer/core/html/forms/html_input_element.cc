@@ -1132,6 +1132,10 @@ void HTMLInputElement::ResetImpl() {
   }
   SetChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
+  if (FormControlType() == FormControlType::kInputCheckbox && indeterminate()) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kHTMLInputElementResetIndeterminateCheckbox);
+  }
   HTMLFormControlElementWithState::ResetImpl();
 }
 

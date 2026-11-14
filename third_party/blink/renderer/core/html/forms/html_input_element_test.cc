@@ -9,6 +9,7 @@
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -1214,6 +1215,25 @@ TEST_F(HTMLInputElementTest, SetCheckedForBindingClearsSuggestedValue) {
   input.setCheckedForBinding(false);
   EXPECT_TRUE(input.SuggestedValue().empty());
   EXPECT_EQ(WebAutofillState::kNotFilled, input.GetAutofillState());
+}
+
+TEST_F(HTMLInputElementTest, ResetIndeterminateCheckboxUseCounter) {
+  SetBodyContent("<form id=form><input id=test type=checkbox></form>");
+  auto* form = To<HTMLFormElement>(GetElementById("form"));
+  const auto feature = WebFeature::kHTMLInputElementResetIndeterminateCheckbox;
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+
+  form->reset();
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(TestElement().indeterminate());
+
+  TestElement().setIndeterminate(true);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_TRUE(TestElement().indeterminate());
+
+  form->reset();
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_TRUE(TestElement().indeterminate());
 }
 
 // Removing a disabled <fieldset> notifies its descendants in tree order.

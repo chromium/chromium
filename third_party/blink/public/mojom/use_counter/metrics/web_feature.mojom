@@ -5414,6 +5414,7 @@ enum WebFeature {
   kV8MLGraph_Devices_AttributeGetter = 6095,
   kSemanticEmbedder_MaxInputTokens = 6096,
   kViewportFitCoverAndSafeAreaInsetTop = 6097,
+  kHTMLInputElementResetIndeterminateCheckbox = 6098,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
