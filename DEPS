@@ -2281,7 +2281,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/fastfloat/fast_float.git' + '@' + 'dbeabeeb3e6791cb96994c2a7a084c36e62ccfb2',
 
   'src/third_party/federated_compute/src':
-    Var('chromium_git') + '/external/github.com/google-parfait/federated-compute.git' + '@' + '84ee1e5e8102b9dbcc700a738428342b85e05df0',
+    Var('chromium_git') + '/external/github.com/google-parfait/federated-compute.git' + '@' + 'b72c315ebd3227c0c1e0581c8d6c4e95bdcfc66b',
 
   'src/third_party/ffmpeg':
     Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + Var('ffmpeg_revision'),
