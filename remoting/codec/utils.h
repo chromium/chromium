@@ -35,11 +35,23 @@ void ConvertDesktopFrameRectToYuv(const webrtc::DesktopFrame& frame,
 webrtc::DesktopRegion GetRowAlignedRegion(const webrtc::DesktopRegion& region,
                                           int frame_width);
 
+// Minimum row-aligned dirty pixel count (~25% of a 1080p frame) required for
+// `ConvertDesktopFrameRegionToYuv()` to parallelize conversion across
+// `base::ThreadPool` via `base::CreateJob()`.
+inline constexpr int64_t kParallelYuvConversionPixelThreshold = 512000;
+
 // Converts each rectangle in `region` (aligned horizontally to SIMD row
 // boundaries via `GetRowAlignedRect()`) from an ARGB `frame` into I420 or I444
 // YUV planes. Because `GetRowAlignedRect()` only aligns `left` and `right`,
 // when `is_i444` is false (I420), each rectangle in `region` must have an even
 // `top()` coordinate (e.g., via `AlignRect()`).
+//
+// When the coalesced region covers at least
+// `kParallelYuvConversionPixelThreshold` pixels and multiple CPU workers are
+// available in `base::ThreadPool`, conversion is partitioned across dynamic
+// work-stealing horizontal strips via `base::CreateJob(...).Join()` before
+// returning synchronously; under `ThreadPool` contention, the calling thread
+// drains remaining strips inline without stalling on queued workers.
 void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
                                     const webrtc::DesktopRegion& region,
                                     bool is_i444,

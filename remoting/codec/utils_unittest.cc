@@ -7,7 +7,14 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_waitable_event.h"
 #include "remoting/base/cpu_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
@@ -355,6 +362,168 @@ TEST(
       EXPECT_EQ(actual_v, expected_v);
     }
   }
+}
+
+TEST(CodecUtilsTest,
+     ConvertDesktopFrameRegionToYuv_ParallelJobMatchesSinglePass) {
+  base::test::TaskEnvironment task_environment;
+  // 1024 * 542 = 555,008 pixels (> `kParallelYuvConversionPixelThreshold`).
+  // `542` is not divisible by 16, exercising `RoundToTwosMultiple` across
+  // uneven horizontal strip heights so I420 chroma rows remain aligned.
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 542;
+  constexpr int kYStride = 1088;
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
+  FillPatternFrame(frame);
+
+  // Exercise both a full-frame rect and a multi-rect region mixing a tall rect
+  // (split across dynamic strips) and short rects (`height == 4`, kept intact
+  // without splitting) that totals >= 512k pixels.
+  webrtc::DesktopRegion multi_rect_region;
+  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 0, kWidth, 514));
+  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 520, kWidth, 524));
+  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 528, kWidth, 532));
+  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 536, kWidth, 540));
+
+  const std::vector<webrtc::DesktopRegion> regions = {
+      webrtc::DesktopRegion(webrtc::DesktopRect::MakeWH(kWidth, kHeight)),
+      multi_rect_region,
+  };
+
+  size_t region_idx = 0;
+  for (const webrtc::DesktopRegion& region : regions) {
+    const webrtc::DesktopRegion aligned_region =
+        GetRowAlignedRegion(region, kWidth);
+    for (const bool is_i444 : {false, true}) {
+      SCOPED_TRACE(testing::Message()
+                   << "region_idx=" << region_idx << " is_i444=" << is_i444);
+      const int u_stride = is_i444 ? 1104 : 576;
+      const int v_stride = is_i444 ? 1120 : 608;
+      const int uv_height = is_i444 ? kHeight : kHeight / 2;
+
+      std::vector<uint8_t> expected_y(kYStride * kHeight, kSentinel);
+      std::vector<uint8_t> expected_u(u_stride * uv_height, kSentinel);
+      std::vector<uint8_t> expected_v(v_stride * uv_height, kSentinel);
+      for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
+           r.Advance()) {
+        ConvertDesktopFrameRectToYuv(frame, r.rect(), is_i444, expected_y,
+                                     kYStride, expected_u, u_stride, expected_v,
+                                     v_stride);
+      }
+
+      std::vector<uint8_t> actual_y(kYStride * kHeight, kSentinel);
+      std::vector<uint8_t> actual_u(u_stride * uv_height, kSentinel);
+      std::vector<uint8_t> actual_v(v_stride * uv_height, kSentinel);
+      ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, kYStride,
+                                     actual_u, u_stride, actual_v, v_stride);
+
+      EXPECT_EQ(actual_y, expected_y);
+      EXPECT_EQ(actual_u, expected_u);
+      EXPECT_EQ(actual_v, expected_v);
+    }
+    ++region_idx;
+  }
+}
+
+TEST(CodecUtilsTest,
+     ConvertDesktopFrameRegionToYuv_CompletesInlineWhenThreadPoolStarved) {
+  // Declare `workers_occupied` and `release_workers` before `task_environment`
+  // so they outlive `~TaskEnvironment()`'s `ThreadPool` worker-thread join.
+  base::TestWaitableEvent workers_occupied;
+  base::TestWaitableEvent release_workers;
+  base::test::TaskEnvironment task_environment;
+  base::ScopedClosureRunner release_guard(base::BindOnce(
+      &base::TestWaitableEvent::Signal, base::Unretained(&release_workers)));
+
+  // Pin every foreground `ThreadPool` worker on `release_workers` (`Wait()` on
+  // `TestWaitableEvent` omits `ScopedBlockingCall`, so `ThreadPool` does not
+  // spawn replacement threads). Static `PostTask` + `BarrierClosure` would
+  // deadlock here because `release_workers` is only signaled after conversion
+  // returns; `CreateJob(...).Join()` drains all strips inline on the calling
+  // thread instead.
+  base::RepeatingClosure occupied_barrier = base::BarrierClosure(
+      base::test::TaskEnvironment::kNumForegroundThreadPoolThreads,
+      base::BindOnce(&base::TestWaitableEvent::Signal,
+                     base::Unretained(&workers_occupied)));
+  for (int i = 0;
+       i < base::test::TaskEnvironment::kNumForegroundThreadPoolThreads; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(
+            [](base::RepeatingClosure on_occupied,
+               base::TestWaitableEvent* release) {
+              on_occupied.Run();
+              release->Wait();
+            },
+            occupied_barrier, base::Unretained(&release_workers)));
+  }
+  workers_occupied.Wait();
+
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
+  FillPatternFrame(frame);
+  const webrtc::DesktopRegion region(
+      webrtc::DesktopRect::MakeWH(kWidth, kHeight));
+
+  for (const bool is_i444 : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "is_i444=" << is_i444);
+    const int uv_stride = is_i444 ? kWidth : kWidth / 2;
+    const int uv_height = is_i444 ? kHeight : kHeight / 2;
+
+    std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
+    std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
+    std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
+    ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, kWidth,
+                                   actual_u, uv_stride, actual_v, uv_stride);
+
+    std::vector<uint8_t> expected_y(kWidth * kHeight, kSentinel);
+    std::vector<uint8_t> expected_u(uv_stride * uv_height, kSentinel);
+    std::vector<uint8_t> expected_v(uv_stride * uv_height, kSentinel);
+    ConvertDesktopFrameRectToYuv(
+        frame, webrtc::DesktopRect::MakeWH(kWidth, kHeight), is_i444,
+        expected_y, kWidth, expected_u, uv_stride, expected_v, uv_stride);
+
+    EXPECT_EQ(actual_y, expected_y);
+    EXPECT_EQ(actual_u, expected_u);
+    EXPECT_EQ(actual_v, expected_v);
+  }
+
+  release_guard.RunAndReset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+}
+
+TEST(CodecUtilsTest,
+     ConvertDesktopFrameRegionToYuv_NoThreadPoolRunsSinglePassAboveThreshold) {
+  // Intentionally omit `TaskEnvironment` (`ThreadPoolInstance::Get()` is null)
+  // to verify callers without an initialized `ThreadPool` fall back cleanly to
+  // single-pass conversion above `kParallelYuvConversionPixelThreshold`.
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
+  FillPatternFrame(frame);
+  const webrtc::DesktopRegion region(
+      webrtc::DesktopRect::MakeWH(kWidth, kHeight));
+
+  std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u((kWidth / 2) * (kHeight / 2), kSentinel);
+  std::vector<uint8_t> actual_v((kWidth / 2) * (kHeight / 2), kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, /*is_i444=*/false, actual_y,
+                                 kWidth, actual_u, kWidth / 2, actual_v,
+                                 kWidth / 2);
+
+  std::vector<uint8_t> ref_y(kWidth * kHeight, 0);
+  std::vector<uint8_t> ref_u((kWidth / 2) * (kHeight / 2), 0);
+  std::vector<uint8_t> ref_v((kWidth / 2) * (kHeight / 2), 0);
+  libyuv::ARGBToI420(frame.data(), frame.stride(), ref_y.data(), kWidth,
+                     ref_u.data(), kWidth / 2, ref_v.data(), kWidth / 2, kWidth,
+                     kHeight);
+  EXPECT_EQ(actual_y, ref_y);
+  EXPECT_EQ(actual_u, ref_u);
+  EXPECT_EQ(actual_v, ref_v);
 }
 
 }  // namespace remoting
