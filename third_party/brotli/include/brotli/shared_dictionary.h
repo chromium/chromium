@@ -22,6 +22,18 @@ extern "C" {
 #define SHARED_BROTLI_MAX_COMPOUND_DICTS 15
 
 /**
+ * Practical limit for RAW dictionary size.
+ *
+ * Maximal distance (for non large window mode) is `(2 << 26 + 11) << NPOSTFIX`.
+ * Usually NPOSTFIX is 0 for regular data (i.e. not WORD/DWORD/QWORD stream).
+ * In large window mode, distance could be much larger.
+ *
+ * Currently, there are no known use cases for larger than 64MiB dictionary in
+ * regular mode and 2GiB in large window mode.
+ */
+#define SHARED_BROTLI_MAX_RAW_DICT_SIZE (1u << (23u + sizeof(size_t)))
+
+/**
  * Opaque structure that holds shared dictionary data.
  *
  * Allocated and initialized with ::BrotliSharedDictionaryCreateInstance.

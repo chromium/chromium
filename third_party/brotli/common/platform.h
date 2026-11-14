@@ -24,6 +24,7 @@
 #ifndef BROTLI_COMMON_PLATFORM_H_
 #define BROTLI_COMMON_PLATFORM_H_
 
+#include <limits.h>
 #include <string.h>  /* IWYU pragma: export memcmp, memcpy, memset */
 #include <stdlib.h>  /* IWYU pragma: export exit, free, malloc */
 #include <sys/types.h>  /* should include endian.h for us */
@@ -522,6 +523,14 @@ BROTLI_MIN_MAX(size_t) BROTLI_MIN_MAX(uint32_t) BROTLI_MIN_MAX(uint8_t)
 #define BROTLI_MIN(T, A, B) (brotli_min_ ## T((A), (B)))
 #define BROTLI_MAX(T, A, B) (brotli_max_ ## T((A), (B)))
 
+static BROTLI_INLINE int brotli_safe_add_int(int a, int b, int* result) {
+  if (b > 0 && a > INT_MAX - b) return 0;
+  if (b < 0 && a < INT_MIN - b) return 0;
+  *result = a + b;
+  return 1;
+}
+#define BROTLI_SAFE_ADD(T, A, B, R) (brotli_safe_add_ ## T((A), (B), (R)))
+
 #define BROTLI_SWAP(T, A, I, J) { \
   T __brotli_swap_tmp = (A)[(I)]; \
   (A)[(I)] = (A)[(J)];            \
@@ -607,6 +616,7 @@ BROTLI_UNUSED_FUNCTION void BrotliSuppressUnusedFunctions(void) {
   BROTLI_UNUSED(&brotli_max_uint32_t);
   BROTLI_UNUSED(&brotli_min_uint8_t);
   BROTLI_UNUSED(&brotli_max_uint8_t);
+  BROTLI_UNUSED(&brotli_safe_add_int);
   BROTLI_UNUSED(&BrotliDefaultAllocFunc);
   BROTLI_UNUSED(&BrotliDefaultFreeFunc);
   BROTLI_UNUSED(&BrotliRotateRight16);
@@ -615,6 +625,7 @@ BROTLI_UNUSED_FUNCTION void BrotliSuppressUnusedFunctions(void) {
 #if BROTLI_ENABLE_DUMP
   BROTLI_UNUSED(&BrotliDump);
 #endif
+}
 
 #if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_I86)) && \
     !defined(_M_ARM64EC)
@@ -650,11 +661,12 @@ BROTLI_UNUSED_FUNCTION void BrotliSuppressUnusedFunctions(void) {
 
 /* The SIMD matchers are only faster at certain quality levels. */
 #if defined(_M_X64) && defined(BROTLI_TZCNT64)
+#define BROTLI_MAX_RECOMMENDED_SIMD_QUALITY 7
 #define BROTLI_MAX_SIMD_QUALITY 7
 #elif defined(BROTLI_TZCNT64)
-#define BROTLI_MAX_SIMD_QUALITY 6
+#define BROTLI_MAX_RECOMMENDED_SIMD_QUALITY 6
+#define BROTLI_MAX_SIMD_QUALITY 7
 #endif
-}
 
 #if defined(_MSC_VER)
 #define BROTLI_CRASH() __debugbreak(), (void)abort()

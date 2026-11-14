@@ -1,7 +1,7 @@
 Name: Brotli
 URL: https://github.com/google/brotli
-Version: cfa184a997ac19454d5a3ae97f6d600aac2445a6
-Revision: cfa184a997ac19454d5a3ae97f6d600aac2445a6
+Version: d89c4b1c52e25ddafe047bc78bbee5c1e24b1809
+Revision: d89c4b1c52e25ddafe047bc78bbee5c1e24b1809
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE

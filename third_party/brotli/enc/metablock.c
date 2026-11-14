@@ -9,22 +9,170 @@
 
 #include "metablock.h"
 
-#include "../common/constants.h"
-#include "../common/context.h"
-#include "../common/platform.h"
 #include "bit_cost.h"
 #include "block_splitter.h"
 #include "cluster.h"
 #include "command.h"
 #include "entropy_encode.h"
+#include "hash.h"
 #include "histogram.h"
 #include "memory.h"
 #include "params.h"
 #include "prefix.h"
+#include "../common/constants.h"
+#include "../common/context.h"
+#include "../common/platform.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
+
+static void ForceBase64LiteralSplits(MemoryManager* m, BlockSplit* split,
+                                     const Base64Region* base64_regions,
+                                     size_t num_base64_regions,
+                                     size_t last_flush_pos,
+                                     MetaBlockSplit* mb) {
+  size_t r;
+  /* Each base64 region can split an existing block into at most 3 blocks
+     (adding 2 new blocks). In the worst case, every base64 region splits
+     a different block, increasing the number of blocks by 2 *
+     num_base64_regions. We add 1 extra block as a safety margin. */
+  size_t new_alloc_size = split->num_blocks + num_base64_regions * 2 + 1;
+  uint8_t* new_types = BROTLI_ALLOC(m, uint8_t, new_alloc_size);
+  uint32_t* new_lengths = BROTLI_ALLOC(m, uint32_t, new_alloc_size);
+  size_t new_num_blocks = 0;
+  size_t curr_offset = 0;
+  size_t block_idx = 0;
+
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(new_types) ||
+      BROTLI_IS_NULL(new_lengths)) {
+    return;
+  }
+
+  memset(mb->literal_is_base64, 0, sizeof(mb->literal_is_base64));
+  uint8_t base64_type_id = (uint8_t)split->num_types;
+  mb->literal_is_base64[base64_type_id >> 3] |=
+      (uint8_t)(1u << (base64_type_id & 7));
+
+  for (block_idx = 0; block_idx < split->num_blocks; ++block_idx) {
+    uint32_t block_len = split->lengths[block_idx];
+    uint8_t block_type = split->types[block_idx];
+    size_t block_start = curr_offset;
+    size_t block_end = curr_offset + block_len;
+
+    BROTLI_BOOL intersected = BROTLI_FALSE;
+    for (r = 0; r < num_base64_regions; ++r) {
+      size_t b64_start = base64_regions[r].start_literal_pos - last_flush_pos;
+      size_t b64_end = b64_start + base64_regions[r].length;
+
+      if (b64_start < block_end && b64_end > block_start) {
+        if (b64_start > block_start) {
+          new_types[new_num_blocks] = block_type;
+          new_lengths[new_num_blocks] = (uint32_t)(b64_start - block_start);
+          new_num_blocks++;
+        }
+        size_t intersect_start = BROTLI_MAX(size_t, block_start, b64_start);
+        size_t intersect_end = BROTLI_MIN(size_t, block_end, b64_end);
+        new_types[new_num_blocks] = base64_type_id;
+        new_lengths[new_num_blocks] =
+            (uint32_t)(intersect_end - intersect_start);
+        new_num_blocks++;
+
+        if (b64_end < block_end) {
+          block_start = b64_end;
+          block_len = (uint32_t)(block_end - b64_end);
+          continue;
+        } else {
+          block_len = 0;
+          intersected = BROTLI_TRUE;
+          break;
+        }
+      }
+    }
+
+    if (!intersected && block_len > 0) {
+      new_types[new_num_blocks] = block_type;
+      new_lengths[new_num_blocks] = block_len;
+      new_num_blocks++;
+    }
+    curr_offset = block_end;
+  }
+
+  BROTLI_FREE(m, split->types);
+  BROTLI_FREE(m, split->lengths);
+  split->types = new_types;
+  split->lengths = new_lengths;
+  split->num_blocks = new_num_blocks;
+  split->num_types++;
+}
+
+static void AppendBase64Histogram(MemoryManager* m, MetaBlockSplit* mb) {
+  size_t base64_type_id = mb->literal_split.num_types - 1;
+  size_t b64_histo_id = mb->literal_histograms_size;
+  size_t new_context_map_size =
+      mb->literal_split.num_types << BROTLI_LITERAL_CONTEXT_BITS;
+  HistogramLiteral* new_histos =
+      BROTLI_ALLOC(m, HistogramLiteral, mb->literal_histograms_size + 1);
+  uint32_t* new_context_map =
+      BROTLI_ALLOC(m, uint32_t, new_context_map_size);
+  size_t i;
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(new_histos) ||
+      BROTLI_IS_NULL(new_context_map)) {
+    BROTLI_FREE(m, new_histos);
+    BROTLI_FREE(m, new_context_map);
+    return;
+  }
+  memcpy(new_histos, mb->literal_histograms,
+         mb->literal_histograms_size * sizeof(HistogramLiteral));
+  BROTLI_FREE(m, mb->literal_histograms);
+  mb->literal_histograms = new_histos;
+  HistogramClearLiteral(&mb->literal_histograms[b64_histo_id]);
+  mb->literal_histograms_size++;
+
+  if (mb->literal_context_map != NULL) {
+    memcpy(new_context_map, mb->literal_context_map,
+           mb->literal_context_map_size * sizeof(uint32_t));
+    BROTLI_FREE(m, mb->literal_context_map);
+  } else {
+    /* If context map was NULL (num_contexts == 1), initialize preceding types */
+    size_t t;
+    for (t = 0; t < base64_type_id; ++t) {
+      for (i = 0; i < 64; ++i) {
+        new_context_map[(t << 6) + i] = (uint32_t)t;
+      }
+    }
+  }
+  mb->literal_context_map = new_context_map;
+  mb->literal_context_map_size = new_context_map_size;
+  for (i = 0; i < 64; ++i) {
+    mb->literal_context_map[(base64_type_id << 6) + i] = (uint32_t)b64_histo_id;
+  }
+}
+
+static void MapBase64RegionsToLiteralPositions(
+    const Command* commands, size_t num_commands, size_t last_flush_pos,
+    const Base64Region* in_regions, size_t num_in_regions,
+    Base64Region* out_regions) {
+  size_t r;
+  for (r = 0; r < num_in_regions; ++r) {
+    size_t target_ring_pos = in_regions[r].start_literal_pos;
+    size_t curr_ring_pos = last_flush_pos;
+    size_t curr_lit_pos = 0;
+    size_t i;
+    for (i = 0; i < num_commands; ++i) {
+      const Command cmd = commands[i];
+      if (curr_ring_pos + cmd.insert_len_ >= target_ring_pos) {
+        size_t offset = target_ring_pos > curr_ring_pos ? target_ring_pos - curr_ring_pos : 0;
+        curr_lit_pos += offset;
+        break;
+      }
+      curr_lit_pos += cmd.insert_len_;
+      curr_ring_pos += cmd.insert_len_ + CommandCopyLen(&cmd);
+    }
+    out_regions[r].start_literal_pos = curr_lit_pos;
+    out_regions[r].length = in_regions[r].length;
+  }
+}
 
 void BrotliInitDistanceParams(BrotliDistanceParams* dist_params,
     uint32_t npostfix, uint32_t ndirect, BROTLI_BOOL large_window) {
@@ -123,16 +271,13 @@ static BROTLI_BOOL ComputeDistanceCost(const Command* cmds,
   return BROTLI_TRUE;
 }
 
-void BrotliBuildMetaBlock(MemoryManager* m,
-                          const uint8_t* ringbuffer,
-                          const size_t pos,
-                          const size_t mask,
-                          BrotliEncoderParams* params,
-                          uint8_t prev_byte,
-                          uint8_t prev_byte2,
-                          Command* cmds,
-                          size_t num_commands,
-                          ContextType literal_context_mode,
+void BrotliBuildMetaBlock(MemoryManager* m, const uint8_t* ringbuffer,
+                          const size_t pos, const size_t mask,
+                          const Base64Region* base64_regions,
+                          size_t num_base64_regions,
+                          BrotliEncoderParams* params, uint8_t prev_byte,
+                          uint8_t prev_byte2, Command* cmds,
+                          size_t num_commands, ContextType literal_context_mode,
                           MetaBlockSplit* mb) {
   /* Histogram ids need to fit in one byte. */
   static const size_t kMaxNumberOfHistograms = 256;
@@ -261,6 +406,21 @@ void BrotliBuildMetaBlock(MemoryManager* m,
             mb->literal_context_map[i];
       }
     }
+  }
+
+  if (num_base64_regions > 0 && mb->literal_split.num_types < 256 &&
+      mb->literal_histograms_size < 256) {
+    Base64Region local_b64[256];
+    size_t safe_num_b64 = BROTLI_MIN(size_t, num_base64_regions, 256);
+    MapBase64RegionsToLiteralPositions(cmds, num_commands, pos,
+                                       base64_regions, safe_num_b64,
+                                       local_b64);
+    ForceBase64LiteralSplits(m, &mb->literal_split, local_b64,
+                             safe_num_b64, 0, mb);
+    if (!BROTLI_IS_OOM(m)) {
+      AppendBase64Histogram(m, mb);
+    }
+    if (BROTLI_IS_OOM(m)) return;
   }
 
   BROTLI_DCHECK(mb->distance_context_map == 0);
@@ -547,10 +707,12 @@ typedef struct GreedyMetablockArena {
 
 static BROTLI_INLINE void BrotliBuildMetaBlockGreedyInternal(
     MemoryManager* m, GreedyMetablockArena* arena, const uint8_t* ringbuffer,
-    size_t pos, size_t mask, uint8_t prev_byte, uint8_t prev_byte2,
+    size_t pos, size_t mask, const Base64Region* base64_regions,
+    size_t num_base64_regions, uint8_t prev_byte, uint8_t prev_byte2,
     ContextLut literal_context_lut, const size_t num_contexts,
     const uint32_t* static_context_map, const Command* commands,
     size_t n_commands, MetaBlockSplit* mb) {
+  const size_t start_pos = pos;
   size_t num_literals = 0;
   size_t i;
   for (i = 0; i < n_commands; ++i) {
@@ -614,6 +776,36 @@ static BROTLI_INLINE void BrotliBuildMetaBlockGreedyInternal(
         &arena->lit_blocks.ctx, m, /* is_final = */ BROTLI_TRUE);
     if (BROTLI_IS_OOM(m)) return;
   }
+
+  if (num_base64_regions > 0 && mb->literal_split.num_types < 256 &&
+      mb->literal_histograms_size + num_contexts <= 256) {
+    Base64Region local_b64[256];
+    size_t safe_num_b64 = BROTLI_MIN(size_t, num_base64_regions, 256);
+    MapBase64RegionsToLiteralPositions(commands, n_commands, start_pos,
+                                       base64_regions, safe_num_b64,
+                                       local_b64);
+    ForceBase64LiteralSplits(m, &mb->literal_split, local_b64,
+                             safe_num_b64, 0, mb);
+    if (BROTLI_IS_OOM(m)) return;
+    {
+      size_t num_b64_histos = num_contexts;
+      size_t b64_histo_id = mb->literal_histograms_size;
+      HistogramLiteral* new_histos = BROTLI_ALLOC(
+          m, HistogramLiteral, mb->literal_histograms_size + num_b64_histos);
+      if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(new_histos)) {
+        return;
+      }
+      memcpy(new_histos, mb->literal_histograms,
+             mb->literal_histograms_size * sizeof(HistogramLiteral));
+      BROTLI_FREE(m, mb->literal_histograms);
+      mb->literal_histograms = new_histos;
+      for (i = 0; i < num_b64_histos; ++i) {
+        HistogramClearLiteral(&mb->literal_histograms[b64_histo_id + i]);
+      }
+      mb->literal_histograms_size += num_b64_histos;
+    }
+  }
+
   BlockSplitterFinishBlockCommand(
       &arena->cmd_blocks, /* is_final = */ BROTLI_TRUE);
   BlockSplitterFinishBlockDistance(
@@ -624,26 +816,22 @@ static BROTLI_INLINE void BrotliBuildMetaBlockGreedyInternal(
   }
 }
 
-void BrotliBuildMetaBlockGreedy(MemoryManager* m,
-                                const uint8_t* ringbuffer,
-                                size_t pos,
-                                size_t mask,
-                                uint8_t prev_byte,
-                                uint8_t prev_byte2,
-                                ContextLut literal_context_lut,
-                                size_t num_contexts,
-                                const uint32_t* static_context_map,
-                                const Command* commands,
-                                size_t n_commands,
-                                MetaBlockSplit* mb) {
+void BrotliBuildMetaBlockGreedy(
+    MemoryManager* m, const uint8_t* ringbuffer, size_t pos, size_t mask,
+    const Base64Region* base64_regions, size_t num_base64_regions,
+    uint8_t prev_byte, uint8_t prev_byte2, ContextLut literal_context_lut,
+    size_t num_contexts, const uint32_t* static_context_map,
+    const Command* commands, size_t n_commands, MetaBlockSplit* mb) {
   GreedyMetablockArena* arena = BROTLI_ALLOC(m, GreedyMetablockArena, 1);
   if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(arena)) return;
   if (num_contexts == 1) {
-    BrotliBuildMetaBlockGreedyInternal(m, arena, ringbuffer, pos, mask,
+    BrotliBuildMetaBlockGreedyInternal(
+        m, arena, ringbuffer, pos, mask, base64_regions, num_base64_regions,
         prev_byte, prev_byte2, literal_context_lut, 1, NULL, commands,
         n_commands, mb);
   } else {
-    BrotliBuildMetaBlockGreedyInternal(m, arena, ringbuffer, pos, mask,
+    BrotliBuildMetaBlockGreedyInternal(
+        m, arena, ringbuffer, pos, mask, base64_regions, num_base64_regions,
         prev_byte, prev_byte2, literal_context_lut, num_contexts,
         static_context_map, commands, n_commands, mb);
   }

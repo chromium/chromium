@@ -57,6 +57,33 @@ typedef enum BrotliEncoderMode {
   BROTLI_MODE_FONT = 2
 } BrotliEncoderMode;
 
+/** Options for ::BROTLI_PARAM_BASE64_MODE parameter. */
+typedef enum BrotliEncoderBase64Mode {
+  /** Base64 optimization is disabled. */
+  BROTLI_BASE64_MODE_DISABLED = 0,
+  /** Automatic detection of Base64 zones and direct jump (skipping dictionary
+      and LZ77 lookups). */
+  BROTLI_BASE64_MODE_DETECTION = 1
+} BrotliEncoderBase64Mode;
+
+#define BROTLI_DEFAULT_BASE64_MODE BROTLI_BASE64_MODE_DISABLED
+
+#define BROTLI_DEFAULT_MAX_BASE64_REGIONS 16
+
+#define BROTLI_DEFAULT_MIN_BASE64_REGION_LEN 2048
+
+/** Options for ::BROTLI_PARAM_SIMD_HASHER parameter. */
+typedef enum BrotliEncoderSimdHasher {
+  /** Use SIMD hasher when recommended for the quality level. */
+  BROTLI_SIMD_HASHER_DEFAULT = 0,
+  /** Use SIMD hasher when supported up to quality 7. */
+  BROTLI_SIMD_HASHER_ENABLE = 1,
+  /** Never use SIMD hasher. */
+  BROTLI_SIMD_HASHER_DISABLE = 2
+} BrotliEncoderSimdHasher;
+
+#define BROTLI_DEFAULT_SIMD_HASHER BROTLI_SIMD_HASHER_DEFAULT
+
 /** Default value for ::BROTLI_PARAM_QUALITY parameter. */
 #define BROTLI_DEFAULT_QUALITY 11
 /** Default value for ::BROTLI_PARAM_LGWIN parameter. */
@@ -218,7 +245,38 @@ typedef enum BrotliEncoderParameter {
    * maximal window size have the same effect. Values greater than 2**30 are not
    * allowed.
    */
-  BROTLI_PARAM_STREAM_OFFSET = 9
+  BROTLI_PARAM_STREAM_OFFSET = 9,
+  /**
+   * Base64 encoding mode. Controls how the encoder handles Base64 content.
+   * Currently supports 0 (disabled) and 1 (automatic detection and skip
+   * dictionary lookups).
+   */
+  BROTLI_PARAM_BASE64_MODE = 10,
+  /**
+   * Maximum number of Base64 regions to detect.
+   * Default is 16.
+   */
+  BROTLI_PARAM_MAX_BASE64_REGIONS = 11,
+  /**
+   * SIMD hasher usage mode.
+   *
+   * Controls whether the encoder uses SIMD hashers.
+   * See ::BrotliEncoderSimdHasher for options.
+   */
+  BROTLI_PARAM_SIMD_HASHER = 12,
+  /**
+   * Engage optimized hasher.
+   *
+   * When enabled (1), engages H59 instead of H58.
+   */
+  BROTLI_PARAM_HASHER_OPT = 13,
+  /**
+   * Minimum length of a Base64 region to trigger detection and literal block
+   * splitting. Below this threshold, Base64 regions are encoded using standard
+   * LZ77 and Huffman coding.
+   * Default is 2048.
+   */
+  BROTLI_PARAM_MIN_BASE64_REGION_LEN = 14
 } BrotliEncoderParameter;
 
 /**

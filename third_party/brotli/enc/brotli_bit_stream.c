@@ -1017,16 +1017,44 @@ void BrotliStoreMetaBlock(MemoryManager* m,
     if (BROTLI_IS_OOM(m)) return;
   }
 
-  BuildAndStoreEntropyCodesLiteral(m, literal_enc, mb->literal_histograms,
-      mb->literal_histograms_size, BROTLI_NUM_LITERAL_SYMBOLS, tree,
-      storage_ix, storage);
+  {
+    uint8_t is_base64_histogram[256] = {0};
+    size_t max_type_id = BROTLI_MIN(size_t, mb->literal_split.num_types, 256);
+    size_t type_id;
+    for (type_id = 0; type_id < max_type_id; ++type_id) {
+      if (mb->literal_is_base64[type_id >> 3] & (1u << (type_id & 7))) {
+        if (mb->literal_context_map) {
+          size_t j;
+          for (j = 0; j < (1u << BROTLI_LITERAL_CONTEXT_BITS); ++j) {
+            uint32_t b64_histo_id =
+                mb->literal_context_map[(type_id << BROTLI_LITERAL_CONTEXT_BITS) + j];
+            if (b64_histo_id < 256) {
+              is_base64_histogram[b64_histo_id] = 1;
+            }
+          }
+        } else {
+          uint32_t b64_histo_id = (uint32_t)type_id;
+          if (b64_histo_id < 256) {
+            is_base64_histogram[b64_histo_id] = 1;
+          }
+        }
+      }
+    }
+
+    BuildAndStoreEntropyCodesLiteral(m, literal_enc, mb->literal_histograms,
+        mb->literal_histograms_size, BROTLI_NUM_LITERAL_SYMBOLS, tree,
+        is_base64_histogram,
+        storage_ix, storage);
+  }
   if (BROTLI_IS_OOM(m)) return;
   BuildAndStoreEntropyCodesCommand(m, command_enc, mb->command_histograms,
       mb->command_histograms_size, BROTLI_NUM_COMMAND_SYMBOLS, tree,
+      NULL,
       storage_ix, storage);
   if (BROTLI_IS_OOM(m)) return;
   BuildAndStoreEntropyCodesDistance(m, distance_enc, mb->distance_histograms,
       mb->distance_histograms_size, num_distance_symbols, tree,
+      NULL,
       storage_ix, storage);
   if (BROTLI_IS_OOM(m)) return;
   BROTLI_FREE(m, tree);

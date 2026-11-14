@@ -10,13 +10,14 @@
 #ifndef BROTLI_ENC_METABLOCK_H_
 #define BROTLI_ENC_METABLOCK_H_
 
-#include "../common/context.h"
-#include "../common/platform.h"
 #include "block_splitter.h"
 #include "command.h"
+#include "hash.h"
 #include "histogram.h"
 #include "memory.h"
 #include "params.h"
+#include "../common/context.h"
+#include "../common/platform.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -38,6 +39,7 @@ typedef struct MetaBlockSplit {
   size_t command_histograms_size;
   HistogramDistance* distance_histograms;
   size_t distance_histograms_size;
+  uint8_t literal_is_base64[32];
 } MetaBlockSplit;
 
 static BROTLI_INLINE void InitMetaBlockSplit(MetaBlockSplit* mb) {
@@ -54,6 +56,7 @@ static BROTLI_INLINE void InitMetaBlockSplit(MetaBlockSplit* mb) {
   mb->command_histograms_size = 0;
   mb->distance_histograms = 0;
   mb->distance_histograms_size = 0;
+  memset(mb->literal_is_base64, 0, sizeof(mb->literal_is_base64));
 }
 
 static BROTLI_INLINE void DestroyMetaBlockSplit(
@@ -72,23 +75,19 @@ static BROTLI_INLINE void DestroyMetaBlockSplit(
    The distance parameters are dynamically selected based on the commands
    which get recomputed under the new distance parameters. The new distance
    parameters are stored into *params. */
-BROTLI_INTERNAL void BrotliBuildMetaBlock(MemoryManager* m,
-                                          const uint8_t* ringbuffer,
-                                          const size_t pos,
-                                          const size_t mask,
-                                          BrotliEncoderParams* params,
-                                          uint8_t prev_byte,
-                                          uint8_t prev_byte2,
-                                          Command* cmds,
-                                          size_t num_commands,
-                                          ContextType literal_context_mode,
-                                          MetaBlockSplit* mb);
+BROTLI_INTERNAL void BrotliBuildMetaBlock(
+    MemoryManager* m, const uint8_t* ringbuffer, const size_t pos,
+    const size_t mask, const Base64Region* base64_regions,
+    size_t num_base64_regions, BrotliEncoderParams* params, uint8_t prev_byte,
+    uint8_t prev_byte2, Command* cmds, size_t num_commands,
+    ContextType literal_context_mode, MetaBlockSplit* mb);
 
 /* Uses a fast greedy block splitter that tries to merge current block with the
    last or the second last block and uses a static context clustering which
    is the same for all block types. */
 BROTLI_INTERNAL void BrotliBuildMetaBlockGreedy(
     MemoryManager* m, const uint8_t* ringbuffer, size_t pos, size_t mask,
+    const Base64Region* base64_regions, size_t num_base64_regions,
     uint8_t prev_byte, uint8_t prev_byte2, ContextLut literal_context_lut,
     size_t num_contexts, const uint32_t* static_context_map,
     const Command* commands, size_t n_commands, MetaBlockSplit* mb);

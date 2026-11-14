@@ -18,6 +18,98 @@
 #include "params.h"
 #include "quality.h"  /* IWYU pragma: keep for inc */
 
+BROTLI_INTERNAL const BROTLI_MODEL("small")
+    uint8_t kIsBase64[256] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        0, 0, 0, 1, /* 43 '+', 47 '/' (45 '-' is 0) */
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, /* 48-57 '0'-'9' (61 '='
+                                                           is 0) */
+        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, /* 65-79 'A'-'O' */
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, /* 80-90 'P'-'Z' */
+        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, /* 97-111 'a'-'o' */
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, /* 112-122 'p'-'z' */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+static const size_t kBase64TriggerLen = 8;
+
+static BROTLI_INLINE BROTLI_BOOL IsBase64Char(uint8_t c) {
+  return TO_BROTLI_BOOL(kIsBase64[c]);
+}
+
+static BROTLI_INLINE BROTLI_BOOL MatchTrigger(const uint8_t* ringbuffer,
+                                              size_t mask, size_t pos) {
+  const char* trigger = ";base64,";
+  size_t i;
+  for (i = 0; i < kBase64TriggerLen; ++i) {
+    if (ringbuffer[(pos + i) & mask] != trigger[i]) return BROTLI_FALSE;
+  }
+  return BROTLI_TRUE;
+}
+
+static const uint64_t kBase64Trigger64 =
+    BROTLI_MAKE_UINT64_T(0x2C343665u, 0x7361623Bu);
+
+static size_t FindNextBase64Trigger(const uint8_t* ringbuffer, size_t mask,
+                                    size_t pos, size_t end) {
+  while (pos + kBase64TriggerLen <= end) {
+    size_t ringbuffer_size = mask + 1;
+    size_t pos_index = pos & mask;
+    size_t contiguous_len = ringbuffer_size - pos_index;
+    size_t max_scan_len = end - pos;
+    size_t scan_len = BROTLI_MIN(size_t, contiguous_len, max_scan_len);
+
+    const uint8_t* p =
+        (const uint8_t*)memchr(&ringbuffer[pos_index], ';', scan_len);
+    if (p != NULL) {
+      size_t offset = (size_t)(p - &ringbuffer[pos_index]);
+      if (offset + kBase64TriggerLen <= scan_len) {
+        if (BROTLI_UNALIGNED_LOAD64LE(p) == kBase64Trigger64) {
+          return pos + offset;
+        }
+      } else if (pos + offset + kBase64TriggerLen <= end) {
+        if (MatchTrigger(ringbuffer, mask, pos + offset)) {
+          return pos + offset;
+        }
+      } else {
+        return end;
+      }
+      pos += offset + 1;
+    } else {
+      pos += scan_len;
+    }
+  }
+  return end;
+}
+
+static BROTLI_INLINE BROTLI_BOOL CompareRingbuffer(
+    const uint8_t* ringbuffer, size_t mask,
+    size_t pos1, size_t pos2, size_t len) {
+  size_t idx1 = pos1 & mask;
+  size_t idx2 = pos2 & mask;
+  if (idx1 + len <= mask + 1 && idx2 + len <= mask + 1) {
+    return TO_BROTLI_BOOL(
+        memcmp(&ringbuffer[idx1], &ringbuffer[idx2], len) == 0);
+  }
+  while (len > 0) {
+    size_t chunk1 = mask + 1 - (pos1 & mask);
+    size_t chunk2 = mask + 1 - (pos2 & mask);
+    size_t chunk = BROTLI_MIN(size_t, len, BROTLI_MIN(size_t, chunk1, chunk2));
+    if (memcmp(&ringbuffer[pos1 & mask], &ringbuffer[pos2 & mask], chunk) != 0) {
+      return BROTLI_FALSE;
+    }
+    pos1 += chunk;
+    pos2 += chunk;
+    len -= chunk;
+  }
+  return BROTLI_TRUE;
+}
+
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
@@ -120,6 +212,11 @@ static BROTLI_INLINE size_t ComputeDistanceCode(size_t distance,
 #include "backward_references_inc.h"
 #undef HASHER
 
+#define HASHER() H59
+/* NOLINTNEXTLINE(build/include) */
+#include "backward_references_opt_inc.h"
+#undef HASHER
+
 #define HASHER() H68
 /* NOLINTNEXTLINE(build/include) */
 #include "backward_references_inc.h"
@@ -172,6 +269,10 @@ static BROTLI_INLINE size_t ComputeDistanceCode(size_t distance,
 /* NOLINTNEXTLINE(build/include) */
 #include "backward_references_inc.h"
 #undef HASHER
+#define HASHER() H59
+/* NOLINTNEXTLINE(build/include) */
+#include "backward_references_opt_inc.h"
+#undef HASHER
 #define HASHER() H68
 /* NOLINTNEXTLINE(build/include) */
 #include "backward_references_inc.h"
@@ -206,6 +307,7 @@ void BrotliCreateBackwardReferences(size_t num_bytes,
       CASE_(6)
 #if defined(BROTLI_MAX_SIMD_QUALITY)
       CASE_(58)
+      CASE_(59)
       CASE_(68)
 #endif
       CASE_(40)

@@ -30,6 +30,7 @@ source_set("headers") {
     "include/brotli/decode.h",
     "include/brotli/encode.h",
     "include/brotli/port.h",
+    "include/brotli/shared_dictionary.h",
     "include/brotli/types.h",
   ]
 }
@@ -88,6 +89,7 @@ enc_sources = [
   "enc/backward_references_hq.c",
   "enc/backward_references_hq.h",
   "enc/backward_references_inc.h",
+  "enc/backward_references_opt_inc.h",
   "enc/bit_cost.c",
   "enc/bit_cost.h",
   "enc/bit_cost_inc.h",
@@ -129,6 +131,7 @@ enc_sources = [
   "enc/hash_longest_match_inc.h",
   "enc/hash_longest_match_quickly_inc.h",
   "enc/hash_longest_match_simd_inc.h",
+  "enc/hash_longest_match_simd_opt_inc.h",
   "enc/hash_rolling_inc.h",
   "enc/hash_to_binary_tree_inc.h",
   "enc/histogram.c",

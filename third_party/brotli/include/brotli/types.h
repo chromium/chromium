@@ -41,7 +41,7 @@ typedef __int64 int64_t;
  * evaluated, for example: @code{.cpp}
  * if (SomeBrotliFunction(encoder, BROTLI_TRUE) &&
  *     !OtherBrotliFunction(decoder, BROTLI_FALSE)) {
- *   bool x = !!YetAnotherBrotliFunction(encoder, TO_BROLTI_BOOL(2 * 2 == 4));
+ *   bool x = !!YetAnotherBrotliFunction(encoder, TO_BROTLI_BOOL(2 * 2 == 4));
  *   DoSomething(x);
  * }
  * @endcode

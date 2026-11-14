@@ -190,15 +190,15 @@ typedef enum {
 
 /* BrotliDecoderState addon, used for Compound Dictionary functionality. */
 typedef struct BrotliDecoderCompoundDictionary {
-  int num_chunks;
-  int total_size;
-  int br_index;
-  int br_offset;
-  int br_length;
-  int br_copied;
+  uint8_t num_chunks;
+  uint8_t block_bits;
+  uint16_t br_index;
+  uint32_t total_size;
+  uint32_t br_offset;
+  uint32_t br_length;
+  uint32_t br_copied;
   const uint8_t* chunks[16];
-  int chunk_offsets[16];
-  int block_bits;
+  uint32_t chunk_offsets[16];
   uint8_t block_map[256];
 } BrotliDecoderCompoundDictionary;
 

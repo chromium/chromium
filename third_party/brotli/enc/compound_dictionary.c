@@ -155,6 +155,9 @@ PreparedDictionary* CreatePreparedDictionary(MemoryManager* m,
   uint32_t hash_bits = 40;
   uint16_t bucket_limit = 32;
   size_t volume = 16u << bucket_bits;
+  if (source_size > SHARED_BROTLI_MAX_RAW_DICT_SIZE) {
+    return NULL;
+  }
   /* Tune parameters to fit dictionary size. */
   while (volume < source_size && bucket_bits < 22) {
     bucket_bits++;
@@ -183,6 +186,9 @@ BROTLI_BOOL AttachPreparedDictionary(
   if (!dictionary) return BROTLI_FALSE;
 
   length = dictionary->source_size;
+  if (length > SHARED_BROTLI_MAX_RAW_DICT_SIZE - compound->total_size) {
+    return BROTLI_FALSE;
+  }
   index = compound->num_chunks;
   compound->total_size += length;
   compound->chunks[index] = dictionary;
@@ -198,6 +204,17 @@ BROTLI_BOOL AttachPreparedDictionary(
       /* dictionary->magic == kLeanPreparedDictionaryMagic */
       compound->chunk_source[index] =
           (const uint8_t*)BROTLI_UNALIGNED_LOAD_PTR((const uint8_t**)tail);
+    }
+    {
+      PreparedDictionaryView* view = &compound->chunk_views[index];
+      view->slot_offsets = slot_offsets;
+      view->heads = heads;
+      view->items = items;
+      view->source = compound->chunk_source[index];
+      view->source_size = dictionary->source_size;
+      view->hash_shift = 64u - dictionary->bucket_bits;
+      view->slot_mask = (~((uint32_t)0U)) >> (32 - dictionary->slot_bits);
+      view->hash_mask = (~((uint64_t)0U)) >> (64 - dictionary->hash_bits);
     }
   }
   compound->num_chunks++;

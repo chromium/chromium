@@ -29,6 +29,11 @@ extern "C" {
 #endif
 
 typedef struct {
+  size_t start_literal_pos;
+  size_t length;
+} Base64Region;
+
+typedef struct {
   /**
    * Dynamically allocated areas; regular hasher uses one or two allocations;
    * "composite" hasher uses up to 4 allocations.
@@ -52,6 +57,9 @@ typedef struct {
    * data initialization (using input ringbuffer).
    */
   BROTLI_BOOL is_prepared_;
+
+  Base64Region* base64_regions;
+  size_t num_base64_regions;
 } HasherCommon;
 
 #define score_t size_t
@@ -116,6 +124,13 @@ static BROTLI_INLINE score_t BackwardReferenceScore(
     size_t copy_length, size_t backward_reference_offset) {
   return BROTLI_SCORE_BASE + BROTLI_LITERAL_BYTE_SCORE * (score_t)copy_length -
       BROTLI_DISTANCE_BIT_PENALTY * Log2FloorNonZero(backward_reference_offset);
+}
+
+/* Returns the minimum length of a backward reference that will improve on the
+ provided score.  We conservatively assume that the match will be a last
+ distance match, the best case scenario for the next match.*/
+static BROTLI_INLINE size_t MinimumBetterLength(score_t score) {
+  return (score - (BROTLI_SCORE_BASE + 15)) / BROTLI_LITERAL_BYTE_SCORE;
 }
 
 static BROTLI_INLINE score_t BackwardReferenceScoreUsingLastDistance(
@@ -283,6 +298,10 @@ static BROTLI_INLINE size_t BackwardMatchLengthCode(const BackwardMatch* self) {
 #include "hash_longest_match_simd_inc.h" /* NOLINT(build/include) */
 #undef HASHER
 
+#define HASHER() H59
+#include "hash_longest_match_simd_opt_inc.h" /* NOLINT(build/include) */
+#undef HASHER
+
 #define HASHER() H68
 #include "hash_longest_match64_simd_inc.h" /* NOLINT(build/include) */
 #undef HASHER
@@ -381,7 +400,7 @@ static BROTLI_INLINE size_t BackwardMatchLengthCode(const BackwardMatch* self) {
 
 #if defined(BROTLI_MAX_SIMD_QUALITY)
 #define FOR_SIMPLE_HASHERS(H) \
-  H(2) H(3) H(4) H(5) H(6) H(40) H(41) H(42) H(54) H(58) H(68)
+  H(2) H(3) H(4) H(5) H(6) H(40) H(41) H(42) H(54) H(58) H(59) H(68)
 #else
 #define FOR_SIMPLE_HASHERS(H) \
   H(2) H(3) H(4) H(5) H(6) H(40) H(41) H(42) H(54)
@@ -408,6 +427,7 @@ static BROTLI_INLINE void HasherInit(Hasher* hasher) {
   hasher->common.extra[1] = NULL;
   hasher->common.extra[2] = NULL;
   hasher->common.extra[3] = NULL;
+  hasher->common.base64_regions = NULL;
 }
 
 static BROTLI_INLINE void DestroyHasher(MemoryManager* m, Hasher* hasher) {
@@ -415,6 +435,9 @@ static BROTLI_INLINE void DestroyHasher(MemoryManager* m, Hasher* hasher) {
   if (hasher->common.extra[1] != NULL) BROTLI_FREE(m, hasher->common.extra[1]);
   if (hasher->common.extra[2] != NULL) BROTLI_FREE(m, hasher->common.extra[2]);
   if (hasher->common.extra[3] != NULL) BROTLI_FREE(m, hasher->common.extra[3]);
+  if (hasher->common.base64_regions != NULL) {
+    BROTLI_FREE(m, hasher->common.base64_regions);
+  }
 }
 
 static BROTLI_INLINE void HasherReset(Hasher* hasher) {
@@ -451,6 +474,13 @@ static BROTLI_INLINE void HasherSetup(MemoryManager* m, Hasher* hasher,
       if (alloc_size[i] == 0) continue;
       hasher->common.extra[i] = BROTLI_ALLOC(m, uint8_t, alloc_size[i]);
       if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(hasher->common.extra[i])) return;
+    }
+    if (params->base64_mode && params->max_base64_regions > 0) {
+      hasher->common.base64_regions = BROTLI_ALLOC(
+          m, Base64Region, params->max_base64_regions);
+      if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(hasher->common.base64_regions)) {
+        return;
+      }
     }
     switch (hasher->common.params.type) {
 #define INITIALIZE_(N)                        \
@@ -544,8 +574,6 @@ static BROTLI_INLINE void FindCompoundDictionaryMatch(
     /* kLeanPreparedDictionaryMagic */
     source = (const uint8_t*)BROTLI_UNALIGNED_LOAD_PTR((const uint8_t**)tail);
   }
-
-  BROTLI_DCHECK(cur_ix_masked + max_length <= ring_buffer_mask + 1);
 
   for (i = 0; i < 4; ++i) {
     const size_t distance = (size_t)distance_cache[i];
@@ -656,8 +684,6 @@ static BROTLI_INLINE size_t FindAllCompoundDictionaryMatches(
     source = (const uint8_t*)BROTLI_UNALIGNED_LOAD_PTR((const uint8_t**)tail);
   }
 
-  BROTLI_DCHECK(cur_ix_masked + max_length <= ring_buffer_mask + 1);
-
   while (item == 0) {
     size_t offset;
     size_t distance;
@@ -726,6 +752,188 @@ static BROTLI_INLINE size_t LookupAllCompoundDictionaryMatches(
     }
   }
   return total_found;
+}
+
+/* Struct for handing state between the prefetch and find calls.  Avoids
+ * recalculating the hash and dependent variables. */
+typedef struct PreparedDictionaryProbe {
+  const uint32_t* chain;
+  uint32_t item;
+} PreparedDictionaryProbe;
+
+static BROTLI_INLINE void PrefetchCompoundDictionaryMatchOpt(
+    const CompoundDictionary* addon, const uint8_t* BROTLI_RESTRICT data,
+    const size_t ring_buffer_mask, const size_t cur_ix,
+    PreparedDictionaryProbe* BROTLI_RESTRICT probes) {
+  const size_t cur_ix_masked = cur_ix & ring_buffer_mask;
+  const uint64_t bytes = BROTLI_UNALIGNED_LOAD64LE(&data[cur_ix_masked]);
+  size_t d;
+  for (d = 0; d < addon->num_chunks; ++d) {
+    const PreparedDictionaryView* view = &addon->chunk_views[d];
+    const uint64_t h =
+        (bytes & view->hash_mask) * kPreparedDictionaryHashMul64Long;
+    const uint32_t key = (uint32_t)(h >> view->hash_shift);
+    const uint32_t slot = key & view->slot_mask;
+    const uint32_t head = view->heads[key];
+    /* Deliberately branchless - if head == 0xFFFF (no items), we'll prefetch
+     * some garbage address.  Prefetch can't fault, so this is safe.*/
+    const uint32_t* chain = &view->items[view->slot_offsets[slot] + head];
+    PREFETCH_L1(chain);
+    probes[d].chain = chain;
+    probes[d].item = (head == 0xFFFF) ? 1 : 0;
+
+    /* One-ahead for the heads[] line of the next probe: the next search is
+       at cur_ix + 1 (the lazy search, or the next position after a miss),
+       whose hash covers bytes cur_ix+1.. -- the same 8-byte load shifted by
+       one byte (hash_mask spans at most 56 bits for this to be exact; a
+       mismatch would only waste the prefetch). The heads[key] load above
+       misses L1 ~94% of the time (mostly L3 fills). */
+    {
+      const uint64_t h1 =
+          ((bytes >> 8) & view->hash_mask) * kPreparedDictionaryHashMul64Long;
+      PREFETCH_L1(&view->heads[(uint32_t)(h1 >> view->hash_shift)]);
+    }
+  }
+}
+
+/* The heads[] half of PrefetchCompoundDictionaryMatchOpt: hash the position
+   and prefetch its heads[] line, with no dependent items[] load. Used at the
+   commit site, where the successor position is known but the probe state for
+   it would not survive the intervening StoreRange. */
+static BROTLI_INLINE void PrefetchCompoundDictionaryHeadsOpt(
+    const CompoundDictionary* addon, const uint8_t* BROTLI_RESTRICT data,
+    const size_t ring_buffer_mask, const size_t cur_ix) {
+  const uint64_t bytes =
+      BROTLI_UNALIGNED_LOAD64LE(&data[cur_ix & ring_buffer_mask]);
+  size_t d;
+  for (d = 0; d < addon->num_chunks; ++d) {
+    const PreparedDictionaryView* view = &addon->chunk_views[d];
+    const uint64_t h =
+        (bytes & view->hash_mask) * kPreparedDictionaryHashMul64Long;
+    PREFETCH_L1(&view->heads[(uint32_t)(h >> view->hash_shift)]);
+  }
+}
+
+static BROTLI_INLINE void FindCompoundDictionaryMatchOpt(
+    const PreparedDictionaryView* self,
+    const PreparedDictionaryProbe* BROTLI_RESTRICT probe,
+    const uint8_t* BROTLI_RESTRICT data,
+    const size_t ring_buffer_mask, const int* BROTLI_RESTRICT distance_cache,
+    const size_t cur_ix, const size_t max_length, const size_t distance_offset,
+    const size_t max_distance, HasherSearchResult* BROTLI_RESTRICT out) {
+  const uint32_t source_size = self->source_size;
+  const size_t boundary = distance_offset - source_size;
+
+  const uint8_t* source = self->source;
+
+  const size_t cur_ix_masked = cur_ix & ring_buffer_mask;
+  score_t best_score = out->score;
+  size_t best_len = out->len;
+  size_t i;
+  /* The hash and hashtable offsets were calculated in Prefetch, reuse the
+   * results. */
+  const uint32_t* BROTLI_RESTRICT chain = probe->chain;
+  uint32_t item = probe->item;
+#if defined(BROTLI_DEBUG) || defined(BROTLI_ENABLE_LOG)
+  {
+    const uint64_t bytes = BROTLI_UNALIGNED_LOAD64LE(&data[cur_ix_masked]);
+    const uint64_t h =
+        (bytes & self->hash_mask) * kPreparedDictionaryHashMul64Long;
+    const uint32_t key = (uint32_t)(h >> self->hash_shift);
+    const uint32_t slot = key & self->slot_mask;
+    const uint32_t head = self->heads[key];
+    const uint32_t* expected_chain =
+        &self->items[self->slot_offsets[slot] + head];
+    const uint32_t expected_item = (head == 0xFFFF) ? 1 : 0;
+    BROTLI_DCHECK(probe->chain == expected_chain);
+    BROTLI_DCHECK(probe->item == expected_item);
+  }
+#endif
+
+  for (i = 0; i < 4; ++i) {
+    const size_t distance = (size_t)distance_cache[i];
+    size_t offset;
+    size_t limit;
+    size_t len;
+    if (distance <= boundary || distance > distance_offset) continue;
+    offset = distance_offset - distance;
+    limit = source_size - offset;
+    limit = limit > max_length ? max_length : limit;
+    len = FindMatchLengthWithLimit(&source[offset], &data[cur_ix_masked],
+                                   limit);
+    if (len >= 2) {
+      score_t score = BackwardReferenceScoreUsingLastDistance(len);
+      if (best_score < score) {
+        if (i != 0) score -= BackwardReferencePenaltyUsingLastDistance(i);
+        if (best_score < score) {
+          best_score = score;
+          if (len > best_len) best_len = len;
+          out->len = len;
+          out->len_code_delta = 0;
+          out->distance = distance;
+          out->score = best_score;
+        }
+      }
+    }
+  }
+  /* we require matches of len >4, so increase best_len to 3, so we can compare
+   * 4 bytes all the time. */
+  if (best_len < 3) {
+    best_len = 3;
+  }
+  while (item == 0) {
+    size_t offset;
+    size_t distance;
+    size_t limit;
+    item = *chain;
+    chain++;
+    offset = item & 0x7FFFFFFF;
+    item &= 0x80000000;
+    distance = distance_offset - offset;
+    limit = source_size - offset;
+    limit = (limit > max_length) ? max_length : limit;
+    if (distance > max_distance) continue;
+    if (best_len >= limit ||
+        /* compare 4 bytes ending at best_len + 1 */
+        BrotliUnalignedRead32(&data[cur_ix_masked + best_len - 3]) !=
+            BrotliUnalignedRead32(&source[offset + best_len - 3])) {
+      continue;
+    }
+    {
+      const size_t len = FindMatchLengthWithLimit(&source[offset],
+                                                  &data[cur_ix_masked],
+                                                  limit);
+      if (len >= 4) {
+        score_t score = BackwardReferenceScore(len, distance);
+        if (best_score < score) {
+          best_score = score;
+          best_len = len;
+          out->len = best_len;
+          out->len_code_delta = 0;
+          out->distance = distance;
+          out->score = best_score;
+        }
+      }
+    }
+  }
+}
+
+static BROTLI_INLINE void LookupCompoundDictionaryMatchOpt(
+    const CompoundDictionary* addon,
+    const PreparedDictionaryProbe* BROTLI_RESTRICT probes,
+    const uint8_t* BROTLI_RESTRICT data,
+    const size_t ring_buffer_mask, const int* BROTLI_RESTRICT distance_cache,
+    const size_t cur_ix, const size_t max_length,
+    const size_t max_ring_buffer_distance, const size_t max_distance,
+    HasherSearchResult* sr) {
+  size_t base_offset = max_ring_buffer_distance + 1 + addon->total_size - 1;
+  size_t d;
+  for (d = 0; d < addon->num_chunks; ++d) {
+    FindCompoundDictionaryMatchOpt(
+        &addon->chunk_views[d], &probes[d], data, ring_buffer_mask,
+        distance_cache, cur_ix, max_length,
+        base_offset - addon->chunk_offsets[d], max_distance, sr);
+  }
 }
 
 #if defined(__cplusplus) || defined(c_plusplus)

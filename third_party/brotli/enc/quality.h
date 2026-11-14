@@ -128,14 +128,17 @@ static BROTLI_INLINE size_t LiteralSpreeLengthForSparseSearch(
    - q04: h54 (longest_match_quickly), b20, l7 | for large files
 
    - q05: h58 (longest_match_simd   ), b14, l4
+   - q05: h59 (longest_match_simd_opt), b14, l4
    - q05: h68 (longest_match64_simd ), b15, l5 | for large files
    - q05: h40 (forgetful_chain      ), b15, l4 | for small window
 
    - q06: h58 (longest_match_simd   ), b14, l4
+   - q06: h59 (longest_match_simd_opt), b14, l4
    - q06: h68 (longest_match64_simd ), b15, l5 | for large files
    - q06: h40 (forgetful_chain      ), b15, l4 | for small window
 
    - q07: h58 (longest_match_simd   ), b15, l4
+   - q07: h59 (longest_match_simd_opt), b15, l4
    - q07: h68 (longest_match64_simd ), b15, l5 | for large files
    - q07: h41 (forgetful_chain      ), b15, l4 | for small window
 
@@ -153,6 +156,22 @@ static BROTLI_INLINE size_t LiteralSpreeLengthForSparseSearch(
 
   Where "q" is quality, "h" is hasher type, "b" is bucket bits,
   "l" is source len. */
+
+#if defined(BROTLI_MAX_SIMD_QUALITY)
+static BROTLI_INLINE BROTLI_BOOL
+ShouldUseSimdHasher(const BrotliEncoderParams* params) {
+  if (params->simd_hasher == BROTLI_SIMD_HASHER_DISABLE) {
+    return BROTLI_FALSE;
+  }
+  int max_quality = BROTLI_MAX_RECOMMENDED_SIMD_QUALITY;
+
+  if (params->simd_hasher == BROTLI_SIMD_HASHER_ENABLE) {
+    max_quality = BROTLI_MAX_SIMD_QUALITY;
+  }
+  return TO_BROTLI_BOOL(params->quality <= max_quality);
+}
+#endif
+
 static BROTLI_INLINE void ChooseHasher(const BrotliEncoderParams* params,
                                        BrotliHasherParams* hparams) {
   if (params->quality > 9) {
@@ -165,7 +184,7 @@ static BROTLI_INLINE void ChooseHasher(const BrotliEncoderParams* params,
     hparams->type = params->quality < 7 ? 40 : params->quality < 9 ? 41 : 42;
   } else if (params->size_hint >= (1 << 20) && params->lgwin >= 19) {
 #if defined(BROTLI_MAX_SIMD_QUALITY)
-    hparams->type = params->quality <= BROTLI_MAX_SIMD_QUALITY ? 68 : 6;
+    hparams->type = ShouldUseSimdHasher(params) ? 68 : 6;
 #else
     hparams->type = 6;
 #endif
@@ -177,7 +196,8 @@ static BROTLI_INLINE void ChooseHasher(const BrotliEncoderParams* params,
     /* TODO(eustas): often previous setting (H6) is faster and denser; consider
                      adding an option to use it. */
 #if defined(BROTLI_MAX_SIMD_QUALITY)
-    hparams->type = params->quality <= BROTLI_MAX_SIMD_QUALITY ? 58 : 5;
+    hparams->type =
+        ShouldUseSimdHasher(params) ? (params->hasher_opt ? 59 : 58) : 5;
 #else
     hparams->type = 5;
 #endif
