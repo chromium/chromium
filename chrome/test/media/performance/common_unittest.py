@@ -323,6 +323,56 @@ class MediaMetricsTest(unittest.TestCase):
                     'v', '/out/g.csv', 'mac'
                 )
 
+    def test_glances_csv_parses_underscored_headers_and_ignores_battery_pct(
+        self,
+    ):
+        csv_data = (
+            'cpu_total,sensors_Battery_value,sensors_Battery_unit\n'
+            '40.0,100,%\n'
+            '60.0,100,%\n'
+        )
+        with (
+            mock.patch('os.path.exists', return_value=True),
+            mock.patch('builtins.open', mock.mock_open(read_data=csv_data)),
+            mock.patch('media_metrics.measures') as mock_measures,
+        ):
+            with self.assertLogs(level='INFO'):
+                media_metrics.parse_glances_csv_and_record(
+                    'v', '/out/g.csv', 'win'
+                )
+        mock_measures.average.assert_called_once_with(
+            'v', 'video_perf', 'cpu_utilization'
+        )
+        mock_measures.average.return_value.record.assert_called_once_with(50.0)
+
+    def test_glances_csv_parses_dotted_headers_and_wattage(self):
+        csv_data = (
+            'cpu.total,sensors.Battery.value,sensors.Battery.unit\n'
+            '20.0,12.5,W\n'
+            '30.0,17.5,W\n'
+        )
+        with (
+            mock.patch('os.path.exists', return_value=True),
+            mock.patch('builtins.open', mock.mock_open(read_data=csv_data)),
+            mock.patch('media_metrics.measures') as mock_measures,
+        ):
+            with self.assertLogs(level='INFO'):
+                media_metrics.parse_glances_csv_and_record(
+                    'v', '/out/g.csv', 'mac'
+                )
+        self.assertEqual(
+            [c.args for c in mock_measures.average.call_args_list],
+            [
+                ('v', 'video_perf', 'cpu_utilization'),
+                ('v', 'video_perf', 'power_consumption_watts'),
+            ],
+        )
+        record = mock_measures.average.return_value.record
+        self.assertEqual(
+            [c.args[0] for c in record.call_args_list],
+            [25.0, 15.0],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

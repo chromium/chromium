@@ -767,18 +767,55 @@ class MonitoringTest(fakes.SenderTestCase):
         sender.stop_monitoring(proc, '/tmp/g.csv', '/out/g.csv')
         proc.terminate.assert_called_once()
         self.assertEqual(
-            self.ssh.remote_commands, ['pkill -f glances', 'rm -f /tmp/g.csv']
+            self.ssh.remote_commands,
+            ['rm -f /tmp/g.csv', 'pkill -f glances', 'rm -f /tmp/g.csv'],
         )
         self.assertEqual(
             self.ssh.copies[0][-2:],
             [f'{fakes.USER}@{MAC_HOST}:/tmp/g.csv', '/out/g.csv'],
         )
 
+    def test_stop_monitoring_removes_remote_csv_on_copy_timeout(self):
+        sender = _win()
+        with mock.patch.object(
+            sender,
+            'copy_from',
+            side_effect=subprocess.TimeoutExpired('scp', 30),
+        ):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                sender.stop_monitoring(
+                    None, 'C:/Users/Public/g.csv', '/out/g.csv'
+                )
+        self.assertIn(
+            "powershell -Command \"Remove-Item -Path 'C:/Users/Public/g.csv' "
+            "-Force -ErrorAction SilentlyContinue\"",
+            self.ssh.remote_commands,
+        )
+
+    def test_stop_monitoring_removes_remote_csv_on_kill_timeout(self):
+        sender = _mac()
+        with mock.patch.object(
+            sender,
+            'run',
+            side_effect=[
+                subprocess.TimeoutExpired('ssh', 120),
+                fakes.completed(),
+            ],
+        ) as mock_run:
+            with self.assertRaises(subprocess.TimeoutExpired):
+                sender.stop_monitoring(None, '/tmp/g.csv', '/out/g.csv')
+        self.assertEqual(
+            [c.args[0] for c in mock_run.call_args_list],
+            ['pkill -f glances', 'rm -f /tmp/g.csv'],
+        )
+
     def test_cros_uses_power_log(self):
         sender = _mac(sender_os='cros')
         sender.start_monitoring('/tmp/g.csv')
+        self.assertIn('rm -f /tmp/cros_power.txt', self.ssh.remote_commands)
         self.assertIn('power_now', self.popen.call_args[0][0][-1])
 
+        self.ssh.remote_commands.clear()
         sender.stop_monitoring(None, '/tmp/g.csv', '/out/g.csv')
         self.assertIn('rm -f /tmp/cros_power.txt', self.ssh.remote_commands)
         self.assertEqual(self.ssh.copies[0][-1], '/out/g.csv')
@@ -791,6 +828,19 @@ class MonitoringTest(fakes.SenderTestCase):
             "-Force -ErrorAction SilentlyContinue\"",
         )
         self.assertFalse(self.ssh.ran_prefix('rm '))
+
+    def test_windows_glances_and_terminate_commands_avoid_dollar_vars(self):
+        self.assertNotIn('$', senders.WindowsSender.GLANCES_KILL_CMD)
+        self.assertIn('taskkill', senders.WindowsSender.GLANCES_KILL_CMD)
+        self.assertNotIn('$', senders.WindowsSender.TERMINATE_CHROMEDRIVER_CMD)
+        self.assertIn(
+            'C:/Users/Public/glances_*.csv',
+            senders.WindowsSender.TERMINATE_CHROMEDRIVER_CMD,
+        )
+        self.assertIn(
+            'scoped_dir*',
+            senders.WindowsSender.TERMINATE_CHROMEDRIVER_CMD,
+        )
 
     def test_kills_monitor_that_ignores_terminate(self):
         proc = mock.MagicMock()

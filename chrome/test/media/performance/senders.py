@@ -479,6 +479,9 @@ class Sender(abc.ABC):
 
     def start_monitoring(self, csv_remote_path):
         """Starts glances in the background, writing CSV to the sender."""
+        # Glances appends to an existing CSV file, so remove any leftover file
+        # from a previously aborted or timed-out run before starting.
+        self.run(self._remove_file_command(csv_remote_path))
         glances_cmd = (
             f"{self.GLANCES_PYTHON} -m glances -t 1 --export csv "
             f"--export-csv-file {csv_remote_path} --quiet"
@@ -498,9 +501,11 @@ class Sender(abc.ABC):
                 monitor_proc.kill()
 
         # Also kill it on the sender in case terminating ssh did not.
-        self.run(self.GLANCES_KILL_CMD)
-        self.copy_from(csv_remote_path, csv_local_path)
-        self.run(self._remove_file_command(csv_remote_path))
+        try:
+            self.run(self.GLANCES_KILL_CMD)
+            self.copy_from(csv_remote_path, csv_local_path)
+        finally:
+            self.run(self._remove_file_command(csv_remote_path))
 
 
 def _remove_local_chrome_dirs():
@@ -670,6 +675,7 @@ class CrosSender(LinuxSender):
 
     def start_monitoring(self, csv_remote_path):
         """Logs battery power draw once a second instead of using glances."""
+        self.run("rm -f /tmp/cros_power.txt")
         # The PID goes to /tmp/cros_power.pid so stop_monitoring can kill it.
         cros_cmd = (
             "sh -c 'echo $$ > /tmp/cros_power.pid; "
@@ -686,15 +692,17 @@ class CrosSender(LinuxSender):
 
     def stop_monitoring(self, monitor_proc, csv_remote_path, csv_local_path):
         logging.info("Stopping Glances/Power monitoring...")
-        self.run(
-            "if [ -f /tmp/cros_power.pid ]; then "
-            "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
-            "rm -f /tmp/cros_power.pid; "
-            "fi"
-        )
         remote_log = "/tmp/cros_power.txt"
-        self.copy_from(remote_log, csv_local_path)
-        self.run(f"rm -f {remote_log}")
+        try:
+            self.run(
+                "if [ -f /tmp/cros_power.pid ]; then "
+                "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
+                "rm -f /tmp/cros_power.pid; "
+                "fi"
+            )
+            self.copy_from(remote_log, csv_local_path)
+        finally:
+            self.run(f"rm -f {remote_log}")
 
 
 class WindowsSender(Sender):
@@ -710,16 +718,25 @@ class WindowsSender(Sender):
         'SilentlyContinue"'
     )
     TERMINATE_CHROMEDRIVER_CMD = (
-        'powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
+        'powershell -Command "Stop-Process -Name '
+        'chromedriver,chrome,glances,python,python3 -Force '
         '-ErrorAction SilentlyContinue; '
-        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"'
+        'taskkill /F /IM chromedriver.exe /IM chrome.exe '
+        '/IM python.exe /IM python3.exe /T; '
+        'Remove-Item -Path C:/Users/Public/glances_*.csv,'
+        f'{WIN_REMOTE_TMP_DIR}/*.perfetto-trace,'
+        f'{WIN_REMOTE_TMP_DIR}/*.log,'
+        'C:/Users/*/AppData/Local/Temp/scoped_dir* '
+        '-Recurse -Force -ErrorAction SilentlyContinue; exit 0"'
     )
     STATUS_CMD = f'curl.exe -s -o NUL -w "%{{http_code}}" {_STATUS_URL}'
     GLANCES_PYTHON = 'python'
+    # Avoid $_ pipeline variables inside double-quoted powershell -Command
+    # strings, which expand to empty when sshd's login shell is PowerShell.
     GLANCES_KILL_CMD = (
-        'powershell -Command "Get-WmiObject Win32_Process | '
-        'Where-Object { $_.CommandLine -like \'*glances*\' } | '
-        'ForEach-Object { Stop-Process $_.ProcessId -Force }"'
+        'powershell -Command "Stop-Process -Name glances,python,python3 '
+        '-Force -ErrorAction SilentlyContinue; '
+        'taskkill /F /IM python.exe /IM python3.exe /T; exit 0"'
     )
 
     # Win32_Processor.Architecture enum values: 0 = x86, 9 = x64, 12 = ARM64.

@@ -147,6 +147,16 @@ def _record_cros_power(video_file, csv_local_path):
     logging.info("ChromeOS Average Power Draw: %.2f W", avg_power)
 
 
+def _first_float(row, *keys):
+    """Returns the first parseable float among `keys` in `row`, or None."""
+    for key in keys:
+        if key in row:
+            val = _parse_float(row[key])
+            if val is not None:
+                return val
+    return None
+
+
 def _record_glances_csv(video_file, csv_local_path):
     """Records average CPU and battery power from a glances CSV export."""
     cpu_usages = []
@@ -154,12 +164,19 @@ def _record_glances_csv(video_file, csv_local_path):
     with open(csv_local_path, mode='r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cpu_val = _parse_float(row.get('cpu.total'))
+            cpu_val = _first_float(row, 'cpu_total', 'cpu.total')
             if cpu_val is not None:
                 cpu_usages.append(cpu_val)
 
-            power_val = _parse_float(row.get('sensors.Battery.value'))
-            if power_val is not None:
+            power_val = _first_float(
+                row, 'sensors_Battery_value', 'sensors.Battery.value'
+            )
+            power_unit = (
+                row.get('sensors_Battery_unit')
+                or row.get('sensors.Battery.unit')
+                or ''
+            ).strip()
+            if power_val is not None and power_unit != '%':
                 power_draws.append(power_val)
 
     if cpu_usages:
