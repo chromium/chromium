@@ -803,10 +803,46 @@ class PaintCountView : public View {
 BEGIN_METADATA(PaintCountView)
 END_METADATA
 
+namespace {
+
+// Records the visibility changes a widget reports to its observers.
+class VisibilityRecordingWidgetObserver : public WidgetObserver {
+ public:
+  explicit VisibilityRecordingWidgetObserver(Widget* widget) {
+    observation_.Observe(widget);
+  }
+
+  const std::vector<bool>& visibility_changes() const {
+    return visibility_changes_;
+  }
+  const std::vector<bool>& on_screen_changes() const {
+    return on_screen_changes_;
+  }
+
+  // WidgetObserver:
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+    visibility_changes_.push_back(visible);
+  }
+  void OnWidgetVisibilityOnScreenChanged(Widget* widget,
+                                         bool visible) override {
+    on_screen_changes_.push_back(visible);
+  }
+  void OnWidgetDestroying(Widget* widget) override { observation_.Reset(); }
+
+ private:
+  std::vector<bool> visibility_changes_;
+  std::vector<bool> on_screen_changes_;
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+};
+
+}  // namespace
+
 // Test that a child widget is only added to its parent NSWindow when the
 // parent is on the active space. Otherwise, it may cause a space transition
 // or order an unattached transient child window onto the currently active
-// space. See https://crbug.com/866760 and http://b/565454675.
+// space. The child only becomes visible, and tells its observers, once it is
+// added. See https://crbug.com/866760, http://b/565454675 and
+// http://b/584370453.
 TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
   NativeWidgetMacTestWindow* parent_window;
   NativeWidgetMacTestWindow* child_window;
@@ -822,13 +858,18 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
   init_params.parent = parent->GetNativeView();
   Widget* child =
       CreateWidgetWithTestWindow(std::move(init_params), &child_window);
+  VisibilityRecordingWidgetObserver visibility_observer(child);
 
   EXPECT_EQ(nil, child_window.parentWindow);
   EXPECT_FALSE([child_window isVisible]);
+  EXPECT_FALSE(child->IsVisible());
 
   child->Activate();
   EXPECT_EQ(nil, child_window.parentWindow);
   EXPECT_FALSE([child_window isVisible]);
+  EXPECT_FALSE(child->IsVisible());
+  EXPECT_TRUE(visibility_observer.visibility_changes().empty());
+  EXPECT_TRUE(visibility_observer.on_screen_changes().empty());
 
   parent_window.fakeOnInactiveSpace = NO;
   [NSWorkspace.sharedWorkspace.notificationCenter
@@ -836,6 +877,12 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
                     object:NSWorkspace.sharedWorkspace];
   EXPECT_EQ(parent_window, child_window.parentWindow);
   EXPECT_TRUE([child_window isVisible]);
+  EXPECT_TRUE(child->IsVisible());
+  EXPECT_THAT(visibility_observer.visibility_changes(),
+              testing::ElementsAre(true));
+  // OmniboxPopupFullPresenter relies on this to focus a deferred popup.
+  EXPECT_THAT(visibility_observer.on_screen_changes(),
+              testing::ElementsAre(true));
 
   parent->CloseNow();
 }

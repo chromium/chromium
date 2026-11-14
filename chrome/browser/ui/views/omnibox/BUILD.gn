@@ -220,6 +220,19 @@ if (is_mac) {
       "//ui/views",
     ]
   }
+
+  source_set("native_widget_mac_test_util") {
+    testonly = true
+    sources = [
+      "omnibox_popup_native_widget_mac_test_util.h",
+      "omnibox_popup_native_widget_mac_test_util.mm",
+    ]
+    deps = [
+      "//base",
+      "//components/remote_cocoa/app_shim",
+      "//ui/views",
+    ]
+  }
 }
 
 source_set("unit_tests") {

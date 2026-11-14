@@ -431,7 +431,7 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
     refocus_on_activation_ = false;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&OmniboxPopupFullPresenter::RefocusAfterActivation,
+        base::BindOnce(&OmniboxPopupFullPresenter::RequestFocusIfOmniboxFocused,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -586,7 +586,21 @@ void OmniboxPopupFullPresenter::OnWidgetBoundsChanged(
   SynchronizePopupBounds();
 }
 
-void OmniboxPopupFullPresenter::RefocusAfterActivation() {
+void OmniboxPopupFullPresenter::OnWidgetVisibilityOnScreenChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (widget != GetWidget() || !visible) {
+    return;
+  }
+  // The popup may have been opened while it couldn't appear on screen, e.g. on
+  // macOS in a new window entering a fullscreen Space before macOS switched to
+  // it. `RequestFocus()` gave up then, as the popup wasn't shown, and the
+  // location bar may have moved since.
+  SynchronizePopupBounds();
+  RequestFocusIfOmniboxFocused();
+}
+
+void OmniboxPopupFullPresenter::RequestFocusIfOmniboxFocused() {
   // Only refocus if the omnibox is still focused with the popup open. If the
   // window was deactivated again in the meantime, `RequestFocus()` waits for
   // the next activation.

@@ -145,7 +145,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // activation (Escape handling, macOS key window restoration). The browser or
   // popup widget deactivating schedules `BlurIfBrowserOrPopupInactive()`.
   // Either activating while `refocus_on_activation_` is set schedules
-  // `RefocusAfterActivation()`.
+  // `RequestFocusIfOmniboxFocused()`.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   // Keeps the popup over the location bar when the browser widget moves or
   // resizes. The popup is its own top-level window, which doesn't always move
@@ -160,6 +160,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // `OnModalDialogClosed()`.
   void OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
                                             bool visible) override;
+  // Gives the popup focus when it appears on screen while the omnibox is
+  // focused. On macOS, a popup opened in a window that isn't on the active
+  // Space only appears once that Space becomes active, which is too late for
+  // the focus request made when the popup opened.
+  void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
+                                         bool visible) override;
+
   void StopForwardingEvents();
 
   // Tells this window's popup view that the adopted page's handler is ready,
@@ -207,10 +214,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // activation, also closes the popup, even if a draft would keep it open, and
   // even if the omnibox was already blurred. See `OnModalDialogShown()`.
   void BlurForWindowDeactivation();
-  // Hands focus to the popup if the omnibox is still focused with the popup
-  // open. Runs after the browser window or popup is activated while
-  // `refocus_on_activation_` is set.
-  void RefocusAfterActivation();
+  // Gives the popup focus if the omnibox is still focused with the popup open.
+  // Runs after the browser window or popup is activated while
+  // `refocus_on_activation_` is set, and when the popup appears on screen.
+  void RequestFocusIfOmniboxFocused();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the system emoji picker is shown, e.g. after picking Emoji

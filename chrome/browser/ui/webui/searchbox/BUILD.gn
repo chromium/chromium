@@ -382,6 +382,10 @@ if (enable_webui_ntp && !is_android) {
         "//chrome/browser/ui/views/bubble",
       ]
     }
+    if (is_mac) {
+      deps +=
+          [ "//chrome/browser/ui/views/omnibox:native_widget_mac_test_util" ]
+    }
     if (enable_dice_support && !is_mac) {
       deps += [
         "//chrome/browser/profiles:profile",
