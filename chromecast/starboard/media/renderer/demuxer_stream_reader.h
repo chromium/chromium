@@ -46,8 +46,8 @@ class DemuxerStreamReader {
   // underlying buffer data (stored in the scoped_refptr) can be managed
   // properly.
   //
-  // sample_info may contain pointers (to DRM-related info) that become
-  // invalid after the callback returns.
+  // sample_info may contain pointers (e.g. to DRM-related info or
+  // audio_specific_config) that become invalid after the callback returns.
   using HandleBufferCb = base::RepeatingCallback<void(
       int seek_ticket,
       StarboardSampleInfo sample_info,

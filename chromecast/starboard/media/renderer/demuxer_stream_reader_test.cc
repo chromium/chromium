@@ -13,7 +13,10 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -100,6 +103,20 @@ StarboardSampleInfo CreateAudioSample(
   sample_info.drm_info = drm_info;
 
   return sample_info;
+}
+
+std::vector<uint8_t> CopyAudioSpecificConfig(
+    const StarboardAudioSampleInfo& audio_info) {
+  if (!audio_info.audio_specific_config ||
+      audio_info.audio_specific_config_size == 0) {
+    return {};
+  }
+  const uint8_t* config_bytes =
+      static_cast<const uint8_t*>(audio_info.audio_specific_config);
+  // SAFETY: `audio_specific_config` points to `audio_specific_config_size`
+  // bytes per the StarboardAudioSampleInfo contract.
+  return UNSAFE_BUFFERS(std::vector<uint8_t>(
+      config_bytes, config_bytes + audio_info.audio_specific_config_size));
 }
 
 // Creates a video sample containing the given data and (optional) DRM info.
@@ -818,6 +835,333 @@ TEST_F(DemuxerStreamReaderTest, RejectsVideoBufferWithMismatchedDrmSubsamples) {
   ASSERT_FALSE(read_cb.is_null());
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
   RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest,
+       UpdatesAudioSpecificConfigOnValidAudioConfigChange) {
+  constexpr int kSeekTicket = 7;
+  const std::vector<uint8_t> kInitialExtraData = {0x12, 0x10};
+  const std::vector<uint8_t> kUpdatedExtraData = {0x11, 0x90, 0x56, 0xE5, 0x00};
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom({1, 2, 3, 4, 5, 6, 7, 8});
+  StarboardSampleInfo initial_info = CreateAudioSample(*buffer);
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 44100, kInitialExtraData,
+      ::media::EncryptionScheme::kUnencrypted));
+
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_1;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_2;
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(SaveArgByMove<0>(&read_cb_1))
+      .WillOnce(SaveArgByMove<0>(&read_cb_2));
+
+  EXPECT_CALL(renderer_client_, OnError).Times(0);
+  EXPECT_CALL(renderer_client_, OnAudioConfigChange).Times(1);
+
+  std::vector<uint8_t> captured_audio_specific_config;
+  uint32_t captured_samples_per_second = 0;
+  EXPECT_CALL(
+      handle_buffer_cb_,
+      Call(kSeekTicket, _, Pointee(DecoderBufferMatches(std::cref(*buffer)))))
+      .WillOnce([&captured_audio_specific_config, &captured_samples_per_second](
+                    int /*seek_ticket*/, StarboardSampleInfo sample_info,
+                    scoped_refptr<::media::DecoderBuffer> /*buffer*/) {
+        captured_audio_specific_config =
+            CopyAudioSpecificConfig(sample_info.audio_sample_info);
+        captured_samples_per_second =
+            sample_info.audio_sample_info.samples_per_second;
+      });
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr, initial_info.audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+
+  // First read reports a valid same-codec config change with new extra_data.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_1.is_null());
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 48000, kUpdatedExtraData,
+      ::media::EncryptionScheme::kUnencrypted));
+  std::move(read_cb_1).Run(DemuxerStream::Status::kConfigChanged, {});
+  // First pass runs OnReadBuffer (via BindPostTask), which posts a follow-up
+  // ReadBuffer task in HandleNonOkDemuxerStatus; second pass runs ReadBuffer.
+  RunPendingTasks();
+  RunPendingTasks();
+
+  ASSERT_FALSE(read_cb_2.is_null());
+  std::move(read_cb_2).Run(DemuxerStream::Status::kOk, {buffer});
+  RunPendingTasks();
+
+  EXPECT_EQ(captured_audio_specific_config, kUpdatedExtraData);
+  EXPECT_EQ(captured_samples_per_second, 48000u);
+}
+
+TEST_F(DemuxerStreamReaderTest,
+       PreservesAudioSpecificConfigOnUnsupportedAudioConfigChange) {
+  constexpr int kSeekTicket = 7;
+  const std::vector<uint8_t> kInitialExtraData = {0x12, 0x10, 0x56, 0xE5, 0x00};
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom({1, 2, 3, 4, 5, 6, 7, 8});
+  StarboardSampleInfo initial_info = CreateAudioSample(*buffer);
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 44100, kInitialExtraData,
+      ::media::EncryptionScheme::kUnencrypted));
+
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_1;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_2;
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(SaveArgByMove<0>(&read_cb_1))
+      .WillOnce(SaveArgByMove<0>(&read_cb_2));
+
+  EXPECT_CALL(renderer_client_, OnAudioConfigChange).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::DECODER_ERROR_NOT_SUPPORTED)))
+      .Times(1);
+
+  std::vector<uint8_t> captured_audio_specific_config;
+  StarboardAudioCodec captured_codec =
+      StarboardAudioCodec::kStarboardAudioCodecNone;
+  EXPECT_CALL(
+      handle_buffer_cb_,
+      Call(kSeekTicket, _, Pointee(DecoderBufferMatches(std::cref(*buffer)))))
+      .WillOnce([&captured_audio_specific_config, &captured_codec](
+                    int /*seek_ticket*/, StarboardSampleInfo sample_info,
+                    scoped_refptr<::media::DecoderBuffer> /*buffer*/) {
+        captured_codec = sample_info.audio_sample_info.codec;
+        captured_audio_specific_config =
+            CopyAudioSpecificConfig(sample_info.audio_sample_info);
+      });
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr, initial_info.audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+
+  // First read reports a config change to an unsupported audio codec (DTS).
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_1.is_null());
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kDTS, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 48000, /*extra_data=*/{},
+      ::media::EncryptionScheme::kUnencrypted));
+  std::move(read_cb_1).Run(DemuxerStream::Status::kConfigChanged, {});
+  RunPendingTasks();
+
+  // If another read occurs before teardown completes, the previous
+  // audio_specific_config must still be valid.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_2.is_null());
+  std::move(read_cb_2).Run(DemuxerStream::Status::kOk, {buffer});
+  RunPendingTasks();
+
+  EXPECT_EQ(captured_codec, StarboardAudioCodec::kStarboardAudioCodecAac);
+  EXPECT_EQ(captured_audio_specific_config, kInitialExtraData);
+}
+
+TEST_F(DemuxerStreamReaderTest,
+       PreservesAudioSpecificConfigOnAudioCodecChange) {
+  constexpr int kSeekTicket = 7;
+  const std::vector<uint8_t> kInitialExtraData = {0x12, 0x10, 0x56, 0xE5, 0x00};
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom({1, 2, 3, 4, 5, 6, 7, 8});
+  StarboardSampleInfo initial_info = CreateAudioSample(*buffer);
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 44100, kInitialExtraData,
+      ::media::EncryptionScheme::kUnencrypted));
+
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_1;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_2;
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(SaveArgByMove<0>(&read_cb_1))
+      .WillOnce(SaveArgByMove<0>(&read_cb_2));
+
+  EXPECT_CALL(renderer_client_, OnAudioConfigChange).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::DECODER_ERROR_NOT_SUPPORTED)))
+      .Times(1);
+
+  std::vector<uint8_t> captured_audio_specific_config;
+  StarboardAudioCodec captured_codec =
+      StarboardAudioCodec::kStarboardAudioCodecNone;
+  EXPECT_CALL(
+      handle_buffer_cb_,
+      Call(kSeekTicket, _, Pointee(DecoderBufferMatches(std::cref(*buffer)))))
+      .WillOnce([&captured_audio_specific_config, &captured_codec](
+                    int /*seek_ticket*/, StarboardSampleInfo sample_info,
+                    scoped_refptr<::media::DecoderBuffer> /*buffer*/) {
+        captured_codec = sample_info.audio_sample_info.codec;
+        captured_audio_specific_config =
+            CopyAudioSpecificConfig(sample_info.audio_sample_info);
+      });
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr, initial_info.audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+
+  // First read reports a mid-stream codec change from AAC to Opus.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_1.is_null());
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kOpus, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 48000, /*extra_data=*/{},
+      ::media::EncryptionScheme::kUnencrypted));
+  std::move(read_cb_1).Run(DemuxerStream::Status::kConfigChanged, {});
+  RunPendingTasks();
+
+  // Subsequent sample reads must still reference valid audio_specific_config
+  // data from the active AAC config.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_2.is_null());
+  std::move(read_cb_2).Run(DemuxerStream::Status::kOk, {buffer});
+  RunPendingTasks();
+
+  EXPECT_EQ(captured_codec, StarboardAudioCodec::kStarboardAudioCodecAac);
+  EXPECT_EQ(captured_audio_specific_config, kInitialExtraData);
+}
+
+TEST_F(DemuxerStreamReaderTest,
+       PendingDrmKeyCallbackRetainsAudioSpecificConfigAcrossConfigChange) {
+  constexpr int kSeekTicket = 7;
+  const std::vector<uint8_t> kInitialExtraData = {0x12, 0x10};
+  const std::vector<uint8_t> kUpdatedExtraData = {0x11, 0x90, 0x56, 0xE5, 0x00};
+  scoped_refptr<DecoderBuffer> encrypted_buffer =
+      DecoderBuffer::CopyFrom(kBufferData);
+  encrypted_buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      std::string(kIdentifier), std::string(kIv), /*subsamples=*/{}));
+
+  scoped_refptr<DecoderBuffer> second_buffer =
+      DecoderBuffer::CopyFrom({9, 8, 7, 6});
+
+  StarboardSampleInfo initial_info = CreateAudioSample(*encrypted_buffer);
+
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 44100, kInitialExtraData,
+      ::media::EncryptionScheme::kCenc));
+
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_1;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_2;
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb_3;
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(SaveArgByMove<0>(&read_cb_1))
+      .WillOnce(SaveArgByMove<0>(&read_cb_2))
+      .WillOnce(SaveArgByMove<0>(&read_cb_3));
+
+  EXPECT_CALL(renderer_client_,
+              OnWaiting(::media::WaitingReason::kNoDecryptionKey))
+      .Times(1);
+  EXPECT_CALL(renderer_client_, OnAudioConfigChange).Times(1);
+
+  std::vector<uint8_t> first_buffer_config;
+  std::vector<uint8_t> second_buffer_config;
+  EXPECT_CALL(handle_buffer_cb_,
+              Call(kSeekTicket, _,
+                   Pointee(DecoderBufferMatches(std::cref(*encrypted_buffer)))))
+      .WillOnce([&first_buffer_config](
+                    int /*seek_ticket*/, StarboardSampleInfo sample_info,
+                    scoped_refptr<::media::DecoderBuffer> /*buffer*/) {
+        first_buffer_config =
+            CopyAudioSpecificConfig(sample_info.audio_sample_info);
+      });
+  EXPECT_CALL(handle_buffer_cb_,
+              Call(kSeekTicket, _,
+                   Pointee(DecoderBufferMatches(std::cref(*second_buffer)))))
+      .WillOnce([&second_buffer_config](
+                    int /*seek_ticket*/, StarboardSampleInfo sample_info,
+                    scoped_refptr<::media::DecoderBuffer> /*buffer*/) {
+        second_buffer_config =
+            CopyAudioSpecificConfig(sample_info.audio_sample_info);
+      });
+
+  DemuxerStreamReader stream_reader(
+      &audio_stream_, /*video_stream=*/nullptr, initial_info.audio_sample_info,
+      /*video_sample_info=*/std::nullopt,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+
+  // Read an encrypted audio buffer while its DRM key is unavailable; the
+  // sample is parked in WaitForKey.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_1.is_null());
+  std::move(read_cb_1).Run(DemuxerStream::Status::kOk, {encrypted_buffer});
+  RunPendingTasks();
+
+  // Trigger a valid audio config change while the encrypted sample is still
+  // waiting for its DRM key, replacing chromium_audio_config_.
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeAudio);
+  ASSERT_FALSE(read_cb_2.is_null());
+  audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 48000, kUpdatedExtraData,
+      ::media::EncryptionScheme::kCenc));
+  std::move(read_cb_2).Run(DemuxerStream::Status::kConfigChanged, {});
+  RunPendingTasks();
+  RunPendingTasks();
+  ASSERT_FALSE(read_cb_3.is_null());
+
+  // Now make the DRM key available and verify that the parked sample's
+  // audio_specific_config still points to valid memory with its initial data.
+  StarboardDrmKeyTracker::GetInstance().AddKey(std::string(kIdentifier),
+                                               "some_session");
+  RunPendingTasks();
+
+  EXPECT_EQ(first_buffer_config, kInitialExtraData);
+
+  // Complete the post-config-change read and verify it uses the updated config.
+  std::move(read_cb_3).Run(DemuxerStream::Status::kOk, {second_buffer});
+  RunPendingTasks();
+
+  EXPECT_EQ(second_buffer_config, kUpdatedExtraData);
 }
 
 }  // namespace
