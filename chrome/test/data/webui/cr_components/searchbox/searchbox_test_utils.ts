@@ -145,6 +145,7 @@ export function createSuggestTemplateInfo(
     style: SuggestStyle.kUnspecified,
     typeIcon: IconType.kIconTypeUnspecified,
     fuseboxAction: null,
+    actionIcon: null,
     ...otherModifiers,
     primaryText: toFormattedString(primaryText),
     secondaryText: secondaryText === null ? null :

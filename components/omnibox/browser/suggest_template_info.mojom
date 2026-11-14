@@ -110,6 +110,18 @@ enum SecondaryTextPlacement {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:SecondaryTextPlacement)
 
+// The icon on the right hand side of the suggestion. Maps to
+// SuggestTemplateInfo.ActionIconType in
+// //third_party/omnibox_proto/suggest_template_info.proto.
+// LINT.IfChange(ActionIconType)
+enum ActionIconType {
+  kActionIconTypeUnspecified = 0,
+  kQueryBuilding = 1,
+  kNavigationArrow = 2,
+  kBlueDot = 3,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:ActionIconType)
+
 // An image to display with the suggestion. Maps to SuggestTemplateInfo.Image in
 // //third_party/omnibox_proto/suggest_template_info.proto.
 struct Image {
@@ -148,4 +160,6 @@ struct SuggestTemplateInfo {
   // FuseboxAction carries client behavior and configuration to apply when the
   // user accepts a suggestion.
   fusebox_action.mojom.FuseboxAction? fusebox_action;
+  // The icon to display on the right hand side of the suggestion, if any.
+  ActionIconType? action_icon;
 };

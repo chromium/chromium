@@ -86,6 +86,26 @@ mojom::IconType GetTypeIcon(const omnibox::SuggestTemplateInfo& proto) {
   return static_cast<mojom::IconType>(proto.type_icon());
 }
 
+std::optional<mojom::ActionIconType> GetActionIcon(
+    const omnibox::SuggestTemplateInfo& proto) {
+  if (!proto.has_action_icon()) {
+    return std::nullopt;
+  }
+  // Map the values explicitly instead of casting, so a proto value can't end up
+  // as a mojom value with a different meaning.
+  switch (proto.action_icon()) {
+    case omnibox::SuggestTemplateInfo::ACTION_ICON_TYPE_UNSPECIFIED:
+      return std::nullopt;
+    case omnibox::SuggestTemplateInfo::QUERY_BUILDING:
+      return mojom::ActionIconType::kQueryBuilding;
+    case omnibox::SuggestTemplateInfo::NAVIGATION_ARROW:
+      return mojom::ActionIconType::kNavigationArrow;
+    case omnibox::SuggestTemplateInfo::BLUE_DOT:
+      return mojom::ActionIconType::kBlueDot;
+  }
+  return std::nullopt;
+}
+
 mojom::SuggestStyle GetStyle(const omnibox::SuggestTemplateInfo& proto) {
   static_assert(static_cast<int32_t>(
                     omnibox::SuggestTemplateInfo::StandardSuggestStyle_MAX) ==
@@ -126,6 +146,7 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfoFromProto(
   suggest_template->style = GetStyle(proto);
   suggest_template->type_icon = GetTypeIcon(proto);
   suggest_template->fusebox_action = GetFuseboxAction(proto);
+  suggest_template->action_icon = GetActionIcon(proto);
   return suggest_template;
 }
 

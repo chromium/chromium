@@ -33,6 +33,7 @@ generate_grd("build_grdp") {
     "dock_to_left.svg",
     "dock_to_right.svg",
     "dogfood.svg",
+    "dot.svg",
     "drive_docs_custom.svg",
     "drive_docs_custom_old.svg",
     "drive_folder_custom.svg",

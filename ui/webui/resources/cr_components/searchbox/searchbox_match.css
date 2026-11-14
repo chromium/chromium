@@ -342,6 +342,23 @@
   margin-inline-end: 1px;
 }
 
+#actionIcon {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+/* The dot uses the URL color so that it follows dark mode and themes. */
+#actionIcon.blue-dot {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
+  background-color: var(--color-searchbox-results-url);
+  height: 8px;
+  width: 8px;
+}
+
+:host(:is(:focus-within, [selected])) #actionIcon.blue-dot {
+  background-color: var(--color-searchbox-results-url-selected);
+}
+
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
   --cr-icon-button-fill-color: var(--color-searchbox-results-icon-selected);
 }
@@ -357,6 +374,13 @@
 #remove:focus-visible:not([hidden]),
 #remove.selected:not([hidden]) {
   display: inline-flex;
+}
+
+/* The remove button takes precedence on hover and selection. */
+:host-context(.vertical) .container:hover #remove:not([hidden]) ~ #actionIcon,
+:host-context(.vertical):host([selected]) #remove:not([hidden]) ~ #actionIcon,
+#remove:is(:focus-visible, .selected):not([hidden]) ~ #actionIcon {
+  display: none;
 }
 
 .selected:not(#action):not(#keyword) {
@@ -440,6 +464,11 @@
     forced-color-adjust: auto;
   }
 
+  #actionIcon.blue-dot {
+    background-color: ButtonText;
+    forced-color-adjust: none;
+  }
+
   .container:not(.actions):hover cr-searchbox-action,
   :host(:is(:focus-visible, :focus-within, [selected]))
       .container:not(.actions) cr-searchbox-action {
@@ -468,6 +497,12 @@
   .container:not(.actions):hover #secondaryText[has-icon]::before,
   :host(:is(:focus-visible, :focus-within, [selected]))
       .container:not(.actions) #secondaryText[has-icon]::before {
+    background-color: HighlightText;
+  }
+
+  .container:not(.actions):hover #actionIcon.blue-dot,
+  :host(:is(:focus-visible, :focus-within, [selected]))
+      .container:not(.actions) #actionIcon.blue-dot {
     background-color: HighlightText;
   }
 }

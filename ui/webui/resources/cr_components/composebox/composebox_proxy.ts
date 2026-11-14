@@ -39,6 +39,7 @@ export function createAutocompleteMatch(
       style: SuggestStyle.kUnspecified,
       typeIcon: IconType.kIconTypeUnspecified,
       fuseboxAction: null,
+      actionIcon: null,
     },
     secondaryTextIsUrl: false,
     urlEmphasis: null,

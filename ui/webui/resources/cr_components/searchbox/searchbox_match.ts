@@ -14,7 +14,7 @@ import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/o
 import type {AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FormattedString, FormattedStringFragment} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
-import {ColorType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, ColorType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -588,6 +588,17 @@ export class SearchboxMatchElement extends CrLitElement {
                 SelectionLineState.kFocusedButtonRemoveSuggestion ?
         'selected' :
         '';
+  }
+
+  // Returns the class that styles the action icon on the right side of the
+  // match, or an empty string if there is none or desktop has no design for it.
+  protected getActionIconClass_(): string {
+    switch (this.match.suggestTemplate.actionIcon) {
+      case ActionIconType.kBlueDot:
+        return 'blue-dot';
+      default:
+        return '';
+    }
   }
 }
 
