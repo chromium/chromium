@@ -70,10 +70,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -473,19 +470,6 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<SplitTabsToolbarButton>(browser_));
   }
 
-  if (contextual_tasks::IsContextualTasksUIEnabled() &&
-      contextual_tasks::kShowEntryPoint.Get() ==
-          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    auto button = std::make_unique<ContextualTasksButton>(browser_);
-    auto* vts_controller =
-        tabs::VerticalTabStripStateController::From(browser_);
-    if ((!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) &&
-        !contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(browser_)) {
-      button->SetProperty(views::kMarginsKey, gfx::Insets());
-    }
-    contextual_tasks_button_ = AddChildViewAt(std::move(button), 0);
-  }
-
   if (location_bar_view) {
     location_bar_view_ = AddChildView(std::move(location_bar_view));
     location_bar_ = location_bar_view_;
@@ -645,17 +629,6 @@ void ToolbarView::Init() {
       contextual_tasks::GetExpandButtonOption() ==
           contextual_tasks::ExpandButtonOption::kToolbarCloseButton) {
     AddChildView(std::make_unique<ContextualTasksCloseTabButton>(browser_));
-  }
-
-  if (contextual_tasks_button_) {
-    if (auto* const controller =
-            ContextualTasksEphemeralButtonController::From(browser_)) {
-      contextual_tasks_button_position_subscription_ =
-          controller->RegisterShouldUpdateButtonPosition(
-              base::BindRepeating(&ToolbarView::PositionContextualTasksButton,
-                                  base::Unretained(this)));
-    }
-    PositionContextualTasksButton();
   }
 
   LoadImages();
@@ -1591,10 +1564,6 @@ void ToolbarView::ChildVisibilityChanged(views::View* child) {
       base::UmaHistogramBoolean("Toolbar.Overflow.HomeButton", true);
     }
   }
-  if (child == glic_button_view_ || child == glic_actor_button_container_ ||
-      child == avatar_) {
-    PositionContextualTasksButton();
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1758,29 +1727,9 @@ void ToolbarView::LayoutCommon() {
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  const bool is_trailing_contextual_tasks_visible =
-      IsTrailingContextualTasksButtonVisible();
-  const bool is_leading_contextual_tasks_visible =
-      IsLeadingContextualTasksButtonVisible();
-
-  // Only zero out the interior margin if the contextual tasks button
-  // is actually visible and not in vertical tabs mode (where the button does
-  // not sit flush at the window edge). When the button is hidden, we must
-  // retain the default interior margin so that the Back button (or App Menu
-  // button) is not incorrectly shifted to the toolbar's edge. Layout is in
-  // logical / RTL-relative DIPs where `left()` is the leading edge.
-  if (!should_display_vertical_tabs_) {
-    if (is_leading_contextual_tasks_visible) {
-      interior_margin.set_left(0);
-    }
-    if (is_trailing_contextual_tasks_visible) {
-      interior_margin.set_right(0);
-    }
-  }
-
   if (app_menu_button_) {
     const bool expanded = app_menu_button_->IsLabelPresentAndVisible();
-    if (expanded && !is_trailing_contextual_tasks_visible) {
+    if (expanded) {
       // The interior margin in an expanded state should be more than in a
       // collapsed state.
       interior_margin.set_right(interior_margin.right() + 1);
@@ -1794,11 +1743,9 @@ void ToolbarView::LayoutCommon() {
     SetRefreshMargins(avatar_, avatar_->IsLabelPresentAndVisible());
   }
 
-  // Record whether there is leading interior margin available before zeroing it
-  // out for WebUI toolbar below. If a leading button (such as the ephemeral
-  // contextual tasks button) sits flush at the container edge, the leading
-  // interior margin is zero and subsequent buttons (like the Back button) must
-  // not extend their hit target for Fitts' law.
+  // Record the leading interior margin before it is zeroed out for the WebUI
+  // toolbar below. It is used further down to extend the Back button's hit
+  // target to the window edge for Fitts' law.
   const int leading_interior_margin = interior_margin.left();
 
   const bool is_rtl = base::i18n::IsRTL();
@@ -1843,10 +1790,9 @@ void ToolbarView::LayoutCommon() {
   if (features::IsWebUIBackForwardButtonEnabled()) {
     if (toolbar_webview_) {
       // `SetIsMaximizedOrFullscreen` signals the WebUI back/forward buttons
-      // whether to apply Fitts' law edge padding. When a leading button
-      // (e.g. contextual tasks) sits flush against the window edge, the
-      // available margin is 0, so Fitts' law padding must be suppressed even
-      // if the window itself is maximized or fullscreen.
+      // whether to apply Fitts' law edge padding. If there is no leading
+      // interior margin there is nothing to extend into, so the padding is
+      // suppressed even if the window itself is maximized or fullscreen.
       const bool should_apply_webui_fitts_law = margin > 0;
       toolbar_webview_->SetIsMaximizedOrFullscreen(
           should_apply_webui_fitts_law);
@@ -1857,84 +1803,13 @@ void ToolbarView::LayoutCommon() {
     }
   }
 
-  GetAppMenuControl()->SetIsMaximizedOrFullscreen(
-      ShouldAppMenuApplyFittsLaw(is_maximized_or_fullscreen));
+  GetAppMenuControl()->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
 
   if (toolbar_divider_ && extensions_container_) {
     views::ManualLayoutUtil(layout_manager_)
         .SetViewHidden(toolbar_divider_, !extensions_container_->GetVisible());
   }
   // Cast button visibility is controlled externally.
-}
-
-void ToolbarView::PositionContextualTasksButton() {
-  if (!contextual_tasks_button_) {
-    return;
-  }
-  if (contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(browser_)) {
-    const bool is_glic_left_of_profile =
-        features::kGlicToolbarButtonLocationParam.Get() ==
-            features::GlicToolbarButtonLocation::kLeftOfProfileChip ||
-        features::kGlicToolbarButtonLocationParam.Get() ==
-            features::GlicToolbarButtonLocation::
-                kLeftOfProfileChipWithBackground;
-    views::View* anchor = nullptr;
-    if (glic_button_view_ && glic_button_view_->GetVisible() &&
-        is_glic_left_of_profile) {
-      anchor = (glic_button_view_->parent() == this)
-                   ? static_cast<views::View*>(glic_button_view_)
-                   : static_cast<views::View*>(glic_button_view_->parent());
-    } else if (avatar_) {
-      anchor = avatar_;
-    } else {
-      anchor = app_menu_button_;
-    }
-    if (anchor) {
-      std::optional<size_t> anchor_index = GetIndexOf(anchor);
-      if (anchor_index.has_value()) {
-        const size_t current_index =
-            GetIndexOf(contextual_tasks_button_).value();
-        const size_t target_index =
-            current_index < *anchor_index ? *anchor_index - 1 : *anchor_index;
-        ReorderChildView(contextual_tasks_button_, target_index);
-        return;
-      }
-    }
-  }
-  const size_t target_index =
-      contextual_tasks::IsEphemeralButtonTrailing(browser_) ? children().size()
-                                                            : 0;
-  ReorderChildView(contextual_tasks_button_, target_index);
-}
-
-bool ToolbarView::IsLeadingContextualTasksButtonVisible() const {
-  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
-         !children().empty() && children().front() == contextual_tasks_button_;
-}
-
-bool ToolbarView::IsTrailingContextualTasksButtonVisible() const {
-  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
-         !children().empty() && children().back() == contextual_tasks_button_;
-}
-
-bool ToolbarView::ShouldAppMenuApplyFittsLaw(
-    bool is_maximized_or_fullscreen) const {
-  if (!is_maximized_or_fullscreen) {
-    return false;
-  }
-
-  // `SetIsMaximizedOrFullscreen()` informs the app menu control to extend its
-  // hit target to the window edge per Fitts' law when maximized or fullscreen.
-  // When the contextual tasks button is placed at the trailing edge, the app
-  // menu button is no longer flush with the window border, so Fitts' law edge
-  // padding must be suppressed to avoid inserting an unwanted gap between the
-  // two buttons.
-  //
-  // Note: The leading edge (Back button) handles this symmetrically: when the
-  // contextual tasks button is visible on the leading edge, the leading
-  // interior margin is zeroed out, which naturally zeroes out the Back
-  // button's leading margin (see `leading_interior_margin`).
-  return !IsTrailingContextualTasksButtonVisible();
 }
 
 // AppMenuIconController::Delegate:
