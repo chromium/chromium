@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_ACTIONS_COMMAND_ID_TO_ACTION_ID_H_
 
 #include <optional>
+#include <utility>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "ui/actions/action_id.h"
 
 namespace chrome {
@@ -27,7 +28,8 @@ namespace chrome {
 // Once registered there, `CommandActionUpdater` automatically intercepts state
 // updates (`UpdateCommandEnabled`) and executions for your command and routes
 // them into the declarative Action framework.
-const base::flat_map<int, actions::ActionId>& GetCommandIdToActionIdMap();
+base::span<const std::pair<const int, actions::ActionId>>
+GetCommandIdToActionIdMappings();
 
 // Returns the Action ID associated with `command_id`, or std::nullopt if the
 // command has no associated action.

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/actions/command_id_to_action_id.h"
@@ -14,8 +15,8 @@
 
 namespace chrome {
 
-// See `GetCommandIdToActionIdMap()` in command_id_to_action_id.h for how to
-// migrate a legacy browser command to the Action framework.
+// See `GetCommandIdToActionIdMappings()` in command_id_to_action_id.h for how
+// to migrate a legacy browser command to the Action framework.
 
 CommandActionUpdater::CommandActionUpdater(
     actions::ActionItem* root_action_item)
@@ -24,7 +25,7 @@ CommandActionUpdater::CommandActionUpdater(
 CommandActionUpdater::~CommandActionUpdater() = default;
 
 bool CommandActionUpdater::SupportsCommand(int id) const {
-  return GetCommandIdToActionIdMap().contains(id);
+  return GetActionId(id).has_value();
 }
 
 bool CommandActionUpdater::IsCommandEnabled(int id) const {
@@ -85,7 +86,7 @@ bool CommandActionUpdater::UpdateCommandEnabled(int id, bool state) {
 }
 
 void CommandActionUpdater::DisableAllCommands() {
-  for (const auto& [idc, action_id] : GetCommandIdToActionIdMap()) {
+  for (const auto& [idc, action_id] : GetCommandIdToActionIdMappings()) {
     if (auto* const action = FindAction(action_id)) {
       action->SetEnabled(false);
     }
@@ -93,13 +94,8 @@ void CommandActionUpdater::DisableAllCommands() {
 }
 
 std::vector<int> CommandActionUpdater::GetAllIds() const {
-  std::vector<int> result;
-  const auto& map = GetCommandIdToActionIdMap();
-  result.reserve(map.size());
-  for (const auto& [idc, action_id] : map) {
-    result.push_back(idc);
-  }
-  return result;
+  return base::ToVector(GetCommandIdToActionIdMappings(),
+                        &std::pair<const int, actions::ActionId>::first);
 }
 
 // static

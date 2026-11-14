@@ -47,7 +47,7 @@ TEST_F(ChromeActionsTest, NoDuplicateCommandIds) {
   constexpr size_t kExpectedMapSize =
       (CHROME_ACTION_IDS SIDE_PANEL_ACTION_IDS TOOLBAR_PINNABLE_ACTION_IDS
            SUBMENU_ACTION_IDS 0);
-  EXPECT_EQ(chrome::GetCommandIdToActionIdMap().size(), kExpectedMapSize);
+  EXPECT_EQ(chrome::GetCommandIdToActionIdMappings().size(), kExpectedMapSize);
 }
 
 #undef E
