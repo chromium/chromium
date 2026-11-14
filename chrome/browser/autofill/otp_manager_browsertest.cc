@@ -339,11 +339,11 @@ class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest,
                                       std::string(sender_address)));
 
     // `OtpCoordinator` uses `GmailOtpServiceImpl` (`GmailNonAgentic`), whereas
-    // `OtpManagerImpl` uses `GmailOtpRetriever` (`GmailAgentic`). Wait for the
+    // `OtpManagerImpl` uses `GmailOtpRetriever` (`GmailAutofill`). Wait for the
     // asynchronous sender domain check to complete.
     const std::string_view histogram_prefix =
         is_otp_coordinator_enabled() ? "OneTimeTokens.GmailNonAgentic."
-                                     : "OneTimeTokens.GmailAgentic.";
+                                     : "OneTimeTokens.GmailAutofill.";
     const std::string accepted_histogram = base::StrCat(
         {histogram_prefix, "SenderDomainMatchAcceptedMatchType.Received"});
     const std::string rejected_histogram = base::StrCat(

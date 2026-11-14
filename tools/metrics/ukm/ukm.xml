@@ -16731,8 +16731,8 @@ be describing additional metrics about the same event.
       Records the match type of a Gmail OTP whose sender domain passed the check
       against the origin of the page's OTP form. Recorded once per checked token
       that came from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA
-      histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached.
+      histograms
+      OneTimeTokens.{GmailActor,GmailAutofill}.SenderDomainMatchAcceptedMatchType.Cached.
     </summary>
     <aggregation>
       <history>
@@ -16748,8 +16748,8 @@ be describing additional metrics about the same event.
       Records the match type of a Gmail OTP whose sender domain passed the check
       against the origin of the page's OTP form. Recorded once per checked token
       that arrived while Chrome was waiting for a Gmail OTP for this page.
-      Mirrors the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received.
+      Mirrors the UMA histograms
+      OneTimeTokens.{GmailActor,GmailAutofill}.SenderDomainMatchAcceptedMatchType.Received.
     </summary>
     <aggregation>
       <history>
@@ -16764,8 +16764,8 @@ be describing additional metrics about the same event.
     <summary>
       Records why a Gmail OTP's sender domain failed the check against the
       origin of the page's OTP form. Recorded once per checked token that came
-      from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached.
+      from Chrome's 1-minute Gmail OTP cache. Mirrors the UMA histograms
+      OneTimeTokens.{GmailActor,GmailAutofill}.SenderDomainMatchRejectionReason.Cached.
     </summary>
     <aggregation>
       <history>
@@ -16781,8 +16781,8 @@ be describing additional metrics about the same event.
       Records why a Gmail OTP's sender domain failed the check against the
       origin of the page's OTP form. Recorded once per checked token that
       arrived while Chrome was waiting for a Gmail OTP for this page. Mirrors
-      the UMA histogram
-      OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received.
+      the UMA histograms
+      OneTimeTokens.{GmailActor,GmailAutofill}.SenderDomainMatchRejectionReason.Received.
     </summary>
     <aggregation>
       <history>

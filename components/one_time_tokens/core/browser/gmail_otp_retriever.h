@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -72,14 +73,15 @@ class GmailOtpRetriever {
   // sender domain matches `otp_frame_origin` via the Public Suffix List
   // (`kPsl` or `kGroupedAndPsl`) are accepted in addition to exact, `www.`
   // subdomain, and affiliated matches. The result of each sender domain check
-  // is recorded to UKM against `ukm_source_id`, the source of the outermost
-  // main frame of the page that contains the OTP form, unless it is
-  // `ukm::kInvalidSourceId`.
+  // is recorded to UMA for `flow`, and to UKM against `ukm_source_id`, the
+  // source of the outermost main frame of the page that contains the OTP form,
+  // unless it is `ukm::kInvalidSourceId`.
   static std::unique_ptr<GmailOtpRetriever> CreateAndStart(
       GmailOtpBackend& backend,
       std::unique_ptr<affiliations::DomainRelationChecker>
           domain_relation_checker,
       const url::Origin& otp_frame_origin,
+      GmailOtpFlow flow,
       ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       ResultCallback callback);
@@ -99,6 +101,7 @@ class GmailOtpRetriever {
                     std::unique_ptr<affiliations::DomainRelationChecker>
                         domain_relation_checker,
                     const url::Origin& otp_frame_origin,
+                    GmailOtpFlow flow,
                     ukm::SourceId ukm_source_id,
                     bool allow_psl_matching,
                     ResultCallback callback);
@@ -127,6 +130,7 @@ class GmailOtpRetriever {
 
   const raw_ref<GmailOtpBackend> gmail_otp_backend_;
   const url::Origin otp_frame_origin_;
+  const GmailOtpFlow flow_;
   const ukm::SourceId ukm_source_id_;
   const bool allow_psl_matching_;
   // Answers all sender domain checks of this retrieval.

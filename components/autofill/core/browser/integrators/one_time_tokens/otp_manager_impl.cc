@@ -44,6 +44,7 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -229,6 +230,7 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
             : owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
     gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
         *gmail_otp_service->GetBackend(), std::move(checker), frame_origin,
+        one_time_tokens::GmailOtpFlow::kAutofill,
         owner_->driver().GetPageUkmSourceId(), /*allow_psl_matching=*/true,
         base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -493,6 +495,7 @@ void OtpManagerImpl::OnTickleReceived() {
           : target_field->origin();
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *gmail_otp_service->GetBackend(), std::move(checker), frame_origin,
+      one_time_tokens::GmailOtpFlow::kAutofill,
       owner_->driver().GetPageUkmSourceId(), /*allow_psl_matching=*/true,
       base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));

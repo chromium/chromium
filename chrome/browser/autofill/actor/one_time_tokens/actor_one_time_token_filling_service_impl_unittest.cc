@@ -47,6 +47,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -340,6 +341,9 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(entries[0]->source_id,
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  histogram_tester_.ExpectUniqueSample(
+      "OneTimeTokens.GmailActor.SenderDomainMatchAcceptedMatchType.Cached",
+      one_time_tokens::GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);

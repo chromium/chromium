@@ -3869,6 +3869,9 @@ TEST_F(OtpManagerImplTest,
           kGmail_SenderDomainMatchAcceptedMatchType_ReceivedName,
       static_cast<int64_t>(
           one_time_tokens::GmailOtpSenderDomainMatchType::kPsl));
+  histogram_tester_.ExpectUniqueSample(
+      "OneTimeTokens.GmailAutofill.SenderDomainMatchAcceptedMatchType.Received",
+      one_time_tokens::GmailOtpSenderDomainMatchType::kPsl, 1);
 
   autofill_client().set_affiliation_service(nullptr);
 }
