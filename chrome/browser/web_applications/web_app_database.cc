@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/metadata_batch.h"
@@ -267,24 +265,17 @@ WebAppDatabase::MigrationResult WebAppDatabase::MigrateDatabase(
   }
 
   // Upgrade from version 6 to version 7.
-  bool declined_to_upgrade = false;
   if (state.metadata.version() < 7 && GetCurrentDatabaseVersion() >= 7) {
-    if (base::FeatureList::IsEnabled(
-            features::kWebAppUpgradeToDatabaseVersion6)) {
-      MigrateScopeToStartUrlGetWithoutFilenameIfInvalid(state, changed_apps);
-      base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 7);
-      state.metadata.set_version(7);
-      did_change_metadata = true;
-    } else {
-      declined_to_upgrade = true;
-    }
+    MigrateScopeToStartUrlGetWithoutFilenameIfInvalid(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 7);
+    state.metadata.set_version(7);
+    did_change_metadata = true;
   }
 
-  int expected_version = declined_to_upgrade ? 6 : GetCurrentDatabaseVersion();
-  if (state.metadata.version() != expected_version) {
+  if (state.metadata.version() != GetCurrentDatabaseVersion()) {
     DLOG(ERROR) << "Mismatch between web app database state metadata version: "
                 << state.metadata.version()
-                << " and current version: " << expected_version;
+                << " and current version: " << GetCurrentDatabaseVersion();
     return MigrationResult::kDowngradeDetected;
   }
 
