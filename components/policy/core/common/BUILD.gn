@@ -34,6 +34,8 @@ source_set("util") {
   sources = [
     "cloud/cloud_policy_util.cc",
     "cloud/cloud_policy_util.h",
+    "cloud/network_name_cache.cc",
+    "cloud/network_name_cache.h",
   ]
 
   configs += [ "//components/policy:component_implementation" ]
@@ -42,12 +44,12 @@ source_set("util") {
     ":common_constants",
     "//components/policy/proto",
     "//components/version_info",
-  ]
 
-  deps = [
-    "//base",
+    # network_name_cache.h includes net/base/network_change_notifier.h.
     "//net",
   ]
+
+  deps = [ "//base" ]
 
   if (is_chromeos) {
     deps += [
@@ -558,6 +560,7 @@ source_set("unit_tests") {
     "cloud/cloud_policy_util_unittest.cc",
     "cloud/device_management_service_unittest.cc",
     "cloud/dm_token_unittest.cc",
+    "cloud/network_name_cache_unittest.cc",
     "cloud/user_info_fetcher_unittest.cc",
     "cloud/user_policy_metrics_recorder_unittest.cc",
     "command_line_policy_provider_unittest.cc",

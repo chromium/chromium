@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/network_name_cache.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/load_flags.h"
@@ -1009,6 +1010,12 @@ void DeviceManagementService::Initialize() {
 void DeviceManagementService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void DeviceManagementService::SetNetworkNameCache(
+    std::unique_ptr<NetworkNameCache> network_name_cache) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  network_name_cache_ = std::move(network_name_cache);
 }
 
 DeviceManagementService::DeviceManagementService(

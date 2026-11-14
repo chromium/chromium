@@ -14,14 +14,19 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "build/branding_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/network_name_cache.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_statistics_collector.h"
@@ -75,6 +80,22 @@ void BrowserPolicyConnector::InitInternal(
           GetPolicyService(), local_state,
           base::SingleThreadTaskRunner::GetCurrentDefault());
   policy_statistics_collector_->Initialize();
+
+  // `NetworkNameCache` creates a ThreadPool task runner in its constructor,
+  // which DCHECKs if no `base::ThreadPoolInstance` exists. That is always the
+  // case in the browser, but tests that call `Init()` under a
+  // `SingleThreadTaskEnvironment` have no ThreadPool; skip the cache there.
+  // Reporting requests then omit the network name.
+  if (device_management_service_ &&
+      base::FeatureList::IsEnabled(kUseCachedNetworkName)) {
+    if (base::ThreadPoolInstance::Get()) {
+      device_management_service_->SetNetworkNameCache(
+          std::make_unique<NetworkNameCache>(
+              base::PassKey<BrowserPolicyConnector>()));
+    } else {
+      CHECK_IS_TEST();
+    }
+  }
 }
 
 void BrowserPolicyConnector::Shutdown() {

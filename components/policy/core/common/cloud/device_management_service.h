@@ -38,6 +38,8 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class NetworkNameCache;
+
 // Used in the Enterprise.DMServerRequestSuccess histogram, shows how many
 // retries we had to do to execute the DeviceManagementRequestJob.
 enum class DMServerRequestSuccess {
@@ -313,6 +315,15 @@ class POLICY_EXPORT DeviceManagementService {
 
   const Configuration* configuration() const { return configuration_.get(); }
 
+  // Sets the cache that reporting requests sent through this service use to
+  // report the name of the network the device is connected to.
+  void SetNetworkNameCache(
+      std::unique_ptr<NetworkNameCache> network_name_cache);
+
+  // Returns the cache set by `SetNetworkNameCache()`, or nullptr if none was
+  // set (e.g. if `kUseCachedNetworkName` is disabled, or in tests).
+  NetworkNameCache* network_name_cache() { return network_name_cache_.get(); }
+
   // Sets the retry delay to a shorter time to prevent browser tests from
   // timing out.
   static void SetRetryDelayForTesting(long retryDelayMs);
@@ -356,6 +367,9 @@ class POLICY_EXPORT DeviceManagementService {
 
   // TaskRunner used to schedule retry attempts.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Caches the network name reported in reporting requests. May be null.
+  std::unique_ptr<NetworkNameCache> network_name_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

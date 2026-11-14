@@ -47,6 +47,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #if BUILDFLAG(IS_WIN)
@@ -95,6 +96,8 @@ namespace policy {
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kReportAndroidMachineName, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kUseCachedNetworkName, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIOSReportMachineName, base::FEATURE_ENABLED_BY_DEFAULT);

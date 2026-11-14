@@ -8,13 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/policy/policy_export.h"
 #include "components/version_info/channel.h"
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-#include "base/feature_list.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/callback_forward.h"
@@ -40,6 +37,12 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kReportAndroidMachineName);
 // a kill switch.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kIOSReportMachineName);
 #endif  // BUILDFLAG(IS_IOS)
+
+// When enabled, `BrowserPolicyConnector` creates a `NetworkNameCache`, which
+// queries the name of the network the device is connected to on a background
+// sequence, so that it can be reported without blocking the calling thread.
+// Used as a kill switch.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kUseCachedNetworkName);
 
 // Returns the name of the machine. This function is platform specific.
 POLICY_EXPORT std::string GetMachineName();
