@@ -58,8 +58,8 @@ class TabCollectionTabModelImpl {
                       bool is_attaching_group,
                       bool is_pinned);
 
-  // Removes a list of tabs from the tab model.
-  void RemoveTabRecursive(TabAndroid* tab);
+  // Removes a tab from the tab model.
+  void RemoveTab(TabAndroid* tab);
 
   // Create tab group.
   void CreateTabGroup(const base::Token& tab_group_id,
@@ -147,8 +147,6 @@ class TabCollectionTabModelImpl {
                       size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;
-  // Returns the recursive index of the given tab, or -1 if not found.
-  int GetIndexOfTabRecursive(TabAndroid* tab_android) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;
   TabGroup* GetTabGroupChecked(const tab_groups::TabGroupId& tab_group_id,
                                bool allow_detached = false) const;

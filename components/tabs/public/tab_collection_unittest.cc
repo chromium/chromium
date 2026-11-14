@@ -1098,7 +1098,7 @@ TEST_F(TabStripCollectionTest, RecursiveTabIndexOperationTests) {
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 12ul);
 }
 
-TEST_F(TabStripCollectionTest, RecursiveRemoveTabAtIndex) {
+TEST_F(TabStripCollectionTest, RemoveTab) {
   // Setup for the main collections.
   PerformBasicSetup();
   TabStripCollection* tab_strip_collection = GetCollection();
@@ -1115,21 +1115,18 @@ TEST_F(TabStripCollectionTest, RecursiveRemoveTabAtIndex) {
   // Remove a pinned tab.
   TabInterface* tab_to_check =
       tab_strip_collection->GetTabAtIndexRecursive(2ul);
-  EXPECT_EQ(tab_to_check,
-            tab_strip_collection->RemoveTabAtIndexRecursive(2).get());
+  EXPECT_EQ(tab_to_check, tab_strip_collection->RemoveTab(tab_to_check).get());
   EXPECT_EQ(pinned_collection->TabCountRecursive(), 3ul);
 
   // Remove an unpinned tab. Now there are 3 pinned tabs.
   tab_to_check = tab_strip_collection->GetTabAtIndexRecursive(4ul);
-  EXPECT_EQ(tab_to_check,
-            tab_strip_collection->RemoveTabAtIndexRecursive(4ul).get());
+  EXPECT_EQ(tab_to_check, tab_strip_collection->RemoveTab(tab_to_check).get());
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 4ul);
 
   // Remove a grouped tab. Now there are 3 pinned tabs and 1 unpinned tab
   // before the group.
   tab_to_check = tab_strip_collection->GetTabAtIndexRecursive(4ul);
-  EXPECT_EQ(tab_to_check,
-            tab_strip_collection->RemoveTabAtIndexRecursive(4ul).get());
+  EXPECT_EQ(tab_to_check, tab_strip_collection->RemoveTab(tab_to_check).get());
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 1ul);
 }
 

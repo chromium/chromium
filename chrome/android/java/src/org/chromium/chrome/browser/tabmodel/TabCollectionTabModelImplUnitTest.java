@@ -184,7 +184,7 @@ public class TabCollectionTabModelImplUnitTest {
                             return null;
                         })
                 .when(mTabCollectionTabModelImplJni)
-                .removeTabRecursive(any(), any(Tab.class));
+                .removeTab(any(), any(Tab.class));
 
         when(mTabCollectionTabModelImplJni.moveTabRecursive(
                         any(), anyInt(), anyInt(), any(), anyBoolean()))
@@ -1059,7 +1059,7 @@ public class TabCollectionTabModelImplUnitTest {
         assertNull(mTabModel.getTabById(1));
         assertNull(mTabModel.getCurrentTabSupplier().get());
         assertFalse(mTabModel.isTabMultiSelected(1));
-        verify(mTabCollectionTabModelImplJni).removeTabRecursive(any(), eq(tab));
+        verify(mTabCollectionTabModelImplJni).removeTab(any(), eq(tab));
         verify(mTabModelObserver, never()).tabRemoved(any());
         verify(mTabModelObserver, never()).willCloseTabs(any(), anyBoolean(), anyBoolean());
 

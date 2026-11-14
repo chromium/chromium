@@ -64,17 +64,6 @@ TabCollectionTabModelImpl::TabCollectionTabModelImpl(Profile* profile)
 
 TabCollectionTabModelImpl::~TabCollectionTabModelImpl() = default;
 
-int TabCollectionTabModelImpl::GetIndexOfTabRecursive(
-    TabAndroid* tab_android) const {
-  if (!tab_android) {
-    return kInvalidTabIndex;
-  }
-
-  std::optional<size_t> index =
-      tab_strip_collection_->GetIndexOfTabRecursive(tab_android);
-  return index ? base::checked_cast<int>(*index) : kInvalidTabIndex;
-}
-
 int TabCollectionTabModelImpl::MoveTabRecursive(
     size_t current_index,
     size_t new_index,
@@ -118,10 +107,8 @@ int TabCollectionTabModelImpl::AddTabRecursive(
   return base::checked_cast<int>(index);
 }
 
-void TabCollectionTabModelImpl::RemoveTabRecursive(TabAndroid* tab) {
-  int index = GetIndexOfTabRecursive(tab);
-  CHECK_NE(index, kInvalidTabIndex);
-  tab_strip_collection_->RemoveTabAtIndexRecursive(index);
+void TabCollectionTabModelImpl::RemoveTab(TabAndroid* tab) {
+  tab_strip_collection_->RemoveTab(tab);
 }
 
 void TabCollectionTabModelImpl::CreateTabGroup(

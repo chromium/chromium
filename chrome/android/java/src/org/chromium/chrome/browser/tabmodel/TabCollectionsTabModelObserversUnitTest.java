@@ -145,7 +145,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return null;
                         })
                 .when(mTabCollectionTabModelImplJni)
-                .removeTabRecursive(any(), any(Tab.class));
+                .removeTab(any(), any(Tab.class));
 
         when(mTabCollectionTabModelImplJni.moveTabRecursive(
                         any(), anyInt(), anyInt(), any(), anyBoolean()))

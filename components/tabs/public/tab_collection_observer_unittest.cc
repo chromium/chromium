@@ -324,7 +324,7 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
             testing::Eq(false)))
         .Times(1);
 
-    collection->RemoveTabAtIndexRecursive(3);
+    collection->RemoveTab(group_tab_1_ptr);
   }
 
   // Test for final group tab.
@@ -348,7 +348,7 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
             testing::Eq(false)))
         .Times(1);
 
-    collection->RemoveTabAtIndexRecursive(2);
+    collection->RemoveTab(group_tab_0_ptr);
   }
 
   // Test for unpinned tab.
@@ -371,7 +371,7 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
             testing::Eq(false)))
         .Times(1);
 
-    collection->RemoveTabAtIndexRecursive(1);
+    collection->RemoveTab(unpinned_tab_ptr);
   }
 
   // Test for pinned tab.
@@ -394,7 +394,7 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
             testing::Eq(false)))
         .Times(1);
 
-    collection->RemoveTabAtIndexRecursive(0);
+    collection->RemoveTab(pinned_tab_ptr);
   }
 }
 

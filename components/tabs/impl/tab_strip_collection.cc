@@ -313,14 +313,36 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
   return move_datas;
 }
 
-ScopedTab TabStripCollection::RemoveTabAtIndexRecursive(size_t index) {
-  TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
-  return RemoveTabImpl(tab_to_be_removed);
-}
-
 ScopedTab TabStripCollection::RemoveTab(TabInterface* tab,
-                                        bool remove_for_detach = false) {
-  return RemoveTabImpl(tab, remove_for_detach);
+                                        bool remove_for_detach) {
+  CHECK(tab);
+
+  TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
+  CHECK(parent_collection);
+
+  // If it is the only tab in the group remove the collection.
+  if (parent_collection != unpinned_collection_ &&
+      parent_collection != pinned_collection_ &&
+      parent_collection->TabCountRecursive() == 1) {
+    RemoveTabCollectionImpl(parent_collection);
+    return parent_collection->MaybeRemoveTab(tab);
+  }
+
+  TabCollection::Position position = {
+      parent_collection->GetHandle(),
+      parent_collection->GetIndexOfTab(tab).value()};
+
+  ScopedTab removed_tab = parent_collection->MaybeRemoveTab(tab);
+
+  CHECK(removed_tab);
+
+  parent_collection->NotifyOnChildrenRemoved(
+      GetPassKey(), position,
+      std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
+          removed_tab->GetHandle()}},
+      nullptr, remove_for_detach);
+
+  return removed_tab;
 }
 
 ScopedTab TabStripCollection::MaybeRemoveTab(TabInterface* tab) {
@@ -594,38 +616,6 @@ void TabStripCollection::AddTabCollectionImpl(
   parent_collection_ptr->NotifyOnChildrenAdded(
       GetPassKey(), handles_added, position, nullptr,
       collection_ptr->TabCountRecursive() > 0);
-}
-
-ScopedTab TabStripCollection::RemoveTabImpl(TabInterface* tab,
-                                            bool remove_for_detach) {
-  CHECK(tab);
-
-  TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
-  CHECK(parent_collection);
-
-  // If it is the only tab in the group remove the collection.
-  if (parent_collection != unpinned_collection_ &&
-      parent_collection != pinned_collection_ &&
-      parent_collection->TabCountRecursive() == 1) {
-    RemoveTabCollectionImpl(parent_collection);
-    return parent_collection->MaybeRemoveTab(tab);
-  }
-
-  TabCollection::Position position = {
-      parent_collection->GetHandle(),
-      parent_collection->GetIndexOfTab(tab).value()};
-
-  ScopedTab removed_tab = parent_collection->MaybeRemoveTab(tab);
-
-  CHECK(removed_tab);
-
-  parent_collection->NotifyOnChildrenRemoved(
-      GetPassKey(), position,
-      std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
-          removed_tab->GetHandle()}},
-      nullptr, remove_for_detach);
-
-  return removed_tab;
 }
 
 std::unique_ptr<TabCollection> TabStripCollection::RemoveTabCollectionImpl(

@@ -974,7 +974,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             return;
         }
         TabCollectionTabModelImplJni.get()
-                .removeTabRecursive(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
+                .removeTab(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
         tab.onRemovedFromTabModel(mCurrentTabSupplier, DetachReason.INSERT_INTO_OTHER_WINDOW);
         mTabIdToTabs.remove(tab.getId());
         mMultiSelectedTabs.remove(tab.getId());
@@ -2253,7 +2253,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             // TODO(crbug.com/428692223): Vectorize this so all the tabs get removed from the
             // collection in a single pass.
             TabCollectionTabModelImplJni.get()
-                    .removeTabRecursive(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
+                    .removeTab(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
             tab.onRemovedFromTabModel(mCurrentTabSupplier, detachReason);
             mTabIdToTabs.remove(tab.getId());
         }
@@ -2882,8 +2882,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 boolean isAttachingGroup,
                 boolean isPinned);
 
-        void removeTabRecursive(
-                JniPtr<NativeTabCollectionTabModelImpl> self, @JniType("TabAndroid*") Tab tabs);
+        void removeTab(
+                JniPtr<NativeTabCollectionTabModelImpl> self, @JniType("TabAndroid*") Tab tab);
 
         void createTabGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
