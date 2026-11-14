@@ -341,6 +341,10 @@ class MODULES_EXPORT AudioContext final
   void Uninitialize() override;
   void DetachPendingResolvers() override;
 
+  // Uninitializes a context that Create() rejects after construction. Script
+  // never observes such a context, so it must not report autoplay metrics.
+  void UninitializeRejectedContext();
+
   // Returns the AutoplayPolicy currently applying to this instance.
   AutoplayPolicy::Type GetAutoplayPolicy() const;
 

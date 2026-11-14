@@ -211,7 +211,9 @@ void RealtimeAudioDestinationHandler::RestartRendering() {
 }
 
 uint32_t RealtimeAudioDestinationHandler::MaxChannelCount() const {
-  return platform_destination_->MaxChannelCount();
+  // `platform_destination_` is null when its creation failed. The context is
+  // then rejected, but the inspector can still query it during teardown.
+  return platform_destination_ ? platform_destination_->MaxChannelCount() : 0;
 }
 
 double RealtimeAudioDestinationHandler::SampleRate() const {
@@ -358,7 +360,8 @@ uint32_t RealtimeAudioDestinationHandler::GetCallbackBufferSize() const {
   DCHECK(IsMainThread());
   DCHECK(IsInitialized());
 
-  return platform_destination_->CallbackBufferSize();
+  return platform_destination_ ? platform_destination_->CallbackBufferSize()
+                               : 0;
 }
 
 int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
@@ -373,7 +376,9 @@ base::TimeDelta RealtimeAudioDestinationHandler::GetPlatformBufferDuration()
   DCHECK(IsMainThread());
   DCHECK(IsInitialized());
 
-  return platform_destination_->GetPlatformBufferDuration();
+  return platform_destination_
+             ? platform_destination_->GetPlatformBufferDuration()
+             : base::TimeDelta();
 }
 
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {

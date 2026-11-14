@@ -122,6 +122,9 @@ AudioListener::AudioListener(BaseAudioContext& context)
       forward_x_->Handler(), forward_y_->Handler(), forward_z_->Handler(),
       up_x_->Handler(), up_y_->Handler(), up_z_->Handler(),
       deferred_task_handler_->RenderQuantumFrames()));
+  if (Handler().HasAllocationFailed()) {
+    context.SetAllocationFailed();
+  }
 }
 
 AudioListener::~AudioListener() {

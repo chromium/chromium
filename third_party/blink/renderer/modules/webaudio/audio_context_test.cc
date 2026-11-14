@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/synchronization/waitable_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -59,6 +60,8 @@
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/webaudio/analyser_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_listener_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
@@ -76,6 +79,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -515,6 +519,10 @@ class AudioContextTest : public PageTestBase {
   void SetContextState(AudioContext* audio_context,
                        V8AudioContextState::Enum state) {
     audio_context->SetContextState(state);
+  }
+
+  void UninitializeAudioContext(AudioContext* audio_context) {
+    audio_context->Uninitialize();
   }
 
   void ClearAudibilityState(AudioContext* audio_context)
@@ -2689,6 +2697,131 @@ TEST_F(AudioContextTest, RenderSizeHint) {
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
   EXPECT_EQ(context->renderQuantumSize(), 256u);
+}
+
+TEST_F(AudioContextTest, RenderSizeHintWithoutSampleRate) {
+  // Under this policy the constructor provisionally records an autoplay
+  // failure, which a rejected context must not report.
+  GetFrame().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  base::HistogramTester histogram_tester;
+  const int baseline_observers = InstanceCounters::CounterValue(
+      InstanceCounters::kContextLifecycleStateObserverCounter);
+
+  // Coarse pre-validation rejects 0, uint32_t(-1), and > 6 * max_sample_rate
+  // before constructing AudioContext even when sampleRate is omitted.
+  for (uint32_t invalid_hint :
+       {0u, std::numeric_limits<uint32_t>::max(), 4608001u}) {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    options->setRenderSizeHint(
+        MakeGarbageCollected<
+            V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(invalid_hint));
+    DummyExceptionStateForTesting exception_state;
+    AudioContext* context =
+        AudioContext::Create(GetFrame().DomWindow(), options, exception_state);
+    EXPECT_EQ(context, nullptr);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotSupportedError);
+    EXPECT_EQ(InstanceCounters::CounterValue(
+                  InstanceCounters::kContextLifecycleStateObserverCounter),
+              baseline_observers);
+  }
+  EXPECT_EQ(mock_audio_context_manager()->closed_count(), 0);
+
+  // A hint within the coarse bound [1, 4608000] but exceeding 6 * 44100
+  // (the mock hardware sample rate) fails post-construction validation,
+  // uninitializes cleanly, and becomes eligible for Oilpan collection.
+  {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    options->setRenderSizeHint(
+        MakeGarbageCollected<
+            V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(264601u));
+    DummyExceptionStateForTesting exception_state;
+    AudioContext* context =
+        AudioContext::Create(GetFrame().DomWindow(), options, exception_state);
+    EXPECT_EQ(context, nullptr);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotSupportedError);
+  }
+
+  test::RunPendingTasks();
+  EXPECT_EQ(mock_audio_context_manager()->closed_count(), 1);
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(InstanceCounters::CounterValue(
+                InstanceCounters::kContextLifecycleStateObserverCounter),
+            baseline_observers);
+
+  // Trigger another post-construction rejection without running GC before
+  // TearDown so ContextDestroyed() exercises Uninitialize() idempotency.
+  AudioContextOptions* options = AudioContextOptions::Create();
+  options->setRenderSizeHint(
+      MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
+          264601u));
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_EQ(
+      AudioContext::Create(GetFrame().DomWindow(), options, exception_state),
+      nullptr);
+  EXPECT_TRUE(exception_state.HadException());
+
+  // Script never observed the rejected contexts, so they must not contribute
+  // autoplay metrics.
+  histogram_tester.ExpectTotalCount("WebAudio.Autoplay", 0);
+}
+
+TEST_F(AudioContextTest, AllocationFailureCleansUpWithoutCrash) {
+  AudioContext* valid_context =
+      AudioContext::Create(GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  AudioListener* listener = valid_context->listener();
+  ASSERT_NE(listener, nullptr);
+
+  // Verify AudioListenerHandler falls back cleanly instead of hitting CHECK
+  // when AudioFloatArray allocation fails.
+  scoped_refptr<AudioListenerHandler> failed_listener_handler =
+      AudioListenerHandler::Create(
+          listener->positionX()->Handler(), listener->positionY()->Handler(),
+          listener->positionZ()->Handler(), listener->forwardX()->Handler(),
+          listener->forwardY()->Handler(), listener->forwardZ()->Handler(),
+          listener->upX()->Handler(), listener->upY()->Handler(),
+          listener->upZ()->Handler(), std::numeric_limits<unsigned>::max());
+  EXPECT_TRUE(failed_listener_handler->HasAllocationFailed());
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(
+        valid_context->GetDeferredTaskHandler());
+    failed_listener_handler.reset();
+  }
+
+  // Verify an AudioContext whose internal allocations fail cleans up cleanly
+  // via Uninitialize() and is collected by Oilpan.
+  WeakPersistent<AudioContext> weak_failed_context;
+  {
+    AudioContext* failed_context = MakeGarbageCollected<AudioContext>(
+        *GetFrame().DomWindow(),
+        WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive),
+        /*sample_rate=*/std::nullopt,
+        WebAudioSinkDescriptor(g_empty_string,
+                               GetFrame().DomWindow()->GetLocalFrameToken()),
+        /*update_echo_cancellation_on_first_start=*/false,
+        std::numeric_limits<uint32_t>::max());
+    failed_context->UpdateStateIfNeeded();
+    EXPECT_TRUE(failed_context->HasAllocationFailed());
+    EXPECT_DOUBLE_EQ(failed_context->baseLatency(), 0.0);
+    // The destination has no platform destination. The inspector reads these
+    // through BuildProtocolContext() on creation and on the state change in
+    // Uninitialize() when the DevTools WebAudio panel is open.
+    EXPECT_EQ(failed_context->MaxChannelCount(), 0);
+    EXPECT_EQ(failed_context->CallbackBufferSize(), 0);
+    EXPECT_TRUE(failed_context->PlatformBufferDuration().is_zero());
+    UninitializeAudioContext(failed_context);
+    EXPECT_FALSE(failed_context->HasPendingActivity());
+    weak_failed_context = failed_context;
+  }
+
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_failed_context);
 }
 
 TEST_F(AudioContextTest, RenderSizeHintWithResampler) {
