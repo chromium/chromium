@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+from enum import Enum
 
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
@@ -76,6 +77,11 @@ IGNORED_TYPES = {
   "url.mojom.Url",
   "url.mojom.SchemeHostPort",
 }
+
+
+class Endpoint(Enum):
+  REMOTE = 0
+  RECEIVER = 1
 
 
 class Generator(generator.Generator):
@@ -245,37 +251,30 @@ class Generator(generator.Generator):
       interface = kind
     name = self._FormatUniqueName(interface)
 
-    # Track the pending endpoints used from the JS side. A pending remote passed
+    # Track pending endpoints used from the JS side. A pending remote passed
     # from the browser side is used directly as a `Remote`, so it is not
     # tracked.
     if is_pending_receiver or (is_pending_remote and is_in_js):
       self._TrackPendingInterfaces(kind)
 
-    # TODO(crbug.com/522372048): this check prevents interfaces from being
-    # registered as both remotes and receivers. Rewrite the logic to
-    # support the edge case where an interface is used as both.
-    if name in self.interface_remotes or name in self.interface_receivers:
-      return
-
+    # True if JS side keeps a remote. False if JS side keeps a receiver.
+    endpoint_kept = self._GetEndpointKept(
+      is_in_js, is_pending_remote, is_pending_receiver
+    )
     if is_pending_remote:
-      if is_in_js:
-        # Pending remote passed from JS side, JS keeps receiver
-        self.interface_receivers[name] = interface
-      else:
-        # Pending remote passed from browser side, JS keeps remote
-        self.interface_remotes[name] = interface
-      is_in_js = not is_in_js  # interface is used from the other side
-    elif is_pending_receiver:
-      if is_in_js:
-        # Pending receiver passed from JS side, JS keeps remote
-        self.interface_remotes[name] = interface
-      else:
-        # Pending receiver passed from browser side, JS keeps receiver
-        self.interface_receivers[name] = interface
-      # Do NOT flip is_in_js; the interface is used from the same side that
+      # Flip, as interface is used from the other side. Do NOT flip is_in_js
+      # otherwise, since then the interface is used from the same side that
       # passed the receiver to the other side.
-    else:
+      is_in_js = not is_in_js
+
+    if endpoint_kept == Endpoint.REMOTE:
+      if name in self.interface_remotes:
+        return
       self.interface_remotes[name] = interface
+    else:
+      if name in self.interface_receivers:
+        return
+      self.interface_receivers[name] = interface
 
     for method in interface.methods:
       for param in method.parameters:
@@ -378,13 +377,18 @@ class Generator(generator.Generator):
     # When JS implements the interface (i.e., it is a receiver), JS only passes
     # remotes to the browser, so they are typed after their Mojom kind
     # (`PendingRemote` / `PendingAssociatedRemote`). Remotes that JS calls into
-    # keep the `Remote` type, which carries the interface's methods.
+    # keep the `Remote` type, which carries the interface's methods. If JS also
+    # calls into the interface, the remotes it gets from the browser (e.g. a
+    # token from `Transfer()`) can be passed as well, as they are the same JS
+    # objects as the remotes JS creates, so these keep the `Remote` type.
     if self._IsAnyPendingRemoteKind(kind):
       name = self._FormatUniqueName(kind.kind)
       if name not in self.interface_receivers:
         return f"js{name}Remote"
       if mojom.IsPendingAssociatedRemoteKind(kind):
         return f"js{name}PendingAssociatedRemote"
+      if name in self.interface_remotes:
+        return f"js{name}Remote"
       return f"js{name}PendingRemote"
 
     if mojom.IsPendingReceiverKind(kind):
@@ -468,6 +472,26 @@ class Generator(generator.Generator):
 
     file_name = "%s.MojoProfile.swift" % self.module.path
     self.WriteWithComment(self._GenerateFuzzilliModule(), file_name)
+
+  # Given which side the interface is used from, and the kind of the interface,
+  # returns which endpoint the JS side keeps.
+  def _GetEndpointKept(self, is_in_js, is_pending_remote, is_pending_receiver):
+    if is_pending_remote:
+      if is_in_js:
+        # Pending remote passed from JS side, JS keeps receiver
+        return Endpoint.RECEIVER
+      else:
+        # Pending remote passed from browser side, JS keeps remote
+        return Endpoint.REMOTE
+    elif is_pending_receiver:
+      if is_in_js:
+        # Pending receiver passed from JS side, JS keeps remote
+        return Endpoint.REMOTE
+      else:
+        # Pending receiver passed from browser side, JS keeps receiver
+        return Endpoint.RECEIVER
+    else:
+      return Endpoint.REMOTE
 
   # Stores the interface of a pending kind used from the JS side in the
   # dictionary matching that pending kind.

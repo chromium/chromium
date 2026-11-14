@@ -186,14 +186,14 @@ extension ILType {
     fileprivate static let jsGoldenReceiverFromJsViaReceiverFromBrowserPendingReceiver: ILType = .object(
         ofGroup: "golden.ReceiverFromJsViaReceiverFromBrowserPendingReceiver")
 
-    // MixedRemoteFromBrowser
-    fileprivate static let jsGoldenMixedRemoteFromBrowserRemote: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromBrowserRemote",
+    // MixedRemote
+    fileprivate static let jsGoldenMixedRemoteRemote: ILType = .object(
+        ofGroup: "golden.MixedRemoteRemote",
         withProperties: ["$"],
         withMethods: [
         ])
-    fileprivate static let jsGoldenMixedRemoteFromBrowserRemoteWrapper: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromBrowserRemoteWrapper",
+    fileprivate static let jsGoldenMixedRemoteRemoteWrapper: ILType = .object(
+        ofGroup: "golden.MixedRemoteRemoteWrapper",
         withMethods: [
           "close",
           "isBound",
@@ -446,37 +446,29 @@ extension ILType {
           "bindNewPipeAndPassReceiver",
         ])
 
-    // MixedRemoteFromJs
-    fileprivate static let jsGoldenMixedRemoteFromJsCallbackRouter: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsCallbackRouter",
+    // MixedRemote
+    fileprivate static let jsGoldenMixedRemoteCallbackRouter: ILType = .object(
+        ofGroup: "golden.MixedRemoteCallbackRouter",
         withProperties: [
             "$",
         ])
-    fileprivate static let jsGoldenMixedRemoteFromJsCallbackRouterReceiverHelper: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsCallbackRouterReceiverHelper",
+    fileprivate static let jsGoldenMixedRemoteCallbackRouterReceiverHelper: ILType = .object(
+        ofGroup: "golden.MixedRemoteCallbackRouterReceiverHelper",
         withMethods: [
           "close",
           "bindNewPipeAndPassRemote",
           "associateAndPassRemote",
         ])
-    fileprivate static let jsGoldenMixedRemoteFromJsPendingReceiver: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsPendingReceiver")
-    fileprivate static let jsGoldenMixedRemoteFromJsPendingRemote: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsPendingRemote",
+    fileprivate static let jsGoldenMixedRemotePendingReceiver: ILType = .object(
+        ofGroup: "golden.MixedRemotePendingReceiver")
+    fileprivate static let jsGoldenMixedRemotePendingRemote: ILType = .object(
+        ofGroup: "golden.MixedRemotePendingRemote",
         withProperties: ["$"])
-    fileprivate static let jsGoldenMixedRemoteFromJsPendingAssociatedReceiver: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsPendingAssociatedReceiver")
-    fileprivate static let jsGoldenMixedRemoteFromJsPendingAssociatedRemote: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsPendingAssociatedRemote",
+    fileprivate static let jsGoldenMixedRemotePendingAssociatedReceiver: ILType = .object(
+        ofGroup: "golden.MixedRemotePendingAssociatedReceiver")
+    fileprivate static let jsGoldenMixedRemotePendingAssociatedRemote: ILType = .object(
+        ofGroup: "golden.MixedRemotePendingAssociatedRemote",
         withProperties: ["$"])
-    fileprivate static let jsGoldenMixedRemoteFromJsRemoteWrapper: ILType = .object(
-        ofGroup: "golden.MixedRemoteFromJsRemoteWrapper",
-        withMethods: [
-          "close",
-          "isBound",
-          "bindNewPipeAndPassReceiver",
-          "associateAndPassReceiver",
-        ])
 }
 
 extension ObjectGroup {
@@ -497,8 +489,8 @@ extension ObjectGroup {
             "returnReceiver": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_ReturnReceiver_ResponseParams),
             "passMixed": [
-                .plain(.jsGoldenMixedRemoteFromJsPendingRemote),
-                .plain(.jsGoldenMixedRemoteFromJsPendingAssociatedRemote),
+                .plain(.jsGoldenMixedRemoteRemote),
+                .plain(.jsGoldenMixedRemotePendingAssociatedRemote),
             ] => .undefined,
             "returnMixed": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_ReturnMixed_ResponseParams),
@@ -741,17 +733,17 @@ extension ObjectGroup {
         methods: [:]
     )
 
-    // MixedRemoteFromBrowser
-    fileprivate static let goldenMixedRemoteFromBrowserRemote = ObjectGroup(
-        name: "golden.MixedRemoteFromBrowserRemote",
-        instanceType: .jsGoldenMixedRemoteFromBrowserRemote,
-        properties: ["$": .jsGoldenMixedRemoteFromBrowserRemoteWrapper],
+    // MixedRemote
+    fileprivate static let goldenMixedRemoteRemote = ObjectGroup(
+        name: "golden.MixedRemoteRemote",
+        instanceType: .jsGoldenMixedRemoteRemote,
+        properties: ["$": .jsGoldenMixedRemoteRemoteWrapper],
         methods: [:]
     )
 
-    fileprivate static let goldenMixedRemoteFromBrowserRemoteWrapper = ObjectGroup(
-        name: "golden.MixedRemoteFromBrowserRemoteWrapper",
-        instanceType: .jsGoldenMixedRemoteFromBrowserRemoteWrapper,
+    fileprivate static let goldenMixedRemoteRemoteWrapper = ObjectGroup(
+        name: "golden.MixedRemoteRemoteWrapper",
+        instanceType: .jsGoldenMixedRemoteRemoteWrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
@@ -1219,58 +1211,48 @@ extension ObjectGroup {
             "bindNewPipeAndPassReceiver": [] => .jsGoldenRemoteFromJsViaReceiverFromBrowserPendingReceiver,
         ])
 
-    // MixedRemoteFromJs
-    fileprivate static let goldenMixedRemoteFromJsCallbackRouter = ObjectGroup(
-        name: "golden.MixedRemoteFromJsCallbackRouter",
-        instanceType: .jsGoldenMixedRemoteFromJsCallbackRouter,
+    // MixedRemote
+    fileprivate static let goldenMixedRemoteCallbackRouter = ObjectGroup(
+        name: "golden.MixedRemoteCallbackRouter",
+        instanceType: .jsGoldenMixedRemoteCallbackRouter,
         properties: [
-            "$": .jsGoldenMixedRemoteFromJsCallbackRouterReceiverHelper,
+            "$": .jsGoldenMixedRemoteCallbackRouterReceiverHelper,
         ],
         methods: [:]
     )
-    fileprivate static let goldenMixedRemoteFromJsCallbackRouterReceiverHelper = ObjectGroup(
-        name: "golden.MixedRemoteFromJsCallbackRouterReceiverHelper",
-        instanceType: .jsGoldenMixedRemoteFromJsCallbackRouterReceiverHelper,
+    fileprivate static let goldenMixedRemoteCallbackRouterReceiverHelper = ObjectGroup(
+        name: "golden.MixedRemoteCallbackRouterReceiverHelper",
+        instanceType: .jsGoldenMixedRemoteCallbackRouterReceiverHelper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
-            "bindNewPipeAndPassRemote": [] => .jsGoldenMixedRemoteFromJsPendingRemote,
-            "associateAndPassRemote": [] => .jsGoldenMixedRemoteFromJsPendingAssociatedRemote,
+            "bindNewPipeAndPassRemote": [] => .jsGoldenMixedRemoteRemote,
+            "associateAndPassRemote": [] => .jsGoldenMixedRemotePendingAssociatedRemote,
         ])
-    fileprivate static let goldenMixedRemoteFromJsPendingReceiver = ObjectGroup(
-        name: "golden.MixedRemoteFromJsPendingReceiver",
-        instanceType: .jsGoldenMixedRemoteFromJsPendingReceiver,
+    fileprivate static let goldenMixedRemotePendingReceiver = ObjectGroup(
+        name: "golden.MixedRemotePendingReceiver",
+        instanceType: .jsGoldenMixedRemotePendingReceiver,
         properties: [:],
         methods: [:]
     )
-    fileprivate static let goldenMixedRemoteFromJsPendingRemote = ObjectGroup(
-        name: "golden.MixedRemoteFromJsPendingRemote",
-        instanceType: .jsGoldenMixedRemoteFromJsPendingRemote,
-        properties: ["$": .jsGoldenMixedRemoteFromJsRemoteWrapper],
+    fileprivate static let goldenMixedRemotePendingRemote = ObjectGroup(
+        name: "golden.MixedRemotePendingRemote",
+        instanceType: .jsGoldenMixedRemotePendingRemote,
+        properties: ["$": .jsGoldenMixedRemoteRemoteWrapper],
         methods: [:]
     )
-    fileprivate static let goldenMixedRemoteFromJsPendingAssociatedReceiver = ObjectGroup(
-        name: "golden.MixedRemoteFromJsPendingAssociatedReceiver",
-        instanceType: .jsGoldenMixedRemoteFromJsPendingAssociatedReceiver,
+    fileprivate static let goldenMixedRemotePendingAssociatedReceiver = ObjectGroup(
+        name: "golden.MixedRemotePendingAssociatedReceiver",
+        instanceType: .jsGoldenMixedRemotePendingAssociatedReceiver,
         properties: [:],
         methods: [:]
     )
-    fileprivate static let goldenMixedRemoteFromJsPendingAssociatedRemote = ObjectGroup(
-        name: "golden.MixedRemoteFromJsPendingAssociatedRemote",
-        instanceType: .jsGoldenMixedRemoteFromJsPendingAssociatedRemote,
-        properties: ["$": .jsGoldenMixedRemoteFromJsRemoteWrapper],
+    fileprivate static let goldenMixedRemotePendingAssociatedRemote = ObjectGroup(
+        name: "golden.MixedRemotePendingAssociatedRemote",
+        instanceType: .jsGoldenMixedRemotePendingAssociatedRemote,
+        properties: ["$": .jsGoldenMixedRemoteRemoteWrapper],
         methods: [:]
     )
-    fileprivate static let goldenMixedRemoteFromJsRemoteWrapper = ObjectGroup(
-        name: "golden.MixedRemoteFromJsRemoteWrapper",
-        instanceType: .jsGoldenMixedRemoteFromJsRemoteWrapper,
-        properties: [:],
-        methods: [
-            "close": [] => .undefined,
-            "isBound": [] => .boolean,
-            "bindNewPipeAndPassReceiver": [] => .jsGoldenMixedRemoteFromJsPendingReceiver,
-            "associateAndPassReceiver": [] => .jsGoldenMixedRemoteFromJsPendingAssociatedReceiver,
-        ])
 }
 
 ///
@@ -1420,8 +1402,8 @@ extension ObjectGroup {
         name: "golden.Primary_ReturnMixed_ResponseParams",
         instanceType: .jsGoldenPrimary_ReturnMixed_ResponseParams,
         properties: [
-            "remote": .jsGoldenMixedRemoteFromBrowserRemote,
-            "associatedRemote": .jsGoldenMixedRemoteFromBrowserRemote,
+            "remote": .jsGoldenMixedRemoteRemote,
+            "associatedRemote": .jsGoldenMixedRemotePendingAssociatedRemote,
         ],
         methods: [:]
     )
@@ -1567,8 +1549,8 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenReceiverFromJsViaReceiverFromBrowserRemote,
     .goldenReceiverFromJsViaReceiverFromBrowserRemoteWrapper,
     .goldenReceiverFromJsViaReceiverFromBrowserPendingReceiver,
-    .goldenMixedRemoteFromBrowserRemote,
-    .goldenMixedRemoteFromBrowserRemoteWrapper,
+    .goldenMixedRemoteRemote,
+    .goldenMixedRemoteRemoteWrapper,
     .goldenRemoteFromJsCallbackRouter,
     .goldenRemoteFromJsCallbackRouterReceiverHelper,
     .goldenRemoteFromJsPendingReceiver,
@@ -1622,13 +1604,12 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenRemoteFromJsViaReceiverFromBrowserPendingReceiver,
     .goldenRemoteFromJsViaReceiverFromBrowserPendingRemote,
     .goldenRemoteFromJsViaReceiverFromBrowserRemoteWrapper,
-    .goldenMixedRemoteFromJsCallbackRouter,
-    .goldenMixedRemoteFromJsCallbackRouterReceiverHelper,
-    .goldenMixedRemoteFromJsPendingReceiver,
-    .goldenMixedRemoteFromJsPendingRemote,
-    .goldenMixedRemoteFromJsPendingAssociatedReceiver,
-    .goldenMixedRemoteFromJsPendingAssociatedRemote,
-    .goldenMixedRemoteFromJsRemoteWrapper,
+    .goldenMixedRemoteCallbackRouter,
+    .goldenMixedRemoteCallbackRouterReceiverHelper,
+    .goldenMixedRemotePendingReceiver,
+    .goldenMixedRemotePendingRemote,
+    .goldenMixedRemotePendingAssociatedReceiver,
+    .goldenMixedRemotePendingAssociatedRemote,
     .goldenRemoteFromJsReturnRemoteResponseParams,
     .goldenRemoteFromJsReturnReceiverResponseParams,
     .goldenReceiverFromJsReturnRemoteResponseParams,
@@ -1682,8 +1663,8 @@ private let mojoBuiltins: [String: ILType] = [
        .constructor([] => .jsGoldenReceiverFromBrowserViaReceiverFromBrowserCallbackRouter),
     "golden.RemoteFromJsViaReceiverFromBrowserCallbackRouter":
        .constructor([] => .jsGoldenRemoteFromJsViaReceiverFromBrowserCallbackRouter),
-    "golden.MixedRemoteFromJsCallbackRouter":
-       .constructor([] => .jsGoldenMixedRemoteFromJsCallbackRouter),
+    "golden.MixedRemoteCallbackRouter":
+       .constructor([] => .jsGoldenMixedRemoteCallbackRouter),
 ]
 
 private let keepGenerators = [

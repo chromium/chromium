@@ -4,11 +4,14 @@ private let mojoObjectGroups: [ObjectGroup] = [
 {%- for remote in interface_remotes %}
     .{{remote|format_unique_name|to_camel(True)}}Remote,
     .{{remote|format_unique_name|to_camel(True)}}RemoteWrapper,
-{%- if remote in interface_pending_receivers %}
+{#- Avoid duplicate definitions #}
+{%- if remote not in interface_receivers %}
+    {%- if remote in interface_pending_receivers %}
     .{{remote|format_unique_name|to_camel(True)}}PendingReceiver,
-{%- endif %}
-{%- if remote in interface_associated_pending_receivers %}
+    {%- endif %}
+    {%- if remote in interface_associated_pending_receivers %}
     .{{remote|format_unique_name|to_camel(True)}}PendingAssociatedReceiver,
+    {%- endif %}
 {%- endif %}
 {%- endfor %}
 {%- for receiver in interface_receivers %}
@@ -32,9 +35,12 @@ private let mojoObjectGroups: [ObjectGroup] = [
 {%- if receiver in interface_associated_pending_remotes %}
     .{{receiver|format_unique_name|to_camel(True)}}PendingAssociatedRemote,
 {%- endif %}
-{%- if receiver in interface_pending_remotes or
-       receiver in interface_associated_pending_remotes %}
+{#- Avoid duplicate definitions #}
+{%- if receiver not in interface_remotes %}
+    {%- if receiver in interface_pending_remotes or
+           receiver in interface_associated_pending_remotes %}
     .{{receiver|format_unique_name|to_camel(True)}}RemoteWrapper,
+    {%- endif %}
 {%- endif %}
     {%- for method in receiver.methods %}
     .{{(method|callback_receiver_name)|to_camel(True)}},
