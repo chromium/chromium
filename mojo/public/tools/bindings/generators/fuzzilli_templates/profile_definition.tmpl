@@ -1,11 +1,11 @@
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
 private let mojoObjectGroups: [ObjectGroup] = [
-{%- for remote in interface_remotes %}
+{%- for remote in js_called_interfaces %}
     .{{remote|format_unique_name|to_camel(True)}}Remote,
     .{{remote|format_unique_name|to_camel(True)}}RemoteWrapper,
 {#- Avoid duplicate definitions #}
-{%- if remote not in interface_receivers %}
+{%- if remote not in js_implemented_interfaces %}
     {%- if remote in interface_pending_receivers %}
     .{{remote|format_unique_name|to_camel(True)}}PendingReceiver,
     {%- endif %}
@@ -14,7 +14,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     {%- endif %}
 {%- endif %}
 {%- endfor %}
-{%- for receiver in interface_receivers %}
+{%- for receiver in js_implemented_interfaces %}
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouter,
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouterReceiverHelper,
 {%- if receiver in interface_pending_receivers or
@@ -36,7 +36,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .{{receiver|format_unique_name|to_camel(True)}}PendingAssociatedRemote,
 {%- endif %}
 {#- Avoid duplicate definitions #}
-{%- if receiver not in interface_remotes %}
+{%- if receiver not in js_called_interfaces %}
     {%- if receiver in interface_pending_remotes or
            receiver in interface_associated_pending_remotes %}
     .{{receiver|format_unique_name|to_camel(True)}}RemoteWrapper,
@@ -64,7 +64,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// of every async function it emits, and `codeSuffix` awaits them all. Typed
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
-{%- for remote in interface_remotes %}
+{%- for remote in js_called_interfaces %}
     {#- TODO(crbug.com/522372048): Primary interfaces can also be used as non-primary
         interfaces. Add support for this use case. #}
     {%- if remote != primary and
@@ -74,7 +74,7 @@ private let mojoBuiltins: [String: ILType] = [
        .constructor([] => .{{remote|format_il_type}}),
     {%- endif %}
 {%- endfor %}
-{%- for receiver in interface_receivers %}
+{%- for receiver in js_implemented_interfaces %}
     "{{receiver|fully_qualified_name}}CallbackRouter":
        .constructor([] => .js{{receiver|format_unique_name}}CallbackRouter),
 {%- endfor %}
@@ -162,7 +162,7 @@ let mojo{{primary.name}}Profile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-{%- for receiver in interface_receivers %}
+{%- for receiver in js_implemented_interfaces %}
     {%- if receiver.methods %}
         (Mojo{{receiver|format_unique_name}}RouterListenerGenerator, 5000),
     {%- endif %}

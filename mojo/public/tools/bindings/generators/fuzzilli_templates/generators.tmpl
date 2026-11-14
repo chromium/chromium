@@ -47,7 +47,7 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
     b.getProperty(propertyName, of: obj)
 }
 
-{%- for receiver in interface_receivers %}
+{%- for receiver in js_implemented_interfaces %}
     {%- if receiver.methods %}
 
 /// Generates a call to add a callback to the {{

@@ -92,12 +92,16 @@ class Generator(generator.Generator):
     # from the browser. All other interfaces, which will be bound using the
     # primary interface, are considered secondary interfaces
     self.primary_interface = None
-    self.interface_remotes = {}
-    self.interface_receivers = {}
+    # Interfaces that JS holds a `Remote` of and calls into.
+    self.js_called_interfaces = {}
+    # Interfaces that JS implements, i.e. holds a receiver of.
+    self.js_implemented_interfaces = {}
 
     # TODO(crbug.com/522372048): Consider improving the organization of all
     # these types.
-    # The following track which endpoint types are used from the JS side.
+    # The following track which pending endpoint kinds of each interface are
+    # used from the JS side. An interface can be in these sets regardless of
+    # whether it is called or implemented by JS.
     self.interface_pending_remotes = set()
     self.interface_associated_pending_remotes = set()
     self.interface_pending_receivers = set()
@@ -149,8 +153,10 @@ class Generator(generator.Generator):
       "module": self.module,
       "mojo_scripts_page_path": self._GetMojoScriptsPagePath(),
       "primary": self.primary_interface,
-      "interface_remotes": list(self.interface_remotes.values()),
-      "interface_receivers": list(self.interface_receivers.values()),
+      "js_called_interfaces": list(self.js_called_interfaces.values()),
+      "js_implemented_interfaces": list(
+        self.js_implemented_interfaces.values()
+      ),
       "interface_pending_remotes": list(self.interface_pending_remotes),
       "interface_associated_pending_remotes": list(
         self.interface_associated_pending_remotes
@@ -268,13 +274,13 @@ class Generator(generator.Generator):
       is_in_js = not is_in_js
 
     if endpoint_kept == Endpoint.REMOTE:
-      if name in self.interface_remotes:
+      if name in self.js_called_interfaces:
         return
-      self.interface_remotes[name] = interface
+      self.js_called_interfaces[name] = interface
     else:
-      if name in self.interface_receivers:
+      if name in self.js_implemented_interfaces:
         return
-      self.interface_receivers[name] = interface
+      self.js_implemented_interfaces[name] = interface
 
     for method in interface.methods:
       for param in method.parameters:
@@ -383,11 +389,11 @@ class Generator(generator.Generator):
     # objects as the remotes JS creates, so these keep the `Remote` type.
     if self._IsAnyPendingRemoteKind(kind):
       name = self._FormatUniqueName(kind.kind)
-      if name not in self.interface_receivers:
+      if name not in self.js_implemented_interfaces:
         return f"js{name}Remote"
       if mojom.IsPendingAssociatedRemoteKind(kind):
         return f"js{name}PendingAssociatedRemote"
-      if name in self.interface_remotes:
+      if name in self.js_called_interfaces:
         return f"js{name}Remote"
       return f"js{name}PendingRemote"
 
