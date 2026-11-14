@@ -278,9 +278,9 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
   }
 
   bool RequiresNetworkEncryption() const override {
-    // TODO(crbug.com/562129749): Check whether RequiresNetworkEncryption is
-    // actually required for these components.
-    return true;
+    // Model assets are shared across eligible devices and do not require
+    // confidentiality, allowing HTTP caching for enterprises and testing.
+    return false;
   }
 
   update_client::CrxInstaller::Result OnCustomInstall(
