@@ -130,7 +130,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void ShutdownForTesting();
 
   void StoreSinkInPrefsForTesting(base::OnceClosure on_sink_stored_callback,
-                                  const MediaSinkInternal* sink);
+                                  std::optional<MediaSinkInternal> sink);
 
   void SetExpirationTimerForTesting(const MediaSink::Id& sink_id);
 
@@ -141,10 +141,10 @@ class AccessCodeCastSinkService : public KeyedService,
   void HandleMediaRouteAddedForTesting(const MediaRoute::Id route_id,
                                        const bool is_route_local,
                                        const MediaSource media_source,
-                                       const MediaSinkInternal* sink);
+                                       std::optional<MediaSinkInternal> sink);
 
   void HandleMediaRouteRemovedByAccessCodeForTesting(
-      const MediaSinkInternal* sink);
+      std::optional<MediaSinkInternal> sink);
 
   void OnAccessCodeValidatedForTesting(
       AddSinkResultCallback add_sink_callback,
@@ -218,19 +218,20 @@ class AccessCodeCastSinkService : public KeyedService,
                              const MediaSinkInternal& sink,
                              bool channel_opened);
 
-  bool IsSinkValidAccessCodeSink(const MediaSinkInternal* sink);
+  bool IsSinkValidAccessCodeSink(const std::optional<MediaSinkInternal>& sink);
 
   // Handles removal from media router via expiration if a route with an access
   // code cast sink has ended.
-  void HandleMediaRouteRemovedByAccessCode(const MediaSinkInternal* sink);
+  void HandleMediaRouteRemovedByAccessCode(
+      std::optional<MediaSinkInternal> sink);
 
   // Reports to metrics whenever the added route is to an access code sink.
   void HandleMediaRouteAdded(const MediaRoute::Id route_id,
                              const bool is_route_local,
                              const MediaSource media_source,
-                             const MediaSinkInternal* sink);
+                             std::optional<MediaSinkInternal> sink);
 
-  void OnAccessCodeRouteRemoved(const MediaSinkInternal* sink);
+  void OnAccessCodeRouteRemoved(const MediaSink::Id& sink_id);
   void OpenChannelIfNecessary(const MediaSinkInternal& sink,
                               AddSinkResultCallback add_sink_callback,
                               bool has_sink);
@@ -242,6 +243,13 @@ class AccessCodeCastSinkService : public KeyedService,
   // Returns a MediaRoute if the given `sink_id` corresponds to a route
   // currently active in the media router.
   std::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
+
+  // Fetches a copy of the sink corresponding to `sink_id` from
+  // `cast_media_sink_service_impl_` on its task runner and invokes `callback`
+  // with the result.
+  void GetSinkById(
+      const MediaSink::Id& sink_id,
+      base::OnceCallback<void(std::optional<MediaSinkInternal>)> callback);
 
   // Fetches and validates stored devices from the pref service. No-op if
   // `pref_updater_` hasn't been instantiated.
@@ -293,7 +301,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void StoreSinkInPrefsById(const MediaSink::Id& sink_id,
                             base::OnceClosure on_sink_stored_callback);
   void StoreSinkInPrefs(base::OnceClosure on_sink_stored_callback,
-                        const MediaSinkInternal* sink);
+                        std::optional<MediaSinkInternal> sink);
   void StoreSinkAndSetExpirationTimer(const MediaSink::Id& sink_id);
 
   void AddStoredDevicesToMediaRouter(
@@ -305,14 +313,15 @@ class AccessCodeCastSinkService : public KeyedService,
   // Removes the media sink from the MediaSinkServiceBase AND closes the cast
   // socket of that media sink. This function is a no-op if there exists a local
   // active route for the sink.
-  void RemoveAndDisconnectMediaSinkFromRouter(const MediaSinkInternal* sink);
+  void RemoveAndDisconnectMediaSinkFromRouter(
+      std::optional<MediaSinkInternal> sink);
   void RemoveAndDisconnectExistingSinksOnNetwork();
 
   void DoCheckMediaSinkForExpiration(const MediaSink::Id& sink_id,
                                      base::TimeDelta time_till_expiration);
 
   void UpdateExistingSink(const MediaSinkInternal& new_sink,
-                          const MediaSinkInternal* exisitng_sink);
+                          std::optional<MediaSinkInternal> existing_sink);
 
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;

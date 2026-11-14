@@ -159,7 +159,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   void StoreSinkInPrefs(const MediaSinkInternal& sink) {
     base::RunLoop loop;
     access_code_cast_sink_service_->StoreSinkInPrefsForTesting(
-        loop.QuitClosure(), &sink);
+        loop.QuitClosure(), sink);
     loop.Run();
   }
 
@@ -340,7 +340,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
               DisconnectAndRemoveSink(cast_sink1))
       .Times(0);
   access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCodeForTesting(
-      &cast_sink1);
+      cast_sink1);
   task_environment_.FastForwardBy(kRemoveRouteDelay);
 
   // Remove the access code sink from the list of routes.
@@ -357,7 +357,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(access_code_sink2));
   access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCodeForTesting(
-      &access_code_sink2);
+      access_code_sink2);
   task_environment_.FastForwardBy(kRemoveRouteDelay);
 }
 
@@ -479,7 +479,7 @@ TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
   base::MockCallback<base::OnceClosure> mock_callback;
   EXPECT_CALL(mock_callback, Run()).Times(0);
   access_code_cast_sink_service_->StoreSinkInPrefsForTesting(
-      mock_callback.Get(), nullptr);
+      mock_callback.Get(), std::nullopt);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(IsDeviceAddedTimeDictEmpty());
@@ -1185,21 +1185,21 @@ TEST_F(AccessCodeCastSinkServiceTest, HandleMediaRouteAdded) {
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
 
   access_code_cast_sink_service_->HandleMediaRouteAddedForTesting(
-      fake_route_1, true, MediaSource::ForAnyTab(), &cast_sink1);
+      fake_route_1, true, MediaSource::ForAnyTab(), cast_sink1);
 
   // The histogram should not be logged to after a non access code route starts.
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
 
   access_code_cast_sink_service_->HandleMediaRouteAddedForTesting(
-      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
+      fake_route_2, true, MediaSource::ForAnyTab(), cast_sink2);
 
   // The histogram should log when a route starts to a new access code device.
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
 
   access_code_cast_sink_service_->HandleMediaRouteAddedForTesting(
-      fake_route_3, true, MediaSource::ForAnyTab(), &cast_sink3);
+      fake_route_3, true, MediaSource::ForAnyTab(), cast_sink3);
 
   // The histogram should log when a route starts to a saved access code device.
   histogram_tester.ExpectBucketCount(
@@ -1208,13 +1208,13 @@ TEST_F(AccessCodeCastSinkServiceTest, HandleMediaRouteAdded) {
   // Ensure various pref values are can be logged.
   SetDeviceDurationPrefForTesting(base::Seconds(100));
   access_code_cast_sink_service_->HandleMediaRouteAddedForTesting(
-      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
+      fake_route_2, true, MediaSource::ForAnyTab(), cast_sink2);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 100, 1);
 
   SetDeviceDurationPrefForTesting(base::Seconds(1000));
   access_code_cast_sink_service_->HandleMediaRouteAddedForTesting(
-      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
+      fake_route_2, true, MediaSource::ForAnyTab(), cast_sink2);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 1000, 1);
 
@@ -1375,6 +1375,32 @@ TEST_F(AccessCodeCastSinkServiceTest, InitializePrefUpdater) {
   access_code_cast_sink_service_->ResetPrefUpdaterForTesting();
   access_code_cast_sink_service_->InitializePrefUpdaterForTesting();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest,
+       SinkRemovedBeforeRouteRemovedDelayedTask) {
+  SetDeviceDurationPrefForTesting(base::Seconds(0));
+
+  MediaSinkInternal access_code_sink = CreateCastSink(1);
+  access_code_sink.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  mock_cast_media_sink_service_impl()->AddSinkForTest(access_code_sink);
+  StoreSinkInPrefs(access_code_sink);
+  SetExpirationTimerAndExpectTimerRunning(access_code_sink);
+
+  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink.id());
+  SimulateRoutesUpdated({media_route_access});
+
+  // Remove the route, which posts a delayed task to OnAccessCodeRouteRemoved.
+  SimulateRoutesUpdated({});
+
+  // Remove the sink from CastMediaSinkServiceImpl before the delayed task runs
+  // to ensure OnAccessCodeRouteRemoved does not dereference a dangling pointer.
+  mock_cast_media_sink_service_impl()->RemoveSinkById(access_code_sink.id());
+
+  task_environment_.FastForwardBy(kRemoveRouteDelay);
+  EXPECT_TRUE(IsDeviceAddedTimeDictEmpty());
+  EXPECT_TRUE(IsDevicesDictEmpty());
 }
 
 }  // namespace media_router
