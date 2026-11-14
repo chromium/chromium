@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/export_template.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkClipOp.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/decoration/decoration_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -18,6 +20,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/scoped_canvas.h"
 
 namespace ash {
 
@@ -70,6 +74,14 @@ void ResizeShadowGenerator::Draw(gfx::Canvas* canvas,
                                  const ResizeShadowValue& value,
                                  const gfx::RoundedCornersF& rounded_corners,
                                  const gfx::Rect& content_rect) {
+  gfx::ScopedCanvas scoped_canvas(canvas);
+
+  // Clip out the content area so it is not painted with the resize shadow.
+  const SkRRect content_rrect =
+      gfx::RoundedRectToSkRRect(content_rect, rounded_corners);
+  canvas->sk_canvas()->clipRRect(content_rrect, SkClipOp::kDifference,
+                                 /*do_anti_alias=*/true);
+
   gfx::Rect shadow_rect = content_rect;
   shadow_rect.Outset(value.outsets());
 

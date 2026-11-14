@@ -28,6 +28,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
 #include "ui/color/color_provider_source.h"
@@ -691,6 +692,13 @@ TEST_F(ResizeShadowTest, ResizeShadowDetailsCachingAndInsets) {
       first.nine_patch_image.BackedBySameObjectAs(cached.nine_patch_image));
   EXPECT_EQ(gfx::Outsets::TLBR(0, 0, 0, 8), first.margins);
   EXPECT_EQ(gfx::Insets::TLBR(2, 2, 2, 10), first.aperture_insets);
+  const SkBitmap* first_bitmap = first.nine_patch_image.bitmap();
+  ASSERT_TRUE(first_bitmap);
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            first_bitmap->getColor(first.aperture_insets.left(),
+                                   first.aperture_insets.top()));
+  EXPECT_EQ(SK_ColorBLACK, first_bitmap->getColor(first_bitmap->width() - 1,
+                                                  first.aperture_insets.top()));
 
   // Large rounded corners (window radius 12, shadow radius 16) on a single
   // hovered edge must reserve at least `corner_radius` on non-outset
