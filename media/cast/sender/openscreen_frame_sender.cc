@@ -158,12 +158,17 @@ base::TimeDelta OpenscreenFrameSender::GetInFlightMediaDuration() const {
   base::TimeDelta duration = client_->GetEncoderBacklogDuration();
 
   // If we have sent at least one frame, then include the duration currently
-  // in flight (as recorded by the Open Screen sender).
+  // in flight (as recorded by the Open Screen sender), capping per-frame
+  // duration so static screen gaps between in-flight frames do not inflate
+  // the backlog.
   if (!last_enqueued_frame_id_.is_null()) {
     const RtpTimeTicks newest_timestamp =
         GetRecordedRtpTimestamp(last_enqueued_frame_id_);
-    duration +=
-        ToTimeDelta(sender_->GetInFlightMediaDuration(newest_timestamp));
+    const base::TimeDelta max_in_flight_duration =
+        GetUnacknowledgedFrameCount() * base::Seconds(1.0 / max_frame_rate_);
+    duration += std::min(
+        ToTimeDelta(sender_->GetInFlightMediaDuration(newest_timestamp)),
+        max_in_flight_duration);
   }
   return duration;
 }

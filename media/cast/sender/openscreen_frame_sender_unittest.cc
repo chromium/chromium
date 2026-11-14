@@ -478,4 +478,39 @@ TEST_F(OpenscreenFrameSenderTest, TracesEachFrameUntilItIsCanceled) {
           std::vector<std::string>{"Video Transport", "1", "1000", "1"}));
 }
 
+TEST_F(OpenscreenFrameSenderTest,
+       CapsInFlightMediaDurationAcrossStaticScreenGap) {
+  auto frame0 = std::make_unique<SenderEncodedFrame>();
+  frame0->is_key_frame = true;
+  frame0->frame_id = FrameId::first();
+  frame0->referenced_frame_id = frame0->frame_id;
+  frame0->reference_time = base::TimeTicks::Now();
+  frame0->rtp_timestamp = RtpTimeTicks{900};
+  frame0->data = base::HeapArray<uint8_t>::WithSize(10);
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame0)));
+
+  auto frame1 = std::make_unique<SenderEncodedFrame>();
+  frame1->is_key_frame = false;
+  frame1->frame_id = FrameId::first() + 1;
+  frame1->referenced_frame_id = FrameId::first();
+  frame1->reference_time = base::TimeTicks::Now() + base::Seconds(2);
+  frame1->rtp_timestamp = RtpTimeTicks{18900};
+  frame1->data = base::HeapArray<uint8_t>::WithSize(10);
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame1)));
+
+  // Even if the underlying sender reports a 2-second RTP span across a static
+  // screen gap, OpenscreenFrameSender caps the in-flight duration at
+  // `GetUnacknowledgedFrameCount() / max_frame_rate` so the next frame is not
+  // dropped.
+  EXPECT_CALL(mock_video_sender(), GetInFlightFrameCount())
+      .WillRepeatedly(testing::Return(2u));
+  EXPECT_CALL(mock_video_sender(),
+              GetInFlightMediaDuration(RtpTimeTicks{18900}))
+      .WillOnce(testing::Return(std::chrono::seconds(2)));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(33)));
+}
+
 }  // namespace media::cast

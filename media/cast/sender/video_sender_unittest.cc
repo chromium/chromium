@@ -676,6 +676,22 @@ TEST_F(VideoSenderTest,
   video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
   EXPECT_EQ(video_sender().GetFramesInserted(), 2);
   EXPECT_EQ(video_sender().GetFramesDropped(), 0);
+
+  // When the first frame finishes encoding, GetEncoderUtilization() and
+  // GetLossiness() reflect the encoded frame's values immediately.
+  auto encoded_frame = std::make_unique<SenderEncodedFrame>();
+  encoded_frame->encoder_utilization = 0.42;
+  encoded_frame->lossiness = 0.25;
+  encoded_frame->encode_completion_time = NowTicks();
+  encoded_frame->is_key_frame = true;
+  encoded_frame->frame_id = FrameId::first();
+  encoded_frame->referenced_frame_id = FrameId::first();
+  encoded_frame->rtp_timestamp = RtpTimeTicks(90);
+  encoded_frame->reference_time = NowTicks();
+  encoded_frame->data = base::HeapArray<uint8_t>::WithSize(512);
+  std::move(first_callback).Run(std::move(encoded_frame));
+  EXPECT_DOUBLE_EQ(video_sender().GetEncoderUtilization(), 0.42);
+  EXPECT_DOUBLE_EQ(video_sender().GetLossiness(), 0.25);
 }
 
 TEST_F(VideoSenderTest, EnqueueFrameDropCountsAsDroppedFrame) {

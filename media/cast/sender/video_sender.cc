@@ -481,6 +481,12 @@ void VideoSender::OnEncodedVideoFrame(
       std::min(last_enqueued_frame_reference_time_ - reference_time,
                max_backlog_duration);
 
+  if (encoded_frame) {
+    last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
+    if (!encoded_frame->data.empty()) {
+      last_reported_lossiness_ = encoded_frame->lossiness;
+    }
+  }
   TRACE_EVENT_END("cast.stream", GetTracingTrack(video_frame.get()),
                   "encoder_utilization", last_reported_encoder_utilization_,
                   "lossiness", last_reported_lossiness_.value_or(-1.0));
@@ -495,9 +501,6 @@ void VideoSender::OnEncodedVideoFrame(
     OnFrameDroppedByEncoder(*encoded_frame);
     return;
   }
-
-  last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
-  last_reported_lossiness_ = encoded_frame->lossiness;
 
   if (last_reported_encoder_utilization_ >= 0.0) {
     encoder_utilization_sum_ += last_reported_encoder_utilization_;
