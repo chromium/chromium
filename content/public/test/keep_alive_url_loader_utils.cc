@@ -4,11 +4,12 @@
 #include "content/public/test/keep_alive_url_loader_utils.h"
 
 #include <memory>
-#include <set>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -31,8 +32,8 @@ using testing::Pointee;
 
 // NOTE: The following are sorted in the topological order of the corresponding
 // request stage types.
-const std::set<std::string>& GetTimeDeltaMetricNames() {
-  static base::NoDestructor<std::set<std::string>> names({
+const auto& GetTimeDeltaMetricNames() {
+  static constexpr auto kNames = base::MakeFixedFlatSet<std::string_view>({
       "TimeDelta.RequestStarted",
       "TimeDelta.FirstRedirectReceived",
       "TimeDelta.SecondRedirectReceived",
@@ -47,7 +48,7 @@ const std::set<std::string>& GetTimeDeltaMetricNames() {
       "TimeDelta.RequestRetried",
       "TimeDelta.EventLogged",
   });
-  return *names;
+  return kNames;
 }
 
 // Counts the total triggering of `Increment()` asynchronously.
@@ -487,11 +488,10 @@ void KeepAliveRequestUkmMatcher::ExpectTimeSortedTimeDeltaUkm(
         << "] is not defined.";
   }
 
-  std::set<std::string> time_sorted_metric_names_set(
+  const base::flat_set<std::string_view> time_sorted_metric_names_set(
       time_sorted_metric_names.begin(), time_sorted_metric_names.end());
   for (const auto& metric_name : GetTimeDeltaMetricNames()) {
-    if (time_sorted_metric_names_set.find(metric_name) !=
-        time_sorted_metric_names_set.end()) {
+    if (time_sorted_metric_names_set.contains(metric_name)) {
       EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, metric_name))
           << "TimeDelta UKM metric [" << metric_name << "] must exist.";
     } else {
