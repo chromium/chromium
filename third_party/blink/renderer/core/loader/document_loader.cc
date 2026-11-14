@@ -73,6 +73,7 @@
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -95,6 +96,7 @@
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
@@ -2344,7 +2346,19 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   // also when parsing origin trials delivered in meta tags).
   frame_->DomWindow()->GetOriginTrialContext()->InitializePendingFeatures();
 
-  frame_->DomWindow()->BindContentSecurityPolicy();
+  if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
+    // Rebinding CSP after document.open() may add the current host locally.
+    // A renderer-side replacement must preserve the browser's existing set.
+    SecurityContext& security_context =
+        frame_->DomWindow()->GetSecurityContext();
+    const Vector<unsigned> previous_insecure_navigations =
+        SecurityContext::SerializeInsecureNavigationSet(
+            security_context.InsecureNavigationsToUpgrade());
+    frame_->DomWindow()->BindContentSecurityPolicy();
+    security_context.SetInsecureNavigationsSet(previous_insecure_navigations);
+  } else {
+    frame_->DomWindow()->BindContentSecurityPolicy();
+  }
 
   if (history_item_ && IsBackForwardOrRestore(load_type_)) {
     document->SetStateForNewControls(history_item_->GetDocumentState());
@@ -2860,6 +2874,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   ContentSecurityPolicy* csp = CreateCSP();
 
+  auto previous_insecure_request_policy =
+      mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
+  Vector<unsigned> previous_insecure_navigations;
   scoped_refptr<SecurityOrigin> security_origin;
   if (frame_->IsProvisional()) {
     // Provisional frames shouldn't be doing anything other than act as a
@@ -2868,6 +2885,14 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // frame. For some reason, doing so breaks some random devtools tests.
     security_origin = SecurityOrigin::CreateUniqueOpaque();
   } else if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
+    const SecurityContext& previous_security_context =
+        frame_->DomWindow()->GetSecurityContext();
+    previous_insecure_request_policy =
+        previous_security_context.GetInsecureRequestPolicy();
+    previous_insecure_navigations =
+        SecurityContext::SerializeInsecureNavigationSet(
+            previous_security_context.InsecureNavigationsToUpgrade());
+
     // For javascript: URL, XSLT commits and discarded documents which don't go
     // through the browser process and reuses the same DocumentLoader, reuse the
     // previous origin.
@@ -3064,20 +3089,28 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   OriginTrialContext::AddTokensFromHeader(
       frame_->DomWindow(), response_.HttpHeaderField(http_names::kOriginTrial));
 
-  Frame* parent_or_opener = frame_->Tree().Parent();
-  // Only the initial empty document inherits insecure request state from an
-  // opener. Later navigations must use the new document's own policy.
-  if (!parent_or_opener && commit_reason_ == CommitReason::kInitialization) {
-    parent_or_opener = frame_->Opener();
-  }
-  if (parent_or_opener) {
-    const SecurityContext* parent_or_opener_context =
-        parent_or_opener->GetSecurityContext();
-    security_context.SetInsecureRequestPolicy(
-        parent_or_opener_context->GetInsecureRequestPolicy());
-    for (auto to_upgrade :
-         parent_or_opener_context->InsecureNavigationsToUpgrade()) {
-      security_context.AddInsecureNavigationUpgrade(to_upgrade);
+  if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
+    // Document replacements notify the browser without resetting its insecure
+    // request state. Preserve the previous window's state instead of inheriting
+    // from a parent or opener.
+    security_context.SetInsecureRequestPolicy(previous_insecure_request_policy);
+    security_context.SetInsecureNavigationsSet(previous_insecure_navigations);
+  } else {
+    Frame* parent_or_opener = frame_->Tree().Parent();
+    // Only the initial empty document inherits insecure request state from an
+    // opener. Later navigations must use the new document's own policy.
+    if (!parent_or_opener && commit_reason_ == CommitReason::kInitialization) {
+      parent_or_opener = frame_->Opener();
+    }
+    if (parent_or_opener) {
+      const SecurityContext* parent_or_opener_context =
+          parent_or_opener->GetSecurityContext();
+      security_context.SetInsecureRequestPolicy(
+          parent_or_opener_context->GetInsecureRequestPolicy());
+      for (auto to_upgrade :
+           parent_or_opener_context->InsecureNavigationsToUpgrade()) {
+        security_context.AddInsecureNavigationUpgrade(to_upgrade);
+      }
     }
   }
 

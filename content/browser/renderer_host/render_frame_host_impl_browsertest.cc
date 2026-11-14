@@ -127,6 +127,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -165,6 +166,26 @@ namespace {
 const char kTrustMeUrl[] = "trustme://host/path/";
 const char kTrustMeIfEmbeddingSecureUrl[] =
     "trustmeifembeddingsecure://host/path/";
+
+void ExpectDefaultInsecureRequestState(RenderFrameHostImpl* rfh) {
+  const blink::mojom::FrameReplicationState& replication_state =
+      rfh->frame_tree_node()->current_replication_state();
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+            replication_state.insecure_request_policy);
+  EXPECT_THAT(replication_state.insecure_navigations_set, testing::IsEmpty());
+}
+
+void ExpectSameInsecureRequestState(RenderFrameHostImpl* expected_rfh,
+                                    RenderFrameHostImpl* actual_rfh) {
+  const blink::mojom::FrameReplicationState& expected_state =
+      expected_rfh->frame_tree_node()->current_replication_state();
+  const blink::mojom::FrameReplicationState& actual_state =
+      actual_rfh->frame_tree_node()->current_replication_state();
+  EXPECT_EQ(expected_state.insecure_request_policy,
+            actual_state.insecure_request_policy);
+  EXPECT_EQ(expected_state.insecure_navigations_set,
+            actual_state.insecure_navigations_set);
+}
 
 // Configure trustme: as a scheme that should cause cookies to be treated as
 // first-party when top-level, and also installs a URLLoaderFactory that
@@ -10877,26 +10898,6 @@ class InitialEmptyDocumentInsecureRequestStateBrowserTest
     ASSERT_FALSE(opener_replication_state.insecure_navigations_set.empty());
   }
 
-  void ExpectDefaultInsecureRequestState(RenderFrameHostImpl* rfh) {
-    const blink::mojom::FrameReplicationState& replication_state =
-        rfh->frame_tree_node()->current_replication_state();
-    EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-              replication_state.insecure_request_policy);
-    EXPECT_TRUE(replication_state.insecure_navigations_set.empty());
-  }
-
-  void ExpectSameInsecureRequestState(RenderFrameHostImpl* expected_rfh,
-                                      RenderFrameHostImpl* actual_rfh) {
-    const blink::mojom::FrameReplicationState& expected_state =
-        expected_rfh->frame_tree_node()->current_replication_state();
-    const blink::mojom::FrameReplicationState& actual_state =
-        actual_rfh->frame_tree_node()->current_replication_state();
-    EXPECT_EQ(expected_state.insecure_request_policy,
-              actual_state.insecure_request_policy);
-    EXPECT_EQ(expected_state.insecure_navigations_set,
-              actual_state.insecure_navigations_set);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -10978,6 +10979,123 @@ IN_PROC_BROWSER_TEST_F(InitialEmptyDocumentInsecureRequestStateBrowserTest,
   EXPECT_EQ(subframe_rfh->frame_tree_node(),
             popup_rfh->frame_tree_node()->opener());
   ExpectSameInsecureRequestState(subframe_rfh, popup_rfh);
+}
+
+// Tests that a javascript: URL document replacement in a subframe preserves the
+// subframe's existing insecure request state rather than inheriting an updated
+// policy from its parent frame. Regression test for https://crbug.com/574394862
+// and https://crbug.com/574439684.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    JavaScriptUrlReplacementInSubframePreservesInsecureRequestState) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.test", "/frame_tree/page_with_one_frame.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL subframe_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "child0", subframe_url));
+  RenderFrameHostImpl* subframe_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+  ASSERT_TRUE(subframe_rfh);
+  ExpectDefaultInsecureRequestState(subframe_rfh);
+
+  ASSERT_TRUE(ExecJs(root_frame_host(), R"(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = 'upgrade-insecure-requests; block-all-mixed-content';
+    document.head.appendChild(meta);
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    const blink::mojom::FrameReplicationState& parent_state =
+        root_frame_host()->frame_tree_node()->current_replication_state();
+    return parent_state.insecure_request_policy ==
+               blink::mojom::InsecureRequestPolicy::kMaxInsecureRequestPolicy &&
+           !parent_state.insecure_navigations_set.empty();
+  }));
+
+  ASSERT_TRUE(ExecJs(subframe_rfh, R"(
+    location.href = "javascript:'<script>" +
+        "history.pushState({}, \"\", \"#same-doc\");" +
+        "</script>replaced'";
+  )"));
+
+  const GURL same_doc_url = subframe_url.Resolve("#same-doc");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return subframe_rfh->GetLastCommittedURL() == same_doc_url ||
+           !subframe_rfh->IsRenderFrameLive();
+  }));
+  EXPECT_EQ(same_doc_url, subframe_rfh->GetLastCommittedURL());
+  ASSERT_TRUE(subframe_rfh->IsRenderFrameLive());
+  ExpectDefaultInsecureRequestState(subframe_rfh);
+}
+
+// Tests that CSP rebinding preserves an empty insecure navigations set after
+// document.open() changes a popup's URL from about:blank to a hostful URL.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       JavaScriptUrlReplacementAfterDocumentOpen) {
+  const GURL opener_url(
+      embedded_test_server()->GetURL("a.test", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), opener_url));
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(shell(), "window.popup = window.open('about:blank');"));
+  WebContentsImpl* popup_contents = static_cast<WebContentsImpl*>(
+      new_shell_observer.GetShell()->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  ASSERT_EQ("about:blank", EvalJs(popup_rfh, "document.URL"));
+  ASSERT_TRUE(ExecJs(popup_rfh, R"(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = 'upgrade-insecure-requests';
+    document.head.appendChild(meta);
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return popup_rfh->frame_tree_node()
+               ->current_replication_state()
+               .insecure_request_policy ==
+           blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests;
+  }));
+  ASSERT_THAT(popup_rfh->frame_tree_node()
+                  ->current_replication_state()
+                  .insecure_navigations_set,
+              testing::IsEmpty());
+
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    popup.document.open();
+    popup.document.write('<title>opened</title>');
+    popup.document.close();
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return popup_rfh->last_document_url_in_renderer() == opener_url;
+  }));
+  ASSERT_EQ(opener_url.spec(), EvalJs(popup_rfh, "document.URL"));
+  ASSERT_EQ(blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
+            popup_rfh->frame_tree_node()
+                ->current_replication_state()
+                .insecure_request_policy);
+  ASSERT_THAT(popup_rfh->frame_tree_node()
+                  ->current_replication_state()
+                  .insecure_navigations_set,
+              testing::IsEmpty());
+
+  ASSERT_TRUE(ExecJs(popup_rfh, R"(
+    location.href = "javascript:'<script>" +
+        "history.pushState({}, \"\", \"#same-doc\");" +
+        "</script>replaced'";
+  )"));
+  const GURL same_doc_url = opener_url.Resolve("#same-doc");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return popup_rfh->GetLastCommittedURL() == same_doc_url ||
+           !popup_rfh->IsRenderFrameLive();
+  }));
+  EXPECT_EQ(same_doc_url, popup_rfh->GetLastCommittedURL());
+  ASSERT_TRUE(popup_rfh->IsRenderFrameLive());
+  const blink::mojom::FrameReplicationState& state =
+      popup_rfh->frame_tree_node()->current_replication_state();
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
+            state.insecure_request_policy);
+  EXPECT_THAT(state.insecure_navigations_set, testing::IsEmpty());
 }
 
 // Regression test for https://crbug.com/574394862.
@@ -11077,10 +11195,7 @@ IN_PROC_BROWSER_TEST_F(
       [&] { return popup_rfh->GetLastCommittedURL() == same_doc_url; }));
   EXPECT_TRUE(popup_rfh->IsRenderFrameLive());
 
-  // TODO(crbug.com/574439684): The renderer lost the insecure request policy
-  // and the browser picked it up from the same-document commit. Once fixed,
-  // this should remain kBlockAllMixedContent.
-  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
             insecure_request_policy());
 }
 
