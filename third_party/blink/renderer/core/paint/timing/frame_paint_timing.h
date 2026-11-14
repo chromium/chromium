@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -22,6 +23,7 @@ class FramePaintTiming {
   FramePaintTiming(GraphicsContext& context, const LocalFrame* frame)
       : context_(context), frame_(frame) {
     context_.GetPaintController().BeginFrame(frame_);
+    block_paint_hook_.ResetTop();
   }
   FramePaintTiming(const FramePaintTiming&) = delete;
   FramePaintTiming& operator=(const FramePaintTiming&) = delete;
@@ -37,6 +39,7 @@ class FramePaintTiming {
  private:
   GraphicsContext& context_;
   const LocalFrame* frame_;
+  ScopedPaintTimingDetectorBlockPaintHook block_paint_hook_;
 };
 
 }  // namespace blink

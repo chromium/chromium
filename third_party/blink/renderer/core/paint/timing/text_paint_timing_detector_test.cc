@@ -635,6 +635,105 @@ TEST_F(TextPaintTimingDetectorTest, Iframe_ClippedByViewport) {
   EXPECT_EQ(child_lcp_support.LcpDetailsForReporting().text_paint_time, 0.0);
 }
 
+TEST_F(TextPaintTimingDetectorTest, Iframe_BackgroundClipText) {
+  SetMainFrameBodyContent(R"HTML(
+    <div id="wrapper">
+      <iframe width="200" height="200"></iframe>
+    </div>
+  )HTML");
+  InitializeChildFramePaintTimingClient();
+  LcpTestSupport child_lcp_support(ChildDocument());
+
+  SetChildFrameBodyContent(R"HTML(
+    <style>
+      .clipped {
+        background: linear-gradient(90deg, red, blue);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+    </style>
+    <h1 class="clipped">Clipped heading</h1>
+    <p id="visible">Visible paragraph</p>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  // Ensure main frame wrapper does not aggregate text from the child frame.
+  EXPECT_EQ(main_frame_client_->PaintedTextRecordCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().text_paint_size, 0u);
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+
+  // Ensure the child frame still records its own visible text.
+  EXPECT_EQ(child_frame_client_->PaintedTextRecordCount(), 1u);
+  EXPECT_GT(child_lcp_support.LcpDetailsForReporting().text_paint_size, 0u);
+  ASSERT_EQ(child_lcp_support.LcpCandidateCount(), 1u);
+  EXPECT_EQ(child_lcp_support.CurrentLcpCandidate()->element(),
+            ChildDocument().getElementById(AtomicString("visible")));
+
+  // Ensure text in the parent block after the iframe is still aggregated into
+  // the parent block.
+  Element* wrapper = GetElementById("wrapper");
+  wrapper->AppendChild(GetDocument().createTextNode("Parent text"));
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedTextRecordCount(), 1u);
+  ASSERT_EQ(LcpCandidateCount(), 1u);
+  EXPECT_EQ(CurrentLcpCandidate()->element(), wrapper);
+}
+
+TEST_F(TextPaintTimingDetectorTest, BackgroundClipTextInlineBlock) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      .clipped-transparent {
+        display: inline-block;
+        background: linear-gradient(90deg, red, blue);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .clipped-opaque {
+        display: inline-block;
+        background: linear-gradient(90deg, red, blue);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: black;
+      }
+    </style>
+    <div id="outer1">
+      <div class="clipped-transparent">Text</div>
+    </div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedTextRecordCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().text_paint_size, 0u);
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+
+  // Ensure text in the parent block after the clipped inline-block is still
+  // aggregated into the parent block once PaintTextClipMask exits.
+  Element* outer1 = GetElementById("outer1");
+  outer1->AppendChild(GetDocument().createTextNode("Outer trailing text"));
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedTextRecordCount(), 1u);
+  EXPECT_GT(LcpDetailsForReporting().text_paint_size, 0u);
+  ASSERT_EQ(LcpCandidateCount(), 1u);
+  EXPECT_EQ(CurrentLcpCandidate()->element(), outer1);
+
+  Element* outer2 = GetDocument().CreateRawElement(html_names::kDivTag);
+  Element* inner_opaque = GetDocument().CreateRawElement(html_names::kDivTag);
+  inner_opaque->setAttribute(html_names::kClassAttr,
+                             AtomicString("clipped-opaque"));
+  inner_opaque->AppendChild(GetDocument().createTextNode(
+      "Opaque text that is longer than the outer trailing text"));
+  outer2->AppendChild(inner_opaque);
+  GetDocument().body()->AppendChild(outer2);
+
+  SimulateRenderingAndPresentationTime();
+  // Only inner_opaque should be recorded for the new subtree, not outer2.
+  EXPECT_EQ(main_frame_client_->PaintedTextRecordCount(), 2u);
+  EXPECT_GT(LcpDetailsForReporting().text_paint_size, 0u);
+  ASSERT_EQ(LcpCandidateCount(), 2u);
+  EXPECT_EQ(CurrentLcpCandidate()->element(), inner_opaque);
+}
+
 TEST_F(TextPaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
   SetMainFrameBodyContent(R"HTML(
     <div>text</div>

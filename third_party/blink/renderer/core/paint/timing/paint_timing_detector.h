@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_DETECTOR_H_
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -167,8 +168,8 @@ class ScopedPaintTimingDetectorBlockPaintHook {
 
  public:
   // This constructor does nothing by itself. It will only set relevant
-  // variables when EmplaceIfNeeded() is called successfully. The lifetime of
-  // the object helps keeping the lifetime of |reset_top_| and |data_| to the
+  // variables when EmplaceIfNeeded() or ResetTop() is called. The lifetime of
+  // the object helps keeping the lifetime of `reset_top_` and `data_` to the
   // appropriate scope.
   ScopedPaintTimingDetectorBlockPaintHook() {}
   ScopedPaintTimingDetectorBlockPaintHook(
@@ -178,6 +179,12 @@ class ScopedPaintTimingDetectorBlockPaintHook {
 
   void EmplaceIfNeeded(const LayoutBoxModelObject&,
                        const PropertyTreeStateOrAlias&);
+  // Resets `top_` to nullptr for the lifetime of this hook, restoring the
+  // previous `top_` when this object goes out of scope.
+  void ResetTop() {
+    CHECK(!reset_top_);
+    reset_top_.emplace(&top_, nullptr);
+  }
   ~ScopedPaintTimingDetectorBlockPaintHook();
 
  private:

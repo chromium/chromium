@@ -400,6 +400,30 @@ TEST_P(ElementTimingTest, TextElementTimingInShadowTreeIgnored) {
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
+TEST_P(ElementTimingTest,
+       TextElementTimingIgnoresChildIframeBackgroundClipText) {
+  SetMainFrameBodyContent(R"HTML(
+    <div id="wrapper" elementtiming="wrapper-et">
+      <iframe width="200" height="200"></iframe>
+    </div>
+    <p id="parent-text" elementtiming="parent-et">Parent text</p>
+  )HTML");
+  SetChildFrameBodyContent(R"HTML(
+    <style>
+      h1 {
+        background: linear-gradient(90deg, red, blue);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+    </style>
+    <h1>Child clipped heading</h1>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("parent-text")));
+}
+
 TEST_P(ElementTimingTest, ElementAndContainerTimingDecoupled) {
   SetMainFrameBodyContent(R"HTML(
     <p containertiming="foo">Sample paragraph text</p>
