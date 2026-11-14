@@ -2965,6 +2965,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   }
 
   void EnterFullscreenAndVerify(content::WebContents* web_contents) {
+    web_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
     EXPECT_EQ(EvalFullscreenRequest(web_contents),
               "document.documentElement.requestFullscreen() succeeded.");
     EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
