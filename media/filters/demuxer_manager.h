@@ -20,6 +20,7 @@
 #include "media/base/pipeline.h"
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
+#include "media/media_buildflags.h"
 #include "net/storage_access_api/status.h"
 #include "url/origin.h"
 
@@ -148,8 +149,15 @@ class MEDIA_EXPORT DemuxerManager {
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   std::unique_ptr<Demuxer> CreateFFmpegDemuxer();
-  void OnFFmpegMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+  std::unique_ptr<Demuxer> CreateSymphoniaDemuxer();
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+  void OnMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>

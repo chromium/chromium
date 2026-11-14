@@ -10,17 +10,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
@@ -29,19 +33,25 @@
 #include "media/base/data_source.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_demuxer_host.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"
+#include "media/filters/demuxer_manager.h"
 #include "media/filters/file_data_source.h"
+#include "media/filters/mock_demuxer_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
+using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::HasSubstr;
 using ::testing::NiceMock;
+using ::testing::Property;
 using ::testing::StrictMock;
 
 namespace media {
@@ -276,6 +286,7 @@ TEST_F(SymphoniaDemuxerTest, InitializeWav) {
 
   ASSERT_NE(media_tracks_, nullptr);
   EXPECT_EQ(media_tracks_->tracks().size(), 1u);
+  EXPECT_EQ(demuxer_->GetDemuxerType(), DemuxerType::kSymphoniaDemuxer);
   EXPECT_EQ(demuxer_->GetContainerForMetrics(),
             container_names::MediaContainerName::kContainerWAV);
   EXPECT_GE(demuxer_->GetMemoryUsage(), 0);
@@ -656,5 +667,125 @@ TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
 
   demuxer_.reset();
 }
+
+namespace {
+
+// Sets the state of `kSymphoniaDemuxing`. Used as a base class so the state is
+// set before `TaskEnvironment` starts threads that may read features.
+class ScopedSymphoniaDemuxingState {
+ protected:
+  explicit ScopedSymphoniaDemuxingState(bool enabled) {
+    feature_list_.InitWithFeatureState(kSymphoniaDemuxing, enabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+constexpr bool kSymphoniaDemuxingStates[] = {true, false};
+#else
+// Without FFmpeg, no demuxer is available when Symphonia is disabled.
+constexpr bool kSymphoniaDemuxingStates[] = {true};
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+}  // namespace
+
+// Tests `DemuxerManager` demuxer selection with `kSymphoniaDemuxing` enabled
+// (param true) or disabled (param false).
+class SymphoniaDemuxerManagerTest : public testing::TestWithParam<bool>,
+                                    public ScopedSymphoniaDemuxingState {
+ public:
+  SymphoniaDemuxerManagerTest() : ScopedSymphoniaDemuxingState(GetParam()) {}
+
+ protected:
+  // Has a `DemuxerManager` create a demuxer for `filename`, checks its type,
+  // initializes it on the media sequence, and stops it. Expectations on
+  // `client_` must be set first.
+  void CreateInitializeAndStopDemuxer(std::string_view filename) {
+    DemuxerManager manager(&client_, url::Origin(), media_task_runner_,
+                           &media_log_, /*demuxer_override=*/nullptr);
+    auto data_source = std::make_unique<FileDataSource>();
+    ASSERT_TRUE(data_source->Initialize(GetTestDataFilePath(filename)));
+    manager.SetDataSource(std::move(data_source));
+
+    Demuxer* demuxer = nullptr;
+    PipelineStatus status = manager.CreateDemuxer(
+        /*load_media_source=*/false, DataSource::METADATA,
+        /*needs_first_frame=*/false,
+        base::BindLambdaForTesting(
+            [&](Demuxer* created_demuxer, Pipeline::StartType, bool, bool) {
+              demuxer = created_demuxer;
+              return PipelineStatus(PIPELINE_OK);
+            }));
+    ASSERT_EQ(status, PIPELINE_OK);
+    ASSERT_NE(demuxer, nullptr);
+    EXPECT_EQ(manager.GetDemuxerType(), GetParam()
+                                            ? DemuxerType::kSymphoniaDemuxer
+                                            : DemuxerType::kFFmpegDemuxer);
+
+    base::test::TestFuture<PipelineStatus> init_status;
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Demuxer::Initialize, base::Unretained(demuxer), &host_,
+                       init_status.GetSequenceBoundCallback()));
+    EXPECT_EQ(init_status.Get(), PIPELINE_OK);
+
+    // The demuxer's tracks reach the client through `DemuxerManager` on the
+    // main thread.
+    tracks_added_.Run();
+
+    base::test::TestFuture<void> stopped;
+    media_task_runner_->PostTaskAndReply(
+        FROM_HERE, base::BindOnce(&Demuxer::Stop, base::Unretained(demuxer)),
+        stopped.GetCallback());
+    ASSERT_TRUE(stopped.Wait());
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  // Like in `WebMediaPlayerImpl`, the demuxer is created on the main thread
+  // and driven on a separate media sequence.
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  NiceMock<MockMediaLog> media_log_;
+  NiceMock<MockDemuxerHost> host_;
+  NiceMock<MockDemuxerManagerClient> client_;
+  // Quit once the expected `AddTrack()` calls have happened.
+  base::RunLoop tracks_added_;
+};
+
+TEST_P(SymphoniaDemuxerManagerTest, CreatesAndInitializesDemuxer) {
+  EXPECT_CALL(client_,
+              AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kAudio)))
+      .WillOnce(RunClosure(tracks_added_.QuitClosure()));
+  CreateInitializeAndStopDemuxer("sfx_s16le.wav");
+}
+
+TEST_P(SymphoniaDemuxerManagerTest, AddsEveryTrackOfMultiTrackFile) {
+  // The file has three video tracks and two audio tracks. SymphoniaDemuxer
+  // does not support video tracks yet (crbug.com/583934381), so only
+  // FFmpegDemuxer reports them.
+  constexpr int kAudioTracks = 2;
+  const int video_tracks = GetParam() ? 0 : 3;
+  base::RepeatingClosure track_added = base::BarrierClosure(
+      kAudioTracks + video_tracks, tracks_added_.QuitClosure());
+  EXPECT_CALL(client_,
+              AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kAudio)))
+      .Times(kAudioTracks)
+      .WillRepeatedly(RunClosure(track_added));
+  EXPECT_CALL(client_,
+              AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kVideo)))
+      .Times(video_tracks)
+      .WillRepeatedly(RunClosure(track_added));
+  CreateInitializeAndStopDemuxer("multitrack-3video-2audio.webm");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SymphoniaDemuxerManagerTest,
+                         testing::ValuesIn(kSymphoniaDemuxingStates),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SymphoniaEnabled"
+                                             : "SymphoniaDisabled";
+                         });
 
 }  // namespace media

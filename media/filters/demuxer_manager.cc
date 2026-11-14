@@ -18,6 +18,9 @@
 #include "media/base/media_switches.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/ffmpeg_demuxer.h"
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+#include "media/filters/symphonia_demuxer.h"
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 #include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 
@@ -268,11 +271,21 @@ PipelineStatus DemuxerManager::CreateDemuxer(
     // run in the demuxer override case?
     SetDemuxer(std::move(demuxer_override_));
   } else if (!load_media_source) {
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+    // TODO(crbug.com/550619039): Fall back to FFmpegDemuxer for containers
+    // that Symphonia is not enabled for. Until then, enabling
+    // `kSymphoniaDemuxing` sends all progressive playback to Symphonia.
+    if (base::FeatureList::IsEnabled(kSymphoniaDemuxing)) {
+      SetDemuxer(CreateSymphoniaDemuxer());
+    }
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+    if (!demuxer_) {
 #if BUILDFLAG(ENABLE_FFMPEG)
-    SetDemuxer(CreateFFmpegDemuxer());
+      SetDemuxer(CreateFFmpegDemuxer());
 #else
-    return DEMUXER_ERROR_PROGRESSIVE_DISABLED;
+      return DEMUXER_ERROR_PROGRESSIVE_DISABLED;
 #endif
+    }
   } else {
     DCHECK(!HasDataSource());
     SetDemuxer(CreateChunkDemuxer());
@@ -405,7 +418,6 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-
 std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
   DCHECK(data_source_);
   return std::make_unique<FFmpegDemuxer>(
@@ -413,14 +425,28 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&DemuxerManager::OnEncryptedMediaInitData,
                               weak_factory_.GetWeakPtr())),
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&DemuxerManager::OnFFmpegMediaTracksUpdated,
-                              weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::OnMediaTracksUpdated, weak_factory_.GetWeakPtr())),
       media_log_.get(), IsLocalFile(loaded_url_));
 }
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
-void DemuxerManager::OnFFmpegMediaTracksUpdated(
-    std::unique_ptr<MediaTracks> tracks) {
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+std::unique_ptr<Demuxer> DemuxerManager::CreateSymphoniaDemuxer() {
+  CHECK(data_source_);
+  return std::make_unique<SymphoniaDemuxer>(
+      media_task_runner_, data_source_.get(),
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&DemuxerManager::OnEncryptedMediaInitData,
+                              weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::OnMediaTracksUpdated, weak_factory_.GetWeakPtr())),
+      media_log_->Clone());
+}
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+void DemuxerManager::OnMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks) {
   DCHECK(demuxer_);
 
   // For MSE/chunk_demuxer case the media track updates are handled by
@@ -444,8 +470,7 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
     }
   }
 }
-
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>

@@ -350,11 +350,16 @@ static_library("test_support") {
   sources = [
     "fake_video_decoder.cc",
     "fake_video_decoder.h",
+    "mock_demuxer_manager_client.cc",
+    "mock_demuxer_manager_client.h",
   ]
 
   deps = [
     "//base/test:test_support",
+    "//media",
     "//media/base:test_support",
+    "//testing/gmock",
+    "//url",
   ]
 }
 
