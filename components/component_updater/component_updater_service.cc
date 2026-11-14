@@ -537,12 +537,15 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
   UMA_HISTOGRAM_LONG_TIMES_100("ComponentUpdater.UpdateCompleteTime",
                                base::TimeTicks::Now() - start_time);
 
-  for (const auto& id : components_pending_unregistration_) {
-    if (!update_client_->IsUpdating(id)) {
-      const auto component = GetComponent(id);
-      if (component) {
-        DoUnregisterComponent(id);
-      }
+  // Drain first: DoUnregisterComponent() may re-enter this service.
+  for (const std::string& id :
+       std::exchange(components_pending_unregistration_, {})) {
+    if (update_client_->IsUpdating(id)) {
+      components_pending_unregistration_.push_back(id);
+      continue;
+    }
+    if (GetComponent(id)) {
+      DoUnregisterComponent(id);
     }
   }
 

@@ -737,6 +737,47 @@ TEST_F(ComponentUpdaterTest,
   EXPECT_TRUE(item.component);
 }
 
+TEST_F(ComponentUpdaterTest, PendingUnregistrationIsDrainedAfterProcessing) {
+  const std::string id1 = "abagagagagagagagagagagagagagagag";
+  const std::string id2 = "jebgalgnebhfojomionfpkfelancnnkf";
+  auto installer1 = base::MakeRefCounted<MockInstaller>();
+  auto installer2 = base::MakeRefCounted<MockInstaller>();
+  EXPECT_CALL(*installer1, Uninstall()).WillOnce(Return(true));
+  EXPECT_CALL(*installer2, Uninstall()).Times(0);
+
+  EXPECT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id1,
+       .public_key_hash = base::ToVector(update_client::abag_hash),
+       .version = base::Version("1.0"),
+       .installer = installer1,
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
+  EXPECT_TRUE(component_updater().RegisterComponent(
+      {.app_id = id2,
+       .public_key_hash = base::ToVector(update_client::jebg_hash),
+       .version = base::Version("0.9"),
+       .installer = installer2,
+       .requires_network_encryption = false,
+       .supports_group_policy_enable_component_updates = true}));
+
+  EXPECT_CALL(update_client(), IsUpdating(id1)).WillOnce(Return(true));
+  EXPECT_TRUE(component_updater().UnregisterComponent(id1));
+
+  // Still updating: `id1` stays pending.
+  EXPECT_CALL(update_client(), IsUpdating(id1)).WillOnce(Return(true));
+  TriggerUpdateComplete(id1);
+  CrxUpdateItem item;
+  EXPECT_TRUE(component_updater().GetComponentDetails(id1, &item));
+
+  // Finished updating: `id1` is uninstalled and drained from the pending list.
+  EXPECT_CALL(update_client(), IsUpdating(id1)).WillOnce(Return(false));
+  TriggerUpdateComplete(id2);
+  EXPECT_FALSE(component_updater().GetComponentDetails(id1, &item));
+
+  EXPECT_CALL(update_client(), IsUpdating(id1)).Times(0);
+  TriggerUpdateComplete(id2);
+}
+
 TEST_F(ComponentUpdaterTest, Cancel) {
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   EXPECT_CALL(update_client(), Cancel(id)).WillOnce(Return(true));
