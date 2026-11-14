@@ -134,8 +134,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       mojo::PendingRemote<media::mojom::Remoter> remoter,
       mojo::PendingReceiver<media::mojom::RemotingSource> source_receiver)
       override;
-  void RequestRemotingStreaming() override;
-  void RestartMirroringStreaming() override;
+  void StartRemoting() override;
+  void StopRemoting(media::mojom::RemotingStopReason reason) override;
   std::unique_ptr<media::mojom::RemotingDataStreamSender>
   CreateRemotingDataStreamSender(
       bool is_audio,
@@ -226,7 +226,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void RecordBandwidthMetrics();
 
   // Create and send OFFER message.
-  void Negotiate();
   void NegotiateMirroring();
   void NegotiateRemoting();
 

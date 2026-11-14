@@ -53,6 +53,7 @@ class MockRemotingSource : public media::mojom::RemotingSource {
   ~MockRemotingSource() override = default;
 
   void Bind(mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
+    receiver_.reset();
     receiver_.Bind(std::move(receiver));
   }
 
@@ -112,14 +113,15 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   // mojom::CastMessageChannel mock implementation (inbound messages).
   MOCK_METHOD1(OnMessage, void(mojom::CastMessagePtr));
   MOCK_METHOD0(OnConnectToRemotingSource, void());
-  MOCK_METHOD0(RequestRemotingStreaming, void());
-  MOCK_METHOD0(RestartMirroringStreaming, void());
+  MOCK_METHOD(void, StartRemoting, (), (override));
+  MOCK_METHOD(void, StopRemoting, (RemotingStopReason), (override));
 
   // MediaRemoter::Client implementation.
   void ConnectToRemotingSource(
       mojo::PendingRemote<media::mojom::Remoter> remoter,
       mojo::PendingReceiver<media::mojom::RemotingSource> source_receiver)
       override {
+    remoter_.reset();
     remoter_.Bind(std::move(remoter));
     remoting_source_.Bind(std::move(source_receiver));
     OnConnectToRemotingSource();
@@ -160,22 +162,22 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  // Requests to start a remoting session.
-  void StartRemoting() {
+  // The source asks to start a remoting session.
+  void SourceStartsRemoting() {
     ASSERT_TRUE(remoter_);
-    EXPECT_CALL(*this, RequestRemotingStreaming());
+    EXPECT_CALL(*this, StartRemoting());
     remoter_->Start();
     RunUntilIdle();
     Mock::VerifyAndClear(this);
   }
 
-  // Stops the current remoting session.
-  void StopRemoting() {
+  // The source stops the current remoting session.
+  void SourceStopsRemoting() {
     ASSERT_TRUE(remoter_);
     EXPECT_CALL(remoting_source_, OnStopped(RemotingStopReason::USER_DISABLED));
     EXPECT_CALL(remoting_source_, OnSinkGone());
     EXPECT_CALL(rpc_dispatcher_, Unsubscribe());
-    EXPECT_CALL(*this, RestartMirroringStreaming());
+    EXPECT_CALL(*this, StopRemoting(RemotingStopReason::USER_DISABLED));
     remoter_->Stop(media::mojom::RemotingStopReason::USER_DISABLED);
     RunUntilIdle();
     Mock::VerifyAndClear(this);
@@ -200,24 +202,25 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  // Signals that mirroring is resumed successfully.
-  void MirroringResumed(bool is_remoting_disabled) {
+  // Signals that the client is ready to accept remoting requests again.
+  void RemoterReady(bool is_remoting_disabled) {
     // When MediaRemoter is in the REMOTING_DISABLED state, it should not notify
     // its remoting_source_ about available sinks.
     EXPECT_CALL(remoting_source_, OnSinkAvailable(_))
         .Times(is_remoting_disabled ? 0 : 1);
-    media_remoter_->OnMirroringResumed();
+    media_remoter_->OnReadyForRemoting();
     RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  // Signals that remoting session failed to start.
+  // Signals that remoting session failed to start. The remoter must not
+  // call back into the client.
   void RemotingStartFailed() {
     ASSERT_TRUE(media_remoter_);
     EXPECT_CALL(remoting_source_, OnStartFailed(_));
     EXPECT_CALL(remoting_source_, OnSinkGone());
-    EXPECT_CALL(*this, RestartMirroringStreaming());
-    media_remoter_->OnRemotingFailed();
+    EXPECT_CALL(*this, StopRemoting(_)).Times(0);
+    media_remoter_->OnRemotingStartFailed();
     RunUntilIdle();
     Mock::VerifyAndClear(this);
     Mock::VerifyAndClear(&remoting_source_);
@@ -265,6 +268,33 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
 
   mojo::Remote<media::mojom::Remoter>& remoter() { return remoter_; }
 
+  // Signals that the client stopped remoting. The remoter must not call back
+  // into the client.
+  void ClientStopsRemoting(RemotingStopReason reason) {
+    ASSERT_TRUE(media_remoter_);
+    EXPECT_CALL(remoting_source_, OnStopped(reason));
+    EXPECT_CALL(remoting_source_, OnSinkGone());
+    EXPECT_CALL(rpc_dispatcher_, Unsubscribe());
+    EXPECT_CALL(*this, StopRemoting(_)).Times(0);
+    media_remoter_->OnRemotingStopped(reason);
+    RunUntilIdle();
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+    Mock::VerifyAndClear(&rpc_dispatcher_);
+  }
+
+  // Signals that the remoting source changed.
+  void SourceChanged(bool expect_sink_available) {
+    ASSERT_TRUE(media_remoter_);
+    EXPECT_CALL(*this, OnConnectToRemotingSource());
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_))
+        .Times(expect_sink_available ? 1 : 0);
+    media_remoter_->OnSourceChanged();
+    RunUntilIdle();
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
   void DestroyRemoter() { media_remoter_.reset(); }
 
   void DisconnectAudioStream() {
@@ -288,37 +318,37 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
 
 TEST_F(MediaRemoterTest, StartAndStopRemoting) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
-  StopRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, StartAndStopRemotingAudioOnly) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_ONLY);
-  StopRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, StartAndStopRemotingVideoOnly) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::VIDEO_ONLY);
-  StopRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, BrowserDataSendFailureAllowsRemotingAgain) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
@@ -327,19 +357,19 @@ TEST_F(MediaRemoterTest, BrowserDataSendFailureAllowsRemotingAgain) {
               OnStopped(RemotingStopReason::DATA_SEND_FAILED));
   EXPECT_CALL(remoting_source(), OnSinkGone());
   EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
-  EXPECT_CALL(*this, RestartMirroringStreaming());
+  EXPECT_CALL(*this, StopRemoting(RemotingStopReason::DATA_SEND_FAILED));
   remoter()->Stop(RemotingStopReason::DATA_SEND_FAILED);
   remoter().FlushForTesting();
   remoting_source().FlushForTesting();
 
-  MirroringResumed(/*is_remoting_disabled=*/false);
-  StartRemoting();
-  StopRemoting();
+  RemoterReady(/*is_remoting_disabled=*/false);
+  SourceStartsRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, StartRemotingWithoutCallingStart) {
   CreateRemoter();
-  // Should fail since we didn't call `StartRemoting().`
+  // Should fail since the source did not ask to start remoting.
   EXPECT_CALL(remoting_source(), OnStarted()).Times(0);
   RemotingStreamingStarted();
 }
@@ -347,56 +377,106 @@ TEST_F(MediaRemoterTest, StartRemotingWithoutCallingStart) {
 TEST_F(MediaRemoterTest, StopRemotingWhileStarting) {
   CreateRemoter();
   // Starts a remoting session.
-  StartRemoting();
+  SourceStartsRemoting();
   // Immediately stops the remoting session while not started yet.
-  StopRemoting();
+  SourceStopsRemoting();
 
-  // Signals that successfully switch to mirroring.
-  MirroringResumed(/* is_remoting_disabled */ false);
+  // Signals that the client is ready to accept remoting requests again.
+  RemoterReady(/* is_remoting_disabled */ false);
   // Now remoting can be started again.
-  StartRemoting();
-  EXPECT_CALL(*this, RestartMirroringStreaming());
+  SourceStartsRemoting();
 
-  // Called when MediaRemoter is destroyed.
+  // Destroying the remoter ends the pending start without calling the
+  // client.
   EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
+  EXPECT_CALL(*this, StopRemoting(_)).Times(0);
+  DestroyRemoter();
 }
 
 TEST_F(MediaRemoterTest, RemotingStartFailed) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   RemotingStartFailed();
-  MirroringResumed(/* is_remoting_disabled */ true);
+  RemoterReady(/* is_remoting_disabled */ true);
+}
+
+TEST_F(MediaRemoterTest, ClientStopsRemoting) {
+  CreateRemoter();
+  SourceStartsRemoting();
+  EXPECT_CALL(remoting_source(), OnStarted());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
+  RemotingStreamingStarted();
+  StartDataStreams(SessionType::AUDIO_AND_VIDEO);
+
+  ClientStopsRemoting(RemotingStopReason::LOCAL_PLAYBACK);
+
+  // Remoting can start again when the client is ready.
+  RemoterReady(/* is_remoting_disabled */ false);
+  SourceStartsRemoting();
+  SourceStopsRemoting();
+}
+
+TEST_F(MediaRemoterTest, ClientStopsRemotingWhileStarting) {
+  CreateRemoter();
+  SourceStartsRemoting();
+  ClientStopsRemoting(RemotingStopReason::LOCAL_PLAYBACK);
+
+  // A late answer to the cancelled start is ignored.
+  EXPECT_CALL(remoting_source(), OnStarted()).Times(0);
+  RemotingStreamingStarted();
+}
+
+TEST_F(MediaRemoterTest, SourceChangedWhileReady) {
+  CreateRemoter();
+  SourceChanged(/*expect_sink_available=*/true);
+  SourceStartsRemoting();
+  SourceStopsRemoting();
+}
+
+TEST_F(MediaRemoterTest, SourceChangedAfterClientStopsRemoting) {
+  CreateRemoter();
+  SourceStartsRemoting();
+  EXPECT_CALL(remoting_source(), OnStarted());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
+  RemotingStreamingStarted();
+  ClientStopsRemoting(RemotingStopReason::LOCAL_PLAYBACK);
+
+  // The new source only hears about the sink when the client is ready.
+  SourceChanged(/*expect_sink_available=*/false);
+  RemoterReady(/* is_remoting_disabled */ false);
+  SourceStartsRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, SwitchBetweenMultipleSessions) {
   CreateRemoter();
 
   // Start a remoting session.
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
-  // Stop the remoting session and switch to mirroring.
-  StopRemoting();
-  MirroringResumed(/* is_remoting_disabled */ false);
+  // Stop the remoting session.
+  SourceStopsRemoting();
+  RemoterReady(/* is_remoting_disabled */ false);
 
   // Switch to remoting again.
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
-  // Switch to mirroring again.
-  StopRemoting();
-  MirroringResumed(/* is_remoting_disabled */ false);
+  // Stop the remoting session again.
+  SourceStopsRemoting();
+  RemoterReady(/* is_remoting_disabled */ false);
 }
 
 TEST_F(MediaRemoterTest, ReceivesRpcMessagesAndSendsOutboundMessages) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   RpcDispatcher::ResponseCallback response_callback;
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _))
@@ -420,12 +500,12 @@ TEST_F(MediaRemoterTest, ReceivesRpcMessagesAndSendsOutboundMessages) {
   remoter()->SendMessageToSink(kOutboundMessage);
   remoter().FlushForTesting();
 
-  StopRemoting();
+  SourceStopsRemoting();
 }
 
 TEST_F(MediaRemoterTest, RpcErrorStopsRemoting) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   RpcDispatcher::ErrorCallback error_callback;
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _))
@@ -441,17 +521,17 @@ TEST_F(MediaRemoterTest, RpcErrorStopsRemoting) {
               OnStopped(RemotingStopReason::MESSAGE_SEND_FAILED));
   EXPECT_CALL(remoting_source(), OnSinkGone());
   EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
-  EXPECT_CALL(*this, RestartMirroringStreaming());
+  EXPECT_CALL(*this, StopRemoting(RemotingStopReason::MESSAGE_SEND_FAILED));
   error_callback.Run();
   remoting_source().FlushForTesting();
 
-  // Mirroring is resumed, but remoting should remain disabled.
-  MirroringResumed(/* is_remoting_disabled */ true);
+  // Remoting should remain disabled after an RPC error.
+  RemoterReady(/* is_remoting_disabled */ true);
 }
 
 TEST_F(MediaRemoterTest, RpcErrorCanDestroyRemoter) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   RpcDispatcher::ErrorCallback error_callback;
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _))
@@ -466,16 +546,15 @@ TEST_F(MediaRemoterTest, RpcErrorCanDestroyRemoter) {
               OnStopped(RemotingStopReason::MESSAGE_SEND_FAILED));
   EXPECT_CALL(remoting_source(), OnSinkGone());
   EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
-  EXPECT_CALL(*this, RestartMirroringStreaming()).WillOnce([this] {
-    DestroyRemoter();
-  });
+  EXPECT_CALL(*this, StopRemoting(RemotingStopReason::MESSAGE_SEND_FAILED))
+      .WillOnce([this] { DestroyRemoter(); });
   error_callback.Run();
   remoting_source().FlushForTesting();
 }
 
 TEST_F(MediaRemoterTest, DataStreamErrorDisablesRemoting) {
   CreateRemoter();
-  StartRemoting();
+  SourceStartsRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
@@ -487,14 +566,13 @@ TEST_F(MediaRemoterTest, DataStreamErrorDisablesRemoting) {
               OnStopped(RemotingStopReason::DATA_SEND_FAILED));
   EXPECT_CALL(remoting_source(), OnSinkGone());
   EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
-  EXPECT_CALL(*this, RestartMirroringStreaming()).WillOnce([&run_loop] {
-    run_loop.Quit();
-  });
+  EXPECT_CALL(*this, StopRemoting(RemotingStopReason::DATA_SEND_FAILED))
+      .WillOnce([&run_loop] { run_loop.Quit(); });
   DisconnectAudioStream();
   run_loop.Run();
   remoting_source().FlushForTesting();
 
-  MirroringResumed(/*is_remoting_disabled=*/true);
+  RemoterReady(/*is_remoting_disabled=*/true);
 }
 
 }  // namespace mirroring

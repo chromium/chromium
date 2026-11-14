@@ -18,33 +18,16 @@ MediaRemoter::MediaRemoter(
     : client_(client),
       sink_metadata_(sink_metadata),
       rpc_dispatcher_(rpc_dispatcher),
-      state_(MIRRORING) {
-  client_->ConnectToRemotingSource(
-      receiver_.BindNewPipeAndPassRemote(),
-      remoting_source_.BindNewPipeAndPassReceiver());
+      state_(READY) {
+  ConnectToSource();
   remoting_source_->OnSinkAvailable(sink_metadata_.Clone());
 }
 
 MediaRemoter::~MediaRemoter() {
-  // Stop this remoting session if mirroring is stopped during a remoting
-  // session. For example, user stops mirroring through the cast dialog or
-  // closes the tab.
-  Stop(media::mojom::RemotingStopReason::ROUTE_TERMINATED);
-}
-
-void MediaRemoter::OnMessageFromSink(const std::vector<uint8_t>& response) {
-  remoting_source_->OnMessageFromSink(response);
-}
-
-void MediaRemoter::OnRpcError() {
-  if (state_ != REMOTING_STARTED && state_ != STARTING_REMOTING) {
-    return;
-  }
-  base::WeakPtr self = weak_factory_.GetWeakPtr();
-  Stop(media::mojom::RemotingStopReason::MESSAGE_SEND_FAILED);
-  if (self) {
-    state_ = REMOTING_DISABLED;
-  }
+  // The client destroys the remoter when the Cast session is torn down, which
+  // can happen while remoting is active (e.g. user stops casting through the
+  // Cast dialog or closes the tab).
+  EndRemoting(media::mojom::RemotingStopReason::ROUTE_TERMINATED);
 }
 
 void MediaRemoter::OnRemotingStarted() {
@@ -67,65 +50,49 @@ void MediaRemoter::OnRemotingStarted() {
   remoting_source_->OnStarted();
 }
 
-void MediaRemoter::OnMirroringResumed(bool is_tab_switching) {
-  if (state_ == REMOTING_DISABLED) {
+void MediaRemoter::OnRemotingStartFailed() {
+  if (state_ != STARTING_REMOTING) {
+    return;  // Start operation was canceled.
+  }
+  state_ = REMOTING_DISABLED;
+  remoting_source_->OnStartFailed(
+      media::mojom::RemotingStartFailReason::INVALID_ANSWER_MESSAGE);
+  remoting_source_->OnSinkGone();
+}
+
+void MediaRemoter::OnRemotingStopped(media::mojom::RemotingStopReason reason) {
+  EndRemoting(reason);
+}
+
+void MediaRemoter::OnReadyForRemoting() {
+  if (state_ != STOPPING_REMOTING) {
     return;
   }
-  DCHECK(state_ == STOPPING_REMOTING ||
-         (state_ == MIRRORING && is_tab_switching));
-
-  state_ = MIRRORING;
-
-  if (is_tab_switching) {
-    receiver_.reset();
-    remoting_source_.reset();
-    client_->ConnectToRemotingSource(
-        receiver_.BindNewPipeAndPassRemote(),
-        remoting_source_.BindNewPipeAndPassReceiver());
-  }
+  state_ = READY;
 
   // Notify the remoting source to enable starting media remoting again.
   remoting_source_->OnSinkAvailable(sink_metadata_.Clone());
 }
 
-void MediaRemoter::OnRemotingFailed() {
-  DCHECK(state_ == STARTING_REMOTING || state_ == REMOTING_STARTED);
-  if (state_ == STARTING_REMOTING) {
-    remoting_source_->OnStartFailed(
-        media::mojom::RemotingStartFailReason::INVALID_ANSWER_MESSAGE);
-  }
-  state_ = REMOTING_DISABLED;
-  remoting_source_->OnSinkGone();
-  // Fallback to mirroring.
-  client_->RestartMirroringStreaming();
-}
-
-void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
-  if (state_ == STOPPING_REMOTING || state_ == MIRRORING ||
-      state_ == REMOTING_DISABLED) {
+void MediaRemoter::OnSourceChanged() {
+  if (state_ == REMOTING_DISABLED) {
     return;
   }
-
-  // At this point, we are currently remoting and should tear down.
-  rpc_dispatcher_->Unsubscribe();
-  audio_sender_.reset();
-  video_sender_.reset();
-
-  state_ = STOPPING_REMOTING;
-  remoting_source_->OnStopped(reason);
-  // Prevent the start of remoting until switching completes.
-  remoting_source_->OnSinkGone();
-  // Switch to mirroring.
-  client_->RestartMirroringStreaming();
+  receiver_.reset();
+  remoting_source_.reset();
+  ConnectToSource();
+  if (state_ == READY) {
+    remoting_source_->OnSinkAvailable(sink_metadata_.Clone());
+  }
 }
 
 void MediaRemoter::Start() {
-  if (state_ != MIRRORING) {
+  if (state_ != READY) {
     VLOG(2) << "Warning: Ignore start request. state=" << state_;
     return;
   }
   state_ = STARTING_REMOTING;
-  client_->RequestRemotingStreaming();
+  client_->StartRemoting();
 }
 
 void MediaRemoter::StartDataStreams(
@@ -162,6 +129,13 @@ void MediaRemoter::StartDataStreams(
   }
 }
 
+void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
+  if (EndRemoting(reason)) {
+    // The client may destroy `this`.
+    client_->StopRemoting(reason);
+  }
+}
+
 void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
   if (state_ != REMOTING_STARTED) {
     return;
@@ -169,15 +143,50 @@ void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
   rpc_dispatcher_->SendOutboundMessage(message);
 }
 
+void MediaRemoter::OnMessageFromSink(const std::vector<uint8_t>& response) {
+  remoting_source_->OnMessageFromSink(response);
+}
+
+void MediaRemoter::OnRpcError() {
+  FailRemoting(media::mojom::RemotingStopReason::MESSAGE_SEND_FAILED);
+}
+
 void MediaRemoter::OnRemotingDataStreamError() {
   if (state_ != REMOTING_STARTED) {
     return;
   }
-  base::WeakPtr self = weak_factory_.GetWeakPtr();
-  Stop(media::mojom::RemotingStopReason::DATA_SEND_FAILED);
-  if (self) {
-    state_ = REMOTING_DISABLED;
+  FailRemoting(media::mojom::RemotingStopReason::DATA_SEND_FAILED);
+}
+
+void MediaRemoter::ConnectToSource() {
+  client_->ConnectToRemotingSource(
+      receiver_.BindNewPipeAndPassRemote(),
+      remoting_source_.BindNewPipeAndPassReceiver());
+}
+
+bool MediaRemoter::EndRemoting(media::mojom::RemotingStopReason reason) {
+  if (state_ != STARTING_REMOTING && state_ != REMOTING_STARTED) {
+    return false;
   }
+
+  rpc_dispatcher_->Unsubscribe();
+  audio_sender_.reset();
+  video_sender_.reset();
+
+  state_ = STOPPING_REMOTING;
+  remoting_source_->OnStopped(reason);
+  // Prevent the start of remoting until the client is ready again.
+  remoting_source_->OnSinkGone();
+  return true;
+}
+
+void MediaRemoter::FailRemoting(media::mojom::RemotingStopReason reason) {
+  if (!EndRemoting(reason)) {
+    return;
+  }
+  state_ = REMOTING_DISABLED;
+  // The client may destroy `this`.
+  client_->StopRemoting(reason);
 }
 
 }  // namespace mirroring

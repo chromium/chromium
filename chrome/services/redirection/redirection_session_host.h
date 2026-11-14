@@ -57,8 +57,8 @@ class RedirectionSessionHost final : public mirroring::MediaRemoter::Client,
       mojo::PendingRemote<media::mojom::Remoter> remoter,
       mojo::PendingReceiver<media::mojom::RemotingSource> source_receiver)
       override;
-  void RequestRemotingStreaming() override;
-  void RestartMirroringStreaming() override;
+  void StartRemoting() override;
+  void StopRemoting(media::mojom::RemotingStopReason reason) override;
   std::unique_ptr<media::mojom::RemotingDataStreamSender>
   CreateRemotingDataStreamSender(
       bool is_audio,

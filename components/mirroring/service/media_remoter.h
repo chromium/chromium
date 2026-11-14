@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 #define COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,20 +22,21 @@ namespace mirroring {
 
 class RpcDispatcher;
 
-// MediaRemoter remotes media content directly to a Cast Receiver. When
-// MediaRemoter is started, it connects itself with a source tab in browser
-// through the Mirroring Service mojo interface and allows the browser to access
-// this MediaRemoter to start/stop individual remoting sessions, which are
-// caused by user actions (i.e., when they somehow indicate a desire to
-// enter/leave an immersive video-watching mode).
+// MediaRemoter is the Mirroring Service's end of the media::mojom::Remoter and
+// media::mojom::RemotingSource interface pair. It tells a remoting source when
+// a sink is available, relays RPC messages between the source and the Cast
+// Receiver, and hands the source's data pipes to senders that its Client
+// creates.
 //
-// When a remoting session is started, MediaRemoter will first request that tab
-// mirroring be switched into content remoting mode. If granted, it will notify
-// the browser that this has succeeded. At this point, two-way RPC binary
-// messaging begins, and the MediaRemoter simply forwards messages between the
-// browser and the Cast Receiver. The audio/video data streams are delivered
-// from the media renderer to the Mirroring Service through mojo datapipes, and
-// are then sent out to Cast Receiver through Cast Streaming.
+// MediaRemoter does not own the streaming session. Its Client does, and the
+// Client decides what to stream when remoting is not active.
+//
+// Like the mojom interfaces, the API is split by direction:
+//  - Commands go down from the source to the Client: StartRemoting() and
+//    StopRemoting().
+//  - Events go up from the Client to the source: the public On*() methods.
+// An event from the Client never causes a StartRemoting() or StopRemoting()
+// call back into the Client.
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
     : public media::mojom::Remoter {
  public:
@@ -39,18 +44,24 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
    public:
     virtual ~Client() = default;
 
-    // Connects the |remoter| with a source tab.
+    // Passes both pipe ends to whatever provides the remoting source. The
+    // client may drop them if there is no source, in which case the remoter
+    // never receives a command.
     virtual void ConnectToRemotingSource(
         mojo::PendingRemote<media::mojom::Remoter> remoter,
         mojo::PendingReceiver<media::mojom::RemotingSource>
             source_receiver) = 0;
 
-    // Requests to start remoting. OnRemotingStarted() / OnRemotingStartFailed()
-    // will be called when starting succeeds / fails.
-    virtual void RequestRemotingStreaming() = 0;
+    // Starts a remoting streaming session. The client answers with
+    // OnRemotingStarted() or OnRemotingStartFailed(), unless StopRemoting()
+    // cancels the start first.
+    virtual void StartRemoting() = 0;
 
-    // Requests to resume mirroring.
-    virtual void RestartMirroringStreaming() = 0;
+    // Stops the remoting streaming session, or cancels a pending
+    // StartRemoting(). Called when the source stops remoting, or when the
+    // remoter fails to relay an RPC message or a data stream. The client may
+    // destroy the remoter from inside this call.
+    virtual void StopRemoting(media::mojom::RemotingStopReason reason) = 0;
 
     // Creates a RemotingDataStreamSender for the given data pipe. The client
     // is responsible for providing the transport-specific sender
@@ -71,29 +82,31 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   MediaRemoter(const MediaRemoter&) = delete;
   MediaRemoter& operator=(const MediaRemoter&) = delete;
 
+  // Tells the source that remoting stopped with ROUTE_TERMINATED if a session
+  // is starting or active. Does not call the client.
   ~MediaRemoter() override;
 
-  // Callback from |rpc_dispatcher_| for received RPC messages and errors.
-  void OnMessageFromSink(const std::vector<uint8_t>& response);
-  void OnRpcError();
-
-  // Called when OFFER/ANSWER exchange for a remoting session succeeds.
+  // Answers to Client::StartRemoting(). Both do nothing if the start was
+  // cancelled. A failed start disables remoting for the lifetime of this
+  // object.
   void OnRemotingStarted();
+  void OnRemotingStartFailed();
 
-  // Called when a mirroring session is successfully resumed.
-  void OnMirroringResumed(bool is_tab_switching = false);
+  // The client stopped the remoting streaming session, or cancelled a pending
+  // start, for its own reasons.
+  void OnRemotingStopped(media::mojom::RemotingStopReason reason);
 
-  // Error occurred either during the start of remoting or in the middle of
-  // remoting. In either case, this call fallbacks to mirroring, and prevents
-  // further starting of media remoting during this mirroring session.
-  void OnRemotingFailed();
+  // The client can accept another StartRemoting() after remoting stopped.
+  // Does nothing if remoting has not stopped, or is disabled.
+  void OnReadyForRemoting();
 
-  // media::mojom::Remoter implementation.
-  // Stops the current remoting session with a given |reason|.
-  void Stop(media::mojom::RemotingStopReason reason) override;
+  // The remoting source changed. Drops the current source and connects to the
+  // new one through Client::ConnectToRemotingSource(). Does nothing if remoting
+  // is disabled.
+  void OnSourceChanged();
 
  private:
-  // media::mojom::Remoter implementation.
+  // media::mojom::Remoter implementation. Only the source calls these.
   void Start() override;
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
@@ -102,10 +115,26 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
           audio_sender_receiver,
       mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
           video_sender_receiver) override;
+  void Stop(media::mojom::RemotingStopReason reason) override;
   void SendMessageToSink(const std::vector<uint8_t>& message) override;
-  // Called by RemotingDataStreamSender when error occurred. Will stop this
-  // remoting session and fallback to mirroring.
+
+  // Callbacks from `rpc_dispatcher_` for received RPC messages and errors.
+  void OnMessageFromSink(const std::vector<uint8_t>& response);
+  void OnRpcError();
+
+  // Called by a RemotingDataStreamSender when an error occurred.
   void OnRemotingDataStreamError();
+
+  // Binds new pipes and passes the other ends to the client.
+  void ConnectToSource();
+
+  // Ends the active session or pending start, and tells the source that
+  // remoting stopped. Returns false if there was nothing to end.
+  bool EndRemoting(media::mojom::RemotingStopReason reason);
+
+  // Ends the active session or pending start because of an error in the
+  // remoter, disables remoting, and tells the client to stop.
+  void FailRemoting(media::mojom::RemotingStopReason reason);
 
   raw_ref<Client> client_;
   const media::mojom::RemotingSinkMetadata sink_metadata_;
@@ -117,7 +146,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
 
   // State transition diagram:
   //
-  // .-----------> MIRRORING
+  // .-------------> READY
   // |                 |
   // |                 V
   // |           STARTING_REMOTING
@@ -131,7 +160,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   // |   V          V
   // .--STOPPING_REMOTING
   enum {
-    MIRRORING,          // In mirroring.
+    READY,              // Ready to start remoting.
     STARTING_REMOTING,  // Starting a remoting session.
     REMOTING_STARTED,   // Remoting started successfully.
     REMOTING_DISABLED,  // Remoting was disabled (because of error).

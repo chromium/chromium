@@ -84,7 +84,7 @@ void RedirectionSessionHost::ConnectToRemotingSource(
       mojo::FusePipes(std::move(source_receiver), std::move(pending_source_)));
 }
 
-void RedirectionSessionHost::RequestRemotingStreaming() {
+void RedirectionSessionHost::StartRemoting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The session already exists and needs no negotiation, and the streams it
@@ -92,11 +92,11 @@ void RedirectionSessionHost::RequestRemotingStreaming() {
   media_remoter_->OnRemotingStarted();
 }
 
-void RedirectionSessionHost::RestartMirroringStreaming() {
+void RedirectionSessionHost::StopRemoting(
+    media::mojom::RemotingStopReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Redirection has no mirroring mode to fall back to, so a remoter that has
-  // finished remoting has nothing left to do.
+  // The session exists only to carry remoting, so it ends with it.
   EndSession();
 }
 
@@ -139,7 +139,9 @@ void RedirectionSessionHost::OnDemuxerHandlesReceived(
       !OpenStreamFor(mmr_session_.Get(), video_demuxer_handle, video_sender_)) {
     // A sender with no stream leaves its source blocked on a frame that can
     // never be acknowledged.
-    media_remoter_->Stop(media::mojom::RemotingStopReason::DATA_SEND_FAILED);
+    media_remoter_->OnRemotingStopped(
+        media::mojom::RemotingStopReason::DATA_SEND_FAILED);
+    EndSession();
     return;
   }
 }
