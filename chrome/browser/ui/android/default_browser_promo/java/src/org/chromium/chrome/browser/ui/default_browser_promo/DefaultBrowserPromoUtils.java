@@ -16,7 +16,6 @@ import android.provider.Settings;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -26,7 +25,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -97,10 +95,6 @@ public class DefaultBrowserPromoUtils {
                             new DefaultBrowserStateProvider());
         }
         return sInstance;
-    }
-
-    static boolean isFeatureEnabled() {
-        return !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO);
     }
 
     /**
@@ -177,17 +171,15 @@ public class DefaultBrowserPromoUtils {
     }
 
     /**
-     * This decides whether the dialog should be promoted. Returns true if: the feature is enabled,
-     * the {@link RoleManager} is available, and both the impression count and current default
-     * browser state satisfy the pre-defined conditions.
+     * This decides whether the dialog should be promoted. Returns true if: the {@link RoleManager}
+     * is available, and both the impression count and current default browser state satisfy the
+     * pre-defined conditions.
      *
      * @param context The context.
      * @param source The source of the click, one of {@link DefaultBrowserPromoEntryPoint}.
      */
     public boolean shouldShowRoleManagerPromo(
             Context context, @DefaultBrowserPromoEntryPoint int source) {
-        if (!isFeatureEnabled()) return false;
-
         if (!isRoleAvailableButNotHeld(context)) {
             // Returns false if RoleManager default app setting is not available in the current
             // system, or the browser role is already held.
@@ -211,8 +203,6 @@ public class DefaultBrowserPromoUtils {
      * whether the Role Manager Promo should be shown during the First Run Experience.
      */
     public boolean shouldShowRoleManagerPromoForFre(Context context) {
-        if (!isFeatureEnabled()) return false;
-
         // For FRE, roleManager.isRoleHeld(RoleManager.ROLE_BROWSER) actually just returns false
         // even if Chrome (Canary, Dev, Beta, Stable) is set as default. But we're still calling
         // this method because it checks whether the role is available.

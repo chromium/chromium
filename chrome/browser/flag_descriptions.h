@@ -6002,12 +6002,6 @@ inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
 inline constexpr char kChromeFindsInternalsDescription[] =
     "Enables the chrome://chrome-finds-internals page.";
 
-inline constexpr char kClankDefaultBrowserPromoRoleManagerName[] =
-    "Clank default browser Promo Role Manager ";
-inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =
-    "Sets the Role Manager Default Browser Promo for testing the new "
-    "Default Browser Promo Feature";
-
 inline constexpr char kClankOmniboxMinimizationName[] =
     "Clank Omnibox Minimization";
 inline constexpr char kClankOmniboxMinimizationDescription[] =

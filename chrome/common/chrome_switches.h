@@ -852,10 +852,6 @@ inline constexpr char kAndroidEntraSsoAllowDebugBrokers[] =
 inline constexpr char kAuthAndroidNegotiateAccountType[] =
     "auth-spnego-account-type";
 
-// Disable the default browser promo.
-inline constexpr char kDisableDefaultBrowserPromo[] =
-    "disable-default-browser-promo";
-
 // Forces the night mode to be enabled.
 inline constexpr char kForceEnableNightMode[] = "force-enable-night-mode";
 

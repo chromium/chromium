@@ -41,13 +41,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -230,17 +228,6 @@ public class DefaultBrowserPromoUtilsTest {
         when(mCounter.getMaxPromoCount()).thenReturn(1);
         Assert.assertFalse(
                 "Should not promo when promo count reaches the upper limit.",
-                mUtils.shouldShowRoleManagerPromo(
-                        mActivity,
-                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.CHROME_STARTUP));
-        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
-    }
-
-    @Test
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO})
-    public void testNoPromo_featureDisabled() {
-        Assert.assertFalse(
-                "Should not promo when the feature is disabled.",
                 mUtils.shouldShowRoleManagerPromo(
                         mActivity,
                         DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.CHROME_STARTUP));

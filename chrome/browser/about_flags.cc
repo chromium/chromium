@@ -10599,12 +10599,6 @@ const FeatureEntry kFeatureEntries[] = {
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"clank-default-browser-promo-role-manager",
-     flag_descriptions::kClankDefaultBrowserPromoRoleManagerName,
-     flag_descriptions::kClankDefaultBrowserPromoRoleManagerDescription,
-     kOsAndroid,
-     SINGLE_DISABLE_VALUE_TYPE(switches::kDisableDefaultBrowserPromo)},
-
     {"desktop-ua-on-connected-display",
      flag_descriptions::kDesktopUAOnConnectedDisplayName,
      flag_descriptions::kDesktopUAOnConnectedDisplayDescription, kOsAndroid,
