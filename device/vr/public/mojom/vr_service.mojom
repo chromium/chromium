@@ -107,6 +107,14 @@ struct XRSessionDeviceConfig {
   // The max number of layers that can be enabled at same time. See
   // SetEnabledCompositionLayers.
   uint16 max_render_layers = 1;
+
+  // The rates the page may ask for with XRFrameRateController. Empty if the
+  // page can't control the frame rate.
+  array<float> supported_frame_rates;
+
+  // The device's current frame rate, if known. XRFrameData.frame_rate reports
+  // changes.
+  float? frame_rate;
 };
 
 // This structure contains all the mojo interfaces for different kinds of
@@ -124,6 +132,8 @@ struct XRSessionDeviceConfig {
 struct XRSession {
   pending_remote<XRFrameDataProvider> data_provider;
   pending_remote<XRLayerManager>? layer_manager;
+  // Only present if XRSessionDeviceConfig.supported_frame_rates is non-empty.
+  pending_remote<XRFrameRateController>? frame_rate_controller;
   // TODO(crbug.com/529477851): Move where the client_receiver gets set to the
   // device process then mark this as non-optional.
   pending_receiver<XRSessionClient>? client_receiver;
@@ -1001,6 +1011,9 @@ struct XRFrameData {
   float rendering_time_ratio;
 
   XRTrackedImagesData? tracked_images;
+
+  // The device's current frame rate, if known.
+  float? frame_rate;
 };
 
 struct RequestSessionSuccess {
@@ -1336,6 +1349,14 @@ interface XRLayerManager {
   // in the same order as the order of layer_ids. This method can be called
   // multiple times in the same session.
   SetEnabledCompositionLayers(array<LayerId> layer_ids);
+};
+
+// Lets a session pick the device's frame rate. Hosted in the device process.
+interface XRFrameRateController {
+  // Asks the device to target |rate|, one of
+  // XRSessionDeviceConfig.supported_frame_rates. Replies without waiting for
+  // the device to switch, which XRFrameData.frame_rate reports.
+  UpdateTargetFrameRate(float rate) => ();
 };
 
 // Functions for pushing frame data to the sessions.

@@ -436,6 +436,7 @@ test("device_unittests") {
 
     if (enable_openxr) {
       sources += [
+        "vr/openxr/fb/openxr_frame_rate_handler_fb_unittest.cc",
         "vr/openxr/openxr_hand_utils_unittest.cc",
         "vr/openxr/openxr_view_configuration_unittest.cc",
       ]

@@ -95,6 +95,14 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     return layer_manager_.get();
   }
 
+  // Only bound if the device lets the page control its frame rate.
+  device::mojom::blink::XRFrameRateController* frame_rate_controller() {
+    if (!frame_rate_controller_.is_bound()) {
+      return nullptr;
+    }
+    return frame_rate_controller_.get();
+  }
+
   // Adds an ImmersiveSessionObserver. Observers will be automatically removed
   // by Oilpan when they are destroyed, and their WeakMember becomes null.
   void AddImmersiveSessionObserver(ImmersiveSessionObserver*);
@@ -195,6 +203,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   Vector<XRSharedImageData> shared_images_;
 
   HeapMojoRemote<device::mojom::blink::XRLayerManager> layer_manager_;
+  HeapMojoRemote<device::mojom::blink::XRFrameRateController>
+      frame_rate_controller_;
 
   bool last_has_focus_ = false;
 

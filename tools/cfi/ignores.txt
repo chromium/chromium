@@ -239,6 +239,7 @@ src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 # its trampoline dispatch through the same kind of pointers, and the mock's
 # Vulkan calls go through vkGetInstanceProcAddr.
 src:*third_party/openxr/src/src/*
+src:*device/vr/openxr/fb/openxr_frame_rate_handler_fb.cc
 src:*device/vr/openxr/linux/openxr_vulkan_context.cc
 src:*device/vr/openxr/msft/openxr_anchor_manager_msft.cc
 src:*device/vr/openxr/msft/openxr_scene_msft.cc

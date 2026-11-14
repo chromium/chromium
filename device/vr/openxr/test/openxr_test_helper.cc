@@ -108,6 +108,7 @@ const std::vector<const char*>& OpenXrTestHelper::GetSupportedExtensions() {
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
       XR_EXT_HAND_TRACKING_EXTENSION_NAME,
       XR_KHR_VISIBILITY_MASK_EXTENSION_NAME,
+      XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
 #if BUILDFLAG(IS_WIN)
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
       XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
@@ -195,6 +196,7 @@ void OpenXrTestHelper::Reset() {
 #endif
   next_handle_ = 0;
   next_predicted_display_time_ = 0;
+  display_refresh_rate_ = kDisplayRefreshRates[1];
 
   // vectors
   paths_.clear();
@@ -1595,6 +1597,27 @@ XrResult OpenXrTestHelper::PollEvent(XrEventDataBuffer* event_data) {
   }
 
   return XR_EVENT_UNAVAILABLE;
+}
+
+XrResult OpenXrTestHelper::RequestDisplayRefreshRate(float rate) {
+  RETURN_IF_FALSE(std::ranges::contains(kDisplayRefreshRates, rate),
+                  XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB,
+                  "xrRequestDisplayRefreshRateFB rate is not supported");
+  if (rate == display_refresh_rate_) {
+    return XR_SUCCESS;
+  }
+
+  XrEventDataBuffer event_data;
+  XrEventDataDisplayRefreshRateChangedFB* event_data_ptr =
+      reinterpret_cast<XrEventDataDisplayRefreshRateChangedFB*>(&event_data);
+  event_data_ptr->type = XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB;
+  event_data_ptr->next = nullptr;
+  event_data_ptr->fromDisplayRefreshRate = display_refresh_rate_;
+  event_data_ptr->toDisplayRefreshRate = rate;
+  event_queue_.push(event_data);
+
+  display_refresh_rate_ = rate;
+  return XR_SUCCESS;
 }
 
 #if BUILDFLAG(IS_WIN)

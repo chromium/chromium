@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
+#include "device/vr/openxr/fb/openxr_frame_rate_handler_fb.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_depth_sensor.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
@@ -139,6 +140,7 @@ class OpenXrApiWrapper {
   OpenXrHitTestManager* GetHitTestManager();
   OpenXrLightEstimator* GetLightEstimator();
   OpenXrDepthSensor* GetDepthSensor();
+  OpenXrFrameRateHandlerFb* GetFrameRateHandler();
 
   void OnContextProviderCreated(
       scoped_refptr<viz::ContextProvider> context_provider);
@@ -284,6 +286,7 @@ class OpenXrApiWrapper {
   std::unique_ptr<OpenXrMeshManager> mesh_manager_;
   std::unique_ptr<OpenXrUnboundedSpaceProvider> unbounded_space_provider_;
   std::unique_ptr<OpenXrVisibilityMaskHandler> visibility_mask_handler_;
+  std::unique_ptr<OpenXrFrameRateHandlerFb> frame_rate_handler_;
 
   // The context provider is owned by the OpenXrRenderLoop, and may change when
   // there is a context lost.

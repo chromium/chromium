@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+Helpers for the XRSession frame rate tests.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      let frameRateChanges = 0;
+
+      onSessionStartedCallback = function(session) {
+        if (session.mode !== 'immersive-vr') {
+          return;
+        }
+        session.addEventListener('frameratechange', () => frameRateChanges++);
+      }
+
+      function immersiveSession() {
+        return sessionInfos[sessionTypes.IMMERSIVE].currentSession;
+      }
+
+      // The outcome of the last updateTargetFrameRate(): 'resolved', an error
+      // name, or null while pending.
+      let updateResult = null;
+
+      function updateTargetFrameRate(rate) {
+        updateResult = null;
+        immersiveSession().updateTargetFrameRate(rate).then(
+            () => { updateResult = 'resolved'; },
+            (error) => { updateResult = error.name; });
+      }
+
+      function updateTargetFrameRateAndEndSession(rate) {
+        updateTargetFrameRate(rate);
+        immersiveSession().end();
+      }
+
+      // Stops the immersive session's frame loop after its next frame.
+      let frameLoopStopped = false;
+
+      function stopFrameLoop() {
+        const onFrame = onXRFrame;
+        onXRFrame = (time, frame) => {
+          if (frame.session !== immersiveSession()) {
+            onFrame(time, frame);
+            return;
+          }
+          frameLoopStopped = true;
+        };
+      }
+    </script>
+  </body>
+</html>

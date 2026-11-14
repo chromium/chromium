@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
+#include "device/vr/openxr/fb/openxr_frame_rate_handler_fb.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -98,6 +99,7 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   layer_manager_receiver_.reset();
+  frame_rate_controller_receiver_.reset();
   submit_client_.reset();
 
   pending_frame_.reset();
@@ -295,6 +297,7 @@ void OpenXrRenderLoop::CleanUp() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   layer_manager_receiver_.reset();
+  frame_rate_controller_receiver_.reset();
   overlay_receiver_.reset();
   overlay_submit_callback_.Reset();
   pending_overlay_pose_callback_.Reset();
@@ -431,6 +434,15 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   session->device_config->views = openxr_->GetDefaultViews();
   if (auto* depth = openxr_->GetDepthSensor(); depth) {
     session->device_config->depth_configuration = depth->GetDepthConfig();
+  }
+  if (auto* frame_rate_handler = openxr_->GetFrameRateHandler()) {
+    session->device_config->frame_rate = frame_rate_handler->frame_rate();
+    if (!frame_rate_handler->supported_frame_rates().empty()) {
+      session->device_config->supported_frame_rates =
+          frame_rate_handler->supported_frame_rates();
+      session->frame_rate_controller =
+          frame_rate_controller_receiver_.BindNewPipeAndPassRemote();
+    }
   }
   if (graphics_binding_->SupportsLayers()) {
     session->device_config->max_render_layers =
@@ -807,6 +819,10 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   }
 
   frame_data->render_info->mojo_from_viewer = openxr_->GetViewerPose();
+
+  if (auto* frame_rate_handler = openxr_->GetFrameRateHandler()) {
+    frame_data->frame_rate = frame_rate_handler->frame_rate();
+  }
 
   UpdateStageParameters();
 
@@ -1307,6 +1323,27 @@ void OpenXrRenderLoop::SetEnabledCompositionLayers(
       layer_ids, openxr_->session(),
       openxr_->GetRecommendedSwapchainSampleCount(),
       context_provider_->SharedImageInterface());
+}
+
+void OpenXrRenderLoop::UpdateTargetFrameRate(
+    float rate,
+    UpdateTargetFrameRateCallback callback) {
+  // The handler is gone if the runtime has already ended the session.
+  OpenXrFrameRateHandlerFb* frame_rate_handler = openxr_->GetFrameRateHandler();
+  if (!frame_rate_handler) {
+    std::move(callback).Run();
+    return;
+  }
+  if (!std::ranges::contains(frame_rate_handler->supported_frame_rates(),
+                             rate)) {
+    frame_rate_controller_receiver_.ReportBadMessage(
+        "Frame rate is not supported.");
+    return;
+  }
+  // Don't wait for a switch, which may never come. GetNextFrameData()
+  // reports it if it does.
+  frame_rate_handler->RequestFrameRate(rate);
+  std::move(callback).Run();
 }
 
 void OpenXrRenderLoop::CreateAnchor(

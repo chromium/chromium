@@ -13,6 +13,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -1486,6 +1487,21 @@ void XRSystem::OnRequestSessionReturned(
   // If session creation failed, move straight on to processing that.
   if (!result->is_success()) {
     FinishSessionCreation(query, std::move(result));
+    return;
+  }
+
+  // The device offers frame rate control with both a list of rates and a
+  // controller, or neither.
+  const auto& session = result->get_success()->session;
+  const bool has_frame_rates =
+      !session->device_config->supported_frame_rates.empty();
+  const bool has_frame_rate_controller =
+      session->frame_rate_controller.is_valid();
+  if (has_frame_rates != has_frame_rate_controller) {
+    mojo::ReportBadMessage("Frame rates and controller do not match.");
+    FinishSessionCreation(
+        query, device::mojom::blink::RequestSessionResult::NewFailureReason(
+                   device::mojom::RequestSessionError::INVALID_CLIENT));
     return;
   }
 

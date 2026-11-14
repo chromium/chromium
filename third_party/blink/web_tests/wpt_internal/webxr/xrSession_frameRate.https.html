@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+
+<script>
+// The WebXR Test API cannot set up frame rates yet, so this test drives the
+// chromium mock directly.
+
+// Starts an immersive session and its frame loop on a device that runs at
+// |frameRate| and supports |supportedFrameRates|.
+async function requestSessionWithFrameRates(
+    t, gl, supportedFrameRates, frameRate) {
+  const controller = await navigator.xr.test.simulateDeviceConnection(
+      TRACKED_IMMERSIVE_DEVICE);
+  controller.setFrameRates(supportedFrameRates, frameRate);
+  await gl.makeXRCompatible();
+  const session = await new Promise((resolve, reject) => {
+    navigator.xr.test.simulateUserActivation(() => {
+      navigator.xr.requestSession('immersive-vr').then(resolve, reject);
+    });
+  });
+  t.add_cleanup(() => session.end().catch(() => {}));
+
+  session.updateRenderState({baseLayer: new XRWebGLLayer(session, gl)});
+  const onFrame = () => session.requestAnimationFrame(onFrame);
+  session.requestAnimationFrame(onFrame);
+  return {controller, session};
+}
+
+xr_session_promise_test(
+    'Frame rate is null when the device does not report it',
+    async (session, fakeDeviceController, t) => {
+      assert_equals(session.frameRate, null);
+      assert_equals(session.supportedFrameRates, null);
+      await promise_rejects_dom(
+          t, 'InvalidStateError', session.updateTargetFrameRate(90));
+    }, TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_promise_test('Session reports the device frame rates',
+    async (t, gl) => {
+  const {session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  assert_equals(session.frameRate, 90);
+  assert_array_equals(session.supportedFrameRates, [72, 90, 120]);
+  assert_true(session.supportedFrameRates instanceof Float32Array);
+}, {}, 'webgl');
+
+xr_promise_test('updateTargetFrameRate rejects unsupported rates',
+    async (t, gl) => {
+  const {controller, session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  await promise_rejects_js(t, TypeError, session.updateTargetFrameRate(60));
+  assert_array_equals(controller.getRequestedFrameRates(), []);
+}, {}, 'webgl');
+
+xr_promise_test('frameratechange follows updateTargetFrameRate',
+    async (t, gl) => {
+  const {controller, session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  const changed = new Promise(resolve => {
+    session.addEventListener('frameratechange', resolve, {once: true});
+  });
+  await session.updateTargetFrameRate(120);
+  assert_array_equals(controller.getRequestedFrameRates(), [120]);
+  const event = await changed;
+  assert_true(event instanceof XRSessionEvent);
+  assert_equals(event.session, session);
+  assert_equals(session.frameRate, 120);
+}, {}, 'webgl');
+
+xr_promise_test('updateTargetFrameRate resolves if the device keeps its rate',
+    async (t, gl) => {
+  const {controller, session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  controller.keepFrameRate();
+  let fired = false;
+  session.addEventListener('frameratechange', () => { fired = true; });
+  await session.updateTargetFrameRate(120);
+  // Let a few frames through.
+  for (let i = 0; i < 3; i++) {
+    await new Promise(resolve => session.requestAnimationFrame(resolve));
+  }
+  assert_false(fired);
+  assert_equals(session.frameRate, 90);
+}, {}, 'webgl');
+
+xr_promise_test('frameratechange fires when the device changes its rate',
+    async (t, gl) => {
+  const {controller, session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  const changed = new Promise(resolve => {
+    session.addEventListener('frameratechange', resolve, {once: true});
+  });
+  // The page learns of it from a frame.
+  controller.setFrameRate(72);
+  await changed;
+  assert_equals(session.frameRate, 72);
+}, {}, 'webgl');
+
+xr_promise_test('frameratechange does not fire when the rate is unchanged',
+    async (t, gl) => {
+  const {session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  let fired = false;
+  session.addEventListener('frameratechange', () => { fired = true; });
+  // Let a few frames through.
+  for (let i = 0; i < 3; i++) {
+    await new Promise(resolve => session.requestAnimationFrame(resolve));
+  }
+  assert_false(fired);
+  assert_equals(session.frameRate, 90);
+}, {}, 'webgl');
+
+xr_promise_test('updateTargetFrameRate rejects after the session ends',
+    async (t, gl) => {
+  const {session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  await session.end();
+  await promise_rejects_dom(
+      t, 'InvalidStateError', session.updateTargetFrameRate(90));
+}, {}, 'webgl');
+
+xr_promise_test('updateTargetFrameRate rejects if the session ends first',
+    async (t, gl) => {
+  const {controller, session} =
+      await requestSessionWithFrameRates(t, gl, [72, 90, 120], 90);
+  controller.holdFrameRateReplies();
+  const rejected = promise_rejects_dom(
+      t, 'InvalidStateError', session.updateTargetFrameRate(120));
+  await session.end();
+  await rejected;
+}, {}, 'webgl');
+</script>

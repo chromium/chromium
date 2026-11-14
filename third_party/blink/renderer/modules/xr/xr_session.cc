@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -136,6 +137,8 @@ const char kEntityTypesNotSpecified[] =
 
 const char kSessionNotHaveSetFrameRate[] =
     "Session does not have a set frame rate.";
+
+const char kFrameRateNotSupported[] = "Frame rate is not supported.";
 
 const float kMinDefaultFramebufferScale = 0.1f;
 const float kMaxDefaultFramebufferScale = 1.0f;
@@ -424,6 +427,8 @@ XRSession::XRSession(
   // frame is sent to us, so we're okay to move it here, the other values on
   // device_config_ may be referenced throughout the lifetime of the session.
   UpdateViews(std::move(device_config_->views));
+
+  frame_rate_ = device_config_->frame_rate;
 
   DVLOG(2) << __func__
            << ": supports_viewport_scaling_=" << supports_viewport_scaling_;
@@ -827,12 +832,84 @@ void XRSession::UpdateStageParameters(
   }
 }
 
+NotShared<DOMFloat32Array> XRSession::supportedFrameRates() {
+  if (!FrameRateController()) {
+    return NotShared<DOMFloat32Array>();
+  }
+  return NotShared<DOMFloat32Array>(
+      DOMFloat32Array::Create(device_config_->supported_frame_rates));
+}
+
 ScriptPromise<IDLUndefined> XRSession::updateTargetFrameRate(
+    ScriptState* script_state,
     float rate,
     ExceptionState& exception_state) {
-  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                    kSessionNotHaveSetFrameRate);
-  return EmptyPromise();
+  if (!frame_rate_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionNotHaveSetFrameRate);
+    return EmptyPromise();
+  }
+
+  if (ended_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionEnded);
+    return EmptyPromise();
+  }
+
+  auto* frame_rate_controller = FrameRateController();
+  if (!frame_rate_controller ||
+      !std::ranges::contains(device_config_->supported_frame_rates, rate)) {
+    exception_state.ThrowTypeError(kFrameRateNotSupported);
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  // The device replies once it has the request. Frames report any switch.
+  update_target_frame_rate_promises_.insert(resolver);
+  frame_rate_controller->UpdateTargetFrameRate(
+      rate, resolver->WrapCallbackInScriptScope(blink::BindOnce(
+                &XRSession::OnUpdateTargetFrameRate, WrapPersistent(this))));
+
+  return promise;
+}
+
+void XRSession::OnUpdateTargetFrameRate(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  CHECK(update_target_frame_rate_promises_.Take(resolver));
+  if (ended_) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kSessionEnded);
+    return;
+  }
+  resolver->Resolve();
+}
+
+void XRSession::SetFrameRate(float frame_rate) {
+  if (frame_rate_ == frame_rate) {
+    return;
+  }
+  // The first known rate is not a change.
+  const bool changed = frame_rate_.has_value();
+  frame_rate_ = frame_rate;
+  if (changed &&
+      RuntimeEnabledFeatures::WebXRFrameRateEnabled(GetExecutionContext())) {
+    // Queued, as this can run in the middle of a frame update.
+    EnqueueEvent(
+        *XRSessionEvent::Create(event_type_names::kFrameratechange, this),
+        TaskType::kMiscPlatformAPI);
+  }
+}
+
+device::mojom::blink::XRFrameRateController* XRSession::FrameRateController() {
+  // The controller belongs to the immersive session, like LayerManager().
+  // XRSystem checked that it comes with a list of rates.
+  if (ended_ || !immersive()) {
+    return nullptr;
+  }
+  return xr_->frameProvider()->frame_rate_controller();
 }
 
 ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
@@ -1649,6 +1726,7 @@ void XRSession::HandleShutdown() {
       end_session_resolver_->Detach();
       end_session_resolver_ = nullptr;
     }
+    update_target_frame_rate_promises_.clear();
     return;
   }
 
@@ -1658,6 +1736,15 @@ void XRSession::HandleShutdown() {
   // provider thinking there's still an active immersive session.
   xr_->frameProvider()->OnSessionEnded(this);
   xr_->OnSessionEnded(this);
+
+  // The device's pending replies were dropped with the session.
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
+      update_target_frame_rate_promises;
+  update_target_frame_rate_promises_.swap(update_target_frame_rate_promises);
+  for (auto& resolver : update_target_frame_rate_promises) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kSessionEnded);
+  }
 
   if (end_session_resolver_) {
     DVLOG(3) << __func__ << ": Resolving end_session_resolver_";
@@ -2045,6 +2132,10 @@ void XRSession::UpdatePresentationFrameState(
     // Check if the session was ended by the |OnMojoSpaceReset| callback.
     if (ended_) {
       return;
+    }
+
+    if (frame_data->frame_rate) {
+      SetFrameRate(*frame_data->frame_rate);
     }
   } else {
     UpdateWorldUnderstandingStateForFrame(timestamp, frame_data);
@@ -2798,6 +2889,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(callback_collection_);
   visitor->Trace(create_anchor_promises_);
+  visitor->Trace(update_target_frame_rate_promises_);
   visitor->Trace(request_hit_test_source_promises_);
   visitor->Trace(graphics_bindings_);
   visitor->Trace(reference_spaces_);

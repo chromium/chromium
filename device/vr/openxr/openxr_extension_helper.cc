@@ -174,6 +174,11 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   // Visibility Mask
   OPENXR_LOAD_FN(xrGetVisibilityMaskKHR);
 
+  // Display refresh rate
+  OPENXR_LOAD_FN(xrEnumerateDisplayRefreshRatesFB);
+  OPENXR_LOAD_FN(xrGetDisplayRefreshRateFB);
+  OPENXR_LOAD_FN(xrRequestDisplayRefreshRateFB);
+
 #if BUILDFLAG(IS_WIN)
   OPENXR_LOAD_FN(xrConvertWin32PerformanceCounterToTimeKHR);
 #endif

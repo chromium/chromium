@@ -148,6 +148,7 @@ void OpenXrApiWrapper::Reset() {
   scene_understanding_manager_.reset();
   unbounded_space_provider_.reset();
   visibility_mask_handler_.reset();
+  frame_rate_handler_.reset();
   unbounded_space_ = XR_NULL_HANDLE;
   local_space_ = XR_NULL_HANDLE;
   stage_space_ = XR_NULL_HANDLE;
@@ -451,6 +452,10 @@ OpenXrDepthSensor* OpenXrApiWrapper::GetDepthSensor() {
   return depth_sensor_.get();
 }
 
+OpenXrFrameRateHandlerFb* OpenXrApiWrapper::GetFrameRateHandler() {
+  return frame_rate_handler_.get();
+}
+
 XrResult OpenXrApiWrapper::EnableSupportedFeatures(
     const OpenXrExtensionHelper& extension_helper) {
   CHECK(session_options_);
@@ -733,6 +738,9 @@ XrResult OpenXrApiWrapper::InitSession(
     visibility_mask_handler_ = std::make_unique<OpenXrVisibilityMaskHandler>(
         extension_helper, session_);
   }
+
+  frame_rate_handler_ =
+      OpenXrFrameRateHandlerFb::Create(extension_helper, session_);
 
   EnsureEventPolling();
 
@@ -1042,8 +1050,12 @@ XrResult OpenXrApiWrapper::BeginSession() {
   }
 
   XrResult xr_result = xrBeginSession(session_, &session_begin_info);
-  if (XR_SUCCEEDED(xr_result))
+  if (XR_SUCCEEDED(xr_result)) {
     session_running_ = true;
+    if (frame_rate_handler_) {
+      frame_rate_handler_->OnSessionBegin();
+    }
+  }
 
   // Only the first xrBeginSession() starts the WebXR session. Later ones
   // resume it after the runtime stopped it.
@@ -1669,6 +1681,13 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       }
       if (visibility_mask_handler_) {
         visibility_mask_handler_->OnVisibilityMaskChanged(*mask_changed_event);
+      }
+    } else if (event_data.type ==
+               XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB) {
+      if (frame_rate_handler_) {
+        frame_rate_handler_->OnDisplayRefreshRateChanged(
+            *reinterpret_cast<XrEventDataDisplayRefreshRateChangedFB*>(
+                &event_data));
       }
     } else {
       DVLOG(1) << __func__ << " Unhandled event type: " << event_data.type;

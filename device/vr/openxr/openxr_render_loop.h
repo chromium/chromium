@@ -81,6 +81,7 @@ class OpenXrRenderLoop : public XRThread,
                          public mojom::ImmersiveOverlay,
                          public mojom::XREnvironmentIntegrationProvider,
                          public mojom::XRLayerManager,
+                         public mojom::XRFrameRateController,
                          public viz::ContextLostObserver {
  public:
   using RequestSessionCallback =
@@ -262,6 +263,10 @@ class OpenXrRenderLoop : public XRThread,
   void SetEnabledCompositionLayers(
       const std::vector<LayerId>& layer_ids) override;
 
+  // XRFrameRateController
+  void UpdateTargetFrameRate(float rate,
+                             UpdateTargetFrameRateCallback callback) override;
+
   void CreateAnchor(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const device::Pose& native_origin_from_anchor,
@@ -348,6 +353,8 @@ class OpenXrRenderLoop : public XRThread,
   mojo::Receiver<mojom::XRPresentationProvider> presentation_receiver_{this};
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};
   mojo::Receiver<mojom::XRLayerManager> layer_manager_receiver_{this};
+  mojo::Receiver<mojom::XRFrameRateController> frame_rate_controller_receiver_{
+      this};
   mojo::Receiver<mojom::ImmersiveOverlay> overlay_receiver_{this};
   mojom::XRVisibilityState visibility_state_ =
       mojom::XRVisibilityState::VISIBLE;

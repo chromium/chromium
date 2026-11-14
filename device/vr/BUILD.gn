@@ -147,6 +147,8 @@ if (enable_vr) {
       sources += [
         "openxr/context_provider_callbacks.h",
         "openxr/exit_xr_present_reason.h",
+        "openxr/fb/openxr_frame_rate_handler_fb.cc",
+        "openxr/fb/openxr_frame_rate_handler_fb.h",
         "openxr/fb/openxr_hand_tracker_fb.cc",
         "openxr/fb/openxr_hand_tracker_fb.h",
         "openxr/msft/openxr_anchor_manager_msft.cc",

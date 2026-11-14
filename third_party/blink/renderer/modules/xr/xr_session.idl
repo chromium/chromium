@@ -69,7 +69,7 @@ enum XRReflectionFormat {
   [RuntimeEnabled=WebXRFrameRate] attribute EventHandler onframeratechange;
 
   [RaisesException] void updateRenderState(optional XRRenderStateInit init = {});
-  [RuntimeEnabled=WebXRFrameRate, RaisesException] Promise<undefined> updateTargetFrameRate(float rate);
+  [RuntimeEnabled=WebXRFrameRate, CallWith=ScriptState, RaisesException] Promise<undefined> updateTargetFrameRate(float rate);
   [CallWith=ScriptState, RaisesException] Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);

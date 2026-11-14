@@ -102,3 +102,74 @@ MockVRService.prototype.getFramesThrottled = function() {
 
   return this.frames_throttled_;
 };
+
+// XRFrameRateController. Sessions requested after setFrameRates() can pick
+// one of |supportedFrameRates|.
+MockRuntime.prototype.setFrameRates = function(supportedFrameRates, frameRate) {
+  this.supported_frame_rates_ = supportedFrameRates;
+  this.frame_rate_ = frameRate;
+  this.requested_frame_rates_ = [];
+  this.hold_frame_rate_replies_ = false;
+  this.keep_frame_rate_ = false;
+};
+
+// Switches the device to |frameRate|. The page sees it in the next frame.
+MockRuntime.prototype.setFrameRate = function(frameRate) {
+  this.frame_rate_ = frameRate;
+};
+
+MockRuntime.prototype.getRequestedFrameRates = function() {
+  return this.requested_frame_rates_;
+};
+
+// Stops replying to updateTargetFrameRate, like a slow device.
+MockRuntime.prototype.holdFrameRateReplies = function() {
+  this.hold_frame_rate_replies_ = true;
+};
+
+// Ignores later requests, like a device capped by power saving.
+MockRuntime.prototype.keepFrameRate = function() {
+  this.keep_frame_rate_ = true;
+};
+
+// Switches at once unless keepFrameRate() was called. The page sees the new
+// rate in the next frame.
+MockRuntime.prototype.updateTargetFrameRate = function(rate) {
+  this.requested_frame_rates_.push(rate);
+  if (this.hold_frame_rate_replies_) {
+    return new Promise(() => {});
+  }
+  if (!this.keep_frame_rate_) {
+    this.frame_rate_ = rate;
+  }
+  return Promise.resolve();
+};
+
+MockRuntime.prototype._requestRuntimeSession_preFrameRate =
+    MockRuntime.prototype._requestRuntimeSession;
+MockRuntime.prototype._requestRuntimeSession = async function(sessionOptions) {
+  const result = await this._requestRuntimeSession_preFrameRate(sessionOptions);
+  if (!result.session || !this.supported_frame_rates_) {
+    return result;
+  }
+
+  const vrMojom =
+      await import('/gen/device/vr/public/mojom/vr_service.mojom.m.js');
+  this.frameRateControllerReceiver_ =
+      new vrMojom.XRFrameRateControllerReceiver(this);
+  result.session.frameRateController =
+      this.frameRateControllerReceiver_.$.bindNewPipeAndPassRemote();
+  result.session.deviceConfig.supportedFrameRates = this.supported_frame_rates_;
+  result.session.deviceConfig.frameRate = this.frame_rate_;
+  return result;
+};
+
+MockRuntime.prototype._injectAdditionalFrameData_preFrameRate =
+    MockRuntime.prototype._injectAdditionalFrameData;
+MockRuntime.prototype._injectAdditionalFrameData = function(options,
+                                                            frameData) {
+  this._injectAdditionalFrameData_preFrameRate(options, frameData);
+  if (this.frame_rate_ !== undefined) {
+    frameData.frameRate = this.frame_rate_;
+  }
+};

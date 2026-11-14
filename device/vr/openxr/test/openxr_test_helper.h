@@ -161,6 +161,9 @@ class OpenXrTestHelper {
   void UpdateEventQueue();
   XrResult PollEvent(XrEventDataBuffer* event_data);
 
+  float display_refresh_rate() const { return display_refresh_rate_; }
+  XrResult RequestDisplayRefreshRate(float rate);
+
   void LocateJoints(XrHandTrackerEXT hand_tracker,
                     const XrHandJointsLocateInfoEXT* locate_info,
                     XrHandJointLocationsEXT* locations);
@@ -209,6 +212,8 @@ class OpenXrTestHelper {
 
   static constexpr XrEnvironmentBlendMode kEnvironmentBlendMode =
       XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+  static constexpr std::array<float, 3> kDisplayRefreshRates = {72.0f, 90.0f,
+                                                                120.0f};
   static constexpr const char* kLocalReferenceSpacePath =
       "/reference_space/local";
   static constexpr const char* kStageReferenceSpacePath =
@@ -371,6 +376,8 @@ class OpenXrTestHelper {
   std::optional<gfx::Transform> presenting_pose_;
 
   std::queue<XrEventDataBuffer> event_queue_;
+
+  float display_refresh_rate_ = kDisplayRefreshRates[1];
 
   void OnTestHookDisconnected();
   mojo::SharedRemote<device_test::mojom::XRTestHook> GetTestHook();

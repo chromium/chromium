@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "device/vr/openxr/fb/openxr_frame_rate_handler_fb.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_handler_factories.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
@@ -197,6 +198,7 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
 
   EnableExtensionIfSupported(XR_EXT_FUTURE_EXTENSION_NAME);
   EnableExtensionIfSupported(OpenXrVisibilityMaskHandler::GetExtension());
+  EnableExtensionIfSupported(OpenXrFrameRateHandlerFb::GetExtension());
 
   for (const auto& extension : handled_extensions) {
     EnableExtensionIfSupported(extension.c_str());

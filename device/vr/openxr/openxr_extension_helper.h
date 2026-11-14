@@ -84,6 +84,11 @@ struct OpenXrExtensionMethods {
   // Visibility Mask
   OPENXR_DECLARE_FN(xrGetVisibilityMaskKHR);
 
+  // Display refresh rate
+  OPENXR_DECLARE_FN(xrEnumerateDisplayRefreshRatesFB);
+  OPENXR_DECLARE_FN(xrGetDisplayRefreshRateFB);
+  OPENXR_DECLARE_FN(xrRequestDisplayRefreshRateFB);
+
 #if BUILDFLAG(IS_WIN)
   // Time
   OPENXR_DECLARE_FN(xrConvertWin32PerformanceCounterToTimeKHR);
