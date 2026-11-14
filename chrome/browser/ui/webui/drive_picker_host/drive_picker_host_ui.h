@@ -45,6 +45,8 @@ class DrivePickerHostUIConfig
  public:
   DrivePickerHostUIConfig();
 
+  static bool IsEnabled();
+
   // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

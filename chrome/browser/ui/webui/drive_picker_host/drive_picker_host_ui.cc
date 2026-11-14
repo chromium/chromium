@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
@@ -88,10 +89,16 @@ DrivePickerHostUIConfig::DrivePickerHostUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIDrivePickerHostHost) {}
 
+// static
+bool DrivePickerHostUIConfig::IsEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kComposeboxDriveContextMenuOption) ||
+         base::FeatureList::IsEnabled(features::kGlicDrivePicker);
+}
+
 bool DrivePickerHostUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      omnibox::kComposeboxDriveContextMenuOption);
+  return IsEnabled();
 }
 
 DrivePickerHostUI::DrivePickerHostUI(content::WebUI* web_ui)

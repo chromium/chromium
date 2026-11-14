@@ -272,6 +272,7 @@ BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
 BASE_DECLARE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics);
 
 BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
+
 BASE_DECLARE_FEATURE(kGlicBrowserCommandFallback);
 BASE_DECLARE_FEATURE_PARAM(std::string, kGlicBrowserCommandFallbackUrl);
 
@@ -307,11 +308,12 @@ BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringBackgroundOptInNotification);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicExperimentalTriggeringBackgroundOptInTimeout;
 #endif  // BUILDFLAG(IS_ANDROID)
-
 // Serves the Glic API bundle at `chrome__glic_api.js` (relative to the guest
 // document) to allowed consumer Gemini NoWebview guest frames instead of
 // sending it via `glic-bootstrap` postMessage.
 BASE_DECLARE_FEATURE(kGlicApiBundleResource);
+
+BASE_DECLARE_FEATURE(kGlicDrivePicker);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

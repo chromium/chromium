@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
 
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/drive_picker_host_untrusted_resources.h"
@@ -28,7 +29,8 @@ DrivePickerUntrustedHostUIConfig::~DrivePickerUntrustedHostUIConfig() = default;
 bool DrivePickerUntrustedHostUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(
-      omnibox::kComposeboxDriveContextMenuOption);
+             omnibox::kComposeboxDriveContextMenuOption) ||
+         base::FeatureList::IsEnabled(features::kGlicDrivePicker);
 }
 
 // DrivePickerUntrustedHostUI

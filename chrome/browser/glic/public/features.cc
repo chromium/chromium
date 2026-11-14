@@ -401,6 +401,7 @@ BASE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicBrowserCommandFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kGlicBrowserCommandFallbackUrl,
@@ -441,6 +442,7 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicExperimentalTriggeringBackgroundOptInNotification,
         "background_opt_in_timeout", base::Minutes(10)};
 #endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kGlicApiBundleResource, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicDrivePicker, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

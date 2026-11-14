@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
@@ -249,14 +250,25 @@ TEST_F(DrivePickerHostUITest, IsWebUIEnabled_FeatureEnabled) {
   DrivePickerHostUIConfig config;
   feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOption);
+  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled());
   EXPECT_TRUE(config.IsWebUIEnabled(profile()));
 }
 
 TEST_F(DrivePickerHostUITest, IsWebUIEnabled_FeatureDisabled) {
   DrivePickerHostUIConfig config;
-  feature_list_.InitAndDisableFeature(
-      omnibox::kComposeboxDriveContextMenuOption);
+  feature_list_.InitWithFeatures(
+      {},
+      {omnibox::kComposeboxDriveContextMenuOption, features::kGlicDrivePicker});
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled());
   EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerHostUITest, IsWebUIEnabled_GlicFeatureEnabled) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures({features::kGlicDrivePicker},
+                                 {omnibox::kComposeboxDriveContextMenuOption});
+  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled());
+  EXPECT_TRUE(config.IsWebUIEnabled(profile()));
 }
 
 TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {

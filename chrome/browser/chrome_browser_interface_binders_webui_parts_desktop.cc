@@ -483,8 +483,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       plural_string::mojom::PluralStringProvider, NewTabPageUI,
       ContextualTasksUI, OmniboxPopupUI, OmniboxEverywhereUI>(map);
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
+  if (DrivePickerHostUIConfig::IsEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         drive_picker_host::mojom::DrivePickerHostHandler, DrivePickerHostUI>(
         map);
@@ -591,8 +590,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
+  if (DrivePickerHostUIConfig::IsEnabled()) {
     registry.ForWebUI<DrivePickerHostUI>()
         .Add<drive_picker_host::mojom::DrivePickerHostHandler>();
   }
@@ -667,8 +665,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
       .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
+  if (DrivePickerHostUIConfig::IsEnabled()) {
     registry.ForWebUI<DrivePickerUntrustedHostUI>()
         .Add<drive_picker_host_untrusted::mojom::PageHandlerFactory>();
   }

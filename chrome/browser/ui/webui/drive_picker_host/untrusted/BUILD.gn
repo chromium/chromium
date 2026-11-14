@@ -31,6 +31,7 @@ source_set("untrusted") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host/untrusted:resources",
     "//chrome/common",
@@ -46,6 +47,7 @@ source_set("unit_tests") {
   deps = [
     ":untrusted",
     "//base/test:test_support",
+    "//chrome/browser/glic/public:features",
     "//chrome/test:test_support",
     "//components/omnibox/common",
     "//content/test:test_support",
