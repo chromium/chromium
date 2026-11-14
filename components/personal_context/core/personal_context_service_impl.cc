@@ -142,18 +142,6 @@ std::optional<proto::SourceReference> ToChromeSourceReference(
       }
       return source_ref;
     }
-    case proto::DecryptedReference::kDriveFile: {
-      const proto::DecryptedDriveFile& drive_file = decrypted_ref.drive_file();
-      proto::SourceReference source_ref;
-      proto::DriveFile* drive = source_ref.mutable_drive();
-      if (IsSpecified(drive_file.name())) {
-        drive->set_name(drive_file.name());
-      }
-      if (IsSpecified(drive_file.url())) {
-        drive->set_url(drive_file.url());
-      }
-      return source_ref;
-    }
     case proto::DecryptedReference::REFERENCE_NOT_SET:
       return std::nullopt;
   }

@@ -204,11 +204,6 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   *gmail_ref->mutable_gmail_message()->mutable_timestamp() =
       CreateTimestamp(1780605015, 123456789);
 
-  proto::DecryptedReference* drive_ref = decrypted_entity.add_references();
-  drive_ref->mutable_drive_file()->set_name("passport_scan.pdf");
-  drive_ref->mutable_drive_file()->set_url(
-      "https://drive.google.com/file/d/456");
-
   std::string serialized_entity = decrypted_entity.SerializeAsString();
   std::optional<std::vector<uint8_t>> ciphertext = key_manager_->Seal(
       key_manager_->GetPublicKey(), base::as_byte_span(serialized_entity));
@@ -233,7 +228,7 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   EXPECT_EQ(result->passport().expiration_date().month(), 1);
   EXPECT_EQ(result->passport().expiration_date().day(), 15);
 
-  ASSERT_EQ(result->source_references_size(), 2);
+  ASSERT_EQ(result->source_references_size(), 1);
   EXPECT_EQ(result->source_references(0).gmail().subject(),
             "Your Passport Application");
   EXPECT_EQ(
@@ -246,9 +241,6 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   EXPECT_EQ(result->source_references(0).gmail().thread_id(), 222);
   EXPECT_THAT(result->source_references(0).gmail().timestamp(),
               EqualsProto(CreateDateTime(2026, 6, 4, 20, 30, 15, 123456789)));
-  EXPECT_EQ(result->source_references(1).drive().name(), "passport_scan.pdf");
-  EXPECT_EQ(result->source_references(1).drive().url(),
-            "https://drive.google.com/file/d/456");
 
   histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
                                       /*sample=*/true,
@@ -357,10 +349,17 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyF
       ->mutable_message_urls()
       ->set_mobile_web_url("UNSPECIFIED");
 
-  // Drive reference with unspecified name should only set url.
-  proto::DecryptedReference* drive_ref = decrypted_entity.add_references();
-  drive_ref->mutable_drive_file()->set_name("   ");
-  drive_ref->mutable_drive_file()->set_url("https://drive.google.com/file/d/456");
+  // Gmail reference with an unspecified subject and desktop URL should only
+  // set the mobile URL.
+  proto::DecryptedReference* partial_gmail_ref =
+      decrypted_entity.add_references();
+  partial_gmail_ref->mutable_gmail_message()->set_subject("   ");
+  partial_gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_desktop_web_url("UNSPECIFIED");
+  partial_gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_mobile_web_url("https://mail.google.com/mail/mu/mp/#cv/Inbox/456");
 
   std::string serialized_entity = decrypted_entity.SerializeAsString();
   std::optional<std::vector<uint8_t>> ciphertext = key_manager_->Seal(
@@ -380,9 +379,15 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyF
   EXPECT_TRUE(result->passport().issuing_country().empty());
 
   ASSERT_EQ(result->source_references_size(), 1);
-  EXPECT_TRUE(result->source_references(0).drive().name().empty());
-  EXPECT_EQ(result->source_references(0).drive().url(),
-            "https://drive.google.com/file/d/456");
+  EXPECT_TRUE(result->source_references(0).gmail().subject().empty());
+  EXPECT_TRUE(result->source_references(0)
+                  .gmail()
+                  .message_urls()
+                  .desktop_web_url()
+                  .empty());
+  EXPECT_EQ(
+      result->source_references(0).gmail().message_urls().mobile_web_url(),
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/456");
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntity_DeduplicatesReferences) {

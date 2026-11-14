@@ -152,6 +152,7 @@ PersonalContextSourceReferenceToSource(
       break;
     case personal_context::proto::SourceReference::kDrive:
     case personal_context::proto::SourceReference::kChromeHistoryEntry:
+    case personal_context::proto::SourceReference::kSearchQuery:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       return std::nullopt;
   }

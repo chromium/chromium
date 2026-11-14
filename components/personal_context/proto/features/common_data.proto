@@ -142,6 +142,7 @@ message SourceReference {
     PhotosReference photos = 2;
     DriveFile drive = 3;
     ChromeHistoryEntry chrome_history_entry = 4;
+    SearchQuery search_query = 5;
   }
 }
 
@@ -201,6 +202,14 @@ message ChromeHistoryEntry {
   string title = 2;
   // UTC timestamp of when the page was visited.
   Timestamp visit_timestamp = 3;
+}
+
+// Represents a reference to a Search History query.
+message SearchQuery {
+  // The query string.
+  string query = 1;
+  // UTC timestamp of when the search was issued.
+  Timestamp timestamp = 2;
 }
 
 // Represents a completed purchase transaction from a retail merchant.
@@ -406,14 +415,13 @@ message DecryptedEntity {
 }
 
 message DecryptedReference {
-  reserved 1 to 8, 13 to 17, 19 to 47;
+  reserved 1 to 8, 13 to 47;
 
   oneof reference {
     DecryptedPhotosPhoto photo = 9;
     DecryptedPhotosVideo video = 10;
     DecryptedPhotosAlbum photos_album = 11;
     DecryptedGmailMessage gmail_message = 12;
-    DecryptedDriveFile drive_file = 18;
   }
 }
 
@@ -467,23 +475,13 @@ message DecryptedPhotosVideo {
 }
 
 message DecryptedPhotosAlbum {
-  reserved 1 to 4, 6, 7 to 11;
+  reserved 1 to 4, 6 to 11;
 
   // Start timestamp of the album.
   Timestamp start_time = 5;
 
   // The deeplink url of the album.
   string deeplink_url = 12;
-}
-
-message DecryptedDriveFile {
-  reserved 1, 3, 4;
-
-  // Drive file title.
-  string name = 2;
-
-  // Drive URL of the file.
-  string url = 5;
 }
 
 message DecryptedPassport {
