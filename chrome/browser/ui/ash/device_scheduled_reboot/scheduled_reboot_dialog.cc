@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/ptr_util.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,13 +29,8 @@ ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
 }
 
 ScheduledRebootDialog::~ScheduledRebootDialog() {
-  if (dialog_delegate_) {
-    views::Widget* widget = dialog_delegate_->GetWidget();
-    if (widget->HasObserver(this)) {
-      widget->RemoveObserver(this);
-    }
-    widget->CloseNow();
-    dialog_delegate_ = nullptr;
+  if (widget_) {
+    widget_->CloseNow();
   }
 }
 
@@ -62,26 +58,27 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
   auto bubble = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kSystem,
       /*autosize=*/false);
-  dialog_delegate_ = bubble.get();
   bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
-  constrained_window::CreateBrowserModalDialogViews(std::move(bubble),
-                                                    native_view)
-      ->Show();
-  dialog_delegate_->GetWidget()->AddObserver(this);
-}
-
-void ScheduledRebootDialog::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
-  dialog_delegate_ = nullptr;
+  bubble->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget_ = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
+      std::move(bubble), native_view));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &ScheduledRebootDialog::CloseWidget, weak_ptr_factory_.GetWeakPtr()));
+  widget_->Show();
 }
 
 views::DialogDelegate* ScheduledRebootDialog::GetDialogDelegate() const {
-  return dialog_delegate_;
+  return widget_ ? widget_->widget_delegate()->AsDialogDelegate() : nullptr;
+}
+
+void ScheduledRebootDialog::CloseWidget(views::Widget::ClosedReason reason) {
+  widget_.reset();
 }
 
 void ScheduledRebootDialog::UpdateWindowTitle() {
-  if (dialog_delegate_) {
-    dialog_delegate_->SetTitle(BuildTitle());
+  if (widget_) {
+    widget_->widget_delegate()->AsDialogDelegate()->SetTitle(BuildTitle());
   }
 }
 
