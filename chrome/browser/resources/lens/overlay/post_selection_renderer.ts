@@ -263,11 +263,11 @@ export class PostSelectionRendererElement extends
   declare private canvasWidth: number;
   declare private canvasPhysicalHeight: number;
   declare private canvasPhysicalWidth: number;
+  // Whether the region selected glow is enabled via feature flag.
+  declare regionSelectedGlowEnabled: boolean;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect().
-  // Whether the region selected glow is enabled via feature flag.
-  declare private regionSelectedGlowEnabled: boolean;
-  declare private selectionOverlayRect: DOMRect;
+  declare selectionOverlayRect: DOMRect;
   // Whether the background gradient should be hidden.
   declare private backgroundGradientHidden: boolean;
   // Whether to hide the corner handles. The region can't be resized without
@@ -277,7 +277,7 @@ export class PostSelectionRendererElement extends
   declare hideCloseButton: boolean;
   declare private multiRegionSelectionEnabled: boolean;
   declare private staticRegions: StaticRegion[];
-  declare private activeRegionId: string;
+  declare activeRegionId: string;
   declare private activeRegionHasPolyline: boolean;
   declare protected activePolylinePoints: Point[];
   declare private selectedRegions: SelectedRegion[];

@@ -140,7 +140,7 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
 
   private eventTracker_: EventTracker = new EventTracker();
   // Whether the border glow is enabled. This is a replacement for the shimmer.
-  declare private borderGlowEnabled: boolean;
+  declare borderGlowEnabled: boolean;
   declare private canvasHeight: number;
   declare private canvasWidth: number;
   declare private canvasPhysicalHeight: number;
@@ -151,12 +151,12 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   declare private isSelecting: boolean;
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
-  declare private screenshotDataUri: string;
+  declare screenshotDataUri: string;
   // Shader hex colors.
   declare private shaderLayerColorHexes: string[];
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
-  declare private selectionOverlayRect: DOMRect;
+  declare selectionOverlayRect: DOMRect;
   // Whether keyboard selection should be displayed.
   declare private displayKeyboardSelection: boolean;
   // Whether multi-region selection is enabled.

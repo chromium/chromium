@@ -41,8 +41,8 @@ export class TraceReportElement extends CrLitElement {
 
   private traceReportProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
-  protected accessor trace: ClientTraceReport|null = null;
-  protected accessor isHeader: boolean = false;
+  accessor trace: ClientTraceReport|null = null;
+  accessor isHeader: boolean = false;
   protected accessor isLoading: boolean = false;
 
   protected onCopyUuidClick_(): void {

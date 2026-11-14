@@ -104,7 +104,7 @@ export class TabStripElement extends CrLitElement implements
   protected accessor items_: TabStripItem[] = [];
   private accessor activeTab_: string = '';
   protected accessor dragInProgress_ = false;
-  protected accessor inactiveFrame = false;
+  accessor inactiveFrame = false;
 
   private readonly tabStripService_: TabStripServiceRemote;
   private readonly tabDragService_: TabDragServiceRemote;

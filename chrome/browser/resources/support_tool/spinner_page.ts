@@ -40,7 +40,7 @@ export class SpinnerPageElement extends SpinnerPageElementBase {
     };
   }
 
-  protected accessor pageTitle: string = '';
+  accessor pageTitle: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   protected onCancelClick_() {

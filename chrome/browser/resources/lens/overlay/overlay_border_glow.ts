@@ -44,7 +44,7 @@ export class OverlayBorderGlowElement extends CrLitElement {
   // Whether the border glow is fading in.
   private accessor isFadingIn: boolean = false;
   // The bounding box of the selection overlay.
-  private accessor selectionOverlayRect: DOMRect = new DOMRect(0, 0, 0, 0);
+  accessor selectionOverlayRect: DOMRect = new DOMRect(0, 0, 0, 0);
 
   protected getGradientColorStyles(): string {
     const styles: string[] = [

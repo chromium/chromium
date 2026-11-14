@@ -31,7 +31,7 @@ export class TracingScenarioElement extends CrLitElement {
     };
   }
 
-  protected accessor scenario: Scenario = {
+  accessor scenario: Scenario = {
     scenarioName: '',
     description: '',
     isLocalScenario: true,
@@ -39,7 +39,7 @@ export class TracingScenarioElement extends CrLitElement {
     currentState: TracingScenarioState.kDisabled,
   };
 
-  protected accessor enabled: boolean = false;
+  accessor enabled: boolean = false;
 
   protected onEnabledChange_(event: Event) {
     const toggle = event.target as HTMLInputElement;

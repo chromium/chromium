@@ -279,7 +279,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
   private accessor activeList_: string = 'a';
   private accessor transitioningList_: string = '';
   protected accessor imageUrls_: {[key: string]: string} = {};
-  private accessor selectedBookmarks: {[key: string]: boolean} = {};
+  accessor selectedBookmarks: {[key: string]: boolean} = {};
   private accessor hasLoadedData_: boolean = false;
   protected accessor canDrag_: boolean = true;
   protected accessor hasActiveDrag_: boolean = false;

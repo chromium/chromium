@@ -70,7 +70,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     };
   }
 
-  protected accessor state: ReloadControlState = {
+  accessor state: ReloadControlState = {
     // While this will be overwritten anyways, this matches the default value on
     // some platforms.
     doubleClickInterval: {microseconds: BigInt(500 * 1000)},

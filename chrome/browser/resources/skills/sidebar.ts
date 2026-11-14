@@ -60,7 +60,7 @@ export class SkillsSidebarElement extends CrLitElement {
     },
   ];
 
-  protected accessor selectedPage: Page = Page.USER_SKILLS;
+  accessor selectedPage: Page = Page.USER_SKILLS;
 
   protected onIronActivate_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
     const newUrl = new URL(e.detail.item.href);
