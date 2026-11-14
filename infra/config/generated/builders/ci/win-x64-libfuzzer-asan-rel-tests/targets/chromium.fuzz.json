@@ -13,7 +13,8 @@
         "name": "fuzzing_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10"
+            "os": "Windows-10",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

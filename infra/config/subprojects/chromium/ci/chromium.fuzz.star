@@ -1426,7 +1426,7 @@ libfuzzer_builder(
     max_concurrent_invocations = 3 if settings.is_main else None,
     sanitizer = "asan",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-    swarming_mixins = ["win10-any"],
+    swarming_mixins = ["win10-any", "no_ssd"],
     test_builder_name = "win-x64-libfuzzer-asan-rel-tests",
     use_component_build = False,
     use_ssd_for_test_builder = None,
