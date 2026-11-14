@@ -1348,8 +1348,9 @@ BASE_FEATURE(kNdkVideoEncodeAcceleratorBitrateLayering,
 BASE_FEATURE(kNdkVideoEncodeAcceleratorNativeSvc,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, do not pause media when a headphone unplug event is received.
-BASE_FEATURE(kNoPauseMediaOnHeadphoneUnplug, base::FEATURE_DISABLED_BY_DEFAULT);
+// Pause media when headphones are unplugged or an external audio device
+// disconnects.
+BASE_FEATURE(kPauseMediaOnHeadphoneUnplug, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Pause media when a system sleep/suspension is detected.
 BASE_FEATURE(kPauseMediaOnSystemSleepAndroid,

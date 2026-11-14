@@ -875,7 +875,7 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records whether playback is paused when a headset unplug event is received.
-    If the feature flag NoPauseMediaOnHeadphoneUnplug is enabled, this will
+    If the feature flag PauseMediaOnHeadphoneUnplug is disabled, this will
     record false. Otherwise, it will record true. Only recorded when a headset
     unplug event (AudioManager.ACTION_AUDIO_BECOMING_NOISY) is received while
     the media notification is active and not already paused.

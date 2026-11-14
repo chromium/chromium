@@ -14657,6 +14657,7 @@ from previous Chrome versions.
   <int value="-122557051" label="SafetyHubUnifiedPasswordsModule:disabled"/>
   <int value="-122492389" label="enable-browser-task-scheduler"/>
   <int value="-122458532" label="FilesExtractArchive:enabled"/>
+  <int value="-122268450" label="PauseMediaOnHeadphoneUnplug:disabled"/>
   <int value="-121563330" label="SecurePaymentConfirmationBrowser:disabled"/>
   <int value="-120988078" label="OmniboxGroupingFrameworkForZPS:enabled"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
@@ -14722,6 +14723,7 @@ from previous Chrome versions.
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-103592169" label="EnableInputProtection:enabled"/>
   <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>
+  <int value="-103079551" label="PauseMediaOnHeadphoneUnplug:enabled"/>
   <int value="-102947692"
       label="RestrictInteractionsInSwipeRegionOnFullscreen:enabled"/>
   <int value="-102537270" label="extension-content-verification"/>

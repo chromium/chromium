@@ -7145,14 +7145,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "no-pause-media-on-headphone-unplug",
-    "owners": [
-      "philyan@chromium.org",
-      "media-dev@chromium.org"
-    ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "notebook-home-url",
     "owners": [
       "chrome-ai-productivity-eng@google.com"
@@ -8119,6 +8111,11 @@
     "name": "password-sign-in-in-context-error-resolution",
     "owners": [ "izuzic@google.com", "rgod@google.com", "ylahodiuk@google.com", "anki-team@google.com" ],
     "expiry_milestone": 165
+  },
+  {
+    "name": "pause-media-on-headphone-unplug",
+    "owners": [ "philyan@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 180
   },
   {
     "name": "payment-handler-camera-access-ux",

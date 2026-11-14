@@ -6372,11 +6372,6 @@ inline constexpr char kNewTabPageCustomizationThemeSyncDescription[] =
     "Allows users to sync their New Tab page customizations settings "
     "(appearance).";
 
-inline constexpr char kNoPauseMediaOnHeadphoneUnplugName[] =
-    "Do not pause media on headphone unplug";
-inline constexpr char kNoPauseMediaOnHeadphoneUnplugDescription[] =
-    "When enabled, playback will not be paused when headphones are unplugged.";
-
 inline constexpr char kNotebookHomeURLName[] = "Notebook Home URL";
 inline constexpr char kNotebookHomeURLDescription[] =
     "Overrides the default URL for the Notebook Home WebUI.";
@@ -6408,6 +6403,12 @@ inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1Description[] =
     "Minimum SDK = 1";
 inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
+
+inline constexpr char kPauseMediaOnHeadphoneUnplugName[] =
+    "Pause media on headphone unplug";
+inline constexpr char kPauseMediaOnHeadphoneUnplugDescription[] =
+    "When enabled, playback pauses when headphones are unplugged or an "
+    "external audio device disconnects.";
 
 inline constexpr char kPersistAcrossRebootsDebugLogsName[] =
     "persist-across-reboots-debug-logs";

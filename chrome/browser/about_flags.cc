@@ -8419,10 +8419,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"no-pause-media-on-headphone-unplug",
-     flag_descriptions::kNoPauseMediaOnHeadphoneUnplugName,
-     flag_descriptions::kNoPauseMediaOnHeadphoneUnplugDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(media::kNoPauseMediaOnHeadphoneUnplug)},
+    {"pause-media-on-headphone-unplug",
+     flag_descriptions::kPauseMediaOnHeadphoneUnplugName,
+     flag_descriptions::kPauseMediaOnHeadphoneUnplugDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kPauseMediaOnHeadphoneUnplug)},
 #endif
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,

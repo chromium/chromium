@@ -173,9 +173,11 @@ public class MediaSessionHelper implements MediaImageCallback {
                         public void onAudioBecomingNoisy() {
                             if (mIsPaused) return;
 
-                            // On desktop devices, do not pause media when headphones are unplugged
-                            // to align with standard desktop behavior.
-                            boolean shouldPause = !DeviceInfo.isDesktop();
+                            boolean shouldPause =
+                                    MediaFeatureMap.getInstance()
+                                            .isEnabledInNative(
+                                                    MediaFeatureList
+                                                            .PAUSE_MEDIA_ON_HEADPHONE_UNPLUG);
 
                             if (mMediaSessionObserver != null
                                     && mMediaSessionObserver.getMediaSession() != null) {
