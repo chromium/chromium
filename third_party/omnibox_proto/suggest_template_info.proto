@@ -22,7 +22,7 @@ import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 15
+// Next ID: 16
 message SuggestTemplateInfo {
 // LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
@@ -263,4 +263,21 @@ message SuggestTemplateInfo {
 
   // The icon on the right hand side of the suggestion.
   optional ActionIconType action_icon = 14;
+
+  // Badge overlay specification for the type icon.
+  // Next ID: 2
+  message TypeIconBadge {
+    // Next ID: 2
+    enum BadgeType {
+      BADGE_TYPE_UNSPECIFIED = 0;
+      // Small dot badge indicator per Material 3 specs.
+      DOT = 1;
+    }
+
+    // The type of badge to render.
+    optional BadgeType badge_type = 1;
+  }
+
+  // Optional badge overlay associated with the type icon.
+  optional TypeIconBadge type_icon_badge = 15;
 }
