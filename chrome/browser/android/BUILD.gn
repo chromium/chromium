@@ -874,7 +874,6 @@ if (is_android) {
       "//components/commerce/core:heuristics_provider",
       "//components/commerce/core:merchant_signal_db_proto",
       "//components/commerce/core:proto",
-      "//components/component_updater/android:native_background_task_update_scheduler",
       "//components/content_capture/android",
       "//components/content_settings/android",
       "//components/content_settings/browser",

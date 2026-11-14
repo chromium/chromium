@@ -32,7 +32,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_WEBAPK_UPDATE = 12;
     public static final int BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION = 13;
     public static final int BACKGROUND_TASK_FEED_REFRESH = 14;
-    public static final int BACKGROUND_TASK_COMPONENT_UPDATE = 15;
+    public static final int BACKGROUND_TASK_DEPRECATED_COMPONENT_UPDATE = 15;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION = 18;
     public static final int BACKGROUND_TASK_ONE_SHOT_SYNC_WAKE_UP = 19;
     public static final int BACKGROUND_TASK_NOTIFICATION_SCHEDULER = 20;
@@ -119,8 +119,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION;
             case TaskIds.FEED_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEED_REFRESH;
-            case TaskIds.COMPONENT_UPDATE_JOB_ID:
-                return BACKGROUND_TASK_COMPONENT_UPDATE;
+            case TaskIds.DEPRECATED_COMPONENT_UPDATE_JOB_ID:
+                return BACKGROUND_TASK_DEPRECATED_COMPONENT_UPDATE;
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return BACKGROUND_TASK_ONE_SHOT_SYNC_WAKE_UP;
             case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:
@@ -202,7 +202,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "DeprecatedDownloadResumption";
             case TaskIds.FEED_REFRESH_JOB_ID:
                 return "FeedRefresh";
-            case TaskIds.COMPONENT_UPDATE_JOB_ID:
+            case TaskIds.DEPRECATED_COMPONENT_UPDATE_JOB_ID:
                 return "ComponentUpdate";
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return "BackgroundSyncOneShot";

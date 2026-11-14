@@ -27,7 +27,6 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
-import org.chromium.components.component_updater.UpdateTask;
 import org.chromium.components.enterprise.reporting.SignalsReportingBackgroundTask;
 
 /**
@@ -83,8 +82,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new DownloadBackgroundTask();
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return new WebApkUpdateTask();
-            case TaskIds.COMPONENT_UPDATE_JOB_ID:
-                return new UpdateTask();
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return new BackgroundSyncBackgroundTask();
             case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:

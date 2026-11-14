@@ -103,7 +103,7 @@ enum class TaskIds {
   // component: Internals>Installer>Components
   // team_email: chrome-updates-dev@chromium.org
   // owner: sorin@chromium.org
-  COMPONENT_UPDATE_JOB_ID = 2,
+  DEPRECATED_COMPONENT_UPDATE_JOB_ID = 2,
   // component: Blink>BackgroundSync
   // team_email: platform-capabilities@chromium.org
   // owner: peter@chromium.org
