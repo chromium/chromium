@@ -24,6 +24,8 @@ mod ffi {
         fn AnnotationValueSize(annotation: &Annotation) -> u32;
         fn AnnotationType(annotation: &Annotation) -> u16;
         fn AnnotationIsGuarded(annotation: &Annotation) -> bool;
+        fn AnnotationValue(annotation: &Annotation) -> String;
+        fn IsInAnnotationList(annotation: &Annotation) -> bool;
     }
 }
 
@@ -61,4 +63,61 @@ fn test_layout_matches_crashpad() {
 fn test_name() {
     static KEY: CrashKeyString<64> = CrashKeyString::new(c"rust-name");
     expect_eq!(KEY.name(), c"rust-name");
+}
+
+#[gtest(RustCrashKeyTest, SetAndClear)]
+fn test_set_and_clear() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-set-and-clear");
+    let annotation = as_annotation(&KEY);
+
+    KEY.set("value");
+    expect_true!(ffi::IsInAnnotationList(annotation));
+    expect_eq!(ffi::AnnotationValueSize(annotation), 5);
+    expect_eq!(ffi::AnnotationValue(annotation), "value");
+
+    KEY.set("another value");
+    expect_eq!(ffi::AnnotationValue(annotation), "another value");
+
+    KEY.clear();
+    expect_eq!(ffi::AnnotationValueSize(annotation), 0);
+    // Cleared crash keys stay in the list, but aren't included in reports.
+    expect_true!(ffi::IsInAnnotationList(annotation));
+
+    KEY.set("again");
+    expect_eq!(ffi::AnnotationValue(annotation), "again");
+}
+
+#[gtest(RustCrashKeyTest, Truncation)]
+fn test_truncation() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-truncation");
+    let annotation = as_annotation(&KEY);
+
+    KEY.set(&"x".repeat(100));
+    expect_eq!(ffi::AnnotationValue(annotation), "x".repeat(32));
+
+    // Truncation doesn't split multi-byte characters: 16 two-byte characters
+    // fit exactly, but a leading one-byte character leaves room for only 15.
+    KEY.set(&"\u{e9}".repeat(20));
+    expect_eq!(ffi::AnnotationValue(annotation), "\u{e9}".repeat(16));
+    KEY.set(&format!("x{}", "\u{e9}".repeat(20)));
+    expect_eq!(ffi::AnnotationValue(annotation), format!("x{}", "\u{e9}".repeat(15)));
+}
+
+#[gtest(RustCrashKeyTest, ConcurrentWrites)]
+fn test_concurrent_writes() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-concurrent-writes");
+    let values = ["a".repeat(32), "b".repeat(32)];
+    std::thread::scope(|scope| {
+        for value in &values {
+            scope.spawn(move || {
+                for _ in 0..1000 {
+                    KEY.set(value);
+                }
+            });
+        }
+    });
+    // Each write is atomic with respect to other writes, so the value must be
+    // one of the written values rather than a mix of them.
+    let value = ffi::AnnotationValue(as_annotation(&KEY));
+    expect_true!(values.contains(&value), "Unexpected value: {value}");
 }

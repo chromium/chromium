@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/crash/core/common/crash_key_rust_shim.h"
+
 #include <stdint.h>
 
 #include <type_traits>
 
 #include "third_party/crashpad/crashpad/client/annotation.h"
+#include "third_party/crashpad/crashpad/client/annotation_list.h"
 
 namespace crash_reporter::rust {
 
@@ -26,5 +29,11 @@ static_assert(sizeof(crashpad::Annotation::Type) == 2);
 static_assert(sizeof(crashpad::Annotation::ConcurrentAccessGuardMode) == 1);
 static_assert(static_cast<uint16_t>(crashpad::Annotation::Type::kString) == 1);
 // LINT.ThenChange(crash_key.rs:AnnotationLayout)
+
+void RegisterAnnotation(crashpad::Annotation* annotation) {
+  // Use Register() rather than Get(), in case the crash key system hasn't been
+  // initialized yet (as in `crashpad::Annotation::SetSize()`).
+  crashpad::AnnotationList::Register()->Add(annotation);
+}
 
 }  // namespace crash_reporter::rust

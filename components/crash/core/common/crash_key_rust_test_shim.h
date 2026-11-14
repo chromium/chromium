@@ -21,6 +21,9 @@ size_t AnnotationSize();
 uint32_t AnnotationValueSize(const crashpad::Annotation& annotation);
 uint16_t AnnotationType(const crashpad::Annotation& annotation);
 bool AnnotationIsGuarded(const crashpad::Annotation& annotation);
+::rust::String AnnotationValue(const crashpad::Annotation& annotation);
+
+bool IsInAnnotationList(const crashpad::Annotation& annotation);
 
 }  // namespace crash_reporter::rust::test
 

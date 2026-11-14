@@ -23,11 +23,21 @@
 //! use crash_key_rust::CrashKeyString;
 //!
 //! static SOME_DATA_TO_LOG: CrashKeyString<256> = CrashKeyString::new(c"some_data_to_log");
+//!
+//! fn on_failure(data: &str) {
+//!     SOME_DATA_TO_LOG.set(data);
+//!     // ... later, e.g. once the crash report has been triggered:
+//!     SOME_DATA_TO_LOG.clear();
+//! }
 //! ```
 
 use std::cell::UnsafeCell;
 use std::ffi::{c_char, c_void, CStr};
-use std::sync::atomic::{AtomicBool, AtomicPtr, AtomicU32};
+use std::sync::atomic::{AtomicBool, AtomicPtr, AtomicU32, Ordering};
+
+chromium::import! {
+    "//components/crash/core/common:crash_key_rust_crashpad_ffi" as ffi;
+}
 
 /// Mirrors the memory layout of //third_party/crashpad's `Annotation` (see
 /// `third_party/crashpad/crashpad/client/annotation.h`). Crashpad reads this
@@ -113,6 +123,8 @@ pub struct CrashKeyString<const N: usize> {
     header: AnnotationHeader,
     value: UnsafeCell<[u8; N]>,
     name: &'static CStr,
+    /// Held while writing to `value` (and the corresponding `header.size`).
+    writer_lock: AtomicBool,
 }
 
 impl<const N: usize> CrashKeyString<N> {
@@ -137,11 +149,68 @@ impl<const N: usize> CrashKeyString<N> {
             },
             value: UnsafeCell::new([0; N]),
             name,
+            writer_lock: AtomicBool::new(false),
         }
     }
 
     pub fn name(&self) -> &'static CStr {
         self.name
+    }
+
+    /// # Thread safety
+    ///
+    /// Can be called from any thread. If another thread is writing to the same
+    /// crash key at the same time, this write is dropped rather than waiting,
+    /// so setting a crash key never blocks.
+    pub fn set(&'static self, value: &str) {
+        let Some(_lock) = self.try_lock_writer() else {
+            return;
+        };
+        let value = truncate_to_char_boundary(value, N).as_bytes();
+        debug_assert!(!value.contains(&0), "Crash key values must not contain NUL characters.");
+        // SAFETY: `writer_lock` is held, so nothing else is writing to
+        // `self.value`.
+        unsafe { (&mut *self.value.get())[..value.len()].copy_from_slice(value) };
+        // `value.len()` is at most `N`, which is at most 1024.
+        self.header.size.store(value.len() as u32, Ordering::Release);
+        self.register();
+    }
+
+    /// Can be called from any thread; see `set()` for details.
+    pub fn clear(&'static self) {
+        let Some(_lock) = self.try_lock_writer() else {
+            return;
+        };
+        self.header.size.store(0, Ordering::Release);
+    }
+
+    fn register(&'static self) {
+        if !self.header.link_node.load(Ordering::Acquire).is_null() {
+            return;
+        }
+        // `crashpad::Annotation::value_ptr_` is set lazily because a `const fn`
+        // can't refer to the address of the `static` it's initializing. This is
+        // fine since Crashpad only reads `value_ptr_` of annotations in its
+        // list. The registration below synchronizes with readers of the list.
+        self.header.value_ptr.store(self.value.get().cast(), Ordering::Relaxed);
+        // SAFETY: `self.header` is layout-compatible with
+        // `crashpad::Annotation`, is fully initialized, and is `'static`.
+        unsafe {
+            ffi::RegisterAnnotation(std::ptr::from_ref(&self.header).cast_mut().cast());
+        }
+    }
+
+    // Writes to the same crash key are serialized by `writer_lock`. If another
+    // thread holds it, the write is dropped rather than waiting for the lock.
+    // This is equivalent to the dropped write happening first and then being
+    // overwritten by the other write, and ensures that setting a crash key
+    // never blocks. (In C++, concurrent writes to the same crash key are a data
+    // race, which has caused TSan failures in the past.)
+    fn try_lock_writer(&self) -> Option<WriterLockGuard<'_>> {
+        self.writer_lock
+            .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
+            .ok()
+            .map(|_| WriterLockGuard { lock: &self.writer_lock })
     }
 
     /// Returns a pointer to this crash key's storage, to be treated as a
@@ -154,6 +223,34 @@ impl<const N: usize> CrashKeyString<N> {
     }
 }
 
-// SAFETY: All fields that may be mutated through a shared reference are
-// atomics. `name` is a pointer to immutable `'static` data.
+// SAFETY: `value` is only mutated while holding `writer_lock`. All other fields
+// that may be mutated through a shared reference are atomics, and `name` is a
+// pointer to immutable `'static` data. (Crashpad's crash handler reads this
+// memory from another process while this process is suspended, and Crashpad's
+// own in-process readers of annotation values are debug-only and already
+// accept racing with writers, as for C++ crash keys.)
 unsafe impl<const N: usize> Sync for CrashKeyString<N> {}
+
+/// Releases `CrashKeyString::writer_lock` when dropped.
+struct WriterLockGuard<'a> {
+    lock: &'a AtomicBool,
+}
+
+impl Drop for WriterLockGuard<'_> {
+    fn drop(&mut self) {
+        self.lock.store(false, Ordering::Release);
+    }
+}
+
+/// Returns the longest prefix of `value` that is at most `max_len` bytes long
+/// and ends on a character boundary.
+fn truncate_to_char_boundary(value: &str, max_len: usize) -> &str {
+    if value.len() <= max_len {
+        return value;
+    }
+    let mut len = max_len;
+    while !value.is_char_boundary(len) {
+        len -= 1;
+    }
+    &value[..len]
+}

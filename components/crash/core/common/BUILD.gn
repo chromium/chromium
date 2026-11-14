@@ -122,8 +122,20 @@ target(crash_key_target_type, "crash_key_lib") {
 if (use_crashpad_annotation) {
   source_set("crash_key_rust_shim") {
     visibility = [ ":*" ]
-    sources = [ "crash_key_rust_shim.cc" ]
-    deps = [ "//third_party/crashpad/crashpad/client" ]
+    sources = [
+      "crash_key_rust_shim.cc",
+      "crash_key_rust_shim.h",
+    ]
+    public_deps = [ "//third_party/crashpad/crashpad/client" ]
+  }
+
+  rust_static_library("crash_key_rust_crashpad_ffi") {
+    visibility = [ ":*" ]
+    crate_root = "crash_key_crashpad_ffi.rs"
+    sources = [ crate_root ]
+    cxx_bindings = [ crate_root ]
+    allow_unsafe = true
+    deps = [ ":crash_key_rust_shim" ]
   }
 
   # Rust API for crash keys. See crash_key.rs.
@@ -131,7 +143,7 @@ if (use_crashpad_annotation) {
     crate_root = "crash_key.rs"
     sources = [ crate_root ]
     allow_unsafe = true
-    deps = [ ":crash_key_rust_shim" ]
+    deps = [ ":crash_key_rust_crashpad_ffi" ]
   }
 
   # `crash_key_rust` with additional APIs for tests, which are behind
@@ -142,7 +154,7 @@ if (use_crashpad_annotation) {
     sources = [ crate_root ]
     allow_unsafe = true
     features = [ "testing" ]
-    deps = [ ":crash_key_rust_shim" ]
+    deps = [ ":crash_key_rust_crashpad_ffi" ]
   }
 
   source_set("crash_key_rust_test_shim") {
