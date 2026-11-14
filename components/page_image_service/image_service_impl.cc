@@ -4,21 +4,15 @@
 
 #include "components/page_image_service/image_service_impl.h"
 
-#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/i18n/case_conversion.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
-#include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/hints/hints_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -26,11 +20,10 @@
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/page_image_service/image_service_consent_helper.h"
 #include "components/page_image_service/metrics_util.h"
+#include "components/page_image_service/suggest_entity_image_url_fetcher.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace page_image_service {
 
@@ -45,144 +38,6 @@ void FulfillAllCallbacks(std::vector<ImageService::ResultCallback> callbacks,
 }
 
 }  // namespace
-
-// A one-time use object that uses Suggest to get an image URL corresponding
-// to `search_query` and `entity_id`. This is a hacky temporary implementation,
-// ideally this should be replaced by persisted Suggest-provided entities.
-// TODO(tommycli): Move this to its own separate file with unit tests.
-class ImageServiceImpl::SuggestEntityImageURLFetcher {
- public:
-  SuggestEntityImageURLFetcher(
-      const AutocompleteSchemeClassifier& autocomplete_scheme_classifier,
-      mojom::ClientId client_id,
-      const std::u16string& search_query,
-      const std::string& entity_id)
-      : autocomplete_scheme_classifier_(autocomplete_scheme_classifier),
-        client_id_(client_id),
-        search_query_(base::i18n::ToLower(search_query)),
-        entity_id_(entity_id) {}
-  SuggestEntityImageURLFetcher(const SuggestEntityImageURLFetcher&) = delete;
-
-  // `callback` is called with the result.
-  void Start(const TemplateURL* template_url,
-             const SearchTermsData& search_terms_data,
-             RemoteSuggestionsService* remote_suggestions_service,
-             base::OnceCallback<void(const GURL&)> callback) {
-    CHECK(template_url);
-    CHECK(remote_suggestions_service);
-    CHECK(!callback_);
-    callback_ = std::move(callback);
-
-    TemplateURLRef::SearchTermsArgs search_terms_args;
-    search_terms_args.page_classification =
-        metrics::OmniboxEventProto::JOURNEYS;
-    search_terms_args.search_terms = search_query_;
-
-    // ImageServiceFactory does not create a service instance for OTR profiles.
-    loader_ = remote_suggestions_service->StartSuggestionsRequest(
-        RemoteRequestType::kImages, /*is_off_the_record=*/false, template_url,
-        search_terms_args, search_terms_data,
-        base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
-                       weak_factory_.GetWeakPtr()));
-
-    // No request is started if `template_url` has no valid suggestions URL.
-    // Still notify the caller. Post the callback, because it owns this fetcher
-    // (see FetchSuggestImage()).
-    if (!loader_) {
-      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
-                                       PageImageServiceResult::kResponseMissing,
-                                       client_id_);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback_), GURL()));
-    }
-  }
-
- private:
-  void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         const int response_code,
-                         std::optional<std::string> response_body) {
-    DCHECK_EQ(loader_.get(), source);
-    if (response_code != 200) {
-      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
-                                       PageImageServiceResult::kResponseMissing,
-                                       client_id_);
-      return std::move(callback_).Run(GURL());
-    }
-
-    std::string response_json = SearchSuggestionParser::ExtractJsonData(
-        source, std::move(response_body));
-    if (response_json.empty()) {
-      UmaHistogramEnumerationForClient(
-          kBackendSuggestResultHistogramName,
-          PageImageServiceResult::kResponseMalformed, client_id_);
-      return std::move(callback_).Run(GURL());
-    }
-
-    auto response_data =
-        SearchSuggestionParser::DeserializeJsonData(response_json);
-    if (!response_data) {
-      UmaHistogramEnumerationForClient(
-          kBackendSuggestResultHistogramName,
-          PageImageServiceResult::kResponseMalformed, client_id_);
-      return std::move(callback_).Run(GURL());
-    }
-
-    AutocompleteInput input(search_query_, metrics::OmniboxEventProto::JOURNEYS,
-                            *autocomplete_scheme_classifier_);
-    SearchSuggestionParser::Results results;
-    if (!SearchSuggestionParser::ParseSuggestResults(
-            *response_data, input, *autocomplete_scheme_classifier_,
-            /*default_result_relevance=*/100,
-            /*is_keyword_result=*/false, &results)) {
-      UmaHistogramEnumerationForClient(
-          kBackendSuggestResultHistogramName,
-          PageImageServiceResult::kResponseMalformed, client_id_);
-      return std::move(callback_).Run(GURL());
-    }
-
-    for (const auto& result : results.suggest_results) {
-      // TODO(tommycli): `entity_id_` is not used yet, because it's always
-      // empty right now.
-      GURL url(result.suggest_template_info()
-                   ? result.suggest_template_info()->image().url()
-                   : "");
-      if (url.is_valid() &&
-          base::i18n::ToLower(result.match_contents()) == search_query_) {
-        UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
-                                         PageImageServiceResult::kSuccess,
-                                         client_id_);
-        return std::move(callback_).Run(std::move(url));
-      }
-    }
-
-    // If we didn't find any matching images, still notify the caller.
-    if (!callback_.is_null()) {
-      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
-                                       PageImageServiceResult::kNoImage,
-                                       client_id_);
-      std::move(callback_).Run(GURL());
-    }
-  }
-
-  // Embedder-specific logic on how to classify schemes.
-  const raw_ref<const AutocompleteSchemeClassifier>
-      autocomplete_scheme_classifier_;
-
-  // The id of the UI requesting the image.
-  mojom::ClientId client_id_;
-
-  // The search query and entity ID we are searching for.
-  const std::u16string search_query_;
-  const std::string entity_id_;
-
-  // The result callback to be called once we get the answer.
-  base::OnceCallback<void(const GURL&)> callback_;
-
-  // The URL loader used to get the suggestions.
-  std::unique_ptr<network::SimpleURLLoader> loader_;
-
-  base::WeakPtrFactory<SuggestEntityImageURLFetcher> weak_factory_{this};
-};
 
 ImageServiceImpl::ImageServiceImpl(
     TemplateURLService* template_url_service,

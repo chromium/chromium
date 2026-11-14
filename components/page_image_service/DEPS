@@ -12,4 +12,12 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/metrics_proto/omnibox_event.pb.h",
+  "+third_party/omnibox_proto/suggest_template_info.pb.h",
 ]
+
+specific_include_rules = {
+  "suggest_entity_image_url_fetcher_unittest\\.cc": [
+    "+net/http/http_status_code.h",
+  ],
+}

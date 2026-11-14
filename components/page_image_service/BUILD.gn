@@ -13,6 +13,8 @@ source_set("page_image_service") {
     "image_service_impl.h",
     "metrics_util.cc",
     "metrics_util.h",
+    "suggest_entity_image_url_fetcher.cc",
+    "suggest_entity_image_url_fetcher.h",
   ]
   public_deps = [ "mojom:mojo_bindings" ]
   deps = [
@@ -28,6 +30,9 @@ source_set("page_image_service") {
     "//components/unified_consent",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//url",
   ]
 }
 
@@ -36,6 +41,7 @@ source_set("unit_tests") {
   sources = [
     "image_service_consent_helper_unittest.cc",
     "image_service_impl_unittest.cc",
+    "suggest_entity_image_url_fetcher_unittest.cc",
   ]
   deps = [
     ":page_image_service",
@@ -49,7 +55,12 @@ source_set("unit_tests") {
     "//components/search_engines:test_support",
     "//components/sync:test_support",
     "//components/variations:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/omnibox_proto",
+    "//url",
   ]
 }

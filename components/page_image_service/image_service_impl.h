@@ -31,6 +31,7 @@ class OptimizationGuideDecider;
 namespace page_image_service {
 
 class ImageServiceConsentHelper;
+class SuggestEntityImageURLFetcher;
 enum class PageImageServiceConsentStatus;
 
 // Through my manual testing, 16ms (which is about a frame at 60hz) allowed
@@ -67,8 +68,6 @@ class ImageServiceImpl : public ImageService {
       base::OnceCallback<void(PageImageServiceConsentStatus)> callback);
 
  private:
-  class SuggestEntityImageURLFetcher;
-
   struct OptGuideRequest {
     OptGuideRequest();
     ~OptGuideRequest();
