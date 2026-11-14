@@ -82,6 +82,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardOzone : public Clipboard {
                      ReadFilenamesCallback callback) const override;
   void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                ReadUrlCallback callback) const override;
+  void ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                ReadUrlsCallback callback) const override;
   void ReadData(const ClipboardFormatType& format,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;
@@ -89,7 +91,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardOzone : public Clipboard {
   bool IsSelectionBufferAvailable() const override;
   void WritePortableTextRepresentation(ClipboardBuffer buffer,
                                        const ObjectMap& objects,
-                                       PrivacyTypes privacy_types);
+                                       PrivacyTypes privacy_types,
+                                       std::string_view fallback_text);
   void WritePrivacyMetadata(PrivacyTypes privacy_types);
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,

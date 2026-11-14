@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -20,8 +21,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -33,6 +34,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -40,6 +42,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_clipboard.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -59,6 +62,58 @@ bool IsReadAllowed(std::optional<DataTransferEndpoint> data_src,
   bool is_allowed = policy_controller->IsClipboardReadAllowed(
       data_src, data_dst, data.size());
   return is_allowed;
+}
+
+std::vector<ClipboardUrlInfo> ParseMozillaUrls(
+    const PlatformClipboard::Data& data) {
+  std::vector<ClipboardUrlInfo> url_infos;
+  if (!data || data->size() % sizeof(char16_t) != 0) {
+    return url_infos;
+  }
+
+  std::u16string text(data->size() / sizeof(char16_t), u'\0');
+  base::as_writable_byte_span(text).copy_from(*data);
+
+  std::u16string_view view = text;
+  if (const size_t nul_pos = view.find(u'\0');
+      nul_pos != std::u16string_view::npos) {
+    view = view.substr(0, nul_pos);
+  }
+  if (view.starts_with(u'\uFEFF')) {
+    view.remove_prefix(1);
+  }
+
+  const std::vector<std::u16string_view> lines = base::SplitStringPiece(
+      view, u"\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (size_t i = 0; i < lines.size(); i += 2) {
+    const std::u16string_view url_line =
+        base::TrimString(lines[i], u"\r", base::TRIM_TRAILING);
+    GURL url(url_line);
+    if (!url.is_valid()) {
+      continue;
+    }
+    std::u16string_view title_line;
+    if (i + 1 < lines.size()) {
+      title_line = base::TrimString(lines[i + 1], u"\r", base::TRIM_TRAILING);
+    }
+    url_infos.push_back(
+        {.url = std::move(url), .title = std::u16string(title_line)});
+  }
+  return url_infos;
+}
+
+std::string JoinMultiUrlSpecs(base::span<const ClipboardUrlInfo> urls) {
+  if (urls.size() <= 1) {
+    return std::string();
+  }
+  std::string joined;
+  for (const auto& url_info : urls) {
+    if (!joined.empty()) {
+      joined += "\n";
+    }
+    joined += url_info.url.spec();
+  }
+  return joined;
 }
 
 std::vector<std::u16string> GetStandardFormatsFromMimeTypes(
@@ -646,9 +701,26 @@ void ClipboardOzone::ReadFilenames(
 void ClipboardOzone::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadUrlCallback callback) const {
+  ReadURLs(data_dst,
+           base::BindOnce(
+               [](ReadUrlCallback callback,
+                  std::vector<ClipboardUrlInfo> url_infos) {
+                 std::move(callback).Run(url_infos.empty()
+                                             ? ClipboardUrlInfo()
+                                             : std::move(url_infos.front()));
+               },
+               std::move(callback)));
+}
+
+void ClipboardOzone::ReadURLs(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadUrlsCallback callback) const {
   CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
-  NOTIMPLEMENTED();
-  std::move(callback).Run(ClipboardUrlInfo());
+  ReadAsync(ClipboardBuffer::kCopyPaste, kMimeTypeMozillaUrl, data_dst,
+            ClipboardFormatMetric::kUrl, std::move(callback),
+            [](ReadUrlsCallback callback, const PlatformClipboard::Data& data) {
+              std::move(callback).Run(ParseMozillaUrls(data));
+            });
 }
 
 void ClipboardOzone::ReadData(
@@ -671,7 +743,8 @@ bool ClipboardOzone::IsSelectionBufferAvailable() const {
 void ClipboardOzone::WritePortableTextRepresentation(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    PrivacyTypes privacy_types) {
+    PrivacyTypes privacy_types,
+    std::string_view fallback_text) {
   // Just like Non-Backed/X11 implementation does, copy text data from the
   // copy/paste selection to the primary selection, except for confidential
   // credentials (`kNoDisplay`) which must not be exposed to middle-click paste.
@@ -680,18 +753,20 @@ void ClipboardOzone::WritePortableTextRepresentation(
     return;
   }
 
-  auto text_iter = objects.find(base::VariantIndexOfType<Data, TextData>());
-  if (text_iter == objects.end()) {
-    return;
+  std::string_view selection_text;
+  if (auto text_iter = objects.find(base::VariantIndexOfType<Data, TextData>());
+      text_iter != objects.end()) {
+    selection_text = std::get<TextData>(text_iter->second.data).data;
   }
-
-  const auto& text_data = std::get<TextData>(text_iter->second.data);
-  if (text_data.data.empty()) {
+  if (selection_text.empty()) {
+    selection_text = fallback_text;
+  }
+  if (selection_text.empty()) {
     return;
   }
 
   async_clipboard_ozone_->PrepareForWriting();
-  WriteText(text_data.data);
+  WriteText(selection_text);
   WritePrivacyMetadata(privacy_types);
   async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
 }
@@ -732,11 +807,23 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
   for (const auto& raw_object : raw_objects) {
     DispatchPortableRepresentation(raw_object);
   }
+  std::string fallback_urls_text;
+  if (!async_clipboard_ozone_->HasFormatToOffer(kMimeTypePlainText)) {
+    if (auto url_iter = objects.find(base::VariantIndexOfType<Data, UrlData>());
+        url_iter != objects.end()) {
+      fallback_urls_text =
+          JoinMultiUrlSpecs(std::get<UrlData>(url_iter->second.data).url_infos);
+      if (!fallback_urls_text.empty()) {
+        WriteText(fallback_urls_text);
+      }
+    }
+  }
   const auto privacy_type_flags = static_cast<PrivacyTypes>(privacy_types);
   WritePrivacyMetadata(privacy_type_flags);
   async_clipboard_ozone_->OfferData(buffer);
 
-  WritePortableTextRepresentation(buffer, objects, privacy_type_flags);
+  WritePortableTextRepresentation(buffer, objects, privacy_type_flags,
+                                  fallback_urls_text);
 }
 
 void ClipboardOzone::WriteText(std::string_view text) {
@@ -771,6 +858,7 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 }
 
 void ClipboardOzone::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  CHECK(!url_infos.empty());
   // Writes Mozilla URLs (UTF16: alternating URL and title lines). Collapse
   // line breaks in titles so they cannot split an entry across extra lines.
   std::u16string bookmarks;

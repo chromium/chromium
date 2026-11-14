@@ -4,6 +4,8 @@
 
 #include "ui/base/clipboard/clipboard_ozone.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -24,10 +27,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/ozone/public/platform_clipboard.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -83,6 +88,17 @@ class FakePlatformClipboard : public PlatformClipboard {
   }
 
   bool IsSelectionBufferAvailable() const override { return true; }
+
+  void SetExternalData(ClipboardBuffer buffer,
+                       const std::string& mime_type,
+                       base::span<const uint8_t> data) {
+    data_map_[buffer] = {
+        {mime_type, base::MakeRefCounted<base::RefCountedBytes>(data)}};
+    is_owner_[buffer] = false;
+    if (callback_) {
+      callback_.Run(buffer);
+    }
+  }
 
   const DataMap& GetDataMap(ClipboardBuffer buffer) const {
     static const base::NoDestructor<DataMap> kEmptyMap;
@@ -261,6 +277,162 @@ TEST_F(ClipboardOzoneTest, NoCloudClipboardOnlyDoesNotWritePasswordHint) {
       fake_platform_clipboard_.GetDataMap(ClipboardBuffer::kSelection);
   ASSERT_TRUE(selection_map.contains(kMimeTypePlainText));
   EXPECT_FALSE(selection_map.contains(kMimeTypeLinuxPasswordManagerHint));
+}
+
+TEST_F(ClipboardOzoneTest, WriteURLsMultipleEntries) {
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/1"), .title = u"First\nLine"},
+      {.url = GURL("https://b.example/2"), .title = u""},
+      {.url = GURL("https://c.example/3"), .title = u"Third"},
+  };
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs(url_infos);
+  }
+
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr),
+      u"https://a.example/1\nhttps://b.example/2\nhttps://c.example/3");
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kSelection,
+                                    /*data_dst=*/nullptr),
+      u"https://a.example/1\nhttps://b.example/2\nhttps://c.example/3");
+
+  std::u16string title;
+  std::string url;
+  clipboard_test_util::ReadBookmark(clipboard(), /*data_dst=*/nullptr, &title,
+                                    &url);
+  EXPECT_EQ(url, "https://a.example/1");
+  EXPECT_EQ(title, u"First Line");
+
+  std::vector<ClipboardUrlInfo> read_urls =
+      clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+  ASSERT_EQ(read_urls.size(), 3u);
+  EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+  EXPECT_EQ(read_urls[0].title, u"First Line");
+  EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+  EXPECT_EQ(read_urls[1].title, u"");
+  EXPECT_EQ(read_urls[2].url, GURL("https://c.example/3"));
+  EXPECT_EQ(read_urls[2].title, u"Third");
+}
+
+TEST_F(ClipboardOzoneTest, WriteURLsSingleEntryWritesNoText) {
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs(
+        {{.url = GURL("https://a.example/"), .title = u"Example"}});
+  }
+
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr),
+      u"");
+}
+
+TEST_F(ClipboardOzoneTest, WriteURLsKeepsCallerText) {
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/1"), .title = u"First"},
+      {.url = GURL("https://b.example/2"), .title = u"Second"},
+  };
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs(url_infos);
+    writer.WriteText(u"custom");
+  }
+
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr),
+      u"custom");
+
+  std::vector<ClipboardUrlInfo> read_urls =
+      clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+  ASSERT_EQ(read_urls.size(), 2u);
+  EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+  EXPECT_EQ(read_urls[0].title, u"First");
+  EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+  EXPECT_EQ(read_urls[1].title, u"Second");
+}
+
+TEST_F(ClipboardOzoneTest, ReadURLsParseMozillaUrlsEdgeCases) {
+  // Case 1: \r\n line endings.
+  {
+    constexpr std::u16string_view kPayload =
+        u"https://a.example/1\r\nTitle 1\r\nhttps://b.example/2\r\nTitle 2\r\n";
+    fake_platform_clipboard_.SetExternalData(ClipboardBuffer::kCopyPaste,
+                                             kMimeTypeMozillaUrl,
+                                             base::as_byte_span(kPayload));
+    std::vector<ClipboardUrlInfo> read_urls =
+        clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+    ASSERT_EQ(read_urls.size(), 2u);
+    EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+    EXPECT_EQ(read_urls[0].title, u"Title 1");
+    EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+    EXPECT_EQ(read_urls[1].title, u"Title 2");
+  }
+
+  // Case 2: an invalid URL pair that is skipped while later valid entries are
+  // kept.
+  {
+    constexpr std::u16string_view kPayload =
+        u"invalid_url\nInvalid Title\nhttps://valid.example/\nValid Title\n";
+    fake_platform_clipboard_.SetExternalData(ClipboardBuffer::kCopyPaste,
+                                             kMimeTypeMozillaUrl,
+                                             base::as_byte_span(kPayload));
+    std::vector<ClipboardUrlInfo> read_urls =
+        clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+    ASSERT_EQ(read_urls.size(), 1u);
+    EXPECT_EQ(read_urls[0].url, GURL("https://valid.example/"));
+    EXPECT_EQ(read_urls[0].title, u"Valid Title");
+  }
+
+  // Case 3: a trailing URL with no title line.
+  {
+    constexpr std::u16string_view kPayload =
+        u"https://a.example/1\nTitle 1\nhttps://b.example/2";
+    fake_platform_clipboard_.SetExternalData(ClipboardBuffer::kCopyPaste,
+                                             kMimeTypeMozillaUrl,
+                                             base::as_byte_span(kPayload));
+    std::vector<ClipboardUrlInfo> read_urls =
+        clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+    ASSERT_EQ(read_urls.size(), 2u);
+    EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+    EXPECT_EQ(read_urls[0].title, u"Title 1");
+    EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+    EXPECT_EQ(read_urls[1].title, u"");
+  }
+
+  // Case 4: an odd byte length (expect no URLs).
+  {
+    constexpr std::u16string_view kValidPayload =
+        u"https://a.example/\nTitle\n";
+    auto valid_bytes = base::as_byte_span(kValidPayload);
+    std::vector<uint8_t> odd_bytes(valid_bytes.begin(), valid_bytes.end());
+    odd_bytes.push_back('x');
+    fake_platform_clipboard_.SetExternalData(ClipboardBuffer::kCopyPaste,
+                                             kMimeTypeMozillaUrl, odd_bytes);
+    std::vector<ClipboardUrlInfo> read_urls =
+        clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+    EXPECT_TRUE(read_urls.empty());
+  }
+
+  // Case 5: a leading UTF-16 BOM together with a trailing NUL.
+  {
+    // The array includes the string literal's terminating NUL.
+    constexpr char16_t kBomAndNulPayload[] =
+        u"\uFEFFhttps://bom.example/\nBOM Title";
+    fake_platform_clipboard_.SetExternalData(
+        ClipboardBuffer::kCopyPaste, kMimeTypeMozillaUrl,
+        base::as_byte_span(kBomAndNulPayload));
+    std::vector<ClipboardUrlInfo> read_urls =
+        clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+    ASSERT_EQ(read_urls.size(), 1u);
+    EXPECT_EQ(read_urls[0].url, GURL("https://bom.example/"));
+    EXPECT_EQ(read_urls[0].title, u"BOM Title");
+  }
 }
 
 }  // namespace ui
