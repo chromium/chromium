@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -218,6 +219,8 @@ class PrivacyOverlayWinTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::AutoReset<bool> allow_capture_exclusion_failure_ =
       ScopedAllowCaptureExclusionFailureForTesting();
+  base::AutoReset<std::optional<bool>> hotkey_registration_override_ =
+      ScopedOverrideHotKeyRegistrationForTesting(true);
   testing::NiceMock<FakeClientSessionControl> client_session_control_{
       "user@domain/rest-of-jid"};
   LocalInputMonitor::PointerMoveCallback pointer_callback_;
@@ -234,9 +237,14 @@ TEST_F(PrivacyOverlayWinTest,
   ASSERT_NE(windows.button_hwnd, nullptr);
   ASSERT_FALSE(windows.backdrop_hwnds.empty());
 
+  const std::wstring expected_hotkey_hint =
+      LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT);
+  ASSERT_FALSE(expected_hotkey_hint.empty());
+
   // Verify every per-monitor backdrop window is visible, click-through,
   // opaque, positioned below `button_hwnd` in the `HWND_TOPMOST` Z-order band,
-  // and carries the localized sharing message as its accessible window title.
+  // and carries the localized sharing message and disconnect hotkey hint as its
+  // accessible window title.
   for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
     EXPECT_TRUE(IsWindow(backdrop_hwnd));
     EXPECT_TRUE(IsWindowVisible(backdrop_hwnd));
@@ -245,6 +253,8 @@ TEST_F(PrivacyOverlayWinTest,
     std::wstring backdrop_title = GetWindowTextOrEmpty(backdrop_hwnd);
     EXPECT_FALSE(backdrop_title.empty());
     EXPECT_NE(backdrop_title.find(L"user@domain"), std::wstring::npos);
+    EXPECT_NE(backdrop_title.find(L"\n" + expected_hotkey_hint),
+              std::wstring::npos);
 
     LONG_PTR ex_style = GetWindowLongPtr(backdrop_hwnd, GWL_EXSTYLE);
     EXPECT_NE(ex_style & WS_EX_TOPMOST, 0);
@@ -309,7 +319,11 @@ TEST_F(PrivacyOverlayWinTest,
       GetDlgItem(windows.button_hwnd, IDC_DISCONNECT_SHARINGWITH);
   ASSERT_NE(sharing_text_hwnd, nullptr);
   EXPECT_FALSE(IsWindowVisible(sharing_text_hwnd));
-  EXPECT_NE(GetWindowTextOrEmpty(sharing_text_hwnd).find(L"user@domain"),
+  const std::wstring sharing_control_text =
+      GetWindowTextOrEmpty(sharing_text_hwnd);
+  EXPECT_NE(sharing_control_text.find(L"user@domain"), std::wstring::npos);
+  EXPECT_NE(sharing_control_text.find(
+                L"\n" + LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT)),
             std::wstring::npos);
 
   // Verify the Disconnect button dialog is horizontally centered on its target
@@ -846,6 +860,183 @@ TEST_F(PrivacyOverlayWinTest, TruncatesOverlongClientEmailWithEllipsis) {
       base::AsWString(FormatEmailForDisplay(kLongEmail));
   EXPECT_NE(expected_elided_email.find(L"\x2026"), std::wstring::npos);
   EXPECT_NE(backdrop_title.find(expected_elided_email), std::wstring::npos);
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       RendersHotkeyHintBelowSharingMessageAndAboveDisconnectButton) {
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  const std::wstring hotkey_hint = LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT);
+  ASSERT_FALSE(hotkey_hint.empty());
+
+  // Locate the backdrop window on the monitor where `button_hwnd` is anchored.
+  HMONITOR button_monitor =
+      MonitorFromWindow(windows.button_hwnd, MONITOR_DEFAULTTONEAREST);
+  HWND target_backdrop = windows.backdrop_hwnds.front();
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    if (MonitorFromWindow(backdrop_hwnd, MONITOR_DEFAULTTONEAREST) ==
+        button_monitor) {
+      target_backdrop = backdrop_hwnd;
+      break;
+    }
+  }
+
+  RECT client_rect = {};
+  ASSERT_TRUE(GetClientRect(target_backdrop, &client_rect));
+  int client_width = client_rect.right - client_rect.left;
+  int client_height = client_rect.bottom - client_rect.top;
+  ASSERT_GT(client_width, 0);
+  ASSERT_GT(client_height, 0);
+
+  base::win::ScopedGetDC screen_dc(nullptr);
+  base::win::ScopedCreateDC mem_dc(CreateCompatibleDC(screen_dc));
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
+      CreateCompatibleBitmap(screen_dc, client_width, client_height));
+  base::win::ScopedSelectObject select_bitmap(mem_dc.get(), bitmap.get());
+
+  const COLORREF expected_bg_color =
+      IsHighContrastEnabled() ? GetSysColor(COLOR_WINDOW) : kGoogleBlueColor;
+  SendMessage(target_backdrop, WM_PRINTCLIENT,
+              reinterpret_cast<WPARAM>(mem_dc.get()), PRF_CLIENT);
+
+  // Query the shared `ComputeBackdropContentLayout()` helper for
+  // `target_backdrop` and verify glyphs are rendered in both the sharing band
+  // and the hotkey hint band, and that `button_hwnd` sits strictly below the
+  // hotkey hint band (unless clamped at the bottom of an unusually tiny
+  // screen).
+  UINT dpi = GetMonitorDpi(button_monitor, target_backdrop);
+  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
+  base::win::ScopedGDIObject<HFONT> title_font =
+      CreateOverlayFont(ScaleForDpi(kBaseTitleFontSize, dpi), FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font =
+      CreateOverlayFont(ScaleForDpi(kBaseBodyFontSize, dpi), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font =
+      CreateOverlayFont(ScaleForDpi(kBaseHintFontSize, dpi), FW_NORMAL);
+
+  std::wstring product_name = LoadModuleString(IDS_PRODUCT_NAME);
+  std::wstring backdrop_title = GetWindowTextOrEmpty(target_backdrop);
+  size_t newline_pos = backdrop_title.find(L'\n');
+  ASSERT_NE(newline_pos, std::wstring::npos);
+  EXPECT_EQ(backdrop_title.substr(newline_pos + 1), hotkey_hint);
+  std::wstring_view sharing_only =
+      std::wstring_view(backdrop_title).substr(0, newline_pos);
+
+  BackdropContentLayout layout = ComputeBackdropContentLayout(
+      mem_dc.get(), client_width, client_height, dpi, /*is_rtl=*/false,
+      {.font = title_font.get(), .text = product_name},
+      {.font = body_font.get(), .text = sharing_only},
+      {.font = hint_font.get(), .text = hotkey_hint});
+  ASSERT_GT(layout.body_height, 0);
+  ASSERT_GT(layout.hint_height, 0);
+  EXPECT_EQ(layout.hint_gap, spacing / 2);
+
+  int body_bottom =
+      std::min(client_height, layout.body_top + layout.body_height);
+  int hint_bottom =
+      std::min(client_height, layout.hint_top + layout.hint_height);
+  ASSERT_LT(layout.body_top, body_bottom);
+  ASSERT_LT(body_bottom, layout.hint_top);
+  ASSERT_LT(layout.hint_top, hint_bottom);
+
+  EXPECT_TRUE(HasNonBackgroundPixel(mem_dc.get(), std::max(0, layout.text_left),
+                                    std::max(0, layout.body_top),
+                                    std::min(client_width, layout.text_right),
+                                    body_bottom, expected_bg_color));
+  EXPECT_TRUE(HasNonBackgroundPixel(mem_dc.get(), std::max(0, layout.text_left),
+                                    std::max(0, layout.hint_top),
+                                    std::min(client_width, layout.text_right),
+                                    hint_bottom, expected_bg_color));
+
+  RECT backdrop_screen_rect = {};
+  RECT button_screen_rect = {};
+  ASSERT_TRUE(GetWindowRect(target_backdrop, &backdrop_screen_rect));
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &button_screen_rect));
+  int button_height = button_screen_rect.bottom - button_screen_rect.top;
+  if (hint_bottom + spacing + button_height + spacing <= client_height) {
+    int button_top_in_backdrop =
+        button_screen_rect.top - backdrop_screen_rect.top;
+    EXPECT_GE(button_top_in_backdrop, hint_bottom + spacing);
+  }
+}
+
+TEST_F(PrivacyOverlayWinTest, OmitsHotkeyHintWhenHotkeyRegistrationFails) {
+  base::AutoReset<std::optional<bool>> fail_hotkey_registration =
+      ScopedOverrideHotKeyRegistrationForTesting(false);
+
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  const std::wstring hotkey_hint = LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT);
+  ASSERT_FALSE(hotkey_hint.empty());
+
+  HWND sharing_text_hwnd =
+      GetDlgItem(windows.button_hwnd, IDC_DISCONNECT_SHARINGWITH);
+  ASSERT_NE(sharing_text_hwnd, nullptr);
+  const std::wstring sharing_control_text =
+      GetWindowTextOrEmpty(sharing_text_hwnd);
+  EXPECT_NE(sharing_control_text.find(L"user@domain"), std::wstring::npos);
+  EXPECT_EQ(sharing_control_text.find(L'\n'), std::wstring::npos);
+  EXPECT_EQ(sharing_control_text.find(hotkey_hint), std::wstring::npos);
+
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    std::wstring backdrop_title = GetWindowTextOrEmpty(backdrop_hwnd);
+    EXPECT_NE(backdrop_title.find(L"user@domain"), std::wstring::npos);
+    EXPECT_EQ(backdrop_title.find(L'\n'), std::wstring::npos);
+    EXPECT_EQ(backdrop_title.find(hotkey_hint), std::wstring::npos);
+  }
+
+  // Verify `PaintBackdrop()` also omits the hotkey hint glyphs below the
+  // sharing message band.
+  HWND backdrop_hwnd = windows.backdrop_hwnds.front();
+  RECT client_rect = {};
+  ASSERT_TRUE(GetClientRect(backdrop_hwnd, &client_rect));
+  int client_width = client_rect.right - client_rect.left;
+  int client_height = client_rect.bottom - client_rect.top;
+  ASSERT_GT(client_width, 0);
+  ASSERT_GT(client_height, 0);
+
+  base::win::ScopedGetDC screen_dc(nullptr);
+  base::win::ScopedCreateDC mem_dc(CreateCompatibleDC(screen_dc));
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
+      CreateCompatibleBitmap(screen_dc, client_width, client_height));
+  base::win::ScopedSelectObject select_bitmap(mem_dc.get(), bitmap.get());
+
+  const COLORREF expected_bg_color =
+      IsHighContrastEnabled() ? GetSysColor(COLOR_WINDOW) : kGoogleBlueColor;
+  SendMessage(backdrop_hwnd, WM_PRINTCLIENT,
+              reinterpret_cast<WPARAM>(mem_dc.get()), PRF_CLIENT);
+
+  HMONITOR monitor = MonitorFromWindow(backdrop_hwnd, MONITOR_DEFAULTTONEAREST);
+  UINT dpi = GetMonitorDpi(monitor, backdrop_hwnd);
+  base::win::ScopedGDIObject<HFONT> title_font =
+      CreateOverlayFont(ScaleForDpi(kBaseTitleFontSize, dpi), FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font =
+      CreateOverlayFont(ScaleForDpi(kBaseBodyFontSize, dpi), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font =
+      CreateOverlayFont(ScaleForDpi(kBaseHintFontSize, dpi), FW_NORMAL);
+
+  const std::wstring product_name = LoadModuleString(IDS_PRODUCT_NAME);
+  BackdropContentLayout layout_if_shown = ComputeBackdropContentLayout(
+      mem_dc.get(), client_width, client_height, dpi, /*is_rtl=*/false,
+      {.font = title_font.get(), .text = product_name},
+      {.font = body_font.get(), .text = sharing_control_text},
+      {.font = hint_font.get(), .text = hotkey_hint});
+  int hint_bottom = std::min(
+      client_height, layout_if_shown.hint_top + layout_if_shown.hint_height);
+  if (layout_if_shown.hint_top < hint_bottom) {
+    EXPECT_FALSE(HasNonBackgroundPixel(
+        mem_dc.get(), std::max(0, layout_if_shown.text_left),
+        std::max(0, layout_if_shown.hint_top),
+        std::min(client_width, layout_if_shown.text_right), hint_bottom,
+        expected_bg_color));
+  }
 }
 
 }  // namespace remoting

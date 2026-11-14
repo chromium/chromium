@@ -331,8 +331,7 @@ bool DisconnectWindowWin::BeginDialog() {
   DCHECK(!(GetWindowLong(hwnd_, GWL_EXSTYLE) & WS_EX_APPWINDOW));
 
   // Set up handler for Ctrl-Alt-Esc shortcut.
-  if (!has_hotkey_ && RegisterHotKey(hwnd_, kDisconnectHotkeyId,
-                                     MOD_ALT | MOD_CONTROL, VK_ESCAPE)) {
+  if (!has_hotkey_ && RegisterDisconnectHotKey(hwnd_)) {
     has_hotkey_ = true;
   }
 
@@ -349,7 +348,7 @@ void DisconnectWindowWin::EndDialog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_hotkey_) {
-    UnregisterHotKey(hwnd_, kDisconnectHotkeyId);
+    UnregisterDisconnectHotKey(hwnd_);
     has_hotkey_ = false;
   }
 

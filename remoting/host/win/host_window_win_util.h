@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -57,6 +58,7 @@ inline constexpr int kBaseButtonFontSize = 14;
 inline constexpr int kBaseIconSize = 64;
 inline constexpr int kBaseTitleFontSize = 28;
 inline constexpr int kBaseBodyFontSize = 18;
+inline constexpr int kBaseHintFontSize = 14;
 inline constexpr int kBaseVerticalSpacing = 16;
 inline constexpr int kBaseButtonTopOffset = 72;
 
@@ -97,6 +99,23 @@ bool ApplyCaptureExclusion(HWND hwnd);
 // `ERROR_INVALID_PARAMETER`, `ERROR_NOT_SUPPORTED`, or `ERROR_ACCESS_DENIED`.
 base::AutoReset<bool> ScopedAllowCaptureExclusionFailureForTesting();
 
+// Registers the Ctrl+Alt+Esc disconnect shortcut (`kDisconnectHotkeyId`) for
+// `hwnd`. Returns false if `hwnd` is null or `RegisterHotKey()` fails.
+bool RegisterDisconnectHotKey(HWND hwnd);
+
+// Unregisters the Ctrl+Alt+Esc disconnect shortcut (`kDisconnectHotkeyId`)
+// previously registered for `hwnd`.
+void UnregisterDisconnectHotKey(HWND hwnd);
+
+// Overrides `RegisterDisconnectHotKey()` and `UnregisterDisconnectHotKey()` in
+// unit tests so parallel test-launcher worker processes sharing an interactive
+// desktop (`WinSta0\Default`) do not contend on the desktop-global Win32
+// `RegisterHotKey()` table. Because `UnregisterDisconnectHotKey()` is a no-op
+// while an override is active, the returned `base::AutoReset` must span the
+// full `RegisterDisconnectHotKey()` / `UnregisterDisconnectHotKey()` lifetime.
+base::AutoReset<std::optional<bool>> ScopedOverrideHotKeyRegistrationForTesting(
+    bool succeed);
+
 // Enumerates the virtual-screen bounding rectangles of all active physical
 // displays, falling back to `GetSystemMetrics` virtual/primary screen metrics
 // if `EnumDisplayMonitors()` returns no monitors (e.g. on headless bots).
@@ -122,6 +141,55 @@ std::wstring LoadModuleString(UINT resource_id);
 // `DEFAULT_CHARSET` GDI font linking.
 base::win::ScopedGDIObject<HFONT> CreateOverlayFont(int pixel_height,
                                                     LONG weight);
+
+// Pairs a GDI `font` handle with its localized `text` for a single centered
+// text band on the privacy overlay backdrop.
+struct BackdropTextBlock {
+  HFONT font = nullptr;
+  std::wstring_view text;
+};
+
+// Returns the `DrawTextW()` format flags used to both measure and render
+// centered backdrop text blocks.
+UINT GetBackdropDrawTextFlags(bool is_rtl);
+
+// Computed layout geometry (in physical client/monitor pixels) and `DrawTextW`
+// flags for the centered icon, product title, sharing message, and optional
+// disconnect hotkey hint rendered on each per-monitor privacy overlay backdrop.
+struct BackdropContentLayout {
+  UINT draw_text_flags = 0;
+  int max_text_width = 0;
+  int text_left = 0;
+  int text_right = 0;
+  int icon_size = 0;
+  int icon_left = 0;
+  int icon_top = 0;
+  int title_top = 0;
+  int title_bottom = 0;
+  int title_height = 0;
+  int center_y = 0;
+  int body_top = 0;
+  int body_height = 0;
+  int hint_gap = 0;
+  int hint_top = 0;
+  int hint_height = 0;
+  int below_center_height = 0;
+};
+
+// Computes the centered backdrop content layout for a `client_width` x
+// `client_height` surface at `dpi`. Shared by
+// `PrivacyOverlayWin::PaintBackdrop` and
+// `PrivacyOverlayWin::PositionDisconnectButton` (as well as unit tests) so
+// Disconnect button placement and backdrop text rendering never drift out of
+// sync.
+BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
+                                                   int client_width,
+                                                   int client_height,
+                                                   UINT dpi,
+                                                   bool is_rtl,
+                                                   BackdropTextBlock title,
+                                                   BackdropTextBlock body,
+                                                   BackdropTextBlock hint);
 
 }  // namespace remoting
 

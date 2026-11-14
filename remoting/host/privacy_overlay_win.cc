@@ -77,10 +77,10 @@ bool RegisterPrivacyOverlayClass(WNDPROC wnd_proc) {
 //    permanently click-through (`WS_EX_LAYERED | WS_EX_TRANSPARENT`) and
 //    excluded from desktop capture (`WDA_EXCLUDEFROMCAPTURE`). The local
 //    physical monitors display the branded Google Blue privacy screen
-//    (localized product name + localized sharing message), while WebRTC/DXGI
-//    desktop capture sees right through the overlay to the underlying desktop
-//    applications, and remote mouse/touch inputs pass straight through without
-//    obstruction.
+//    (localized product name, localized sharing message, and localized
+//    Ctrl+Alt+Esc disconnect shortcut hint), while WebRTC/DXGI desktop capture
+//    sees right through the overlay to the underlying desktop applications, and
+//    remote mouse/touch inputs pass straight through without obstruction.
 // 2. On-Demand Floating Disconnect Button Dialog (`hwnd_`):
 //    A single topmost dialog created from the localized `IDD_DISCONNECT`
 //    resource and resized to wrap only the "Stop Sharing" button
@@ -126,6 +126,7 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
     base::win::ScopedGDIObject<HICON> crd_icon;
     base::win::ScopedGDIObject<HFONT> title_font;
     base::win::ScopedGDIObject<HFONT> body_font;
+    base::win::ScopedGDIObject<HFONT> hint_font;
   };
 
   // Dialog procedure for the floating Disconnect button dialog (`hwnd_`).
@@ -157,10 +158,12 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // inserting them into `backdrop_dpi_cache_` if not yet present.
   const BackdropDpiResources& GetBackdropResourcesForDpi(UINT dpi);
 
-  // Measures the wrapped pixel height of `sharing_with_text_` for a monitor of
-  // `monitor_width` and `dpi` so `PositionDisconnectButton()` can place the
-  // floating button below multi-line wrapped text without overlapping it.
-  int MeasureSharingTextHeight(int monitor_width, UINT dpi);
+  // Computes the centered backdrop content layout for a `width` x `height`
+  // surface at `dpi` using cached DPI fonts and current localized strings.
+  BackdropContentLayout ComputeBackdropLayout(HDC dc,
+                                              int width,
+                                              int height,
+                                              UINT dpi);
 
   // Draws the background and contrasting rounded border of the Disconnect
   // button dialog into `hdc`.
@@ -196,8 +199,8 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   void OnLocalKeyPressed(uint32_t usb_keycode);
 
   // Renders the privacy overlay backdrop content (icon, localized product
-  // title, and localized sharing message) into `hdc` using an offscreen double
-  // buffer for the central content region.
+  // title, localized sharing message, and localized disconnect shortcut hint)
+  // into `hdc` using an offscreen double buffer for the central content region.
   void PaintBackdrop(HWND hwnd, HDC hdc);
 
   // Window procedure for per-monitor backdrop windows (`backdrop_hwnds_`).
@@ -268,6 +271,8 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // `IDD_DISCONNECT` dialog template.
   std::wstring product_name_text_;
   std::wstring sharing_with_text_;
+  std::wstring hotkey_hint_text_;
+  std::wstring accessible_backdrop_text_;
   std::wstring button_text_;
 
   // Last observed local cursor position in virtual-screen coordinates.
@@ -560,13 +565,35 @@ bool PrivacyOverlayWin::BeginOverlay() {
     return false;
   }
 
+  if (!hotkey_registered_) {
+    if (RegisterDisconnectHotKey(hwnd_)) {
+      hotkey_registered_ = true;
+    } else {
+      PLOG(WARNING) << "Failed to register Ctrl+Alt+Esc disconnect hotkey";
+    }
+  }
+
+  // Only advertise the Ctrl+Alt+Esc shortcut when the hotkey was actually
+  // registered, and degrade gracefully if loading the hint string fails.
+  if (hotkey_registered_) {
+    hotkey_hint_text_ = LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT);
+    if (hotkey_hint_text_.empty()) {
+      LOG(WARNING)
+          << "Failed to load IDS_DISCONNECT_HOTKEY_HINT for Privacy Overlay";
+    }
+  } else {
+    hotkey_hint_text_.clear();
+  }
+
   // Detect whether the localized dialog resource, message text, or process UI
   // language uses a right-to-left (RTL) reading layout.
   LONG_PTR ex_style = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
   is_rtl_ = (ex_style & (WS_EX_LAYOUTRTL | WS_EX_RTLREADING)) != 0 ||
             base::i18n::IsRTL() ||
             base::i18n::StringContainsStrongRTLChars(
-                base::AsStringPiece16(message_text));
+                base::AsStringPiece16(message_text)) ||
+            base::i18n::StringContainsStrongRTLChars(
+                base::AsStringPiece16(hotkey_hint_text_));
 
   // Configure extended styles for the Disconnect button window:
   // - Strip `WS_EX_LAYOUTRTL` so GDI coordinates in `PaintButtonDialog()` are
@@ -587,11 +614,6 @@ bool PrivacyOverlayWin::BeginOverlay() {
   SetWindowLongPtr(hwnd_, GWL_EXSTYLE, ex_style);
   SetLayeredWindowAttributes(hwnd_, 0, 0, LWA_ALPHA);
 
-  if (!hotkey_registered_ && RegisterHotKey(hwnd_, kDisconnectHotkeyId,
-                                            MOD_ALT | MOD_CONTROL, VK_ESCAPE)) {
-    hotkey_registered_ = true;
-  }
-
   // Wrap the formatted client email in explicit LTR directional formatting
   // marks (LRE/PDF) when rendering in an RTL context so neutral characters
   // (such as a leading ellipsis or `@`) are not reordered by the BiDi
@@ -606,9 +628,14 @@ bool PrivacyOverlayWin::BeginOverlay() {
     return false;
   }
 
+  accessible_backdrop_text_ =
+      hotkey_hint_text_.empty()
+          ? sharing_with_text_
+          : (sharing_with_text_ + L"\n" + hotkey_hint_text_);
+
   // Write the formatted text back to the control and dialog window caption so
   // screen readers have full accessible context.
-  SetWindowTextW(hwnd_message, sharing_with_text_.c_str());
+  SetWindowTextW(hwnd_message, accessible_backdrop_text_.c_str());
   SetWindowTextW(hwnd_, product_name_text_.c_str());
 
   // Hide the alignment toggle and sharing text controls inside the button
@@ -673,7 +700,7 @@ void PrivacyOverlayWin::EndOverlay() {
   local_input_monitor_.reset();
 
   if (hotkey_registered_ && hwnd_) {
-    UnregisterHotKey(hwnd_, kDisconnectHotkeyId);
+    UnregisterDisconnectHotKey(hwnd_);
     hotkey_registered_ = false;
   }
 
@@ -785,52 +812,30 @@ PrivacyOverlayWin::GetBackdropResourcesForDpi(UINT dpi) {
   int icon_size = ScaleForDpi(kBaseIconSize, dpi);
   int title_height = ScaleForDpi(kBaseTitleFontSize, dpi);
   int body_height = ScaleForDpi(kBaseBodyFontSize, dpi);
+  int hint_height = ScaleForDpi(kBaseHintFontSize, dpi);
 
   resources.crd_icon.reset(static_cast<HICON>(
       LoadImageW(CURRENT_MODULE(), MAKEINTRESOURCEW(IDI_CHROME_REMOTE_DESKTOP),
                  IMAGE_ICON, icon_size, icon_size, LR_DEFAULTCOLOR)));
   resources.title_font = CreateOverlayFont(title_height, FW_SEMIBOLD);
   resources.body_font = CreateOverlayFont(body_height, FW_NORMAL);
+  resources.hint_font = CreateOverlayFont(hint_height, FW_NORMAL);
 
   auto [inserted_it, _] =
       backdrop_dpi_cache_.emplace(dpi, std::move(resources));
   return inserted_it->second;
 }
 
-int PrivacyOverlayWin::MeasureSharingTextHeight(int monitor_width, UINT dpi) {
-  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
-  int default_height = ScaleForDpi(kBaseBodyFontSize, dpi) + spacing;
-  if (sharing_with_text_.empty() || monitor_width <= 0) {
-    return default_height;
-  }
-
+BackdropContentLayout PrivacyOverlayWin::ComputeBackdropLayout(HDC dc,
+                                                               int width,
+                                                               int height,
+                                                               UINT dpi) {
   const BackdropDpiResources& resources = GetBackdropResourcesForDpi(dpi);
-  if (!resources.body_font.is_valid()) {
-    return default_height;
-  }
-
-  base::win::ScopedGetDC screen_dc(hwnd_);
-  if (!screen_dc) {
-    return default_height;
-  }
-
-  int max_text_width = std::max(
-      1, (monitor_width * kMaxTextWidthNumerator) / kMaxTextWidthDenominator);
-  RECT calc_rect = {0, 0, max_text_width, 0};
-  UINT draw_text_flags = DT_CENTER | DT_WORDBREAK | DT_EDITCONTROL |
-                         DT_EXTERNALLEADING | DT_NOPREFIX | DT_CALCRECT;
-  if (is_rtl_) {
-    draw_text_flags |= DT_RTLREADING;
-  }
-
-  base::win::ScopedSelectObject select_font(screen_dc,
-                                            resources.body_font.get());
-  if (DrawTextW(screen_dc, sharing_with_text_.c_str(), -1, &calc_rect,
-                draw_text_flags)) {
-    return std::max(default_height,
-                    static_cast<int>(calc_rect.bottom - calc_rect.top));
-  }
-  return default_height;
+  return ComputeBackdropContentLayout(
+      dc, width, height, dpi, is_rtl_,
+      {.font = resources.title_font.get(), .text = product_name_text_},
+      {.font = resources.body_font.get(), .text = sharing_with_text_},
+      {.font = resources.hint_font.get(), .text = hotkey_hint_text_});
 }
 
 void PrivacyOverlayWin::PaintButtonDialog(HWND hwnd, HDC hdc) {
@@ -899,12 +904,13 @@ bool PrivacyOverlayWin::UpdateBackdrops() {
     ex_style |= WS_EX_RTLREADING;
   }
 
-  // Set the accessible window title of each backdrop directly to the localized
-  // sharing message (without hardcoded ASCII concatenation separators that can
-  // scramble BiDi ordering) so screen readers can announce who the desktop is
-  // shared with.
-  const std::wstring& backdrop_title =
-      !sharing_with_text_.empty() ? sharing_with_text_ : product_name_text_;
+  // Set the accessible window title of each backdrop to the localized sharing
+  // message and (when active) the disconnect shortcut hint separated by a
+  // newline so each line forms an independent BiDi paragraph and screen readers
+  // pause naturally between them.
+  const std::wstring& backdrop_title = !accessible_backdrop_text_.empty()
+                                           ? accessible_backdrop_text_
+                                           : product_name_text_;
 
   for (size_t i = 0; i < monitor_rects.size(); ++i) {
     const RECT& rect = monitor_rects[i];
@@ -997,11 +1003,15 @@ void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point,
       monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
 
   int left = monitor_info.rcMonitor.left + (monitor_width - window_width) / 2;
-  int center_y = monitor_info.rcMonitor.top + monitor_height / 2;
   int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
-  int min_offset = ScaleForDpi(kBaseButtonTopOffset, dpi);
-  int text_offset = MeasureSharingTextHeight(monitor_width, dpi) + spacing;
-  int top = center_y + std::max(min_offset, text_offset);
+  int min_top = monitor_info.rcMonitor.top + (monitor_height / 2) +
+                ScaleForDpi(kBaseButtonTopOffset, dpi);
+  base::win::ScopedGetDC screen_dc(hwnd_);
+  BackdropContentLayout layout =
+      ComputeBackdropLayout(screen_dc, monitor_width, monitor_height, dpi);
+  int below_text_top = monitor_info.rcMonitor.top + layout.center_y +
+                       layout.below_center_height + spacing;
+  int top = std::max(min_top, below_text_top);
 
   // Clamp `top` so the button never clips off the bottom of the monitor.
   int max_top = std::max(static_cast<int>(monitor_info.rcMonitor.top),
@@ -1133,65 +1143,20 @@ void PrivacyOverlayWin::PaintBackdrop(HWND hwnd, HDC hdc) {
   UINT dpi = GetMonitorDpi(monitor, hwnd);
   const BackdropDpiResources& resources = GetBackdropResourcesForDpi(dpi);
 
-  int center_x = client_width / 2;
-  int center_y = client_height / 2;
+  // Compute the centered content layout first so we only need to allocate a
+  // compact offscreen double-buffer bitmap for the central content region
+  // (rather than a ~33 MB full-screen 4K bitmap) while filling the surrounding
+  // solid background bands directly without flicker.
+  const BackdropContentLayout layout =
+      ComputeBackdropLayout(hdc, client_width, client_height, dpi);
 
-  int icon_size = ScaleForDpi(kBaseIconSize, dpi);
-  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
-  int max_text_width = std::max(
-      1, (client_width * kMaxTextWidthNumerator) / kMaxTextWidthDenominator);
-  int text_left = center_x - max_text_width / 2;
-  int text_right = text_left + max_text_width;
-
-  UINT draw_text_flags = DT_CENTER | DT_WORDBREAK | DT_EDITCONTROL |
-                         DT_EXTERNALLEADING | DT_NOPREFIX;
-  if (is_rtl_) {
-    draw_text_flags |= DT_RTLREADING;
-  }
-
-  // Measure the title and body text bounding boxes first so we only need to
-  // allocate a compact offscreen double-buffer bitmap for the central content
-  // region (rather than a ~33 MB full-screen 4K bitmap) while filling the
-  // surrounding solid background bands directly without flicker.
-  int title_box_height = 0;
-  if (!product_name_text_.empty() && resources.title_font.is_valid()) {
-    title_box_height = ScaleForDpi(kBaseTitleFontSize, dpi);
-    base::win::ScopedSelectObject select_font(hdc, resources.title_font.get());
-    RECT calc_rect = {text_left, 0, text_right, 0};
-    if (DrawTextW(hdc, product_name_text_.c_str(), -1, &calc_rect,
-                  draw_text_flags | DT_CALCRECT)) {
-      title_box_height = std::max(
-          title_box_height, static_cast<int>(calc_rect.bottom - calc_rect.top));
-    }
-  }
-
-  int body_box_height = 0;
-  if (!sharing_with_text_.empty() && resources.body_font.is_valid()) {
-    body_box_height = ScaleForDpi(kBaseBodyFontSize, dpi) + spacing;
-    base::win::ScopedSelectObject select_font(hdc, resources.body_font.get());
-    RECT calc_rect = {text_left, 0, text_right, 0};
-    if (DrawTextW(hdc, sharing_with_text_.c_str(), -1, &calc_rect,
-                  draw_text_flags | DT_CALCRECT)) {
-      body_box_height = std::max(
-          body_box_height, static_cast<int>(calc_rect.bottom - calc_rect.top));
-    }
-  }
-
-  int title_bottom = center_y - spacing;
-  int icon_top = title_bottom - title_box_height - spacing - icon_size;
-  if (icon_top < spacing) {
-    int shift_down = spacing - icon_top;
-    icon_top = spacing;
-    title_bottom += shift_down;
-    center_y += shift_down;
-  }
-  int icon_left = center_x - icon_size / 2;
-
-  int content_left = std::max(0, std::min(text_left, icon_left));
-  int content_top = std::max(0, icon_top);
-  int content_right =
-      std::min(client_width, std::max(text_right, icon_left + icon_size));
-  int content_bottom = std::min(client_height, center_y + body_box_height);
+  int content_left = std::max(0, std::min(layout.text_left, layout.icon_left));
+  int content_top = std::max(0, layout.icon_top);
+  int content_right = std::min(
+      client_width,
+      std::max(layout.text_right, layout.icon_left + layout.icon_size));
+  int content_bottom =
+      std::min(client_height, layout.center_y + layout.below_center_height);
   int content_width = std::max(0, content_right - content_left);
   int content_height = std::max(0, content_bottom - content_top);
 
@@ -1248,29 +1213,41 @@ void PrivacyOverlayWin::PaintBackdrop(HWND hwnd, HDC hdc) {
   SetTextColor(target_dc, text_color);
 
   if (resources.crd_icon.is_valid()) {
-    DrawIconEx(target_dc, icon_left + offset_x, icon_top + offset_y,
-               resources.crd_icon.get(), icon_size, icon_size, 0, nullptr,
+    DrawIconEx(target_dc, layout.icon_left + offset_x,
+               layout.icon_top + offset_y, resources.crd_icon.get(),
+               layout.icon_size, layout.icon_size, 0, nullptr,
                DI_NORMAL | DI_NOMIRROR);
   }
 
-  if (title_box_height > 0 && resources.title_font.is_valid()) {
+  if (layout.title_height > 0 && resources.title_font.is_valid()) {
     base::win::ScopedSelectObject select_font(target_dc,
                                               resources.title_font.get());
-    int title_top = title_bottom - title_box_height;
-    RECT title_rect = {text_left + offset_x, title_top + offset_y,
-                       text_right + offset_x, title_bottom + offset_y};
+    RECT title_rect = {layout.text_left + offset_x, layout.title_top + offset_y,
+                       layout.text_right + offset_x,
+                       layout.title_bottom + offset_y};
     DrawTextW(target_dc, product_name_text_.c_str(), -1, &title_rect,
-              draw_text_flags);
+              layout.draw_text_flags);
   }
 
-  if (body_box_height > 0 && resources.body_font.is_valid()) {
+  if (layout.body_height > 0 && resources.body_font.is_valid()) {
     base::win::ScopedSelectObject select_font(target_dc,
                                               resources.body_font.get());
-    RECT sharing_rect = {text_left + offset_x, center_y + offset_y,
-                         text_right + offset_x,
-                         center_y + body_box_height + offset_y};
+    RECT sharing_rect = {layout.text_left + offset_x,
+                         layout.body_top + offset_y,
+                         layout.text_right + offset_x,
+                         layout.body_top + layout.body_height + offset_y};
     DrawTextW(target_dc, sharing_with_text_.c_str(), -1, &sharing_rect,
-              draw_text_flags);
+              layout.draw_text_flags);
+  }
+
+  if (layout.hint_height > 0 && resources.hint_font.is_valid()) {
+    base::win::ScopedSelectObject select_font(target_dc,
+                                              resources.hint_font.get());
+    RECT hint_rect = {layout.text_left + offset_x, layout.hint_top + offset_y,
+                      layout.text_right + offset_x,
+                      layout.hint_top + layout.hint_height + offset_y};
+    DrawTextW(target_dc, hotkey_hint_text_.c_str(), -1, &hint_rect,
+              layout.draw_text_flags);
   }
 
   if (target_dc != hdc) {

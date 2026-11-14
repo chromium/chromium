@@ -6,6 +6,7 @@
 
 #include <shellscalingapi.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -29,6 +30,7 @@ namespace remoting {
 namespace {
 
 bool g_allow_capture_exclusion_failure_for_testing = false;
+std::optional<bool> g_hotkey_registration_override_for_testing;
 
 // Callback for `EnumDisplayMonitors()` that collects the virtual-screen
 // bounding rectangle of each active physical display.
@@ -75,6 +77,30 @@ bool RetryCaptureExclusionWithoutLayeredStyle(HWND hwnd,
   SetWindowLongPtr(hwnd, GWL_EXSTYLE, ex_style);
   SetLayeredWindowAttributes(hwnd, cr_key, alpha, flags);
   return succeeded;
+}
+
+// Measures the wrapped pixel height of `text` within `max_width` using `font`,
+// returning at least `min_height` when `text` is non-empty.
+int MeasureWrappedTextHeight(HDC dc,
+                             HFONT font,
+                             std::wstring_view text,
+                             int max_width,
+                             int min_height,
+                             UINT draw_text_flags) {
+  if (text.empty()) {
+    return 0;
+  }
+  if (!dc || !font || max_width <= 0) {
+    return min_height;
+  }
+  base::win::ScopedSelectObject select_font(dc, font);
+  RECT calc_rect = {0, 0, max_width, 0};
+  if (DrawTextW(dc, text.data(), static_cast<int>(text.size()), &calc_rect,
+                draw_text_flags | DT_CALCRECT)) {
+    return std::max(min_height,
+                    static_cast<int>(calc_rect.bottom - calc_rect.top));
+  }
+  return min_height;
 }
 
 }  // namespace
@@ -143,6 +169,34 @@ bool ApplyCaptureExclusion(HWND hwnd) {
 base::AutoReset<bool> ScopedAllowCaptureExclusionFailureForTesting() {
   return base::AutoReset<bool>(&g_allow_capture_exclusion_failure_for_testing,
                                true);
+}
+
+bool RegisterDisconnectHotKey(HWND hwnd) {
+  if (!hwnd) {
+    SetLastError(ERROR_INVALID_WINDOW_HANDLE);
+    return false;
+  }
+  if (g_hotkey_registration_override_for_testing.has_value()) {
+    if (!*g_hotkey_registration_override_for_testing) {
+      SetLastError(ERROR_HOTKEY_ALREADY_REGISTERED);
+    }
+    return *g_hotkey_registration_override_for_testing;
+  }
+  return RegisterHotKey(hwnd, kDisconnectHotkeyId, MOD_ALT | MOD_CONTROL,
+                        VK_ESCAPE) != FALSE;
+}
+
+void UnregisterDisconnectHotKey(HWND hwnd) {
+  if (!hwnd || g_hotkey_registration_override_for_testing.has_value()) {
+    return;
+  }
+  UnregisterHotKey(hwnd, kDisconnectHotkeyId);
+}
+
+base::AutoReset<std::optional<bool>> ScopedOverrideHotKeyRegistrationForTesting(
+    bool succeed) {
+  return base::AutoReset<std::optional<bool>>(
+      &g_hotkey_registration_override_for_testing, succeed);
 }
 
 std::vector<RECT> GetActiveMonitorRects() {
@@ -253,6 +307,76 @@ base::win::ScopedGDIObject<HFONT> CreateOverlayFont(int pixel_height,
   logfont.lfCharSet = DEFAULT_CHARSET;
   logfont.lfQuality = CLEARTYPE_QUALITY;
   return base::win::ScopedGDIObject<HFONT>(CreateFontIndirectW(&logfont));
+}
+
+UINT GetBackdropDrawTextFlags(bool is_rtl) {
+  UINT flags = DT_CENTER | DT_WORDBREAK | DT_EDITCONTROL | DT_EXTERNALLEADING |
+               DT_NOPREFIX;
+  if (is_rtl) {
+    flags |= DT_RTLREADING;
+  }
+  return flags;
+}
+
+BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
+                                                   int client_width,
+                                                   int client_height,
+                                                   UINT dpi,
+                                                   bool is_rtl,
+                                                   BackdropTextBlock title,
+                                                   BackdropTextBlock body,
+                                                   BackdropTextBlock hint) {
+  if (dpi == 0) {
+    dpi = USER_DEFAULT_SCREEN_DPI;
+  }
+
+  BackdropContentLayout layout;
+  layout.draw_text_flags = GetBackdropDrawTextFlags(is_rtl);
+  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
+  layout.icon_size = ScaleForDpi(kBaseIconSize, dpi);
+
+  int center_x = client_width / 2;
+  int center_y = client_height / 2;
+  layout.max_text_width = std::max(
+      1, (client_width * kMaxTextWidthNumerator) / kMaxTextWidthDenominator);
+  layout.text_left = center_x - layout.max_text_width / 2;
+  layout.text_right = layout.text_left + layout.max_text_width;
+
+  // Use the unpadded font pixel size as the fallback minimum height for each
+  // non-empty block so single-line and multi-line sharing messages maintain a
+  // uniform `spacing / 2` visual gap above `hint.text`.
+  layout.title_height = MeasureWrappedTextHeight(
+      dc, title.font, title.text, layout.max_text_width,
+      ScaleForDpi(kBaseTitleFontSize, dpi), layout.draw_text_flags);
+  layout.body_height = MeasureWrappedTextHeight(
+      dc, body.font, body.text, layout.max_text_width,
+      ScaleForDpi(kBaseBodyFontSize, dpi), layout.draw_text_flags);
+  layout.hint_height = MeasureWrappedTextHeight(
+      dc, hint.font, hint.text, layout.max_text_width,
+      ScaleForDpi(kBaseHintFontSize, dpi), layout.draw_text_flags);
+  layout.hint_gap =
+      (layout.body_height > 0 && layout.hint_height > 0) ? (spacing / 2) : 0;
+  layout.below_center_height =
+      layout.body_height + layout.hint_gap + layout.hint_height;
+
+  int title_bottom = center_y - spacing;
+  int icon_top =
+      title_bottom - layout.title_height - spacing - layout.icon_size;
+  if (client_height > 0 && icon_top < spacing) {
+    int shift_down = spacing - icon_top;
+    icon_top = spacing;
+    title_bottom += shift_down;
+    center_y += shift_down;
+  }
+
+  layout.icon_left = center_x - layout.icon_size / 2;
+  layout.icon_top = icon_top;
+  layout.title_bottom = title_bottom;
+  layout.title_top = title_bottom - layout.title_height;
+  layout.center_y = center_y;
+  layout.body_top = center_y;
+  layout.hint_top = center_y + layout.body_height + layout.hint_gap;
+  return layout;
 }
 
 }  // namespace remoting
