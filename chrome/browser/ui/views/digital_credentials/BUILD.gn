@@ -54,6 +54,7 @@ if (!is_android) {
       "//chrome/browser/digital_credentials",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_path_utils",
+      "//device/bluetooth:mocks",
       "//ui/events:test_support",
     ]
   }

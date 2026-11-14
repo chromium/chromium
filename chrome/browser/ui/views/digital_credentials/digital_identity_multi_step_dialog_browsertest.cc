@@ -261,7 +261,8 @@ class TestDigitalIdentityProviderDesktop
                content::DigitalIdentityProvider::RequestStatusForMetrics>
                result) { std::move(callback).Run(); },
         std::move(callback)));
-    ShowQrCodeDialog("FIDO:/0123456789", RequestInfo::RequestType::kGet);
+    ShowQrCodeDialog("FIDO:/0123456789", RequestInfo::RequestType::kGet,
+                     UiWarningLevel::kHintNoIssues);
   }
 
   DigitalIdentityMultiStepDialog* GetDialog() { return EnsureDialogCreated(); }

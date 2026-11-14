@@ -52,16 +52,18 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
               DigitalIdentityCallback callback) override;
 
  protected:
-  // Shared implementation between `Request()` and `Create()` above.
+  // Shared implementation between `Get()` and `Create()` above.
   void Transact(content::WebContents* web_contents,
                 RequestInfo::RequestType request_type,
                 const url::Origin& rp_origin,
                 base::ValueView request,
+                UiWarningLevel warning_level,
                 DigitalIdentityCallback callback);
 
   // Shows dialog with QR code.
-  void ShowQrCodeDialog(const std::string& qr_url,
-                        RequestInfo::RequestType request_type);
+  virtual void ShowQrCodeDialog(const std::string& qr_url,
+                                RequestInfo::RequestType request_type,
+                                UiWarningLevel warning_level);
 
   void set_web_contents_for_testing(
       base::WeakPtr<content::WebContents> web_contents) {
@@ -94,6 +96,7 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   // Called whenever some significant event occurs during the transaction.
   void OnEvent(const std::string& qr_url,
                RequestInfo::RequestType request_type,
+               UiWarningLevel warning_level,
                content::digital_credentials::cross_device::Event);
 
   // caBLE events notify when the user has started the transaction on their

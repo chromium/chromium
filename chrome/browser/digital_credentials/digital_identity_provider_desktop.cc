@@ -135,9 +135,8 @@ void DigitalIdentityProviderDesktop::Get(content::WebContents* web_contents,
                                          base::ValueView request,
                                          UiWarningLevel warning_level,
                                          DigitalIdentityCallback callback) {
-  // TODO(crbug.com/409836575): Make use of `warning_level`.
   Transact(web_contents, RequestInfo::RequestType::kGet, rp_origin, request,
-           std::move(callback));
+           warning_level, std::move(callback));
 }
 
 void DigitalIdentityProviderDesktop::Create(content::WebContents* web_contents,
@@ -145,7 +144,7 @@ void DigitalIdentityProviderDesktop::Create(content::WebContents* web_contents,
                                             base::ValueView request,
                                             DigitalIdentityCallback callback) {
   Transact(web_contents, RequestInfo::RequestType::kCreate, rp_origin, request,
-           std::move(callback));
+           UiWarningLevel::kHintNoIssues, std::move(callback));
 }
 
 void DigitalIdentityProviderDesktop::Transact(
@@ -153,6 +152,7 @@ void DigitalIdentityProviderDesktop::Transact(
     RequestInfo::RequestType request_type,
     const url::Origin& rp_origin,
     base::ValueView request,
+    UiWarningLevel warning_level,
     DigitalIdentityCallback callback) {
   web_contents_ = web_contents->GetWeakPtr();
   rp_origin_ = rp_origin;
@@ -173,7 +173,7 @@ void DigitalIdentityProviderDesktop::Transact(
       }),
       base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,
                           weak_ptr_factory_.GetWeakPtr(), std::move(qr_url),
-                          request_type),
+                          request_type, warning_level),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -181,26 +181,28 @@ void DigitalIdentityProviderDesktop::Transact(
 void DigitalIdentityProviderDesktop::OnEvent(
     const std::string& qr_url,
     RequestInfo::RequestType request_type,
+    UiWarningLevel warning_level,
     Event event) {
-  std::visit(absl::Overload{
-                 [this, qr_url, request_type](SystemEvent event) {
-                   switch (event) {
-                     case SystemEvent::kBluetoothNotPowered:
-                       ShowBluetoothManualTurnOnDialog();
-                       break;
-                     case SystemEvent::kNeedPermission:
-                       // The user is being asked for Bluetooth permission by
-                       // the system. Nothing for Chrome UI to do.
-                       break;
-                     case SystemEvent::kReady:
-                       bluetooth_manual_dialog_controller_.reset();
-                       ShowQrCodeDialog(qr_url, request_type);
-                       break;
-                   }
-                 },
-                 [this](device::cablev2::Event event) { OnCableEvent(event); },
-             },
-             event);
+  std::visit(
+      absl::Overload{
+          [this, qr_url, request_type, warning_level](SystemEvent event) {
+            switch (event) {
+              case SystemEvent::kBluetoothNotPowered:
+                ShowBluetoothManualTurnOnDialog();
+                break;
+              case SystemEvent::kNeedPermission:
+                // The user is being asked for Bluetooth permission by
+                // the system. Nothing for Chrome UI to do.
+                break;
+              case SystemEvent::kReady:
+                bluetooth_manual_dialog_controller_.reset();
+                ShowQrCodeDialog(qr_url, request_type, warning_level);
+                break;
+            }
+          },
+          [this](device::cablev2::Event event) { OnCableEvent(event); },
+      },
+      event);
 }
 
 void DigitalIdentityProviderDesktop::OnCableEvent(
@@ -283,7 +285,10 @@ DigitalIdentityProviderDesktop::EnsureDialogCreated() {
 
 void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
     const std::string& qr_url,
-    RequestInfo::RequestType request_type) {
+    RequestInfo::RequestType request_type,
+    UiWarningLevel warning_level) {
+  // TODO(crbug.com/409836575): Make use of `warning_level` to display UI
+  // warning.
   std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
 
