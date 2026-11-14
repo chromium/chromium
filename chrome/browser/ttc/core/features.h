@@ -94,6 +94,10 @@ inline constexpr base::FeatureParam<bool> kTtcGetPointerIncludeNodeIdentity{
 inline constexpr base::FeatureParam<base::TimeDelta>
     kTtcGetPointerCaptureTimeout{&kTtcGetPointer, "capture_timeout",
                                  base::Seconds(3)};
+// Whether get_pointer answers with the text the user has selected when they
+// are not pointing at anything, e.g. on a tablet, where there is no pointer.
+inline constexpr base::FeatureParam<bool> kTtcGetPointerUseSelection{
+    &kTtcGetPointer, "use_selection", false};
 
 // Sends the get_screenshot image to the model as visual content, i.e. as image
 // bytes next to the tool result, instead of as base64 text inside the result.

@@ -3258,6 +3258,59 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, NoActivePointer) {
   EXPECT_FALSE(response.visual_content());
 }
 
+class ToolControllerGetPointerSelectionBrowserTest
+    : public ToolControllerGetPointerBrowserTest {
+ public:
+  ToolControllerGetPointerSelectionBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kTtcGetPointer, {{"use_selection", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A user who is not pointing but has selected text gets the selection.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
+                       ShowsSelectionWhenNotPointing) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.body.innerHTML = '<p>Before</p><p id=\"p\">The quick brown "
+      "fox</p>';"
+      "getSelection().selectAllChildren(document.getElementById('p'));"));
+  // The machine's own pointer may be over the window, and so have been seen.
+  controller->pointer_tracker()->Clear();
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  const base::DictValue& result = response.GetResult();
+  EXPECT_THAT(result.FindString("status"), testing::Pointee(std::string("ok")));
+  EXPECT_FALSE(result.contains("points"));
+  EXPECT_THAT(result.FindStringByDottedPath("selection.text"),
+              testing::Pointee(std::string("The quick brown fox")));
+  EXPECT_TRUE(result.FindDictByDottedPath("selection.bounds"));
+  ASSERT_TRUE(response.visual_content());
+  EXPECT_FALSE(
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
+                       NoPointerAndNoSelection) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  controller->pointer_tracker()->Clear();
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+  EXPECT_EQ(response.GetResult(),
+            base::DictValue().Set("status", "no_active_pointer"));
+}
+
 // Like get_screenshot, get_pointer does not capture pages that TTC may not
 // read.
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, DisallowedUrl) {

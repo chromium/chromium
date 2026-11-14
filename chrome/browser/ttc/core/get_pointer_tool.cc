@@ -55,6 +55,11 @@ ToolDefinition GetPointerTool::GetDefinition() {
              "the page content by its label or text. ",
        "If it returns no_active_pointer, the user is not pointing at "
        "anything; answer from the page content or ask."});
+  if (kTtcGetPointerUseSelection.Get()) {
+    definition.description +=
+        " If the user is not pointing but has selected text on the page, it "
+        "returns the selection instead, in an image without a crosshair.";
+  }
   // The tool takes no arguments, so its schema is left empty. Like
   // get_screenshot, the model speaks about what the tool returns.
   definition.behavior = ToolDefinition::Behavior::kBlocking;
@@ -76,7 +81,9 @@ void GetPointerTool::Run(ToolResponseCallback callback) {
       CHECK_DEREF(session_controller_->pointer_tracker())
           .ResolveLocations(session_controller_->user_turn_start(),
                             base::TimeTicks::Now());
-  if (locations.empty()) {
+  // Whether the user has selected something is only known once the page is
+  // captured.
+  if (locations.empty() && !kTtcGetPointerUseSelection.Get()) {
     std::move(callback).Run(ToolResponse::Success(
         base::DictValue().Set("status", "no_active_pointer")));
     return;

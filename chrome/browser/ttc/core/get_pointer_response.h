@@ -38,7 +38,18 @@ struct PointerContext;
 //     "viewport": {"width": 1280, "height": 720}
 //   }
 //
-// If no location is in the viewport, the result is
+// If no location is in the viewport and kTtcGetPointerUseSelection is on, the
+// text the user has selected in the page's main document stands in for where
+// they point. The image then has no crosshair, and instead of "points" the
+// result has
+//
+//   "selection": {"text": "...", "bounds": {...}}
+//
+// with the start of the selected text and where the content it is in is in
+// the viewport. A selection that is not in the viewport, or is inside a text
+// field, does not count.
+//
+// Otherwise, if no location is in the viewport, the result is
 // {"status": "no_active_pointer"}, without an image. If the screenshot in
 // `context` cannot be made into the image, the response is an error.
 //
