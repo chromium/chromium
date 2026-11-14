@@ -665,8 +665,11 @@ const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
   return keywords::kClosed;
 }
 
-void InvalidateForCanvasTransformChange(LayoutObject* layout_object) {
-  if (layout_object) {
+void InvalidateForCanvasTransformChange(Element& element) {
+  // Ensure style and slot assignments are clean before calling
+  // PaintLayer::UpdateTransform.
+  element.GetDocument().UpdateStyleAndLayoutTree();
+  if (LayoutObject* layout_object = element.GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
     const auto* box = DynamicTo<LayoutBox>(layout_object);
     if (box && box->TransformsChangeMayRequireLayout()) {
@@ -4660,13 +4663,13 @@ void Element::SetCanvasTransform(const gfx::Transform& transform) {
     }
   }
   EnsureRareData().SetCanvasTransform(transform).RefreshNode(*this);
-  InvalidateForCanvasTransformChange(GetLayoutObject());
+  InvalidateForCanvasTransformChange(*this);
 }
 
 void Element::ClearCanvasTransform() {
   if (NodeRareData* data = RareData()) {
     data->ClearCanvasTransform();
-    InvalidateForCanvasTransformChange(GetLayoutObject());
+    InvalidateForCanvasTransformChange(*this);
   }
 }
 
