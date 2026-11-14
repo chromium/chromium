@@ -810,13 +810,13 @@ class CONTENT_EXPORT RenderFrameImpl
     navigation_client_impl_ = std::move(client);
   }
 
+  base::WeakPtr<RenderFrameImpl> GetWeakPtr();
+
  protected:
   explicit RenderFrameImpl(CreateParams params);
 
   bool IsLocalRoot() const;
   const RenderFrameImpl* GetLocalRoot() const;
-
-  base::WeakPtr<RenderFrameImpl> GetWeakPtr();
 
  private:
   friend class RenderFrameImplTest;
