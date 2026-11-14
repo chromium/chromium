@@ -392,7 +392,7 @@ public class SendTabToSelfReceiverTest {
         // Explicitly save a label data for `tab` in MockPersistedTabDataStorage.
         PersistedTabDataStorage storage =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> PersistedTabDataConfiguration.TEST_CONFIG.getStorage());
+                        () -> PersistedTabDataConfiguration.TEST_CONFIG.getStorage(tab.getProfile()));
         String deviceName = "Example Phone";
         String guid = "stts_test_guid";
         SendTabToSelfPersistedTabDataProto proto =

@@ -131,12 +131,12 @@ public class SendTabToSelfTabLabellerUnitTest {
             mLabeller.destroy();
         }
         PersistedTabDataConfiguration.TEST_CONFIG
-                .getStorage()
+                .getStorage(mProfile)
                 .delete(
                         TAB_ID,
                         PersistedTabDataConfiguration.SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA.getId());
         PersistedTabDataConfiguration.TEST_CONFIG
-                .getStorage()
+                .getStorage(mProfile)
                 .delete(
                         TAB_ID_2,
                         PersistedTabDataConfiguration.SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA.getId());
@@ -167,7 +167,7 @@ public class SendTabToSelfTabLabellerUnitTest {
 
         // To avoid leaking the data to other tests, delete it from the db.
         PersistedTabDataConfiguration.TEST_CONFIG
-                .getStorage()
+                .getStorage(mProfile)
                 .delete(
                         TAB_ID,
                         PersistedTabDataConfiguration.SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA.getId());
@@ -332,6 +332,7 @@ public class SendTabToSelfTabLabellerUnitTest {
         when(tabB.getId()).thenReturn(TAB_ID_2);
         when(tabB.isInitialized()).thenReturn(true);
         when(tabB.getUserDataHost()).thenReturn(userDataHostB);
+        when(tabB.getProfile()).thenReturn(mProfile);
 
         // Update tab model to contain both tabs.
         when(mTabModel.getCount()).thenReturn(2);
@@ -369,6 +370,7 @@ public class SendTabToSelfTabLabellerUnitTest {
         when(tabB.getId()).thenReturn(TAB_ID_2);
         when(tabB.isInitialized()).thenReturn(true);
         when(tabB.getUserDataHost()).thenReturn(userDataHostB);
+        when(tabB.getProfile()).thenReturn(mProfile);
 
         // Update tab model to contain both tabs.
         when(mTabModel.getCount()).thenReturn(2);
@@ -391,7 +393,7 @@ public class SendTabToSelfTabLabellerUnitTest {
         // Cleanup.
         userDataHostB.destroy();
         PersistedTabDataConfiguration.TEST_CONFIG
-                .getStorage()
+                .getStorage(mProfile)
                 .delete(
                         TAB_ID,
                         PersistedTabDataConfiguration.SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA.getId());
@@ -423,6 +425,7 @@ public class SendTabToSelfTabLabellerUnitTest {
         when(newTab.isInitialized()).thenReturn(true);
         UserDataHost newUserDataHost = new UserDataHost();
         when(newTab.getUserDataHost()).thenReturn(newUserDataHost);
+        when(newTab.getProfile()).thenReturn(mProfile);
 
         // Associate label data with the new tab.
         SendTabToSelfTabCardLabelData sttsData =

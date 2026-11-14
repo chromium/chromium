@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
@@ -1880,11 +1881,14 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mPersistencePolicy instanceof TabbedModeTabPersistencePolicy) {
             mPersistencePolicy.getAllTabIds(
                     (res) -> {
+                        if (mDestroyed) return;
                         List<Integer> allTabIds = new ArrayList<>();
                         for (int i = 0; i < res.size(); i++) {
                             allTabIds.add(res.keyAt(i));
                         }
-                        PersistedTabData.performStorageMaintenance(allTabIds);
+                        Profile profile = mTabModelSelector.getModel(false).getProfile();
+                        assert profile != null;
+                        PersistedTabData.performStorageMaintenance(profile, allTabIds);
                         if (onCompleteForTesting != null) {
                             onCompleteForTesting.run();
                         }

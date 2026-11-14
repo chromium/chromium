@@ -533,7 +533,8 @@ public class ShoppingPersistedTabDataTest {
                 PersistedTabDataConfiguration.get(
                         ShoppingPersistedTabData.class, tab.isIncognito());
         ShoppingPersistedTabData deserialized =
-                new ShoppingPersistedTabData(tab, config.getStorage(), config.getId());
+                new ShoppingPersistedTabData(
+                        tab, config.getStorage(tab.getProfile()), config.getId());
         deserialized.deserializeAndLog(serialized);
         Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
     }

@@ -34,7 +34,7 @@ public class MockPersistedTabData extends PersistedTabData {
         super(
                 tab,
                 PersistedTabDataConfiguration.get(MockPersistedTabData.class, tab.isIncognito())
-                        .getStorage(),
+                        .getStorage(tab.getProfile()),
                 PersistedTabDataConfiguration.get(MockPersistedTabData.class, tab.isIncognito())
                         .getId());
         mField = field;

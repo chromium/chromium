@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,9 +88,10 @@ public enum PersistedTabDataConfiguration {
     }
 
     /**
+     * @param profile {@link Profile} associated with {@link PersistedTabData}
      * @return {@link PersistedTabDataStorage} for a given configuration
      */
-    public PersistedTabDataStorage getStorage() {
+    public PersistedTabDataStorage getStorage(Profile profile) {
         switch (this) {
             case MOCK_PERSISTED_TAB_DATA:
             case ENCRYPTED_MOCK_PERSISTED_TAB_DATA:
@@ -98,7 +100,7 @@ public enum PersistedTabDataConfiguration {
             case SHOPPING_PERSISTED_TAB_DATA:
             case ARCHIVE_PERSISTED_TAB_DATA:
             case SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA:
-                return new LevelDBPersistedTabDataStorageFactory().create();
+                return new LevelDBPersistedTabDataStorageFactory().create(profile);
             case EMPTY_BYTE_BUFFER_TEST_CONFIG:
                 return getEmptyByteBufferPersistedTabDataStorage();
         }

@@ -24,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;
@@ -91,7 +92,7 @@ public abstract class PersistedTabData implements UserData {
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         factory.create(
                 data,
-                config.getStorage(),
+                config.getStorage(tab.getProfile()),
                 config.getId(),
                 (persistedTabData) -> {
                     if (persistedTabData != null) {
@@ -147,7 +148,7 @@ public abstract class PersistedTabData implements UserData {
         if (assumeNonNull(sCachedCallbacks.get(key)).size() > 1) return;
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
-        config.getStorage()
+        config.getStorage(tab.getProfile())
                 .restore(
                         tab.getId(),
                         config.getId(),
@@ -195,7 +196,7 @@ public abstract class PersistedTabData implements UserData {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         T persistedTabData = supplier.get();
-        config.getStorage()
+        config.getStorage(tab.getProfile())
                 .restore(
                         tab.getId(),
                         config.getId(),
@@ -261,7 +262,7 @@ public abstract class PersistedTabData implements UserData {
             String key) {
         factory.create(
                 data,
-                config.getStorage(),
+                config.getStorage(tab.getProfile()),
                 config.getId(),
                 (persistedTabDataFromStorage) -> {
                     if (persistedTabDataFromStorage != null
@@ -561,17 +562,19 @@ public abstract class PersistedTabData implements UserData {
      * identifiers. This method is not supported for all {@link PersistedTabData} - call
      * addSupportedMaintenanceClass to gain support. This method is also not supported for incognito
      * Tabs. Must be called from UI Thread.
+     *
+     * @param profile {@link Profile} to perform storage maintenance for.
      * @param liveTabIds {@link Tab} identifiers which are currently live - no {@link
-     *         PersistedTabData} will be deleted for these Tabs.
+     *     PersistedTabData} will be deleted for these Tabs.
      */
-    public static void performStorageMaintenance(List<Integer> liveTabIds) {
+    public static void performStorageMaintenance(Profile profile, List<Integer> liveTabIds) {
         ThreadUtils.assertOnUiThread();
         for (Class<? extends PersistedTabData> clazz : sSupportedMaintenanceClasses) {
             // Maintenance is supported only for regular Tabs.
             boolean isEncrypted = false;
             PersistedTabDataConfiguration config =
                     PersistedTabDataConfiguration.get(clazz, isEncrypted);
-            PersistedTabDataStorage storage = config.getStorage();
+            PersistedTabDataStorage storage = config.getStorage(profile);
             storage.performMaintenance(liveTabIds, config.getId());
         }
     }

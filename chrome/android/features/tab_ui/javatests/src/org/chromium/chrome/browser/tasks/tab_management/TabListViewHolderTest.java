@@ -339,6 +339,7 @@ public class TabListViewHolderTest {
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDbPersistedTabDataStorage);
         doReturn(1L).when(mLevelDbPersistedTabDataStorage).init(any(BrowserContextHandle.class));
         doReturn(false).when(mProfile).isOffTheRecord();
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);

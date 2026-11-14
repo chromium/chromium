@@ -204,7 +204,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
                 tab,
                 PersistedTabDataConfiguration.get(
                                 SendTabToSelfTabCardLabelData.class, tab.isIncognito())
-                        .getStorage(),
+                        .getStorage(tab.getProfile()),
                 PersistedTabDataConfiguration.get(
                                 SendTabToSelfTabCardLabelData.class, tab.isIncognito())
                         .getId());

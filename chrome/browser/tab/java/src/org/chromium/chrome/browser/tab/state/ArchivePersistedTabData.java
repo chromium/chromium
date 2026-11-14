@@ -54,7 +54,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
         super(
                 tab,
                 PersistedTabDataConfiguration.get(ArchivePersistedTabData.class, tab.isIncognito())
-                        .getStorage(),
+                        .getStorage(tab.getProfile()),
                 PersistedTabDataConfiguration.get(ArchivePersistedTabData.class, tab.isIncognito())
                         .getId());
     }

@@ -55,7 +55,7 @@ public class ShoppingPersistedTabDataNativeTest {
         // Treat Tabs 0 and 2 as being live, assume Tab 1 was destroyed but its stored
         // ShoppingPersistedTabData was not removed.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> PersistedTabData.performStorageMaintenance(Arrays.asList(0, 2)));
+                () -> PersistedTabData.performStorageMaintenance(profile, Arrays.asList(0, 2)));
         verifySPTD(tab0, true);
         verifySPTD(tab1, false);
         verifySPTD(tab2, true);

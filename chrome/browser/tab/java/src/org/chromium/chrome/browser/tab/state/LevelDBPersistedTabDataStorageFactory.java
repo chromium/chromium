@@ -7,18 +7,18 @@ package org.chromium.chrome.browser.tab.state;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Creates {@link LevelDBPersistedTabDataStorage} instances per profile */
 @NullMarked
 public class LevelDBPersistedTabDataStorageFactory
         implements PersistedTabDataStorageFactory<LevelDBPersistedTabDataStorage> {
     private static final ProfileKeyedMap<LevelDBPersistedTabDataStorage>
-            sProfileToLevelDBStorageMap = ProfileKeyedMap.createMapOfDestroyables();
+            sProfileToLevelDBStorageMap =
+                    ProfileKeyedMap.createMapOfDestroyables(
+                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
 
     @Override
-    public LevelDBPersistedTabDataStorage create() {
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
+    public LevelDBPersistedTabDataStorage create(Profile profile) {
         return sProfileToLevelDBStorageMap.getForProfile(
                 profile, LevelDBPersistedTabDataStorage::new);
     }

@@ -308,7 +308,7 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
         // Cleanup storage.
         PersistedTabDataConfiguration.TEST_CONFIG
-                .getStorage()
+                .getStorage(mProfile)
                 .delete(
                         14,
                         PersistedTabDataConfiguration.SEND_TAB_TO_SELF_TAB_CARD_LABEL_DATA.getId());

@@ -37,6 +37,7 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
 
     @Mock private Profile mProfile1;
     @Mock private Profile mProfile2;
+    @Mock private Profile mOtrProfile1;
     @Mock private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     @Before
@@ -45,27 +46,29 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
         when(mLevelDBPersistedTabDataStorage.init(any(BrowserContextHandle.class))).thenReturn(1L);
         doNothing().when(mLevelDBPersistedTabDataStorage).destroy(anyLong());
         doReturn(false).when(mProfile1).isOffTheRecord();
+        doReturn(mProfile1).when(mProfile1).getOriginalProfile();
         doReturn(false).when(mProfile2).isOffTheRecord();
+        doReturn(mProfile2).when(mProfile2).getOriginalProfile();
+        doReturn(true).when(mOtrProfile1).isOffTheRecord();
+        doReturn(mProfile1).when(mOtrProfile1).getOriginalProfile();
     }
 
     @Test
     public void testFactoryMethod() {
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
-        ProfileManager.setLastUsedProfileForTesting(mProfile1);
-        LevelDBPersistedTabDataStorage profile1Storage = factory.create();
-        ProfileManager.setLastUsedProfileForTesting(mProfile2);
-        LevelDBPersistedTabDataStorage profile2Storage = factory.create();
-        ProfileManager.setLastUsedProfileForTesting(mProfile1);
-        LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create();
+        LevelDBPersistedTabDataStorage profile1Storage = factory.create(mProfile1);
+        LevelDBPersistedTabDataStorage profile2Storage = factory.create(mProfile2);
+        LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create(mProfile1);
+        LevelDBPersistedTabDataStorage otrProfile1Storage = factory.create(mOtrProfile1);
         Assert.assertEquals(profile1Storage, profile1StorageAgain);
+        Assert.assertEquals(profile1Storage, otrProfile1Storage);
         Assert.assertNotEquals(profile1Storage, profile2Storage);
     }
 
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
-        ProfileManager.setLastUsedProfileForTesting(mProfile1);
-        LevelDBPersistedTabDataStorage storage = factory.create();
+        LevelDBPersistedTabDataStorage storage = factory.create(mProfile1);
         ProfileManager.onProfileDestroyed(mProfile1);
         Assert.assertTrue(storage.isDestroyed());
     }
@@ -73,8 +76,7 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
     @Test
     public void testSaveByteBufferConversion() {
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
-        ProfileManager.setLastUsedProfileForTesting(mProfile1);
-        LevelDBPersistedTabDataStorage storage = factory.create();
+        LevelDBPersistedTabDataStorage storage = factory.create(mProfile1);
 
         byte[] full = new byte[] {1, 2, 3, 4};
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
