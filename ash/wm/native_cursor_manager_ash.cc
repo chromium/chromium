@@ -79,7 +79,8 @@ void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
 }
 
 // static
-float NativeCursorManagerAsh::GetCursorScale(const display::Display& display) {
+float NativeCursorManagerAsh::GetDefaultCursorScale(
+    const display::Display& display) {
   const float scale = display.device_scale_factor();
   if (!display.IsInternal()) {
     return scale;
@@ -178,9 +179,9 @@ void NativeCursorManagerAsh::UpdateCursor(
   // If a custom cursor size is set, use it as is. Otherwise, use a scale that
   // keeps the cursor at least 4mm tall on internal displays.
   const float scale = custom_cursor_size ? display.device_scale_factor()
-                                         : GetCursorScale(display);
+                                         : GetDefaultCursorScale(display);
   const bool loader_changed =
-      cursor_loader_.SetDisplay(display.panel_rotation(), scale);
+      cursor_loader_.UpdateRotationAndScale(display.panel_rotation(), scale);
   const bool display_changed =
       display != display_ ||
       display.panel_rotation() != display_.panel_rotation() ||

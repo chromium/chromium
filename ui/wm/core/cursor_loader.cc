@@ -52,8 +52,8 @@ void CursorLoader::OnThemeLoaded() {
   UnloadCursors();
 }
 
-bool CursorLoader::SetDisplay(display::Display::Rotation rotation,
-                              float scale) {
+bool CursorLoader::UpdateRotationAndScale(display::Display::Rotation rotation,
+                                          float scale) {
   if (rotation_ == rotation && scale_ == scale) {
     return false;
   }

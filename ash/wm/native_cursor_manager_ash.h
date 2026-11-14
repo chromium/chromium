@@ -36,7 +36,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   // Returns the scale used to rasterize normal-size cursor assets on
   // `display`, enforcing a minimum physical size on internal displays.
-  static float GetCursorScale(const display::Display& display);
+  static float GetDefaultCursorScale(const display::Display& display);
 
   // Returns the rotation of the currently loaded cursor.
   display::Display::Rotation GetRotation() const;

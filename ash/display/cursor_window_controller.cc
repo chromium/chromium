@@ -800,9 +800,10 @@ void CursorWindowController::UpdateCursorImage() {
       outline_color = SK_ColorWHITE;
     }
 
-    const float scale = custom_cursor_size_
-                            ? dsf
-                            : NativeCursorManagerAsh::GetCursorScale(display_);
+    const float scale =
+        custom_cursor_size_
+            ? dsf
+            : NativeCursorManagerAsh::GetDefaultCursorScale(display_);
     images = GetCursorImages(cursor_.type(), custom_cursor_size_, scale, dsf,
                              fill_color, outline_color,
                              &hot_point_in_physical_pixels);

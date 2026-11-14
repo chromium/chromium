@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
 
   // Sets the rotation and scale the cursors are loaded for.
   // Returns true if the cursor needs to be reset.
-  bool SetDisplay(display::Display::Rotation rotation, float scale);
+  bool UpdateRotationAndScale(display::Display::Rotation rotation, float scale);
 
   // Sets the size of the mouse cursor icon in dip. Cursors are scaled
   // uniformly so that their height matches the size. If `std::nullopt`, the
