@@ -8,8 +8,11 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -17,6 +20,7 @@
 #include "base/values.h"
 #include "crypto/hash.h"
 #include "crypto/openssl_util.h"
+#include "net/base/features.h"
 #include "net/base/trace_constants.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -88,41 +92,64 @@ std::optional<base::Value> ReadHeader(std::string_view* data) {
 // currently implement.
 static const int kCurrentFileVersion = 0;
 
+// ReadCRL reads one (parent SPKI hash, serials) record from |data|. |reserve|
+// is told the inline and overflow serial counts up front (after verifying that
+// all records fit in |data|) and |add_serial| is called once per serial, in
+// file order.
+template <typename ReserveFn, typename AddSerialFn>
 bool ReadCRL(std::string_view* data,
-             std::string* out_parent_spki_hash,
-             std::vector<std::vector<uint8_t>>* out_serials) {
-  if (data->size() < crypto::hash::kSha256Size) {
+             size_t max_inline_serial_length,
+             SHA256HashValue* out_parent_spki_hash,
+             ReserveFn reserve,
+             AddSerialFn add_serial) {
+  if (data->size() < sizeof(SHA256HashValue)) {
     return false;
   }
-  *out_parent_spki_hash =
-      std::string(data->substr(0, crypto::hash::kSha256Size));
-  data->remove_prefix(crypto::hash::kSha256Size);
+  base::span(*out_parent_spki_hash)
+      .copy_from(base::as_byte_span(*data).first<sizeof(SHA256HashValue)>());
+  data->remove_prefix(sizeof(SHA256HashValue));
 
   uint32_t num_serials;
-  if (data->size() < sizeof(num_serials))
+  if (data->size() < sizeof(num_serials)) {
     return false;
+  }
   // Assumes little endian.
   base::byte_span_from_ref(num_serials)
-      .copy_from(base::as_byte_span(*data).first(sizeof(num_serials)));
+      .copy_from(base::as_byte_span(*data).first<sizeof(num_serials)>());
   data->remove_prefix(sizeof(num_serials));
 
-  if (num_serials > 32 * 1024 * 1024)  // Sanity check.
+  if (num_serials > 32 * 1024 * 1024) {  // Sanity check.
     return false;
+  }
 
-  out_serials->reserve(num_serials);
+  // Verify that all |num_serials| records are present in |data| before
+  // reserving space for them.
+  std::string_view cursor = *data;
+  size_t inline_serials = 0;
+  size_t overflow_serials = 0;
+  for (uint32_t i = 0; i < num_serials; ++i) {
+    if (cursor.empty()) {
+      return false;
+    }
+    uint8_t serial_length = static_cast<uint8_t>(cursor[0]);
+    cursor.remove_prefix(sizeof(uint8_t));
+    if (cursor.size() < serial_length) {
+      return false;
+    }
+    cursor.remove_prefix(serial_length);
+    if (serial_length > max_inline_serial_length) {
+      ++overflow_serials;
+    } else {
+      ++inline_serials;
+    }
+  }
+
+  reserve(inline_serials, overflow_serials);
 
   for (uint32_t i = 0; i < num_serials; ++i) {
-    if (data->size() < sizeof(uint8_t))
-      return false;
-
-    uint8_t serial_length = (*data)[0];
+    uint8_t serial_length = static_cast<uint8_t>((*data)[0]);
     data->remove_prefix(sizeof(uint8_t));
-
-    if (data->size() < serial_length)
-      return false;
-
-    out_serials->push_back(
-        base::ToVector(base::as_byte_span(data->substr(0, serial_length))));
+    add_serial(base::as_byte_span(data->substr(0, serial_length)));
     data->remove_prefix(serial_length);
   }
 
@@ -249,16 +276,53 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
   auto crl_set = base::WrapRefCounted(new CRLSet());
   crl_set->sequence_ = static_cast<uint32_t>(*sequence);
   crl_set->not_after_ = static_cast<uint64_t>(not_after);
-  crl_set->crls_.reserve(64);  // Value observed experimentally.
+  if (!data.empty()) {
+    crl_set->use_compact_serials_ =
+        base::FeatureList::IsEnabled(features::kCRLSetCompactSerials);
+    if (crl_set->use_compact_serials_) {
+      crl_set->compact_crls_.reserve(64);  // Value observed experimentally.
+    } else {
+      crl_set->crls_.reserve(64);  // Value observed experimentally.
+    }
+  }
 
   while (!data.empty()) {
-    std::string spki_hash;
-    std::vector<std::vector<uint8_t>> blocked_serials;
-
-    if (!ReadCRL(&data, &spki_hash, &blocked_serials)) {
-      return false;
+    SHA256HashValue spki_hash;
+    if (crl_set->use_compact_serials_) {
+      std::vector<CompactSerials::Entry> entries;
+      std::vector<std::vector<uint8_t>> overflow;
+      if (!ReadCRL(
+              &data, kMaxInlineSerialLength, &spki_hash,
+              [&](size_t inline_count, size_t overflow_count) {
+                entries.reserve(inline_count);
+                overflow.reserve(overflow_count);
+              },
+              [&](base::span<const uint8_t> serial) {
+                if (serial.size() > kMaxInlineSerialLength) {
+                  overflow.push_back(base::ToVector(serial));
+                } else {
+                  entries.push_back(CompactSerials::MakeEntry(serial));
+                }
+              })) {
+        return false;
+      }
+      crl_set->compact_crls_[spki_hash] =
+          CompactSerials(std::move(entries), std::move(overflow));
+    } else {
+      std::vector<std::vector<uint8_t>> blocked_serials;
+      if (!ReadCRL(
+              &data, kMaxInlineSerialLength, &spki_hash,
+              [&](size_t inline_count, size_t overflow_count) {
+                blocked_serials.reserve(inline_count + overflow_count);
+              },
+              [&](base::span<const uint8_t> serial) {
+                blocked_serials.push_back(base::ToVector(serial));
+              })) {
+        return false;
+      }
+      crl_set->crls_[std::string(base::as_string_view(spki_hash))] =
+          std::move(blocked_serials);
     }
-    crl_set->crls_[std::move(spki_hash)] = std::move(blocked_serials);
   }
 
   std::vector<std::string> blocked_interception_spkis;
@@ -344,6 +408,19 @@ CRLSet::Result CRLSet::CheckSerial(base::span<const uint8_t> serial_number,
     serial = serial.subspan(1u);
   }
 
+  if (use_compact_serials_) {
+    if (issuer_spki_hash.size() != sizeof(SHA256HashValue)) {
+      return UNKNOWN;
+    }
+    SHA256HashValue spki_hash;
+    base::span(spki_hash).copy_from(base::as_byte_span(issuer_spki_hash));
+    auto it = compact_crls_.find(spki_hash);
+    if (it == compact_crls_.end()) {
+      return UNKNOWN;
+    }
+    return it->second.Contains(serial) ? REVOKED : GOOD;
+  }
+
   auto it = crls_.find(std::string(issuer_spki_hash));
   if (it == crls_.end())
     return UNKNOWN;
@@ -375,7 +452,59 @@ uint32_t CRLSet::sequence() const {
 }
 
 const CRLSet::CRLList& CRLSet::CrlsForTesting() const {
+  CHECK(!use_compact_serials_);
   return crls_;
+}
+
+size_t CRLSet::NumSerialsForTesting(std::string_view issuer_spki_hash) const {
+  if (use_compact_serials_) {
+    if (issuer_spki_hash.size() != sizeof(SHA256HashValue)) {
+      return 0;
+    }
+    SHA256HashValue spki_hash;
+    base::span(spki_hash).copy_from(base::as_byte_span(issuer_spki_hash));
+    auto it = compact_crls_.find(spki_hash);
+    return it == compact_crls_.end() ? 0 : it->second.size();
+  }
+  auto it = crls_.find(std::string(issuer_spki_hash));
+  return it == crls_.end() ? 0 : it->second.size();
+}
+
+CRLSet::CompactSerials::CompactSerials() = default;
+CRLSet::CompactSerials::CompactSerials(
+    std::vector<Entry> entries_vec,
+    std::vector<std::vector<uint8_t>> overflow)
+    : overflow(std::move(overflow)) {
+  // Sort and deduplicate with std::ranges::sort (O(N log N) introsort) before
+  // moving into base::flat_set with base::sorted_unique, avoiding flat_tree's
+  // O(N log^2 N) in-place rotate-merge sort.
+  std::ranges::sort(entries_vec);
+  auto repeated = std::ranges::unique(entries_vec);
+  entries_vec.erase(repeated.begin(), repeated.end());
+  entries = base::flat_set<Entry>(base::sorted_unique, std::move(entries_vec));
+}
+CRLSet::CompactSerials::CompactSerials(CompactSerials&&) = default;
+CRLSet::CompactSerials& CRLSet::CompactSerials::operator=(CompactSerials&&) =
+    default;
+CRLSet::CompactSerials::~CompactSerials() = default;
+
+// static
+CRLSet::CompactSerials::Entry CRLSet::CompactSerials::MakeEntry(
+    base::span<const uint8_t> serial) {
+  DCHECK_LE(serial.size(), kMaxInlineSerialLength);
+  Entry entry = {};
+  entry[0] = static_cast<uint8_t>(serial.size());
+  base::span(entry).subspan(1u, serial.size()).copy_from(serial);
+  return entry;
+}
+
+bool CRLSet::CompactSerials::Contains(base::span<const uint8_t> serial) const {
+  if (serial.size() > kMaxInlineSerialLength) {
+    return std::ranges::any_of(overflow, [&](const std::vector<uint8_t>& s) {
+      return base::span(s) == serial;
+    });
+  }
+  return entries.contains(MakeEntry(serial));
 }
 
 // static
@@ -434,9 +563,10 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
   crl_set->sequence_ = 0;
   if (is_expired)
     crl_set->not_after_ = 1;
+  crl_set->use_compact_serials_ =
+      base::FeatureList::IsEnabled(features::kCRLSetCompactSerials);
 
   if (issuer_spki) {
-    std::string spki(base::as_string_view(*issuer_spki));
     std::vector<std::vector<uint8_t>> serials;
     if (!serial_number.empty()) {
       serials.push_back(base::ToVector(serial_number));
@@ -455,7 +585,23 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
       }
     }
 
-    crl_set->crls_.emplace(std::move(spki), std::move(serials));
+    if (crl_set->use_compact_serials_) {
+      std::vector<CompactSerials::Entry> entries;
+      std::vector<std::vector<uint8_t>> overflow;
+      for (const auto& s : serials) {
+        if (s.size() > kMaxInlineSerialLength) {
+          overflow.push_back(s);
+        } else {
+          entries.push_back(CompactSerials::MakeEntry(s));
+        }
+      }
+      crl_set->compact_crls_.emplace(
+          *issuer_spki,
+          CompactSerials(std::move(entries), std::move(overflow)));
+    } else {
+      crl_set->crls_.emplace(std::string(base::as_string_view(*issuer_spki)),
+                             std::move(serials));
+    }
   }
 
   if (!subject_hash.empty())

@@ -8,16 +8,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace net {
 
@@ -75,8 +78,13 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
       std::unordered_map<std::string, std::vector<std::vector<uint8_t>>>;
 
   // crls returns the internal state of this CRLSet. It should only be used in
-  // testing.
+  // testing, and is only valid when features::kCRLSetCompactSerials is
+  // disabled.
   const CRLList& CrlsForTesting() const;
+
+  // Returns the number of revoked serial numbers recorded for
+  // |issuer_spki_hash| regardless of the storage representation. For tests.
+  size_t NumSerialsForTesting(std::string_view issuer_spki_hash) const;
 
   // BuiltinCRLSet() returns the default CRLSet, to be used when no CRLSet is
   // available from the network.  The default CRLSet includes a statically-
@@ -114,9 +122,40 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // not_after_ contains the time, in UNIX epoch seconds, after which the
   // CRLSet should be considered stale, or 0 if no such time was given.
   uint64_t not_after_ = 0;
+  // Revoked serial numbers of one issuer, stored compactly: serials of up to
+  // kMaxInlineSerialLength bytes are kept as sorted, fixed-width entries of
+  // [length byte][serial bytes, zero padded] and looked up by binary search;
+  // longer serials (rare) live in |overflow|. Used instead of |crls_| when
+  // features::kCRLSetCompactSerials is enabled.
+  static constexpr size_t kMaxInlineSerialLength = 20;
+  struct CompactSerials {
+    using Entry = std::array<uint8_t, kMaxInlineSerialLength + 1>;
+
+    CompactSerials();
+    CompactSerials(std::vector<Entry> entries,
+                   std::vector<std::vector<uint8_t>> overflow);
+    CompactSerials(CompactSerials&&);
+    CompactSerials& operator=(CompactSerials&&);
+    ~CompactSerials();
+
+    static Entry MakeEntry(base::span<const uint8_t> serial);
+    bool Contains(base::span<const uint8_t> serial) const;
+    size_t size() const { return entries.size() + overflow.size(); }
+
+    base::flat_set<Entry> entries;
+    std::vector<std::vector<uint8_t>> overflow;
+  };
+  using CompactCRLList = absl::flat_hash_map<SHA256HashValue, CompactSerials>;
+
+  // Whether this set stores serials in |compact_crls_| (true) or |crls_|
+  // (false). Decided once, at parse time, from kCRLSetCompactSerials.
+  bool use_compact_serials_ = false;
   // crls_ is a map from the SHA-256 hash of an X.501 subject name to a list
   // of revoked serial numbers.
   CRLList crls_;
+  // compact_crls_ holds the same information as |crls_| when
+  // |use_compact_serials_| is true.
+  CompactCRLList compact_crls_;
   // blocked_spkis_ contains the SHA256 hashes of SPKIs which are to be blocked
   // no matter where in a certificate chain they might appear.
   std::vector<std::string> blocked_spkis_;

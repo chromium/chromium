@@ -12,7 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "crypto/hash.h"
+#include "net/base/features.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -86,6 +88,9 @@ static const uint8_t kGIASPKISHA256[32] = {
 };
 
 TEST(CRLSetTest, Parse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCRLSetCompactSerials);
+
   std::string_view s(reinterpret_cast<const char*>(kGIACRLSet),
                      sizeof(kGIACRLSet));
   scoped_refptr<CRLSet> set;
@@ -214,6 +219,148 @@ TEST(CRLSetTest, BlockedSubjects) {
             set->CheckSubject(subject, base::as_string_view(spki_sha256)));
 }
 
+// Builds a minimal CRLSet file: an empty header plus one issuer record with
+// the given serials (already stripped of any leading 0x00).
+std::string BuildCRLSetWithSerials(
+    base::span<const uint8_t> issuer_spki_hash,
+    const std::vector<std::vector<uint8_t>>& serials) {
+  static constexpr std::string_view kHeader =
+      "{\"Version\":0,\"ContentType\":\"CRLSet\",\"Sequence\":1}";
+  std::string out;
+  const uint16_t header_len = static_cast<uint16_t>(kHeader.size());
+  out.append(base::as_string_view(base::byte_span_from_ref(header_len)));
+  out.append(kHeader);
+  out.append(base::as_string_view(issuer_spki_hash));
+  const uint32_t num_serials = static_cast<uint32_t>(serials.size());
+  out.append(base::as_string_view(base::byte_span_from_ref(num_serials)));
+  for (const auto& serial : serials) {
+    out.push_back(static_cast<char>(serial.size()));
+    out.append(base::as_string_view(base::span(serial)));
+  }
+  return out;
+}
+
+// Runs the CRLSetTest.Parse lookups and a hand-built set covering serial
+// lengths around the compact storage's inline limit, with the compact
+// representation both disabled and enabled, and expects identical answers.
+class CRLSetSerialStorageTest : public testing::TestWithParam<bool> {
+ public:
+  CRLSetSerialStorageTest() {
+    feature_list_.InitWithFeatureState(features::kCRLSetCompactSerials,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CRLSetSerialStorageTest, ParseAndCheckSerial) {
+  scoped_refptr<CRLSet> set;
+  ASSERT_TRUE(CRLSet::Parse(base::as_string_view(kGIACRLSet), &set));
+  ASSERT_TRUE(set);
+
+  const std::string gia_spki_hash(base::as_string_view(kGIASPKISHA256));
+  EXPECT_EQ(13u, set->NumSerialsForTesting(gia_spki_hash));
+  // First, last and a middle entry of the set are revoked; a leading 0x00
+  // (DER positive sign) is stripped before lookup.
+  EXPECT_EQ(CRLSet::REVOKED, set->CheckSerial({0x10, 0x0D, 0x7F, 0x30, 0x00,
+                                               0x03, 0x00, 0x00, 0x23, 0xB0},
+                                              gia_spki_hash));
+  EXPECT_EQ(CRLSet::REVOKED, set->CheckSerial({0x64, 0x63, 0x49, 0xD2, 0x00,
+                                               0x03, 0x00, 0x00, 0x1D, 0x77},
+                                              gia_spki_hash));
+  EXPECT_EQ(CRLSet::REVOKED, set->CheckSerial({0x16, 0x7D, 0x75, 0x9D, 0x00,
+                                               0x03, 0x00, 0x00, 0x14, 0x55},
+                                              gia_spki_hash));
+  EXPECT_EQ(CRLSet::REVOKED,
+            set->CheckSerial({0x00, 0x16, 0x7D, 0x75, 0x9D, 0x00, 0x03, 0x00,
+                              0x00, 0x14, 0x55},
+                             gia_spki_hash));
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x47, 0x54, 0x3E, 0x79, 0x00, 0x03,
+                                            0x00, 0x00, 0x14, 0xF5},
+                                           gia_spki_hash));
+  // A prefix or an extension of a revoked serial is a different serial.
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x16, 0x7D, 0x75, 0x9D, 0x00, 0x03,
+                                            0x00, 0x00, 0x14},
+                                           gia_spki_hash));
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x16, 0x7D, 0x75, 0x9D, 0x00, 0x03,
+                                            0x00, 0x00, 0x14, 0x55, 0x00},
+                                           gia_spki_hash));
+  // Unknown issuer (including malformed SPKI hash length).
+  EXPECT_EQ(CRLSet::UNKNOWN,
+            set->CheckSerial({0x16, 0x7D}, std::string(32, 'x')));
+  EXPECT_EQ(CRLSet::UNKNOWN, set->CheckSerial({0x16, 0x7D}, "bad_len"));
+  EXPECT_EQ(0u, set->NumSerialsForTesting("bad_len"));
+}
+
+TEST_P(CRLSetSerialStorageTest, TruncatedSerialListRejected) {
+  std::string data =
+      BuildCRLSetWithSerials(kGIASPKISHA256, {{0x01, 0x02}, {0x03, 0x04}});
+  // Truncate the last byte so the second serial record is incomplete.
+  data.pop_back();
+  scoped_refptr<CRLSet> set;
+  EXPECT_FALSE(CRLSet::Parse(data, &set));
+}
+
+TEST_P(CRLSetSerialStorageTest, SerialLengthsAroundInlineLimit) {
+  const std::array<uint8_t, 32> issuer = {1, 2, 3};
+  const std::vector<uint8_t> one = {0x01};
+  const std::vector<uint8_t> twenty(20, 0x7A);
+  const std::vector<uint8_t> twenty_one(21, 0x7B);
+  const std::vector<uint8_t> forty(40, 0x7C);
+  // A serial equal to the zero padding of a shorter one must not collide.
+  const std::vector<uint8_t> short_with_zeros = {0x7A, 0x00, 0x00};
+  std::vector<uint8_t> twenty_zero_tail(20, 0x00);
+  twenty_zero_tail[0] = 0x7A;
+
+  const std::string data = BuildCRLSetWithSerials(
+      issuer, {forty, twenty_one, twenty, one, short_with_zeros});
+  scoped_refptr<CRLSet> set;
+  ASSERT_TRUE(CRLSet::Parse(data, &set));
+  ASSERT_TRUE(set);
+  const std::string issuer_hash(base::as_string_view(issuer));
+  EXPECT_EQ(5u, set->NumSerialsForTesting(issuer_hash));
+
+  for (const auto* revoked :
+       {&one, &twenty, &twenty_one, &forty, &short_with_zeros}) {
+    EXPECT_EQ(CRLSet::REVOKED, set->CheckSerial(*revoked, issuer_hash))
+        << "length " << revoked->size();
+  }
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial(twenty_zero_tail, issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x7A}, issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD, set->CheckSerial({0x7A, 0x00}, issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD,
+            set->CheckSerial(std::vector<uint8_t>(19, 0x7A), issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD,
+            set->CheckSerial(std::vector<uint8_t>(22, 0x7B), issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD,
+            set->CheckSerial(std::vector<uint8_t>(41, 0x7C), issuer_hash));
+}
+
+TEST_P(CRLSetSerialStorageTest, ForTestingHonoursStorage) {
+  SHA256HashValue issuer = {{9, 9, 9}};
+  scoped_refptr<CRLSet> set = CRLSet::ForTesting(
+      false, &issuer, {0x00, 0x80, 0x01, 0x02}, std::string(), {});
+  ASSERT_TRUE(set);
+  const std::string issuer_hash(base::as_string_view(issuer));
+  EXPECT_EQ(1u, set->NumSerialsForTesting(issuer_hash));
+  // ForTesting() strips the DER sign byte; CheckSerial() does the same, so the
+  // DER form matches. A serial whose first byte has the high bit set is
+  // negative and is rejected as UNKNOWN before any lookup.
+  EXPECT_EQ(CRLSet::REVOKED,
+            set->CheckSerial({0x00, 0x80, 0x01, 0x02}, issuer_hash));
+  EXPECT_EQ(CRLSet::UNKNOWN, set->CheckSerial({0x80, 0x01, 0x02}, issuer_hash));
+  EXPECT_EQ(CRLSet::GOOD,
+            set->CheckSerial({0x00, 0x80, 0x01, 0x03}, issuer_hash));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CRLSetSerialStorageTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Compact" : "Legacy";
+                         });
+
 TEST(CRLSetTest, Expired) {
   // This CRLSet has an expiry value set to one second past midnight, 1st Jan,
   // 1970.
@@ -242,10 +389,14 @@ std::vector<std::string> GetCRLSetRawSeeds() {
   return seeds;
 }
 
-void ParseDoesNotCrash(std::string_view spki_hash,
+void ParseDoesNotCrash(bool use_compact_serials,
+                       std::string_view spki_hash,
                        std::string_view issuer_hash,
                        const std::vector<uint8_t>& serial,
                        std::string_view crlset_data) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kCRLSetCompactSerials,
+                                    use_compact_serials);
   scoped_refptr<CRLSet> out_crl_set;
   CRLSet::Parse(crlset_data, &out_crl_set);
 
@@ -258,11 +409,12 @@ void ParseDoesNotCrash(std::string_view spki_hash,
 
 FUZZ_TEST(CRLSetTest, ParseDoesNotCrash)
     .WithDomains(
+        fuzztest::Arbitrary<bool>(),
         fuzztest::Arbitrary<std::string>().WithSize(32),
         fuzztest::Arbitrary<std::string>().WithSize(32),
         fuzztest::VectorOf(fuzztest::Arbitrary<uint8_t>())
             .WithMinSize(4)
-            .WithMaxSize(19),
+            .WithMaxSize(40),
         fuzztest::Arbitrary<std::string>().WithSeeds(GetCRLSetRawSeeds));
 
 }  // namespace net

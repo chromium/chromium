@@ -678,6 +678,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 // disabled, Chrome does not distinguish between SCTs based on log type.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnforceOneRfc6962CtPolicy);
 
+// When enabled, CRLSet stores blocked serials in a compact representation
+// instead of std::vector<std::vector<uint8_t>> per issuer.
+NET_EXPORT BASE_DECLARE_FEATURE(kCRLSetCompactSerials);
+
 // Finch experiment to select a disk cache backend.
 enum class DiskCacheBackend {
   kDefault,

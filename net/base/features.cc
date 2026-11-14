@@ -623,6 +623,8 @@ BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
 
 BASE_FEATURE(kEnforceOneRfc6962CtPolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCRLSetCompactSerials, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDiskCacheBackendExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<DiskCacheBackend>::Option
     kDiskCacheBackendOptions[] = {
