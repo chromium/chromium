@@ -52,6 +52,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -336,6 +337,38 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
     ASSERT_EQ(true, Eval("return true;"));
   }
 
+  // Sends one Escape key event to the popup page. Unlike `PressKey()`, this
+  // lets a test act between the keydown and the keyup.
+  void SendEscapeKeyEvent(blink::WebInputEvent::Type type) {
+    input::NativeWebKeyboardEvent event(
+        type, blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+    event.windows_key_code = ui::VKEY_ESCAPE;
+    event.native_key_code =
+        ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::ESCAPE);
+    event.dom_code = static_cast<int>(ui::DomCode::ESCAPE);
+    event.dom_key = ui::DomKey::ESCAPE;
+    popup_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->ForwardKeyboardEvent(event);
+  }
+
+  // Presses Escape as a user does: the keyup comes after the unbounded window,
+  // which consumes the keydown, requested a dismissal.
+  void PressEscape() {
+    ASSERT_EQ(true, Eval(R"(
+      window.escapeDismissals = 0;
+      wrapper.addEventListener('beforetoggle', e => {
+        if (e.cancelable) {
+          ++window.escapeDismissals;
+        }
+      }, {once: true});
+      return true;)"));
+    SendEscapeKeyEvent(blink::WebInputEvent::Type::kRawKeyDown);
+    ASSERT_TRUE(WaitForJs("window.escapeDismissals > 0"));
+    SendEscapeKeyEvent(blink::WebInputEvent::Type::kKeyUp);
+  }
+
   // Sends a trusted key press to the popup WebContents.
   void PressKey(ui::DomKey key,
                 ui::DomCode code,
@@ -609,15 +642,26 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
   EXPECT_EQ(OmniboxPopupState::kNone, popup_state());
 }
 
-// Escape closes the dropdown.
+// A trusted Escape reaches the searchbox's staged Escape handling: the
+// unbounded window consumes the keydown and requests a dismissal, which the
+// page cancels and replays the keydown on keyup. The first Escape reverts
+// the selected suggestion to the typed text, the second closes the dropdown.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
-                       SearchboxEscapeClosesDropdown) {
+                       SearchboxEscapeIsStaged) {
   NavigateTo("/title1.html");
   FocusAndWaitForPopup();
   TypeAndWaitForDropdown("title");
 
-  PressKey(ui::DomKey::ESCAPE, ui::DomCode::ESCAPE, ui::VKEY_ESCAPE);
+  PressKey(ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN);
+  ASSERT_TRUE(WaitForJs("input.value !== 'title'"));
+
+  PressEscape();
+  EXPECT_TRUE(WaitForInputValue("title"));
+  EXPECT_EQ(true, Eval(std::string("return ") + kDropdownOpen + ";"));
+
+  PressEscape();
   EXPECT_TRUE(WaitForJs(kDropdownClosed));
+  EXPECT_EQ(u"title", edit_model()->user_text());
 }
 
 // Closing the unbounded element, as light dismiss (a real Escape or an outside
