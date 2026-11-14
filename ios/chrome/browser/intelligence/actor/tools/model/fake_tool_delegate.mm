@@ -96,4 +96,9 @@ void FakeToolDelegate::IsAcceptableNavigationDestination(
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
+void FakeToolDelegate::EnqueueFollowupAction(
+    std::unique_ptr<ActorToolRequest> action) {
+  enqueued_followup_actions_.push_back(std::move(action));
+}
+
 }  // namespace actor

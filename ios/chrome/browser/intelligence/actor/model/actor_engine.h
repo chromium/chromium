@@ -148,6 +148,7 @@ class ActorEngine : public ToolDelegate {
       int32_t window_id,
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) override;
+  void EnqueueFollowupAction(std::unique_ptr<ActorToolRequest> action) override;
 
   // Returns the origin gating checker ID used for evaluating navigation
   // and actuation policies.
@@ -206,6 +207,10 @@ class ActorEngine : public ToolDelegate {
 
   // Returns the index of the action currently in progress.
   size_t InProgressActionIndex() const;
+
+  // Returns the index into `action_results_` corresponding to `action_index`
+  // in `action_sequence_`, excluding any preceding follow-up actions.
+  size_t GetResultIndexForAction(size_t action_index) const;
 
   // Callback invoked when the pre-execution origin gating check completes.
   void OnPreExecutionGatingDecision(

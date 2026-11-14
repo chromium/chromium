@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_FAKE_TOOL_DELEGATE_H_
 
 #include <map>
+#import <memory>
 #import <optional>
 #import <utility>
 #import <vector>
@@ -14,6 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 
 class WebStateList;
@@ -44,6 +46,12 @@ class FakeToolDelegate : public ToolDelegate {
   void IsAcceptableNavigationDestination(
       const GURL& url,
       ToolExecutionCallback callback) override;
+  void EnqueueFollowupAction(std::unique_ptr<ActorToolRequest> action) override;
+
+  const std::vector<std::unique_ptr<ActorToolRequest>>&
+  enqueued_followup_actions() const {
+    return enqueued_followup_actions_;
+  }
 
   void set_navigation_destination_allowed(bool allowed) {
     navigation_destination_allowed_ = allowed;
@@ -66,6 +74,7 @@ class FakeToolDelegate : public ToolDelegate {
   raw_ptr<AggregatedJournal> journal_ = nullptr;
   raw_ptr<ActorToolFactory> tool_factory_ = nullptr;
   std::map<int32_t, base::WeakPtr<WebStateList>> web_state_lists_;
+  std::vector<std::unique_ptr<ActorToolRequest>> enqueued_followup_actions_;
   bool fail_insert_web_state_ = false;
   bool navigation_destination_allowed_ = true;
 };

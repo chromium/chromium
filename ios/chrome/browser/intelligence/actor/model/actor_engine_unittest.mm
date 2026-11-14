@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
@@ -78,6 +79,10 @@ struct ControllableToolHooks {
   ToolExecutionCallback execute_callback;
   // If set, run synchronously from within `Execute()`.
   base::OnceClosure on_execute;
+  // Target WebStateID of each tool that began `Execute()`.
+  std::vector<web::WebStateID> executed_action_ids;
+  // ToolDelegate passed to the active tool, cleared on tool destruction.
+  raw_ptr<ToolDelegate> tool_delegate = nullptr;
   // Whether the most recently created tool has been destroyed.
   bool tool_destroyed = false;
 };
@@ -86,16 +91,28 @@ struct ControllableToolHooks {
 // callbacks stored in its `ControllableToolHooks`.
 class ControllableActorTool : public ActorTool {
  public:
-  explicit ControllableActorTool(ControllableToolHooks& hooks) : hooks_(hooks) {
+  ControllableActorTool(ControllableToolHooks& hooks,
+                        ToolDelegate* tool_delegate,
+                        web::WebStateID target_web_state_id)
+      : hooks_(hooks), target_web_state_id_(target_web_state_id) {
+    CHECK(!hooks_->tool_delegate);
+    hooks_->tool_delegate = tool_delegate;
     hooks_->tool_destroyed = false;
   }
-  ~ControllableActorTool() override { hooks_->tool_destroyed = true; }
+  ~ControllableActorTool() override {
+    hooks_->validate_callback.Reset();
+    hooks_->execute_callback.Reset();
+    hooks_->on_execute.Reset();
+    hooks_->tool_delegate = nullptr;
+    hooks_->tool_destroyed = true;
+  }
 
   void Validate(ToolExecutionCallback callback) override {
     hooks_->validate_callback = std::move(callback);
   }
 
   void Execute(ToolExecutionCallback callback) override {
+    hooks_->executed_action_ids.push_back(target_web_state_id_);
     hooks_->execute_callback = std::move(callback);
     if (hooks_->on_execute) {
       std::move(hooks_->on_execute).Run();
@@ -110,6 +127,7 @@ class ControllableActorTool : public ActorTool {
 
  private:
   const raw_ref<ControllableToolHooks> hooks_;
+  const web::WebStateID target_web_state_id_;
 };
 
 // Creates `ControllableActorTool`s bound to `hooks`.
@@ -122,7 +140,8 @@ class ControllableActorToolFactory : public ActorToolFactory {
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
       const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
-    return std::make_unique<ControllableActorTool>(*hooks_);
+    return std::make_unique<ControllableActorTool>(
+        *hooks_, tool_delegate, request.GetTargetWebStateId());
   }
 
  private:
@@ -210,6 +229,10 @@ class ActorEngineTest : public PlatformTest {
 
   void PushActionResult(ActionResult result) {
     engine_->action_results_.push_back(std::move(result));
+  }
+
+  void PushActionToSequence(std::unique_ptr<ActorToolRequest> action) {
+    engine_->action_sequence_.push_back(std::move(action));
   }
 
   const std::vector<ActionResult>& GetActionResults() const {
@@ -501,6 +524,7 @@ TEST_F(ActorEngineTest, InProgressActionIndex) {
 // overwrites a previously recorded success for the same action (e.g., if a
 // post-invoke step fails).
 TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
+  PushActionToSequence(MakeSuccessfulActorToolRequest());
   PushActionResult(ActionResult(ToolExecutionResult::Ok()));
   SetNextActionIndex(1);
 
@@ -1730,6 +1754,422 @@ TEST_F(ActorEngineOriginGatingTest,
   EXPECT_TRUE(decision.is_allowed);
   EXPECT_EQ(decision.attribution,
             origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
+}
+
+// Test fixture for `EnqueueFollowupAction()` using `ControllableActorTool`.
+class ActorEngineFollowupTest : public ActorEngineTest {
+ protected:
+  void TearDown() override {
+    actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    "{}");
+    ActorEngineTest::TearDown();
+  }
+
+  std::unique_ptr<ActorToolFactory> CreateToolFactory() override {
+    return std::make_unique<ControllableActorToolFactory>(profile_.get(),
+                                                          hooks_);
+  }
+
+  [[nodiscard]] bool WaitForToolValidating() {
+    return base::test::RunUntil(
+        [this]() { return !hooks_.validate_callback.is_null(); });
+  }
+
+  // Executes the next tool in the engine that returns `result`, optionally
+  // running a callback during the execution.
+  void ExecuteNextTool(
+      ToolExecutionResult result,
+      base::OnceClosure during_execute = base::NullCallback()) {
+    ASSERT_TRUE(WaitForToolValidating());
+    std::move(hooks_.validate_callback).Run(ToolExecutionResult::Ok());
+    ASSERT_TRUE(WaitForToolInvoking());
+    if (during_execute) {
+      ASSERT_NO_FATAL_FAILURE(std::move(during_execute).Run());
+    }
+    ASSERT_NE(hooks_.tool_delegate, nullptr);
+    ASSERT_FALSE(hooks_.execute_callback.is_null());
+    std::move(hooks_.execute_callback).Run(std::move(result));
+  }
+
+  ControllableToolHooks hooks_;
+};
+
+// Tests that a follow-up action enqueued during an action executes before the
+// next top-level action and merges into the enqueuing action's result.
+TEST_F(ActorEngineFollowupTest, RunsBeforeNextTopLevelAction) {
+  const web::WebStateID action_0 = web::WebStateID::NewUnique();
+  const web::WebStateID action_1 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_1 = web::WebStateID::NewUnique();
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(action_0));
+  actions.push_back(MakeSuccessfulActorToolRequest(action_1));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult::Ok(), base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest(followup_1));
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids,
+            (std::vector<web::WebStateID>{action_0, followup_1, action_1}));
+  ASSERT_EQ(results.size(), 2U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(results[1].tool_result.IsOk());
+  EXPECT_EQ(GetState(), ActorEngine::State::kCompleted);
+}
+
+// Tests that multiple follow-up actions enqueued during a single tool are
+// inserted before subsequent top-level actions in LIFO order (matching
+// Desktop's insertion at `next_action_index_`).
+TEST_F(ActorEngineFollowupTest, MultipleFollowupsRunLifo) {
+  const web::WebStateID action_0 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_1 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_2 = web::WebStateID::NewUnique();
+  const web::WebStateID action_1 = web::WebStateID::NewUnique();
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(action_0));
+  actions.push_back(MakeSuccessfulActorToolRequest(action_1));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult::Ok(), base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest(followup_1));
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest(followup_2));
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids,
+            (std::vector<web::WebStateID>{action_0, followup_2, followup_1,
+                                          action_1}));
+  ASSERT_EQ(results.size(), 2U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(results[1].tool_result.IsOk());
+  EXPECT_EQ(GetState(), ActorEngine::State::kCompleted);
+}
+
+// Tests that chained follow-up actions (`A0` -> `F1` -> `F2`) all merge into
+// the single top-level result.
+TEST_F(ActorEngineFollowupTest, ChainedFollowupsMergeIntoSingleResult) {
+  const web::WebStateID action_0 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_1 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_2 = web::WebStateID::NewUnique();
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(action_0));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/false,
+                                          "initial message"),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest(followup_1));
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kOk,
+                          /*requires_page_stabilization=*/true, std::nullopt),
+      base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest(followup_2));
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids,
+            (std::vector<web::WebStateID>{action_0, followup_1, followup_2}));
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(results[0].tool_result.requires_page_stabilization());
+  EXPECT_EQ(results[0].tool_result.message(), "initial message");
+  EXPECT_EQ(GetState(), ActorEngine::State::kCompleted);
+}
+
+// Tests that a parent's message is preserved when a follow-up succeeds with
+// `std::nullopt` or an empty message.
+TEST_F(ActorEngineFollowupTest,
+       SuccessWithNullOrEmptyMessagePreservesParentMessage) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/false,
+                                          "parent message"),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest());
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest());
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kOk,
+      /*requires_page_stabilization=*/false, std::nullopt)));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kOk,
+                          /*requires_page_stabilization=*/false, "")));
+
+  std::vector<ActionResult> results = future.Take();
+
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(results[0].tool_result.message(), "parent message");
+}
+
+// Tests that a follow-up's non-empty message is used when the parent has no
+// message, and overwrites a parent's message on success.
+TEST_F(ActorEngineFollowupTest, SuccessWithMessageUpdatesParentMessage) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult::Ok(), base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest());
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kOk,
+      /*requires_page_stabilization=*/false, "followup only")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/false,
+                                          "parent message"),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest());
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kOk,
+      /*requires_page_stabilization=*/false, "followup override")));
+
+  std::vector<ActionResult> results = future.Take();
+
+  ASSERT_EQ(results.size(), 2U);
+  EXPECT_EQ(results[0].tool_result.message(), "followup only");
+  EXPECT_EQ(results[1].tool_result.message(), "followup override");
+}
+
+// Tests that `requires_page_stabilization` is OR-ed across parent and follow-up
+// actions in both orders (`true || false` and `false || true`).
+TEST_F(ActorEngineFollowupTest, MergesRequiresPageStabilization) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/true),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest());
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kOk, /*requires_page_stabilization=*/false)));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kOk,
+                          /*requires_page_stabilization=*/false),
+      base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest());
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kOk, /*requires_page_stabilization=*/true)));
+
+  std::vector<ActionResult> results = future.Take();
+
+  ASSERT_EQ(results.size(), 2U);
+  EXPECT_TRUE(results[0].tool_result.requires_page_stabilization());
+  EXPECT_TRUE(results[1].tool_result.requires_page_stabilization());
+}
+
+// Tests that a follow-up failure overwrites the parent result's codes and
+// message, preserves `requires_page_stabilization`, fails the engine, and
+// aborts remaining top-level actions.
+TEST_F(ActorEngineFollowupTest,
+       FailureOverwritesResultPreservesStabilizationAndAbortsSequence) {
+  const web::WebStateID action_0 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_1 = web::WebStateID::NewUnique();
+  const web::WebStateID action_1 = web::WebStateID::NewUnique();
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(action_0));
+  actions.push_back(MakeSuccessfulActorToolRequest(action_1));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/true,
+                                          "parent message"),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest(followup_1));
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult(
+      mojom::ActionResultCode::kArgumentsInvalid,
+      InternalToolErrorCode::kCreationMissingRequiredFields,
+      /*requires_page_stabilization=*/false, "followup error")));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids,
+            (std::vector<web::WebStateID>{action_0, followup_1}));
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(results[0].tool_result.internal_code(),
+            InternalToolErrorCode::kCreationMissingRequiredFields);
+  EXPECT_EQ(results[0].tool_result.message(), "followup error");
+  EXPECT_TRUE(results[0].tool_result.requires_page_stabilization());
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that a follow-up failure with `std::nullopt` message clears any
+// message recorded by the parent action.
+TEST_F(ActorEngineFollowupTest, FailureWithNullMessageClearsParentMessage) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExecuteNextTool(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                          /*requires_page_stabilization=*/false,
+                                          "parent message"),
+                      base::BindLambdaForTesting([&]() {
+                        hooks_.tool_delegate->EnqueueFollowupAction(
+                            MakeSuccessfulActorToolRequest());
+                      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kElementDisabled,
+                          /*requires_page_stabilization=*/false,
+                          /*message=*/std::nullopt)));
+
+  std::vector<ActionResult> results = future.Take();
+
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kElementDisabled);
+  EXPECT_EQ(results[0].tool_result.message(), std::nullopt);
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that when a subsequent top-level action `A1` fails after `A0` + `F1`
+// succeeded, `GetResultIndexForAction` maps `A1` to `results[1]`.
+TEST_F(ActorEngineFollowupTest,
+       SubsequentTopLevelFailureMapsToCorrectResultIndex) {
+  const web::WebStateID action_0 = web::WebStateID::NewUnique();
+  const web::WebStateID followup_1 = web::WebStateID::NewUnique();
+  const web::WebStateID action_1 = web::WebStateID::NewUnique();
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(action_0));
+  actions.push_back(MakeSuccessfulActorToolRequest(action_1));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult::Ok(), base::BindLambdaForTesting([&]() {
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            MakeSuccessfulActorToolRequest(followup_1));
+      })));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(ToolExecutionResult::Ok()));
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kTabWentAway)));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids,
+            (std::vector<web::WebStateID>{action_0, followup_1, action_1}));
+  ASSERT_EQ(results.size(), 2U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(results[1].tool_result.code(),
+            mojom::ActionResultCode::kTabWentAway);
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that a follow-up page action targeting a tab on a blocked URL fails in
+// `kPreExecutionChecks` with `kUrlBlocked` and merges into the parent result.
+TEST_F(ActorEngineFollowupTest, FollowupPageActionBlockedByOriginGating) {
+  base::test::ScopedFeatureList origin_gating_feature(kActorOriginGating);
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://malicious.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://malicious.com"));
+  int blocked_tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  ASSERT_NO_FATAL_FAILURE(ExecuteNextTool(
+      ToolExecutionResult(mojom::ActionResultCode::kOk,
+                          /*requires_page_stabilization=*/true),
+      base::BindLambdaForTesting([&]() {
+        optimization_guide::proto::Action followup;
+        followup.mutable_activate_tab()->set_tab_id(blocked_tab_id);
+        hooks_.tool_delegate->EnqueueFollowupAction(
+            std::make_unique<ActorToolRequest>(std::move(followup)));
+      })));
+
+  std::vector<ActionResult> results = future.Take();
+
+  EXPECT_EQ(hooks_.executed_action_ids.size(), 1U);
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_TRUE(results[0].tool_result.requires_page_stabilization());
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
 }
 
 }  // namespace actor

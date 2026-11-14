@@ -221,6 +221,8 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
       ToolExecutionCallback callback) override {
     std::move(callback).Run(ToolExecutionResult::Ok());
   }
+  void EnqueueFollowupAction(
+      std::unique_ptr<ActorToolRequest> action) override {}
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
