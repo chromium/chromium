@@ -32,11 +32,9 @@ source_set("onboarding_bubble") {
 source_set("contextual_tasks") {
   sources = [
     "contextual_tasks_browser_controller.h",
-    "contextual_tasks_button.h",
     "contextual_tasks_close_button_controller.h",
     "contextual_tasks_close_tab_button.h",
     "contextual_tasks_ephemeral_button_controller.h",
-    "contextual_tasks_ephemeral_button_menu_model.h",
     "contextual_tasks_ephemeral_button_utils.h",
     "contextual_tasks_pinned_action_toolbar_button.h",
   ]
@@ -56,11 +54,9 @@ source_set("contextual_tasks") {
 source_set("impl") {
   sources = [
     "contextual_tasks_browser_controller.cc",
-    "contextual_tasks_button.cc",
     "contextual_tasks_close_button_controller.cc",
     "contextual_tasks_close_tab_button.cc",
     "contextual_tasks_ephemeral_button_controller.cc",
-    "contextual_tasks_ephemeral_button_menu_model.cc",
     "contextual_tasks_ephemeral_button_utils.cc",
     "contextual_tasks_pinned_action_toolbar_button.cc",
   ]

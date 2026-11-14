@@ -38,14 +38,12 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -53,7 +51,6 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
-#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
@@ -132,17 +129,6 @@ ContextualTasksEphemeralButtonController::
                                   base::Unretained(this)));
     }
   }
-  pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kSidePanelHorizontalAlignment,
-      base::BindRepeating(&ContextualTasksEphemeralButtonController::
-                              OnSidePanelAlignmentChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kSidePanelAlignmentOverrides,
-      base::BindRepeating(&ContextualTasksEphemeralButtonController::
-                              OnSidePanelAlignmentChanged,
-                          base::Unretained(this)));
   if (BrowserActions* const browser_actions =
           BrowserActions::From(browser_window_interface_);
       browser_actions && browser_actions->root_action_item()) {
@@ -257,11 +243,9 @@ void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
     UpdateEphemeralStateInToolbar(false);
     was_ephemeral_button_visible_ = false;
   }
-  should_update_visibility_callbacks_.Notify(false);
   ephemeral_button_auto_dismiss_timers_.clear();
   contextual_task_observation_.Reset();
   pinned_toolbar_observation_.Reset();
-  pref_change_registrar_.Reset();
   tab_discard_subscription_ = base::CallbackListSubscription();
   Observe(nullptr);
   UpdatePinnedButtonActiveIndicator();
@@ -420,23 +404,6 @@ void ContextualTasksEphemeralButtonController::OnActionsChanged() {
   MaybeNotifyVisibilityShouldChange();
 }
 
-base::CallbackListSubscription
-ContextualTasksEphemeralButtonController::RegisterShouldUpdateButtonVisibility(
-    ShouldUpdateVisibilityCallbackList::CallbackType callback) {
-  return should_update_visibility_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
-ContextualTasksEphemeralButtonController::RegisterShouldUpdateButtonPosition(
-    ShouldUpdateButtonPositionCallbackList::CallbackType callback) {
-  return should_update_position_callbacks_.Add(std::move(callback));
-}
-
-void ContextualTasksEphemeralButtonController::OnSidePanelAlignmentChanged() {
-  should_update_position_callbacks_.Notify();
-  MaybeNotifyVisibilityShouldChange();
-}
-
 bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   Profile* const profile = browser_window_interface_->GetProfile();
   if (!profile || profile->IsOffTheRecord()) {
@@ -465,15 +432,6 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   }
 
   if (!contextual_tasks::IsContextualTasksUIEnabled()) {
-    return false;
-  }
-
-  // The trailing edge is only used when the right-hand ephemeral button param
-  // is enabled.
-  if (!contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(
-          browser_window_interface_) &&
-      contextual_tasks::IsEphemeralButtonTrailing(browser_window_interface_) &&
-      !contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton()) {
     return false;
   }
 
@@ -837,10 +795,9 @@ void ContextualTasksEphemeralButtonController::
       contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/true);
       if (was_active_panel_collapsed) {
         // The panel was reopened while the collapsed button's toast could be
-        // showing (e.g. from the Omnibox or a context menu). Match the legacy
-        // ContextualTasksButton, which aborts the toast whenever the panel
-        // opens; a click on the button itself already marks the promo as
-        // used before reaching here.
+        // showing (e.g. from the Omnibox or a context menu). Abort the toast
+        // whenever the panel opens; a click on the button itself already marks
+        // the promo as used before reaching here.
         if (auto* user_education = BrowserUserEducationInterface::From(
                 browser_window_interface_)) {
           user_education->AbortFeaturePromo(
@@ -853,8 +810,7 @@ void ContextualTasksEphemeralButtonController::
       contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/false);
       // The popped-out pinned action was just added to the toolbar and has
       // not been laid out yet. Request the toast once the current task has
-      // finished, mirroring the legacy button, which waited for its show
-      // animation; the request is dropped if the button changes state first.
+      // finished; the request is dropped if the button changes state first.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ContextualTasksEphemeralButtonController::
                                         MaybeShowEphemeralButtonPromo,
@@ -905,7 +861,6 @@ void ContextualTasksEphemeralButtonController::
       }
     }
   }
-  should_update_visibility_callbacks_.Notify(should_show);
   FlushOpenClickCounts(/*flush_all=*/false);
 }
 
