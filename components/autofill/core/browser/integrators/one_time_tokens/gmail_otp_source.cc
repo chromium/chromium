@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -222,7 +223,8 @@ void GmailOtpSource::FetchFreshestCachedOtpForOrigin(
     return;
   }
   gmail_otp_service_->GetFreshestCachedOtp(
-      origin, GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
+      origin, one_time_tokens::GmailOtpFlow::kAutofill,
+      GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
       base::BindOnce(&GmailOtpSource::OnCachedOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), origin));
 }
@@ -232,8 +234,8 @@ one_time_tokens::ExpiringSubscription GmailOtpSource::SubscribeToService(
     base::Time expiration) {
   CHECK(gmail_otp_service_);
   return gmail_otp_service_->Subscribe(
-      origin, GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
-      expiration,
+      origin, one_time_tokens::GmailOtpFlow::kAutofill,
+      GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true, expiration,
       base::BindRepeating(&GmailOtpSource::OnIncomingTokenReceived,
                           weak_ptr_factory_.GetWeakPtr(), origin),
       base::BindOnce(&GmailOtpSource::ProlongSubscriptionForOrigin,

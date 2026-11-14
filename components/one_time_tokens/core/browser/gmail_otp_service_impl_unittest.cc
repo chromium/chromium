@@ -20,6 +20,7 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -53,16 +54,17 @@ class GmailOtpServiceImplTest : public testing::Test {
 
 TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_OpaqueOrigin) {
   base::test::TestFuture<std::optional<OneTimeToken>> future;
-  service_->GetFreshestCachedOtp(url::Origin(), ukm::kInvalidSourceId,
-                                 /*allow_psl_matching=*/false,
-                                 future.GetCallback());
+  service_->GetFreshestCachedOtp(
+      url::Origin(), GmailOtpFlow::kAutofill, ukm::kInvalidSourceId,
+      /*allow_psl_matching=*/false, future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_EmptyCache) {
   base::test::TestFuture<std::optional<OneTimeToken>> future;
   service_->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
 }
@@ -75,14 +77,15 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_NoMatch) {
 
   base::test::TestFuture<std::optional<OneTimeToken>> future;
   service_->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchRejectionReason.Cached",
+      "OneTimeTokens.GmailAutofill.SenderDomainMatchRejectionReason.Cached",
       GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAutofill.SenderDomainMatchAcceptedMatchType.Cached",
       0);
 }
 
@@ -103,17 +106,18 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_FreshestMatchingReturned) {
 
   base::test::TestFuture<std::optional<OneTimeToken>> future;
   service_->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, future.GetCallback());
 
   std::optional<OneTimeToken> result = future.Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), "222222");
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchRejectionReason.Cached",
+      "OneTimeTokens.GmailAutofill.SenderDomainMatchRejectionReason.Cached",
       GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAutofill.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kExact, 1);
   EXPECT_TRUE(test_ukm_recorder_
                   .GetEntriesByName(ukm::builders::OneTimeTokens::kEntryName)
@@ -135,7 +139,8 @@ TEST_F(GmailOtpServiceImplTest,
 
   base::test::TestFuture<std::optional<OneTimeToken>> future;
   service_->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), source_id,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      source_id,
       /*allow_psl_matching=*/false, future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
 
@@ -160,7 +165,8 @@ TEST_F(GmailOtpServiceImplTest,
 
   bool callback_called = false;
   service_->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false,
       base::BindLambdaForTesting(
           [&callback_called](std::optional<OneTimeToken>) {
@@ -195,7 +201,8 @@ TEST_F(GmailOtpServiceImplTest,
 
   bool callback_called = false;
   service->GetFreshestCachedOtp(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false,
       base::BindLambdaForTesting(
           [&callback_called](std::optional<OneTimeToken>) {
@@ -216,7 +223,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_OpaqueOrigin) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       valid_future;
   ExpiringSubscription valid_subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       valid_future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(valid_subscription.IsAlive());
@@ -225,7 +233,7 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_OpaqueOrigin) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin(), ukm::kInvalidSourceId,
+      url::Origin(), GmailOtpFlow::kAutofill, ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   EXPECT_TRUE(subscription.IsAlive());
@@ -253,7 +261,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_ReceivesMatchingToken) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(subscription.IsAlive());
@@ -267,11 +276,11 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_ReceivesMatchingToken) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), "654321");
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.GmailNonAgentic."
+      "OneTimeTokens.GmailAutofill."
       "SenderDomainMatchAcceptedMatchType.Received",
       GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.GmailNonAgentic."
+      "OneTimeTokens.GmailAutofill."
       "SenderDomainMatchRejectionReason.Received",
       0);
 }
@@ -282,7 +291,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_IgnoresNonMatchingToken) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(subscription.IsAlive());
@@ -297,13 +307,51 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_IgnoresNonMatchingToken) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch);
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.GmailNonAgentic."
+      "OneTimeTokens.GmailAutofill."
       "SenderDomainMatchRejectionReason.Received",
       GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.GmailNonAgentic."
+      "OneTimeTokens.GmailAutofill."
       "SenderDomainMatchAcceptedMatchType.Received",
       0);
+}
+
+// The actor flow records to the GmailActor histograms instead of the
+// GmailAutofill ones.
+TEST_F(GmailOtpServiceImplTest, ActorFlow_RecordsActorHistograms) {
+  base::HistogramTester histogram_tester;
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
+                   "noreply@different.com", base::Time::Now())));
+  base::test::TestFuture<std::optional<OneTimeToken>> cached_future;
+  service_->GetFreshestCachedOtp(
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kActor,
+      ukm::kInvalidSourceId, /*allow_psl_matching=*/false,
+      cached_future.GetCallback());
+  EXPECT_FALSE(cached_future.Get().has_value());
+
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      received_future;
+  ExpiringSubscription subscription = service_->Subscribe(
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kActor,
+      ukm::kInvalidSourceId, /*allow_psl_matching=*/false,
+      base::Time::Now() + base::Minutes(1),
+      received_future.GetRepeatingCallback(), base::DoNothing());
+  backend_.ProcessCallbacks(base::ok(
+      OneTimeToken(OneTimeTokenType::kGmail, "222222", base::TimeTicks::Now(),
+                   "noreply@example.com", base::Time::Now())));
+  ASSERT_TRUE(received_future.Take().has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailActor.SenderDomainMatchRejectionReason.Cached",
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailActor.SenderDomainMatchAcceptedMatchType.Received",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  EXPECT_TRUE(
+      histogram_tester.GetTotalCountsForPrefix("OneTimeTokens.GmailAutofill.")
+          .empty());
 }
 
 TEST_F(GmailOtpServiceImplTest, Subscribe_RecordsAcceptanceAndRejectionUkm) {
@@ -313,7 +361,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_RecordsAcceptanceAndRejectionUkm) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), source_id,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      source_id,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(subscription.IsAlive());
@@ -347,7 +396,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_DispatchesErrorToSubscribers) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(subscription.IsAlive());
@@ -365,7 +415,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_DispatchesErrorToSubscribers) {
 TEST_F(GmailOtpServiceImplTest, Subscribe_Expiration) {
   base::test::TestFuture<void> expiration_future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Seconds(30),
       base::DoNothing(), expiration_future.GetCallback());
   ASSERT_TRUE(subscription.IsAlive());
@@ -385,7 +436,8 @@ TEST_F(GmailOtpServiceImplTest,
       token_future;
   base::test::TestFuture<void> expiration_future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, now + base::Seconds(30),
       token_future.GetRepeatingCallback(), expiration_future.GetCallback());
   ASSERT_TRUE(subscription.IsAlive());
@@ -424,7 +476,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_CancelPreventsNotification) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   ExpiringSubscription subscription = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       future.GetRepeatingCallback(), base::DoNothing());
   ASSERT_TRUE(subscription.IsAlive());
@@ -445,7 +498,8 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_DestructionPreventsNotification) {
       future;
   {
     ExpiringSubscription subscription = service_->Subscribe(
-        url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+        url::Origin::Create(GURL("https://example.com")),
+        GmailOtpFlow::kAutofill, ukm::kInvalidSourceId,
         /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
         future.GetRepeatingCallback(), base::DoNothing());
     ASSERT_TRUE(subscription.IsAlive());
@@ -477,7 +531,8 @@ TEST_F(GmailOtpServiceImplTest,
       token_future;
   base::test::TestFuture<void> expiration_future;
   ExpiringSubscription subscription = service->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Seconds(30),
       token_future.GetRepeatingCallback(), expiration_future.GetCallback());
 
@@ -512,7 +567,8 @@ TEST_F(GmailOtpServiceImplTest,
       &backend_, &mock_affiliation_service, std::nullopt);
   bool callback_called = false;
   ExpiringSubscription subscription = service->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       base::BindLambdaForTesting(
           [&callback_called](
@@ -548,7 +604,8 @@ TEST_F(GmailOtpServiceImplTest, HasPendingRequestsAndGetLogSink) {
   int completed_count = 0;
 
   sub1 = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       base::BindLambdaForTesting(
           [&](base::expected<OneTimeToken, OneTimeTokenRetrievalError>) {
@@ -561,7 +618,8 @@ TEST_F(GmailOtpServiceImplTest, HasPendingRequestsAndGetLogSink) {
           }),
       base::DoNothing());
   sub2 = service_->Subscribe(
-      url::Origin::Create(GURL("https://example.com")), ukm::kInvalidSourceId,
+      url::Origin::Create(GURL("https://example.com")), GmailOtpFlow::kAutofill,
+      ukm::kInvalidSourceId,
       /*allow_psl_matching=*/false, base::Time::Now() + base::Minutes(1),
       base::BindLambdaForTesting(
           [&](base::expected<OneTimeToken, OneTimeTokenRetrievalError>) {

@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -338,19 +337,15 @@ class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest,
                                       "123456", base::TimeTicks::Now(),
                                       std::string(sender_address)));
 
-    // `OtpCoordinator` uses `GmailOtpServiceImpl` (`GmailNonAgentic`), whereas
-    // `OtpManagerImpl` uses `GmailOtpRetriever` (`GmailAutofill`). Wait for the
-    // asynchronous sender domain check to complete.
-    const std::string_view histogram_prefix =
-        is_otp_coordinator_enabled() ? "OneTimeTokens.GmailNonAgentic."
-                                     : "OneTimeTokens.GmailAutofill.";
-    const std::string accepted_histogram = base::StrCat(
-        {histogram_prefix, "SenderDomainMatchAcceptedMatchType.Received"});
-    const std::string rejected_histogram = base::StrCat(
-        {histogram_prefix, "SenderDomainMatchRejectionReason.Received"});
+    // Wait for the asynchronous sender domain check to complete.
+    constexpr char kAcceptedHistogram[] =
+        "OneTimeTokens.GmailAutofill.SenderDomainMatchAcceptedMatchType."
+        "Received";
+    constexpr char kRejectedHistogram[] =
+        "OneTimeTokens.GmailAutofill.SenderDomainMatchRejectionReason.Received";
     ASSERT_TRUE(base::test::RunUntil([&] {
-      return !histogram_tester.GetAllSamples(accepted_histogram).empty() ||
-             !histogram_tester.GetAllSamples(rejected_histogram).empty();
+      return !histogram_tester.GetAllSamples(kAcceptedHistogram).empty() ||
+             !histogram_tester.GetAllSamples(kRejectedHistogram).empty();
     }));
 
     // Accepted tokens proactively trigger `AskForValuesToFill()` via
@@ -359,7 +354,7 @@ class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest,
     // triggers (`kProactiveUnfocusedOnAndroid`). When no proactive trigger is
     // expected, click/tap `#otp` to request suggestions.
     const bool accepted =
-        !histogram_tester.GetAllSamples(accepted_histogram).empty();
+        !histogram_tester.GetAllSamples(kAcceptedHistogram).empty();
 #if BUILDFLAG(IS_ANDROID)
     const bool expects_proactive_trigger =
         accepted && !is_otp_coordinator_enabled();

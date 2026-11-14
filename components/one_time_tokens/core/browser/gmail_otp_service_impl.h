@@ -51,11 +51,13 @@ class GmailOtpServiceImpl : public GmailOtpService {
   // GmailOtpService:
   GmailOtpBackend* GetBackend() override;
   void GetFreshestCachedOtp(const url::Origin& origin,
+                            GmailOtpFlow flow,
                             ukm::SourceId ukm_source_id,
                             bool allow_psl_matching,
                             GetFreshestCachedOtpCallback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
       const url::Origin& origin,
+      GmailOtpFlow flow,
       ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       base::Time expiration,
@@ -71,12 +73,14 @@ class GmailOtpServiceImpl : public GmailOtpService {
   void StartCachedOtpCheck(ExpiringSubscriptionHandle check_handle,
                            std::vector<OneTimeToken> tokens,
                            size_t current_index,
+                           GmailOtpFlow flow,
                            ukm::SourceId ukm_source_id,
                            bool allow_psl_matching,
                            GetFreshestCachedOtpCallback callback);
   void OnCachedTokenMatchChecked(ExpiringSubscriptionHandle check_handle,
                                  std::vector<OneTimeToken> tokens,
                                  size_t current_index,
+                                 GmailOtpFlow flow,
                                  ukm::SourceId ukm_source_id,
                                  bool allow_psl_matching,
                                  GetFreshestCachedOtpCallback callback,
@@ -86,6 +90,7 @@ class GmailOtpServiceImpl : public GmailOtpService {
 
   void NotifySubscriber(
       const ScopedDomainMatcherCleanup* cleanup,
+      GmailOtpFlow flow,
       ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       IncomingTokenCallback callback,
@@ -93,7 +98,8 @@ class GmailOtpServiceImpl : public GmailOtpService {
   void OnBackendTokenReceived(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
   void OnBackendSubscriptionExpired();
-  void OnSubscriberDomainMatchChecked(ukm::SourceId ukm_source_id,
+  void OnSubscriberDomainMatchChecked(GmailOtpFlow flow,
+                                      ukm::SourceId ukm_source_id,
                                       bool allow_psl_matching,
                                       IncomingTokenCallback callback,
                                       OneTimeToken token,
