@@ -281,7 +281,6 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   uint64_t frames_processed_ = 0;
 
   // Tracks CDM file IO related states.
-  int last_read_file_size_kb_ = 0;
   bool file_size_uma_reported_ = false;
 
   // Tracks UKM related data.

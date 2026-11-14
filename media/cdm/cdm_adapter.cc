@@ -865,13 +865,6 @@ void CdmAdapter::OnRejectPromise(uint32_t promise_id,
   // they may be used multiple times in one promise chain that involves IPC.
   ReportSystemCodeUMA(cdm_config_.key_system, system_code);
 
-  // UMA to help track file related errors. See http://crbug.com/410630
-  if (system_code == 0x27) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Media.EME.CdmFileIO.FileSizeKBOnError",
-                                last_read_file_size_kb_, kSizeKBMin, kSizeKBMax,
-                                kSizeKBBuckets);
-  }
-
   CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.RejectPromise(promise_id,
                                      ToMediaCdmPromiseException(exception),
@@ -1259,13 +1252,13 @@ bool CdmAdapter::AudioFramesDataToAudioFrames(
 
 void CdmAdapter::OnFileRead(int file_size_bytes) {
   DCHECK_GE(file_size_bytes, 0);
-  last_read_file_size_kb_ = file_size_bytes / 1024;
 
-  if (file_size_uma_reported_)
+  if (file_size_uma_reported_) {
     return;
+  }
 
   UMA_HISTOGRAM_CUSTOM_COUNTS("Media.EME.CdmFileIO.FileSizeKBOnFirstRead",
-                              last_read_file_size_kb_, kSizeKBMin, kSizeKBMax,
+                              file_size_bytes / 1024, kSizeKBMin, kSizeKBMax,
                               kSizeKBBuckets);
   file_size_uma_reported_ = true;
 }

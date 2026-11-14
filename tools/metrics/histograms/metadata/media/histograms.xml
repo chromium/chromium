@@ -4117,17 +4117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
-    expires_after="2027-09-22">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Size in KB of the last file successfully read by the CDM through CDM FileIO
-    before a specific error happens. This is reported only when the error
-    happens, which should be rare.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnFirstRead" units="KB"
     expires_after="2027-09-22">
   <owner>xhwang@chromium.org</owner>
