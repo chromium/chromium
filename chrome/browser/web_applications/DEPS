@@ -1,8 +1,9 @@
-include_rules = {
+include_rules = [
   "+ash/edusumer",
   "+base",
   "+chrome/browser",
   "-chrome/browser/extensions",
+  "-chrome/browser/web_applications/isolated_web_apps",
   "-extensions",
   "+chrome/common/chromeos/extensions",
   "+components/dbus",
@@ -19,7 +20,7 @@ include_rules = {
   "+third_party/fuzztest",
   "+third_party/liburlpattern",
   "+url",
-}
+]
 
 specific_include_rules = {
   "system_media_controls_bridge_browsertest.cc": [
@@ -39,10 +40,12 @@ specific_include_rules = {
   ],
   ".*unittest\\.(cc|h)": [
     "+chrome/browser/extensions",
+    "+chrome/browser/web_applications/isolated_web_apps",
     "+extensions",
   ],
   ".*browsertest\\.(cc|h)": [
     "+chrome/browser/extensions",
+    "+chrome/browser/web_applications/isolated_web_apps",
     "+extensions",
   ],
 }
