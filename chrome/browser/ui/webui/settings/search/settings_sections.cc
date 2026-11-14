@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/ui/webui/settings/search/appearance_section.h"
+#include "chrome/browser/ui/webui/settings/search/security_section.h"
 #include "chrome/browser/ui/webui/settings/search/settings_section.h"
 
 namespace settings_search {
@@ -20,6 +21,7 @@ std::vector<std::unique_ptr<SettingsSection>> CreateSettingsSections(
   CHECK(profile);
   std::vector<std::unique_ptr<SettingsSection>> sections;
   sections.push_back(std::make_unique<AppearanceSection>(registry, profile));
+  sections.push_back(std::make_unique<SecuritySection>(registry, profile));
   return sections;
 }
 

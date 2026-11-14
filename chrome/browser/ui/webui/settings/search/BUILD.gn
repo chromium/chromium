@@ -9,6 +9,8 @@ source_set("search") {
   sources = [
     "appearance_section.cc",
     "appearance_section.h",
+    "security_section.cc",
+    "security_section.h",
     "settings_search_handler.cc",
     "settings_search_handler.h",
     "settings_search_item.cc",
@@ -52,6 +54,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "appearance_section_unittest.cc",
+    "security_section_unittest.cc",
     "settings_search_handler_unittest.cc",
     "settings_search_registry_unittest.cc",
     "settings_section_unittest.cc",
@@ -65,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs/organizer",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//components/search",
     "//content/test:test_support",
@@ -79,6 +83,13 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ash/login/users:test_support",
       "//components/user_manager",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//device/fido",
+      "//device/fido/public",
     ]
   }
 

@@ -34,6 +34,9 @@ TEST(SettingsSectionsTest, CreateSettingsSectionsRegistersSections) {
   EXPECT_THAT(registry.GetItems(),
               Contains(Pointee(Property(&SettingsSearchItem::id,
                                         mojom::SettingId::kAppearance))));
+  EXPECT_THAT(registry.GetItems(),
+              Contains(Pointee(Property(&SettingsSearchItem::id,
+                                        mojom::SettingId::kSecurity))));
 }
 
 }  // namespace
