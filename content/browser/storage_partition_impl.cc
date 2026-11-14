@@ -3201,12 +3201,26 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     }
   }
 
+  // `storage_key_policy_matcher` cannot be evaluated in the network service,
+  // so a deletion that is scoped only by it is not applied to device bound
+  // sessions. See NetworkContext::ClearDeviceBoundSessionsSessionOnlyData().
   if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
-      device_bound_session_manager) {
+      device_bound_session_manager &&
+      (filter_builder || storage_key_policy_matcher.is_null())) {
+    network::mojom::ClearDataFilterPtr filter;
+    if (filter_builder) {
+      filter = filter_builder->BuildNetworkServiceFilter();
+    } else if (!storage_key_origin_empty) {
+      // TODO(crbug.com/329705715): `ClearDataFilter` does not support storage
+      // partitioning yet, so clearing a third-party `StorageKey` clears the
+      // sessions for `storage_key.origin()`.
+      filter = network::mojom::ClearDataFilter::New();
+      filter->type = network::mojom::ClearDataFilter::Type::DELETE_MATCHES;
+      filter->origins.push_back(storage_key.origin());
+    }
     device_bound_session_manager->DeleteAllSessions(
         net::device_bound_sessions::DeletionReason::kStoragePartitionCleared,
-        begin, end,
-        filter_builder ? filter_builder->BuildNetworkServiceFilter() : nullptr,
+        begin, end, std::move(filter),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(CreateTaskCompletionClosure(
             TracingDataType::kDeviceBoundSessions)));
   }

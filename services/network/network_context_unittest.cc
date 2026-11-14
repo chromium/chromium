@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
@@ -117,7 +118,18 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "crypto/sign.h"
+#include "net/device_bound_sessions/registration_fetcher.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_result.h"
+#include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/test_support.h"
+#include "net/device_bound_sessions/unexportable_key_service_factory.h"
+#include "net/log/net_log_with_source.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #include "net/disk_cache/buildflags.h"
@@ -2567,6 +2579,217 @@ TEST_F(NetworkContextTest,
                                  net::SiteForCookies::FromOrigin(origin)));
   manager.FlushForTesting();
   EXPECT_FALSE(manager.is_connected());
+}
+
+// Makes `SessionService::Create` independent of the platform key provider
+// and of whatever an earlier test cached in `UnexportableKeyServiceFactory`.
+class ScopedFakeDeviceBoundSessionKeyService {
+ public:
+  ScopedFakeDeviceBoundSessionKeyService() {
+    net::device_bound_sessions::UnexportableKeyServiceFactory::GetInstance()
+        ->SetUnexportableKeyFactoryForTesting(&GetKeyService);
+  }
+  ~ScopedFakeDeviceBoundSessionKeyService() {
+    net::device_bound_sessions::UnexportableKeyServiceFactory::GetInstance()
+        ->SetUnexportableKeyFactoryForTesting(nullptr);
+  }
+
+ private:
+  static unexportable_keys::UnexportableKeyService* GetKeyService() {
+    static base::NoDestructor<unexportable_keys::FakeUnexportableKeyService>
+        key_service;
+    return key_service.get();
+  }
+};
+
+// Registers a device bound session on the origin of `url` using a test
+// fetcher that completes synchronously. The session is site-scoped when
+// `include_site` is true and origin-scoped otherwise.
+void RegisterDeviceBoundSessionForTesting(
+    net::device_bound_sessions::SessionService& service,
+    const GURL& url,
+    bool include_site = true) {
+  net::device_bound_sessions::ScopedTestRegistrationFetcher scoped_fetcher(
+      base::BindRepeating(
+          [](const GURL& url, bool include_site,
+             net::device_bound_sessions::RegistrationFetcher::
+                 RegistrationCompleteCallback callback) {
+            std::move(callback).Run(
+                nullptr,
+                net::device_bound_sessions::RegistrationResult(
+                    net::device_bound_sessions::Session::CreateIfValid(
+                        net::device_bound_sessions::SessionParams{
+                            .session_id = "session_id",
+                            .fetcher_url = url.Resolve("/refresh"),
+                            .refresh_url = url.Resolve("/refresh").spec(),
+                            .scope = {.include_site = include_site,
+                                      .origin =
+                                          url::Origin::Create(url).Serialize()},
+                            .credentials = {{
+                                .name = "test_cookie",
+                                .attributes = "secure",
+                            }},
+                        })));
+          },
+          url, include_site));
+  service.RegisterBoundSession(
+      base::NullCallback(),
+      net::device_bound_sessions::RegistrationFetcherParam::
+          CreateInstanceForTesting(url, {crypto::sign::ECDSA_SHA256},
+                                   "challenge",
+                                   /*authorization=*/std::nullopt),
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      net::SiteForCookies(), net::NetLogWithSource(),
+      /*original_request_initiator=*/std::nullopt);
+}
+
+std::vector<net::SchemefulSite> GetDeviceBoundSessionSites(
+    net::device_bound_sessions::SessionService& service) {
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      future;
+  service.GetAllSessionsAsync(future.GetCallback());
+  std::vector<net::SchemefulSite> sites;
+  for (const auto& key : future.Get()) {
+    sites.push_back(key.site);
+  }
+  return sites;
+}
+
+TEST_F(NetworkContextTest, ClearDeviceBoundSessionsSessionOnlyData) {
+  ScopedFakeDeviceBoundSessionKeyService scoped_key_service;
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->device_bound_sessions_enabled = true;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  net::device_bound_sessions::SessionService* service =
+      network_context->url_request_context()->device_bound_session_service();
+  ASSERT_TRUE(service);
+
+  const GURL kSessionOnlyUrl("https://session-only.test/");
+  const GURL kPersistentUrl("https://persistent.test/");
+  RegisterDeviceBoundSessionForTesting(*service, kSessionOnlyUrl);
+  RegisterDeviceBoundSessionForTesting(*service, kPersistentUrl);
+  ASSERT_THAT(
+      GetDeviceBoundSessionSites(*service),
+      testing::UnorderedElementsAre(net::SchemefulSite(kSessionOnlyUrl),
+                                    net::SchemefulSite(kPersistentUrl)));
+
+  base::RunLoop run_loop;
+  network_context->cookie_manager()->SetContentSettings(
+      ContentSettingsType::COOKIES,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(kSessionOnlyUrl),
+          ContentSettingsPattern::Wildcard(),
+          base::Value(CONTENT_SETTING_SESSION_ONLY),
+          content_settings::ProviderType::kNone, false)},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  base::test::TestFuture<void> future;
+  network_context->ClearDeviceBoundSessionsSessionOnlyData(
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(GetDeviceBoundSessionSites(*service),
+              ElementsAre(net::SchemefulSite(kPersistentUrl)));
+}
+
+// A session belongs to its origin. An exact-host delete-on-exit rule for a
+// site does not cover a host cookie on a subdomain, so it keeps an
+// origin-scoped session on that subdomain even though it deletes domain
+// cookies for the site.
+TEST_F(NetworkContextTest,
+       ClearDeviceBoundSessionsSessionOnlyDataExactHostRuleForSite) {
+  ScopedFakeDeviceBoundSessionKeyService scoped_key_service;
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->device_bound_sessions_enabled = true;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  net::device_bound_sessions::SessionService* service =
+      network_context->url_request_context()->device_bound_session_service();
+  ASSERT_TRUE(service);
+
+  const GURL kSubdomainUrl("https://accounts.session-only.test/");
+  const GURL kPersistentUrl("https://persistent.test/");
+  RegisterDeviceBoundSessionForTesting(*service, kSubdomainUrl,
+                                       /*include_site=*/false);
+  RegisterDeviceBoundSessionForTesting(*service, kPersistentUrl);
+  ASSERT_THAT(
+      GetDeviceBoundSessionSites(*service),
+      testing::UnorderedElementsAre(net::SchemefulSite(kSubdomainUrl),
+                                    net::SchemefulSite(kPersistentUrl)));
+
+  base::RunLoop run_loop;
+  network_context->cookie_manager()->SetContentSettings(
+      ContentSettingsType::COOKIES,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromString("session-only.test"),
+          ContentSettingsPattern::Wildcard(),
+          base::Value(CONTENT_SETTING_SESSION_ONLY),
+          content_settings::ProviderType::kNone, false)},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The rule does not cover a host cookie on the subdomain, only domain
+  // cookies for the site.
+  DeleteCookiePredicate cookie_predicate =
+      network_context->cookie_manager()
+          ->cookie_settings()
+          .CreateDeleteCookieOnExitPredicate();
+  ASSERT_FALSE(cookie_predicate.Run(kSubdomainUrl.host(),
+                                    net::CookieSourceScheme::kSecure));
+  ASSERT_TRUE(cookie_predicate.Run(".session-only.test",
+                                   net::CookieSourceScheme::kSecure));
+
+  base::test::TestFuture<void> future;
+  network_context->ClearDeviceBoundSessionsSessionOnlyData(
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(
+      GetDeviceBoundSessionSites(*service),
+      testing::UnorderedElementsAre(net::SchemefulSite(kSubdomainUrl),
+                                    net::SchemefulSite(kPersistentUrl)));
+}
+
+TEST_F(NetworkContextTest,
+       ClearDeviceBoundSessionsSessionOnlyDataNoSessionOnlyRules) {
+  ScopedFakeDeviceBoundSessionKeyService scoped_key_service;
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->device_bound_sessions_enabled = true;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  net::device_bound_sessions::SessionService* service =
+      network_context->url_request_context()->device_bound_session_service();
+  ASSERT_TRUE(service);
+
+  const GURL kUrl("https://example.test/");
+  RegisterDeviceBoundSessionForTesting(*service, kUrl);
+
+  base::test::TestFuture<void> future;
+  network_context->ClearDeviceBoundSessionsSessionOnlyData(
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(GetDeviceBoundSessionSites(*service),
+              ElementsAre(net::SchemefulSite(kUrl)));
+}
+
+TEST_F(NetworkContextTest, ClearDeviceBoundSessionsSessionOnlyDataDisabled) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->device_bound_sessions_enabled = false;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  base::test::TestFuture<void> future;
+  network_context->ClearDeviceBoundSessionsSessionOnlyData(
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

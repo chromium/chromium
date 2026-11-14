@@ -294,7 +294,10 @@ class CONTENT_EXPORT StoragePartition {
   // * `filter_builder` is present if origin/domain filters are to be handled,
   //   otherwise should be nullptr.
   // * `storage_key_policy_matcher` is present if special storage policy is to
-  //   be handled, otherwise the callback should be null.
+  //   be handled, otherwise the callback should be null. It cannot be applied
+  //   to device bound sessions: like cookies, they are filtered by
+  //   `filter_builder` alone when it is present, and are not deleted when the
+  //   matcher is the only filter.
   //   The StorageKey matcher does not apply to cookies, instead use:
   // * `cookie_deletion_filter` identifies the cookies to delete and will be
   //   used if `remove_mask` has the REMOVE_DATA_MASK_COOKIES bit set. Note:

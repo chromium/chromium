@@ -395,6 +395,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       ClearSharedDictionaryCacheForIsolationKeyCallback callback) override {}
   void ClearSharedDictionarySessionOnlyData(
       ClearSharedDictionarySessionOnlyDataCallback callback) override {}
+  void ClearDeviceBoundSessionsSessionOnlyData(
+      ClearDeviceBoundSessionsSessionOnlyDataCallback callback) override {}
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
   void RegisterHttpCacheClient(
       const net::NetworkIsolationKey& key,

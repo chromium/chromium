@@ -195,6 +195,7 @@
 #include "services/network/url_request_context_builder_mojo.h"
 #include "services/network/web_transport.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
@@ -4226,6 +4227,40 @@ void NetworkContext::ClearSharedDictionarySessionOnlyData(
   shared_dictionary_manager_->ClearData(
       /*start_time=*/base::Time(), /*end_time=*/base::Time::Max(),
       std::move(url_matcher), std::move(callback));
+}
+
+void NetworkContext::ClearDeviceBoundSessionsSessionOnlyData(
+    ClearDeviceBoundSessionsSessionOnlyDataCallback callback) {
+  net::device_bound_sessions::SessionService* session_service =
+      url_request_context_->device_bound_session_service();
+  if (!session_service || !cookie_manager_) {
+    std::move(callback).Run();
+    return;
+  }
+  DeleteCookiePredicate cookie_predicate =
+      cookie_manager_->cookie_settings().CreateDeleteCookieOnExitPredicate();
+  if (!cookie_predicate) {
+    std::move(callback).Run();
+    return;
+  }
+  // A session belongs to its origin, so it is deleted when a host cookie on
+  // that origin would be deleted on exit. This matches how `OriginMatcher`
+  // scopes the other session-only data types.
+  auto origin_matcher = base::BindRepeating(
+      [](DeleteCookiePredicate predicate, const url::Origin& origin,
+         const net::SchemefulSite& site) {
+        net::CookieSourceScheme scheme =
+            GURL::SchemeIsCryptographic(origin.scheme())
+                ? net::CookieSourceScheme::kSecure
+                : net::CookieSourceScheme::kNonSecure;
+        return predicate.Run(origin.host(), scheme);
+      },
+      std::move(cookie_predicate));
+  session_service->DeleteAllSessions(
+      net::device_bound_sessions::DeletionReason::kStoragePartitionCleared,
+      /*created_after_time=*/std::nullopt,
+      /*created_before_time=*/std::nullopt, std::move(origin_matcher),
+      std::move(callback));
 }
 
 void NetworkContext::GetSharedDictionaryUsageInfo(

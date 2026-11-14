@@ -1334,6 +1334,10 @@ interface NetworkContext {
   // with session-only cookie policy.
   ClearSharedDictionarySessionOnlyData() => ();
 
+  // Clears device bound sessions for sites configured with session-only cookie
+  // policy.
+  ClearDeviceBoundSessionsSessionOnlyData() => ();
+
   // Registers a `SharedHttpCacheClientFactory` remote for `key` to enable the
   // Renderer-Accessible HTTP Cache. Transient `NetworkIsolationKey`s are
   // ignored.

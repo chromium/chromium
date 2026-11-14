@@ -9,7 +9,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -19,6 +23,11 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_feature_histogram_tester.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -26,6 +35,7 @@
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -40,11 +50,14 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
@@ -118,6 +131,59 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
     return WasLatestNavigationValid();
   }
 
+  // Registers a session for `GetURL("/")` and waits for it to exist.
+  void RegisterSession() {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(NavigateToUrl(GetURL("/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  std::vector<SessionKey> GetAllSessions() {
+    base::test::TestFuture<const std::vector<SessionKey>&> future;
+    browser()
+        ->GetProfile()
+        ->GetDefaultStoragePartition()
+        ->GetDeviceBoundSessionManager()
+        ->GetAllSessions(future.GetCallback());
+    return future.Get();
+  }
+
+  void SetDefaultCookieSetting(ContentSetting setting) {
+    CookieSettingsFactory::GetForProfile(browser()->GetProfile())
+        ->SetDefaultCookieSetting(setting);
+  }
+
+  void SetCookieSettingForHost(std::string_view host, ContentSetting setting) {
+    HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+        ->SetContentSettingCustomScope(
+            ContentSettingsPattern::FromString(std::string(host)),
+            ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+            setting);
+  }
+
+  void RunDeleteOnExit() {
+    base::RunLoop run_loop;
+    SessionDataDeleter deleter(browser()->GetProfile());
+    deleter.DeleteSessionOnlyData(/*skip_session_cookies=*/false,
+                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Clears device bound sessions through the `StorageKey` overload of
+  // `StoragePartition::ClearData()`, which is what DevTools
+  // Storage.clearDataForStorageKey uses.
+  void ClearDataForStorageKey(const GURL& url) {
+    base::RunLoop run_loop;
+    browser()->GetProfile()->GetDefaultStoragePartition()->ClearData(
+        content::StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        base::Time(), base::Time::Max(), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   bool WasLatestNavigationValid() {
     content::WebContents* tab =
@@ -181,6 +247,83 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
   EXPECT_EQ(histograms.GetCount(
                 blink::mojom::WebFeature::kDeviceBoundSessionRegistered),
             1);
+}
+
+// A default cookie setting of delete-on-exit deletes the session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, DeleteOnExitDefault) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  RunDeleteOnExit();
+
+  EXPECT_THAT(GetAllSessions(), testing::IsEmpty());
+}
+
+// An allow exception for the session's site keeps the session when the
+// default is delete-on-exit.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       DeleteOnExitDefaultWithAllowException) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  SetCookieSettingForHost(GetURL("/").host(), CONTENT_SETTING_ALLOW);
+  RunDeleteOnExit();
+
+  EXPECT_THAT(GetAllSessions(),
+              testing::ElementsAre(testing::Field(
+                  &SessionKey::site, net::SchemefulSite(GetURL("/")))));
+}
+
+// Delete-on-exit for an unrelated site must not delete this site's session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       DeleteOnExitForOtherSiteKeepsSession) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  SetCookieSettingForHost("b.test", CONTENT_SETTING_SESSION_ONLY);
+  RunDeleteOnExit();
+
+  EXPECT_THAT(GetAllSessions(),
+              testing::ElementsAre(testing::Field(
+                  &SessionKey::site, net::SchemefulSite(GetURL("/")))));
+}
+
+// Delete-on-exit for the session's site deletes the session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       DeleteOnExitForSessionSiteDeletesSession) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  SetCookieSettingForHost(GetURL("/").host(), CONTENT_SETTING_SESSION_ONLY);
+  RunDeleteOnExit();
+
+  EXPECT_THAT(GetAllSessions(), testing::IsEmpty());
+}
+
+// Clearing data for the session's storage key deletes the session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       ClearDataForStorageKeyDeletesSession) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  ClearDataForStorageKey(GetURL("/"));
+
+  EXPECT_THAT(GetAllSessions(), testing::IsEmpty());
+}
+
+// Clearing data for another storage key keeps the session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       ClearDataForOtherStorageKeyKeepsSession) {
+  RegisterSession();
+  ASSERT_THAT(GetAllSessions(), testing::SizeIs(1));
+
+  ClearDataForStorageKey(GURL("https://b.test/"));
+
+  EXPECT_THAT(GetAllSessions(),
+              testing::ElementsAre(testing::Field(
+                  &SessionKey::site, net::SchemefulSite(GetURL("/")))));
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {

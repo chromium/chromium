@@ -631,6 +631,7 @@ source_set("tests") {
     "//components/network_session_configurator/browser",
     "//components/os_crypt/browser:test_support",
     "//components/prefs:test_support",
+    "//components/unexportable_keys:test_support",
     "//components/variations:test_support",
     "//components/variations/net",
     "//components/vrp_flags:buildflags",

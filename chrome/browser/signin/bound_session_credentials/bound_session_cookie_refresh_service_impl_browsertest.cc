@@ -24,7 +24,9 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
@@ -34,6 +36,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -791,6 +797,54 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
   // The session should have been terminated.
   EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+}
+
+// Verifies that a bound session is deleted by the delete-on-exit cleanup when
+// its site is set to clear cookies on exit.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       DeleteOnExitDeletesSession) {
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromString(std::string(kDomain)),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+          CONTENT_SETTING_SESSION_ONLY);
+
+  base::RunLoop run_loop;
+  SessionDataDeleter deleter(browser()->GetProfile());
+  deleter.DeleteSessionOnlyData(/*skip_session_cookies=*/false,
+                                run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The session should have been terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+}
+
+// Verifies that the delete-on-exit cleanup for an unrelated site does not
+// terminate a bound session.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       DeleteOnExitForOtherSiteKeepsSession) {
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromString(std::string(kOtherDomain)),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+          CONTENT_SETTING_SESSION_ONLY);
+
+  base::RunLoop run_loop;
+  SessionDataDeleter deleter(browser()->GetProfile());
+  deleter.DeleteSessionOnlyData(/*skip_session_cookies=*/false,
+                                run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The session should not be terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
 }
 
 // Verifies that unrelated BTM deletions do not terminate a bound session.

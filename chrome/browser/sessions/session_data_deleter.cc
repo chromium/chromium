@@ -76,6 +76,7 @@ class SessionDataDeleterInternal
   void OnStorageDeletionDone() {}
   void OnMediaDeviceSaltDeletionDone() {}
   void OnSharedDictionaryDeletionDone() {}
+  void OnDeviceBoundSessionDeletionDone() {}
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -103,7 +104,11 @@ void SessionDataDeleterInternal::Run(
     content::StoragePartition* storage_partition,
     HostContentSettingsMap* host_content_settings_map) {
   if (storage_policy_.get() && storage_policy_->HasSessionOnlyOrigins()) {
-    // Cookies are not origin scoped, so they are handled separately.
+    // Cookies are not origin scoped, so they are handled separately. Device
+    // bound sessions in the network service cannot be matched against
+    // `OriginMatcher`, so `StoragePartition` skips them for this call and
+    // they are handled separately below. The bit stays in the mask so that
+    // `DataRemovalObserver`s still see it.
     const uint32_t removal_mask =
         content::StoragePartition::REMOVE_DATA_MASK_ALL &
         ~content::StoragePartition::REMOVE_DATA_MASK_COOKIES;
@@ -156,6 +161,10 @@ void SessionDataDeleterInternal::Run(
   storage_partition->GetNetworkContext()->ClearSharedDictionarySessionOnlyData(
       base::BindOnce(
           &SessionDataDeleterInternal::OnSharedDictionaryDeletionDone, this));
+
+  storage_partition->GetNetworkContext()
+      ->ClearDeviceBoundSessionsSessionOnlyData(base::BindOnce(
+          &SessionDataDeleterInternal::OnDeviceBoundSessionDeletionDone, this));
 
   // Note that from this point on |*this| is kept alive by scoped_refptr<>
   // references automatically taken by |Bind()|, so when the last callback

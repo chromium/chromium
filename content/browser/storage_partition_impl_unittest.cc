@@ -92,6 +92,7 @@
 #include "net/net_buildflags.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/mock_device_bound_session_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -1675,6 +1676,67 @@ TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessions) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
                        blink::StorageKey(), created_after_time,
                        created_before_time, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessionsForStorageKey) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  auto device_bound_session_manager =
+      std::make_unique<network::MockDeviceBoundSessionManager>();
+  network::MockDeviceBoundSessionManager* device_bound_session_manager_raw =
+      device_bound_session_manager.get();
+  partition->OverrideDeviceBoundSessionManagerForTesting(
+      std::move(device_bound_session_manager));
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.test"));
+  network::mojom::ClearDataFilterPtr filter;
+  EXPECT_CALL(*device_bound_session_manager_raw, DeleteAllSessions)
+      .WillOnce([&](net::device_bound_sessions::DeletionReason,
+                    std::optional<base::Time>, std::optional<base::Time>,
+                    network::mojom::ClearDataFilterPtr passed_filter,
+                    base::OnceClosure callback) {
+        filter = std::move(passed_filter);
+        std::move(callback).Run();
+      });
+
+  base::RunLoop run_loop;
+  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+                       blink::StorageKey::CreateFirstParty(kOrigin),
+                       base::Time(), base::Time::Max(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_TRUE(filter);
+  EXPECT_EQ(filter->type,
+            network::mojom::ClearDataFilter::Type::DELETE_MATCHES);
+  EXPECT_THAT(filter->origins, testing::ElementsAre(kOrigin));
+  EXPECT_THAT(filter->domains, testing::IsEmpty());
+}
+
+// A deletion scoped only by a StorageKeyPolicyMatcherFunction cannot be
+// expressed to the network service and must not fall back to deleting every
+// session.
+TEST_F(StoragePartitionImplTest,
+       RemoveDeviceBoundSessionsSkippedForPolicyMatcher) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  auto device_bound_session_manager =
+      std::make_unique<network::MockDeviceBoundSessionManager>();
+  network::MockDeviceBoundSessionManager* device_bound_session_manager_raw =
+      device_bound_session_manager.get();
+  partition->OverrideDeviceBoundSessionManagerForTesting(
+      std::move(device_bound_session_manager));
+
+  EXPECT_CALL(*device_bound_session_manager_raw, DeleteAllSessions).Times(0);
+
+  base::RunLoop run_loop;
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+      /*filter_builder=*/nullptr,
+      base::BindRepeating([](const blink::StorageKey&,
+                             storage::SpecialStoragePolicy*) { return true; }),
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
+      base::Time(), base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
 }
 #endif
