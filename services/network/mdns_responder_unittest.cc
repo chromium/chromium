@@ -5,6 +5,7 @@
 #include "services/network/mdns_responder.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -32,6 +33,7 @@
 #include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/mock_mdns_socket_factory.h"
 #include "net/dns/public/dns_protocol.h"
 #include "services/network/public/cpp/features.h"
@@ -748,6 +750,113 @@ TEST_F(MdnsResponderTest,
   socket_factory_.SimulateReceive(base::as_byte_span(query1));
   socket_factory_.SimulateReceive(base::as_byte_span(query2));
   RunUntilNoTasksRemain();
+}
+
+// Test that truncated mDNS responses do not parse stale trailing bytes left in
+// the socket receive buffer from a previous packet.
+TEST_F(MdnsResponderTest, TruncatedResponseDoesNotReadTrailingBufferBytes) {
+  const auto& addr1 = kPublicAddrs[0];
+  const auto& addr2 = kPublicAddrs[1];
+  const std::string name1 = CreateNameForAddress(0, addr1);
+  ASSERT_TRUE(client_[0].is_bound());
+
+  const std::string conflicting_response =
+      CreateResolutionResponse(kDefaultTtl, {{name1, addr2}});
+  net::DnsRecordParser parser(base::as_byte_span(conflicting_response),
+                              sizeof(net::dns_protocol::Header),
+                              /*num_records=*/1);
+  net::DnsResourceRecord answer_record;
+  ASSERT_TRUE(parser.ReadRecord(&answer_record));
+  const size_t answer_end_offset = parser.GetOffset();
+  ASSERT_GT(answer_end_offset, sizeof(net::dns_protocol::Header));
+
+  // Prime the socket receive buffer with the bytes of `packet`, clearing the
+  // response flag bit in the header so the priming packet itself is ignored as
+  // neither a valid query (qdcount == 0) nor a valid response.
+  auto prime_stale_buffer = [&](const std::string& packet) {
+    std::string stale_packet = packet;
+    stale_packet[2] &= ~(net::dns_protocol::kFlagResponse >> 8);
+    socket_factory_.SimulateReceive(base::as_byte_span(stale_packet));
+    RunUntilNoTasksRemain();
+    ASSERT_TRUE(client_[0].is_bound());
+  };
+
+  EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(0);
+
+  // Packet shorter than the DNS header.
+  prime_stale_buffer(conflicting_response);
+  socket_factory_.SimulateReceive(
+      base::as_byte_span(conflicting_response)
+          .first(sizeof(net::dns_protocol::Header) - 1));
+  RunUntilNoTasksRemain();
+  ASSERT_TRUE(client_[0].is_bound());
+
+  // Response truncated immediately after the DNS header (including with a
+  // large answer count).
+  prime_stale_buffer(conflicting_response);
+  socket_factory_.SimulateReceive(
+      base::as_byte_span(conflicting_response)
+          .first(sizeof(net::dns_protocol::Header)));
+  RunUntilNoTasksRemain();
+  ASSERT_TRUE(client_[0].is_bound());
+
+  std::string large_ancount_header =
+      conflicting_response.substr(0, sizeof(net::dns_protocol::Header));
+  large_ancount_header[6] = '\xff';
+  large_ancount_header[7] = '\xff';
+  prime_stale_buffer(conflicting_response);
+  socket_factory_.SimulateReceive(base::as_byte_span(large_ancount_header));
+  RunUntilNoTasksRemain();
+  ASSERT_TRUE(client_[0].is_bound());
+
+  // Response truncated 1 byte before the end of the answer record.
+  prime_stale_buffer(conflicting_response);
+  socket_factory_.SimulateReceive(
+      base::as_byte_span(conflicting_response).first(answer_end_offset - 1));
+  RunUntilNoTasksRemain();
+  ASSERT_TRUE(client_[0].is_bound());
+
+  // Response truncated right after the first byte (0xc0) of a 2-byte DNS name
+  // compression pointer in a second answer record.
+  const std::string non_conflicting_response =
+      CreateResolutionResponse(kDefaultTtl, {{name1, addr1}});
+  const std::array<uint8_t, 2> name_pointer =
+      net::CreateNamePointer(sizeof(net::dns_protocol::Header));
+  constexpr size_t kRecordTailSize =
+      net::dns_protocol::kResourceRecordSizeInBytesWithoutNameAndRData +
+      net::IPAddress::kIPv4AddressSize;
+  ASSERT_GT(answer_end_offset,
+            sizeof(net::dns_protocol::Header) + kRecordTailSize);
+  std::string two_answer_response =
+      non_conflicting_response.substr(0, answer_end_offset);
+  two_answer_response.append(base::as_string_view(name_pointer));
+  two_answer_response.append(conflicting_response.substr(
+      answer_end_offset - kRecordTailSize, kRecordTailSize));
+  two_answer_response[7] = 2;   // answer count = 2
+  two_answer_response[11] = 0;  // additional count = 0
+
+  prime_stale_buffer(two_answer_response);
+  socket_factory_.SimulateReceive(
+      base::as_byte_span(two_answer_response).first(answer_end_offset + 1));
+  RunUntilNoTasksRemain();
+  ASSERT_TRUE(client_[0].is_bound());
+
+  // Verify the responder still resolves queries for the owned name.
+  const std::string query1 = CreateMdnsQuery(0, name1);
+  const std::string expected_response1 =
+      CreateResolutionResponse(kDefaultTtl, {{name1, addr1}});
+  EXPECT_CALL(socket_factory_, OnSendTo(expected_response1)).Times(1);
+  socket_factory_.SimulateReceive(base::as_byte_span(query1));
+  RunUntilNoTasksRemain();
+
+  // Positive control: the full untruncated `two_answer_response` triggers
+  // conflict resolution.
+  const std::string expected_goodbye =
+      CreateResolutionResponse(base::TimeDelta(), {{name1, addr1}});
+  EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye)).Times(2);
+  socket_factory_.SimulateReceive(base::as_byte_span(two_answer_response));
+  RunUntilNoTasksRemain();
+  EXPECT_FALSE(client_[0].is_bound());
 }
 
 // Test that we stop sending response to the mDNS name generator service queries
