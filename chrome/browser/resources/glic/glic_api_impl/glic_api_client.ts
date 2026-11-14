@@ -1210,6 +1210,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.handler.setOnboardingCompleted();
   }
 
+  setGuestUrlQueryParam?: (key: string, value: string|null) => Promise<void>;
+
   isOnboardingCompleted?(): ObservableValue<boolean> {
     return this.onboardingCompleted;
   }

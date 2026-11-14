@@ -1427,6 +1427,15 @@ export declare interface GlicBrowserHost {
    * the web client, backed by Chrome preferences.
    */
   getClientStorage?(): GlicClientStorage;
+
+  /**
+   * Sets or clears (when `value` is null) a query parameter to append to
+   * subsequent Glic/GEiC guest URL loads for the active provider on this
+   * profile. Reserved keys (`hl`, `authuser`, `configId`, `location`),
+   * keys/values exceeding 256 bytes, or writes exceeding 32 parameters are
+   * silently ignored as a no-op.
+   */
+  setGuestUrlQueryParam?(key: string, value: string|null): Promise<void>;
 }
 
 /**
