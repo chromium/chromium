@@ -182,4 +182,66 @@ suite('CrRipple', function() {
       keydown('Enter');
     });
   });
+
+  test('AnimationsCancelledOnRemoval', async function() {
+    let animations: Animation[] = [];
+    await assertRipplesShown(1, () => {
+      pointerdown();
+      const rippleEl = ripple.shadowRoot.querySelector('.ripple')!;
+      assertTrue(!!rippleEl);
+      assertEquals(1, rippleEl.getAnimations().length);
+      assertEquals('running', rippleEl.getAnimations()[0]!.playState);
+
+      pointerup();
+      animations = rippleEl.getAnimations();
+      assertEquals(2, animations.length);
+    });
+
+    for (const animation of animations) {
+      assertEquals('idle', animation.playState);
+    }
+  });
+
+  test('AnimationsCancelledOnShowAndHoldDown', async function() {
+    pointerdown();
+    pointerup();
+    const firstRipple = ripple.shadowRoot.querySelector('.ripple')!;
+    assertTrue(!!firstRipple);
+    const firstAnimations = firstRipple.getAnimations();
+    assertEquals(2, firstAnimations.length);
+
+    ripple.showAndHoldDown();
+    assertEquals(0, ripple.shadowRoot.querySelectorAll('.ripple').length);
+    for (const animation of firstAnimations) {
+      assertEquals('idle', animation.playState);
+    }
+
+    await ripple.updateComplete;
+    assertEquals(1, ripple.shadowRoot.querySelectorAll('.ripple').length);
+  });
+
+  test('AnimationsCancelledOnDisconnect', async function() {
+    pointerdown();
+    pointerup();
+    const rippleEl = ripple.shadowRoot.querySelector('.ripple')!;
+    assertTrue(!!rippleEl);
+    const animations = rippleEl.getAnimations();
+    assertEquals(2, animations.length);
+
+    ripple.remove();
+    assertEquals(0, ripple.shadowRoot.querySelectorAll('.ripple').length);
+    for (const animation of animations) {
+      assertEquals('idle', animation.playState);
+    }
+
+    // Reconnect, call `showAndHoldDown()`, and disconnect in the same turn:
+    // `holdDown` remains true, while the pending Lit update must not spawn a
+    // detached ripple after removal.
+    document.body.appendChild(ripple);
+    ripple.showAndHoldDown();
+    ripple.remove();
+    await ripple.updateComplete;
+    assertEquals(0, ripple.shadowRoot.querySelectorAll('.ripple').length);
+    assertTrue(ripple.holdDown);
+  });
 });

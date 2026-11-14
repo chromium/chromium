@@ -41,6 +41,9 @@ export class CrRippleElement extends CrLitElement {
   accessor noink: boolean = false;
 
   private ripples_: Element[] = [];
+  // Track `Animation` instances explicitly because `ripple.getAnimations()`
+  // returns `[]` once `<cr-ripple>` is disconnected in `disconnectedCallback`.
+  private animations_: Map<Element, Animation[]> = new Map();
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -92,6 +95,7 @@ export class CrRippleElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.removeAllRipples_();
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -127,14 +131,15 @@ export class CrRippleElement extends CrLitElement {
   }
 
   showAndHoldDown() {
-    this.ripples_.forEach(ripple => {
-      ripple.remove();
-    });
-    this.ripples_ = [];
+    this.removeAllRipples_();
     this.holdDown = true;
   }
 
   private showRipple_(e?: PointerEvent) {
+    if (!this.isConnected) {
+      return;
+    }
+
     const rect = this.getBoundingClientRect();
 
     const roundedCenterX = function() {
@@ -183,7 +188,7 @@ export class CrRippleElement extends CrLitElement {
     this.ripples_.push(ripple);
     this.shadowRoot.appendChild(ripple);
 
-    ripple.animate(
+    const enterAnimation = ripple.animate(
         {
           transform: [
             `translate(${startTranslate}) scale(0)`,
@@ -195,6 +200,25 @@ export class CrRippleElement extends CrLitElement {
           easing: 'cubic-bezier(.2, .9, .1, .9)',
           fill: 'forwards',
         });
+    this.animations_.set(ripple, [enterAnimation]);
+  }
+
+  private removeAllRipples_() {
+    for (const ripple of this.animations_.keys()) {
+      this.removeRipple_(ripple);
+    }
+    this.ripples_ = [];
+  }
+
+  private removeRipple_(ripple: Element) {
+    const animations = this.animations_.get(ripple);
+    if (animations) {
+      for (const animation of animations) {
+        animation.cancel();
+      }
+      this.animations_.delete(ripple);
+    }
+    ripple.remove();
   }
 
   uiUpAction() {
@@ -214,10 +238,10 @@ export class CrRippleElement extends CrLitElement {
       return;
     }
 
-    this.ripples_.forEach(function(ripple) {
+    this.ripples_.forEach(ripple => {
       const opacity = (ripple.computedStyleMap().get('opacity') ?? null) as CSSUnitValue | null;
       if (opacity === null) {
-        ripple.remove();
+        this.removeRipple_(ripple);
         return;
       }
 
@@ -229,9 +253,15 @@ export class CrRippleElement extends CrLitElement {
             duration: 150,
             fill: 'forwards',
           });
-      animation.finished.then(() => {
-        ripple.remove();
-      });
+      this.animations_.get(ripple)?.push(animation);
+      animation.finished.then(
+          () => {
+            this.removeRipple_(ripple);
+          },
+          () => {
+              // Ignore AbortError when `animation.cancel()` aborts the
+              // fade-out.
+          });
     });
     this.ripples_ = [];
   }
