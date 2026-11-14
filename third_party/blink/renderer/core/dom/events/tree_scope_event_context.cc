@@ -30,9 +30,11 @@
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/core/events/pointer_event_context.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -87,6 +89,14 @@ TouchEventContext& TreeScopeEventContext::EnsureTouchEventContext() {
   return *touch_event_context_;
 }
 
+PointerEventContext& TreeScopeEventContext::EnsurePointerEventContext() {
+  CHECK(RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled());
+  if (!pointer_event_context_) {
+    pointer_event_context_ = MakeGarbageCollected<PointerEventContext>();
+  }
+  return *pointer_event_context_;
+}
+
 TreeScopeEventContext::TreeScopeEventContext(TreeScope& tree_scope)
     : tree_scope_(tree_scope),
       containing_closed_shadow_tree_(nullptr),
@@ -99,6 +109,7 @@ void TreeScopeEventContext::Trace(Visitor* visitor) const {
   visitor->Trace(related_target_);
   visitor->Trace(event_path_);
   visitor->Trace(touch_event_context_);
+  visitor->Trace(pointer_event_context_);
   visitor->Trace(containing_closed_shadow_tree_);
   visitor->Trace(children_);
 }

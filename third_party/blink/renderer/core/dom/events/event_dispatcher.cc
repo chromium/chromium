@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event_context.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 namespace blink {
 
@@ -578,6 +580,14 @@ inline void EventDispatcher::DispatchEventPostProcess(
   // 16. If target's root is a shadow root, then set event's target attribute
   // and event's relatedTarget to null.
   event_->SetTarget(event_->GetEventPath().GetWindowEventContext().Target());
+  if (RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled()) {
+    if (PointerEventContext* pointer_event_context =
+            event_->GetEventPath()
+                .GetWindowEventContext()
+                .GetPointerEventContext()) {
+      pointer_event_context->HandleLocalEvents(*event_);
+    }
+  }
   if (!event_->RawTarget()) {
     event_->SetRelatedTarget(nullptr);
   }

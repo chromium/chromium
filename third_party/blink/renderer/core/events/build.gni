@@ -49,6 +49,8 @@ blink_core_sources_events = [
   "page_transition_event.h",
   "pointer_event.cc",
   "pointer_event.h",
+  "pointer_event_context.cc",
+  "pointer_event_context.h",
   "pointer_event_factory.cc",
   "pointer_event_factory.h",
   "pointer_event_util.cc",

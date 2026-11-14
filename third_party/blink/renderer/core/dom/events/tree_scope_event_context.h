@@ -40,6 +40,7 @@ namespace blink {
 class ContainerNode;
 class EventPath;
 class EventTarget;
+class PointerEventContext;
 template <typename NodeType>
 class StaticNodeTypeList;
 using StaticNodeList = StaticNodeTypeList<Node>;
@@ -65,6 +66,11 @@ class CORE_EXPORT TreeScopeEventContext final
     return touch_event_context_.Get();
   }
   TouchEventContext& EnsureTouchEventContext();
+
+  PointerEventContext* GetPointerEventContext() const {
+    return pointer_event_context_.Get();
+  }
+  PointerEventContext& EnsurePointerEventContext();
 
   GCedHeapVector<Member<EventTarget>>& EnsureEventPath(EventPath&);
 
@@ -95,6 +101,7 @@ class CORE_EXPORT TreeScopeEventContext final
   Member<EventTarget> related_target_;
   Member<GCedHeapVector<Member<EventTarget>>> event_path_;
   Member<TouchEventContext> touch_event_context_;
+  Member<PointerEventContext> pointer_event_context_;
   Member<TreeScopeEventContext> containing_closed_shadow_tree_;
 
   HeapVector<Member<TreeScopeEventContext>> children_;

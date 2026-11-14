@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/node_event_context.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/events/pointer_event_context.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -55,6 +56,9 @@ WindowEventContext::WindowEventContext(
   target_ = top_node_event_context.Target();
   related_target_ = top_node_event_context.RelatedTarget();
   touch_event_context_ = top_node_event_context.GetTouchEventContext();
+  if (RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled()) {
+    pointer_event_context_ = top_node_event_context.GetPointerEventContext();
+  }
 }
 
 bool WindowEventContext::HandleLocalEvents(Event& event) {
@@ -63,6 +67,10 @@ bool WindowEventContext::HandleLocalEvents(Event& event) {
 
   if (touch_event_context_) {
     touch_event_context_->HandleLocalEvents(event);
+  } else if (RuntimeEnabledFeatures::
+                 RetargetEventsInPointerEventListsEnabled() &&
+             pointer_event_context_) {
+    pointer_event_context_->HandleLocalEvents(event);
   }
   event.SetTarget(Target());
   event.SetCurrentTarget(Window());
@@ -77,6 +85,7 @@ void WindowEventContext::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
   visitor->Trace(related_target_);
   visitor->Trace(touch_event_context_);
+  visitor->Trace(pointer_event_context_);
 }
 
 }  // namespace blink

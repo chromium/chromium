@@ -102,6 +102,26 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
 
   HeapVector<Member<PointerEvent>> getCoalescedEvents();
   HeapVector<Member<PointerEvent>> getPredictedEvents();
+  const HeapVector<Member<PointerEvent>>& CoalescedEvents() const {
+    return coalesced_events_;
+  }
+  const HeapVector<Member<PointerEvent>>& PredictedEvents() const {
+    return predicted_events_;
+  }
+  void SetCoalescedEvents(
+      const HeapVector<Member<PointerEvent>>& coalesced_events) {
+    coalesced_events_ = coalesced_events;
+  }
+  void SetPredictedEvents(
+      const HeapVector<Member<PointerEvent>>& predicted_events) {
+    predicted_events_ = predicted_events;
+  }
+
+  // Clones a coalesced or predicted PointerEvent, leaving dispatch-only and
+  // nested-list attributes at their defaults per
+  // https://w3c.github.io/pointerevents/#populating-and-maintaining-the-coalesced-and-predicted-events-lists
+  PointerEvent* CloneCoalescedOrPredictedEvent() const;
+
   base::TimeTicks OldestPlatformTimeStamp() const;
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;

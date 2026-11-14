@@ -5682,6 +5682,13 @@
       status: "stable",
     },
     {
+      // Retarget coalesced and predicted events in PointerEvent across shadow
+      // boundaries.
+      // crbug.com/515272369
+      name: "RetargetEventsInPointerEventLists",
+      status: "stable",
+    },
+    {
       // If enabled, makes the root scrollbars' foreground elements follow the
       // browser
       name: "RootScrollbarFollowsBrowserTheme",

@@ -30,12 +30,15 @@
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event_context.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -418,6 +421,51 @@ void EventPath::AdjustTouchList(
     // hot path.
     // TODO(bikineev): Revisit after young generation is there.
     related_node_map.clear();
+  }
+}
+
+void EventPath::AdjustForPointerEvent(const PointerEvent& pointer_event) {
+  CHECK(RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled());
+  const HeapVector<Member<PointerEvent>>& coalesced_events =
+      pointer_event.CoalescedEvents();
+  const HeapVector<Member<PointerEvent>>& predicted_events =
+      pointer_event.PredictedEvents();
+  if (coalesced_events.empty() && predicted_events.empty()) {
+    return;
+  }
+
+  // Unlike TouchEvent (where each Touch can have a distinct target node that
+  // must be retargeted independently via RelatedTargetMap), coalesced and
+  // predicted events always share the parent PointerEvent's target. Therefore
+  // `tree_scope_event_context->Target()` already holds the retargeted target,
+  // and cloning is needed only across shadow boundaries (`i > 0`).
+  for (wtf_size_t i = 0; i < tree_scope_event_contexts_.size(); ++i) {
+    TreeScopeEventContext* tree_scope_event_context =
+        tree_scope_event_contexts_[i].Get();
+    PointerEventContext& pointer_event_context =
+        tree_scope_event_context->EnsurePointerEventContext();
+    EventTarget* adjusted_target = tree_scope_event_context->Target();
+    bool clone = i > 0;
+    AdjustPointerEventList(coalesced_events, clone, adjusted_target,
+                           pointer_event_context.CoalescedEvents());
+    AdjustPointerEventList(predicted_events, clone, adjusted_target,
+                           pointer_event_context.PredictedEvents());
+  }
+}
+
+void EventPath::AdjustPointerEventList(
+    const HeapVector<Member<PointerEvent>>& pointer_event_list,
+    bool clone,
+    EventTarget* adjusted_target,
+    HeapVector<Member<PointerEvent>>& adjusted_pointer_event_list) {
+  CHECK(RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled());
+  adjusted_pointer_event_list.reserve(pointer_event_list.size());
+  for (PointerEvent* pointer_event : pointer_event_list) {
+    if (clone) {
+      pointer_event = pointer_event->CloneCoalescedOrPredictedEvent();
+    }
+    pointer_event->SetTarget(adjusted_target);
+    adjusted_pointer_event_list.push_back(pointer_event);
   }
 }
 

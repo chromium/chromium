@@ -34,6 +34,7 @@ namespace blink {
 
 class EventTarget;
 class Node;
+class PointerEventContext;
 class TouchEventContext;
 
 class CORE_EXPORT NodeEventContext {
@@ -61,6 +62,9 @@ class CORE_EXPORT NodeEventContext {
   }
   TouchEventContext* GetTouchEventContext() const {
     return tree_scope_event_context_->GetTouchEventContext();
+  }
+  PointerEventContext* GetPointerEventContext() const {
+    return tree_scope_event_context_->GetPointerEventContext();
   }
 
   bool CurrentTargetSameAsTarget() const {

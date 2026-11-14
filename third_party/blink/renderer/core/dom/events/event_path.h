@@ -39,6 +39,7 @@ namespace blink {
 class Event;
 class EventTarget;
 class Node;
+class PointerEvent;
 class TouchEvent;
 class TouchList;
 class TreeScope;
@@ -102,7 +103,15 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
 
   void AdjustForRelatedTarget(Node&, EventTarget* related_target);
   void AdjustForReferenceTarget(Node&, EventTarget* source);
+
+  // Retargets Touch targets in `touches`, `targetTouches`, and
+  // `changedTouches` across shadow boundaries.
   void AdjustForTouchEvent(const TouchEvent&);
+
+  // Retargets coalesced and predicted PointerEvent targets across shadow
+  // boundaries.
+  void AdjustForPointerEvent(const PointerEvent&);
+
   // AdjustForDisabledFormControl will shrink this event path if there is a
   // disabled form control in it so that the disabled form control and its
   // parents are not included.
@@ -142,6 +151,11 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   void AdjustTouchList(const TouchList*,
                        HeapVector<Member<TouchList>> adjusted_touch_list,
                        const HeapVector<Member<TreeScope>>& tree_scopes);
+  void AdjustPointerEventList(
+      const HeapVector<Member<PointerEvent>>& pointer_event_list,
+      bool clone,
+      EventTarget* adjusted_target,
+      HeapVector<Member<PointerEvent>>& adjusted_pointer_event_list);
 
   TreeScopeEventContext* GetTreeScopeEventContext(TreeScope&);
   TreeScopeEventContext* EnsureTreeScopeEventContext(Node* current_target,
