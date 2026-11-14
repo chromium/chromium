@@ -146,6 +146,40 @@ class DataProtectionClipboardTest : public testing::Test {
         *contents()->GetPrimaryMainFrame());
   }
 
+  // A tab in a different profile than `contents()`.
+  content::WebContents* other_profile_contents() {
+    if (!other_profile_web_contents_) {
+      content::WebContents::CreateParams params(
+          profile_manager_.CreateTestingProfile("other-test-user"));
+      other_profile_web_contents_ = content::WebContents::Create(params);
+    }
+    return other_profile_web_contents_.get();
+  }
+
+  content::ClipboardEndpoint OtherProfileDestinationEndpoint() {
+    return content::ClipboardEndpoint::ForFrame(
+        ui::DataTransferEndpoint(GURL("https://destination.com")),
+        base::BindLambdaForTesting(
+            [this]() { return other_profile_contents()->GetBrowserContext(); }),
+        *other_profile_contents()->GetPrimaryMainFrame());
+  }
+
+  // Tracks `text` as having been replaced in the OS clipboard with
+  // `restriction_level` for the current clipboard sequence number, as a copy
+  // from a tab of `profile_` would, and returns the metadata of a paste of it.
+  ui::ClipboardMetadata TrackReplacedClipboardText(
+      std::u16string text,
+      data_controls::CopyRestrictionLevel restriction_level) {
+    content::ClipboardPasteData data;
+    data.text = std::move(text);
+    data_controls::LastReplacedClipboardDataObserver::GetInstance()
+        ->AddDataToNextSeqno(std::move(data), restriction_level);
+    ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    return {.size = 1234,
+            .format_type = ui::ClipboardFormatType::PlainTextType(),
+            .seqno = data_controls::GetLastReplacedClipboardData().seqno};
+  }
+
   content::ClipboardEndpoint CopyEndpoint(GURL url) {
     return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(std::move(url)),
@@ -182,6 +216,7 @@ class DataProtectionClipboardTest : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::WebContents> other_profile_web_contents_;
   base::test::ScopedFeatureList scoped_features_;
 #if defined(TOOLKIT_VIEWS)
   std::unique_ptr<views::LayoutProvider> layout_provider_ =
@@ -215,9 +250,10 @@ class DataProtectionClipboardDistilledURLTest
         ->NavigateAndCommit(distiller_url);
   }
 
-  void SetBlockCopyingFromSourceURLRule() {
-    data_controls::SetDataControls(profile_->GetPrefs(), {
-                                                             R"({
+  void SetBlockCopyingFromSourceURLRule(bool machine_scope = true) {
+    data_controls::SetDataControls(profile_->GetPrefs(),
+                                   {
+                                       R"({
         "sources": {
           "urls": ["source.com"]
         },
@@ -227,7 +263,8 @@ class DataProtectionClipboardDistilledURLTest
         "restrictions": [
           {"class": "CLIPBOARD", "level": "BLOCK"}
         ]
-    })"});
+    })"},
+                                   machine_scope);
   }
 
   void SetWarnCopyingFromSourceURLRule() {
@@ -248,6 +285,46 @@ class DataProtectionClipboardDistilledURLTest
  protected:
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
+};
+
+// Tests for `ReplacePasteToFindBar()` with data tracked as replaced in the OS
+// clipboard by a copy made from `source_page_`.
+class DataProtectionClipboardFindBarTest : public DataProtectionClipboardTest {
+ public:
+  void SetUp() override {
+    DataProtectionClipboardTest::SetUp();
+    source_page_ =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    content::WebContentsTester::For(source_page_.get())
+        ->NavigateAndCommit(GURL("https://source.com"));
+    other_profile_page_ = content::WebContentsTester::CreateTestWebContents(
+        profile_manager_.CreateTestingProfile("find-bar-other-user"), nullptr);
+    content::WebContentsTester::For(other_profile_page_.get())
+        ->NavigateAndCommit(GURL("https://other.com"));
+  }
+
+  // Puts `text` in the OS clipboard as a copy from `source_page_` would, so
+  // that the source of the clipboard resolves to that page.
+  void WriteClipboardTextFromSourcePage(std::u16string text) {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
+                                     std::make_unique<ui::DataTransferEndpoint>(
+                                         source_page_->GetLastCommittedURL()));
+    content::AddSourceDataToClipboardWriter(
+        writer, *source_page_->GetPrimaryMainFrame());
+    writer.WriteText(std::move(text));
+  }
+
+  std::optional<std::u16string> ReplacePasteToFindBarOf(
+      content::WebContents* web_contents) {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    ReplacePasteToFindBar(web_contents, future.GetCallback());
+    return future.Get();
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> source_page_;
+  std::unique_ptr<content::WebContents> other_profile_page_;
 };
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -428,6 +505,66 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       KeptInManagedProfile_PasteInSourceProfile) {
+  ui::ClipboardMetadata metadata = TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+
+  // Pasting in the profile the data was copied from restores it.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  auto source = SourceEndpoint();
+  auto destination = DestinationEndpoint();
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("placeholder", "", {}),
+                         future.GetCallback());
+  auto paste_data = future.Get();
+  ASSERT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"kept");
+}
+
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       KeptInManagedProfile_PasteInOtherProfile) {
+  ui::ClipboardMetadata metadata = TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+
+  // Another profile is outside of the boundary the data was kept in, so it
+  // gets what the OS clipboard holds instead.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  auto source = SourceEndpoint();
+  auto destination = OtherProfileDestinationEndpoint();
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("placeholder", "", {}),
+                         future.GetCallback());
+  auto paste_data = future.Get();
+  ASSERT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"placeholder");
+
+  // The same tab still gets the original data.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_EQ(same_tab_data.text, u"kept");
+}
+
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       KeptInManagedBrowser_PasteInOtherProfile) {
+  ui::ClipboardMetadata metadata = TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  // Data kept in the whole browser is restored in any of its profiles.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  auto source = SourceEndpoint();
+  auto destination = OtherProfileDestinationEndpoint();
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("placeholder", "", {}),
+                         future.GetCallback());
+  auto paste_data = future.Get();
+  ASSERT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"kept");
+}
+
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        PasteFrameUrlChainUsesInitiatingFrame) {
@@ -593,6 +730,70 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   ReplaceSameTabClipboardDataIfRequiredByPolicy(new_metadata.seqno,
                                                 same_tab_data);
   EXPECT_TRUE(same_tab_data.empty());
+}
+
+// A copy kept in managed Chrome by a Data Controls rule is tracked with the
+// scope of the rule's policy: the whole browser for a machine-level policy,
+// and only the profile the copy was made from for a profile-level one, which
+// decides whether other profiles get the data back when pasting it.
+class DataProtectionDataControlsReplacementScopeTest
+    : public DataProtectionClipboardTest {
+ public:
+  // Copies text from a `profile_` tab with a rule keeping it in managed Chrome
+  // set at the given scope, and returns the metadata of a paste of it.
+  ui::ClipboardMetadata CopyWithOsClipboardBlockRule(bool machine_scope) {
+    data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"]
+        },
+        "destinations": {
+          "os_clipboard": true
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"},
+                                   machine_scope);
+
+    base::test::TestFuture<const ui::ClipboardFormatType&,
+                           const content::ClipboardPasteData&,
+                           std::optional<std::u16string>>
+        copy_future;
+    IsClipboardCopyAllowedByPolicy(
+        CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+        MakeClipboardPasteData("kept", "", {}), copy_future.GetCallback());
+    EXPECT_TRUE(copy_future.Get<std::optional<std::u16string>>());
+
+    // Ties the kept data to the sequence number of the replacement.
+    ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    return {.size = 1234,
+            .format_type = ui::ClipboardFormatType::PlainTextType(),
+            .seqno = data_controls::GetLastReplacedClipboardData().seqno};
+  }
+
+  std::u16string PasteInOtherProfile(const ui::ClipboardMetadata& metadata) {
+    base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+    PasteIfAllowedByPolicy(
+        SourceEndpoint(), OtherProfileDestinationEndpoint(), metadata,
+        MakeClipboardPasteData("placeholder", "", {}), future.GetCallback());
+    return future.Get().value_or(content::ClipboardPasteData()).text;
+  }
+};
+
+TEST_F(DataProtectionDataControlsReplacementScopeTest, MachineLevelRule) {
+  ui::ClipboardMetadata metadata =
+      CopyWithOsClipboardBlockRule(/*machine_scope=*/true);
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  EXPECT_EQ(PasteInOtherProfile(metadata), u"kept");
+}
+
+TEST_F(DataProtectionDataControlsReplacementScopeTest, ProfileLevelRule) {
+  ui::ClipboardMetadata metadata =
+      CopyWithOsClipboardBlockRule(/*machine_scope=*/false);
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+  EXPECT_EQ(PasteInOtherProfile(metadata), u"placeholder");
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
@@ -1411,8 +1612,78 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest, CopyContentAna
       l10n_util::GetStringUTF16(
           IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  // The policy applies to the whole browser, so the data isn't confined to the
+  // profile it was copied from.
   EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
-            data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysisKeptInManagedChrome_ProfileLevelPolicy) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  // Scans made for a policy applied at the profile level, as opposed to the
+  // browser level, are flagged as such in their settings.
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindLambdaForTesting(
+          [](content::WebContents* web_contents,
+             enterprise_connectors::ContentAnalysisDelegate::Data data,
+             enterprise_connectors::ContentAnalysisDelegate::CompletionCallback
+                 callback,
+             enterprise_connectors::DeepScanAccessPoint access_point) {
+            data.settings.per_profile = true;
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                Create(base::DoNothing(),
+                       base::BindRepeating([](const std::string&,
+                                              const base::FilePath&) {
+                         return enterprise_connectors::test::
+                             FakeContentAnalysisDelegate::DlpResponse(
+                                 enterprise_connectors::
+                                     ContentAnalysisResponse::Result::SUCCESS,
+                                 "dlp",
+                                 enterprise_connectors::
+                                     ContentAnalysisResponse::Result::
+                                         TriggeredRule::KEEP_IN_MANAGED_CHROME);
+                       }),
+                       "dm_token", web_contents, std::move(data),
+                       std::move(callback), access_point);
+          }));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_TRUE(future.Get<1>().text.empty());
+  auto replacement = future.Get<2>();
+  EXPECT_TRUE(replacement.has_value());
+  EXPECT_EQ(
+      *replacement,
+      l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  // Other profiles are outside of what a profile-level policy manages, so the
+  // data is kept in the profile it was copied from.
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
@@ -1875,6 +2146,30 @@ TEST_F(DataProtectionClipboardDistilledURLTest, ReplaceCopyFromFindBar_Block) {
   EXPECT_TRUE(ReplaceCopyFromFindBar(u"text", test_web_contents_.get(),
                                      &copy_replacement));
   EXPECT_FALSE(copy_replacement.empty());
+
+  // The rule's policy applies to the whole browser, so that is where the copy
+  // is kept.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  EXPECT_EQ(
+      data_controls::GetLastReplacedClipboardData().clipboard_paste_data.text,
+      u"text");
+}
+
+TEST_F(DataProtectionClipboardDistilledURLTest,
+       ReplaceCopyFromFindBar_BlockByProfileLevelRule) {
+  SetBlockCopyingFromSourceURLRule(/*machine_scope=*/false);
+  std::u16string copy_replacement;
+  EXPECT_TRUE(ReplaceCopyFromFindBar(u"text", test_web_contents_.get(),
+                                     &copy_replacement));
+  EXPECT_FALSE(copy_replacement.empty());
+
+  // The rule's policy only applies to the profile the copy was made from, so
+  // the copy is kept in that profile alone.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
 }
 
 TEST_F(DataProtectionClipboardDistilledURLTest, ReplaceCopyFromFindBar_Warn) {
@@ -2013,6 +2308,53 @@ TEST_F(DataProtectionClipboardTest, PrepopulateFindBarTextAllowed) {
 
   EXPECT_TRUE(PrepopulateFindBarTextAllowed(source, destination_allowed));
   EXPECT_FALSE(PrepopulateFindBarTextAllowed(source, destination_blocked));
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, NoReplacedData) {
+  WriteClipboardTextFromSourcePage(u"text");
+  EXPECT_FALSE(ReplacePasteToFindBarOf(source_page_.get()));
+  EXPECT_FALSE(ReplacePasteToFindBarOf(other_profile_page_.get()));
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, KeptInManagedBrowser) {
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  // Data kept in the whole browser is restored in the find bar of any profile.
+  EXPECT_EQ(ReplacePasteToFindBarOf(source_page_.get()), u"kept");
+  EXPECT_EQ(ReplacePasteToFindBarOf(other_profile_page_.get()), u"kept");
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, KeptInManagedProfile) {
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+
+  // Data kept in the profile it was copied from is only restored in the find
+  // bar of that profile.
+  EXPECT_EQ(ReplacePasteToFindBarOf(source_page_.get()), u"kept");
+  EXPECT_FALSE(ReplacePasteToFindBarOf(other_profile_page_.get()));
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, Blocked) {
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(u"blocked",
+                             data_controls::CopyRestrictionLevel::kBlocked);
+
+  // Blocked data is never restored in the find bar, even for the page it was
+  // copied from, as it could then be copied back out of the find bar.
+  EXPECT_FALSE(ReplacePasteToFindBarOf(source_page_.get()));
+  EXPECT_FALSE(ReplacePasteToFindBarOf(other_profile_page_.get()));
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, OngoingScan) {
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(u"scanning",
+                             data_controls::CopyRestrictionLevel::kOngoingScan);
+
+  EXPECT_FALSE(ReplacePasteToFindBarOf(source_page_.get()));
+  EXPECT_FALSE(ReplacePasteToFindBarOf(other_profile_page_.get()));
 }
 
 class DataProtectionClipboardInitialEmptyDocumentPopupTest

@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* source_contents = source_tab->GetContents();
 
   // Real copy writes OS replacement text while caching original text under
-  // CopyRestrictionLevel::kKeptInManagedChrome.
+  // CopyRestrictionLevel::kKeptInManagedBrowser.
   CopyTextViaContentBrowserClient(source_contents->GetPrimaryMainFrame(),
                                   u"corp internal secret");
   const std::u16string os_clipboard_text = ReadCurrentClipboardText();
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(
           ui::ClipboardBuffer::kCopyPaste);
   ASSERT_EQ(data_controls::GetLastReplacedClipboardData().seqno, copy_seqno);
   ASSERT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
-            data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
 
   // Switch back to `glic_tab` and open Glic while `source_tab` remains open in
   // the background, so closing `source_tab` later does not background
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(source_endpoint.web_contents(), nullptr);
   ASSERT_EQ(source_endpoint.browser_context(), nullptr);
 
-  // Closed-source-tab paste with CopyRestrictionLevel::kKeptInManagedChrome
+  // Closed-source-tab paste with CopyRestrictionLevel::kKeptInManagedBrowser
   // blocks in ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy and
   // shows kClipboardPasteBlock instead of leaking the replacement warning
   // string into Glic.
@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(
             ui::ClipboardBuffer::kCopyPaste);
     ASSERT_EQ(data_controls::GetLastReplacedClipboardData().seqno, copy_seqno);
     ASSERT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
-              data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+              data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
 
     content::ClipboardEndpoint source = content::CreateClipboardEndpoint(
         *source_contents->GetPrimaryMainFrame());
@@ -1059,6 +1059,113 @@ IN_PROC_BROWSER_TEST_F(
     histogram_tester.ExpectUniqueSample(
         "Glic.Paste.FailedEligibilityReason.Web",
         0 /* kPageContextIneligible */, 1);
+  }
+}
+
+// A copy kept in managed Chrome by a profile-level Data Controls rule is only
+// restored in the Glic of the profile it was copied from. With
+// kGlicCrossProfileTransfer, Glic takes pastes from other browser contexts (an
+// Incognito tab here), which are outside of the profile the copy was kept in,
+// so such a paste blocks with kClipboardPasteBlock instead of handing Glic the
+// replacement warning string.
+IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
+                       KeptInManagedProfileCopyBlocksPasteFromOtherProfile) {
+  data_controls::SetDataControls(GetProfile()->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["*"]
+        },
+        "destinations": {
+          "os_clipboard": true
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"},
+                                 /*machine_scope=*/false);
+
+  const GURL eligible_url =
+      embedded_test_server()->GetURL("eligible.example.com", "/title1.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  content::WebContents* source_contents = active_tab->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(source_contents, eligible_url));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  content::WebContents* glic_guest = GetReadyGuest();
+  ASSERT_TRUE(glic_guest);
+  content::ClipboardEndpoint destination = MakeGuestDestination(glic_guest);
+
+  // Copies kept in the profile are restored in its own Glic.
+  {
+    CopyTextViaContentBrowserClient(source_contents->GetPrimaryMainFrame(),
+                                    u"kept in profile secret");
+    const std::u16string replacement = ReadCurrentClipboardText();
+    ASSERT_NE(replacement, u"kept in profile secret");
+    const ui::ClipboardSequenceNumberToken copy_seqno =
+        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+            ui::ClipboardBuffer::kCopyPaste);
+    ASSERT_EQ(data_controls::GetLastReplacedClipboardData().seqno, copy_seqno);
+    ASSERT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+              data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+
+    content::ClipboardPasteData paste_data;
+    paste_data.text = replacement;
+    base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+    content::GetContentClientForTesting()
+        ->browser()
+        ->IsClipboardPasteAllowedByPolicy(
+            content::CreateClipboardEndpoint(
+                *source_contents->GetPrimaryMainFrame()),
+            destination,
+            {.size = replacement.size() * sizeof(char16_t),
+             .format_type = ui::ClipboardFormatType::PlainTextType(),
+             .seqno = copy_seqno},
+            std::move(paste_data), future.GetCallback());
+    std::optional<content::ClipboardPasteData> restored = future.Get();
+    ASSERT_TRUE(restored.has_value());
+    EXPECT_EQ(restored->text, u"kept in profile secret");
+  }
+
+  // Copies kept in another browser context are blocked, even though its page
+  // context is eligible and the source tab is still open.
+  enterprise_data_protection::PasteAllowedRequest::CleanupRequestsForTesting();
+  BrowserWindowInterface* incognito_browser =
+      InProcessBrowserTest::CreateIncognitoBrowser();
+  content::WebContents* incognito_contents =
+      incognito_browser->tab_strip_model()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(incognito_contents, eligible_url));
+  {
+    glic::StageClipboardCopyEligibility(true);
+    CopyTextViaContentBrowserClient(incognito_contents->GetPrimaryMainFrame(),
+                                    u"kept in incognito secret");
+    const std::u16string replacement = ReadCurrentClipboardText();
+    ASSERT_NE(replacement, u"kept in incognito secret");
+    const ui::ClipboardSequenceNumberToken copy_seqno =
+        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+            ui::ClipboardBuffer::kCopyPaste);
+    ASSERT_EQ(data_controls::GetLastReplacedClipboardData().seqno, copy_seqno);
+    ASSERT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+              data_controls::CopyRestrictionLevel::kKeptInManagedProfile);
+
+    data_controls::DesktopDataControlsDialogTestHelper block_dialog(
+        data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+    content::ClipboardPasteData paste_data;
+    paste_data.text = replacement;
+    base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+    content::GetContentClientForTesting()
+        ->browser()
+        ->IsClipboardPasteAllowedByPolicy(
+            content::CreateClipboardEndpoint(
+                *incognito_contents->GetPrimaryMainFrame()),
+            destination,
+            {.size = replacement.size() * sizeof(char16_t),
+             .format_type = ui::ClipboardFormatType::PlainTextType(),
+             .seqno = copy_seqno},
+            std::move(paste_data), future.GetCallback());
+
+    block_dialog.WaitForDialogToInitialize();
+    EXPECT_EQ(future.Get(), std::nullopt);
+    block_dialog.CloseDialogWithoutBypass();
+    block_dialog.WaitForDialogToClose();
   }
 }
 

@@ -249,6 +249,28 @@ class DataControlsClipboardUtilsBrowserTestBase
 
   virtual bool use_workspace_urls() const = 0;
 
+  // The level a copy kept in managed Chrome by the content analysis policy set
+  // up with `machine_scope()` is tracked with: "managed Chrome" is only the
+  // profile the copy was made from when the policy applies to that profile,
+  // and the whole browser when it applies to the browser. On ChromeOS connector
+  // policies always apply to the whole browser, whichever scope they are set
+  // with, see `ConnectorsService::GetPolicyScope()`.
+  data_controls::CopyRestrictionLevel ExpectedContentAnalysisKeptLevel() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return data_controls::CopyRestrictionLevel::kKeptInManagedBrowser;
+#else
+    return ExpectedDataControlsKeptLevel();
+#endif
+  }
+
+  // Same for a copy kept in managed Chrome by a Data Controls rule set up with
+  // `machine_scope()`, which follows the scope of its policy on every platform.
+  data_controls::CopyRestrictionLevel ExpectedDataControlsKeptLevel() const {
+    return machine_scope()
+               ? data_controls::CopyRestrictionLevel::kKeptInManagedBrowser
+               : data_controls::CopyRestrictionLevel::kKeptInManagedProfile;
+  }
+
   const char* test_url_0() const {
     return use_workspace_urls() ? kWorkspaceUrlForUser0 : kNonWorkspaceUrl;
   }
@@ -2152,7 +2174,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Paste) {
   data.text = u"replaced";
   data_controls::LastReplacedClipboardDataObserver::GetInstance()
       ->AddDataToNextSeqno(
-          data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+          data, data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
   base::test::TestFuture<std::optional<std::u16string>> replace_future2;
@@ -3527,8 +3549,128 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
-            data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+            ExpectedContentAnalysisKeptLevel());
 }
+
+// A copy kept in managed Chrome can be pasted in another profile of the browser
+// when the policy applies to the whole browser, but not when it only applies to
+// the profile the copy was made from, as other profiles are then outside of the
+// managed boundary.
+//
+// ChromeOS requires extra boilerplate to run this test, and since copy-pasting
+// between profiles on ChromeOS isn't a meaningful test it is simply omitted
+// from running this.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Paste_ContentAnalysisKeptInManagedChrome_OtherProfile) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::KEEP_IN_MANAGED_CHROME);
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  const std::u16string kCopiedText(100, 'a');
+  content::ClipboardPasteData data;
+  data.text = kCopiedText;
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+
+  data_controls::GetLastReplacedClipboardData() = {};
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  IsClipboardCopyAllowedByPolicy(
+      source,
+      {.size = 100, .format_type = ui::ClipboardFormatType::PlainTextType()},
+      data, copy_future.GetCallback());
+
+  auto replacement = copy_future.Get<2>();
+  ASSERT_TRUE(replacement.has_value());
+  EXPECT_EQ(
+      *replacement,
+      l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
+
+  // Put the replacement in the OS clipboard as the clipboard host would, which
+  // ties the kept data to the resulting sequence number.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(*replacement);
+  }
+  ASSERT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            ExpectedContentAnalysisKeptLevel());
+
+  // Paste in a tab of another profile.
+  Profile* other_profile = CreateAdditionalProfile();
+  std::unique_ptr<content::WebContents> other_profile_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(other_profile));
+  auto destination = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(GURL("https://destination.com")),
+      base::BindLambdaForTesting([other_profile]() -> content::BrowserContext* {
+        return other_profile;
+      }),
+      *other_profile_contents->GetPrimaryMainFrame());
+  ui::ClipboardMetadata paste_metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+      .seqno = data_controls::GetLastReplacedClipboardData().seqno,
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, paste_metadata));
+
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      paste_future;
+  PasteIfAllowedByPolicy(source, destination, paste_metadata,
+                         MakeClipboardPasteData("placeholder", "", {}),
+                         paste_future.GetCallback());
+  auto paste_data = paste_future.Get();
+  ASSERT_TRUE(paste_data);
+  if (machine_scope()) {
+    EXPECT_EQ(paste_data->text, kCopiedText);
+  } else {
+    EXPECT_EQ(paste_data->text, u"placeholder");
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Fixture for copies made of several formats that get different verdicts: the
 // markup of a copy is kept in managed Chrome while its text or its bitmap is
@@ -3898,7 +4040,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsReplacementWithContentAnalysisBrowserTest,
                 IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
   EXPECT_EQ(ScanCount(), 1);
   EXPECT_EQ(CommitReplacement(*future.Get<2>()),
-            data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+            ExpectedDataControlsKeptLevel());
 }
 
 // The scan blocks the copy: that is more restrictive than keeping the data in
@@ -3921,7 +4063,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsReplacementWithContentAnalysisBrowserTest,
 }
 
 // Both policies keep the data in managed Chrome: the scan's own message is
-// used and the data stays usable inside Chrome.
+// used and the data stays usable inside Chrome, within the boundary the scan's
+// policy manages.
 IN_PROC_BROWSER_TEST_P(DataControlsReplacementWithContentAnalysisBrowserTest,
                        ScanKeptInManagedChrome) {
   SetUpPolicies(enterprise_connectors::TriggeredRule::KEEP_IN_MANAGED_CHROME);
@@ -3937,7 +4080,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsReplacementWithContentAnalysisBrowserTest,
           IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
   EXPECT_EQ(ScanCount(), 1);
   EXPECT_EQ(CommitReplacement(*future.Get<2>()),
-            data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+            ExpectedContentAnalysisKeptLevel());
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,

@@ -212,9 +212,10 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
                              const ui::ClipboardMetadata& metadata);
 
 // Returns true if pasting into Glic must be blocked because `metadata.seqno`
-// came from a blocked or still-scanning enterprise copy, or from a
-// Chrome-only copy whose source `BrowserContext` is gone. Surfaces a
-// paste-block dialog over Glic unless a copy scan is still in flight.
+// came from a blocked or still-scanning enterprise copy, from a Chrome-only
+// copy whose source `BrowserContext` is gone, or from a copy kept in a profile
+// other than Glic's. Surfaces a paste-block dialog over Glic unless a copy scan
+// is still in flight.
 bool MaybeBlockPasteForRestrictedCopy(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,

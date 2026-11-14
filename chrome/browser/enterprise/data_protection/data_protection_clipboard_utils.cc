@@ -125,22 +125,44 @@ bool SkipDataControlOrContentAnalysisChecks(
            main_endpoint.browser_context());
 }
 
+// Returns the level a copy kept in managed Chrome is tracked with: "managed
+// Chrome" is whatever the policy that kept the copy manages, the whole browser
+// for a machine-level policy but only the profile the copy was made from for a
+// profile-level one, since other profiles are outside of that organization's
+// control.
+data_controls::CopyRestrictionLevel KeptInManagedChromeLevel(
+    bool profile_level_policy) {
+  return profile_level_policy
+             ? data_controls::CopyRestrictionLevel::kKeptInManagedProfile
+             : data_controls::CopyRestrictionLevel::kKeptInManagedBrowser;
+}
+
+// A Data Controls rule's decision to keep a copy in managed Chrome: `message`
+// goes to the OS clipboard instead of the copied data, which is tracked at
+// `restriction_level` so that it can be restored for pastes inside the boundary
+// the rule manages.
+struct DataControlsReplacement {
+  std::u16string message;
+  data_controls::CopyRestrictionLevel restriction_level;
+};
+
 // Lets a copy through. When a Data Controls rule keeps the copied data in
-// managed Chrome, `data_controls_replacement` is the message that goes to the
-// OS clipboard instead of `data`, and `data` is remembered for the next
+// managed Chrome, `data_controls_replacement` holds the message that goes to
+// the OS clipboard instead of `data`, and `data` is remembered for the next
 // clipboard sequence number so it can be restored for pastes inside Chrome.
 void CompleteAllowedCopy(
     const ui::ClipboardFormatType& format_type,
     const content::ClipboardPasteData& data,
-    std::optional<std::u16string> data_controls_replacement,
+    std::optional<DataControlsReplacement> data_controls_replacement,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  std::optional<std::u16string> replacement_message;
   if (data_controls_replacement) {
     data_controls::LastReplacedClipboardDataObserver::GetInstance()
-        ->AddDataToNextSeqno(
-            data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+        ->AddDataToNextSeqno(data,
+                             data_controls_replacement->restriction_level);
+    replacement_message = std::move(data_controls_replacement->message);
   }
-  std::move(callback).Run(format_type, data,
-                          std::move(data_controls_replacement));
+  std::move(callback).Run(format_type, data, std::move(replacement_message));
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -320,7 +342,7 @@ void OnIsClipboardOwnerByContentAnalysis(
 // further.
 void OnCopyDeepScanComplete(
     content::ClipboardPasteData clipboard_paste_data,
-    std::optional<std::u16string> data_controls_replacement,
+    std::optional<DataControlsReplacement> data_controls_replacement,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     ui::ClipboardFormatType format_type,
     base::WeakPtr<content::WebContents> web_contents,
@@ -339,7 +361,7 @@ void OnCopyDeepScanComplete(
     observer->AddDataToNextSeqno(
         std::move(clipboard_paste_data),
         result.is_kept_in_managed_chrome
-            ? data_controls::CopyRestrictionLevel::kKeptInManagedChrome
+            ? KeptInManagedChromeLevel(delegate_data.settings.per_profile)
             : data_controls::CopyRestrictionLevel::kBlocked);
     // Each format of a copy (e.g. its text and its HTML) is scanned by its own
     // delegate and every verdict rewrites the text put on the OS clipboard, so
@@ -391,7 +413,7 @@ void CopyIfAllowedByContentAnalysis(
     const content::ClipboardEndpoint& source,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
-    std::optional<std::u16string> data_controls_replacement,
+    std::optional<DataControlsReplacement> data_controls_replacement,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   // Only a service worker copy legitimately has no tab.
   CHECK(web_contents || source.is_service_worker(), base::NotFatalUntil::M161);
@@ -646,12 +668,39 @@ size_t GetDropDataSize(const content::DropData& drop_data) {
   return base::saturated_cast<size_t>(size);
 }
 
+// Returns true if `replaced_data`, which was replaced in the OS clipboard when
+// it was copied from `source_browser_context`, may be restored for a paste
+// into `destination_browser_context` made outside of the tab it was copied
+// from. Callers must have matched `replaced_data.seqno` to the paste's sequence
+// number, and `source_browser_context` must still be alive so that the policy
+// that replaced the data is known to still apply.
+bool CanRestoreReplacedClipboardData(
+    const data_controls::LastReplacedClipboardData& replaced_data,
+    content::BrowserContext* source_browser_context,
+    content::BrowserContext* destination_browser_context) {
+  CHECK(source_browser_context);
+  switch (replaced_data.restriction_level) {
+    case data_controls::CopyRestrictionLevel::kNone:
+    case data_controls::CopyRestrictionLevel::kKeptInManagedBrowser:
+      return true;
+    case data_controls::CopyRestrictionLevel::kOngoingScan:
+    case data_controls::CopyRestrictionLevel::kBlocked:
+      return false;
+    case data_controls::CopyRestrictionLevel::kKeptInManagedProfile:
+      // Data kept in managed Chrome by a profile-level policy stays in the
+      // profile it was copied from, as other profiles (including that
+      // profile's off-the-record ones) are outside of the managed boundary.
+      return source_browser_context == destination_browser_context;
+  }
+}
+
 // Replaces `clipboard_paste_data` with the original clipboard data if it was
 // replaced by a warning message. Returns true if the paste should proceed to
 // content analysis, or false if content analysis should be skipped and the
 // callback run immediately with the current data.
 bool ReplaceClipboardDataIfRequired(
     const FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData& clipboard_paste_data) {
   // If the data currently being pasted was replaced when it was initially
@@ -660,19 +709,18 @@ bool ReplaceClipboardDataIfRequired(
   // if `source` has a known browser context to ensure we're not letting through
   // data that was replaced by policies that are no longer applicable due to the
   // profile being closed.
-  if (source.browser_context &&
-      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
-    auto restriction_level =
-        data_controls::GetLastReplacedClipboardData().restriction_level;
-    if (restriction_level != data_controls::CopyRestrictionLevel::kBlocked &&
-        restriction_level !=
-            data_controls::CopyRestrictionLevel::kOngoingScan) {
-      clipboard_paste_data =
-          data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
-    } else {
-      return false;
-    }
+  const data_controls::LastReplacedClipboardData& replaced_data =
+      data_controls::GetLastReplacedClipboardData();
+  if (!source.browser_context || metadata.seqno != replaced_data.seqno) {
+    return true;
   }
+  if (!CanRestoreReplacedClipboardData(replaced_data,
+                                       source.browser_context.get(),
+                                       destination.browser_context())) {
+    return false;
+  }
+
+  clipboard_paste_data = replaced_data.clipboard_paste_data;
   return true;
 }
 
@@ -694,7 +742,8 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
-  if (!ReplaceClipboardDataIfRequired(source, metadata, clipboard_paste_data)) {
+  if (!ReplaceClipboardDataIfRequired(source, destination, metadata,
+                                      clipboard_paste_data)) {
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
@@ -775,7 +824,8 @@ void PasteIfAllowedByDataControls(
       break;
   }
 
-  if (!ReplaceClipboardDataIfRequired(source, metadata, clipboard_paste_data)) {
+  if (!ReplaceClipboardDataIfRequired(source, destination, metadata,
+                                      clipboard_paste_data)) {
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
@@ -810,18 +860,29 @@ void OnDlpRulesCheckDone(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void GetCopyToOSClipboardReplacement(const content::ClipboardEndpoint& source,
-                                     const ui::ClipboardMetadata& metadata,
-                                     std::u16string* replacement) {
+// Returns the replacement a Data Controls rule makes for a copy from `source`
+// to the OS clipboard, if any.
+std::optional<DataControlsReplacement> GetCopyToOSClipboardReplacement(
+    const content::ClipboardEndpoint& source,
+    const ui::ClipboardMetadata& metadata) {
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source),
                                                    metadata.size);
-
-  if (verdict.level() == data_controls::Rule::Level::kBlock) {
-    *replacement = l10n_util::GetStringUTF16(
-        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
+  if (verdict.level() != data_controls::Rule::Level::kBlock) {
+    return std::nullopt;
   }
+
+  // The triggered rules carry the scope of the DataControlsRules policy they
+  // come from.
+  bool profile_level_policy = std::ranges::any_of(
+      verdict.triggered_rules(),
+      [](const auto& rule) { return !rule.first.machine_scope; });
+  return DataControlsReplacement{
+      .message = l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE),
+      .restriction_level = KeptInManagedChromeLevel(profile_level_policy),
+  };
 }
 
 void IsCopyToOSClipboardRestricted(
@@ -834,14 +895,8 @@ void IsCopyToOSClipboardRestricted(
     return;
   }
 
-  std::optional<std::u16string> data_controls_replacement;
-  {
-    std::u16string replacement;
-    GetCopyToOSClipboardReplacement(source, metadata, &replacement);
-    if (!replacement.empty()) {
-      data_controls_replacement = std::move(replacement);
-    }
-  }
+  std::optional<DataControlsReplacement> data_controls_replacement =
+      GetCopyToOSClipboardReplacement(source, metadata);
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // A Data Controls rule keeping the data in managed Chrome doesn't exempt the
@@ -1383,17 +1438,20 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
 
   ui::ClipboardMetadata metadata;
   metadata.size = selected_text.size() * sizeof(selected_text[0]);
-  GetCopyToOSClipboardReplacement(*source, metadata, replacement);
-  if (!replacement->empty()) {
-    // Before returning, we persist the data that would have been copied so it
-    // can be potentially replaced again at paste time.
-    content::ClipboardPasteData data;
-    data.text = selected_text;
-    data_controls::LastReplacedClipboardDataObserver::GetInstance()
-        ->AddDataToNextSeqno(
-            data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
+  std::optional<DataControlsReplacement> data_controls_replacement =
+      GetCopyToOSClipboardReplacement(*source, metadata);
+  if (!data_controls_replacement) {
+    return false;
   }
-  return !replacement->empty();
+
+  // Before returning, we persist the data that would have been copied so it
+  // can be potentially replaced again at paste time.
+  content::ClipboardPasteData data;
+  data.text = selected_text;
+  data_controls::LastReplacedClipboardDataObserver::GetInstance()
+      ->AddDataToNextSeqno(data, data_controls_replacement->restriction_level);
+  *replacement = std::move(data_controls_replacement->message);
+  return true;
 }
 
 void OnGetSourceClipboardEndpointForFindBar(
@@ -1445,10 +1503,17 @@ void OnGetSourceClipboardEndpointForFindBar(
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste);
 
-  if (source.browser_context() &&
-      seqno == data_controls::GetLastReplacedClipboardData().seqno) {
-    std::move(callback).Run(data_controls::GetLastReplacedClipboardData()
-                                .clipboard_paste_data.text);
+  // Text in the find bar can be copied back out without going through the
+  // policy checks a page copy gets, so even when it searches the tab the data
+  // was copied from, the find bar is held to the restrictions of a paste into
+  // another tab: text that is blocked, still being scanned, or kept in a
+  // different profile is not restored.
+  const data_controls::LastReplacedClipboardData& replaced_data =
+      data_controls::GetLastReplacedClipboardData();
+  if (source.browser_context() && seqno == replaced_data.seqno &&
+      CanRestoreReplacedClipboardData(replaced_data, source.browser_context(),
+                                      destination.browser_context())) {
+    std::move(callback).Run(replaced_data.clipboard_paste_data.text);
     return;
   }
 

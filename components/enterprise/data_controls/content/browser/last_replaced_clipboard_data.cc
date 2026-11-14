@@ -79,8 +79,8 @@ void LastReplacedClipboardDataObserver::AddDataToNextSeqno(
   pending_seqno_data_.Merge(std::move(data));
   // Only override the pending restriction level if the new restriction is more
   // severe than any previously staged restriction for this sequence token
-  // (e.g., kBlocked overrides kKeptInManagedChrome, which overrides
-  // kOngoingScan).
+  // (e.g., kBlocked overrides kKeptInManagedProfile, which overrides
+  // kKeptInManagedBrowser, which overrides kOngoingScan).
   if (restriction_level > pending_restriction_level_) {
     pending_restriction_level_ = restriction_level;
   }

@@ -52,12 +52,12 @@ TEST_F(LastReplacedClipboardDataTest, WithPendingData) {
   text_and_html.text = kText;
   text_and_html.html = kHtml;
   observer->AddDataToNextSeqno(std::move(text_and_html),
-                               CopyRestrictionLevel::kKeptInManagedChrome);
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
 
   content::ClipboardPasteData bitmap;
   bitmap.bitmap = kBitmap;
   observer->AddDataToNextSeqno(std::move(bitmap),
-                               CopyRestrictionLevel::kKeptInManagedChrome);
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
@@ -111,11 +111,11 @@ TEST_F(LastReplacedClipboardDataTest, RestrictionLevelOverridePrecedence) {
   content::ClipboardPasteData data2;
   data2.html = u"<html></html>";
   observer->AddDataToNextSeqno(std::move(data2),
-                               CopyRestrictionLevel::kKeptInManagedChrome);
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   ASSERT_EQ(GetLastReplacedClipboardData().restriction_level,
-            CopyRestrictionLevel::kKeptInManagedChrome);
+            CopyRestrictionLevel::kKeptInManagedBrowser);
   EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.text, kText);
   EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.html,
             u"<html></html>");
@@ -137,6 +137,69 @@ TEST_F(LastReplacedClipboardDataTest, RestrictionLevelOverridePrecedence) {
             u"<svg></svg>");
   EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.png,
             std::vector<uint8_t>({1, 2, 3}));
+}
+
+TEST_F(LastReplacedClipboardDataTest, KeptInManagedProfile) {
+  ASSERT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kNone);
+
+  auto* observer = LastReplacedClipboardDataObserver::GetInstance();
+  ASSERT_TRUE(observer);
+
+  content::ClipboardPasteData data;
+  data.text = kText;
+  observer->AddDataToNextSeqno(std::move(data),
+                               CopyRestrictionLevel::kKeptInManagedProfile);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedProfile);
+
+  // The level doesn't outlive the sequence number it was staged for.
+  content::ClipboardPasteData next_data;
+  next_data.text = kText;
+  observer->AddDataToNextSeqno(std::move(next_data),
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedBrowser);
+}
+
+TEST_F(LastReplacedClipboardDataTest,
+       KeptInManagedProfileOverridesKeptInManagedBrowser) {
+  auto* observer = LastReplacedClipboardDataObserver::GetInstance();
+  ASSERT_TRUE(observer);
+
+  // A format kept in the whole browser doesn't loosen the restriction of a
+  // format kept in the source profile, regardless of the order they're staged.
+  content::ClipboardPasteData text;
+  text.text = kText;
+  observer->AddDataToNextSeqno(std::move(text),
+                               CopyRestrictionLevel::kKeptInManagedProfile);
+  content::ClipboardPasteData html;
+  html.html = kHtml;
+  observer->AddDataToNextSeqno(std::move(html),
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedProfile);
+  EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.text, kText);
+  EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.html, kHtml);
+
+  content::ClipboardPasteData text2;
+  text2.text = kText;
+  observer->AddDataToNextSeqno(std::move(text2),
+                               CopyRestrictionLevel::kKeptInManagedBrowser);
+  content::ClipboardPasteData html2;
+  html2.html = kHtml;
+  observer->AddDataToNextSeqno(std::move(html2),
+                               CopyRestrictionLevel::kKeptInManagedProfile);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedProfile);
 }
 
 }  // namespace data_controls

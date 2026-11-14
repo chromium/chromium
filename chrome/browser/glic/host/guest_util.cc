@@ -1326,7 +1326,7 @@ void ShowPasteBlockDialogIfNeeded(content::WebContents* web_contents) {
 }
 
 bool ShouldBlockPasteForRestrictedCopyImpl(
-    bool has_source_browser_context,
+    content::BrowserContext* source_browser_context,
     content::WebContents* destination_web_contents,
     const ui::ClipboardSequenceNumberToken& seqno) {
   if (!destination_web_contents || !IsGlicGuest(destination_web_contents) ||
@@ -1340,8 +1340,22 @@ bool ShouldBlockPasteForRestrictedCopyImpl(
       return true;
     case data_controls::CopyRestrictionLevel::kOngoingScan:
       return true;
-    case data_controls::CopyRestrictionLevel::kKeptInManagedChrome:
-      if (!has_source_browser_context) {
+    case data_controls::CopyRestrictionLevel::kKeptInManagedBrowser:
+      // The data can be pasted anywhere in the browser as long as the source
+      // `BrowserContext` that the policy was applied to is still alive, which
+      // keeps that policy applicable.
+      if (!source_browser_context) {
+        ShowPasteBlockDialogIfNeeded(destination_web_contents);
+        return true;
+      }
+      return false;
+    case data_controls::CopyRestrictionLevel::kKeptInManagedProfile:
+      // The data can only be pasted into the profile it was copied from, so
+      // the source `BrowserContext` must still be alive and be the one Glic
+      // runs in. Pasting into another profile's Glic is blocked, like pasting
+      // into another profile's tabs is.
+      if (source_browser_context !=
+          destination_web_contents->GetBrowserContext()) {
         ShowPasteBlockDialogIfNeeded(destination_web_contents);
         return true;
       }
@@ -1547,8 +1561,7 @@ bool MaybeBlockPasteForRestrictedCopy(
     const ui::ClipboardMetadata& metadata) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   return ShouldBlockPasteForRestrictedCopyImpl(
-      /*has_source_browser_context=*/source.browser_context() != nullptr,
-      destination.web_contents(), metadata.seqno);
+      source.browser_context(), destination.web_contents(), metadata.seqno);
 #else
   return false;
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -1579,9 +1592,8 @@ WrapClipboardPasteAllowedCallback(
          std::optional<content::ClipboardPasteData> allowed_data) {
         if (allowed_data.has_value() &&
             ShouldBlockPasteForRestrictedCopyImpl(
-                /*has_source_browser_context=*/static_cast<bool>(
-                    source_browser_context),
-                destination_web_contents.get(), seqno)) {
+                source_browser_context.get(), destination_web_contents.get(),
+                seqno)) {
           std::move(inner_callback).Run(std::nullopt);
           return;
         }

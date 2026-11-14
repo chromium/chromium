@@ -14,7 +14,9 @@ namespace data_controls {
 // Represents the enforcement state of a clipboard copy operation tracked inside
 // `LastReplacedClipboardData`. When pasting across tab boundaries or evaluating
 // context menus, these values determine whether pasting is allowed, blocked,
-// or restricted to managed browser contexts.
+// or restricted to managed browser contexts. Values are ordered from least to
+// most restrictive, which `LastReplacedClipboardDataObserver` relies on when
+// several of them apply to the same copy.
 enum class CopyRestrictionLevel {
   // Default uninitialized state, or data whose copy was completely
   // unrestricted.
@@ -22,13 +24,18 @@ enum class CopyRestrictionLevel {
   // Indicates an asynchronous scan is currently in progress; cross-tab pastes
   // are blocked while the OS clipboard holds a temporary scanning placeholder.
   kOngoingScan = 1,
-  // Indicates copy is permitted inside managed Chrome contexts, but external OS
-  // apps are blocked.
-  kKeptInManagedChrome = 2,
+  // Indicates copy is permitted anywhere inside the managed browser, including
+  // its other profiles, but external OS apps are blocked. This is the level of
+  // a policy that applies to the whole browser.
+  kKeptInManagedBrowser = 2,
+  // Indicates copy is only permitted inside the browser context (profile) the
+  // data was copied from: the policy that kept the data applies to that profile
+  // alone, so external OS apps and the browser's other profiles are blocked.
+  kKeptInManagedProfile = 3,
   // Indicates the copy was strictly prohibited by policy or scanning
   // evaluation. All pastes are strictly blocked due to the OS clipboard holding
   // a warning string.
-  kBlocked = 3,
+  kBlocked = 4,
 };
 
 // Struct that holds information on the last data to have been replaced in the
@@ -55,7 +62,8 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
   // next sequence number change. Note that because this can be called multiple
   // times with different data types (text, html, png, etc.) before
   // `OnClipboardDataChanged()` is called, `data` is merged into
-  // `pending_seqno_data_` instead of replacing it entirely.
+  // `pending_seqno_data_` instead of replacing it entirely, and the most
+  // restrictive `restriction_level` passed for the same sequence number wins.
   // `restriction_level` is the policy restriction level that resulted in
   // `data` being replaced.
   void AddDataToNextSeqno(content::ClipboardPasteData data,
