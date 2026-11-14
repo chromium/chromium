@@ -214,7 +214,7 @@ class TestHintsFetcher : public HintsFetcher {
   bool FetchOptimizationGuideServiceHints(
       const std::vector<std::string>& hosts,
       const std::vector<GURL>& urls,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       proto::RequestContext request_context,
       const std::string& locale,
       const std::string& access_token,
@@ -457,7 +457,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   // |optimization_types|.
   std::unique_ptr<OptimizationGuideNavigationData> CreateTestNavigationData(
       const GURL& url,
-      const std::vector<proto::OptimizationType>& optimization_types) {
+      OptimizationTypeSet optimization_types) {
     auto navigation_data = std::make_unique<OptimizationGuideNavigationData>(
         /*navigation_id=*/1, /*navigation_start*/ base::TimeTicks::Now());
     navigation_data->set_navigation_url(url);

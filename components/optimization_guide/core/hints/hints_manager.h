@@ -117,8 +117,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const std::vector<proto::OptimizationType>& optimization_types);
 
   // Returns the optimization types that are registered.
-  base::flat_set<proto::OptimizationType> registered_optimization_types()
-      const {
+  OptimizationTypeSet registered_optimization_types() const {
     return registered_optimization_types_;
   }
 
@@ -343,7 +342,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const base::flat_set<std::string>& hosts_fetched,
       const base::flat_set<GURL>& urls_fetched,
       const base::flat_set<GURL>& urls_for_callback,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
       std::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
@@ -355,7 +354,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // existing interfaces.
   void OnBatchUpdateHintsStored(
       const base::flat_set<GURL>& urls_fetched,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Creates a hints fetcher and stores it in |batch_update_hints_fetchers_| and
@@ -374,8 +373,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   void FetchOptimizationGuideServiceBatchHints(
       const InsertionOrderedSet<std::string>& hosts,
       const InsertionOrderedSet<GURL>& urls,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          optimization_types,
+      OptimizationTypeSet optimization_types,
       optimization_guide::proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
       std::optional<proto::RequestContextMetadata> request_context_metadata,
@@ -386,13 +384,13 @@ class HintsManager : public OptimizationHintsComponentObserver,
   base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
   GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
       const GURL& url,
-      const base::flat_set<proto::OptimizationType>& optimization_types);
+      OptimizationTypeSet optimization_types);
 
   // Invokes |callback| for |url| and |optimization_types| based on what is
   // cached on device.
   void InvokeOnDemandHintsCallbackForURL(
       const GURL& url,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Invokes |callback| for |requested_urls| and |optimization_types| based on
@@ -400,7 +398,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   void ProcessAndInvokeOnDemandHintsCallbacks(
       std::unique_ptr<proto::GetHintsResponse> response,
       const base::flat_set<GURL>& requested_urls,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Called when the hints for a navigation have been fetched from the remote
@@ -523,7 +521,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // manager.
   //
   // Should only be read and modified on the UI thread.
-  base::flat_set<proto::OptimizationType> registered_optimization_types_;
+  OptimizationTypeSet registered_optimization_types_;
 
   struct OptimizationFilterState {
     OptimizationFilterState();

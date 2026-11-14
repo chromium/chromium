@@ -51,7 +51,8 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   // Record registered types/targets metrics.
   if (!registered_optimization_types_.empty()) {
     int64_t types_bitmask = 0;
-    for (const auto& optimization_type : registered_optimization_types_) {
+    for (optimization_guide::proto::OptimizationType optimization_type :
+         registered_optimization_types_) {
       // Optimization types that are out of range cannot be represented in this
       // bitmask.
       if (0 <= optimization_type && optimization_type < 64) {

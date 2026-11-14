@@ -10,9 +10,9 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/gurl.h"
@@ -82,13 +82,12 @@ class OptimizationGuideNavigationData {
   }
 
   // The optimization types that were registered at the start of the navigation.
-  base::flat_set<optimization_guide::proto::OptimizationType>
-  registered_optimization_types() const {
+  optimization_guide::OptimizationTypeSet registered_optimization_types()
+      const {
     return registered_optimization_types_;
   }
   void set_registered_optimization_types(
-      base::flat_set<optimization_guide::proto::OptimizationType>
-          registered_optimization_types) {
+      optimization_guide::OptimizationTypeSet registered_optimization_types) {
     registered_optimization_types_ = registered_optimization_types;
   }
 
@@ -135,8 +134,7 @@ class OptimizationGuideNavigationData {
   GURL navigation_url_;
 
   // The optimization types that were registered at the start of the navigation.
-  base::flat_set<optimization_guide::proto::OptimizationType>
-      registered_optimization_types_;
+  optimization_guide::OptimizationTypeSet registered_optimization_types_;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.

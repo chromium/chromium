@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_shared_jni.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -30,10 +30,8 @@ class OptimizationGuideBridge {
  public:
   static std::vector<proto::HintNotificationPayload> GetCachedNotifications(
       proto::OptimizationType opt_type);
-  static base::flat_set<proto::OptimizationType>
-  GetOptTypesWithPushNotifications();
-  static base::flat_set<proto::OptimizationType>
-  GetOptTypesThatOverflowedPushNotifications();
+  static OptimizationTypeSet GetOptTypesWithPushNotifications();
+  static OptimizationTypeSet GetOptTypesThatOverflowedPushNotifications();
   static void ClearCacheForOptimizationType(proto::OptimizationType opt_type);
   static void OnNotificationNotHandledByNative(
       proto::HintNotificationPayload notification);

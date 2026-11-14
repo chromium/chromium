@@ -331,7 +331,7 @@ std::unique_ptr<proto::Configuration> ReadComponentFile(
 // service.
 void MaybeLogGetHintRequestInfo(
     proto::RequestContext request_context,
-    const base::flat_set<proto::OptimizationType>& requested_optimization_types,
+    OptimizationTypeSet requested_optimization_types,
     const std::vector<GURL>& urls_to_fetch,
     const std::vector<std::string>& hosts_to_fetch,
     OptimizationGuideLogger* optimization_guide_logger) {
@@ -347,7 +347,8 @@ void MaybeLogGetHintRequestInfo(
                          "Registered Optimization Types: ");
   if (optimization_guide_logger->ShouldEnableDebugLogs()) {
     std::vector<std::string> pieces = {"Optimization Type:"};
-    for (const auto& optimization_type : requested_optimization_types) {
+    for (proto::OptimizationType optimization_type :
+         requested_optimization_types) {
       pieces.push_back(
           base::StrCat({" ", proto::OptimizationType_Name(optimization_type)}));
     }
@@ -631,7 +632,7 @@ void HintsManager::ProcessOptimizationFilterSet(
         optimization_filters_[filter.optimization_type()];
 
     // Do not put anything in memory that we don't have registered.
-    if (!registered_optimization_types_.contains(filter.optimization_type())) {
+    if (!registered_optimization_types_.Has(filter.optimization_type())) {
       continue;
     }
 
@@ -1160,11 +1161,10 @@ void HintsManager::RegisterOptimizationTypes(
       continue;
     }
 
-    if (registered_optimization_types_.find(optimization_type) !=
-        registered_optimization_types_.end()) {
+    if (registered_optimization_types_.Has(optimization_type)) {
       continue;
     }
-    registered_optimization_types_.insert(optimization_type);
+    registered_optimization_types_.Put(optimization_type);
 
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
@@ -1237,11 +1237,11 @@ bool HintsManager::HasLoadedOptimizationBlocklist(
 base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
 HintsManager::GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
     const GURL& url,
-    const base::flat_set<proto::OptimizationType>& optimization_types) {
+    OptimizationTypeSet optimization_types) {
   base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
       decisions;
 
-  for (const auto optimization_type : optimization_types) {
+  for (proto::OptimizationType optimization_type : optimization_types) {
     OptimizationMetadata metadata;
     OptimizationTypeDecision type_decision =
         CanApplyOptimization(url, optimization_type, &metadata);
@@ -1284,7 +1284,11 @@ void HintsManager::CanApplyOptimizationOnDemand(
     hosts_to_fetch.insert(url.GetHost());
   }
 
-  MaybeLogGetHintRequestInfo(request_context, optimization_types,
+  OptimizationTypeSet optimization_type_set;
+  for (proto::OptimizationType type : optimization_types) {
+    optimization_type_set.Put(type);
+  }
+  MaybeLogGetHintRequestInfo(request_context, optimization_type_set,
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
@@ -1304,15 +1308,14 @@ void HintsManager::CanApplyOptimizationOnDemand(
       identity_manager_, signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                      weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
-                     urls_to_fetch, optimization_types, request_context,
+                     urls_to_fetch, optimization_type_set, request_context,
                      callback, request_context_metadata));
 }
 
 void HintsManager::FetchOptimizationGuideServiceBatchHints(
     const InsertionOrderedSet<std::string>& hosts,
     const InsertionOrderedSet<GURL>& urls,
-    const base::flat_set<optimization_guide::proto::OptimizationType>&
-        optimization_types,
+    OptimizationTypeSet optimization_types,
     optimization_guide::proto::RequestContext request_context,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
     std::optional<proto::RequestContextMetadata> request_context_metadata,
@@ -1361,7 +1364,7 @@ void HintsManager::CanApplyOptimization(
 void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
     std::unique_ptr<proto::GetHintsResponse> response,
     const base::flat_set<GURL>& requested_urls,
-    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OptimizationTypeSet optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
   // TODO(b/266694081): Reintroduce client side in memory cache sharded by
   // context and store here.
@@ -1405,7 +1408,7 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
                    OptimizationGuideDecisionWithMetadata>
         decisions;
 
-    for (const auto optimization_type : optimization_types) {
+    for (proto::OptimizationType optimization_type : optimization_types) {
       OptimizationMetadata metadata;
       OptimizationTypeDecision type_decision = CanApplyOptimization(
           /*is_on_demand_request=*/true, url, optimization_type, url_keyed_hint,
@@ -1430,7 +1433,7 @@ void HintsManager::OnBatchUpdateHintsFetched(
     const base::flat_set<std::string>& hosts_requested,
     const base::flat_set<GURL>& urls_requested,
     const base::flat_set<GURL>& urls_with_pending_callback,
-    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OptimizationTypeSet optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
     std::optional<std::unique_ptr<proto::GetHintsResponse>>
         get_hints_response) {
@@ -1490,7 +1493,7 @@ void HintsManager::OnBatchUpdateHintsFetched(
 
 void HintsManager::OnBatchUpdateHintsStored(
     const base::flat_set<GURL>& urls,
-    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OptimizationTypeSet optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1528,7 +1531,7 @@ void HintsManager::CleanUpBatchUpdateHintsFetcher(int32_t request_id) {
 
 void HintsManager::InvokeOnDemandHintsCallbackForURL(
     const GURL& url,
-    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OptimizationTypeSet optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
   base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
       decisions = GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
@@ -1593,8 +1596,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   }
 
   bool is_optimization_type_registered =
-      registered_optimization_types_.find(optimization_type) !=
-      registered_optimization_types_.end();
+      registered_optimization_types_.Has(optimization_type);
 
   // If type is not registered AND neither hint is passed in, we probably do not
   // have a hint, so just return.
@@ -1768,7 +1770,8 @@ bool HintsManager::HasOptimizationTypeToFetchFor() {
     return false;
   }
 
-  for (const auto& optimization_type : registered_optimization_types_) {
+  for (proto::OptimizationType optimization_type :
+       registered_optimization_types_) {
     if (!optimization_filters_.contains(optimization_type)) {
       return true;
     }

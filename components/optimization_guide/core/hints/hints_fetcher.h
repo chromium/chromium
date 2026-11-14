@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
 
@@ -124,8 +124,7 @@ class HintsFetcher {
   virtual bool FetchOptimizationGuideServiceHints(
       const std::vector<std::string>& hosts,
       const std::vector<GURL>& urls,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          optimization_types,
+      OptimizationTypeSet optimization_types,
       optimization_guide::proto::RequestContext request_context,
       const std::string& locale,
       const std::string& access_token,

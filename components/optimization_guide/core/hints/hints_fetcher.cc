@@ -202,8 +202,7 @@ void HintsFetcher::AddFetchedHostForTesting(PrefService* pref_service,
 bool HintsFetcher::FetchOptimizationGuideServiceHints(
     const std::vector<std::string>& hosts,
     const std::vector<GURL>& urls,
-    const base::flat_set<optimization_guide::proto::OptimizationType>&
-        optimization_types,
+    OptimizationTypeSet optimization_types,
     optimization_guide::proto::RequestContext request_context,
     const std::string& locale,
     const std::string& access_token,
@@ -257,7 +256,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   get_hints_request.add_supported_key_representations(proto::HOST);
   get_hints_request.add_supported_key_representations(proto::FULL_URL);
 
-  for (const auto& optimization_type : optimization_types) {
+  for (proto::OptimizationType optimization_type : optimization_types) {
     get_hints_request.add_supported_optimizations(optimization_type);
   }
 

@@ -8,9 +8,11 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -80,6 +82,10 @@ enum class OptimizationTypeDecision {
   // Add new values above this line.
   kMaxValue = kInvalidURL,
 };
+
+using OptimizationTypeSet = base::EnumSet<proto::OptimizationType,
+                                          proto::OptimizationType_MIN,
+                                          proto::OptimizationType_MAX>;
 
 using OptimizationGuideDecisionCallback =
     base::OnceCallback<void(OptimizationGuideDecision,

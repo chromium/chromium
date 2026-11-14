@@ -185,9 +185,8 @@ void OptimizationGuideService::OnNavigationStartOrRedirect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(navigation_data);
 
-  base::flat_set<optimization_guide::proto::OptimizationType>
-      registered_optimization_types =
-          hints_manager_->registered_optimization_types();
+  optimization_guide::OptimizationTypeSet registered_optimization_types =
+      hints_manager_->registered_optimization_types();
   if (!registered_optimization_types.empty()) {
     hints_manager_->OnNavigationStartOrRedirect(navigation_data,
                                                 base::DoNothing());
