@@ -164,6 +164,7 @@ void BlockedPopupTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void BlockedPopupTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* infobar_manager) {
   DCHECK(scoped_observation_.IsObservingSource(infobar_manager));
+  infobar_ = nullptr;
   scoped_observation_.Reset();
 }
 
@@ -184,7 +185,9 @@ void BlockedPopupTabHelper::ShowInfoBar() {
       InfobarType::kInfobarTypeConfirm, std::move(delegate));
 
   if (infobar_) {
-    infobar_ = infobar_manager->ReplaceInfoBar(infobar_, std::move(infobar));
+    // Clear `infobar_` before the manager destroys the old infobar.
+    infobars::InfoBar* old_infobar = infobar_.ExtractAsDangling();
+    infobar_ = infobar_manager->ReplaceInfoBar(old_infobar, std::move(infobar));
   } else {
     infobar_ = infobar_manager->AddInfoBar(std::move(infobar));
   }

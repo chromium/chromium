@@ -160,6 +160,23 @@ TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
   EXPECT_FALSE(IsObservingSources());
 }
 
+// Tests that a second blocked popup replaces the existing infobar instead of
+// adding a new one, and that both popups are kept.
+TEST_F(BlockedPopupTabHelperTest, ReplaceInfoBarOnSecondPopup) {
+  // Call `HandlePopup` to show an infobar.
+  const GURL test_url1("https://popups1.example.com");
+  GetBlockedPopupTabHelper()->HandlePopup(test_url1, web::Referrer());
+  ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
+
+  // Call `HandlePopup` again while the infobar is showing, which replaces the
+  // existing infobar.
+  const GURL test_url2("https://popups2.example.com");
+  GetBlockedPopupTabHelper()->HandlePopup(test_url2, web::Referrer());
+  EXPECT_EQ(1U, GetInfobarManager()->infobars().size());
+  EXPECT_EQ(2U, GetBlockedPopupTabHelper()->GetBlockedPopups().size());
+  EXPECT_TRUE(IsObservingSources());
+}
+
 // Tests that the Infobar presentation and dismissal histograms are recorded
 // correctly.
 TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
