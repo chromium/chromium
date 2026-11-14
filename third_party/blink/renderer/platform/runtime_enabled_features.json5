@@ -6504,7 +6504,7 @@
       // https://mimesniff.spec.whatwg.org/#xml-mime-type
       // https://crbug.com/362282752
       name: "SpecCompliantXmlMimeTypes",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Exposes speculation measurement data (preloads, prefetches, prerenders)
