@@ -279,6 +279,24 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Drive.ConsentKitLoadResult"
+    enum="ContextualSearchDriveConsentKitLoadResult" expires_after="2027-05-12">
+  <owner>adamyao@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    How a ConsentKit load ended in the Drive picker on desktop. ConsentKit is
+    the Drive consent dialog. Recorded once per load, when it ends. A load
+    starts when the consent flow opens ConsentKit, or when the user clicks
+    &quot;Try again&quot; on the error screen. It ends when ConsentKit sends
+    UI_RENDERED_EVENT, or when the dialog stops waiting after 5 seconds and
+    shows the error screen. Any message from ConsentKit stops the wait, so a
+    timeout means ConsentKit sent nothing. In its postMessage mode, which is
+    ConsentKit's default for Chrome, UI_RENDERED_EVENT is its first message;
+    loads where ConsentKit replies without it aren't recorded. Neither are loads
+    cut short by closing the dialog.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
     units="count" expires_after="2027-04-11">

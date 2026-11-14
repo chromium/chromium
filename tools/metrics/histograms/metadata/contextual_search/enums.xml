@@ -80,6 +80,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchContextState, //chrome/browser/resources/new_tab_page/ntp_searchbox.ts:ContextualSearchContextState) -->
 
+<!-- LINT.IfChange(ContextualSearchDriveConsentKitLoadResult) -->
+
+<enum name="ContextualSearchDriveConsentKitLoadResult">
+  <int value="0" label="Rendered"/>
+  <int value="1" label="Timed out before a response"/>
+  <int value="2" label="Timed out after a network error"/>
+  <int value="3" label="Timed out after an HTTP error"/>
+  <int value="4" label="Timed out after the page committed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h:ConsentKitLoadResult) -->
+
 <!-- LINT.IfChange(ContextualSearchErrorPage) -->
 
 <enum name="ContextualSearchErrorPage">

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_UI_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
@@ -64,6 +66,35 @@ class DrivePickerHostUI
     // Not called for the initial consent display.
     virtual void OnTransitionToConsent() = 0;
   };
+
+  // How a ConsentKit load ended. A load is the first one in the consent flow,
+  // or one started by "Try again" on the error screen. Recorded as
+  // ContextualSearch.Drive.ConsentKitLoadResult.
+  //
+  // Any message from ConsentKit stops the untrusted page's timer, so each
+  // timeout means ConsentKit sent nothing in time.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ConsentKitLoadResult)
+  enum class ConsentKitLoadResult {
+    // ConsentKit sent its `UI_RENDERED_EVENT` message before the untrusted page
+    // timed out.
+    kRendered = 0,
+    // The ConsentKit frame's navigation hadn't committed or failed at the
+    // timeout, e.g. because the server hadn't responded yet.
+    kTimeoutBeforeResponse = 1,
+    // The ConsentKit frame's navigation failed with a network error, e.g. no
+    // connection, or a response or redirect that the page can't frame.
+    kTimeoutNetError = 2,
+    // The ConsentKit frame got an HTTP status of 400 or higher.
+    kTimeoutHttpError = 3,
+    // The ConsentKit page committed, but ConsentKit sent no message before the
+    // timeout, e.g. because its scripts were still loading.
+    kTimeoutAfterCommit = 4,
+    kMaxValue = kTimeoutAfterCommit,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchDriveConsentKitLoadResult)
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -156,6 +187,14 @@ class DrivePickerHostUI
   // reliable fallback where the WebUI is guaranteed to be associated.
   void MaybeBindUntrustedBridge(content::RenderFrameHost* render_frame_host);
 
+  // Updates `consent_kit_timeout_result_` when the ConsentKit frame's
+  // navigation finishes.
+  void UpdateConsentKitTimeoutResult(
+      content::NavigationHandle* navigation_handle);
+
+  // Records `result` for the current ConsentKit load, which ends the load.
+  void RecordConsentKitLoadResult(ConsentKitLoadResult result);
+
   // Stores a single request that arrived before the untrusted bridge was bound.
   std::unique_ptr<drive_picker_host::DrivePickerHostRequest> pending_request_;
 
@@ -174,6 +213,13 @@ class DrivePickerHostUI
 
   std::unique_ptr<drive_picker::DriveDisclaimerController>
       drive_disclaimer_controller_;
+
+  // The origin of the ConsentKit URL that the untrusted page loads.
+  url::Origin consent_kit_origin_;
+
+  // While a ConsentKit load is in progress, the result to record if the
+  // untrusted page times out now. Empty when no load is in progress.
+  std::optional<ConsentKitLoadResult> consent_kit_timeout_result_;
 
   // Scoped to a single in-flight `CheckDisclaimerStatusAsync()` call so that
   // cancelling or restarting the consent flow invalidates any pending backend
