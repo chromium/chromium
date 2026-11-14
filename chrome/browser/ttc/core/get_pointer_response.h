@@ -27,8 +27,10 @@ struct PointerContext;
 //     // In the order the user pointed. "index" is the number on the point's
 //     // crosshair when there are several. "kind" is "press", "dwell" (the
 //     // pointer rested there) or "moving" (it was only passing). "node" is
-//     // the element there as DescribeNodeAtPoint() describes it, less its
-//     // identity, and is absent if there is none.
+//     // the element there as DescribeNodeAtPoint() describes it, and is
+//     // absent if there is none. It has the element's identity, which is the
+//     // pair of its DOM node id and document id ("dom_node_id" and
+//     // "document_id"), only if `include_node_identity`.
 //     "points": [{"index": 1, "x": 412, "y": 233, "kind": "dwell",
 //                 "node": {"type": "image", "label": "...", "bounds": {...}}}],
 //     // The part of the viewport that the image shows.
@@ -44,7 +46,8 @@ struct PointerContext;
 // thread, so the caller can run it on a worker thread.
 ToolResponse BuildGetPointerResponse(
     const PointerContext& context,
-    base::span<const PointerTracker::Location> locations);
+    base::span<const PointerTracker::Location> locations,
+    bool include_node_identity);
 
 }  // namespace ttc
 

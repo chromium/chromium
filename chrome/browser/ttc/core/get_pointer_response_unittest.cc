@@ -5,9 +5,11 @@
 #include "chrome/browser/ttc/core/get_pointer_response.h"
 
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -67,8 +69,8 @@ PointerContext MakeContext() {
 TEST(GetPointerResponseTest, ShowsAndDescribesWhereTheUserPointed) {
   const std::vector<Location> locations = {
       {.point = gfx::PointF(500, 300), .is_dwell = true}};
-  const ToolResponse response =
-      BuildGetPointerResponse(MakeContext(), locations);
+  const ToolResponse response = BuildGetPointerResponse(
+      MakeContext(), locations, /*include_node_identity=*/false);
   ASSERT_TRUE(response.Ok());
 
   // The element is described without its DOM node and document ids.
@@ -95,6 +97,25 @@ TEST(GetPointerResponseTest, ShowsAndDescribesWhereTheUserPointed) {
   EXPECT_EQ(image.height(), 600);
 }
 
+// The element's identity is only reported if asked for.
+TEST(GetPointerResponseTest, NodeIdentity) {
+  PointerContext context = MakeContext();
+  context.page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main-document");
+  const std::vector<Location> locations = {{.point = gfx::PointF(500, 300)}};
+  const ToolResponse response = BuildGetPointerResponse(
+      context, locations, /*include_node_identity=*/true);
+  ASSERT_TRUE(response.Ok());
+  const base::DictValue* node =
+      response.GetResult().FindList("points")->front().GetDict().FindDict(
+          "node");
+  ASSERT_TRUE(node);
+  EXPECT_EQ(node->FindInt("dom_node_id"), 57);
+  EXPECT_THAT(node->FindString("document_id"),
+              testing::Pointee(std::string("main-document")));
+}
+
 // Points are reported in the order the user pointed, numbered from 1. One
 // outside the viewport is left out, and where there is only the page's
 // background there is no node.
@@ -103,8 +124,8 @@ TEST(GetPointerResponseTest, SeveralPoints) {
       {.point = gfx::PointF(700, 300)},
       {.point = gfx::PointF(-5, 10)},
       {.point = gfx::PointF(300, 300), .is_press = true, .is_dwell = true}};
-  const ToolResponse response =
-      BuildGetPointerResponse(MakeContext(), locations);
+  const ToolResponse response = BuildGetPointerResponse(
+      MakeContext(), locations, /*include_node_identity=*/false);
   ASSERT_TRUE(response.Ok());
   EXPECT_THAT(response.GetResult(), IsJson(R"({
     "status": "ok",
@@ -128,8 +149,8 @@ TEST(GetPointerResponseTest, NoPointInTheViewport) {
       {.point = gfx::PointF(500, std::numeric_limits<float>::infinity())}};
   for (const std::vector<Location>& locations :
        {std::vector<Location>(), outside}) {
-    const ToolResponse response =
-        BuildGetPointerResponse(MakeContext(), locations);
+    const ToolResponse response = BuildGetPointerResponse(
+        MakeContext(), locations, /*include_node_identity=*/false);
     ASSERT_TRUE(response.Ok());
     EXPECT_THAT(response.GetResult(),
                 IsJson(R"({"status": "no_active_pointer"})"));
@@ -148,7 +169,8 @@ TEST(GetPointerResponseTest, UnusableScreenshot) {
   infinite_scale_factor.scale_factor = std::numeric_limits<float>::infinity();
   for (const PointerContext* context :
        {&not_an_image, &no_scale_factor, &infinite_scale_factor}) {
-    const ToolResponse response = BuildGetPointerResponse(*context, locations);
+    const ToolResponse response = BuildGetPointerResponse(
+        *context, locations, /*include_node_identity=*/false);
     ASSERT_FALSE(response.Ok());
     EXPECT_EQ(response.error().code,
               actor::mojom::ActionResultCode::kScreenshotCaptureFailed);

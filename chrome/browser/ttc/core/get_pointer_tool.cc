@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -42,16 +43,18 @@ GetPointerTool::~GetPointerTool() = default;
 ToolDefinition GetPointerTool::GetDefinition() {
   ToolDefinition definition;
   definition.name = "get_pointer";
-  definition.description =
-      "Returns a small image of the active webpage around where the user's "
-      "pointer has been during their current request, with a crosshair "
-      "marking the pointed-at spot, plus the page element under it. Use it "
-      "when the user refers to something on screen with words like "
-      "\"this\", \"that\", \"here\" or \"there\" without naming it. The "
-      "element comes without a node id; to act on it, find it in the page "
-      "content by its label or text. If it returns no_active_pointer, the "
-      "user is not pointing at anything; answer from the page content or "
-      "ask.";
+  definition.description = base::StrCat(
+      {"Returns a small image of the active webpage around where the user's "
+       "pointer has been during their current request, with a crosshair "
+       "marking the pointed-at spot, plus the page element under it. Use it "
+       "when the user refers to something on screen with words like "
+       "\"this\", \"that\", \"here\" or \"there\" without naming it. ",
+       kTtcGetPointerIncludeNodeIdentity.Get()
+           ? ""
+           : "The element comes without a node id; to act on it, find it in "
+             "the page content by its label or text. ",
+       "If it returns no_active_pointer, the user is not pointing at "
+       "anything; answer from the page content or ask."});
   // The tool takes no arguments, so its schema is left empty. Like
   // get_screenshot, the model speaks about what the tool returns.
   definition.behavior = ToolDefinition::Behavior::kBlocking;
@@ -137,7 +140,8 @@ void GetPointerTool::OnCaptured(base::WeakPtr<content::Page> page,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&BuildGetPointerResponse, std::move(context).value(),
-                     std::move(locations)),
+                     std::move(locations),
+                     kTtcGetPointerIncludeNodeIdentity.Get()),
       base::BindOnce(&GetPointerTool::OnResponseBuilt,
                      weak_factory_.GetWeakPtr(), std::move(page),
                      std::move(callback)));

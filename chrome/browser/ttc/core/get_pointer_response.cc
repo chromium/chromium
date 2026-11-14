@@ -31,7 +31,8 @@ namespace ttc {
 
 ToolResponse BuildGetPointerResponse(
     const PointerContext& context,
-    base::span<const PointerTracker::Location> locations) {
+    base::span<const PointerTracker::Location> locations,
+    bool include_node_identity) {
   // The viewport is what the screenshot shows, so that the points, the image
   // and the hit test all agree on what is in it. There is none if the
   // screenshot is not an image or the scale factor is not a usable number.
@@ -85,11 +86,10 @@ ToolResponse BuildGetPointerResponse(
                                 .Set("kind", kind);
     if (std::optional<base::DictValue> node = DescribeNodeAtPoint(
             context.page_content, points[i], context.scale_factor)) {
-      // TODO(crbug.com/571268337): Report the node's identity once the server
-      // maps it to the node ids the model knows. Until then the model would
-      // mistake a DOM node id for one of those and act on another element.
-      node->Remove("dom_node_id");
-      node->Remove("document_id");
+      if (!include_node_identity) {
+        node->Remove("dom_node_id");
+        node->Remove("document_id");
+      }
       point.Set("node", std::move(*node));
     }
     point_list.Append(std::move(point));

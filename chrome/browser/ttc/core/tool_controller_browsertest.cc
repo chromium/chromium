@@ -3200,6 +3200,49 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
       gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
 }
 
+class ToolControllerGetPointerNodeIdentityBrowserTest
+    : public ToolControllerGetPointerBrowserTest {
+ public:
+  ToolControllerGetPointerNodeIdentityBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kTtcGetPointer, {{"include_node_identity", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// With the param on, the element comes with its identity, and the tool's
+// description no longer says that it does not.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerNodeIdentityBrowserTest,
+                       ReportsNodeIdentity) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  std::vector<ToolDefinition> tools = controller->GetToolDefinitions();
+  auto get_pointer =
+      std::ranges::find(tools, "get_pointer", &ToolDefinition::name);
+  ASSERT_NE(get_pointer, tools.end());
+  EXPECT_THAT(get_pointer->description,
+              testing::Not(testing::HasSubstr("without a node id")));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.body.innerHTML = \"<button style='position: fixed; left: 0; "
+      "top: 0; width: 100%; height: 100%'>Buy</button>\";"));
+  PressAt(gfx::Point(30, 18));
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+  const base::ListValue* points = response.GetResult().FindList("points");
+  ASSERT_TRUE(points);
+  ASSERT_EQ(points->size(), 1u);
+  const base::DictValue* node = points->front().GetDict().FindDict("node");
+  ASSERT_TRUE(node);
+  EXPECT_TRUE(node->FindInt("dom_node_id"));
+  EXPECT_TRUE(node->FindString("document_id"));
+}
+
 // A user whose pointer the session has not seen is not pointing.
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, NoActivePointer) {
   SessionControllerImpl* controller = StartSessionAt(PageWithText());

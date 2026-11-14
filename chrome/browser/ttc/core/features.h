@@ -84,6 +84,12 @@ inline constexpr base::FeatureParam<base::TimeDelta> kTtcGetPointerIdleLimit{
 // with that".
 inline constexpr base::FeatureParam<int> kTtcGetPointerMaxResults{
     &kTtcGetPointer, "max_results", 1};
+// Whether get_pointer reports the DOM node and document ids of the elements
+// it describes. Off until the server maps them to the node ids that the model
+// knows: until then the model would mistake a DOM node id for one of those
+// and act on another element.
+inline constexpr base::FeatureParam<bool> kTtcGetPointerIncludeNodeIdentity{
+    &kTtcGetPointer, "include_node_identity", false};
 // How long get_pointer waits for the page to be captured before it gives up.
 inline constexpr base::FeatureParam<base::TimeDelta>
     kTtcGetPointerCaptureTimeout{&kTtcGetPointer, "capture_timeout",
