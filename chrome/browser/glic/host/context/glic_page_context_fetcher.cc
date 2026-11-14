@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -34,6 +35,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
@@ -122,47 +124,68 @@ class ChainedProgressListener
       listeners_;
 };
 
-void HandleFetchPageResult(
-    base::WeakPtr<tabs::TabInterface> tab,
-    glic::mojom::TabDataPtr tab_data,
-    url::Origin last_committed_origin,
-    std::unique_ptr<optimization_guide::proto::ContentNode> media_root_node,
-    base::OnceCallback<void(
-        base::expected<glic::mojom::GetContextResultPtr,
-                       page_content_annotations::FetchPageContextErrorDetails>)>
-        callback,
-    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
-    bool is_screenshot_annotated,
-    base::expected<
-        std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-        page_content_annotations::FetchPageContextErrorDetails> fetch_result) {
-  if (!fetch_result.has_value()) {
-    std::move(callback).Run(
-        base::unexpected(page_content_annotations::FetchPageContextErrorDetails{
-            page_content_annotations::FetchPageContextError::kUnknown,
-            fetch_result.error().message}));
+struct FetchContextState {
+  base::WeakPtr<tabs::TabInterface> tab;
+  base::WeakPtr<content::Page> primary_page;
+  glic::mojom::TabDataPtr tab_data;
+  url::Origin last_committed_origin;
+  std::unique_ptr<optimization_guide::proto::ContentNode> media_root_node;
+  FetchPageContextCallback callback;
+  std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry;
+  bool is_screenshot_annotated = false;
+};
+
+// Returns an error if the tab went away or navigated to a new primary page
+// since the fetch started.
+std::optional<page_content_annotations::FetchPageContextErrorDetails>
+CheckTabStillShareable(const base::WeakPtr<tabs::TabInterface>& tab,
+                       const base::WeakPtr<content::Page>& primary_page) {
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  if (!web_contents || web_contents->IsBeingDestroyed()) {
+    return page_content_annotations::FetchPageContextErrorDetails{
+        page_content_annotations::FetchPageContextError::kWebContentsWentAway,
+        "web contents went away"};
+  }
+  // A page that entered the back/forward cache is still alive, so also check
+  // that it is still the tab's primary page.
+  if (primary_page.get() != &web_contents->GetPrimaryPage()) {
+    return page_content_annotations::FetchPageContextErrorDetails{
+        page_content_annotations::FetchPageContextError::kWebContentsChanged,
+        "web contents changed"};
+  }
+  return std::nullopt;
+}
+
+// Builds the `TabContextResult` from `page_context`. The tab may have closed
+// or navigated since the fetch started, so it is re-checked here.
+void BuildTabContextResult(
+    FetchContextState state,
+    std::unique_ptr<page_content_annotations::FetchPageContextResult>
+        page_context_ptr) {
+  if (auto error = CheckTabStillShareable(state.tab, state.primary_page)) {
+    std::move(state.callback).Run(base::unexpected(std::move(*error)));
     return;
   }
 
   page_content_annotations::FetchPageContextResult& page_context =
-      **fetch_result;
+      *page_context_ptr;
   auto tab_context = mojom::TabContextResult::New();
-  tab_context->tab_data = std::move(tab_data);
+  tab_context->tab_data = std::move(state.tab_data);
 
   if (page_context.inner_text_result) {
-    tab_context->web_page_data =
-        mojom::WebPageData::New(mojom::DocumentData::New(
-            last_committed_origin, page_context.inner_text_result->inner_text,
-            page_context.inner_text_result->truncated));
+    tab_context->web_page_data = mojom::WebPageData::New(
+        mojom::DocumentData::New(state.last_committed_origin,
+                                 page_context.inner_text_result->inner_text,
+                                 page_context.inner_text_result->truncated));
   }
 
   // TODO(b/446700005): This path is used for both actor and non-actor context
   // fetching, but includes bits specific to actor.
   actor::AggregatedJournal* journal = nullptr;
   actor::TaskId task_id;
-  if (journal_entry) {
-    journal = &journal_entry->GetJournal();
-    task_id = journal_entry->GetTaskId();
+  if (state.journal_entry) {
+    journal = &state.journal_entry->GetJournal();
+    task_id = state.journal_entry->GetTaskId();
   }
   if (page_context.screenshot_result.has_value()) {
     if (journal) {
@@ -211,7 +234,7 @@ void HandleFetchPageResult(
 
   // If the screenshot is going to be annotated, mark the standalone
   // screenshot_info as such.
-  if (is_screenshot_annotated && tab_context->viewport_screenshot) {
+  if (state.is_screenshot_annotated && tab_context->viewport_screenshot) {
     if (!page_context.screenshot_info.has_value()) {
       page_context.screenshot_info.emplace();
     }
@@ -220,24 +243,21 @@ void HandleFetchPageResult(
 
   if (page_context.annotated_page_content_result.has_value()) {
     auto annotated_page_data = mojom::AnnotatedPageData::New();
-    if (media_root_node) {
+    if (state.media_root_node) {
       optimization_guide::proto::ContentNode* media_node =
           page_context.annotated_page_content_result->proto.mutable_root_node()
               ->add_children_nodes();
-      media_node->Swap(media_root_node.get());
+      media_node->Swap(state.media_root_node.get());
     }
 
-    if (tab) {
-      if (auto* actor_tab_data = actor::ActorTabData::From(
-              actor::ActorSurfaceHandle::From(tab->GetHandle()))) {
-        actor_tab_data->DidObserveContent(
-            *page_context.annotated_page_content_result,
-            actor::ApcSource::kGlic);
-      }
+    if (auto* actor_tab_data = actor::ActorTabData::From(
+            actor::ActorSurfaceHandle::From(state.tab->GetHandle()))) {
+      actor_tab_data->DidObserveContent(
+          *page_context.annotated_page_content_result, actor::ApcSource::kGlic);
     }
 
     // If the screenshot is going to be annotated mark the APC as such.
-    if (is_screenshot_annotated && tab_context->viewport_screenshot) {
+    if (state.is_screenshot_annotated && tab_context->viewport_screenshot) {
       page_context.annotated_page_content_result->proto
           .mutable_gemini_in_chrome_page_metadata()
           ->mutable_screenshot_info()
@@ -261,8 +281,21 @@ void HandleFetchPageResult(
     tab_context->screenshot_info =
         mojo_base::ProtoWrapper(*page_context.screenshot_info);
   }
-  std::move(callback).Run(
-      base::ok(mojom::GetContextResult::NewTabContext(std::move(tab_context))));
+  std::move(state.callback)
+      .Run(base::ok(
+          mojom::GetContextResult::NewTabContext(std::move(tab_context))));
+}
+
+void HandleFetchPageResult(
+    FetchContextState state,
+    page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
+  if (!fetch_result.has_value()) {
+    std::move(state.callback)
+        .Run(base::unexpected(std::move(fetch_result.error())));
+    return;
+  }
+
+  BuildTabContextResult(std::move(state), std::move(fetch_result.value()));
 }
 
 }  // namespace
@@ -270,10 +303,7 @@ void HandleFetchPageResult(
 void FetchPageContext(
     tabs::TabInterface* tab,
     const mojom::TabContextOptions& tab_context_options,
-    base::OnceCallback<void(
-        base::expected<glic::mojom::GetContextResultPtr,
-                       page_content_annotations::FetchPageContextErrorDetails>)>
-        callback,
+    FetchPageContextCallback callback,
     std::unique_ptr<page_content_annotations::FetchPageProgressListener>
         progress_listener,
     bool is_screenshot_annotated) {
@@ -367,12 +397,19 @@ void FetchPageContext(
   }
 #endif
 
+  FetchContextState state{
+      .tab = tab->GetWeakPtr(),
+      .primary_page = web_contents->GetPrimaryPage().GetWeakPtr(),
+      .tab_data = CreateTabData(tab),
+      .last_committed_origin = std::move(main_document_origin),
+      .media_root_node = std::move(media_root_node),
+      .callback = std::move(callback),
+      .journal_entry = std::move(journal_entry),
+      .is_screenshot_annotated = is_screenshot_annotated,
+  };
   page_content_annotations::FetchPageContext(
       *web_contents, options, std::move(progress_listener),
-      base::BindOnce(&HandleFetchPageResult, tab->GetWeakPtr(),
-                     CreateTabData(tab), std::move(main_document_origin),
-                     std::move(media_root_node), std::move(callback),
-                     std::move(journal_entry), is_screenshot_annotated));
+      base::BindOnce(&HandleFetchPageResult, std::move(state)));
 }
 
 }  // namespace glic
