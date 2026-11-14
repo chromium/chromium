@@ -21813,14 +21813,6 @@ be describing additional metrics about the same event.
       The final SecurityLevel of the page before it is closed or another
       navigation occurs. Based on the enum security_state::SecurityLevel.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="InitialSecurityLevel">
     <summary>
@@ -21841,14 +21833,6 @@ be describing additional metrics about the same event.
       The Safety Tip status of the page when the navigation commits, after the
       reputation check finishes.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ScoreDelta">
     <summary>
