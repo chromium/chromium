@@ -1012,18 +1012,32 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                                    bool performing_navigation);
 #endif
 
-  // Helper for `GetIndexWithSkipping()` to conditionally report DevTools issues
-  // or record metrics for the back-to-ad intervention. The
-  // `is_cross_origin_skip` parameter indicates if the ad-skipping logic
-  // attempts to land on a cross-origin page relative to the start point. (Refer
-  // to `get_origin_for_intervention` in `GetIndexWithSkipping()` for details on
-  // the 'same-origin exception'). `is_first_skipped_ad_same_origin` indicates
-  // if the first skipped ad entry is same-origin with the start point.
-  void MaybeReportBackToAdIntervention(int from_index,
-                                       Direction direction,
-                                       bool performing_navigation,
-                                       bool is_cross_origin_skip,
-                                       bool is_first_skipped_ad_same_origin);
+  // Helper for `GetIndexWithSkipping()` to conditionally report DevTools
+  // issues, send intervention reports, or record metrics for the back-to-ad
+  // intervention. The `is_cross_origin_skip` parameter indicates if the
+  // ad-skipping logic attempts to land on a cross-origin page relative to the
+  // start point. (Refer to `get_origin_for_intervention` in
+  // `GetIndexWithSkipping()` for details on the 'same-origin exception').
+  // `skipped_ad_entry_index` is the index of the entry to name in the
+  // intervention report, i.e., the first entry skipped due to the back-to-ad
+  // intervention, or `std::nullopt` if no report should be sent.
+  // `is_first_skipped_ad_same_origin` indicates if the first skipped ad entry
+  // is same-origin with the start point.
+  void MaybeReportBackToAdIntervention(
+      int from_index,
+      Direction direction,
+      bool performing_navigation,
+      bool is_cross_origin_skip,
+      std::optional<int> skipped_ad_entry_index,
+      bool is_first_skipped_ad_same_origin);
+
+  // Helper for `MaybeReportBackToAdIntervention()`. Returns the main frame URL
+  // of the entry at `entry_index` if it may be revealed to the current main
+  // frame document, or an empty `GURL` otherwise. This requires the entry's
+  // main frame to be same-origin with that document, and its URL to not be
+  // hidden from that document by referrer policy (see
+  // `FrameNavigationEntry::protect_url_in_navigation_api()`).
+  GURL GetMainFrameUrlVisibleToCurrentDocument(int entry_index);
 
   // History Manipulation intervention:
   // The previous document that started this navigation needs to be skipped in

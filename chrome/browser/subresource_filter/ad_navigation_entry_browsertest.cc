@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -71,6 +74,15 @@ class AdNavigationEntryBrowserTest : public SubresourceFilterBrowserTest {
     return embedded_test_server()->GetURL(hostname, "/ad_tagging/" + page);
   }
 
+  // Returns the URL of a `frame_factory.html` page on `hostname`, which hides
+  // its URL from other documents via a "no-referrer" referrer policy.
+  GURL GetNoReferrerURL(const std::string& hostname) {
+    return embedded_test_server()->GetURL(
+        hostname,
+        "/set-header-with-file/components/test/data/ad_tagging/"
+        "frame_factory.html?Referrer-Policy: no-referrer");
+  }
+
   // Returns a vector of the URLs associated with each entry in the current
   // navigation history.
   std::vector<GURL> GetNavigationUrls() {
@@ -94,6 +106,99 @@ class AdNavigationEntryBrowserTest : public SubresourceFilterBrowserTest {
     content::TestNavigationObserver observer(GetWebContents());
     GetWebContents()->GetController().GoForward();
     observer.Wait();
+  }
+
+  // Navigates back via the renderer, which doesn't skip any entries.
+  void GoBackViaRenderer() {
+    content::TestNavigationObserver observer(GetWebContents());
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), "history.back();"));
+    observer.Wait();
+  }
+
+  // Navigates back via the browser UI, and returns the back-to-ad intervention
+  // reports received by the pre-skip page, including those generated before
+  // this call, and those still pending when it is navigated away from.
+  //
+  // The reports are collected when the pre-skip page is unloaded, so the back
+  // navigation must be cross-document. This is always the case when the
+  // intervention applies, as it only skips to a cross-origin page.
+  std::vector<base::DictValue> GoBackAndGetBackToAdInterventionReports() {
+    content::NavigationController& controller =
+        GetWebContents()->GetController();
+    content::DOMMessageQueue message_queue(GetWebContents());
+
+    // Run the script without a user gesture, which would otherwise affect the
+    // original history manipulation intervention.
+    if (!content::ExecJs(GetWebContents(), R"(
+      function sendIfBackToAdReport(report) {
+        if (report.type === 'intervention' &&
+            report.body.id === 'BackToAdIntervention') {
+          window.domAutomationController.send(
+              {url: report.url, message: report.body.message});
+        }
+      }
+
+      let observer = new ReportingObserver((reports, observer) => {
+        reports.forEach(sendIfBackToAdReport);
+      }, {types: ['intervention'], buffered: true});
+      observer.observe();
+
+      window.addEventListener('pagehide', function(event) {
+        observer.takeRecords().forEach(sendIfBackToAdReport);
+        window.domAutomationController.send('END');
+      });
+    )",
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)) {
+      ADD_FAILURE() << "Failed to observe the reports.";
+      return {};
+    }
+
+    const int64_t pre_skip_document_sequence_number =
+        controller.GetLastCommittedEntry()
+            ->GetMainFrameDocumentSequenceNumber();
+    GoBack();
+    if (controller.GetLastCommittedEntry()
+            ->GetMainFrameDocumentSequenceNumber() ==
+        pre_skip_document_sequence_number) {
+      // Fail, rather than wait forever for the pre-skip page to be unloaded.
+      ADD_FAILURE() << "The back navigation must be cross-document.";
+      return {};
+    }
+
+    std::vector<base::DictValue> reports;
+    std::string message;
+    while (true) {
+      if (!message_queue.WaitForMessage(&message)) {
+        // Fail, rather than return reports that may be incomplete (e.g., if the
+        // renderer crashed).
+        ADD_FAILURE() << "Failed to receive all the reports.";
+        return {};
+      }
+      if (message == "\"END\"") {
+        break;
+      }
+      reports.push_back(base::test::ParseJsonDict(message));
+    }
+    return reports;
+  }
+
+  // Expects `report` to be a back-to-ad intervention report that was sent to
+  // the page at `pre_skip_url`, and that includes `skipped_ad_url`.
+  void ExpectBackToAdInterventionReport(const base::DictValue& report,
+                                        const GURL& pre_skip_url,
+                                        const GURL& skipped_ad_url) {
+    const std::string* report_url = report.FindString("url");
+    const std::string* report_message = report.FindString("message");
+    ASSERT_TRUE(report_url);
+    ASSERT_TRUE(report_message);
+
+    EXPECT_EQ(GURL(*report_url), pre_skip_url);
+    EXPECT_THAT(
+        *report_message,
+        ::testing::HasSubstr(
+            "An ad-related entry was detected in the session history."));
+    EXPECT_THAT(*report_message, ::testing::EndsWith(base::StrCat(
+                                     {" (url=", skipped_ad_url.spec(), ")"})));
   }
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
@@ -797,6 +902,249 @@ IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
   ASSERT_TRUE(
       RecordedUkmUseCounter(blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd,
                             GetURL("b.com", "frame_factory.html")));
+}
+
+// Verifies that an intervention report is sent to the pre-skip page when the
+// back-to-ad intervention skips an ad entry during a cross-origin back
+// navigation.
+IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
+                       BackToAdInterventionFired_ReportSent) {
+  // The page loaded in `SetUpOnMainThread()`, which is cross-origin to b.com.
+  const GURL initial_url = GetURL("frame_factory.html");
+  // The ad entry's URL has a fragment, which is stripped in the report.
+  const GURL ad_entry_url = GetURL("b.com", "replaced_state#fragment");
+  const GURL pre_skip_url = GetURL("b.com", "new_state");
+
+  // Navigate to a cross-origin page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("b.com", "frame_factory.html")));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state#fragment');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  // Note that `replaced_state` replaced the b.com `frame_factory.html` entry.
+  // The remaining `frame_factory.html` entry is the (non-b.com) `initial_url`.
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(GURL(url::kAboutBlankURL), initial_url,
+                                     ad_entry_url, pre_skip_url));
+
+  // Back from `new_state`. The previous entry `replaced_state` is skipped,
+  // because it is both created by ad and an ad entry creator.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), initial_url);
+
+  // Expect exactly one report, as it is only sent when performing the back
+  // navigation, rather than on capability checks (e.g., `CanGoBack`).
+  //
+  // The report is sent to the pre-skip page, rather than the page that the
+  // back navigation lands on. It includes the main frame URL of the skipped ad
+  // entry, without its fragment.
+  ASSERT_EQ(reports.size(), 1u);
+  ExpectBackToAdInterventionReport(reports[0], pre_skip_url,
+                                   ad_entry_url.GetWithoutRef());
+}
+
+// Verifies that an intervention report is also sent when the skipped ad entry
+// only differs from the pre-skip entry in a subframe. The report includes the
+// main frame URL of the skipped ad entry, which is then the same as that of
+// the pre-skip page.
+IN_PROC_BROWSER_TEST_F(
+    AdNavigationEntryBrowserTest,
+    BackToAdInterventionFired_ReportSentForSubframeOnlyAdEntry) {
+  const GURL main_frame_url = GetURL("b.com", "replaced_state");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("b.com", "frame_factory.html")));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+  )"));
+
+  // Create an ad subframe, which then pushes a new entry.
+  content::RenderFrameHost* ad_frame =
+      CreateSrcFrame(GetWebContents(), GetURL("test_div.html?ad=true"));
+  ASSERT_TRUE(content::ExecJs(ad_frame, R"(
+    history.pushState({}, '', 'new_state');
+  )"));
+
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                                     GetURL("frame_factory.html"),
+                                     main_frame_url, main_frame_url));
+
+  // Back from `replaced_state` (for Main+Subframe). The previous entry
+  // `replaced_state` (for main frame) is skipped, because it is both created by
+  // ad and an ad entry creator.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            GetURL("frame_factory.html"));
+
+  ASSERT_EQ(reports.size(), 1u);
+  ExpectBackToAdInterventionReport(reports[0], main_frame_url, main_frame_url);
+}
+
+// Verifies that when a back navigation skips an entry due to the original
+// history manipulation intervention, followed by multiple ad entries due to
+// the back-to-ad intervention, the report includes the URL of the first skipped
+// ad entry (i.e., the entry the navigation would otherwise have landed on).
+IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
+                       BackToAdInterventionFired_ReportSentForFirstSkippedAd) {
+  const GURL pre_skip_url = GetURL("b.com", "frame_factory.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pre_skip_url));
+
+  // Create two ad entries (`ad_state1` and `ad_state2`), and go back to
+  // `ad_state2` via the renderer (which doesn't skip ad entries).
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('ad_state1');
+    executeHistoryPushStateFromAdScript('ad_state2');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+  GoBackViaRenderer();
+
+  // Navigate to `test_div.html`, which prunes `new_state`. The navigation is
+  // browser-initiated, so that the user gesture isn't inherited by the new
+  // page. That page then navigates without a user gesture, which makes it
+  // skippable by the original intervention.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetURL("b.com", "test_div.html")));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetWebContents(), pre_skip_url));
+
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(
+                  GURL(url::kAboutBlankURL), GetURL("frame_factory.html"),
+                  GetURL("b.com", "ad_state1"), GetURL("b.com", "ad_state2"),
+                  GetURL("b.com", "test_div.html"), pre_skip_url));
+
+  // Back from b.com `frame_factory.html`. It should skip both the skippable
+  // entry determined by original history intervention (`test_div.html`), as
+  // well as ad entries (`ad_state2`, `ad_state1`). The report is for
+  // `ad_state2`.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            GetURL("frame_factory.html"));
+
+  ASSERT_EQ(reports.size(), 1u);
+  ExpectBackToAdInterventionReport(reports[0], pre_skip_url,
+                                   GetURL("b.com", "ad_state2"));
+}
+
+// Verifies that no intervention report is sent when the skipped ad entry is
+// cross-origin to the pre-skip page, as the entry must not be revealed to that
+// page. The intervention itself still applies.
+IN_PROC_BROWSER_TEST_F(
+    AdNavigationEntryBrowserTest,
+    BackToAdInterventionFired_NoReportForCrossOriginAdEntry) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("b.com", "frame_factory.html")));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                                     GetURL("frame_factory.html"),
+                                     GetURL("b.com", "replaced_state"),
+                                     GetURL("b.com", "new_state")));
+
+  // Go back to `replaced_state` via the renderer (which doesn't skip ad
+  // entries), and then navigate to a cross-origin page, which prunes
+  // `new_state`.
+  GoBackViaRenderer();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("c.com", "frame_factory.html")));
+
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                                     GetURL("frame_factory.html"),
+                                     GetURL("b.com", "replaced_state"),
+                                     GetURL("c.com", "frame_factory.html")));
+
+  // Back from the c.com page. The previous entry `replaced_state` (b.com) is
+  // skipped, but no report is sent: the pre-skip page (c.com) is cross-origin
+  // to the skipped ad entry, so the entry must not be revealed to it. This is
+  // also desirable, as the ad entry isn't related to the c.com page.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            GetURL("frame_factory.html"));
+  EXPECT_TRUE(reports.empty());
+}
+
+// Verifies that no intervention report is sent when the skipped ad entry is for
+// another document that hides its URL via referrer policy, even though it is
+// same-origin with the pre-skip page. The intervention itself still applies.
+IN_PROC_BROWSER_TEST_F(
+    AdNavigationEntryBrowserTest,
+    BackToAdInterventionFired_NoReportForAdEntryUrlHiddenByReferrerPolicy) {
+  const GURL no_referrer_url = GetNoReferrerURL("b.com");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_referrer_url));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  // Go back to `replaced_state` via the renderer (which doesn't skip ad
+  // entries), and then navigate to another same-origin document, which prunes
+  // `new_state`.
+  GoBackViaRenderer();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetURL("b.com", "test_div.html")));
+
+  EXPECT_THAT(GetNavigationUrls(),
+              ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                                     GetURL("frame_factory.html"),
+                                     no_referrer_url.Resolve("replaced_state"),
+                                     GetURL("b.com", "test_div.html")));
+
+  // Back from `test_div.html`. The previous entry `replaced_state` is skipped,
+  // but no report is sent to `test_div.html`, because the skipped entry's
+  // document hides its URL from other documents.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            GetURL("frame_factory.html"));
+  EXPECT_TRUE(reports.empty());
+}
+
+// Verifies that an intervention report is still sent when the skipped ad entry
+// is for the pre-skip document itself, even if that document hides its URL
+// from other documents via referrer policy.
+IN_PROC_BROWSER_TEST_F(
+    AdNavigationEntryBrowserTest,
+    BackToAdInterventionFired_ReportSentForOwnAdEntryWithReferrerPolicy) {
+  const GURL no_referrer_url = GetNoReferrerURL("b.com");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_referrer_url));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  // Back from `new_state`. The previous entry `replaced_state` is skipped,
+  // because it is both created by ad and an ad entry creator.
+  std::vector<base::DictValue> reports =
+      GoBackAndGetBackToAdInterventionReports();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            GetURL("frame_factory.html"));
+
+  // The report is sent because the receiving document already knows the URL of
+  // the entry being skipped (i.e., its own earlier URL).
+  ASSERT_EQ(reports.size(), 1u);
+  ExpectBackToAdInterventionReport(reports[0],
+                                   no_referrer_url.Resolve("new_state"),
+                                   no_referrer_url.Resolve("replaced_state"));
 }
 
 class BackToAdInterventionDisabledBrowserTest

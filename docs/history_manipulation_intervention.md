@@ -190,6 +190,30 @@ are currently lenient regarding potential back-to-ad abuse when the user
 navigates within the same origin. If same-origin back-button abuse arises in the
 future, we can revisit or remove this exception.
 
+**Intervention reports for back-to-ad intervention:**
+
+When a back button navigation skips an `is_possibly_skippable_ad_entry` due to
+the back-to-ad intervention, the browser sends an
+[intervention report](https://wicg.github.io/intervention-reporting/) with ID
+`BackToAdIntervention` to the main frame document that the user is navigating
+away from, via the [Reporting API](https://w3c.github.io/reporting/). The
+report's message includes the main frame URL of the skipped ad entry. If
+multiple ad entries are skipped, it is the URL of the first one, i.e., the entry
+the navigation would otherwise have landed on.
+
+* The report is only sent if that URL may be revealed to the document receiving
+    the report. This requires the skipped entry's main frame to be same-origin
+    with that document. If the skipped entry is for another document, it also
+    requires that document to not hide its URL via a `no-referrer` or `origin`
+    referrer policy (similar to
+    [`NavigationHistoryEntry.url`](https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigationhistoryentry-url)).
+    This avoids leaking information (e.g., about cross-origin entries).
+* The report is sent when the navigation starts, since the document receiving it
+    is unloaded once the navigation commits. As a result, a report may be sent
+    even if the navigation doesn't end up committing (e.g., if it is canceled by
+    a `beforeunload` dialog).
+* No report is sent for forward button navigations.
+
 **UI Behavior:**
 * `NavigationController::CanGoBack()` will return false if all entries are
     marked to be skipped on back/forward UI.
