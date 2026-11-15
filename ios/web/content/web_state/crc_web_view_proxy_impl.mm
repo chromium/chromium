@@ -160,4 +160,9 @@
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset {
 }
+
+- (BOOL)setZoomSize:(int)size {
+  // Zoom needs a WKWebView, which this proxy doesn't have.
+  return NO;
+}
 @end
