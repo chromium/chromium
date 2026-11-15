@@ -7,6 +7,7 @@ License: MIT
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:google:woff2
 
 Description:
 The reference implementation of the WOFF 2.0 web font compression
