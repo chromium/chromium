@@ -87,6 +87,28 @@
   width: 16px;
 }
 
+/* A badge in the top-right corner of the icon. The icon is centered in the
+   square container, so the corner is half the leftover space in. */
+#badge {
+  inset-inline-end: calc(
+      (100% - var(--cr-searchbox-results-search-icon-size, 16px)) / 2);
+  position: absolute;
+  top: calc((100% - var(--cr-searchbox-results-search-icon-size, 16px)) / 2);
+}
+
+/* The dot uses the URL color so that it follows dark mode and themes. */
+#badge.dot {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
+  -webkit-mask-size: contain;
+  background-color: var(--color-searchbox-results-url);
+  height: 4px;
+  width: 4px;
+}
+
+:host-context(cr-searchbox-match:is(:focus-within, [selected])) #badge.dot {
+  background-color: var(--color-searchbox-results-url-selected);
+}
+
 @media (forced-colors: active) {
   :host {
     --color-searchbox-answer-icon-background: transparent;
@@ -168,4 +190,13 @@
 :host(:not([in-searchbox])[is-lens-searchbox_]) #container {
   background-color: var(--color-searchbox-results-icon-container-background);
   border-radius: 4000px;
+}
+
+@media (forced-colors: active) {
+  /* Same color as the icon, which turns HighlightText on hover and
+     selection. */
+  #badge.dot {
+    background-color: var(--color-searchbox-search-icon-background);
+    forced-color-adjust: none;
+  }
 }

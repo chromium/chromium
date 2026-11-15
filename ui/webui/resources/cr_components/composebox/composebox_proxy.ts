@@ -40,6 +40,7 @@ export function createAutocompleteMatch(
       typeIcon: IconType.kIconTypeUnspecified,
       fuseboxAction: null,
       actionIcon: null,
+      typeIconBadge: null,
     },
     secondaryTextIsUrl: false,
     urlEmphasis: null,

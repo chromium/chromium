@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {BadgeType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {getCss} from './searchbox_icon.css.js';
 import {getHtml} from './searchbox_icon.html.js';
@@ -563,6 +563,21 @@ export class SearchboxIconElement extends CrLitElement {
   private computeIsFeaturedSearch_(): boolean {
     return this.match?.type === STARTER_PACK ||
         this.match?.type === FEATURED_ENTERPRISE_SEARCH;
+  }
+
+  // Returns the class that styles the badge on the type icon, or an empty
+  // string if there is no badge to show. The searchbox input icon never shows
+  // one.
+  protected getBadgeClass_(): string {
+    if (this.inSearchbox) {
+      return '';
+    }
+    switch (this.match?.suggestTemplate.typeIconBadge) {
+      case BadgeType.kDot:
+        return 'dot';
+      default:
+        return '';
+    }
   }
 }
 

@@ -65,6 +65,7 @@ export function createSuggestTemplateInfo(
     typeIcon: IconType.kIconTypeUnspecified,
     fuseboxAction: null,
     actionIcon: null,
+    typeIconBadge: null,
   };
 
   return Object.assign(base, modifiers);
