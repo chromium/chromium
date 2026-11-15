@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">சுயச் சோதனை தோல்வியடைந்தது</translation>
 <translation id="1257336506558170607">தேர்ந்தெடுத்துள்ள சான்றிதழ்களைப் பதிவிறக்கும்</translation>
 <translation id="1258491128795710625">புதியவை</translation>
+<translation id="1259453023447377372">சேமிக்கப்பட்ட பக்கக் குழு</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> இடமிருந்து பாப்-அப்களையும் திசைதிருப்புதல்களையும் எப்போதும் அனுமதி</translation>
 <translation id="1262395978737369974">JavaScript மேம்பாடுகளைப் பயன்படுத்த எப்போதும் அனுமதி</translation>
 <translation id="1262564987698748643">கீபோர்டு உள்ளீட்டை அறிந்து அதை மீறிச் செயல்பட தளங்கள் அனுமதி கேட்கலாம்</translation>
@@ -1858,6 +1859,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft கணக்கில் உள்நுழைந்து மீண்டும் முயலவும்</translation>
 <translation id="2611885296070244383">மைக் (பிரவுசர் பயன்பாடு)</translation>
+<translation id="2612346259364350954">ஹைலைட் செய்யப்பட்ட வார்த்தைகளை விளக்க, பக்க உள்ளடக்கத்தைப் பயன்படுத்து</translation>
 <translation id="2612676031748830579">கார்டு எண்</translation>
 <translation id="261305050785128654">நீங்கள் பேசும் மொழிகளை இணையதளங்களுக்குத் தெரியப்படுத்துங்கள். கிடைக்கும்பட்சத்தில், அந்த மொழிகளில் உள்ளடக்கத்தை அவை காட்டும்.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> தளத்தில் நீட்டிப்புகள் எதையும் அனுமதிக்காதே</translation>
@@ -2160,6 +2162,7 @@
 <translation id="284884486564166077">Lens மூலம் படத்தைத் தேடுதல்</translation>
 <translation id="2849035674501872372">தேடுக</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" />க்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="285033512555869047">மூடப்பட்டுள்ளது</translation>
 <translation id="2851291081585704741">ஆஃப்லைனில் உள்ளீர்கள்</translation>
 <translation id="285237063405807022">(ஏற்றுகிறது)</translation>
@@ -2231,6 +2234,7 @@
     சேவையகப் பிழை: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel மற்றும் PowerPoint ஃபைல்களைத் திறக்கலாம்</translation>
 <translation id="2908162660801918428">கோப்பகத்தின் மூலம் மீடியா கேலரியைச் சேர்</translation>
+<translation id="2909334296570021569">பக்கக் குழுவைத் திறக்கும்</translation>
 <translation id="2909487040556589351">மொபைல் சாதனத்தில் Chromeமைப் பெறுங்கள்</translation>
 <translation id="2910318910161511225">நெட்வொர்க்குடன் இணைத்து, மீண்டும் முயலவும்</translation>
 <translation id="2910678330803525229">உலாவலை இனி தொடங்கலாம்</translation>
@@ -2397,6 +2401,7 @@
 <translation id="3042097545107738107">மேம்பட்ட சார்ஜிங் உத்தியை மாற்றும்.</translation>
 <translation id="3043016484125065343">உங்கள் புக்மார்க்குகளைப் பார்க்க உள்நுழையவும்</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> என்ற இணைப்பில் இருந்து</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" />க்கான விருப்பங்கள்</translation>
 <translation id="3044066905368192931">AI மூலம் மேம்படுத்து</translation>
 <translation id="3045447014237878114">இந்தத் தளம் தானாகவே பல ஃபைல்களைப் பதிவிறக்கம் செய்தது</translation>
 <translation id="304644035656848980">உங்கள் மைக்ரோஃபோனின் மாதிரிக்காட்சி</translation>
@@ -3250,6 +3255,7 @@
 <translation id="3748424433435232460">இந்தக் கணக்கிற்கான கடவுச்சொல் இந்தச் சாதனத்தில் ஏற்கெனவே சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="3748466028423001972">கீழ்ப்புறக் காட்சியை மாற்று</translation>
 <translation id="3748706263662799310">பிழையைப் புகாரளி</translation>
+<translation id="3750406842345107892">விளக்கத்தை உருவாக்க, நீங்கள் இருக்கும் பக்கத்தின் உள்ளடக்கமும் URLலும், ஹைலைட் செய்யப்பட்ட வார்த்தைகளும் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> தளத்திற்கான உங்கள் கடவுச்சொல் நகலைப் பகிருங்கள்</translation>
 <translation id="3753412199586870466">பக்கவாட்டு பேனலைத் திற</translation>
 <translation id="3753585830134123417">இடதுபுறம் அளவு மாற்றப்பட்ட சாளரங்கள்</translation>
@@ -4146,6 +4152,7 @@
 <translation id="4550926046134589611"><ph name="APP_NAME" /> ஆப்ஸில் சில ஆதரிக்கப்படும் இணைப்புகள் இப்போதும் திறக்கும்.</translation>
 <translation id="4551379727767354516">உங்களின் சமீபத்திய AI தீம்கள்</translation>
 <translation id="4551763574344810652">செயல்தவிர்க்க <ph name="MODIFIER_KEY_DESCRIPTION" />ஐ அழுத்தவும்</translation>
+<translation id="4552721860956824254">ஆடியோ ஒலியடக்கப்பட்டது</translation>
 <translation id="4553526521109675518">சாதனத்தின் மொழியை மாற்ற உங்கள் Chromebookகை மீண்டும் தொடங்கவும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">இந்த ஆப்ஸின் புதிய பதிப்பு தேவை</translation>
 <translation id="4555769855065597957">நிழல்</translation>
@@ -5094,6 +5101,7 @@
 <translation id="5379140238605961210">மைக்ரோஃபோன் அணுகலைத் தொடர்ந்து தடு</translation>
 <translation id="5382591305415226340">ஆதரிக்கப்படும் இணைப்புகளை நிர்வகி</translation>
 <translation id="5384401776498845256">யாரெல்லாம் உங்களுடன் பகிரலாம்?</translation>
+<translation id="5386856927586721327">உங்கள் திரையில் உள்ளதைப் பற்றி <ph name="LENS_ICON" />Google Lens மூலம் கேளுங்கள்</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> ஐ மாற்றலாம்</translation>
 <translation id="538822246583124912">நிறுவனத்தின் கொள்கை மாறியுள்ளது. கருவிப்பட்டியில் ’பரிசோதனைகள்’ பட்டன் சேர்க்கப்பட்டது. பரிசோதனைகளை இயக்குவதற்கான உரையாடலைத் திறக்க, இந்த பட்டனைக் கிளிக் செய்யவும்.</translation>
 <translation id="5388436023007579456">கேமரா அனுமதியைக் கொண்டுள்ள ஆப்ஸும் இணையதளங்களும், சிஸ்டம் சேவைகளும் உங்கள் கேமராவைப் பயன்படுத்தலாம். கேமராவைப் பயன்படுத்த ஆப்ஸை மீண்டும் தொடங்கவோ பக்கத்தை ரெஃப்ரெஷ் செய்யவோ வேண்டியிருக்கலாம்.</translation>
@@ -7400,6 +7408,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ஆனது முறைமை தொடக்கத்தின்போதே தொடங்கப்படும், மேலும் நீங்கள் பிற <ph name="PRODUCT_NAME" /> சாளரங்களை மூடி விட்டாலும் கூட பின்னணியில் தொடர்ந்து இயங்கும்.</translation>
 <translation id="7399045143794278225">ஒத்திசைவைப் பிரத்தியேகமாக்கு</translation>
 <translation id="7399616692258236448">நீங்கள் அனுமதிக்கும் தளங்களைத் தவிர பிற தளங்கள் அனைத்திற்கும் இருப்பிடக் கோரிக்கைகள் தானாகவே முடக்கப்படும்</translation>
+<translation id="7399746352569282594">இரட்டைக் காட்சியை மூடும்: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">பாதுகாப்புச் சரிபார்ப்பு</translation>
 <translation id="7400059772197434086">இதில் உங்களைப் பற்றிய தகவல்களைப் பயன்படுத்துவதில் இருந்து தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8040,6 +8049,7 @@
 <translation id="7953955868932471628">குறுக்குவழிகளை நிர்வகி</translation>
 <translation id="7955105108888461311">நேரடியாகக் கேட்கவும்</translation>
 <translation id="7955177647836564772">Smart Lock இயக்கப்பட்டிருக்கும்போது உங்கள் ஃபோன் அன்லாக் செய்யப்பட்டால் நீங்கள் கடவுச்சொல் அல்லது பின்னை (PIN) டைப் செய்யத் தேவையில்லை</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> பக்கத்தை மூடும்</translation>
 <translation id="7956373551960864128">நீங்கள் சேமித்துள்ள பிரிண்டர்கள்</translation>
 <translation id="7956918070009672177">உங்கள் சாதனத்தில் <ph name="LANGUAGE" /> மொழியில் குரல்கள் எதுவும் இல்லை. இணையத்துடன் இணைத்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="7957074856830851026">வரிசை எண்/உரிமை ஐடி போன்ற சாதனத் தகவலைப் பார்த்தல்</translation>

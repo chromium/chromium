@@ -95,7 +95,7 @@
 <translation id="126737128831326059">تم التصدير بنجاح</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1273416271143914096">{count,plural, =1{كلمة مرور واحدة ({count})}zero{{count} كلمة مرور}two{كلمتا مرور ({count})}few{{count} كلمات مرور}many{{count} كلمة مرور}other{{count} كلمة مرور}}</translation>
-<translation id="1274721046703404848">‏يمكنك إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
+<translation id="1274721046703404848">‏إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
@@ -1152,7 +1152,7 @@
 <translation id="4607887340472970274">تتبُّع الأسعار</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4621768135601674446">فتح خيارات "وضع القراءة"</translation>
-<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بالانتقال إلى استخدام مفاتيح المرور في حساباتها الحالية</translation>
 <translation id="4629065796475200039">لم يتم استيراد كلمة المرور</translation>
 <translation id="4630212057753624203">فقاعة معلوماتية</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>

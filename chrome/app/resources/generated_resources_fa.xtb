@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">خودآزمایی ناموفق بود</translation>
 <translation id="1257336506558170607">صادر کردن گواهینامه انتخاب‌شده</translation>
 <translation id="1258491128795710625">تازه‌ها</translation>
+<translation id="1259453023447377372">گروه زبانه‌های ذخیره‌شده</translation>
 <translation id="1260451001046713751">همیشه اجازه دادن پنجره‌های بازشو و هدایت‌ها از <ph name="HOST" /></translation>
 <translation id="1262395978737369974">همیشه اجازه داشتن برای استفاده از بهینه‌سازی جاوا اسکریپت</translation>
 <translation id="1262564987698748643">سایت‌ها می‌توانند برای ملغی کردن ورودی صفحه‌کلید درخواست دهند</translation>
@@ -1857,6 +1858,7 @@
 <translation id="2610780100389066815">‏امضای فهرست اطمینان Microsoft</translation>
 <translation id="261114180663074524">‏به سیستم حساب Microsoft وارد شوید و دوباره امتحان کنید</translation>
 <translation id="2611885296070244383">میکروفون (داخلی)</translation>
+<translation id="2612346259364350954">استفاده از محتوای صفحه برای توضیح نوشتار برجسته‌شده</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="261305050785128654">به وب‌سایت‌ها اجازه دهید زبان‌هایی را که صحبت می‌کنید بدانند. این وب‌سایت‌ها درصورت امکان محتوا را به آن زبان‌ها نشان می‌دهند.</translation>
 <translation id="2613210758071148851">هیچ افزونه‌ای در <ph name="RESTRICTED_SITE" /> مجاز نیست</translation>
@@ -2159,6 +2161,7 @@
 <translation id="284884486564166077">هر تصویری را با «لنز» جستجو کنید</translation>
 <translation id="2849035674501872372">بالا را نگاه کنید</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">گزینه‌های بیشتر برای <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">بسته</translation>
 <translation id="2851291081585704741">آفلاین هستید</translation>
 <translation id="285237063405807022">(بارگیری)</translation>
@@ -2230,6 +2233,7 @@
     پیام سرور: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">‏باز کردن فایل‌های Word،‏ Excel، و PowerPoint</translation>
 <translation id="2908162660801918428">افزودن گالری رسانه از طریق دایرکتوری</translation>
+<translation id="2909334296570021569">باز کردن گروه زبانه‌ها</translation>
 <translation id="2909487040556589351">‏دریافت Chrome در دستگاه همراه</translation>
 <translation id="2910318910161511225">به شبکه متصل شوید و دوباره امتحان کنید</translation>
 <translation id="2910678330803525229">اکنون می‌توانید مرور کنید</translation>
@@ -2396,6 +2400,7 @@
 <translation id="3042097545107738107">راهبرد شارژ بهینه‌سازی‌شده را تغییر می‌دهد.</translation>
 <translation id="3043016484125065343">برای دیدن نشانک‌ها، به سیستم وارد شوید</translation>
 <translation id="3043581297103810752">از <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">گزینه‌های <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">به‌سازی با هوش مصنوعی</translation>
 <translation id="3045447014237878114">این سایت چند فایل را به‌طور خودکار بارگیری کرد</translation>
 <translation id="304644035656848980">پیش‌دید کردن میکروفون</translation>
@@ -3249,6 +3254,7 @@
 <translation id="3748424433435232460">درحال‌حاضر گذرواژه‌ای برای این حساب در این دستگاه ذخیره شده است</translation>
 <translation id="3748466028423001972">جابه‌جا کردن با نمای پایین</translation>
 <translation id="3748706263662799310">گزارش یک اشکال</translation>
+<translation id="3750406842345107892">‏محتوا و نشانی وب صفحه‌ای که در آن هستید و نوشتار برجسته‌شده برای تولید توضیح به Google ارسال می‌شوند</translation>
 <translation id="3752115502500640407">هم‌رسانی کردن نسخه‌ای از گذرواژه با <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">باز کردن پانل کناری</translation>
 <translation id="3753585830134123417">اندازه پنجره‌های سمت چپ تغییر کرد</translation>
@@ -4145,6 +4151,7 @@
 <translation id="4550926046134589611">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" /> باز خواهد شد.</translation>
 <translation id="4551379727767354516">مضمون‌های اخیر هوش مصنوعی</translation>
 <translation id="4551763574344810652">برای واگرد، <ph name="MODIFIER_KEY_DESCRIPTION" /> را فشار دهید</translation>
+<translation id="4552721860956824254">صدا قطع شد</translation>
 <translation id="4553526521109675518">‏باید Chromebook را بازراه‌اندازی کنید تا زبان دستگاه تغییر کند. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">نسخه جدیدی از این برنامه لازم است</translation>
 <translation id="4555769855065597957">سایه</translation>
@@ -5093,6 +5100,7 @@
 <translation id="5379140238605961210">ادامه مسدود کردن دسترسی به میکروفون</translation>
 <translation id="5382591305415226340">مدیریت پیوندهای پشتیبانی‌شده</translation>
 <translation id="5384401776498845256">چه کسانی می‌توانند با شما هم‌رسانی کنند</translation>
+<translation id="5386856927586721327">‏با <ph name="LENS_ICON" />«لنز Google» درباره صفحه‌نمایش بپرسید</translation>
 <translation id="5387116558048951800">ویرایش <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">خط‌مشی شرکت تغییر کرد. دکمه آزمایش به نوار ابزار اضافه شد. برای فعال کردن آزمایش‌ها، روی دکمه کلیک کنید تا کادر گفتگو را باز کنید.</translation>
 <translation id="5388436023007579456">برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین، و همچنین خدمات سیستم می‌توانند از دوربین استفاده کنند. برای استفاده از دوربین، شاید لازم باشد برنامه را بازراه‌اندازی کنید یا صفحه را بازآوری کنید.</translation>
@@ -7400,6 +7408,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> در هنگام راه‌اندازی سیستم شروع به کار می‌کند و در پس‌زمینه همچنان فعال خواهد بود، حتی زمانی که تمام پنجره‌های دیگر <ph name="PRODUCT_NAME" /> را ببندید.</translation>
 <translation id="7399045143794278225">سفارشی کردن همگام‌سازی</translation>
 <translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
+<translation id="7399746352569282594">بستن نمای دونیمه <ph name="FIRST_TAB_TITLE" />،‏ <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
 <translation id="7400059772197434086">نمی‌تواند از اطلاعات شما در سایت‌های زیر استفاده کند</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
@@ -8040,6 +8049,7 @@
 <translation id="7953955868932471628">مدیریت میان‌برها</translation>
 <translation id="7955105108888461311">درخواست حضوری</translation>
 <translation id="7955177647836564772">‏اگر Smart Lock روشن باشد و قفل تلفنتان باز باشد، لازم نیست گذرواژه یا پین را وارد کنید</translation>
+<translation id="7955672267519272700">بستن <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
 <translation id="7956918070009672177">هیچ صدایی به زبان <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>

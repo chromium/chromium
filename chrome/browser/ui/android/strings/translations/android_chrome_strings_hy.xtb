@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Տնտեսեք ժամանակը, մուտքագրեք ավելի քիչ</translation>
 <translation id="146522654774760805">Գաղտնաբառեր և ինքնալրացում</translation>
 <translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
+<translation id="1473344277210704336">Gemini-ը և ձեր կարևոր տվյալները՝ ներքևի նոր գործիքագոտում</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1480287803138246127">Պատմության որոշ մասը կարող է չցուցադրվել այստեղ։ Բոլոր տվյալները տեսնելու համար բացեք Chrome-ի ամբողջական պատմությունը։</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">Դուք մուտք եք գործել որպես <ph name="NAME_OR_EMAIL" />։</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4558311620361989323">Վեբէջերի դյուրանցումներ</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />։ <ph name="SUBSCRIPTION_NAME" /> բաժանորդագրություն։</translation>
 <translation id="4572422548854449519">Մուտք գործեք կառավարվող հաշիվ</translation>
 <translation id="4577115723294378384">Դասավորել Ա-ից Ֆ</translation>
 <translation id="4578289292431526768">Սկսել</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">Բացեք նոր ներդիր՝ ձեր հարցին այն ավելացնելու համար</translation>
 <translation id="4585793705637313973">Փոխել էջը</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
+<translation id="4587590257937792551">Chrome-ն ունի նոր ներքևի գործիքագոտի՝ ստեղծված հարմարավետության համար։ Դուք ցանկացած ժամանակ կարող եք վերադառնալ նախկին տարբերակին <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="4595237294768457124">Բացեք նոր ներդիրի էջը</translation>
 <translation id="4595276580892809760">Ավելացնել պատկերներ ցուցասրահից</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">Ապակողպել ինկոգնիտո ներդիրները</translation>
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
 <translation id="6637100877383020115">Հավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_UMA_LINK" />Կառավարել<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Կարևոր տվյալները՝ անմիջապես ներքևի գործիքագոտում։ Դուք ցանկացած ժամանակ կարող եք վերադառնալ նախկին տարբերակին <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="6642299196749785472">Կցել ներդիրներ</translation>
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ընտրված և ամրացված ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
 <translation id="7314734791127433392">Հնարավոր չէ ստուգել գաղտնաբառերը</translation>
+<translation id="7324177883197548771">Chrome-ը նոր տեսք ունի՝ ստեղծված հարմարավետության համար։ Դուք ցանկացած ժամանակ կարող եք վերադառնալ նախկին տարբերակին <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7324354302972299151">Ուղարկել «Do Not Track» հարցում</translation>
 <translation id="7333041109965360609">Ծանուցումների բաժանորդագրությունը չեղարկվել է</translation>
 <translation id="7335766481146072567">Սեղմեք «Շարունակել»</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">Տեղափոխման նշիչ</translation>
 <translation id="7698359219371678927">Ստեղծեք նամակ <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="7702420606070050505">Վերջին գործողությունների ներքևի էկրանը բացվել է ամբողջությամբ</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />։ <ph name="SUBSCRIPTION_NAME" /> բաժանորդագրություն։</translation>
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7708994397325774423">Ստացեք ձեր բոլոր գաղտնաբառերը</translation>
 <translation id="7714077993070342304">Բացել Chrome-ի ընտրացանկը</translation>

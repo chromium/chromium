@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">被您访问过且发生了旧版技术事件的部分网页网址的列表</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{将分享 1 个标签页}other{将分享 {NUM_TABS} 个标签页}}</translation>
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的账号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2358479643736965923">在此标签页上查看 Google AI 搜索的回答</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="236000571258713023">交通工具</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">将活动门票保存到 Google 钱包</translation>
 <translation id="2925454999967523701">“创建文档”按钮，激活它即可快速创建新的 Google 文档</translation>
 <translation id="2925673989565098301">递送方式</translation>
+<translation id="2927328994673424423">2 周前</translation>
 <translation id="2928426578619531300">已关联的用户</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="2930531075747147366">来自您的其他设备的标签页</translation>

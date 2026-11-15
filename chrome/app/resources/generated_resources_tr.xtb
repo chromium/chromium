@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Kendi kendine test başarısız</translation>
 <translation id="1257336506558170607">Seçili sertifikayı dışa aktar</translation>
 <translation id="1258491128795710625">Yenilikler</translation>
+<translation id="1259453023447377372">Kayıtlı sekme grubu</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> sitesindeki pop-up'lara ve yönlendirmelere her zaman izin ver</translation>
 <translation id="1262395978737369974">JavaScript optimizasyonu kullanmasına her zaman izin verilenler</translation>
 <translation id="1262564987698748643">Siteler, klavye girişimi geçersiz kılmak için izin isteyebilir</translation>
@@ -1845,6 +1846,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2610780100389066815">Microsoft Güven Listesi İmzalama</translation>
 <translation id="261114180663074524">Microsoft hesabınızda oturum açıp tekrar deneyin</translation>
 <translation id="2611885296070244383">Mikrofon (dahili)</translation>
+<translation id="2612346259364350954">Vurgulanan metni açıklamak için sayfa içeriğini kullanma</translation>
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="261305050785128654">Konuştuğunuz dilleri web sitelerine bildirin. Mümkün olduğunda bu dillerde içerik gösterirler.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> sitesinde uzantılara izin verme</translation>
@@ -2147,6 +2149,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="284884486564166077">Lens ile istediğiniz resmi arayın</translation>
 <translation id="2849035674501872372">Araştır</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> için diğer seçenekler</translation>
 <translation id="285033512555869047">Kapatıldı</translation>
 <translation id="2851291081585704741">İnternete bağlı değilsiniz</translation>
 <translation id="285237063405807022">(yükleniyor)</translation>
@@ -2218,6 +2221,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel ve PowerPoint dosyalarını açın</translation>
 <translation id="2908162660801918428">Medya Galerisini Dizine Göre Ekle</translation>
+<translation id="2909334296570021569">Sekme grubunu aç</translation>
 <translation id="2909487040556589351">Mobil cihazınıza Chrome'u indirin</translation>
 <translation id="2910318910161511225">Bir ağa bağlanın ve tekrar deneyin</translation>
 <translation id="2910678330803525229">Artık göz atmaya başlayabilirsiniz</translation>
@@ -2384,6 +2388,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3042097545107738107">Optimize edilmiş şarj stratejisini değiştirin.</translation>
 <translation id="3043016484125065343">Yer işaretlerinizi görmek için oturum açın</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> adresinden</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> için seçenekler</translation>
 <translation id="3044066905368192931">Yapay zekayla geliştirin</translation>
 <translation id="3045447014237878114">Bu site birden fazla dosyayı otomatik olarak indirdi</translation>
 <translation id="304644035656848980">Mikrofonunuzun önizlemesi</translation>
@@ -3235,6 +3240,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Bu hesaba ait bir şifre bu cihazda zaten depolanıyor</translation>
 <translation id="3748466028423001972">Alt görünümle değiştir</translation>
 <translation id="3748706263662799310">Hata bildir</translation>
+<translation id="3750406842345107892">Bulunduğunuz sayfanın içeriği, URL'si ve vurgulanan metin, açıklama oluşturmak için Google'a gönderilir</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> şifrenizin bir kopyasını paylaşın</translation>
 <translation id="3753412199586870466">Yan paneli aç</translation>
 <translation id="3753585830134123417">Sol taraftaki pencereler yeniden boyutlandırıldı</translation>
@@ -4131,6 +4137,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4550926046134589611">Bazı desteklenen uygulamalar <ph name="APP_NAME" /> uygulamasında açılmaya devam eder.</translation>
 <translation id="4551379727767354516">Son yapay zeka temalarınız</translation>
 <translation id="4551763574344810652">Geri Almak için <ph name="MODIFIER_KEY_DESCRIPTION" /> kısayoluna basın</translation>
+<translation id="4552721860956824254">Ses kapatıldı</translation>
 <translation id="4553526521109675518">Cihaz dilini değiştirmek için Chromebook'unuzu yeniden başlatmanız gerekir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Bu uygulamanın yeni bir sürümü gerekiyor</translation>
 <translation id="4555769855065597957">Gölge</translation>
@@ -5078,6 +5085,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5379140238605961210">Mikrofon erişimini engellemeye devam et</translation>
 <translation id="5382591305415226340">Desteklenen bağlantıları yönet</translation>
 <translation id="5384401776498845256">Kimler sizinle paylaşabilir?</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google Lens ile ekranınız hakkında soru sorun</translation>
 <translation id="5387116558048951800">Düzenle: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Kurumsal politika değişti. Araç çubuğuna denemeler düğmesi eklendi. Denemeleri etkinleştirmek için iletişim kutusunu açmak üzere tıklayın.</translation>
 <translation id="5388436023007579456">Kamera izni olan uygulamalar ile web sitelerinin yanı sıra sisteme ait hizmetler de kameranızı kullanabilir. Kamerayı kullanmak için uygulamayı yeniden başlatmanız veya sayfayı yenilemeniz gerekebilir.</translation>
@@ -7384,6 +7392,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7396845648024431313"><ph name="APP_NAME" />, sistem açıldığında başlayacak ve diğer tüm <ph name="PRODUCT_NAME" /> pencerelerini kapatsanız da arka planda çalışmaya devam edecektir.</translation>
 <translation id="7399045143794278225">Senkronizasyonu özelleştir</translation>
 <translation id="7399616692258236448">Konum istekleri, izin verdikleriniz dışındaki tüm siteler için otomatik olarak engellenir</translation>
+<translation id="7399746352569282594">Bölünmüş görünümü kapat: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7400059772197434086">sitesinin, şu sitelerdeki bilgilerinizi kullanması engellendi</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8024,6 +8033,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7953955868932471628">Kısayolları yönet</translation>
 <translation id="7955105108888461311">Şahsen sor</translation>
 <translation id="7955177647836564772">Smart Lock açıksa ve telefonunuzun da kilidi açıksa şifre ya da PIN girmeniz gerekmez</translation>
+<translation id="7955672267519272700">Kapat: <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
 <translation id="7956918070009672177">Cihazınızda <ph name="LANGUAGE" /> için ses bulunmuyor. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="7957074856830851026">Seri numarası veya öğe kimliği gibi cihaz bilgilerini görüntüleyin</translation>

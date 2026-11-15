@@ -331,6 +331,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1256143630373008432">Self test failed</translation>
 <translation id="1257336506558170607">Export selected certificate</translation>
 <translation id="1258491128795710625">What’s new</translation>
+<translation id="1259453023447377372">Saved tab group</translation>
 <translation id="1260451001046713751">Always allow pop-ups and redirects from <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Always allowed to use JavaScript optimisation</translation>
 <translation id="1262564987698748643">Sites can ask to override your keyboard input</translation>
@@ -1858,6 +1859,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Sign in to your Microsoft account and then try again</translation>
 <translation id="2611885296070244383">Mic (internal)</translation>
+<translation id="2612346259364350954">Use page content to explain highlighted text</translation>
 <translation id="2612676031748830579">Card number</translation>
 <translation id="261305050785128654">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
 <translation id="2613210758071148851">Don't allow any extensions on <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="284884486564166077">Search any image with Lens</translation>
 <translation id="2849035674501872372">Look up</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">More options for <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Closed</translation>
 <translation id="2851291081585704741">You're offline</translation>
 <translation id="285237063405807022">(loading)</translation>
@@ -2231,6 +2234,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     Server message: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Open Word, Excel, and PowerPoint files</translation>
 <translation id="2908162660801918428">Add Media Gallery by Directory</translation>
+<translation id="2909334296570021569">Open tab group</translation>
 <translation id="2909487040556589351">Get Chrome on your mobile device</translation>
 <translation id="2910318910161511225">Connect to a network and try again</translation>
 <translation id="2910678330803525229">Now you can start browsing</translation>
@@ -2397,6 +2401,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3042097545107738107">Change the optimised charging strategy.</translation>
 <translation id="3043016484125065343">Sign in to see your bookmarks</translation>
 <translation id="3043581297103810752">From <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Options for <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Enhance with AI</translation>
 <translation id="3045447014237878114">This site downloaded multiple files automatically</translation>
 <translation id="304644035656848980">Preview of your microphone</translation>
@@ -3250,6 +3255,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3748424433435232460">A password for this account is already saved on this device</translation>
 <translation id="3748466028423001972">Swap with bottom view</translation>
 <translation id="3748706263662799310">Report a bug</translation>
+<translation id="3750406842345107892">The content and URL of the page that you're on, and the highlighted text, are sent to Google to generate an explanation</translation>
 <translation id="3752115502500640407">Share a copy of your password for <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Open side panel</translation>
 <translation id="3753585830134123417">Resized windows to the left</translation>
@@ -4146,6 +4152,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4550926046134589611">Some supported links will still open in <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Your recent AI themes</translation>
 <translation id="4551763574344810652">Press <ph name="MODIFIER_KEY_DESCRIPTION" /> to undo</translation>
+<translation id="4552721860956824254">Audio muted</translation>
 <translation id="4553526521109675518">You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">A new version of this app is required</translation>
 <translation id="4555769855065597957">Shadow</translation>
@@ -5094,6 +5101,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5379140238605961210">Continue blocking microphone access</translation>
 <translation id="5382591305415226340">Manage supported links</translation>
 <translation id="5384401776498845256">Who can share with you</translation>
+<translation id="5386856927586721327">Ask about your screen with <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Edit <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialogue to enable experiments.</translation>
 <translation id="5388436023007579456">Apps and websites with the camera permission, as well as system services, can use your camera. To use the camera, you may need to restart the app or refresh the page.</translation>
@@ -7399,6 +7407,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
 <translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones that you allow</translation>
+<translation id="7399746352569282594">Close split view: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7400059772197434086">is blocked from using your information on</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8039,6 +8048,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7953955868932471628">Manage shortcuts</translation>
 <translation id="7955105108888461311">Ask in person</translation>
 <translation id="7955177647836564772">If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN</translation>
+<translation id="7955672267519272700">Close <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Your saved printers</translation>
 <translation id="7956918070009672177">There are no <ph name="LANGUAGE" /> voices on your device. Connect to the Internet and try again.</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>

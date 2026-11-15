@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">การทดสอบตัวเองไม่สำเร็จ</translation>
 <translation id="1257336506558170607">ส่งออกใบรับรองที่เลือก</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
+<translation id="1259453023447377372">กลุ่มแท็บที่บันทึกไว้</translation>
 <translation id="1260451001046713751">อนุญาตป๊อปอัปและการเปลี่ยนเส้นทางจาก <ph name="HOST" /> เสมอ</translation>
 <translation id="1262395978737369974">ได้รับอนุญาตให้ใช้การเพิ่มประสิทธิภาพ JavaScript เสมอ</translation>
 <translation id="1262564987698748643">เว็บไซต์ต่างๆ ขอลบล้างอินพุตจากแป้นพิมพ์ได้</translation>
@@ -1845,6 +1846,7 @@
 <translation id="2610780100389066815">การรับรองรายการที่เชื่อถือของ Microsoft</translation>
 <translation id="261114180663074524">ลงชื่อเข้าใช้บัญชี Microsoft แล้วลองอีกครั้ง</translation>
 <translation id="2611885296070244383">ไมค์ (ภายใน)</translation>
+<translation id="2612346259364350954">ใช้เนื้อหาของหน้าเพื่ออธิบายข้อความที่ไฮไลต์</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="261305050785128654">แจ้งให้เว็บไซต์ทราบถึงภาษาที่คุณพูด แล้วเว็บไซต์จะแสดงเนื้อหาในภาษาเหล่านั้น หากเป็นไปได้</translation>
 <translation id="2613210758071148851">ไม่อนุญาตให้มีส่วนขยายใดๆ ใน <ph name="RESTRICTED_SITE" /></translation>
@@ -2147,6 +2149,7 @@
 <translation id="284884486564166077">ค้นหารูปภาพต่างๆ ด้วย Lens</translation>
 <translation id="2849035674501872372">ค้นหา</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">ตัวเลือกเพิ่มเติมสำหรับ <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">ปิดอยู่</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
 <translation id="285237063405807022">(กำลังโหลด)</translation>
@@ -2218,6 +2221,7 @@
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">เปิดไฟล์ Word, Excel และ PowerPoint</translation>
 <translation id="2908162660801918428">เพิ่มแกลเลอรีสื่อตามไดเรกทอรี</translation>
+<translation id="2909334296570021569">เปิดกลุ่มแท็บ</translation>
 <translation id="2909487040556589351">ดาวน์โหลด Chrome บนมือถือ</translation>
 <translation id="2910318910161511225">เชื่อมต่อกับเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="2910678330803525229">ตอนนี้คุณเริ่มเรียกดูข้อมูลต่างๆ ได้แล้ว</translation>
@@ -2384,6 +2388,7 @@
 <translation id="3042097545107738107">เปลี่ยนกลยุทธ์การชาร์จแบบปรับให้เหมาะสม</translation>
 <translation id="3043016484125065343">ลงชื่อเข้าใช้เพื่อดูบุ๊กมาร์ก</translation>
 <translation id="3043581297103810752">จาก <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">ตัวเลือกสำหรับ <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">ปรับปรุงด้วย AI</translation>
 <translation id="3045447014237878114">เว็บไซต์นี้มีการดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="304644035656848980">ตัวอย่างไมโครโฟน</translation>
@@ -3235,6 +3240,7 @@
 <translation id="3748424433435232460">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="3748466028423001972">สลับกับมุมมองด้านล่าง</translation>
 <translation id="3748706263662799310">รายงานข้อบกพร่อง</translation>
+<translation id="3750406842345107892">ระบบจะส่งเนื้อหาและ URL ของหน้าที่คุณอยู่ รวมถึงข้อความที่ไฮไลต์ไปยัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="3752115502500640407">แชร์สำเนารหัสผ่านของ <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">เปิดแผงด้านข้าง</translation>
 <translation id="3753585830134123417">ปรับขนาดหน้าต่างไปทางด้านซ้ายแล้ว</translation>
@@ -4131,6 +4137,7 @@
 <translation id="4550926046134589611">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /></translation>
 <translation id="4551379727767354516">ธีม AI ล่าสุดของคุณ</translation>
 <translation id="4551763574344810652">กด <ph name="MODIFIER_KEY_DESCRIPTION" /> เพื่อเลิกทำ</translation>
+<translation id="4552721860956824254">ปิดเสียงแล้ว</translation>
 <translation id="4553526521109675518">คุณต้องรีสตาร์ท Chromebook เพื่อเปลี่ยนภาษาของอุปกรณ์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">จำเป็นต้องใช้แอปเวอร์ชันใหม่</translation>
 <translation id="4555769855065597957">เงา</translation>
@@ -5077,6 +5084,7 @@
 <translation id="5379140238605961210">บล็อกการเข้าถึงไมโครโฟนต่อไป</translation>
 <translation id="5382591305415226340">จัดการลิงก์ที่รองรับ</translation>
 <translation id="5384401776498845256">คนที่จะแชร์กับคุณได้</translation>
+<translation id="5386856927586721327">ถามเกี่ยวกับหน้าจอของคุณด้วย <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">แก้ไข<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">มีการเปลี่ยนแปลงนโยบายองค์กร เพิ่มปุ่มการทดสอบในแถบเครื่องมือแล้ว คลิกปุ่มดังกล่าวเพื่อเปิดกล่องโต้ตอบสำหรับเปิดใช้การทดสอบ</translation>
 <translation id="5388436023007579456">แอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง ตลอดจนบริการของระบบจะใช้กล้องได้ หากต้องการใช้กล้อง คุณอาจต้องรีสตาร์ทแอปหรือรีเฟรชหน้า</translation>
@@ -7379,6 +7387,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> จะเปิดใช้งานเมื่อเริ่มต้นระบบและทำงานต่อไปในแบบเบื้องหลัง แม้คุณจะปิดหน้าต่าง <ph name="PRODUCT_NAME" /> อื่นๆ จนหมดแล้ว</translation>
 <translation id="7399045143794278225">ปรับแต่งการซิงค์</translation>
 <translation id="7399616692258236448">ระบบจะบล็อกคำขอตำแหน่งจากทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
+<translation id="7399746352569282594">ปิดมุมมองแยก: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
 <translation id="7400059772197434086">ถูกบล็อกไม่ให้ใช้ข้อมูลของคุณใน</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8019,6 +8028,7 @@
 <translation id="7953955868932471628">จัดการทางลัด</translation>
 <translation id="7955105108888461311">ถามด้วยตนเอง</translation>
 <translation id="7955177647836564772">หากเปิด Smart Lock ไว้และโทรศัพท์ปลดล็อกแล้ว คุณไม่จําเป็นต้องป้อนรหัสผ่านหรือ PIN</translation>
+<translation id="7955672267519272700">ปิด <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">เครื่องพิมพ์ที่คุณบันทึกไว้</translation>
 <translation id="7956918070009672177">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="7957074856830851026">ดูข้อมูลอุปกรณ์ เช่น หมายเลขซีเรียลหรือรหัสเนื้อหา</translation>

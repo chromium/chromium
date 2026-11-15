@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">સમય બચાવો, ઓછું ટાઇપ કરો</translation>
 <translation id="146522654774760805">પાસવર્ડ અને ઑટોમૅટિક ભરવાની સુવિધા</translation>
 <translation id="1466383950273130737">Chromeની ભાષા પસંદ કરો</translation>
+<translation id="1473344277210704336">નવા સૌથી નીચેના ટૂલબાર પર Gemini અને તમારી આવશ્યક વસ્તુઓ</translation>
 <translation id="1477626028522505441">સર્વર સમસ્યાઓને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="147982357559798527">બદલવામાં આવ્યું</translation>
 <translation id="1480287803138246127">તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. તમારો બધો Chrome ઇતિહાસ જોવા માટે, સંપૂર્ણ Chrome ઇતિહાસ ખોલો.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">તમે <ph name="NAME_OR_EMAIL" /> તરીકે સાઇન ઇન કરેલું રાખ્યું.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" />ની મેમ્બરશિપ.</translation>
 <translation id="4572422548854449519">મેનેજ એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="4577115723294378384">Aથી Z અનુસાર સૉર્ટ કરો</translation>
 <translation id="4578289292431526768">ચાલો, શરૂ કરીએ</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">તેને તમારા પ્રશ્નમાં ઉમેરવા માટે નવું ટૅબ ખોલો</translation>
 <translation id="4585793705637313973">પેજમાં ફેરફાર કરો</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
+<translation id="4587590257937792551">Chromeમાં સૌથી નીચે નવું ટૂલબાર છે, જે સુવિધા માટે બનાવવામાં આવ્યું છે. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પાછા સ્વિચ કરી શકો છો.</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
 <translation id="4595237294768457124">'નવું ટૅબ' પેજ ખોલો</translation>
 <translation id="4595276580892809760">ગૅલરીમાંથી છબીઓ જોડો</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">તમારી આવશ્યક વસ્તુઓ, સીધી સૌથી નીચેના ટૂલબાર પર. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પાછા સ્વિચ કરી શકો છો.</translation>
 <translation id="6642299196749785472">ટૅબ જોડો</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું, શેર કરતું ટૅબ</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7314734791127433392">પાસવર્ડ ચેક કરી શકતા નથી</translation>
+<translation id="7324177883197548771">Chromeનો નવો દેખાવ છે, જે સુવિધા માટે બનાવવામાં આવ્યો છે. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પાછા સ્વિચ કરી શકો છો.</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
 <translation id="7333041109965360609">નોટિફિકેશનમાંથી અનસબ્સ્ક્રાઇબ કર્યું</translation>
 <translation id="7335766481146072567">'ચાલુ રાખો' દબાવો</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">ઑબ્જેક્ટ ખેંચવાનું હૅન્ડલ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> માં ઇમેઇલ બનાવો</translation>
 <translation id="7702420606070050505">તાજેતરની ઍક્ટિવિટી બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> મેમ્બરશિપ.</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
 <translation id="7708994397325774423">તમારા બધા પાસવર્ડ મેળવો</translation>
 <translation id="7714077993070342304">Chrome મેનૂ ખોલો</translation>

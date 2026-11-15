@@ -331,6 +331,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1256143630373008432">Tự kiểm tra không thành công</translation>
 <translation id="1257336506558170607">Xuất chứng chỉ đã chọn</translation>
 <translation id="1258491128795710625">Tính năng mới</translation>
+<translation id="1259453023447377372">Nhóm thẻ đã lưu</translation>
 <translation id="1260451001046713751">Luôn cho phép cửa sổ bật lên và liên kết chuyển hướng từ <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Luôn được phép sử dụng tính năng tối ưu hoá JavaScript</translation>
 <translation id="1262564987698748643">Các trang web có thể yêu cầu ghi đè thao tác nhập bằng bàn phím</translation>
@@ -1858,6 +1859,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2610780100389066815">Ký Danh sách Tin cậy của Microsoft</translation>
 <translation id="261114180663074524">Đăng nhập vào tài khoản Microsoft rồi thử lại</translation>
 <translation id="2611885296070244383">Micrô (bên trong)</translation>
+<translation id="2612346259364350954">Sử dụng nội dung trang để giải thích văn bản được đánh dấu</translation>
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="261305050785128654">Hãy cho các trang web biết ngôn ngữ mà bạn sử dụng. Các trang web sẽ hiển thị nội dung bằng những ngôn ngữ đó mỗi khi có thể.</translation>
 <translation id="2613210758071148851">Không chấp nhận tiện ích nào trên <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="284884486564166077">Tìm kiếm mọi hình ảnh bằng Ống kính</translation>
 <translation id="2849035674501872372">Tra cứu</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Tuỳ chọn khác cho <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Đã đóng</translation>
 <translation id="2851291081585704741">Bạn hiện không có kết nối mạng</translation>
 <translation id="285237063405807022">(đang tải)</translation>
@@ -2231,6 +2234,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     Thông báo máy chủ: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Mở tệp Word, Excel và PowerPoint</translation>
 <translation id="2908162660801918428">Thêm thư viện của phương tiện theo thư mục</translation>
+<translation id="2909334296570021569">Mở nhóm thẻ</translation>
 <translation id="2909487040556589351">Tải Chrome xuống thiết bị di động</translation>
 <translation id="2910318910161511225">Hãy kết nối với mạng rồi thử lại</translation>
 <translation id="2910678330803525229">Bây giờ, bạn có thể bắt đầu duyệt web</translation>
@@ -2397,6 +2401,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3042097545107738107">Thay đổi chiến lược sạc pin được tối ưu hoá.</translation>
 <translation id="3043016484125065343">Đăng nhập để xem dấu trang của bạn</translation>
 <translation id="3043581297103810752">Từ <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Tuỳ chọn cho <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Nâng cao bằng AI</translation>
 <translation id="3045447014237878114">Trang web này đã tự động tải nhiều tệp xuống</translation>
 <translation id="304644035656848980">Nghe thử micrô của bạn</translation>
@@ -3250,6 +3255,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3748424433435232460">Mật khẩu của tài khoản này đã được lưu trên thiết bị này</translation>
 <translation id="3748466028423001972">Hoán đổi với dạng xem dưới cùng</translation>
 <translation id="3748706263662799310">Báo cáo lỗi</translation>
+<translation id="3750406842345107892">Nội dung và URL của trang bạn đang truy cập, cũng như văn bản được đánh dấu, sẽ được gửi đến Google để tạo thông tin giải thích</translation>
 <translation id="3752115502500640407">Chia sẻ bản sao mật khẩu của bạn cho <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Mở bảng điều khiển bên</translation>
 <translation id="3753585830134123417">Đã đổi kích thước cửa sổ về phía bên trái</translation>
@@ -4146,6 +4152,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4550926046134589611">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Giao diện AI gần đây của bạn</translation>
 <translation id="4551763574344810652">Nhấn <ph name="MODIFIER_KEY_DESCRIPTION" /> để hủy thao tác</translation>
+<translation id="4552721860956824254">Đã tắt tiếng âm thanh</translation>
 <translation id="4553526521109675518">Bạn cần khởi động lại Chromebook để thay đổi ngôn ngữ của thiết bị. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Cần có phiên bản mới của ứng dụng này</translation>
 <translation id="4555769855065597957">Bóng</translation>
@@ -5094,6 +5101,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5379140238605961210">Tiếp tục chặn quyền truy cập micrô</translation>
 <translation id="5382591305415226340">Quản lý đường liên kết được hỗ trợ</translation>
 <translation id="5384401776498845256">Người có thể chia sẻ với bạn</translation>
+<translation id="5386856927586721327">Hỏi về nội dung trên màn hình bằng <ph name="LENS_ICON" />Google Ống kính</translation>
 <translation id="5387116558048951800">Chỉnh sửa <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Chính sách doanh nghiệp đã thay đổi. Nút thử nghiệm đã được thêm vào thanh công cụ. Hãy nhấp vào nút này để mở hộp thoại cho phép bật thử nghiệm.</translation>
 <translation id="5388436023007579456">Các ứng dụng và trang web có quyền truy cập camera cũng như các dịch vụ của hệ thống có thể sử dụng camera. Để sử dụng camera, bạn có thể cần khởi động lại ứng dụng hoặc làm mới trang.</translation>
@@ -7399,6 +7407,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sẽ chạy khi khởi động hệ thống và tiếp tục chạy ở chế độ nền ngay cả khi bạn đã đóng tất cả các cửa sổ khác của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Tuỳ chỉnh dữ liệu đồng bộ hoá</translation>
 <translation id="7399616692258236448">Tự động chặn yêu cầu vị trí đối với mọi trang web, ngoại trừ các trang web bạn cho phép</translation>
+<translation id="7399746352569282594">Đóng chế độ màn hình chia đôi: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
 <translation id="7400059772197434086">không được sử dụng thông tin của bạn trên</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8039,6 +8048,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7953955868932471628">Quản lý lối tắt</translation>
 <translation id="7955105108888461311">Gặp trực tiếp để hỏi</translation>
 <translation id="7955177647836564772">Nếu bật Smart Lock và mở khoá điện thoại, bạn sẽ không cần nhập mật khẩu hoặc mã PIN</translation>
+<translation id="7955672267519272700">Đóng <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Các máy in bạn đã lưu</translation>
 <translation id="7956918070009672177">Không có giọng nói <ph name="LANGUAGE" /> nào trên thiết bị của bạn. Vui lòng kết nối Internet rồi thử lại.</translation>
 <translation id="7957074856830851026">Xem thông tin thiết bị, chẳng hạn như số sê-ri hoặc mã tài sản</translation>

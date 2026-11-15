@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Tiết kiệm thời gian, tối giản thao tác</translation>
 <translation id="146522654774760805">Mật khẩu và tính năng tự động điền</translation>
 <translation id="1466383950273130737">Chọn ngôn ngữ cho Chrome</translation>
+<translation id="1473344277210704336">Gemini cùng các công cụ thiết yếu nằm ngay trên thanh công cụ mới ở dưới cùng</translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
 <translation id="147982357559798527">Đã thay đổi</translation>
 <translation id="1480287803138246127">Một phần nhật ký duyệt web của bạn có thể không xuất hiện ở đây. Để xem toàn bộ nhật ký duyệt web trên Chrome, hãy mở nhật ký duyệt web đầy đủ trên Chrome.</translation>
@@ -907,6 +908,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4537987892902330164">Bạn vẫn đang đăng nhập bằng tài khoản <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Gói thành viên <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Đăng nhập vào tài khoản được quản lý</translation>
 <translation id="4577115723294378384">Sắp xếp từ A đến Z</translation>
 <translation id="4578289292431526768">Bắt đầu nào!</translation>
@@ -914,6 +916,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4585751637295612750">Mở một thẻ mới để thêm vào câu hỏi của bạn</translation>
 <translation id="4585793705637313973">Chỉnh sửa trang</translation>
 <translation id="4587589328781138893">Trang web</translation>
+<translation id="4587590257937792551">Chrome vừa có thanh công cụ mới ở dưới cùng, được thiết kế để bạn dùng thuận tiện hơn. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Trang ngoại tuyến này được tạo từ lúc <ph name="CREATION_TIME" /> và có thể khác với phiên bản trực tuyến.</translation>
 <translation id="4595237294768457124">Mở trang Thẻ mới</translation>
 <translation id="4595276580892809760">Đính kèm hình ảnh từ thư viện</translation>
@@ -1448,6 +1451,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6633067410344541938">Mở khoá thẻ Ẩn danh</translation>
 <translation id="6636623428211296678">Khám phá thêm về các chế độ cài đặt bên dưới hoặc hoàn tất ngay bây giờ</translation>
 <translation id="6637100877383020115">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu sử dụng và dữ liệu sự cố cho Google. <ph name="BEGIN_UMA_LINK" />Quản lý<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Các công cụ thiết yếu nay nằm ngay trên thanh công cụ dưới cùng. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Đính kèm thẻ</translation>
 <translation id="6647441008198474441">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}other{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}}</translation>
@@ -1646,6 +1650,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Thẻ đang chia sẻ, được chọn và được ghim</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7314734791127433392">Không thể kiểm tra mật khẩu</translation>
+<translation id="7324177883197548771">Chrome vừa có giao diện mới, được thiết kế để bạn dùng thuận tiện hơn. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Gửi yêu cầu "Không theo dõi"</translation>
 <translation id="7333041109965360609">Đã huỷ đăng ký nhận thông báo</translation>
 <translation id="7335766481146072567">Nhấn vào Tiếp tục</translation>
@@ -1748,6 +1753,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7697383401610880082">Nút kéo</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Bảng hoạt động gần đây ở dưới cùng đã mở trên toàn màn hình</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Gói thành viên <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7708994397325774423">Truy cập tất cả mật khẩu của bạn</translation>
 <translation id="7714077993070342304">Mở trình đơn Chrome</translation>

@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">የራስ ሙከራ አልተሳካም</translation>
 <translation id="1257336506558170607">የተመረጠውን የእውቅና ማረጋገጫ ወደ ውጭ ላክ</translation>
 <translation id="1258491128795710625">ምን አዲስ ነገር አለ</translation>
+<translation id="1259453023447377372">የተቀመጠ የትር ቡድን</translation>
 <translation id="1260451001046713751">ሁልጊዜ ከ<ph name="HOST" /> የሚመጡ ብቅ-ባዮችን እና አቅጣጫ ማዞሮችን ፍቀድ</translation>
 <translation id="1262395978737369974">ሁልጊዜ ጃቫስክሪፕት ማመቻቸትን እንዲጠቀም ተፈቅዶለታል</translation>
 <translation id="1262564987698748643">ጣቢያዎች የእርስዎን ቁልፍ ሰሌዳ ግብዓት ለመሻር ሊጠይቁ ይችላሉ</translation>
@@ -1853,6 +1854,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">በMicrosoft መለያዎ ይግቡ እና በመቀጠል እንደገና ይሞክሩ</translation>
 <translation id="2611885296070244383">ማይክሮፎን (ውስጣዊ)</translation>
+<translation id="2612346259364350954">የደመቀ ጽሑፍን ለማብራራት የገጽ ይዘትን ተጠቀም</translation>
 <translation id="2612676031748830579">የካርድ ቁጥር</translation>
 <translation id="261305050785128654">የሚናገሩትን ቋንቋዎች ድር ጣቢያዎች እንዲያውቁ ያድርጉ። በሚቻልበት ጊዜ በእነዚያ ቋንቋዎች ይዘትን ያሳያሉ።</translation>
 <translation id="2613210758071148851">ምንም ቅጥያዎችን በ<ph name="RESTRICTED_SITE" /> ላይ አይፍቀዱ</translation>
@@ -2155,6 +2157,7 @@
 <translation id="284884486564166077">ሌንስ ያለው ማንኛውንም ምስል ይፈልጉ</translation>
 <translation id="2849035674501872372">ይፈልጉ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">ለ<ph name="TAB_GROUP_NAME" /> ተጨማሪ አማራጮች</translation>
 <translation id="285033512555869047">ዝግ ነው</translation>
 <translation id="2851291081585704741">ከመስመር ውጭ ነዎት</translation>
 <translation id="285237063405807022">(በመጫን ላይ)</translation>
@@ -2226,6 +2229,7 @@
 የአገልጋይ መልዕክት፦ <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word፣ Excel እና PowerPoint ፋይሎችን ይክፈቱ</translation>
 <translation id="2908162660801918428">የሚዲያ ማዕከለ ስዕላት በአቃፊ ያክሉ</translation>
+<translation id="2909334296570021569">የትር ቡድንን ክፈት</translation>
 <translation id="2909487040556589351">Chromeን በተንቀሳቃሽ መሣሪያዎ ላይ ያግኙ</translation>
 <translation id="2910318910161511225">ከአውታረ መረብ ጋር ያገናኙና እንደገና ይሞክሩ</translation>
 <translation id="2910678330803525229">አሁን ማሰስ መጀመር ይችላሉ</translation>
@@ -2392,6 +2396,7 @@
 <translation id="3042097545107738107">የተባውን የኃይል መሙላት ስልት ይለውጡ።</translation>
 <translation id="3043016484125065343">የእርስዎን እልባቶች ለማየት በመለያ ይግቡ</translation>
 <translation id="3043581297103810752">ከ <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">የ<ph name="SECTION_NAME" /> አማራጮች</translation>
 <translation id="3044066905368192931">በሰው ሠራሽ አስተውሎት ያሻሽሉ</translation>
 <translation id="3045447014237878114">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር አውርዷል</translation>
 <translation id="304644035656848980">የማይክሮፎንዎ ቅድመ እይታ</translation>
@@ -3245,6 +3250,7 @@
 <translation id="3748424433435232460">ለዚህ መለያ አንድ የይለፍ ቃል በዚህ መሣሪያ ላይ አስቀድሞ ተቀምጧል</translation>
 <translation id="3748466028423001972">በግርጌ ዕይታ ለውጥ</translation>
 <translation id="3748706263662799310">ስህተት ሪፖርት አድርግ</translation>
+<translation id="3750406842345107892">እርስዎ ያሉበት ገጽ ይዘት እና ዩአርኤል እና የደመቀው ጽሑፍ ማብራሪያ ለማመንጨት ወደ Google ይላካሉ</translation>
 <translation id="3752115502500640407">የይለፍ ቃልዎን ቅጂ ለ<ph name="WEBSITE" /> ያጋሩ</translation>
 <translation id="3753412199586870466">የጎን ፓነልን ክፈት</translation>
 <translation id="3753585830134123417">ወደ ግራ መጠናቸው የተቀየሩ መስኮቶች</translation>
@@ -4139,6 +4145,7 @@
 <translation id="4550926046134589611">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" /> ውስጥ ይከፈታሉ።</translation>
 <translation id="4551379727767354516">የእርስዎ የቅርብ ጊዜ ሰው ሠራሽ አስተውሎት ገጽታዎች</translation>
 <translation id="4551763574344810652">ለመቀልበስ <ph name="MODIFIER_KEY_DESCRIPTION" />ን ይጫኑ</translation>
+<translation id="4552721860956824254">ኦዲዮ ድምጸ-ከል አድርግ</translation>
 <translation id="4553526521109675518">የመሣሪያውን ቋንቋ ለመቀየር የእርስዎን Chromebook እንደገና ማስጀመር ይኖርብዎታል። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">የዚህ መተግበሪያ አዲስ ሥሪት ያስፈልጋል</translation>
 <translation id="4555769855065597957">ጥላ</translation>
@@ -5087,6 +5094,7 @@
 <translation id="5379140238605961210">የማይክሮፎን መዳረሻ ማገዱን ቀጥል</translation>
 <translation id="5382591305415226340">የሚደገፉ አገናኞችን ያስተዳድሩ</translation>
 <translation id="5384401776498845256">ማን ከእርስዎ ጋር ማጋራት ይችላል</translation>
+<translation id="5386856927586721327">በ<ph name="LENS_ICON" />Google ሌንስ ስለ ማያ ገጽዎ ይጠይቁ</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />ን ያርትዑ</translation>
 <translation id="538822246583124912">የድርጅት መመሪያ ተለውጧል የሙከራዎች አዝራር ወደ መሣሪያ አሞሌ ታክሏል። ሙከራዎችን ለማንቃት መገናኛን ለመክፈት ቁልፉን ጠቅ ያድርጉ።</translation>
 <translation id="5388436023007579456">የካሜራ ፈቃድ ያላቸው መተግበሪያዎች እና ድር ጣቢያዎች እንዲሁም የሥርዓት አገልግሎቶች ካሜራዎን መጠቀም ይችላሉ። ካሜራውን ለመጠቀም መተግበሪያውን እንደገና ማስጀመር ወይም ገጹን ማደስ ሊኖርብዎት ይችላል።</translation>
@@ -7394,6 +7402,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ስርዓት በሚነሳበት ጊዜ ይጀመርና ሁሉንም የሌሎች <ph name="PRODUCT_NAME" /> መስኮቶችን ከዘጉ በኋላም እንኳ በጀርባ ውስጥ መሄዱን ይቀጥላል።</translation>
 <translation id="7399045143794278225">ስምረትን አብጅ</translation>
 <translation id="7399616692258236448">እርስዎ ከፈቀዱላቸው ውጭ ለሁሉም ጣቢያዎች የአካባቢ ጥያቄዎች በራስ-ሰር ይታገዳሉ</translation>
+<translation id="7399746352569282594">የተከፈለ ዕይታን ዝጋ፦ <ph name="FIRST_TAB_TITLE" />፣ <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
 <translation id="7400059772197434086">በሚከተለው ላይ መረጃዎን ከመጠቀም ታግዷል</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8034,6 +8043,7 @@
 <translation id="7953955868932471628">አቋራጮችን ያቀናብሩ</translation>
 <translation id="7955105108888461311">በአካል ጠይቅ</translation>
 <translation id="7955177647836564772">Smart Lock በርቶ ከሆነ እና የእርስዎ ስልክ የተከፈተ ከሆነ የይለፍ ቃል ወይም ፒን ማስገባት አያስፈልግዎትም</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" />ን ዝጋ</translation>
 <translation id="7956373551960864128">የእርስዎ የተቀመጡ አታሚዎች</translation>
 <translation id="7956918070009672177">በመሣሪያዎ ላይ ምንም የ<ph name="LANGUAGE" /> ድምፆች የሉም። ከበይነመረቡ ጋር ይገናኙ እና እንደገና ይሞክሩ።</translation>
 <translation id="7957074856830851026">እንደ የመለያ ቁጥሩ ወይም የእሴት መታወቂያ ያለ የመሣሪያ መረጃን ይመልከቱ</translation>

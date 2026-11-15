@@ -331,6 +331,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1256143630373008432">Vetëtestimi nuk u krye</translation>
 <translation id="1257336506558170607">Eksporto certifikatën e zgjedhur</translation>
 <translation id="1258491128795710625">Ç'të reja ka</translation>
+<translation id="1259453023447377372">Grupi i ruajtur i skedave</translation>
 <translation id="1260451001046713751">Lejo gjithmonë dritaret kërcyese nga <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Lejohet gjithmonë që të përdoret optimizimi i JavaScript</translation>
 <translation id="1262564987698748643">Sajtet mund të kërkojnë që të zëvendësojnë hyrjen e tastierës sate</translation>
@@ -1845,6 +1846,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2610780100389066815">Nënshkrimi i "Microsoft Trust List"</translation>
 <translation id="261114180663074524">Identifikohu në llogarinë tënde të Microsoft dhe më pas provo përsëri</translation>
 <translation id="2611885296070244383">Mikrofon (i brenshëm)</translation>
+<translation id="2612346259364350954">Përdor përmbajtjet e faqes për të shpjeguar tekstin e theksuar</translation>
 <translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="261305050785128654">Tregoju uebsajteve se çfarë gjuhësh flet. Ato do të të shfaqin përmbajtje në ato gjuhë, kur është e mundur.</translation>
 <translation id="2613210758071148851">Mos lejo asnjë shtesë në <ph name="RESTRICTED_SITE" /></translation>
@@ -2147,6 +2149,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="284884486564166077">Kërko për çdo imazh me "Lenten"</translation>
 <translation id="2849035674501872372">Shiko</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Më shumë opsione për "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="285033512555869047">Mbyllur</translation>
 <translation id="2851291081585704741">Je offline</translation>
 <translation id="285237063405807022">(po ngarkohet)</translation>
@@ -2218,6 +2221,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     Mesazhi i serverit: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Hap skedarë Word, Excel dhe PowerPoint</translation>
 <translation id="2908162660801918428">Shto galerinë e medias sipas direktorisë</translation>
+<translation id="2909334296570021569">Hap grupin e skedave</translation>
 <translation id="2909487040556589351">Merr Chrome në pajisjen tënde celulare</translation>
 <translation id="2910318910161511225">Lidhu me një rrjet dhe provo përsëri</translation>
 <translation id="2910678330803525229">Tani mund të fillosh të shfletosh</translation>
@@ -2384,6 +2388,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3042097545107738107">Ndrysho strategjinë e karikimit të optimizuar.</translation>
 <translation id="3043016484125065343">Identifikohu për të parë faqeshënuesit e tu</translation>
 <translation id="3043581297103810752">Nga <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opsionet për "<ph name="SECTION_NAME" />"</translation>
 <translation id="3044066905368192931">Përmirëso me IA-në</translation>
 <translation id="3045447014237878114">Ky sajt shkarkoi shumë skedarë automatikisht</translation>
 <translation id="304644035656848980">Pamja paraprake e mikrofonit tënd</translation>
@@ -3237,6 +3242,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3748424433435232460">Një fjalëkalim për këtë llogari është ruajtur tashmë në këtë pajisje</translation>
 <translation id="3748466028423001972">Ndërro me pamjen poshtë</translation>
 <translation id="3748706263662799310">Raporto një defekt në kod</translation>
+<translation id="3750406842345107892">Përmbajtjet dhe URL-ja e faqes ku ndodhesh, si dhe teksti i theksuar, dërgohen te Google për të gjeneruar një shpjegim</translation>
 <translation id="3752115502500640407">Ndaj një kopje të fjalëkalimit tënd për <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Hap panelin anësor</translation>
 <translation id="3753585830134123417">Madhësia e dritareve u ndryshua në të majtë</translation>
@@ -4133,6 +4139,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4550926046134589611">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Temat e tua të fundit me IA</translation>
 <translation id="4551763574344810652">Shtyp <ph name="MODIFIER_KEY_DESCRIPTION" /> për ta zhbërë</translation>
+<translation id="4552721860956824254">Audioja është çaktivizuar</translation>
 <translation id="4553526521109675518">Duhet të rinisësh pajisjen tënde Chromebook për të ndryshuar gjuhën e pajisjes. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Kërkohet një version i ri i këtij aplikacioni</translation>
 <translation id="4555769855065597957">Hije</translation>
@@ -5079,6 +5086,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5379140238605961210">Vazhdo bllokimin e qasjes te mikrofoni</translation>
 <translation id="5382591305415226340">Menaxho lidhjet e mbështetura</translation>
 <translation id="5384401776498845256">Kush mund të ndajë me ty</translation>
+<translation id="5386856927586721327">Pyet për ekranin tënd me <ph name="LENS_ICON" />"Lenten e Google"</translation>
 <translation id="5387116558048951800">Modifiko <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Politika e ndërmarrjes u ndryshua. Butoni i eksperimenteve u shtua te shiriti i veglave. Kliko te butoni për të hapur një dialog për të aktivizuar eksperimentet.</translation>
 <translation id="5388436023007579456">Aplikacionet dhe uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit, mund të përdorin kamerën. Për ta përdorur kamerën, mund të të duhet të rinisësh aplikacionin ose të rifreskosh faqen.</translation>
@@ -7383,6 +7391,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7396845648024431313"><ph name="APP_NAME" /> do të nisë pas fillimit të sistemit dhe do të vazhdojë të funksionojë në sfond edhe nëse i mbyll të gjitha dritaret e tjera <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizo sinkronizimin</translation>
 <translation id="7399616692258236448">Kërkesat për vendndodhjen bllokohen automatikisht për të gjitha sajtet, përveçse për ato që lejon ti</translation>
+<translation id="7399746352569282594">Mbyll pamjen e ndarë: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
 <translation id="7400059772197434086">është bllokuar që të mos përdorë informacionet e tua në</translation>
 <translation id="7400418766976504921">URL-ja</translation>
@@ -8023,6 +8032,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7953955868932471628">Menaxho shkurtoret</translation>
 <translation id="7955105108888461311">Kërkoja personalisht</translation>
 <translation id="7955177647836564772">Nëse Smart Lock është aktivizuar dhe telefoni yt është i shkyçur, nuk është e nevojshme të futësh një fjalëkalim ose kod PIN</translation>
+<translation id="7955672267519272700">Mbyll "<ph name="TAB_TITLE" />"</translation>
 <translation id="7956373551960864128">Printerët e tu të ruajtur</translation>
 <translation id="7956918070009672177">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Lidhu me rrjetin dhe provo përsëri.</translation>
 <translation id="7957074856830851026">Të shikojë informacionet e pajisjes, të tilla si numri i serisë ose ID-ja e punës</translation>

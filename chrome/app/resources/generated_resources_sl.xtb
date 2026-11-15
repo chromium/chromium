@@ -331,6 +331,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1256143630373008432">Samopreizkus ni uspel</translation>
 <translation id="1257336506558170607">Izvozi izbrano potrdilo</translation>
 <translation id="1258491128795710625">Novosti</translation>
+<translation id="1259453023447377372">Shranjena skupina zavihkov</translation>
 <translation id="1260451001046713751">Vedno dovoli pojavna okna in preusmeritve spletnega mesta <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Uporaba optimizacije za JavaScript je vedno dovoljena</translation>
 <translation id="1262564987698748643">Spletna mesta lahko zahtevajo preglasitev vnosa s tipkovnico</translation>
@@ -1857,6 +1858,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2610780100389066815">Podpisovanje Microsoftovega seznama zaupanja</translation>
 <translation id="261114180663074524">Prijavite se v račun Microsoft in poskusite znova</translation>
 <translation id="2611885296070244383">Mikrofon (notranji)</translation>
+<translation id="2612346259364350954">Uporaba vsebine strani za pojasnilo označenega besedila</translation>
 <translation id="2612676031748830579">Številka kartice</translation>
 <translation id="261305050785128654">Dovolite, da spletna mesta zaznajo, katere jezike govorite. Ko bo mogoče, bo vsebina prikazana v teh jezikih.</translation>
 <translation id="2613210758071148851">Ne dovoli razširitev na spletnem mestu <ph name="RESTRICTED_SITE" /></translation>
@@ -2159,6 +2161,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="284884486564166077">Iskanje po kateri koli sliki z Googlom Lens</translation>
 <translation id="2849035674501872372">Iskanje</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Več možnosti za skupino zavihkov <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Zaprto</translation>
 <translation id="2851291081585704741">Nimate vzpostavljene povezave</translation>
 <translation id="285237063405807022">(nalaganje)</translation>
@@ -2230,6 +2233,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
     Sporočilo strežnika: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Odpiranje datotek za Word, Excel in PowerPoint</translation>
 <translation id="2908162660801918428">Dodajanje galerije predstavnosti po imeniku</translation>
+<translation id="2909334296570021569">Odpiranje skupine zavihkov</translation>
 <translation id="2909487040556589351">Prenesite Chrome v mobilno napravo</translation>
 <translation id="2910318910161511225">Vzpostavite povezavo z omrežjem in poskusite znova</translation>
 <translation id="2910678330803525229">Zdaj lahko začnete brskati</translation>
@@ -2396,6 +2400,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3042097545107738107">Spremenite strategijo optimiziranega polnjenja.</translation>
 <translation id="3043016484125065343">Prijavite se, če si želite ogledati zaznamke</translation>
 <translation id="3043581297103810752">S spletnega mesta <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Možnosti za razdelek <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Izboljšajte z umetno inteligenco</translation>
 <translation id="3045447014237878114">To spletno mesto je samodejno preneslo več datotek</translation>
 <translation id="304644035656848980">Predogled mikrofona</translation>
@@ -3249,6 +3254,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3748424433435232460">Geslo za ta račun je že shranjeno v tej napravi.</translation>
 <translation id="3748466028423001972">Zamenjava s pogledom z dna</translation>
 <translation id="3748706263662799310">Obvestite nas o napaki</translation>
+<translation id="3750406842345107892">Vsebina in URL strani, na kateri ste, ter označeno besedilo se pošljejo Googlu zaradi generiranja pojasnila</translation>
 <translation id="3752115502500640407">Delite kopijo gesla za spletno mesto <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Odpri stransko podokno</translation>
 <translation id="3753585830134123417">Spremenjena velikost oken na levo</translation>
@@ -4145,6 +4151,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4550926046134589611">Nekatere podprte povezave se bodo še vedno odprle v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Vaše nedavne teme z umetno inteligenco</translation>
 <translation id="4551763574344810652">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> za razveljavitev</translation>
+<translation id="4552721860956824254">Zvok je izklopljen</translation>
 <translation id="4553526521109675518">Če želite spremeniti jezik naprave, morate znova zagnati Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Obvezna je nova različica te aplikacije</translation>
 <translation id="4555769855065597957">Senca</translation>
@@ -5093,6 +5100,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5379140238605961210">Še naprej preprečuj dostop do mikrofona</translation>
 <translation id="5382591305415226340">Upravljanje podprtih povezav</translation>
 <translation id="5384401776498845256">Kdo lahko deli z vami</translation>
+<translation id="5386856927586721327">Vprašajte o zaslonu z <ph name="LENS_ICON" />Googlom Lens</translation>
 <translation id="5387116558048951800">Uredi <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Pravilnik podjetja se je spremenil. Gumb za preizkuse je bil dodan v orodno vrstico. Kliknite gumb, če želite odpreti pogovorno okno za omogočanje preizkusov.</translation>
 <translation id="5388436023007579456">Kamero lahko uporabljajo aplikacije in spletna mesta, ki imajo dovoljenje za kamero, ter sistemske storitve. Če želite uporabljati kamero, morate znova zagnati aplikacijo ali osvežiti stran.</translation>
@@ -7405,6 +7413,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7396845648024431313"><ph name="APP_NAME" /> se bo zagnal ob zagonu sistema in se izvajal v ozadju, tudi ko zaprete vsa druga okna programa <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Prilagajanje sinhronizacije</translation>
 <translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
+<translation id="7399746352569282594">Zapiranje razdeljenega pogleda: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7400059772197434086">ne sme uporabljati vaših podatkov na</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8045,6 +8054,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7953955868932471628">Upravljanje bližnjic</translation>
 <translation id="7955105108888461311">Vprašajte osebno</translation>
 <translation id="7955177647836564772">Če je vklopljena funkcija Smart Lock in je telefon odklenjen, vam ni treba vnesti gesla ali kode PIN.</translation>
+<translation id="7955672267519272700">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Shranjeni tiskalniki</translation>
 <translation id="7956918070009672177">V napravi ni glasov v tem jeziku: <ph name="LANGUAGE" />. Vzpostavite internetno povezavo in poskusite znova.</translation>
 <translation id="7957074856830851026">Prikaz podatkov o napravi, denimo serijske številke ali ID-ja sredstva</translation>

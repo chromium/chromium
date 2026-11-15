@@ -331,6 +331,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1256143630373008432">Selftoets het misluk</translation>
 <translation id="1257336506558170607">Voer gekose sertifikaat uit</translation>
 <translation id="1258491128795710625">Wat's nuut</translation>
+<translation id="1259453023447377372">Gestoorde oortjiegroep</translation>
 <translation id="1260451001046713751">Laat altyd opspringers en herleidings van <ph name="HOST" /> af toe</translation>
 <translation id="1262395978737369974">Altyd toegelaat om JavaScript-optimering te gebruik</translation>
 <translation id="1262564987698748643">Werwe kan vra om jou sleutelbordinvoer te ignoreer</translation>
@@ -1858,6 +1859,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2610780100389066815">Microsoft-vertrouelys-ondertekening</translation>
 <translation id="261114180663074524">Meld by jou Microsoft-rekening aan en probeer dan weer</translation>
 <translation id="2611885296070244383">Mikrofoon (intern)</translation>
+<translation id="2612346259364350954">Gebruik bladsyinhoud om gemerkte teks te verduidelik</translation>
 <translation id="2612676031748830579">Kaartnommer</translation>
 <translation id="261305050785128654">Laat webwerwe weet watter tale jy praat. Hulle sal inhoud in daardie tale wys, wanneer moontlik.</translation>
 <translation id="2613210758071148851">Moenie enige uitbreidings op <ph name="RESTRICTED_SITE" /> toelaat nie</translation>
@@ -2160,6 +2162,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="284884486564166077">Soek enige prent met Lens</translation>
 <translation id="2849035674501872372">Kyk op</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Meer opsies vir <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Toe</translation>
 <translation id="2851291081585704741">Jy is vanlyn</translation>
 <translation id="285237063405807022">(laai tans)</translation>
@@ -2231,6 +2234,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
     Bedienerboodskap: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Maak Word-, Excel- en PowerPoint-lêers oop</translation>
 <translation id="2908162660801918428">Voeg mediagalery by gids</translation>
+<translation id="2909334296570021569">Maak oortjiegroep oop</translation>
 <translation id="2909487040556589351">Kry Chrome op jou mobiele toestel</translation>
 <translation id="2910318910161511225">Koppel aan 'n netwerk en probeer weer</translation>
 <translation id="2910678330803525229">Jy kan nou begin blaai</translation>
@@ -2397,6 +2401,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3042097545107738107">Verander die strategie vir geoptimeerde laai.</translation>
 <translation id="3043016484125065343">Meld aan om jou boekmerke te sien</translation>
 <translation id="3043581297103810752">Vanaf <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opsies vir <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Verbeter met KI</translation>
 <translation id="3045447014237878114">Hierdie werf het veelvuldige lêers outomaties afgelaai</translation>
 <translation id="304644035656848980">Voorskou van jou mikrofoon</translation>
@@ -3250,6 +3255,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3748424433435232460">Daar is reeds ’n wagwoord vir hierdie rekening op hierdie toestel gestoor</translation>
 <translation id="3748466028423001972">Ruil met onderaansig</translation>
 <translation id="3748706263662799310">Gee 'n fout aan</translation>
+<translation id="3750406842345107892">Die inhoud en URL van die bladsy waarop jy is, asook die gemerkte teks, word na Google toe gestuur om ’n verduideliking te genereer</translation>
 <translation id="3752115502500640407">Deel ’n kopie van jou wagwoord vir <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Oop kantpaneel</translation>
 <translation id="3753585830134123417">Het grootte van vensters na links verander</translation>
@@ -4146,6 +4152,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4550926046134589611">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" /> oopmaak.</translation>
 <translation id="4551379727767354516">Jou onlangse KI-temas</translation>
 <translation id="4551763574344810652">Druk <ph name="MODIFIER_KEY_DESCRIPTION" /> om te ontdoen</translation>
+<translation id="4552721860956824254">Oudio gedemp</translation>
 <translation id="4553526521109675518">Jy moet jou Chromebook herbegin om die toesteltaal te verander. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">’n Nuwe weergawe van hierdie app is beskikbaar</translation>
 <translation id="4555769855065597957">Skadu</translation>
@@ -5094,6 +5101,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="5379140238605961210">Hou aan om mikrofoontoegang te blokkeer</translation>
 <translation id="5382591305415226340">Bestuur gesteunde skakels</translation>
 <translation id="5384401776498845256">Wie kan met jou deel</translation>
+<translation id="5386856927586721327">Vra oor jou skerm met <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Wysig <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Ondernemingsbeleid het verander. Eksperimente-knoppie is by nutsbalk gevoeg. Klik die knoppie om 'n dialoog oop te maak om eksperimente te aktiveer.</translation>
 <translation id="5388436023007579456">Apps en webwerwe met die kameratoestemming, sowel as stelseldienste, kan jou kamera gebruik. Jy moet dalk die app herbegin of die bladsy herlaai om die kamera te gebruik.</translation>
@@ -7399,6 +7407,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sal met stelselafskop begin en aanhou om in die agtergrond te werk selfs wanneer jy alle ander <ph name="PRODUCT_NAME" />-vensters toegemaak het.</translation>
 <translation id="7399045143794278225">Pasmaak sinkronisering</translation>
 <translation id="7399616692258236448">Liggingversoeke is outomaties geblokkeer vir alle werwe behalwe dié wat jy toelaat</translation>
+<translation id="7399746352569282594">Maak verdeelde aansig toe: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Veiligheidskontrole</translation>
 <translation id="7400059772197434086">is geblokkeer om jou inligting te gebruik op</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8039,6 +8048,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7953955868932471628">Bestuur kortpaaie</translation>
 <translation id="7955105108888461311">Vra persoonlik</translation>
 <translation id="7955177647836564772">As Smart Lock aan is en jou foon is ontsluit, hoef jy nie ’n wagwoord of PIN in te voer nie</translation>
+<translation id="7955672267519272700">Maak <ph name="TAB_TITLE" /> toe</translation>
 <translation id="7956373551960864128">Jou gestoorde drukkers</translation>
 <translation id="7956918070009672177">Daar is geen <ph name="LANGUAGE" /> stemme op jou toestel nie. Koppel aan die internet en probeer weer.</translation>
 <translation id="7957074856830851026">Sien toestelinligting soos sy reeksnommer of bate-ID</translation>

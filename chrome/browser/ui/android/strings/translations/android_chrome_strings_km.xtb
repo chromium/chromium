@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">សន្សំសំចៃ​ពេលវេលា វាយបញ្ចូល​កាន់តែតិច</translation>
 <translation id="146522654774760805">ពាក្យ​សម្ងាត់ និងការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="1466383950273130737">ជ្រើសរើស​ភាសារបស់ Chrome</translation>
+<translation id="1473344277210704336">Gemini និង​វត្ថុចាំបាច់​របស់អ្នក​នៅលើ​របារឧបករណ៍​ថ្មី​នៅខាងក្រោម</translation>
 <translation id="1477626028522505441">ការដោនឡូត <ph name="FILE_NAME" /> បានបរាជ័យដោយសារមានបញ្ហាផ្នែកម៉ាស៊ីនមេ។</translation>
 <translation id="147982357559798527">បានប្ដូរ</translation>
 <translation id="1480287803138246127">ប្រវត្តិខ្លះ​របស់អ្នក​ប្រហែលជា​មិនបង្ហាញ​នៅទីនេះទេ។ ដើម្បី​មើលឃើញ​ប្រវត្តិ Chrome ទាំងអស់​របស់អ្នក សូមបើក​ប្រវត្តិ Chrome ពេញលេញ។</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">អ្នក​បានបន្ត​ចូលគណនីជា <ph name="NAME_OR_EMAIL" />។</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{ផ្ទាំង <ph name="TAB_COUNT_ONE" />}other{ផ្ទាំង <ph name="TAB_COUNT_MANY" />, ឯកជន <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4558311620361989323">ផ្លូវកាត់គេហទំព័រ</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />។ សមាជិកភាព <ph name="SUBSCRIPTION_NAME" />។</translation>
 <translation id="4572422548854449519">ចូលទៅគណនីដែលបានគ្រប់គ្រង</translation>
 <translation id="4577115723294378384">តម្រៀប​តាមលំដាប់ A ទៅ Z</translation>
 <translation id="4578289292431526768">ចាប់ផ្ដើម</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">បើក​ផ្ទាំងថ្មី ដើម្បី​បញ្ចូលវា​ទៅសំណួរ​របស់អ្នក</translation>
 <translation id="4585793705637313973">កែសម្រួលទំព័រ</translation>
 <translation id="4587589328781138893">ទំព័រ</translation>
+<translation id="4587590257937792551">Chrome មាន​របារឧបករណ៍​ថ្មី​នៅខាងក្រោម​ដែលត្រូវបាន​បង្កើតឡើង​ដើម្បីផ្ដល់​ភាពងាយស្រួល។ អ្នកអាច​ប្ដូរ​មកវិញ​នៅពេលណាក៏បាន​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="4594952190837476234">ទំព័រ​សម្រាប់​ប្រើពេលគ្មានអ៊ីនធឺណិតនេះ​បង្កើតឡើងនៅថ្ងៃទី <ph name="CREATION_TIME" /> ហើយ​វាអាច​ខុស​ពី​កំណែ​សម្រាប់​ប្រើពេលមានអ៊ីនធឺណិត។</translation>
 <translation id="4595237294768457124">បើក​ទំព័រ​ផ្ទាំងថ្មី</translation>
 <translation id="4595276580892809760">ភ្ជាប់​រូបភាព​ពី​សាលរូបភាព</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">ដោះសោមុខងារឯកជន</translation>
 <translation id="6636623428211296678">រុករកការកំណត់ច្រើនទៀតខាងក្រោម ឬបញ្ចប់ឥឡូវនេះ</translation>
 <translation id="6637100877383020115">Chrome ផ្ញើទិន្នន័យ​អំពីការគាំង និង​ការប្រើប្រាស់ទៅ Google ដើម្បីជួយកែលម្អ​កម្មវិធីខ្លួន។ <ph name="BEGIN_UMA_LINK" />គ្រប់គ្រង<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">វត្ថុចាំបាច់​របស់អ្នក​ស្ថិតនៅលើ​របារឧបករណ៍​ខាងក្រោម​ដោយផ្ទាល់។ អ្នកអាច​ប្ដូរ​មកវិញ​នៅពេលណាក៏បាន​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="6642299196749785472">ភ្ជាប់​ផ្ទាំង</translation>
 <translation id="6647441008198474441">URL ដែលអ្នក​ចូលមើលត្រូវ​បានផ្ញើទៅ Google ដើម្បីព្យាករ​គេហទំព័រដែលអ្នក​ប្រហែលជា​ចូលមើលបន្ទាប់</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}other{<ph name="CONTACT_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ខ្ទាស់ និង​បានជ្រើសរើស​ដែលកំពុង​បង្ហាញ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
 <translation id="7314734791127433392">មិនអាច​ពិនិត្យមើល​ពាក្យ​សម្ងាត់​បានទេ</translation>
+<translation id="7324177883197548771">Chrome មាន​រូបរាងថ្មី​ដែលត្រូវបាន​បង្កើតឡើង​ដើម្បីផ្ដល់​ភាពងាយស្រួល។ អ្នកអាច​ប្ដូរ​មកវិញ​នៅពេលណាក៏បាន​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="7324354302972299151">ផ្ញើ​សំណើ “Do Not Track”</translation>
 <translation id="7333041109965360609">បានឈប់​ជាវពីការ​ជូនដំណឹង</translation>
 <translation id="7335766481146072567">ចុច "បន្ត"</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">ដង​អូស</translation>
 <translation id="7698359219371678927">បង្កើតអ៊ីមែលនៅក្នុង <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">បានបើក​សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ​ពេញអេក្រង់</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />។ សមាជិកភាព <ph name="SUBSCRIPTION_NAME" />។</translation>
 <translation id="7707922173985738739">ប្រើ​ទិន្នន័យ​ទូរសព្ទចល័ត</translation>
 <translation id="7708994397325774423">យក​ពាក្យសម្ងាត់​ទាំងអស់​របស់អ្នក</translation>
 <translation id="7714077993070342304">បើក​ម៉ឺនុយ Chrome</translation>

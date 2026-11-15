@@ -331,6 +331,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1256143630373008432">Hindi naisagawa ang self test</translation>
 <translation id="1257336506558170607">I-export ang napiling certificate</translation>
 <translation id="1258491128795710625">Ano'ng Bago</translation>
+<translation id="1259453023447377372">Na-save na grupo ng tab</translation>
 <translation id="1260451001046713751">Palaging payagan ang mga pop-up at pag-redirect mula sa <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Palaging pinapayagang gamitin ang pag-optimize ng JavaScript</translation>
 <translation id="1262564987698748643">Puwedeng hilingin ng mga site na i-override ang input ng iyong keyboard</translation>
@@ -1858,6 +1859,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Mag-sign in sa iyong Microsoft account at subukan ulit</translation>
 <translation id="2611885296070244383">Mikropono (internal)</translation>
+<translation id="2612346259364350954">Gamitin ang content ng page para ipaliwanag ang naka-highlight na text</translation>
 <translation id="2612676031748830579">Numero ng card</translation>
 <translation id="261305050785128654">Ipaalam sa mga website ang mga wikang sinasalita mo. Kapag posible, magpapakita ang mga ito ng content na nasa mga wikang iyon.</translation>
 <translation id="2613210758071148851">Huwag payagan ang anumang extension sa <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="284884486564166077">Maghanap ng anumang larawan gamit ang Lens</translation>
 <translation id="2849035674501872372">Maghanap</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Higit pang opsyon para sa <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Sarado</translation>
 <translation id="2851291081585704741">Offline ka</translation>
 <translation id="285237063405807022">(naglo-load)</translation>
@@ -2231,6 +2234,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
     Mensahe mula sa server: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Buksan ang mga Word, Excel, at PowerPoint file</translation>
 <translation id="2908162660801918428">Magdagdag ng Media Gallery ayon sa Direktoryo</translation>
+<translation id="2909334296570021569">Buksan ang grupo ng tab</translation>
 <translation id="2909487040556589351">Kunin ang Chrome sa iyong mobile device</translation>
 <translation id="2910318910161511225">Kumonekta sa isang network at subukan ulit</translation>
 <translation id="2910678330803525229">Masisimulan mo na ngayon ang pag-browse</translation>
@@ -2397,6 +2401,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3042097545107738107">Baguhin ang strategy sa naka-optimize na pag-charge.</translation>
 <translation id="3043016484125065343">Mag-sign in para makita ang iyong mga bookmark</translation>
 <translation id="3043581297103810752">Mula sa <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Mga opsyon para sa <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Pagandahin gamit ang AI</translation>
 <translation id="3045447014237878114">Awtomatikong nag-download ng maraming file ang site na ito</translation>
 <translation id="304644035656848980">Preview ng iyong mikropono</translation>
@@ -3250,6 +3255,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3748424433435232460">Naka-save na sa device na ito ang password para sa account na ito</translation>
 <translation id="3748466028423001972">I-swap sa view sa ibaba</translation>
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
+<translation id="3750406842345107892">Ipinapadala sa Google ang content at URL ng page kung nasaan ka, at ang naka-highlight na text, para bumuo ng paliwanag</translation>
 <translation id="3752115502500640407">Mag-share ng kopya ng iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Buksan ang panel sa gilid</translation>
 <translation id="3753585830134123417">Ni-resize ang mga window sakaliwa</translation>
@@ -4146,6 +4152,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4550926046134589611">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Ang iyong mga kamakailang AI theme</translation>
 <translation id="4551763574344810652">Pindutin ang <ph name="MODIFIER_KEY_DESCRIPTION" /> para i-undo</translation>
+<translation id="4552721860956824254">Naka-mute ang audio</translation>
 <translation id="4553526521109675518">Kailangan mong i-restart ang iyong Chromebook para mapalitan ang wika ng device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Nagre-require ng bagong bersyon ng app na ito</translation>
 <translation id="4555769855065597957">Shadow</translation>
@@ -5094,6 +5101,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5379140238605961210">Magpatuloy sa pag-block ng access sa mikropono</translation>
 <translation id="5382591305415226340">Pamahalaan ang mga sinusuportahang link</translation>
 <translation id="5384401776498845256">Sino ang makakapag-share sa iyo</translation>
+<translation id="5386856927586721327">Magtanong tungkol sa iyong screen gamit ang <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">I-edit ang <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Binago ang patakaran sa enterprise. Idinagdag ang button ng mga eksperimento sa toolbar. I-click ang button para magbukas ng dialog para i-enable ang mga eksperimento.</translation>
 <translation id="5388436023007579456">Magagamit ng mga app at website na may pahintulot sa camera, at ng mga serbisyo ng system, ang iyong camera. Para magamit ang camera, posibleng kailanganin mong i-restart ang app o i-refresh ang page.</translation>
@@ -7401,6 +7409,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7396845648024431313">Ilulunsad ang <ph name="APP_NAME" /> sa system startup at patuloy na paganahin sa background kahit na sa sandaling maisara mo ang lahat ng ibang mga window ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">I-customize ang pag-sync</translation>
 <translation id="7399616692258236448">Awtomatikong naka-block ang mga request sa lokasyon para sa lahat ng site maliban sa mga pinapayagan mo</translation>
+<translation id="7399746352569282594">Isara ang split view: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Pagsusuri sa Kaligtasan</translation>
 <translation id="7400059772197434086">ay naka-block sa paggamit ng iyong impormasyon sa</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8041,6 +8050,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7953955868932471628">Pamahalaan ang mga shortcut</translation>
 <translation id="7955105108888461311">Magtanong nang personal</translation>
 <translation id="7955177647836564772">Kung naka-on ang Smart Lock at naka-unlock ang iyong telepono, hindi mo kailangang maglagay ng password o PIN</translation>
+<translation id="7955672267519272700">Isara ang <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
 <translation id="7956918070009672177">Walang <ph name="LANGUAGE" /> na boses sa iyong device. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="7957074856830851026">Tingnan ang impormasyon ng device, gaya ng serial number o asset ID nito</translation>

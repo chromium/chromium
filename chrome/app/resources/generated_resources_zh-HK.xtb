@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">未能通過自我測試</translation>
 <translation id="1257336506558170607">匯出揀咗嘅憑證</translation>
 <translation id="1258491128795710625">新功能</translation>
+<translation id="1259453023447377372">儲存咗嘅分頁群組</translation>
 <translation id="1260451001046713751">一律顯示 <ph name="HOST" /> 的彈出式視窗及重新導向</translation>
 <translation id="1262395978737369974">一律允許使用 JavaScript 優化功能</translation>
 <translation id="1262564987698748643">網站可以要求取代鍵盤輸入</translation>
@@ -1857,6 +1858,7 @@
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
 <translation id="2611885296070244383">麥克風 (內部)</translation>
+<translation id="2612346259364350954">使用網頁內容解釋突顯的文字</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
 <translation id="2613210758071148851">不允許 <ph name="RESTRICTED_SITE" /> 的任何擴充程式</translation>
@@ -2159,6 +2161,7 @@
 <translation id="284884486564166077">使用「智能鏡頭」搜尋任何圖片</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">更多「<ph name="TAB_GROUP_NAME" />」嘅選項</translation>
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2851291081585704741">您已離線</translation>
 <translation id="285237063405807022">(正在載入)</translation>
@@ -2230,6 +2233,7 @@
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">開啟 Word、Excel 和 PowerPoint 檔案</translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
+<translation id="2909334296570021569">打開分頁群組</translation>
 <translation id="2909487040556589351">在流動裝置下載 Chrome</translation>
 <translation id="2910318910161511225">請連線至網絡並再試一次</translation>
 <translation id="2910678330803525229">你現可開始瀏覽</translation>
@@ -2396,6 +2400,7 @@
 <translation id="3042097545107738107">變更優化充電策略。</translation>
 <translation id="3043016484125065343">登入即可查看書籤</translation>
 <translation id="3043581297103810752">來自 <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">「<ph name="SECTION_NAME" />」的選項</translation>
 <translation id="3044066905368192931">運用 AI 提升成效</translation>
 <translation id="3045447014237878114">此網站曾自動下載多個檔案</translation>
 <translation id="304644035656848980">麥克風預覽畫面</translation>
@@ -3247,6 +3252,7 @@
 <translation id="3748424433435232460">此帳戶的密碼已儲存在此裝置上</translation>
 <translation id="3748466028423001972">與底部檢視畫面交換</translation>
 <translation id="3748706263662799310">報告錯誤</translation>
+<translation id="3750406842345107892">你所在頁面的內容和網址以及突顯文字，都會傳送至 Google 以生成說明</translation>
 <translation id="3752115502500640407">分享 <ph name="WEBSITE" /> 的密碼副本</translation>
 <translation id="3753412199586870466">開啟側面板</translation>
 <translation id="3753585830134123417">已經向左調整並排視窗大細</translation>
@@ -4143,6 +4149,7 @@
 <translation id="4550926046134589611">部分支援連結將仍會在 <ph name="APP_NAME" /> 中開啟。</translation>
 <translation id="4551379727767354516">你最近嘅 AI 主題</translation>
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
+<translation id="4552721860956824254">已靜音</translation>
 <translation id="4553526521109675518">您需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">必須使用此應用程式的新版本</translation>
 <translation id="4555769855065597957">陰影</translation>
@@ -5089,6 +5096,7 @@
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5384401776498845256">誰能與你分享內容</translation>
+<translation id="5386856927586721327">使用「<ph name="LENS_ICON" />Google 智能鏡頭」查詢螢幕畫面內容</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">企業政策改咗，已經將實驗掣加咗去工具列。㩒一下粒掣就可以開對話框同埋啟用實驗。</translation>
 <translation id="5388436023007579456">系統服務與具備相機權限的應用程式和網站可使用相機。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
@@ -7391,6 +7399,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
 <translation id="7399045143794278225">自訂同步處理功能</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置要求 (你允許的網站除外)</translation>
+<translation id="7399746352569282594">閂分割檢視畫面：<ph name="FIRST_TAB_TITLE" />、<ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400059772197434086">已被封鎖，無法在以下位置使用你的資料：</translation>
 <translation id="7400418766976504921">網址</translation>
@@ -8029,6 +8038,7 @@
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機已解鎖，您將不需要輸入密碼或 PIN</translation>
+<translation id="7955672267519272700">閂「<ph name="TAB_TITLE" />」</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
 <translation id="7956918070009672177">裝置上沒有<ph name="LANGUAGE" />語音。請連接互聯網，然後再試一次。</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>

@@ -331,6 +331,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1256143630373008432">Samotestiranje nije uspjelo</translation>
 <translation id="1257336506558170607">Izvezi odabrani certifikat</translation>
 <translation id="1258491128795710625">Što je novo</translation>
+<translation id="1259453023447377372">Spremljena grupa kartica</translation>
 <translation id="1260451001046713751">Uvijek dopusti skočne prozore i preusmjeravanja s web-lokacije <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Uvijek je dopuštena upotreba optimizacije JavaScripta</translation>
 <translation id="1262564987698748643">Web-lokacije mogu tražiti dopuštenje za nadjačavanje unosa pomoću tipkovnice</translation>
@@ -1846,6 +1847,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2610780100389066815">Microsoftovo potpisivanje pouzdanog popisa</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft račun i pokušajte ponovno</translation>
 <translation id="2611885296070244383">Mikrofon (ugrađeni)</translation>
+<translation id="2612346259364350954">Koristi sadržaj stranice za objašnjenje istaknutog teksta</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Neka web-lokacije znaju koje jezike govorite. Prikazivat će sadržaj na tim jezicima kad je to moguće.</translation>
 <translation id="2613210758071148851">Ne dopuštaj nijedno proširenje na web-lokaciji <ph name="RESTRICTED_SITE" /></translation>
@@ -2148,6 +2150,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="284884486564166077">Pretražujte slike pomoću Objektiva</translation>
 <translation id="2849035674501872372">Potražiti</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Više opcija za: <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Zatvoreno</translation>
 <translation id="2851291081585704741">Niste povezani s internetom</translation>
 <translation id="285237063405807022">(učitavanje)</translation>
@@ -2219,6 +2222,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
     Poruka poslužitelja: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Otvarajte Word, Excel i PowerPoint datoteke</translation>
 <translation id="2908162660801918428">Dodavanje galerije medija po direktoriju</translation>
+<translation id="2909334296570021569">Otvori grupu kartica</translation>
 <translation id="2909487040556589351">Preuzmite Chrome na mobilni uređaj</translation>
 <translation id="2910318910161511225">Povežite se s mrežom i pokušajte ponovo</translation>
 <translation id="2910678330803525229">Sada možete početi pregledavati</translation>
@@ -2385,6 +2389,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3042097545107738107">Promijenite strategiju optimiziranog punjenja.</translation>
 <translation id="3043016484125065343">Prijavite se da biste vidjeli svoje oznake</translation>
 <translation id="3043581297103810752">S web-lokacije <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opcije za <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Poboljšaj pomoću AI-ja</translation>
 <translation id="3045447014237878114">Ta je web-lokacija automatski preuzela više datoteka</translation>
 <translation id="304644035656848980">Pregled mikrofona</translation>
@@ -3237,6 +3242,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3748424433435232460">Zaporka za ovaj račun već je spremljena na ovom uređaju</translation>
 <translation id="3748466028423001972">Zamijeni donjim prikazom</translation>
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
+<translation id="3750406842345107892">Sadržaj i URL stranice na kojoj se nalazite te istaknuti tekst šalju se Googleu radi generiranja objašnjenja</translation>
 <translation id="3752115502500640407">Podijelite kopiju svoje zaporke za <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Otvori bočnu ploču</translation>
 <translation id="3753585830134123417">Promijenjena je veličina prozora slijeva</translation>
@@ -4133,6 +4139,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4550926046134589611">Neke podržane veze i dalje će se otvarati u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Vaše nedavne AI teme</translation>
 <translation id="4551763574344810652">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> za poništavanje</translation>
+<translation id="4552721860956824254">Zvuk je isključen</translation>
 <translation id="4553526521109675518">Da biste promijenili jezik uređaja, trebate ponovo pokrenuti Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Dostupna je nova verzija ove aplikacije</translation>
 <translation id="4555769855065597957">Sjena</translation>
@@ -5079,6 +5086,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5379140238605961210">Nastavi blokirati pristup mikrofonu</translation>
 <translation id="5382591305415226340">Upravljanje podržanim vezama</translation>
 <translation id="5384401776498845256">Tko može dijeliti s vama</translation>
+<translation id="5386856927586721327">Postavite pitanje o zaslonu pomoću <ph name="LENS_ICON" />Google objektiva</translation>
 <translation id="5387116558048951800">Uredite <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Promijenila su se pravila organizacije. Gumb eksperimenata dodan je na alatnu traku. Kliknite taj gumb da biste otvorili dijaloški okvir za omogućivanje eksperimenata.</translation>
 <translation id="5388436023007579456">Aplikacije i web-lokacije s dopuštenjem za mikrofon, kao i usluge sustava, mogu upotrebljavati vašu kameru. Da biste upotrebljavali kameru, možda ćete trebati ponovno pokrenuti aplikaciju ili osvježiti stranicu.</translation>
@@ -7385,6 +7393,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7396845648024431313"><ph name="APP_NAME" /> pokrenut će se pri pokretanju sustava i nastavi raditi u pozadini čak i nakon što zatvorite sve ostale prozore proizvoda <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Prilagodite sinkronizaciju</translation>
 <translation id="7399616692258236448">Zahtjevi za lokacije automatski se blokiraju za sve web-lokacije osim onih koje dopustite</translation>
+<translation id="7399746352569282594">Zatvori podijeljeni prikaz: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
 <translation id="7400059772197434086">ne smije upotrebljavati vaše podatke na web-lokaciji</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8025,6 +8034,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7953955868932471628">Upravljanje prečacima</translation>
 <translation id="7955105108888461311">Pitaj osobno</translation>
 <translation id="7955177647836564772">Ako je Smart Lock uključen, a telefon otključan, ne trebate unijeti zaporku ili PIN</translation>
+<translation id="7955672267519272700">Zatvori <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Spremljeni pisači</translation>
 <translation id="7956918070009672177">Na uređaju nema glasova za <ph name="LANGUAGE" />. Povežite se s internetom i pokušajte ponovo.</translation>
 <translation id="7957074856830851026">Pregled informacija uređaja, kao što su serijski broj ili ID uređaja</translation>

@@ -331,6 +331,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1256143630373008432">Niepowodzenie autotestu</translation>
 <translation id="1257336506558170607">Eksportuj wybrany certyfikat</translation>
 <translation id="1258491128795710625">Nowe funkcje</translation>
+<translation id="1259453023447377372">Zapisana grupa kart</translation>
 <translation id="1260451001046713751">Zawsze zezwalaj na wyskakujące okienka i przekierowania z <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Zezwolono na używanie optymalizacji JavaScriptu bez ograniczeń</translation>
 <translation id="1262564987698748643">Witryny mogą prosić o zastępowanie sygnałów z klawiatury</translation>
@@ -1839,6 +1840,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2610780100389066815">Podpisywanie listy zaufania firmy Microsoft</translation>
 <translation id="261114180663074524">Zaloguj się na konto Microsoft i spróbuj jeszcze raz</translation>
 <translation id="2611885296070244383">Mikrofon (wewnętrzny)</translation>
+<translation id="2612346259364350954">Wykorzystuj treść strony do wyjaśniania zaznaczonego tekstu</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
 <translation id="2613210758071148851">Nie zezwalaj na działanie rozszerzeń w witrynie <ph name="RESTRICTED_SITE" /></translation>
@@ -2141,6 +2143,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="284884486564166077">Wyszukaj obraz przez Obiektyw</translation>
 <translation id="2849035674501872372">Znajdź</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> – więcej opcji</translation>
 <translation id="285033512555869047">Zamknięta</translation>
 <translation id="2851291081585704741">Jesteś offline</translation>
 <translation id="285237063405807022">(wczytuję)</translation>
@@ -2212,6 +2215,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
     Komunikat serwera: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Otwieraj pliki programów Word, Excel i PowerPoint</translation>
 <translation id="2908162660801918428">Dodaj galerię multimediów na podstawie katalogu</translation>
+<translation id="2909334296570021569">Otwórz grupę kart</translation>
 <translation id="2909487040556589351">Pobierz Chrome na urządzenie mobilne</translation>
 <translation id="2910318910161511225">Połącz się z siecią i spróbuj ponownie</translation>
 <translation id="2910678330803525229">Możesz już przeglądać</translation>
@@ -2378,6 +2382,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3042097545107738107">Zmień strategię ładowania zoptymalizowanego.</translation>
 <translation id="3043016484125065343">Zaloguj się, aby wyświetlić swoje zakładki</translation>
 <translation id="3043581297103810752">Ze strony <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opcje dotyczące przycisku <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Ulepsz za pomocą AI</translation>
 <translation id="3045447014237878114">Ta strona automatycznie pobrała wiele plików</translation>
 <translation id="304644035656848980">Podgląd mikrofonu</translation>
@@ -3227,6 +3232,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3748424433435232460">Hasło do tego konta jest już zapisane na tym urządzeniu</translation>
 <translation id="3748466028423001972">Zamień z widokiem u dołu</translation>
 <translation id="3748706263662799310">Zgłoś błąd</translation>
+<translation id="3750406842345107892">Treść i adres URL strony, na której się znajdujesz oraz zaznaczony tekst są wysyłane do Google w celu wygenerowania wyjaśnienia</translation>
 <translation id="3752115502500640407">Udostępnij kopię swojego hasła do strony <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Otwórz panel boczny</translation>
 <translation id="3753585830134123417">Zmieniono rozmiar okien w lewo</translation>
@@ -4121,6 +4127,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4550926046134589611">Niektóre obsługiwane linki nadal będą się otwierać w aplikacji <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Twoje motywy wygenerowane przez AI</translation>
 <translation id="4551763574344810652">Naciśnij <ph name="MODIFIER_KEY_DESCRIPTION" />, by cofnąć</translation>
+<translation id="4552721860956824254">Dźwięk wyciszony</translation>
 <translation id="4553526521109675518">Aby zmienić język, musisz ponownie uruchomić Chromebooka. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Wymagana jest nowa wersja tej aplikacji</translation>
 <translation id="4555769855065597957">Cień</translation>
@@ -5067,6 +5074,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="5379140238605961210">Nadal blokuj dostęp do mikrofonu</translation>
 <translation id="5382591305415226340">Zarządzaj obsługiwanymi linkami</translation>
 <translation id="5384401776498845256">Kto może Ci udostępniać dane</translation>
+<translation id="5386856927586721327">Zapytaj o ekran za pomocą <ph name="LENS_ICON" />Obiektywu Google</translation>
 <translation id="5387116558048951800">Edytuj: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Zmieniono zasady przedsiębiorstwa. Do paska narzędzi został dodany przycisk Eksperymenty. Kliknij go, aby otworzyć okno, w którym można włączyć eksperymenty.</translation>
 <translation id="5388436023007579456">Z aparatu mogą korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe. Aby można było używać aparatu, konieczne może być ponowne uruchomienie aplikacji lub odświeżenie strony.</translation>
@@ -7374,6 +7382,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7396845648024431313">Aplikacja <ph name="APP_NAME" /> zostanie włączona podczas uruchamiania systemu i będzie działać w tle nawet po zamknięciu wszystkich pozostałych okien przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Dostosuj synchronizację</translation>
 <translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
+<translation id="7399746352569282594">Zamknij widok dzielony: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7400059772197434086">nie może używać Twoich danych na</translation>
 <translation id="7400418766976504921">Adres URL</translation>
@@ -8014,6 +8023,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7953955868932471628">Zarządzaj skrótami</translation>
 <translation id="7955105108888461311">Poproś osobiście</translation>
 <translation id="7955177647836564772">Jeśli funkcja Smart Lock jest włączona, a telefon odblokowany, nie musisz wpisywać hasła ani kodu PIN</translation>
+<translation id="7955672267519272700">Zamknij: <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Twoje zapisane drukarki</translation>
 <translation id="7956918070009672177">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="7957074856830851026">Sprawdzanie informacji z urządzenia, takich jak numer seryjny lub identyfikator zasobu</translation>

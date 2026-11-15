@@ -129,6 +129,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1460751212339734034">Poupe tempo digitando menos</translation>
 <translation id="146522654774760805">Senhas e preenchimento automático</translation>
 <translation id="1466383950273130737">Idioma do Chrome</translation>
+<translation id="1473344277210704336">O Gemini e seus itens essenciais na nova barra de ferramentas inferior</translation>
 <translation id="1477626028522505441">Falha no download do arquivo <ph name="FILE_NAME" /> devido a problemas de servidor.</translation>
 <translation id="147982357559798527">Alterada</translation>
 <translation id="1480287803138246127">Parte do seu histórico pode não aparecer aqui. Para acessar todo o seu histórico do Chrome, abra o histórico completo.</translation>
@@ -908,6 +909,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4537987892902330164">A conta <ph name="NAME_OR_EMAIL" /> continua conectada.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}other{<ph name="TAB_COUNT_MANY" /> guias e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}}</translation>
 <translation id="4558311620361989323">Atalhos de páginas da Web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Assinatura <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Fazer login em conta gerenciada</translation>
 <translation id="4577115723294378384">Ordenar de A a Z</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
@@ -915,6 +917,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4585751637295612750">Abra uma nova guia para adicioná-la à sua pergunta</translation>
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4587590257937792551">O Chrome tem uma nova barra de ferramentas inferior, criada para facilitar sua vida. Você pode voltar a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
 <translation id="4595237294768457124">Abra uma página Nova Guia.</translation>
 <translation id="4595276580892809760">Anexar imagens da galeria</translation>
@@ -1449,6 +1452,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6633067410344541938">Desbloquear a navegação anônima</translation>
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
 <translation id="6637100877383020115">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Seus itens essenciais na barra de ferramentas inferior. Você pode voltar a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Anexar guias</translation>
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1647,6 +1651,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, guia de compartilhamento fixada e selecionada</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7314734791127433392">Não foi possível verificar as senhas</translation>
+<translation id="7324177883197548771">O Chrome tem um novo visual, criado para facilitar sua vida. Você pode voltar a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Enviar uma solicitação "Do Not Track"</translation>
 <translation id="7333041109965360609">Você cancelou sua inscrição para receber notificações</translation>
 <translation id="7335766481146072567">Pressione Continuar.</translation>
@@ -1749,6 +1754,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7697383401610880082">Alça de arrastar</translation>
 <translation id="7698359219371678927">Criar e-mail no <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">A página inferior de atividade recente está aberta no tamanho máximo</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Assinatura <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7714077993070342304">Abrir menu do Google Chrome</translation>

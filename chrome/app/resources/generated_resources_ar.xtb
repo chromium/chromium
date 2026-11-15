@@ -344,7 +344,7 @@
 <translation id="1267649802567297774">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" والنمط "<ph name="STYLE" />" والحالة "<ph name="MOOD" />".</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1272508081857842302">فتح <ph name="BEGIN_LINK" />الروابط المتوافقة<ph name="END_LINK" /></translation>
-<translation id="1274721046703404848">‏يمكنك إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
+<translation id="1274721046703404848">‏إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
 <translation id="1274997165432133392">ملفات تعريف الارتباط والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
 <translation id="1277738741297162935">‏يمكنك الاطّلاع عليها في "مدير كلمات المرور في Google"</translation>
@@ -4228,7 +4228,7 @@
 <translation id="4624054169152573743">مظهر ملوَّن</translation>
 <translation id="4625350031596795804">نمط التركيز على نطاق كبير</translation>
 <translation id="4625905218692741757">اللون التلقائي الرمادي</translation>
-<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بالانتقال إلى استخدام مفاتيح المرور في حساباتها الحالية</translation>
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
 <translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
 <translation id="4629803160911640220">موثوق بها</translation>

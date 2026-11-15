@@ -331,6 +331,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1256143630373008432">Produciuse un erro na proba automática</translation>
 <translation id="1257336506558170607">Exportar o certificado seleccionado</translation>
 <translation id="1258491128795710625">Novidades</translation>
+<translation id="1259453023447377372">Grupo de pestanas gardado</translation>
 <translation id="1260451001046713751">Permitir sempre ventás emerxentes e redireccións desde <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Permiso concedido para usar a optimización de JavaScript</translation>
 <translation id="1262564987698748643">Os sitios poden pedirche permiso para ignorar a entrada do teclado</translation>
@@ -1845,6 +1846,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2610780100389066815">Sinatura da lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Inicia sesión na túa conta de Microsoft e téntao de novo</translation>
 <translation id="2611885296070244383">Micrófono (interno)</translation>
+<translation id="2612346259364350954">Usar contido da páxina para explicar o texto destacado</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="261305050785128654">Permite que os sitios web saiban que idiomas falas. Mostraranche contido nesas linguas cando sexa posible.</translation>
 <translation id="2613210758071148851">Non permitir extensións en <ph name="RESTRICTED_SITE" /></translation>
@@ -2147,6 +2149,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="284884486564166077">Busca calquera imaxe con Lens</translation>
 <translation id="2849035674501872372">Levanta a mirada</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Máis opcións de <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Pechado</translation>
 <translation id="2851291081585704741">Estás sen conexión</translation>
 <translation id="285237063405807022">(cargando)</translation>
@@ -2218,6 +2221,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
     Mensaxe do servidor: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Abre ficheiros de Word, Excel e PowerPoint</translation>
 <translation id="2908162660801918428">Engadir galería multimedia por directorio</translation>
+<translation id="2909334296570021569">Abrir o grupo de pestanas</translation>
 <translation id="2909487040556589351">Descarga Chrome no teu dispositivo móbil</translation>
 <translation id="2910318910161511225">Conéctate a unha rede e téntao de novo</translation>
 <translation id="2910678330803525229">Xa podes empezar a navegar</translation>
@@ -2384,6 +2388,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3042097545107738107">Cambiar a estratexia de carga optimizada.</translation>
 <translation id="3043016484125065343">Inicia sesión para ver os marcadores</translation>
 <translation id="3043581297103810752">De <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opcións de <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Mellorar con IA</translation>
 <translation id="3045447014237878114">Este sitio descargou varios ficheiros automaticamente</translation>
 <translation id="304644035656848980">Vista previa do teu micrófono</translation>
@@ -3240,6 +3245,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3748424433435232460">Xa hai un contrasinal para esta conta gardado neste dispositivo</translation>
 <translation id="3748466028423001972">Cambiar pola vista inferior</translation>
 <translation id="3748706263662799310">Informar dun erro</translation>
+<translation id="3750406842345107892">O contido e o URL da páxina na que estás, así como o texto destacado, envíanse a Google para xerar unha explicación</translation>
 <translation id="3752115502500640407">Compartir unha copia do teu contrasinal de <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Abrir panel lateral</translation>
 <translation id="3753585830134123417">Ventás co tamaño cambiado á esquerda</translation>
@@ -4136,6 +4142,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4550926046134589611">Algunhas ligazóns compatibles seguirán abríndose na aplicación <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Os teus temas de IA recentes</translation>
 <translation id="4551763574344810652">Preme <ph name="MODIFIER_KEY_DESCRIPTION" /> para desfacer a acción</translation>
+<translation id="4552721860956824254">Audio silenciado</translation>
 <translation id="4553526521109675518">Para cambiar o idioma do teu Chromebook, debes reiniciar o dispositivo. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">É necesaria unha nova versión desta aplicación</translation>
 <translation id="4555769855065597957">Sombra</translation>
@@ -5084,6 +5091,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="5379140238605961210">Continuar bloqueando o acceso ao micrófono</translation>
 <translation id="5382591305415226340">Xestionar ligazóns compatibles</translation>
 <translation id="5384401776498845256">Quen pode compartir contido contigo?</translation>
+<translation id="5386856927586721327">Fai preguntas sobre a túa pantalla con <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Modificouse a política de empresa. Engadiuse á barra de ferramentas o botón Experiments. Fai clic nel para abrir un cadro de diálogo que permite activar os experimentos.</translation>
 <translation id="5388436023007579456">As aplicacións e sitios web co permiso correspondente, así como os servizos do sistema, poden utilizar a cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
@@ -7385,6 +7393,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a executarse cando se inicie o sistema e seguirá executándose en segundo plano aínda que peches todas as demais ventás de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>
 <translation id="7399616692258236448">Bloquéanse automaticamente as solicitudes de localización para todos os sitios, excepto para os que permitas</translation>
+<translation id="7399746352569282594">Pechar vista dividida: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400059772197434086">non ten permitido usar a túa información en</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8025,6 +8034,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7953955868932471628">Xestionar atallos</translation>
 <translation id="7955105108888461311">Preguntar en persoa</translation>
 <translation id="7955177647836564772">Se activas Smart Lock e o teu teléfono está desbloqueado, non é necesario que poñas un contrasinal ou PIN</translation>
+<translation id="7955672267519272700">Pechar <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">As túas impresoras gardadas</translation>
 <translation id="7956918070009672177">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Conéctate a Internet e téntao de novo.</translation>
 <translation id="7957074856830851026">Consultar información do dispositivo, como o seu número de serie ou código de identificación de recurso</translation>

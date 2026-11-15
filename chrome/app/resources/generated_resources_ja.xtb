@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">セルフテストに失敗しました</translation>
 <translation id="1257336506558170607">選択した証明書をエクスポート</translation>
 <translation id="1258491128795710625">最新情報</translation>
+<translation id="1259453023447377372">保存したタブグループ</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> のポップアップとリダイレクトを常に許可する</translation>
 <translation id="1262395978737369974">JavaScript の最適化の使用を常に許可する</translation>
 <translation id="1262564987698748643">サイトがキーボード入力のオーバーライドを要求できるようにする</translation>
@@ -1844,6 +1845,7 @@
 <translation id="2610780100389066815">Microsoft 信頼リストの署名</translation>
 <translation id="261114180663074524">Microsoft アカウントにログインして、もう一度お試しください</translation>
 <translation id="2611885296070244383">マイク（内蔵）</translation>
+<translation id="2612346259364350954">ページの内容に基づいて、選択したテキストを説明する</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="261305050785128654">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> ですべての拡張機能を許可しない</translation>
@@ -2146,6 +2148,7 @@
 <translation id="284884486564166077">Google レンズで画像を検索</translation>
 <translation id="2849035674501872372">調べる</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />（<ph name="UNICODE_NAME" />）</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> に関するその他のオプション</translation>
 <translation id="285033512555869047">閉じています</translation>
 <translation id="2851291081585704741">オフラインです</translation>
 <translation id="285237063405807022">（読み込んでいます）</translation>
@@ -2217,6 +2220,7 @@
     サーバー メッセージ: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word、Excel、PowerPoint のファイルを開く</translation>
 <translation id="2908162660801918428">メディア ギャラリーをディレクトリ単位で追加</translation>
+<translation id="2909334296570021569">タブグループを開く</translation>
 <translation id="2909487040556589351">モバイル デバイスに Chrome をインストール</translation>
 <translation id="2910318910161511225">ネットワークに接続してから、もう一度お試しください</translation>
 <translation id="2910678330803525229">ブラウジングを開始できます</translation>
@@ -2383,6 +2387,7 @@
 <translation id="3042097545107738107">充電の最適化戦略を変更します。</translation>
 <translation id="3043016484125065343">ブックマークを表示するにはログインしてください</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> より</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> に関するオプション</translation>
 <translation id="3044066905368192931">AI で効率化</translation>
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
 <translation id="304644035656848980">マイクのプレビュー</translation>
@@ -3234,6 +3239,7 @@
 <translation id="3748424433435232460">このアカウントのパスワードはすでにこのデバイスに保存されています</translation>
 <translation id="3748466028423001972">下のビューと入れ替え</translation>
 <translation id="3748706263662799310">バグを報告</translation>
+<translation id="3750406842345107892">表示中のページの内容、URL、選択したテキストが Google に送信され、説明が生成されます</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> のパスワードのコピーを共有する</translation>
 <translation id="3753412199586870466">サイドパネルを開く</translation>
 <translation id="3753585830134123417">ウィンドウを左方向にサイズ変更しました</translation>
@@ -4130,6 +4136,7 @@
 <translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>
 <translation id="4551379727767354516">最近の AI テーマ</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
+<translation id="4552721860956824254">音声はミュートになっています</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">このアプリの新しいバージョンが必要です</translation>
 <translation id="4555769855065597957">シャドウ</translation>
@@ -5075,6 +5082,7 @@
 <translation id="5379140238605961210">マイクへのアクセスを引き続きブロックする</translation>
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5384401776498845256">共有を許可する対象</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" /> Google レンズで画面について質問する</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> を編集</translation>
 <translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
 <translation id="5388436023007579456">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
@@ -5968,7 +5976,7 @@
 <translation id="6192333916571137726">ファイルをダウンロード</translation>
 <translation id="6192413564913825901">すべてのブックマークに移動</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
-<translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
+<translation id="6196640612572343990">サードパーティ Cookie をブロックする</translation>
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
 <translation id="6198223452299275399">ページ間をスワイプ</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
@@ -7380,6 +7388,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> はシステム起動時に開始され、他の <ph name="PRODUCT_NAME" /> ウィンドウをすべて閉じてもバックグラウンドで動作し続けます。</translation>
 <translation id="7399045143794278225">同期をカスタマイズする</translation>
 <translation id="7399616692258236448">許可したサイト以外の位置情報リクエストが自動的にブロックされます</translation>
+<translation id="7399746352569282594">分割ビューを閉じる: <ph name="FIRST_TAB_TITLE" />、<ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">安全チェック</translation>
 <translation id="7400059772197434086">は次のサイトであなたの情報を使用できません</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8020,6 +8029,7 @@
 <translation id="7953955868932471628">ショートカットの管理</translation>
 <translation id="7955105108888461311">直接リクエストする</translation>
 <translation id="7955177647836564772">Smart Lock がオンになっていて、スマートフォンのロックが解除されている場合、パスワードや PIN を入力する必要はありません</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> を閉じる</translation>
 <translation id="7956373551960864128">保存されているプリンタ</translation>
 <translation id="7956918070009672177">デバイスに <ph name="LANGUAGE" /> の音声がありません。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>

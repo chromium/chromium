@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Желите да зауставите преузимање?</translation>
 <translation id="4796496140132859135">Група картица. Скупљено.</translation>
 <translation id="4800912004582762296">Кликтање</translation>
+<translation id="4800930308997591052">Пређите на налог <ph name="EMAIL" /> да бисте лако делили картице између уређаја и приступали лозинкама, обележивачима и другом садржају са Google налога.</translation>
 <translation id="4802185666270672526">Сакриј опцију Захтевај верзију сајта за рачунар</translation>
 <translation id="4803185665210547709">Овим управља организација.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -2149,6 +2150,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7618220760967055820">Изаберите дугме које ће се приказивати на траци с алаткама</translation>
 <translation id="7620522820075868385">Откажи</translation>
 <translation id="762078666799342162">Ранија преузимања можете да прегледате у <ph name="BEGIN_LINK" />Фајловима<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Наставите тамо где сте стали на рачунару</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Угрожене лозинке}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7640669552036055091">Картице са Android-а</translation>

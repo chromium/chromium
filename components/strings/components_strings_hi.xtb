@@ -824,6 +824,7 @@
 <translation id="2356941001189392209">लेगसी टेक्नोलॉजी इवेंट वाले जिन पेजों पर आपने विज़िट किया है उनके यूआरएल की सीमित सूची</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 टैब शेयर किया जाएगा}one{{NUM_TABS} टैब शेयर किया जाएगा}other{{NUM_TABS} टैब शेयर किए जाएंगे}}</translation>
 <translation id="2357481397660644965">आपके डिवाइस को <ph name="DEVICE_MANAGER" /> और खाते को <ph name="ACCOUNT_MANAGER" /> प्रबंधित करता है.</translation>
+<translation id="2358479643736965923">इस टैब पर, Google के एआई से मिला जवाब देखें</translation>
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="236000571258713023">वाहन</translation>
@@ -1142,6 +1143,7 @@
 <translation id="2925032407415783182">इवेंट के टिकट को Wallet में सेव करें</translation>
 <translation id="2925454999967523701">'दस्तावेज़ बनाएं' बटन, फटाफट नया Google दस्तावेज़ बनाने के लिए इसे चालू करें</translation>
 <translation id="2925673989565098301">डिलीवरी का तरीका</translation>
+<translation id="2927328994673424423">दो हफ़्ते पहले</translation>
 <translation id="2928426578619531300">उपयोगकर्ता के खाते से जुड़े</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="2930531075747147366">आपके दूसरे डिवाइस से टैब भेजा गया है</translation>

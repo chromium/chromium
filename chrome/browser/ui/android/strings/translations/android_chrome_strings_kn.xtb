@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">ಸಮಯ ಉಳಿಸಿ, ಕಡಿಮೆ ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="146522654774760805">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಆಟೋಫಿಲ್‌</translation>
 <translation id="1466383950273130737">Chrome ನ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
+<translation id="1473344277210704336">ಹೊಸ ಕೆಳಭಾಗದ ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ Gemini ಮತ್ತು ನಿಮ್ಮ ಎಸೆನ್ಶಿಯಲ್‌ಗಳು</translation>
 <translation id="1477626028522505441">ಸರ್ವರ್ ಸಮಸ್ಯೆಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="147982357559798527">ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="1480287803138246127">ನಿಮ್ಮ ಕೆಲವು ಇತಿಹಾಸವನ್ನು ಇಲ್ಲಿ ತೋರಿಸದೇ ಇರಬಹುದು. ನಿಮ್ಮ ಎಲ್ಲಾ Chrome ಇತಿಹಾಸವನ್ನು ನೋಡಲು, ಸಂಪೂರ್ಣ Chrome ಇತಿಹಾಸವನ್ನು ತೆರೆಯಿರಿ.</translation>
@@ -906,6 +907,7 @@
 <translation id="4537987892902330164">ನೀವು <ph name="NAME_OR_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದ್ದೀರಿ.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4558311620361989323">ವೆಬ್‌ಪುಟ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> ಸದಸ್ಯತ್ವ.</translation>
 <translation id="4572422548854449519">ನಿರ್ವಹಿಸಲ್ಪಟ್ಟ ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4577115723294378384">A ನಿಂದ Z ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4578289292431526768">ಪ್ರಾರಂಭಿಸೋಣ</translation>
@@ -913,6 +915,7 @@
 <translation id="4585751637295612750">ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಅದನ್ನು ಸೇರಿಸಲು ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4585793705637313973">ಪುಟ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4587590257937792551">ನಿಮ್ಮ ಅನುಕೂಲಕ್ಕಾಗಿ Chrome ಈಗ ಹೊಸ ಕೆಳಭಾಗದ ಟೂಲ್‌ಬಾರ್ ಅನ್ನು ಹೊಂದಿದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಮರಳಿ ಬದಲಿಸಬಹುದು.</translation>
 <translation id="4594952190837476234">ಈ ಆಫ್‍ಲೈನ್ ಪುಟವನ್ನು <ph name="CREATION_TIME" /> ರಂದು ರಚಿಸಲಾಗಿದೆ ಮತ್ತು ಇದು ಆನ್‌ಲೈನ್ ಆವೃತ್ತಿಗಿಂತ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
 <translation id="4595237294768457124">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4595276580892809760">ಗ್ಯಾಲರಿಯಿಂದ ಚಿತ್ರಗಳನ್ನು ಲಗತ್ತಿಸಿ</translation>
@@ -1447,6 +1450,7 @@
 <translation id="6633067410344541938">ಅಜ್ಞಾತ ಮೋಡ್‌‌ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6636623428211296678">ಕೆಳಗೆ ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಅಥವಾ ಈಗಲೇ ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="6637100877383020115">ಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_UMA_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">ನಿಮ್ಮ ಎಸೆನ್ಶಿಯಲ್‌ಗಳು, ಕೆಳಗಿನ ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿಯೇ ಲಭ್ಯ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಮರಳಿ ಬದಲಿಸಬಹುದು.</translation>
 <translation id="6642299196749785472">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಗತ್ತಿಸಿ</translation>
 <translation id="6647441008198474441">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1645,6 +1649,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಿರುವ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಟ್ಯಾಬ್</translation>
 <translation id="7311244614769792472">ಯಾವ ಫಲಿತಾಂಶಗಳೂ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7314734791127433392">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="7324177883197548771">ನಿಮ್ಮ ಅನುಕೂಲಕ್ಕಾಗಿ Chrome ಈಗ ಹೊಸ ಲುಕ್ ಅನ್ನು ಹೊಂದಿದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಮರಳಿ ಬದಲಿಸಬಹುದು.</translation>
 <translation id="7324354302972299151">"ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ" ವಿನಂತಿಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="7333041109965360609">ನೋಟಿಫಿಕೇಶನ್‌ಗಳಿಂದ ಅನ್‌ಸಬ್‌ಸ್ಕ್ರೈಬ್‌‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7335766481146072567">ಮುಂದುವರಿಸಿ ಎಂಬುದನ್ನು ಒತ್ತಿರಿ</translation>
@@ -1747,6 +1752,7 @@
 <translation id="7697383401610880082">ಹ್ಯಾಂಡಲ್ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ನಲ್ಲಿ ಇಮೇಲ್ ರಚಿಸಿ</translation>
 <translation id="7702420606070050505">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಯ ಕೆಳಭಾಗದ ಶೀಟ್‌ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> ಸದಸ್ಯತ್ವ.</translation>
 <translation id="7707922173985738739">ಮೊಬೈಲ್‌ ಡೇಟಾ ಬಳಸಿ</translation>
 <translation id="7708994397325774423">ನಿಮ್ಮ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7714077993070342304">Chrome ಮೆನುವನ್ನು ತೆರೆಯಿರಿ</translation>

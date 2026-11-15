@@ -129,6 +129,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1460751212339734034">Gagnez du temps, tapez moins</translation>
 <translation id="146522654774760805">Mots de passe et remplissage automatique</translation>
 <translation id="1466383950273130737">Choisir la langue de Chrome</translation>
+<translation id="1473344277210704336">Gemini et vos essentiels sur la nouvelle barre d'outils inférieure</translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
 <translation id="147982357559798527">Modifié</translation>
 <translation id="1480287803138246127">Une partie de votre historique peut ne pas s'afficher ici. Pour consulter tout votre historique de Chrome, ouvrez l'historique complet.</translation>
@@ -907,6 +908,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4537987892902330164">Vous êtes resté connecté en tant que <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> onglet de navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> onglets de navigation privée}}</translation>
 <translation id="4558311620361989323">Raccourcis relatifs à la page Web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Abonnement <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Connectez-vous à un compte géré</translation>
 <translation id="4577115723294378384">Trier de A à Z</translation>
 <translation id="4578289292431526768">Allons-y</translation>
@@ -914,6 +916,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4587590257937792551">Chrome dispose d'une nouvelle barre d'outils inférieure, conçue pour être pratique. Vous pouvez revenir à l'ancienne disposition à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
 <translation id="4595237294768457124">Ouvrez une page Nouvel onglet.</translation>
 <translation id="4595276580892809760">Joindre des images de la galerie</translation>
@@ -1448,6 +1451,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6633067410344541938">Déverrouiller le mode de navigation privée</translation>
 <translation id="6636623428211296678">Explorez plus de paramètres ci-dessous ou terminez maintenant</translation>
 <translation id="6637100877383020115">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Vos essentiels, directement sur la barre d'outils inférieure. Vous pouvez revenir à l'ancienne disposition à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Joindre des onglets</translation>
 <translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autre contact}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> autres contacts}}</translation>
@@ -1646,6 +1650,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, onglet épinglé et sélectionné avec partage en cours</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7314734791127433392">Impossible de valider les mots de passe</translation>
+<translation id="7324177883197548771">Chrome a une nouvelle apparence, conçue pour être pratique. Vous pouvez revenir à l'ancienne disposition à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Envoyer une demande « Do Not Track »</translation>
 <translation id="7333041109965360609">Désabonné des notifications</translation>
 <translation id="7335766481146072567">Appuyez sur Continuer.</translation>
@@ -1748,6 +1753,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Zone de contenu dans le bas de l'écran concernant l'activité récente ouverte à pleine hauteur</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Abonnement <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7714077993070342304">Ouvrir le menu Chrome</translation>

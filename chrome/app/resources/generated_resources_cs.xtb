@@ -331,6 +331,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1256143630373008432">Autonomní test selhal</translation>
 <translation id="1257336506558170607">Exportovat vybraný certifikát</translation>
 <translation id="1258491128795710625">Novinky</translation>
+<translation id="1259453023447377372">Uložená skupina karet</translation>
 <translation id="1260451001046713751">Vždy povolovat vyskakovací okna a přesměrování z webu <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Vždy mohou používat optimalizaci JavaScriptu</translation>
 <translation id="1262564987698748643">Weby mohou žádat o přepsání vstupu z klávesnice</translation>
@@ -1845,6 +1846,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2610780100389066815">Podpis seznamu důvěryhodných certifikátů Microsoft</translation>
 <translation id="261114180663074524">Přihlaste se ke svému účtu Microsoft a poté to zkuste znovu</translation>
 <translation id="2611885296070244383">Mikrofon (interní)</translation>
+<translation id="2612346259364350954">Použít obsah stránky k vysvětlení zvýrazněného textu</translation>
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="261305050785128654">Sdělte webům, kterými jazyky mluvíte. Pokud to bude možné, zobrazí obsah v těchto jazycích.</translation>
 <translation id="2613210758071148851">Na webu <ph name="RESTRICTED_SITE" /> nepovolovat žádná rozšíření</translation>
@@ -2147,6 +2149,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="284884486564166077">Vyhledejte jakýkoli obrázek pomocí aplikace Lens</translation>
 <translation id="2849035674501872372">Podívat se nahoru</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> – další možnosti</translation>
 <translation id="285033512555869047">Zavřeno</translation>
 <translation id="2851291081585704741">Nemáte připojení k internetu</translation>
 <translation id="285237063405807022">(načítání)</translation>
@@ -2218,6 +2221,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Otevírejte soubory Word, Excel a PowerPoint</translation>
 <translation id="2908162660801918428">Přidat galerii médií podle adresáře</translation>
+<translation id="2909334296570021569">Otevřít skupinu karet</translation>
 <translation id="2909487040556589351">Stáhněte si Chrome do mobilního zařízení</translation>
 <translation id="2910318910161511225">Připojte se k síti a zkuste to znovu</translation>
 <translation id="2910678330803525229">Můžete se pustit do prohlížení</translation>
@@ -2384,6 +2388,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3042097545107738107">Změnit strategii optimalizovaného nabíjení</translation>
 <translation id="3043016484125065343">Pokud chcete zobrazit své záložky, přihlaste se</translation>
 <translation id="3043581297103810752">Z webu <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Možnosti pro <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Vylepšit pomocí AI</translation>
 <translation id="3045447014237878114">Tento web automaticky stáhl několik souborů</translation>
 <translation id="304644035656848980">Náhled mikrofonu</translation>
@@ -3235,6 +3240,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Heslo tohoto účtu už je v tomto zařízení uloženo</translation>
 <translation id="3748466028423001972">Vyměnit s dolním zobrazením</translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
+<translation id="3750406842345107892">Obsah a adresa URL stránky, na které se nacházíte, a zvýrazněný text se odešlou do Googlu, aby mohl vygenerovat vysvětlení</translation>
 <translation id="3752115502500640407">Sdílet kopii hesla pro <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Otevřít postranní panel</translation>
 <translation id="3753585830134123417">Velikost oken byla změněna doleva</translation>
@@ -4130,6 +4136,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4550926046134589611">Některé podporované odkazy se budou nadále otevírat v aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Vaše nedávné motivy vygenerované AI</translation>
 <translation id="4551763574344810652">Stisknutím <ph name="MODIFIER_KEY_DESCRIPTION" /> vrátíte provedenou akci zpět</translation>
+<translation id="4552721860956824254">Zvuk je vypnutý</translation>
 <translation id="4553526521109675518">Pokud chcete změnit jazyk Chromebooku, musíte ho restartovat. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">K dispozici je nová verze této aplikace</translation>
 <translation id="4555769855065597957">Stín</translation>
@@ -5076,6 +5083,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5379140238605961210">Blokovat přístup k mikrofonu i nadále</translation>
 <translation id="5382591305415226340">Spravovat podporované odkazy</translation>
 <translation id="5384401776498845256">Kdo s vámi může sdílet</translation>
+<translation id="5386856927586721327">Zeptejte se na to, co vidíte na obrazovce, přes <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Upravit identifikační údaj typu <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Podnikové zásady se změnily. Na lištu bylo přidáno tlačítko experimentálních funkcí. Kliknutím na něj otevřete dialogové okno k aktivaci experimentálních funkcí.</translation>
 <translation id="5388436023007579456">Aplikace a weby s oprávněním ke kameře a systémové služby mohou používat vaši kameru. Je možné, že k použití kamery budete muset restartovat aplikaci nebo obnovit stránku.</translation>
@@ -7382,6 +7390,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7396845648024431313">Aplikace <ph name="APP_NAME" /> se spustí při zapnutí systému a poběží na pozadí i v případě, že zavřete všechna okna prohlížeče <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizovat synchronizaci</translation>
 <translation id="7399616692258236448">Žádosti o informace o poloze jsou automaticky blokovány u všech webů s výjimkou těch, u nichž je povolíte</translation>
+<translation id="7399746352569282594">Zavřít rozdělené zobrazení: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7400059772197434086">má zablokováno používání vašich údajů na</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
@@ -8022,6 +8031,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7953955868932471628">Spravovat zástupce</translation>
 <translation id="7955105108888461311">Zeptat se osobně</translation>
 <translation id="7955177647836564772">Pokud je zapnutá funkce Smart Lock a váš telefon je odemknutý, heslo ani PIN zadávat nemusíte.</translation>
+<translation id="7955672267519272700">Zavřít <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
 <translation id="7956918070009672177">Na zařízení nejsou žádné hlasy pro jazyk <ph name="LANGUAGE" />. Připojte se k internetu a zkuste to znovu.</translation>
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>

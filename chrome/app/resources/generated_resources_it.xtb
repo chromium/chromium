@@ -331,6 +331,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1256143630373008432">Diagnostica automatica non riuscita</translation>
 <translation id="1257336506558170607">Esporta certificato selezionato</translation>
 <translation id="1258491128795710625">Novità</translation>
+<translation id="1259453023447377372">Gruppo di schede salvato</translation>
 <translation id="1260451001046713751">Consenti sempre popup e reindirizzamenti da <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Sempre autorizzati a utilizzare l'ottimizzazione di JavaScript</translation>
 <translation id="1262564987698748643">I siti possono chiedere di eseguire l'override dell'input della tastiera</translation>
@@ -1844,6 +1845,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2610780100389066815">Elenco firme attendibili Microsoft</translation>
 <translation id="261114180663074524">Accedi al tuo account Microsoft e riprova</translation>
 <translation id="2611885296070244383">Microfono (interno)</translation>
+<translation id="2612346259364350954">Utilizza i contenuti della pagina per spiegare il testo evidenziato</translation>
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="261305050785128654">Dai informazioni sulle lingue che conosci ai siti web. Se possibile, ti mostreranno contenuti in queste lingue.</translation>
 <translation id="2613210758071148851">Non consentire alcuna estensione su <ph name="RESTRICTED_SITE" /></translation>
@@ -2146,6 +2148,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="284884486564166077">Cerca immagini con Lens</translation>
 <translation id="2849035674501872372">Ricerca</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Altre opzioni per <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Chiuso</translation>
 <translation id="2851291081585704741">Sei offline</translation>
 <translation id="285237063405807022">(caricamento)</translation>
@@ -2217,6 +2220,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     Messaggio del server: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Apri file di Word, Excel e PowerPoint</translation>
 <translation id="2908162660801918428">Aggiungi Galleria Media per directory</translation>
+<translation id="2909334296570021569">Apri gruppo di schede</translation>
 <translation id="2909487040556589351">Scarica Chrome sul tuo dispositivo mobile</translation>
 <translation id="2910318910161511225">Collegati a una rete e riprova</translation>
 <translation id="2910678330803525229">Ora puoi iniziare a navigare</translation>
@@ -2383,6 +2387,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3042097545107738107">Modifica la strategia di ricarica ottimizzata.</translation>
 <translation id="3043016484125065343">Accedi per visualizzare i tuoi preferiti</translation>
 <translation id="3043581297103810752">Da <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opzioni per <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Migliora con l'AI</translation>
 <translation id="3045447014237878114">Questo sito ha scaricato automaticamente più file</translation>
 <translation id="304644035656848980">Anteprima del microfono</translation>
@@ -3236,6 +3241,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3748424433435232460">Una password per questo account è già salvata su questo dispositivo</translation>
 <translation id="3748466028423001972">Passa alla visualizzazione dal basso</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
+<translation id="3750406842345107892">I contenuti e l'URL della pagina che stai visitando, insieme al testo evidenziato, vengono inviati a Google per generare una spiegazione</translation>
 <translation id="3752115502500640407">Condividi una copia della tua password di <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Apri riquadro laterale</translation>
 <translation id="3753585830134123417">Finestre ridimensionate a sinistra</translation>
@@ -4132,6 +4138,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4550926046134589611">Alcuni link supportati saranno comunque aperti nell'app <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">I tuoi temi AI recenti</translation>
 <translation id="4551763574344810652">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per annullare</translation>
+<translation id="4552721860956824254">Audio disattivato</translation>
 <translation id="4553526521109675518">Per cambiare la lingua del dispositivo, devi riavviare il Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">È richiesta una nuova versione di questa app</translation>
 <translation id="4555769855065597957">Ombra</translation>
@@ -5079,6 +5086,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5379140238605961210">Continua a impedire l'accesso al microfono</translation>
 <translation id="5382591305415226340">Gestisci i link supportati</translation>
 <translation id="5384401776498845256">Chi può condividere con te</translation>
+<translation id="5386856927586721327">Fai domande su ciò che vedi sullo schermo con <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Modifica <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Policy aziendale modificata. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388436023007579456">Le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera, nonché i servizi di sistema, possono utilizzare la fotocamera. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
@@ -7381,6 +7389,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7396845648024431313"><ph name="APP_NAME" /> si attiverà all'avvio del sistema e continuerà a funzionare in background anche dopo la chiusura di tutte le altre finestre di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizza sincronizzazione</translation>
 <translation id="7399616692258236448">Le richieste di posizione vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
+<translation id="7399746352569282594">Chiudi visualizzazione divisa: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Controllo di sicurezza</translation>
 <translation id="7400059772197434086">non può usare le tue informazioni su</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8021,6 +8030,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7953955868932471628">Gestisci scorciatoie</translation>
 <translation id="7955105108888461311">Chiedi di persona</translation>
 <translation id="7955177647836564772">Se la funzionalità Smart Lock è attiva e il telefono è sbloccato, non è necessario inserire una password o un PIN</translation>
+<translation id="7955672267519272700">Chiudi <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Stampanti salvate</translation>
 <translation id="7956918070009672177">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Connettiti a internet e riprova.</translation>
 <translation id="7957074856830851026">Visualizzazione di informazioni del dispositivo, ad esempio numero di serie o ID asset</translation>

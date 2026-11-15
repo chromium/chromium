@@ -331,6 +331,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1256143630373008432">Échec de l'autotest</translation>
 <translation id="1257336506558170607">Exporter le certificat sélectionné</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
+<translation id="1259453023447377372">Groupe d'onglets enregistré</translation>
 <translation id="1260451001046713751">Toujours autoriser les fenêtres contextuelles et les redirections de <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Toujours autorisé à utiliser l'optimisation JavaScript</translation>
 <translation id="1262564987698748643">Les sites peuvent demander à remplacer les entrées de votre clavier</translation>
@@ -1846,6 +1847,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="261114180663074524">Connectez-vous à votre compte Microsoft, puis réessayez</translation>
 <translation id="2611885296070244383">Microphone (interne)</translation>
+<translation id="2612346259364350954">Utiliser le contenu de la page pour expliquer le texte mis en évidence</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="261305050785128654">Indiquez aux sites Web les langues que vous parlez. Le contenu s'affichera dans ces langues, lorsque c'est possible.</translation>
 <translation id="2613210758071148851">N'autoriser aucune extension sur le site <ph name="RESTRICTED_SITE" /></translation>
@@ -2149,6 +2151,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="284884486564166077">Rechercher une image avec Lentille</translation>
 <translation id="2849035674501872372">Obtenir des réponses rapides</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Plus d'options pour <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Fermé</translation>
 <translation id="2851291081585704741">Vous êtes hors ligne</translation>
 <translation id="285237063405807022">(chargement en cours…)</translation>
@@ -2220,6 +2223,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
     Message du serveur : <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Ouvrez des fichiers en format Word, Excel et PowerPoint</translation>
 <translation id="2908162660801918428">Ajouter une nouvelle médiathèque par répertoire</translation>
+<translation id="2909334296570021569">Groupe d'onglets ouvert</translation>
 <translation id="2909487040556589351">Obtenez Chrome sur votre appareil mobile</translation>
 <translation id="2910318910161511225">Connectez-vous à un réseau et réessayez</translation>
 <translation id="2910678330803525229">Vous pouvez maintenant commencer à naviguer</translation>
@@ -2386,6 +2390,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3042097545107738107">Modifier la stratégie de recharge optimisée.</translation>
 <translation id="3043016484125065343">Connectez-vous pour voir vos favoris</translation>
 <translation id="3043581297103810752">À partir de <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Options pour <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Améliorer avec l'IA</translation>
 <translation id="3045447014237878114">Ce site a automatiquement téléchargé plusieurs fichiers</translation>
 <translation id="304644035656848980">Aperçu de votre microphone</translation>
@@ -3239,6 +3244,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3748424433435232460">Un mot de passe est déjà enregistré sur cet appareil pour ce compte</translation>
 <translation id="3748466028423001972">Échanger avec l'affichage du bas</translation>
 <translation id="3748706263662799310">Signaler un bogue</translation>
+<translation id="3750406842345107892">Le contenu et l'URL de la page sur laquelle vous vous trouvez ainsi que le texte mis en évidence sont envoyés à Google pour la génération d'une explication</translation>
 <translation id="3752115502500640407">Partager une copie de votre mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Panneau latéral ouvert</translation>
 <translation id="3753585830134123417">Fenêtres redimensionnées vers la gauche</translation>
@@ -4135,6 +4141,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4550926046134589611">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Vos thèmes d'IA récents</translation>
 <translation id="4551763574344810652">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour annuler l'action</translation>
+<translation id="4552721860956824254">Son désactivé</translation>
 <translation id="4553526521109675518">Vous devez redémarrer votre Chromebook pour changer la langue de l'appareil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Une nouvelle version de cette appli est requise</translation>
 <translation id="4555769855065597957">Ombre</translation>
@@ -5081,6 +5088,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="5379140238605961210">Continuer de bloquer l'accès au microphone</translation>
 <translation id="5382591305415226340">Gérer des liens pris en charge</translation>
 <translation id="5384401776498845256">Qui peut partager avec vous</translation>
+<translation id="5386856927586721327">Posez des questions à propos de votre écran avec <ph name="LENS_ICON" />Lentille Google</translation>
 <translation id="5387116558048951800">Modifier le <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">La politique de l'entreprise a changé. Le bouton des fonctionnalités expérimentales a été ajouté à la barre d'outils. Cliquez sur ce bouton pour ouvrir une boîte de dialogue permettant d'activer des fonctionnalités expérimentales.</translation>
 <translation id="5388436023007579456">Les services système ainsi que les applications et les sites Web disposant de l'autorisation d'accéder à la caméra peuvent utiliser votre caméra. Pour utiliser la caméra, vous devrez peut-être redémarrer l'application ou actualiser la page.</translation>
@@ -7387,6 +7395,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sera lancé au démarrage du système et continuera de s'exécuter en arrière-plan, même si toutes les fenêtres de <ph name="PRODUCT_NAME" /> sont fermées.</translation>
 <translation id="7399045143794278225">Personnaliser la synchronisation</translation>
 <translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
+<translation id="7399746352569282594">Fermer l'affichage partagé : <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Vérification de sécurité</translation>
 <translation id="7400059772197434086">n'est pas autorisé à utiliser vos informations sur</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8027,6 +8036,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7953955868932471628">Gérer les raccourcis</translation>
 <translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7955177647836564772">Lorsque Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin d'entrer de mot de passe ni de NIP</translation>
+<translation id="7955672267519272700">Fermer <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7956918070009672177">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Connectez-vous à Internet et réessayez.</translation>
 <translation id="7957074856830851026">Consulter des renseignements sur l'appareil, comme son numéro de série ou son identifiant d'appareil</translation>

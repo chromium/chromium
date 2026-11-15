@@ -506,7 +506,7 @@
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
 <translation id="6181444274883918285">例外のサイトを追加</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{明日、Chrome で Cookie を再びブロックします}other{# 日後に、Chrome で Cookie を再びブロックします}}</translation>
-<translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
+<translation id="6196640612572343990">サードパーティ Cookie をブロックする</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
 <translation id="6211409961905616543">サイトにモーション センサーと光センサーの使用を許可する</translation>
 <translation id="6218508144653756827">フューシャピンクのテーマ</translation>

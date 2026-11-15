@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Не вдалося виконати самоперевірку</translation>
 <translation id="1257336506558170607">Експортувати вибраний сертифікат</translation>
 <translation id="1258491128795710625">Що нового</translation>
+<translation id="1259453023447377372">Збережена група вкладок</translation>
 <translation id="1260451001046713751">Завжди дозволяти спливаючі вікна й переспрямування з хосту <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Завжди дозволено використовувати оптимізацію JavaScript</translation>
 <translation id="1262564987698748643">Сайти можуть запитувати дозвіл на перевизначення даних, введених за допомогою клавіатури</translation>
@@ -1858,6 +1859,7 @@
 <translation id="2610780100389066815">Підписування списку довіри Microsoft</translation>
 <translation id="261114180663074524">Увійдіть в обліковий запис Microsoft і повторіть спробу</translation>
 <translation id="2611885296070244383">Мікрофон (внутрішній)</translation>
+<translation id="2612346259364350954">Використовувати контент сторінки, щоб пояснювати виділений текст</translation>
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="261305050785128654">Укажіть мови, якими ви розмовляєте. За можливості контент на вебсайтах відображатиметься цими мовами.</translation>
 <translation id="2613210758071148851">Заборонити запуск розширень на сайті <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@
 <translation id="284884486564166077">Шукайте будь-яке зображення за допомогою Об’єктива</translation>
 <translation id="2849035674501872372">Шукати</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Більше опцій для групи вкладок "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="285033512555869047">Закрито</translation>
 <translation id="2851291081585704741">Ви не в мережі</translation>
 <translation id="285237063405807022">(завантажується)</translation>
@@ -2231,6 +2234,7 @@
     Повідомлення сервера: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Відкривайте файли Word, Excel і PowerPoint</translation>
 <translation id="2908162660801918428">Додати медіа-галерею за каталогами</translation>
+<translation id="2909334296570021569">Відкрита група вкладок</translation>
 <translation id="2909487040556589351">Завантажте Chrome на мобільний пристрій</translation>
 <translation id="2910318910161511225">Під’єднайтеся до мережі й повторіть спробу</translation>
 <translation id="2910678330803525229">Тепер ви можете переглядати вебсторінки</translation>
@@ -2397,6 +2401,7 @@
 <translation id="3042097545107738107">Змінити стратегію оптимізованого заряджання.</translation>
 <translation id="3043016484125065343">Щоб переглянути закладки, увійдіть в обліковий запис</translation>
 <translation id="3043581297103810752">Джерело: <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Опції для розділу "<ph name="SECTION_NAME" />"</translation>
 <translation id="3044066905368192931">Покращити за допомогою ШІ</translation>
 <translation id="3045447014237878114">Цей сайт автоматично завантажив декілька файлів</translation>
 <translation id="304644035656848980">Попередній перегляд мікрофона</translation>
@@ -3250,6 +3255,7 @@
 <translation id="3748424433435232460">Пароль для цього облікового запису вже збережено на пристрої</translation>
 <translation id="3748466028423001972">Перемістити на нижній екран</translation>
 <translation id="3748706263662799310">Повідомити про помилку</translation>
+<translation id="3750406842345107892">Контент і URL-адреса поточної сторінки, а також виділений текст надсилаються в Google для створення пояснення</translation>
 <translation id="3752115502500640407">Поділіться копією пароля для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Відкрити бічну панель</translation>
 <translation id="3753585830134123417">Розмір вікон змінено розтягуванням ліворуч</translation>
@@ -4146,6 +4152,7 @@
 <translation id="4550926046134589611">Деякі підтримувані посилання все ще відкриватимуться в додатку <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Ваші нещодавні теми, створені ШІ</translation>
 <translation id="4551763574344810652">Щоб відмінити, натисніть <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
+<translation id="4552721860956824254">Звук вимкнено</translation>
 <translation id="4553526521109675518">Щоб змінити мову пристрою, потрібно перезапустити Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Потрібна нова версія цього додатка</translation>
 <translation id="4555769855065597957">Shadow</translation>
@@ -5092,6 +5099,7 @@
 <translation id="5379140238605961210">Продовжити блокувати доступ до мікрофона</translation>
 <translation id="5382591305415226340">Керувати підтримуваними посиланнями</translation>
 <translation id="5384401776498845256">Хто може ділитися з вами даними</translation>
+<translation id="5386856927586721327">Запитайте про вміст екрана за допомогою Google Об’єктива <ph name="LENS_ICON" /></translation>
 <translation id="5387116558048951800">Редагувати <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Корпоративне правило змінено. Кнопку експериментів додано на панель інструментів. Натисніть її, щоб відкрити вікно й увімкнути експерименти.</translation>
 <translation id="5388436023007579456">Камеру можуть використовувати додатки й вебсайти з відповідним дозволом, а також системні сервіси. Щоб використовувати камеру, можливо, потрібно буде перезапустити додаток або оновити сторінку.</translation>
@@ -7400,6 +7408,7 @@
 <translation id="7396845648024431313">Програма <ph name="APP_NAME" /> запускатиметься під час запуску системи та продовжуватиме працювати у фоновому режимі навіть після закриття всіх інших вікон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Налаштувати синхронізацію</translation>
 <translation id="7399616692258236448">Запити на доступ до геоданих автоматично заблоковано для всіх сайтів, крім тих, які ви дозволили</translation>
+<translation id="7399746352569282594">Закрити паралельний перегляд вкладок "<ph name="FIRST_TAB_TITLE" />" і "<ph name="SECOND_TAB_TITLE" />"</translation>
 <translation id="7399802613464275309">Перевірка безпеки</translation>
 <translation id="7400059772197434086">не може використовувати ваші дані на таких сайтах:</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
@@ -8040,6 +8049,7 @@
 <translation id="7953955868932471628">Керувати комбінаціями клавіш</translation>
 <translation id="7955105108888461311">Запитати особисто</translation>
 <translation id="7955177647836564772">Якщо Smart Lock увімкнено й телефон розблоковано, PIN-код або пароль вводити не потрібно</translation>
+<translation id="7955672267519272700">Закрити вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7956373551960864128">Збережені принтери</translation>
 <translation id="7956918070009672177">На вашому пристрої немає голосових файлів такою мовою: <ph name="LANGUAGE" />. Підключіться до Інтернету й повторіть спробу.</translation>
 <translation id="7957074856830851026">Переглядати інформацію з пристрою, наприклад серійний номер або ідентифікатор об'єкта</translation>

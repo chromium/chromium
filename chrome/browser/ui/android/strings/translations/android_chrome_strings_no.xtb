@@ -129,6 +129,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1460751212339734034">Spar tid – skriv mindre</translation>
 <translation id="146522654774760805">Passord og autofyll</translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
+<translation id="1473344277210704336">Gemini og det viktigste på den nye verktøylinjen nederst</translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
 <translation id="147982357559798527">Endret</translation>
 <translation id="1480287803138246127">Det kan hende at deler av loggen din ikke vises her. For å se hele Chrome-loggen din, åpne hele Chrome-loggen.</translation>
@@ -907,6 +908,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4537987892902330164">Du forble pålogget som <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Hurtigtaster for nettsider</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-abonnement.</translation>
 <translation id="4572422548854449519">Logg på en administrert konto</translation>
 <translation id="4577115723294378384">Sorter fra A til Å</translation>
 <translation id="4578289292431526768">Sett i gang</translation>
@@ -914,6 +916,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4585751637295612750">Åpne en ny fane for å legge den til i spørsmålet ditt</translation>
 <translation id="4585793705637313973">Endre siden</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
+<translation id="4587590257937792551">Chrome har en ny, praktisk verktøylinje nederst. Du kan når som helst bytte tilbake i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Denne siden uten nett er fra <ph name="CREATION_TIME" /> og kan avvike fra nettversjonen.</translation>
 <translation id="4595237294768457124">Åpne en Ny fane-side</translation>
 <translation id="4595276580892809760">Legg ved bilder fra galleriet</translation>
@@ -1448,6 +1451,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6633067410344541938">Lås opp inkognitomodus</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
 <translation id="6637100877383020115">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Det viktigste – rett på verktøylinjen nederst. Du kan når som helst bytte tilbake i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Fest faner</translation>
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
@@ -1646,6 +1650,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt festet delingsfane</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
+<translation id="7324177883197548771">Chrome har et nytt, praktisk utseende. Du kan når som helst bytte tilbake i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
 <translation id="7333041109965360609">Du har meldt deg av varsler</translation>
 <translation id="7335766481146072567">Trykk på Fortsett</translation>
@@ -1748,6 +1753,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7697383401610880082">Håndtak</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Feltet nederst for nylig aktivitet er åpnet i full høyde</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-abonnement.</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
 <translation id="7708994397325774423">Hent alle passordene dine</translation>
 <translation id="7714077993070342304">Åpne Chrome-menyen</translation>

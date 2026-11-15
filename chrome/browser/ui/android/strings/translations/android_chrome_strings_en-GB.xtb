@@ -129,6 +129,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1460751212339734034">Save time, type less</translation>
 <translation id="146522654774760805">Passwords and autofill</translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
+<translation id="1473344277210704336">Gemini and your essentials on the new bottom toolbar</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="147982357559798527">Changed</translation>
 <translation id="1480287803138246127">Some of your history might not show up here. To see all your Chrome history, open full Chrome history.</translation>
@@ -907,6 +908,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4537987892902330164">You stayed signed in as <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Web page shortcuts</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> membership.</translation>
 <translation id="4572422548854449519">Sign in to managed account</translation>
 <translation id="4577115723294378384">Sort by A to Z</translation>
 <translation id="4578289292431526768">Let’s go</translation>
@@ -914,6 +916,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4585751637295612750">Open a new tab to add it to your question</translation>
 <translation id="4585793705637313973">Edit page</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4587590257937792551">Chrome has a new bottom toolbar, built for convenience. You can switch back at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4595237294768457124">Open a New tab page</translation>
 <translation id="4595276580892809760">Attach images from gallery</translation>
@@ -1448,6 +1451,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6633067410344541938">Unlock Incognito</translation>
 <translation id="6636623428211296678">Explore more settings below or finish now</translation>
 <translation id="6637100877383020115">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Your essentials, right on the bottom toolbar. You can switch back at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Attach tabs</translation>
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
@@ -1646,6 +1650,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, selected pinned sharing tab</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7314734791127433392">Can't check passwords</translation>
+<translation id="7324177883197548771">Chrome has a new look, built for convenience. You can switch back at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
 <translation id="7335766481146072567">Press continue</translation>
@@ -1748,6 +1753,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7697383401610880082">Drag handle</translation>
 <translation id="7698359219371678927">Create email in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Recent activity bottom sheet opened at full height</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> membership.</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7708994397325774423">Get all your passwords</translation>
 <translation id="7714077993070342304">Open Chrome menu</translation>

@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">ස්වයං පරීක්ෂණය අසමත් විය</translation>
 <translation id="1257336506558170607">තෝරාගත් සහතිකය නිර්යාත කරන්න</translation>
 <translation id="1258491128795710625">අලුත් මොනවාද</translation>
+<translation id="1259453023447377372">සුරැකි ටැබ සමූහය</translation>
 <translation id="1260451001046713751">සැමවිටම <ph name="HOST" /> වෙතින් උත්පතන සහ හරවා යැවීමට ඉඩ දෙන්න</translation>
 <translation id="1262395978737369974">JavaScript ප්‍රශස්තිකරණය භාවිත කිරීමට සැමවිටම අවසර ඇත</translation>
 <translation id="1262564987698748643">අඩවි ඔබේ යතුරු පුවරු ආදානය අභිබවා යාමට ඉල්ලිය හැක</translation>
@@ -1848,6 +1849,7 @@
 <translation id="2610780100389066815">Microsoft විශ්වාසදායී ලැයිස්තු ප්‍රවිෂ්ටය</translation>
 <translation id="261114180663074524">ඔබේ Microsoft ගිණුමට පුරනය වී නැවත උත්සාහ කරන්න</translation>
 <translation id="2611885296070244383">මයික්‍රෆෝනය (අභ්‍යන්තර)</translation>
+<translation id="2612346259364350954">උද්දීපනය කළ පෙළ පැහැදිලි කිරීමට පිටු අන්තර්ගතය භාවිතා කරන්න</translation>
 <translation id="2612676031748830579">කාඩ්පත් අංකය</translation>
 <translation id="261305050785128654">ඔබ කතා කරන භාෂා වෙබ් අඩවිවලට දැන ගැනීමට සලස්වන්න. ඔවුන් හැකි විට, එම භාෂාවලින් අන්තර්ගත පෙන්වයි.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> හි කිසිදු දිගුවකට ඉඩ නොදෙන්න</translation>
@@ -2150,6 +2152,7 @@
 <translation id="284884486564166077">Lens සමග ඕනෑම රූපයක් සොයන්න</translation>
 <translation id="2849035674501872372">සොයන්න</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> සඳහා තව විකල්ප</translation>
 <translation id="285033512555869047">වසා ඇත</translation>
 <translation id="2851291081585704741">ඔබ නොබැඳි වේ</translation>
 <translation id="285237063405807022">(පූරණ කෙරේ)</translation>
@@ -2221,6 +2224,7 @@
     සේවාදායක පණිවිඩය: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel සහ PowerPoint ගොනු විවෘත කරන්න</translation>
 <translation id="2908162660801918428">නාමාවලිය අනුව මාධ්‍ය ගැලරිය වෙත යන්න</translation>
+<translation id="2909334296570021569">ටැබ සමූහය විවෘත කරන්න</translation>
 <translation id="2909487040556589351">ඔබේ ජංගම උපාංගය මත Chrome ලබා ගන්න</translation>
 <translation id="2910318910161511225">ජාලයකට සම්බන්ධ කර නැවත උත්සාහ කරන්න</translation>
 <translation id="2910678330803525229">දැන් ඔබට බ්‍රවුස් කිරීම ආරම්භ කළ හැක</translation>
@@ -2387,6 +2391,7 @@
 <translation id="3042097545107738107">ප්‍රශස්ත ආරෝපණ උපාය මාර්ගය වෙනස් කරන්න.</translation>
 <translation id="3043016484125065343">ඔබේ පිටුසන් බැලීමට පුරන්න</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> වෙතින්</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> සඳහා විකල්ප</translation>
 <translation id="3044066905368192931">AI සමග ඉහළ නංවන්න</translation>
 <translation id="3045447014237878114">මෙම අඩවිය විසින් ගොනු කිහිපයක් ස්වයංක්‍රීයව බාගැනිණි</translation>
 <translation id="304644035656848980">ඔබේ මයික්‍රෆෝනයෙහි පෙරදසුන</translation>
@@ -3238,6 +3243,7 @@
 <translation id="3748424433435232460">මෙම ගිණුම සඳහා මුරපදයක් දැනටමත් මෙම උපාංගයෙහි සුරැක ඇත</translation>
 <translation id="3748466028423001972">පහළ දසුන සමඟ හුවමාරු කරන්න</translation>
 <translation id="3748706263662799310">දෝෂයක් වාර්තා කරන්න</translation>
+<translation id="3750406842345107892">ඔබ සිටින පිටුවේ අන්තර්ගතය සහ URL සහ උද්දීපනය කළ පෙළ, පැහැදිලි කිරීමක් ජනනය කිරීම සඳහා Google වෙත යවනු ලැබේ</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> සඳහා ඔබේ මුරපදයේ පිටපතක් බෙදා ගන්න</translation>
 <translation id="3753412199586870466">පැති පැනලය විවෘත කරන්න</translation>
 <translation id="3753585830134123417">වමට ප්‍රතිප්‍රමාණ කළ කවුළු</translation>
@@ -4134,6 +4140,7 @@
 <translation id="4550926046134589611">සමහර සහාය දක්වන සබැඳි තවම <ph name="APP_NAME" /> තුළ විවෘතව තිබෙනු ඇත.</translation>
 <translation id="4551379727767354516">ඔබේ මෑත කාලීන AI තේමා</translation>
 <translation id="4551763574344810652">අස් කිරීමට <ph name="MODIFIER_KEY_DESCRIPTION" /> ඔබන්න</translation>
+<translation id="4552721860956824254">ශ්‍රව්‍ය නිහඬ කර ඇත</translation>
 <translation id="4553526521109675518">උපාංග භාෂාව වෙනස් කිරීමට ඔබ ඔබේ Chromebook යළි ඇරඹීමට අවශ්‍යයි. <ph name="BEGIN_LINK_LEARN_MORE" />තවත් දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">මෙම යෙදුමේ නව අනුවාදයක් අවශ්‍යයි</translation>
 <translation id="4555769855065597957">ඡායාව</translation>
@@ -5081,6 +5088,7 @@
 <translation id="5379140238605961210">මයික්‍රොෆෝන ප්‍රවේශය අවහිර කිරීම ඉදිරියටත් කරන්න</translation>
 <translation id="5382591305415226340">සහාය දක්වන සබැඳි කළමනාකරණය කරන්න</translation>
 <translation id="5384401776498845256">ඔබ සමග බෙදා ගත හැකි අය</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google Lens සමග ඔබේ තිරය ගැන විමසන්න</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> සංස්කරණය</translation>
 <translation id="538822246583124912">ව්‍යවසාය ප්‍රතිපත්තිය වෙනස් විය. මෙවලම් තීරුවට අත්හදා බැලීම් බොත්තම එක් කරන ලදි. අත්හදා බැලීම් සබල කිරීම සඳහා සංවාදයක් විවෘත කිරීමට බොත්තම ක්ලික් කරන්න.</translation>
 <translation id="5388436023007579456">කැමරා අවසරය ඇති යෙදුම් සහ වෙබ් අඩවිවලට මෙන්ම පද්ධති සේවාවලට ඔබේ කැමරාව භාවිත කළ හැකි ය. කැමරාව භාවිතය සඳහා, ඔබට යෙදුම යළි ඇරඹීමට හෝ පිටුව නැවුම් කිරීමට අවශ්‍ය විය හැකි ය.</translation>
@@ -7386,6 +7394,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> පද්ධති ඇරඹුමෙහිදී දියත්ව ඔබ අනෙකුත් සියලු <ph name="PRODUCT_NAME" /> කවුළු වැසූ පසුව පවා පසුබිමින් දිගටම ධාවනය වනු ඇත.</translation>
 <translation id="7399045143794278225">සමමුහූර්තය අභිරුචි කරන්න</translation>
 <translation id="7399616692258236448">ඔබ ඉඩ දෙන ඒවා හැර අනෙකුත් සියලු ම අඩවි සඳහා ස්ථාන ඉල්ලීම් ස්වයංක්‍රීයව අවහිර වේ</translation>
+<translation id="7399746352569282594">බෙදීම් දසුන වසන්න: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">ආරක්ෂක පරීක්ෂාව</translation>
 <translation id="7400059772197434086">මෙහි ඇති ඔබේ තොරතුරු භාවිත කිරීමෙන් අවහිර කරනු ලබයි</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8026,6 +8035,7 @@
 <translation id="7953955868932471628">කෙටිමං පාලනය</translation>
 <translation id="7955105108888461311">පුද්ගලිකව විමසන්න</translation>
 <translation id="7955177647836564772">Smart Lock ක්‍රියාත්මක කර ඔබේ දුරකථනය අගුළු හැර තිබේ නම්, ඔබට මුරපදයක් හෝ PIN අංකයක් ඇතුළු කිරීමට අවශ්‍ය නොවේ</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> වසන්න</translation>
 <translation id="7956373551960864128">ඔබේ සුරැකි මුද්‍රක</translation>
 <translation id="7956918070009672177">ඔබේ උපාංගය මත <ph name="LANGUAGE" /> හඬ කිසිවක් නැත. අන්තර්ජාලයට සබැඳී නැවත උත්සාහ කරන්න.</translation>
 <translation id="7957074856830851026">එහි අනුක්‍රමික අංකය හෝ වත්කම් ID යනාදි උපාංග තොරතුරු බලන්න</translation>

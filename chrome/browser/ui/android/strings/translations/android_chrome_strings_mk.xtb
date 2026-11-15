@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Штедете време, пишувајте помалку</translation>
 <translation id="146522654774760805">Лозинки и „Автоматско пополнување“</translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
+<translation id="1473344277210704336">Gemini и вашите неопходни нешта на новиот долен алатник</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="147982357559798527">Променето</translation>
 <translation id="1480287803138246127">Дел од вашата историја можеби нема да се појави тука. За да ја видите сета ваша историја на Chrome, отворете ја целата историја на Chrome.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">Останавте најавени како <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4558311620361989323">Кратенки на веб-страница</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Членство на <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Најавете се на управувана сметка</translation>
 <translation id="4577115723294378384">Подредување од А до Ш</translation>
 <translation id="4578289292431526768">Ајде</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">Отворете нова картичка за да ја додадете во вашето прашање</translation>
 <translation id="4585793705637313973">Уредете ја страницата</translation>
 <translation id="4587589328781138893">Сајтови</translation>
+<translation id="4587590257937792551">Chrome има нов долен алатник, создаден за погодност. Може да се вратите на претходниот изглед во секое време во <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
 <translation id="4595237294768457124">Отворете страница во нова картичка</translation>
 <translation id="4595276580892809760">Приложете слики од галеријата</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">Отклучете го режимот „Инкогнито“</translation>
 <translation id="6636623428211296678">Истражете други поставки долу или завршете сега</translation>
 <translation id="6637100877383020115">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Вашите неопходни нешта, директно на долниот алатник. Може да се вратите на претходниот изглед во секое време во <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Приложете картички</translation>
 <translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, избрана прикачена картичка за споделување</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
 <translation id="7314734791127433392">Не може да се проверат лозинките</translation>
+<translation id="7324177883197548771">Chrome има нов изглед, создаден за погодност. Може да се вратите на претходниот изглед во секое време во <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Испраќање барање „Do Not Track“</translation>
 <translation id="7333041109965360609">Се отпишавте од добивањето известувања</translation>
 <translation id="7335766481146072567">Притиснете „Продолжи“</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">Рачка за влечење</translation>
 <translation id="7698359219371678927">Создајте е-пошта во <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Долниот лист на неодамнешната активност е отворен на цел екран</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Членство на <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7708994397325774423">Добијте ги сите ваши лозинки</translation>
 <translation id="7714077993070342304">Отвори го менито на Chrome</translation>

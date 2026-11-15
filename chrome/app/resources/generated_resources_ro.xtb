@@ -331,6 +331,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1256143630373008432">Autotestul nu a reușit.</translation>
 <translation id="1257336506558170607">Exportă certificatul selectat</translation>
 <translation id="1258491128795710625">Noutăți</translation>
+<translation id="1259453023447377372">Grup de file salvat</translation>
 <translation id="1260451001046713751">Permite întotdeauna afișarea ferestrelor pop-up și redirecționărilor de la <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Au permisiunea de a folosi întotdeauna optimizarea JavaScript</translation>
 <translation id="1262564987698748643">Site-urile pot solicita permisiunea de a modifica intrările de la tastatură</translation>
@@ -1845,6 +1846,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2610780100389066815">Semnarea listei de încredere Microsoft</translation>
 <translation id="261114180663074524">Conectează-te la contul Microsoft și încearcă din nou</translation>
 <translation id="2611885296070244383">Microfon (intern)</translation>
+<translation id="2612346259364350954">Folosește conținutul paginii pentru a explica textul evidențiat</translation>
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="261305050785128654">Permite site-urilor să afle limbile pe care le vorbești. Acestea vor afișa conținutul în limbile respective, dacă este posibil.</translation>
 <translation id="2613210758071148851">Nu permite extensii pe <ph name="RESTRICTED_SITE" /></translation>
@@ -2147,6 +2149,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="284884486564166077">Caută orice imagine cu Lens</translation>
 <translation id="2849035674501872372">Ridică privirea</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Mai multe opțiuni pentru <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Închis</translation>
 <translation id="2851291081585704741">Ești offline</translation>
 <translation id="285237063405807022">(se încarcă)</translation>
@@ -2218,6 +2221,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Deschide fișiere Word, Excel și PowerPoint</translation>
 <translation id="2908162660801918428">Adăugați galeria media după directoare</translation>
+<translation id="2909334296570021569">Deschide grupul de file</translation>
 <translation id="2909487040556589351">Descarcă Chrome pe dispozitivul mobil</translation>
 <translation id="2910318910161511225">Conectează-te la o rețea și încearcă din nou</translation>
 <translation id="2910678330803525229">Acum poți să navighezi</translation>
@@ -2384,6 +2388,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3042097545107738107">Schimbă strategia de încărcare optimizată.</translation>
 <translation id="3043016484125065343">Conectează-te pentru a vedea marcajele</translation>
 <translation id="3043581297103810752">De la <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opțiuni pentru <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Optimizează cu AI</translation>
 <translation id="3045447014237878114">Acest site a descărcat automat mai multe fișiere</translation>
 <translation id="304644035656848980">Previzualizarea microfonului</translation>
@@ -3236,6 +3241,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">O parolă pentru acest cont este deja salvată pe dispozitiv</translation>
 <translation id="3748466028423001972">Schimbă cu afișarea de jos</translation>
 <translation id="3748706263662799310">Raportați o eroare</translation>
+<translation id="3750406842345107892">Conținutul și adresa URL a paginii pe care te afli și textul evidențiat sunt trimise la Google pentru a genera o explicație</translation>
 <translation id="3752115502500640407">Trimite o copie a parolei pentru <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Deschide panoul lateral</translation>
 <translation id="3753585830134123417">Ferestrele au fost redimensionate în partea stângă</translation>
@@ -4132,6 +4138,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4550926046134589611">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Teme recente create cu AI</translation>
 <translation id="4551763574344810652">Apasă pe <ph name="MODIFIER_KEY_DESCRIPTION" /> pentru a anula</translation>
+<translation id="4552721860956824254">Sunet dezactivat</translation>
 <translation id="4553526521109675518">Trebuie să repornești Chromebookul pentru a schimba limba dispozitivului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Este necesară o nouă versiune a acestei aplicații</translation>
 <translation id="4555769855065597957">Umbră</translation>
@@ -5078,6 +5085,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5379140238605961210">Blocați în continuare accesul la microfon</translation>
 <translation id="5382591305415226340">Gestionează linkurile acceptate</translation>
 <translation id="5384401776498845256">Cine îți poate trimite fișiere</translation>
+<translation id="5386856927586721327">Întreabă despre ecran cu <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Editează <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Politica de companie a fost modificată. Butonul Experimente a fost adăugat în bara de instrumente. Dă clic pe buton pentru a deschide o casetă de dialog ca să activezi experimente.</translation>
 <translation id="5388436023007579456">Aplicațiile și site-urile care au permisiunea pentru camera foto, precum și serviciile de sistem, pot folosi camera foto. Pentru a folosi camera foto, poate fi necesar să repornești aplicația sau să actualizezi pagina.</translation>
@@ -7385,6 +7393,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7396845648024431313"><ph name="APP_NAME" /> se va lansa la pornirea sistemului și va continua să ruleze în fundal, chiar după ce ai închis toate celelalte ferestre ale <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizează sincronizarea</translation>
 <translation id="7399616692258236448">Solicitările de localizare sunt blocate automat pentru toate site-urile, cu excepția celor pe care le permiți</translation>
+<translation id="7399746352569282594">Închide afișarea împărțită: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Verificare de siguranță</translation>
 <translation id="7400059772197434086">nu are permisiunea de a folosi informațiile tale pe</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
@@ -8025,6 +8034,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7953955868932471628">Gestionați comenzile rapide</translation>
 <translation id="7955105108888461311">Întreabă în persoană</translation>
 <translation id="7955177647836564772">Dacă Smart Lock este activat și telefonul este deblocat, nu este nevoie să introduci parola sau codul PIN</translation>
+<translation id="7955672267519272700">Închide <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7956918070009672177">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>

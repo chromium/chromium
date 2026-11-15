@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">પોતાનું પરીક્ષણ નિષ્ફળ થયું</translation>
 <translation id="1257336506558170607">પસંદ કરેલા પ્રમાણપત્રની નિકાસ કરો</translation>
 <translation id="1258491128795710625">નવું શું છે</translation>
+<translation id="1259453023447377372">સાચવેલું ટૅબનું ગ્રૂપ</translation>
 <translation id="1260451001046713751"><ph name="HOST" />ના પૉપ-અપ અને રીડાયરેક્ટને હંમેશાં મંજૂરી આપો</translation>
 <translation id="1262395978737369974">JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરવાની હંમેશાં માટે મંજૂરી આપી છે</translation>
 <translation id="1262564987698748643">સાઇટ તમારા કીબોર્ડ ઇનપુટને ઓવરરાઇડ કરવા માટે કહી શકે છે</translation>
@@ -1846,6 +1847,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">તમારા Microsoft એકાઉન્ટમાં સાઇન ઇન કરો અને પછી ફરી પ્રયાસ કરો</translation>
 <translation id="2611885296070244383">માઇક (આંતરિક)</translation>
+<translation id="2612346259364350954">હાઇલાઇટ કરેલી ટેક્સ્ટ સમજાવવા માટે પેજના કન્ટેન્ટનો ઉપયોગ કરો</translation>
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
 <translation id="261305050785128654">તમે જે ભાષાઓ બોલો છો તે વેબસાઇટને જણાવો. જ્યારે શક્ય હશે ત્યારે તેઓ તે ભાષાઓમાં કન્ટેન્ટ બતાવશે.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> પર એક્સ્ટેન્શનને મંજૂરી આપશો નહીં</translation>
@@ -2148,6 +2150,7 @@
 <translation id="284884486564166077">Lens વડે કોઈપણ છબી શોધો</translation>
 <translation id="2849035674501872372">શોધો</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> માટે વધુ વિકલ્પો</translation>
 <translation id="285033512555869047">બંધ</translation>
 <translation id="2851291081585704741">તમે ઑફલાઇન છો</translation>
 <translation id="285237063405807022">(લોડ કરી રહ્યાં છીએ)</translation>
@@ -2219,6 +2222,7 @@
     સર્વર મેસેજ: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel અને PowerPointની ફાઇલો ખોલો</translation>
 <translation id="2908162660801918428">ડિરેક્ટરી દ્વારા મીડિયા ગૅલરી ઉમેરો</translation>
+<translation id="2909334296570021569">ટૅબનું ગ્રૂપ ખોલો</translation>
 <translation id="2909487040556589351">તમારા મોબાઇલ ડિવાઇસ પર Chrome મેળવો</translation>
 <translation id="2910318910161511225">નેટવર્કથી કનેક્ટ કરો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="2910678330803525229">હવે તમે બ્રાઉઝ કરવાનું શરૂ કરી શકો છો</translation>
@@ -2385,6 +2389,7 @@
 <translation id="3042097545107738107">ચાર્જિંગની ઑપ્ટિમાઇઝ કરેલી વ્યૂહરચના બદલો.</translation>
 <translation id="3043016484125065343">તમારા બુકમાર્ક જોવા માટે સાઇન ઇન કરો</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />માંથી</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> માટેના વિકલ્પો</translation>
 <translation id="3044066905368192931">AI વડે બહેતર બનાવો</translation>
 <translation id="3045447014237878114">આ સાઇટે એકથી વધુ ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરી છે</translation>
 <translation id="304644035656848980">તમારા માઇક્રોફોનનો પ્રીવ્યૂ</translation>
@@ -3238,6 +3243,7 @@
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748466028423001972">નીચેની બાજુના વ્યૂ સાથે સ્વૉપ કરો</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
+<translation id="3750406842345107892">સ્પષ્ટતા જનરેટ કરવા માટે, તમે જે પેજ પર છો તેનું કન્ટેન્ટ અને URL તથા હાઇલાઇટ કરેલી ટેક્સ્ટ Googleને મોકલવામાં આવે છે</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> માટે તમારા પાસવર્ડની એક કૉપિ શેર કરો</translation>
 <translation id="3753412199586870466">બાજુની પૅનલ ખોલો</translation>
 <translation id="3753585830134123417">વિન્ડોનું કદ ડાબી બાજુ બદલવામાં આવ્યું</translation>
@@ -4134,6 +4140,7 @@
 <translation id="4550926046134589611">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />માં ખૂલશે.</translation>
 <translation id="4551379727767354516">તમારી તાજેતરની AI થીમ</translation>
 <translation id="4551763574344810652">છેલ્લો ફેરફાર રદ કરવા માટે <ph name="MODIFIER_KEY_DESCRIPTION" /> દબાવો</translation>
+<translation id="4552721860956824254">ઑડિયો મ્યૂટ કર્યો</translation>
 <translation id="4553526521109675518">ડિવાઇસની ભાષા બદલવા માટે તમારે તમારું Chromebook ફરી ચાલુ કરવું જરૂરી છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">આ ઍપનું કોઈ નવું વર્ઝન આવશ્યક છે</translation>
 <translation id="4555769855065597957">શેડો</translation>
@@ -5082,6 +5089,7 @@
 <translation id="5379140238605961210">માઇક્રોફોનની ઍક્સેસને અવરોધિત કરવાનું ચાલુ રાખો</translation>
 <translation id="5382591305415226340">સમર્થિત લિંકને મેનેજ કરો</translation>
 <translation id="5384401776498845256">તમારી સાથે કોણ શેર કરી શકે</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google Lens વડે તમારી સ્ક્રીન વિશે પૂછો</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />માં ફેરફાર કરો</translation>
 <translation id="538822246583124912">એન્ટરપ્રાઇઝ પૉલિસી બદલાઈ ગઈ છે. ટૂલબારમાં પ્રયોગોનું બટન ઉમેરવામાં આવ્યું છે. પ્રયોગો ચાલુ કરવા માટે બટન પર ક્લિક કરીને સંવાદ ખોલો.</translation>
 <translation id="5388436023007579456">કૅમેરાની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટ તેમજ સિસ્ટમ સર્વિસ, તમારા કૅમેરાનો ઉપયોગ કરી શકે છે. કૅમેરાનો ઉપયોગ કરવા માટે, તમારે ઍપને ફરી શરુ કરવાની અથવા પેજને રિફ્રેશ કરવાની જરૂર પડી શકે છે.</translation>
@@ -7391,6 +7399,7 @@ USB ડિવાઇસ</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> સિસ્ટમ શરૂ થવા પર લૉન્ચ થશે અને તમે બાકી તમામ <ph name="PRODUCT_NAME" /> વીડિયો બંધ કરી દેશો તે પછી પણ તે બૅકગ્રાઉન્ડમાં ચાલુ રહે છે.</translation>
 <translation id="7399045143794278225">સિંકની સુવિધા કસ્ટમાઇઝ કરો</translation>
 <translation id="7399616692258236448">તમે મંજૂરી આપો છો તે સિવાયની બધી સાઇટ માટે લોકેશનની વિનંતીઓને ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવે છે</translation>
+<translation id="7399746352569282594">વિભાજિત વ્યૂ બંધ કરો: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">સલામતી માટે તપાસ</translation>
 <translation id="7400059772197434086">ને તમારી માહિતીનો ઉપયોગ આના પર કરવાથી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8031,6 +8040,7 @@ USB ડિવાઇસ</translation>
 <translation id="7953955868932471628">શૉર્ટકટ્સનું સંચાલન કરો</translation>
 <translation id="7955105108888461311">રૂબરૂ પૂછો</translation>
 <translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> બંધ કરો</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
 <translation id="7956918070009672177">તમારા ડિવાઇસમાં કોઈ <ph name="LANGUAGE" /> વૉઇસ નથી. ઇન્ટરનેટ સાથે કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>

@@ -520,7 +520,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6173308241973263798">Borra los datos de Chromium de tu cuenta</translation>
 <translation id="6174920971222007286">Este archivo puede ser peligroso<ph name="LINE_BREAK" />Chromium puede revisar esta descarga por ti si proporcionas la contraseña. La información sobre el archivo se envía a la Navegación segura de Google, pero el contenido del archivo y la contraseña permanecen en tu dispositivo.</translation>
-<translation id="6177442314419606057">Buscar en Chrome</translation>
+<translation id="6177442314419606057">Búsqueda en Chrome</translation>
 <translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
 <translation id="6183079672144801177">Asegúrate de haber accedido a Chromium en tu <ph name="TARGET_DEVICE_NAME" /> y, luego, intenta enviarlo de nuevo.</translation>
 <translation id="6192070012454216182">Realiza búsquedas y haz preguntas desde cualquier lugar, incluso si Chromium está minimizado. Permite que Chromium se ejecute en segundo plano.</translation>
@@ -624,7 +624,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
             • Se restablecerán los accesos directos de Chromium.
             <ph name="LINE_BREAKS" />
             Esta acción no afectará los favoritos, el historial ni las contraseñas guardadas.</translation>
-<translation id="6930607614725241390">Buscar en el panel lateral</translation>
+<translation id="6930607614725241390">Búsqueda en el panel lateral</translation>
 <translation id="6948031725951063910">Alcanzaste el límite de <ph name="BOOKMARK_LIMIT" /> favoritos de Chromium, por lo que aún no se guardaron algunos de tus favoritos en tu Cuenta de Google.
 
 No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>

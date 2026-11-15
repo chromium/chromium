@@ -129,6 +129,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1460751212339734034">Takarítson meg időt, gépeljen kevesebbet</translation>
 <translation id="146522654774760805">Jelszavak és automatikus kitöltés</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
+<translation id="1473344277210704336">A Gemini és a legfontosabb dolgok az új alsó eszköztáron</translation>
 <translation id="1477626028522505441">A következő fájl letöltése szerverproblémák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="147982357559798527">Módosítva</translation>
 <translation id="1480287803138246127">Előfordulhat, hogy az előzményeinek egy része nem jelenik meg itt. Az összes Chrome-előzmény megtekintéséhez nyissa meg a teljes Chrome-előzményeket.</translation>
@@ -907,6 +908,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4537987892902330164">A(z) <ph name="NAME_OR_EMAIL" /> fiókkal maradt bejelentkezve.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_COUNT_MANY" /> lap, <ph name="TAB_COUNT_INCOGNITO" /> inkognitó módban}}</translation>
 <translation id="4558311620361989323">Weboldalakkal kapcsolatos billentyűparancsok</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-tagság.</translation>
 <translation id="4572422548854449519">Bejelentkezés a kezelt fiókba</translation>
 <translation id="4577115723294378384">Rendezés A-tól Z-ig</translation>
 <translation id="4578289292431526768">Indítás</translation>
@@ -914,6 +916,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4585751637295612750">Új lap megnyitása a kérdéshez való hozzáadáshoz</translation>
 <translation id="4585793705637313973">Oldal szerkesztése</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
+<translation id="4587590257937792551">A Chrome új alsó eszköztára a kényelmet szolgálja. A <ph name="BEGIN_LINK" />beállításokban<ph name="END_LINK" /> bármikor visszaválthat.</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
 <translation id="4595237294768457124">Nyisson meg egy Új lap oldalt.</translation>
 <translation id="4595276580892809760">Képek csatolása a galériából</translation>
@@ -1448,6 +1451,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6633067410344541938">Inkognitó lapok zárolásának feloldása</translation>
 <translation id="6636623428211296678">Felfedezheti alább a többi beállítást, vagy befejezheti most az áttekintést</translation>
 <translation id="6637100877383020115">Az alkalmazás továbbfejlesztése érdekében a Chrome használati és hibaadatokat küld a Google-nak. <ph name="BEGIN_UMA_LINK" />Kezelés<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">A legfontosabb dolgok, közvetlenül az alsó eszköztáron. A <ph name="BEGIN_LINK" />beállításokban<ph name="END_LINK" /> bármikor visszaválthat.</translation>
 <translation id="6642299196749785472">Lapok csatolása</translation>
 <translation id="6647441008198474441">Az Ön által felkeresett URL-ek el lesznek küldve a Google-nak, hogy előrejelezzük, mely webhelyeket fogja esetleg legközelebb felkeresni.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1646,6 +1650,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, kiválasztott rögzített, tartalmat megosztó lap</translation>
 <translation id="7311244614769792472">Nincs találat</translation>
 <translation id="7314734791127433392">Nem lehet ellenőrizni a jelszavakat</translation>
+<translation id="7324177883197548771">A Chrome új megjelenése a kényelmet szolgálja. A <ph name="BEGIN_LINK" />beállításokban<ph name="END_LINK" /> bármikor visszaválthat.</translation>
 <translation id="7324354302972299151">„Nincs nyomon követés” kérés küldése</translation>
 <translation id="7333041109965360609">Leiratkozott az értesítésekről</translation>
 <translation id="7335766481146072567">Válassza a Tovább gombot.</translation>
@@ -1748,6 +1753,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7697383401610880082">Fogópont</translation>
 <translation id="7698359219371678927">E-mail létrehozása a(z) <ph name="APP_NAME" /> alkalmazásban</translation>
 <translation id="7702420606070050505">A legutóbbi tevékenységek alsó lapja teljes magasságban megnyitva</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-tagság.</translation>
 <translation id="7707922173985738739">Mobiladat-kapcsolat használata</translation>
 <translation id="7708994397325774423">Az összes jelszó lekérése</translation>
 <translation id="7714077993070342304">Chrome-menü megnyitása</translation>

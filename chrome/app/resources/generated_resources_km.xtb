@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">ការធ្វើតេស្ត​ដោយខ្លួនឯង​មិនបាន​សម្រេចទេ</translation>
 <translation id="1257336506558170607">នាំចេញ​វិញ្ញាបនបត្រ​ដែលបានជ្រើសរើស</translation>
 <translation id="1258491128795710625">អ្វីដែលថ្មី</translation>
+<translation id="1259453023447377372">ក្រុមផ្ទាំង​ដែលបាន​រក្សាទុក</translation>
 <translation id="1260451001046713751">អនុញ្ញាតផ្ទាំងផុស និង​ការបញ្ជូនបន្ត​ពី <ph name="HOST" /> ជានិច្ច</translation>
 <translation id="1262395978737369974">អនុញ្ញាត​ឱ្យប្រើ​ការបង្កើន​ប្រសិទ្ធភាព JavaScript ជានិច្ច</translation>
 <translation id="1262564987698748643">គេហទំព័រអាចស្នើសុំលុបពីលើការបញ្ចូលពីក្ដារចុចរបស់អ្នក</translation>
@@ -1858,6 +1859,7 @@
 <translation id="2610780100389066815">ការចុះហត្ថលេខាបញ្ជីទុកចិត្ត Microsoft</translation>
 <translation id="261114180663074524">ចូលគណនី Microsoft របស់អ្នក រួចព្យាយាមម្ដងទៀត</translation>
 <translation id="2611885296070244383">មីក្រូហ្វូន (ខាងក្នុង)</translation>
+<translation id="2612346259364350954">ប្រើ​ខ្លឹមសារ​ទំព័រ ដើម្បី​ពន្យល់​អំពី​អក្សរ​ដែលបាន​រំលេច</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
 <translation id="261305050785128654">ប្រាប់ឱ្យគេហទំព័រ​ដឹងអំពីភាសា​ដែលអ្នក​និយាយ។ គេហទំព័រ​ទាំងនោះ​នឹងបង្ហាញ​ខ្លឹមសារ​ជាភាសា​ទាំងនោះ នៅពេល​ដែលអាច។</translation>
 <translation id="2613210758071148851">កុំអនុញ្ញាតកម្មវិធីបន្ថែមនៅលើ <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@
 <translation id="284884486564166077">ស្វែងរករូបភាពណាមួយដោយប្រើ Lens</translation>
 <translation id="2849035674501872372">រកមើល</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">ជម្រើស​ច្រើន​ទៀត​សម្រាប់ <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">បិទ</translation>
 <translation id="2851291081585704741">អ្នកគ្មាន​អ៊ីនធឺណិត​ទេ</translation>
 <translation id="285237063405807022">(កំពុង​ផ្ទុក)</translation>
@@ -2231,6 +2234,7 @@
     សារពីម៉ាស៊ីនមេ៖ <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">បើកឯកសារ Word, Excel និង PowerPoint</translation>
 <translation id="2908162660801918428">បន្ថែមវិចិត្រសាលកំសាន្តតាមថតឯកសារ</translation>
+<translation id="2909334296570021569">បើក​ក្រុមផ្ទាំង</translation>
 <translation id="2909487040556589351">ទាញយក Chrome នៅលើ​ឧបករណ៍​ចល័ត​របស់អ្នក</translation>
 <translation id="2910318910161511225">សូមភ្ជាប់​បណ្តាញ រួច​ព្យាយាម​ម្តងទៀត</translation>
 <translation id="2910678330803525229">ឥឡូវនេះ អ្នកអាច​ចាប់ផ្ដើម​រុករក​បានហើយ</translation>
@@ -2397,6 +2401,7 @@
 <translation id="3042097545107738107">ប្ដូរ​យុទ្ធសាស្ត្រ​សាកថ្ម​ដែលបាន​បង្កើន​ប្រសិទ្ធភាព។</translation>
 <translation id="3043016484125065343">​ចូលគណនីដើម្បី​មើល​ឃើញចំណាំ</translation>
 <translation id="3043581297103810752">ពី <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">ជម្រើស​សម្រាប់ <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">ធ្វើឱ្យ​ប្រសើរឡើង​ដោយប្រើ AI</translation>
 <translation id="3045447014237878114">ទំព័រ​នេះ​បាន​ទាញយក​ឯកសារ​ជាច្រើន​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="304644035656848980">មើលមីក្រូហ្វូនរបស់អ្នកសាកល្បង</translation>
@@ -3248,6 +3253,7 @@
 <translation id="3748424433435232460">ពាក្យសម្ងាត់​សម្រាប់​គណនី​នេះ​ត្រូវបាន​រក្សាទុក​នៅ​លើ​ឧបករណ៍​នេះ​រួ​ចហើយ</translation>
 <translation id="3748466028423001972">ប្ដូរ​ជាមួយ​ទិដ្ឋភាព​ខាងក្រោម</translation>
 <translation id="3748706263662799310">រាយការណ៍អំពីបញ្ហា</translation>
+<translation id="3750406842345107892">ខ្លឹមសារ និង URL នៃទំព័រ​ដែលអ្នក​កំពុងស្ថិតនៅ ព្រមទាំង​អក្សរ​ដែលបាន​រំលេច​ត្រូវបាន​បញ្ជូនទៅ Google ដើម្បី​បង្កើត​ការពន្យល់</translation>
 <translation id="3752115502500640407">ចែករំលែក​ច្បាប់ចម្លង​នៃពាក្យសម្ងាត់​របស់អ្នក​សម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">បើក​ផ្ទាំង​ចំហៀង</translation>
 <translation id="3753585830134123417">បានប្ដូរទំហំវិនដូ និងដាក់ទៅខាងឆ្វេង</translation>
@@ -4144,6 +4150,7 @@
 <translation id="4550926046134589611">តំណដែលអាចប្រើបាន​មួយចំនួននឹងនៅ​តែបើកនៅក្នុង <ph name="APP_NAME" /> ដដែល។</translation>
 <translation id="4551379727767354516">ទម្រង់រចនា AI ថ្មីៗរបស់អ្នក</translation>
 <translation id="4551763574344810652">ចុច <ph name="MODIFIER_KEY_DESCRIPTION" /> ដើម្បី​ត្រឡប់​វិញ</translation>
+<translation id="4552721860956824254">បាន​បិទ​សំឡេង</translation>
 <translation id="4553526521109675518">អ្នក​ត្រូវ​ចាប់ផ្ដើម Chromebook ​របស់​អ្នក​ឡើង​វិញ ដើម្បី​ផ្លាស់ប្ដូរភាសារបស់ឧបករណ៍។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">តម្រូវឱ្យមាន​កំណែថ្មី​របស់​កម្មវិធី​នេះ</translation>
 <translation id="4555769855065597957">ស្រមោល</translation>
@@ -5090,6 +5097,7 @@
 <translation id="5379140238605961210">បន្តរារាំងការចូលប្រើម៉ៃក្រូហ្វូន</translation>
 <translation id="5382591305415226340">គ្រប់គ្រងតំណដែលគាំទ្រ</translation>
 <translation id="5384401776498845256">អ្នកដែលអាចចែករំលែកជាមួយអ្នក</translation>
+<translation id="5386856927586721327">សួរ​អំពី​អេក្រង់​របស់អ្នក​ដោយប្រើ <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">កែ <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">បានផ្លាស់ប្ដូរ​គោលការណ៍សហគ្រាស។ បានបញ្ចូលប៊ូតុង​ពិសោធន៍ទៅ​របារឧបករណ៍។ សូមចុច​ប៊ូតុងនេះ ដើម្បីបើក​ប្រអប់សម្រាប់បើកការពិសោធ។</translation>
 <translation id="5388436023007579456">កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា ក៏ដូចជាសេវាកម្ម​ប្រព័ន្ធ អាចប្រើ​កាមេរ៉ា​របស់អ្នក​បាន។ ដើម្បីប្រើ​កាមេរ៉ានេះ អ្នកប្រហែលជាត្រូវ​ចាប់ផ្ដើម​កម្មវិធី​ឡើងវិញ ឬ​ផ្ទុកទំព័រ​ឡើងវិញ។</translation>
@@ -7395,6 +7403,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> នឹងបើកដំណើរការនៅពេលចាប់ផ្តើមដំណើរការប្រព័ន្ធ ហើយបន្តដំណើរការនៅផ្ទៃខាងក្រោយ បើទោះបីជាអ្នកបិទ <ph name="PRODUCT_NAME" /> ផ្ទាំងផ្សេងទៀតទាំងអស់ក៏ដោយ។</translation>
 <translation id="7399045143794278225">ប្ដូរសមកាលកម្ម​តាមបំណង</translation>
 <translation id="7399616692258236448">សំណើសុំ​ទីតាំង​ត្រូវបានទប់ស្កាត់​ដោយស្វ័យប្រវត្តិ​សម្រាប់គេហទំព័រ​ទាំងអស់ លើកលែងតែ​គេហទំព័រ​ដែលអ្នក​អនុញ្ញាត​ប៉ុណ្ណោះ</translation>
+<translation id="7399746352569282594">បិទ​ទិដ្ឋភាព​បំបែក៖ <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">ការពិនិត្យ​សុវត្ថិភាព</translation>
 <translation id="7400059772197434086">ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ប្រើព័ត៌មាន​របស់អ្នក​នៅលើ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8035,6 +8044,7 @@
 <translation id="7953955868932471628">គ្រប់គ្រង់ផ្លូវកាត់</translation>
 <translation id="7955105108888461311">សាកសួរ​ដោយផ្ទាល់</translation>
 <translation id="7955177647836564772">ប្រសិនបើ Smart Lock ត្រូវ​បាន​បើក ហើយ​ទូរសព្ទ​របស់​អ្នក​ត្រូវ​បាន​ដោះសោ អ្នកមិន​ចាំបាច់​ត្រូវ​បញ្ចូល​ពាក្យសម្ងាត់ ឬ​កូដ PIN ទេ</translation>
+<translation id="7955672267519272700">បិទ <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">ម៉ាស៊ីនបោះពុម្ព​ដែលអ្នកបាន​រក្សាទុក</translation>
 <translation id="7956918070009672177">មិនមានសំឡេងជាភាសា<ph name="LANGUAGE" />នៅលើឧបករណ៍របស់អ្នកទេ។ សូមភ្ជាប់​អ៊ីនធឺណិត រួច​ព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="7957074856830851026">មើលព័ត៌មានឧបករណ៍ ដូចជាលេខស៊េរី ឬលេខ​សម្គាល់​ទ្រព្យរបស់វាជាដើម</translation>

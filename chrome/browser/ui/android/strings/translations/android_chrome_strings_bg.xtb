@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Пестете време, въвеждайте по-малко</translation>
 <translation id="146522654774760805">Пароли и автоматично попълване</translation>
 <translation id="1466383950273130737">Изберете език за Chrome</translation>
+<translation id="1473344277210704336">Gemini и най-важните ви неща в новата лента с инструменти в долната част</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="147982357559798527">Променено</translation>
 <translation id="1480287803138246127">Част от историята ви може да не се показва тук. За да видите всички записи в нея, отворете пълната история в Chrome.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">Продължихте да сте влезли като <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Членство в <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Вход в управляван профил</translation>
 <translation id="4577115723294378384">Сортиране от А до Я</translation>
 <translation id="4578289292431526768">Начало</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">Отворете нов раздел, за да го добавите към въпроса си</translation>
 <translation id="4585793705637313973">Редактиране на страницата</translation>
 <translation id="4587589328781138893">Сайтове</translation>
+<translation id="4587590257937792551">Chrome има нова лента с инструменти в долната част, създадена с цел удобство. Можете да превключите обратно по всяко време от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
 <translation id="4595237294768457124">Отворете нов раздел в браузъра.</translation>
 <translation id="4595276580892809760">Прикачване на изображения от галерията</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">Отключване на разделите в режим „инкогнито“</translation>
 <translation id="6636623428211296678">Разгледайте още настройки по-долу или завършете сега</translation>
 <translation id="6637100877383020115">С цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Най-важните ви неща, достъпни директно в лентата с инструменти в долната част. Можете да превключите обратно по всяко време от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Прикачване на разделите</translation>
 <translation id="6647441008198474441">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите страници, които е възможно да посетите</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" /> – избран фиксиран раздел, който споделя</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7314734791127433392">Паролите не могат да бъдат проверени</translation>
+<translation id="7324177883197548771">Chrome има нов облик, създаден с цел удобство. Можете да превключите обратно по всяко време от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Изпращане на заявка Do Not Track</translation>
 <translation id="7333041109965360609">Отписахте се от известията</translation>
 <translation id="7335766481146072567">Натиснете „Напред“</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">Манипулатор за преместване с плъзгане</translation>
 <translation id="7698359219371678927">Създайте имейл в <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Долният лист със скорошна активност е отворен на пълната височина</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Членство в <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
 <translation id="7708994397325774423">Получете всичките си пароли</translation>
 <translation id="7714077993070342304">Отваряне на менюто на Chrome</translation>

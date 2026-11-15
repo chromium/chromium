@@ -129,6 +129,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1460751212339734034">Makatipid ng oras, mag-type ng mas kaunti</translation>
 <translation id="146522654774760805">Mga password at autofill</translation>
 <translation id="1466383950273130737">Piliin ang wika ng Chrome</translation>
+<translation id="1473344277210704336">Ang Gemini at ang iyong mga essential sa bagong toolbar sa ibaba</translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
 <translation id="147982357559798527">Binago</translation>
 <translation id="1480287803138246127">Posibleng hindi lumabas dito ang ilan sa iyong history. Buksan ang buong history sa Chrome para makita ang lahat ng iyong history sa Chrome.</translation>
@@ -907,6 +908,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4537987892902330164">Nanatili kang naka-sign in bilang <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> na tab, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Mga shortcut ng webpage</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Membership sa <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Mag-sign in sa pinamamahalaang account</translation>
 <translation id="4577115723294378384">Isaayos: A hanggang Z</translation>
 <translation id="4578289292431526768">Tara na</translation>
@@ -914,6 +916,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4585751637295612750">Magbukas ng bagong tab para idagdag ito sa iyong tanong</translation>
 <translation id="4585793705637313973">I-edit ang page</translation>
 <translation id="4587589328781138893">Mga Site</translation>
+<translation id="4587590257937792551">May bagong toolbar sa ibaba ang Chrome, na binuo para sa kaginhawaan. Puwede kang bumalik anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
 <translation id="4595237294768457124">Magbukas ng page ng Bagong tab.</translation>
 <translation id="4595276580892809760">Mag-attach ng mga larawan mula sa gallery</translation>
@@ -1448,6 +1451,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6633067410344541938">I-unlock ang Incognito</translation>
 <translation id="6636623428211296678">Mag-explore pa ng mga setting sa ibaba o tapusin ngayon</translation>
 <translation id="6637100877383020115">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_UMA_LINK" />Pamahalaan<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Ang iyong mga essential, nasa toolbar sa ibaba mismo. Puwede kang bumalik anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Mag-attach ng mga tab</translation>
 <translation id="6647441008198474441">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
@@ -1646,6 +1650,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Piniling Naka-pin at Nagshe-share na Tab</translation>
 <translation id="7311244614769792472">Walang nakitang resulta</translation>
 <translation id="7314734791127433392">Hindi masuri ang mga password</translation>
+<translation id="7324177883197548771">May bagong hitsura ang Chrome, na binuo para sa kaginhawaan. Puwede kang bumalik anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Magpadala ng request na “Do Not Track”</translation>
 <translation id="7333041109965360609">Na-unsubscribe sa mga notification</translation>
 <translation id="7335766481146072567">Pindutin ang magpatuloy</translation>
@@ -1748,6 +1753,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7697383401610880082">Handle sa pag-drag</translation>
 <translation id="7698359219371678927">Gumawa ng email sa <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Binuksan nang buo ang bottom sheet ng kamakailang aktibidad</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Membership sa <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
 <translation id="7708994397325774423">Kunin ang lahat ng password mo</translation>
 <translation id="7714077993070342304">Buksan ang menu ng Chrome</translation>

@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Экономьте время</translation>
 <translation id="146522654774760805">Пароли и автозаполнение</translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
+<translation id="1473344277210704336">Gemini и нужные инструменты на новой нижней панели</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
 <translation id="147982357559798527">Изменено</translation>
 <translation id="1480287803138246127">Некоторые данные могут здесь не показываться. Чтобы увидеть их все, откройте историю Chrome.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">Вы остались в аккаунте <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Подписка <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Вход в управляемый аккаунт</translation>
 <translation id="4577115723294378384">По алфавиту (от А до Я)</translation>
 <translation id="4578289292431526768">Начать</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">Откройте новую вкладку и добавьте ее к вопросу</translation>
 <translation id="4585793705637313973">Изменить страницу</translation>
 <translation id="4587589328781138893">Сайты</translation>
+<translation id="4587590257937792551">В Chrome появилась новая удобная панель инструментов внизу. Вернуться к прежнему виду можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Офлайн-версия страницы сохранена <ph name="CREATION_TIME" />. Она может отличаться от онлайн-версии.</translation>
 <translation id="4595237294768457124">Откройте новую вкладку.</translation>
 <translation id="4595276580892809760">Прикрепить изображения из галереи</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">Разблокировать вкладки инкогнито</translation>
 <translation id="6636623428211296678">Вы можете посмотреть другие настройки ниже или завершить проверку.</translation>
 <translation id="6637100877383020115">Chrome отправляет в Google информацию об использовании и сбоях, которая помогает улучшать приложение. <ph name="BEGIN_UMA_LINK" />Настроить отправку данных<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Всё самое важное — на нижней панели инструментов. Вернуться к прежнему виду можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Прикрепить вкладки</translation>
 <translation id="6647441008198474441">Для прогнозирования ваших дальнейших запросов URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099">Выбранная и закрепленная вкладка "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7314734791127433392">Не удалось проверить пароли</translation>
+<translation id="7324177883197548771">В Chrome появился новый удобный дизайн. Вернуться к прежнему виду можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Отправлять запрос Do Not Track</translation>
 <translation id="7333041109965360609">Подписка на уведомления отменена</translation>
 <translation id="7335766481146072567">Нажмите "Продолжить".</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">Маркер перемещения</translation>
 <translation id="7698359219371678927">Написать письмо в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="7702420606070050505">Нижний экран недавних действий открыт полностью</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Подписка <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7708994397325774423">Доступ ко всем паролям</translation>
 <translation id="7714077993070342304">Открыть меню Google Chrome</translation>

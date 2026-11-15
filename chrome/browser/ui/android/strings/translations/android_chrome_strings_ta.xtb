@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">டைப் செய்யும் நேரத்தைச் சேமியுங்கள்</translation>
 <translation id="146522654774760805">கடவுச்சொல் &amp; தானாக நிரப்புதல்</translation>
 <translation id="1466383950273130737">Chromeமிற்கான மொழியைத் தேர்வுசெய்யுங்கள்</translation>
+<translation id="1473344277210704336">புதிய கீழ்ப்புறக் கருவிப்பட்டியில் Geminiயும் உங்களுக்குத் தேவையானவையும்</translation>
 <translation id="1477626028522505441">சேவையகச் சிக்கல்களால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="147982357559798527">மாற்றப்பட்டது</translation>
 <translation id="1480287803138246127">இதுவரையிலான செயல்பாடுகளில் சில இங்கே காட்டப்படாமல் போகலாம். இதுவரையிலான Chrome செயல்பாடுகள் முழுவதையும் பார்க்க, Chrome செயல்பாடுகளை முழுமையாகக் காட்டு என்பதைத் தட்டவும்.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> கணக்கில் உள்நுழைந்தே இருக்கிறீர்கள்.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_COUNT_MANY" /> பக்கங்கள், <ph name="TAB_COUNT_INCOGNITO" /> மறைநிலை}}</translation>
 <translation id="4558311620361989323">இணையப் பக்கக் ஷார்ட்கட்கள்</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> மெம்பர்ஷிப்.</translation>
 <translation id="4572422548854449519">நிர்வகிக்கப்படும் கணக்கில் உள்நுழையவும்</translation>
 <translation id="4577115723294378384">அ - ஃ வரை வரிசைப்படுத்து</translation>
 <translation id="4578289292431526768">தொடங்குக</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">உங்கள் கேள்வியில் சேர்க்க புதிய பக்கத்தைத் திறக்கலாம்</translation>
 <translation id="4585793705637313973">பக்கத்தைத் திருத்து</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4587590257937792551">Chromeமில் எளிய பயன்பாட்டிற்காக உருவாக்கப்பட்ட புதிய கீழ்ப்புறக் கருவிப்பட்டி உள்ளது. <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் முந்தைய தோற்றத்திற்கு மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
 <translation id="4595237294768457124">புதிய பக்கத்தைத் திறக்கவும்</translation>
 <translation id="4595276580892809760">கேலரியில் இருந்து படங்களை இணைக்கும்</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6633067410344541938">மறைநிலைப் பயன்முறையை அன்லாக் செய்</translation>
 <translation id="6636623428211296678">கூடுதல் அமைப்புகளைக் கீழே கண்டறியலாம் அல்லது இப்போது நிறைவுசெய்யலாம்</translation>
 <translation id="6637100877383020115">ஆப்ஸை மேம்படுத்த உதவுவதற்காக, உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_UMA_LINK" />நிர்வகியுங்கள்<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">உங்களுக்குத் தேவையானவை கீழ்ப்பட்டியில் கிடைக்கும். <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் முந்தைய தோற்றத்திற்கு மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="6642299196749785472">பக்கங்களை இணைக்கும்</translation>
 <translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்பு}other{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்புகள்}}</translation>
@@ -1646,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட பின் செய்யப்பட்ட பகிரப்படுகின்ற பக்கம்</translation>
 <translation id="7311244614769792472">முடிவுகள் எதுவுமில்லை</translation>
 <translation id="7314734791127433392">கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை</translation>
+<translation id="7324177883197548771">Chromeமில் எளிய பயன்பாட்டிற்காக உருவாக்கப்பட்ட புதிய தோற்றம் உள்ளது. <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் முந்தைய தோற்றத்திற்கு மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="7324354302972299151">“Do Not Track” கோரிக்கையை அனுப்பு</translation>
 <translation id="7333041109965360609">அறிவிப்புகளில் இருந்து குழுவிலகிவிட்டீர்கள்</translation>
 <translation id="7335766481146072567">தொடர்க என்பதை அழுத்தவும்</translation>
@@ -1748,6 +1753,7 @@
 <translation id="7697383401610880082">இழுப்பதற்கான ஹேண்டில்</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> இல் மின்னஞ்சலை உருவாக்கவும்</translation>
 <translation id="7702420606070050505">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> மெம்பர்ஷிப்.</translation>
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
 <translation id="7708994397325774423">உங்கள் கடவுச்சொற்கள் எல்லாவற்றையும் பெறுங்கள்</translation>
 <translation id="7714077993070342304">Chrome மெனுவைத் திறக்கும்</translation>

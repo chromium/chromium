@@ -129,6 +129,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1460751212339734034">入力せずに効率化</translation>
 <translation id="146522654774760805">パスワードと自動入力</translation>
 <translation id="1466383950273130737">Chrome の言語を選択</translation>
+<translation id="1473344277210704336">Gemini とよく使う機能を集約した下部の新しいツールバー</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="147982357559798527">変更</translation>
 <translation id="1480287803138246127">一部の履歴はここに表示されない場合があります。すべての Chrome 履歴を表示するには、全体の Chrome 履歴を開いてください。</translation>
@@ -907,6 +908,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4537987892902330164">現在、<ph name="NAME_OR_EMAIL" /> としてログインしています。</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のタブ}other{<ph name="TAB_COUNT_MANY" /> 個のタブ、<ph name="TAB_COUNT_INCOGNITO" /> 個のシークレット タブ}}</translation>
 <translation id="4558311620361989323">ウェブページのショートカット</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />、<ph name="EMAIL" />。<ph name="SUBSCRIPTION_NAME" /> メンバーシップ。</translation>
 <translation id="4572422548854449519">管理対象アカウントにログイン</translation>
 <translation id="4577115723294378384">昇順で並べ替え</translation>
 <translation id="4578289292431526768">始める</translation>
@@ -914,6 +916,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4585751637295612750">質問に追加するには新しいタブを開いてください</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
+<translation id="4587590257937792551">Chrome の下部に新しいツールバーが登場。さらに便利になりました。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でいつでも元に戻せます。</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
 <translation id="4595237294768457124">新しいタブページを開く</translation>
 <translation id="4595276580892809760">ギャラリーの画像を添付</translation>
@@ -1448,6 +1451,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6633067410344541938">シークレット モードのロックを解除</translation>
 <translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6637100877383020115">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">よく使う機能に下部のツールバーからすばやくアクセス。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でいつでも元に戻せます。</translation>
 <translation id="6642299196749785472">タブを添付</translation>
 <translation id="6647441008198474441">アクセスした URL が Google に送信され、次にアクセスするサイトの予測が行われます</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件}other{<ph name="CONTACT_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件}}</translation>
@@ -1646,6 +1650,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />、選択された固定の共有タブ</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7314734791127433392">パスワードを確認できません</translation>
+<translation id="7324177883197548771">Chrome のデザインが新しくなり、さらに便利になりました。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でいつでも元に戻せます。</translation>
 <translation id="7324354302972299151">「Do Not Track」リクエストを送信する</translation>
 <translation id="7333041109965360609">通知への登録を解除しました</translation>
 <translation id="7335766481146072567">[続行] を選択</translation>
@@ -1748,6 +1753,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7697383401610880082">ドラッグ ハンドル</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
 <translation id="7702420606070050505">最近のアクティビティのボトムシートが画面全体に表示されています</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />。<ph name="SUBSCRIPTION_NAME" /> メンバーシップ。</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7708994397325774423">すべてのパスワードにアクセス</translation>
 <translation id="7714077993070342304">Chrome メニューを開く</translation>

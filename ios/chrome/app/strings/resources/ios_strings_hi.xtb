@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">पासवर्ड देखने के लिए, आपको सबसे पहले अपने डिवाइस पर एक पासवर्ड सेट करना होगा.</translation>
 <translation id="201759455285471444">टैब ग्रुप को बड़ा करें.</translation>
 <translation id="2022431790688770637">Gemini के सुझावों को मैनेज करें</translation>
+<translation id="2023265063803387188">Gemini, गुप्त मोड में उपलब्ध नहीं है</translation>
 <translation id="2031515492007104071">लेवल अप</translation>
 <translation id="2044394949148788042">टैब ग्रिड खोलें</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है. यह कुछ जानकारी देख सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2652,6 +2653,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="91023216973987714">पेमेंट के तरीके</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" से</translation>
 <translation id="9107664647686727385">देखें कि पासवर्ड हैक या चोरी तो नहीं हुआ है</translation>
+<translation id="9115035712231910133">अटैच की गई इमेज {title}</translation>
 <translation id="9119764377203471454">अटैचमेंट नहीं जोड़े जा सके</translation>
 <translation id="9124387962554796433">Search और अन्य Google सेवाओं को आपके हिसाब से बनाने के लिए, Google आपका ब्राउज़िंग इतिहास इस्तेमाल कर सकता है.</translation>
 <translation id="9124978074365039456">अपनी फ़ोटो गैलरी और कैमरे का इस्तेमाल करके तस्वीरों में दिखने वाली चीज़ों को खरीदें या उनकी पहचान करें. इसके अलावा, तस्वीरों में मौजूद टेक्स्ट का अनुवाद भी करवाया जा सकता है</translation>

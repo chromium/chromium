@@ -331,6 +331,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1256143630373008432">Nem sikerült az önellenőrzés</translation>
 <translation id="1257336506558170607">Kiválasztott tanúsítvány exportálása</translation>
 <translation id="1258491128795710625">Újdonságok</translation>
+<translation id="1259453023447377372">Mentett lapcsoport</translation>
 <translation id="1260451001046713751">Itt mindig engedélyezve vannak az előugró ablakok és az átirányítások: <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Mindig használhatnak JavaScript-optimalizálást</translation>
 <translation id="1262564987698748643">A webhelyek engedélyt kérhetnek a billentyűzetbevitelek felülbírálására</translation>
@@ -1856,6 +1857,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2610780100389066815">Microsoft - megbízhatósági lista aláírása</translation>
 <translation id="261114180663074524">Jelentkezzen be Microsoft-fiókjába, majd próbálja újra</translation>
 <translation id="2611885296070244383">Mikrofon (belső)</translation>
+<translation id="2612346259364350954">Oldaltartalom használata a kiemelt szöveg magyarázatához</translation>
 <translation id="2612676031748830579">Kártyaszám</translation>
 <translation id="261305050785128654">A webhelyek megismerhetik az Ön által beszélt nyelveket. Lehetőség szerint ezeken a nyelveken jelenítik meg a tartalmakat.</translation>
 <translation id="2613210758071148851">Bővítmények letiltása itt: <ph name="RESTRICTED_SITE" /></translation>
@@ -2158,6 +2160,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="284884486564166077">Bármilyen kép keresése a Lens segítségével</translation>
 <translation id="2849035674501872372">Nézzen fel</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">További lehetőségek a következőhöz: <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Zárva</translation>
 <translation id="2851291081585704741">Offline állapotban van</translation>
 <translation id="285237063405807022">(betöltés…)</translation>
@@ -2229,6 +2232,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
     Szerverüzenet: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word-, Excel- és PowerPoint-fájlok megnyitása</translation>
 <translation id="2908162660801918428">Médiagaléria hozzáadása könyvtár szerint</translation>
+<translation id="2909334296570021569">Lapcsoport megnyitása</translation>
 <translation id="2909487040556589351">A Chrome beszerzése mobileszközre</translation>
 <translation id="2910318910161511225">Csatlakozzon egy hálózathoz, és próbálja újra</translation>
 <translation id="2910678330803525229">Most már elkezdheti a böngészést</translation>
@@ -2395,6 +2399,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3042097545107738107">Az optimalizált töltési stratégia módosítása.</translation>
 <translation id="3043016484125065343">Könyvjelzői megtekintéséhez jelentkezzen be</translation>
 <translation id="3043581297103810752">A(z) <ph name="ORIGIN" /> webhelyről</translation>
+<translation id="3043977478651331629">A következő beállításai: <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Feljavítás AI segítségével</translation>
 <translation id="3045447014237878114">Ez a webhely automatikusan letöltött több fájlt</translation>
 <translation id="304644035656848980">Mikrofon előnézete</translation>
@@ -3248,6 +3253,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3748424433435232460">A fiókhoz már tartozik mentett jelszó ezen az eszközön</translation>
 <translation id="3748466028423001972">Csere az alsó nézettel</translation>
 <translation id="3748706263662799310">Programhiba bejelentése</translation>
+<translation id="3750406842345107892">A rendszer elküldi a Google-nak az Ön által megnyitott oldal tartalmát és URL-jét, valamint a kiemelt szöveget, hogy magyarázatot generáljon</translation>
 <translation id="3752115502500640407">A(z) <ph name="WEBSITE" /> webhelyhez tartozó jelszó megosztása</translation>
 <translation id="3753412199586870466">Oldalsó panel megnyitása</translation>
 <translation id="3753585830134123417">Átméretezett ablakok balra</translation>
@@ -4143,6 +4149,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4550926046134589611">Egyes támogatott linkek továbbra is a(z) <ph name="APP_NAME" /> alkalmazásban nyílnak meg.</translation>
 <translation id="4551379727767354516">Legutóbbi AI-témák</translation>
 <translation id="4551763574344810652">Nyomja meg a <ph name="MODIFIER_KEY_DESCRIPTION" /> billentyűparancsot a visszavonáshoz</translation>
+<translation id="4552721860956824254">Hang elnémítva</translation>
 <translation id="4553526521109675518">Az eszköz nyelvének módosításához újra kell indítani a Chromebookot. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4553807334824079753">Szükség van az alkalmazás új verziójára</translation>
 <translation id="4555769855065597957">Árnyék</translation>
@@ -5091,6 +5098,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5379140238605961210">Mikrofon-hozzáférés tiltásának fenntartása</translation>
 <translation id="5382591305415226340">Támogatott linkek kezelése</translation>
 <translation id="5384401776498845256">Ki oszthat meg Önnel tartalmakat?</translation>
+<translation id="5386856927586721327">Kérdezzen a képernyőjéről a <ph name="LENS_ICON" />Google Lens segítségével</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> szerkesztése</translation>
 <translation id="538822246583124912">A vállalati házirend módosult. A Kísérletek gomb bekerült az eszköztárba. A gombra kattintva megnyithatja a párbeszédpanelt a kísérletek engedélyezéséhez.</translation>
 <translation id="5388436023007579456">A kamerahasználati engedéllyel rendelkező alkalmazások és webhelyek, valamint a rendszerszolgáltatások használhatják a kamerát. Előfordulhat, hogy a kamera használatához újra kell indítania az alkalmazást, vagy frissítenie kell az oldalt.</translation>
@@ -7397,6 +7405,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7396845648024431313">A(z) <ph name="APP_NAME" />  el fog indulni a rendszer indításakor, és akkor is tovább fut a háttérben, ha már bezárta az összes többi <ph name="PRODUCT_NAME" />-ablakot.</translation>
 <translation id="7399045143794278225">A szinkronizálás személyre szabása</translation>
 <translation id="7399616692258236448">Az Ön által engedélyezett webhelyek kivételével a rendszer automatikusan letiltja a helykérelmeket.</translation>
+<translation id="7399746352569282594">Osztott nézet bezárása: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Biztonsági ellenőrzés</translation>
 <translation id="7400059772197434086">számára le van tiltva az Ön adatainak felhasználása itt:</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8037,6 +8046,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7953955868932471628">Parancsikonok kezelése</translation>
 <translation id="7955105108888461311">Kérés személyesen</translation>
 <translation id="7955177647836564772">Ha a Smart Lock be van kapcsolva, telefonja pedig fel van oldva, nem kell jelszót vagy PIN-kódot megadnia.</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> bezárása</translation>
 <translation id="7956373551960864128">Mentett nyomtatók</translation>
 <translation id="7956918070009672177">Nincs <ph name="LANGUAGE" /> nyelvű hang az eszközön. Csatlakozzon az internethez, és próbálja újra.</translation>
 <translation id="7957074856830851026">Eszközadatok megtekintése, például az eszköz sorozatszáma vagy tartalomazonosítója</translation>

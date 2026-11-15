@@ -129,6 +129,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1460751212339734034">Hemat waktu, mengetik lebih sedikit</translation>
 <translation id="146522654774760805">Sandi dan isi otomatis</translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
+<translation id="1473344277210704336">Gemini dan fitur penting Anda di toolbar bawah baru</translation>
 <translation id="1477626028522505441">Download <ph name="FILE_NAME" /> gagal karena masalah server.</translation>
 <translation id="147982357559798527">Berubah</translation>
 <translation id="1480287803138246127">Beberapa histori Anda mungkin tidak muncul di sini. Untuk melihat semua Histori Chrome Anda, buka Histori Chrome lengkap.</translation>
@@ -861,7 +862,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4374192654218566997">\n\nAnda juga dapat menghapus data ini dari perangkat ini:</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4380055775103003110">Jika masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Login untuk mendapatkan bookmark, sandi, dan informasi Isi Otomatis di semua berbagai Anda.</translation>
+<translation id="4381351546374507910">Login untuk mendapatkan bookmark, sandi, dan informasi Isi Otomatis di semua perangkat Anda.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk penelusuran</translation>
 <translation id="4387647248986092471">Buat kunci profil mobil</translation>
 <translation id="4387817230000841154">Buka Hasil Download</translation>
@@ -907,6 +908,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4537987892902330164">Anda tetap login sebagai <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> samaran}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Langganan <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Login ke akun terkelola</translation>
 <translation id="4577115723294378384">Urutkan menurut A ke Z</translation>
 <translation id="4578289292431526768">Mulai</translation>
@@ -914,6 +916,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4585751637295612750">Buka tab baru untuk menambahkannya ke pertanyaan Anda</translation>
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4587589328781138893">Situs</translation>
+<translation id="4587590257937792551">Chrome kini memiliki toolbar bawah baru yang dirancang untuk kenyamanan. Anda dapat beralih kembali kapan saja di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
 <translation id="4595237294768457124">Buka halaman Tab baru</translation>
 <translation id="4595276580892809760">Lampirkan gambar dari galeri</translation>
@@ -1448,6 +1451,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6633067410344541938">Buka Kunci Tab Samaran</translation>
 <translation id="6636623428211296678">Jelajahi setelan lainnya di bawah atau selesaikan sekarang</translation>
 <translation id="6637100877383020115">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_UMA_LINK" />Kelola<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Semua fitur penting Anda, langsung di toolbar bawah. Anda dapat beralih kembali kapan saja di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Lampirkan tab</translation>
 <translation id="6647441008198474441">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
@@ -1646,6 +1650,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Tab yang Sedang Berbagi, Disematkan, dan Dipilih</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7314734791127433392">Tidak dapat memeriksa sandi</translation>
+<translation id="7324177883197548771">Chrome kini memiliki tampilan baru yang dirancang untuk kenyamanan. Anda dapat beralih kembali kapan saja di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Kirim permintaan “Do Not Track”</translation>
 <translation id="7333041109965360609">Berhenti berlangganan notifikasi</translation>
 <translation id="7335766481146072567">Tekan lanjutkan.</translation>
@@ -1748,6 +1753,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7697383401610880082">Handel geser</translation>
 <translation id="7698359219371678927">Buat email di <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Sheet bawah aktivitas terbaru terbuka sepenuhnya</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Langganan <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Gunakan data seluler</translation>
 <translation id="7708994397325774423">Dapatkan semua sandi Anda</translation>
 <translation id="7714077993070342304">Buka menu Chrome</translation>

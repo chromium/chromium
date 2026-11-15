@@ -331,6 +331,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1256143630373008432">Özünü-yoxlama alınmadı</translation>
 <translation id="1257336506558170607">Seçilmiş sertifikatı eksport edin</translation>
 <translation id="1258491128795710625">Yeniliklər</translation>
+<translation id="1259453023447377372">Yadda saxlanılmış tab qrupu</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> popap və yönləndirmələrinə daima icazə verin</translation>
 <translation id="1262395978737369974">JavaScript optimallaşdırmasından istifadə etməyə həmişə icazə verilir</translation>
 <translation id="1262564987698748643">Saytlar klaviatura daxiletmənizi əvəzləmək istəyə bilər</translation>
@@ -1848,6 +1849,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft hesabına daxil olub, yenidən cəhd edin</translation>
 <translation id="2611885296070244383">Mikrofon (daxili)</translation>
+<translation id="2612346259364350954">Vurğulanmış mətni izah etmək üçün səhifə kontentindən istifadə edin</translation>
 <translation id="2612676031748830579">Kart nömrəsi</translation>
 <translation id="261305050785128654">Veb-saytlara danışdığınız dilləri bilmək imkanı verin. Onlar mümkün olduqda həmin dillərdə kontent göstərəcək.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> saytında artırmalara icazə verməyin</translation>
@@ -2150,6 +2152,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="284884486564166077">Linza ilə istənilən şəkli axtarın</translation>
 <translation id="2849035674501872372">Axtarış</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> üçün əlavə seçimlər</translation>
 <translation id="285033512555869047">Bağlıdır</translation>
 <translation id="2851291081585704741">Oflaynsınız</translation>
 <translation id="285237063405807022">(yüklənir)</translation>
@@ -2221,6 +2224,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     Server mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel və PowerPoint fayllarını açın</translation>
 <translation id="2908162660801918428">Direktoriya üzrə Media Qalereyası əlavə edin</translation>
+<translation id="2909334296570021569">Tab qrupunu açın</translation>
 <translation id="2909487040556589351">Chrome-u mobil cihazınızda quraşdırın</translation>
 <translation id="2910318910161511225">Şəbəkəyə qoşulun və yenidən cəhd edin</translation>
 <translation id="2910678330803525229">İndi nəzər salmağa başlaya bilərsiniz</translation>
@@ -2387,6 +2391,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3042097545107738107">Optimallaşdırılmış şarj strategiyasını dəyişin.</translation>
 <translation id="3043016484125065343">Əlfəcinlərinizi görmək üçün daxil olun</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> saytından</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> üçün seçimlər</translation>
 <translation id="3044066905368192931">AI ilə təkmilləşdirin</translation>
 <translation id="3045447014237878114">Bu sayt bir çox faylları avtomatik endirdi</translation>
 <translation id="304644035656848980">Mikrofon önizləməsi</translation>
@@ -3240,6 +3245,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3748424433435232460">Bu hesab üçün parol artıq bu cihazda saxlanılıb</translation>
 <translation id="3748466028423001972">Alt görünüşlə dəyişin</translation>
 <translation id="3748706263662799310">Baqı şikayət edin</translation>
+<translation id="3750406842345107892">İzah yaratmaq üçün daxil olduğunuz səhifənin kontenti və URL-i, həmçinin vurğulanmış mətn Google-a göndərilir</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> üçün parol kopyası paylaşın</translation>
 <translation id="3753412199586870466">Yan paneli açın</translation>
 <translation id="3753585830134123417">Pəncərələrin ölçüsü sola doğru dəyişdirildi</translation>
@@ -4134,6 +4140,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4550926046134589611">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" /> tətbiqində açılacaq.</translation>
 <translation id="4551379727767354516">Son AI temaları</translation>
 <translation id="4551763574344810652">Geri qaytarmaq üçün <ph name="MODIFIER_KEY_DESCRIPTION" /> qısayoluna klikləyin</translation>
+<translation id="4552721860956824254">Audio səssiz edildi</translation>
 <translation id="4553526521109675518">Cihaz dilini dəyişmək üçün Chromebook'u yenidən başlatmalısınız. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Bu tətbiqin yeni versiyası tələb olunur</translation>
 <translation id="4555769855065597957">Kölgə</translation>
@@ -5082,6 +5089,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5379140238605961210">Mikrofon girişini bloklamağa davam edin</translation>
 <translation id="5382591305415226340">Dəstəklənən linkləri idarə edin</translation>
 <translation id="5384401776498845256">Sizinlə kim paylaşa bilər</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google Linza ilə ekranınız haqqında soruşun</translation>
 <translation id="5387116558048951800">Redaktə edin: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Müəssisə siyasəti dəyişdirilib. Təcrübələr düyməsi alətlər panelinə əlavə edilib. Təcrübələri aktivləşdirmək məqsədi ilə dialoqu açmaq üçün düyməyə toxunun.</translation>
 <translation id="5388436023007579456">Kamera icazəsi olan tətbiq və veb-saytlar, eləcə də sistem xidmətləri kameradan istifadə edə bilər. Kameradan istifadə üçün tətbiqi yenidən başlatmalı, yaxud səhifəni təzələməlisiniz.</translation>
@@ -7386,6 +7394,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sistem startapı başladacaq və hətta bütün digər <ph name="PRODUCT_NAME" /> pəncərələrini bağlayan kimi  arxa fonda işlətməyə davam edəcək.</translation>
 <translation id="7399045143794278225">Sinxronlaşdırmanı fərdiləşdirin</translation>
 <translation id="7399616692258236448">İcazə verilənlərdən başqa bütün saytlar üçün məkan sorğuları avtomatik bloklanır</translation>
+<translation id="7399746352569282594">Bölünmüş görünüşü bağlayın: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
 <translation id="7400059772197434086">saytının məlumatlarınızdan istifadəsi bloklanıb</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8026,6 +8035,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7953955868932471628">Qısayolları idarə edin</translation>
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
 <translation id="7955177647836564772">Smart Lock aktiv edilibsə və telefonunuzun kilidi açılıbsa, parol və ya PIN daxil etməyinizə ehtiyac yoxdur</translation>
+<translation id="7955672267519272700">Bağlayın: <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Yadda saxlanılmış printerlər</translation>
 <translation id="7956918070009672177">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. İnternetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="7957074856830851026">Seriya nömrəsi və aktiv ID-si kimi cihaz məlumatlarına baxın</translation>

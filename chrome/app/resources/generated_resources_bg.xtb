@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Самотестването не бе успешно</translation>
 <translation id="1257336506558170607">Експортиране на избрания сертификат</translation>
 <translation id="1258491128795710625">Новите неща</translation>
+<translation id="1259453023447377372">Запазена група раздели</translation>
 <translation id="1260451001046713751">Разрешаване винаги на изскачащите прозорци и пренасочванията от <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Сайтове с разрешение за използване на оптимизирането на JavaScript</translation>
 <translation id="1262564987698748643">Сайтовете могат да извеждат запитвания за замяна на въведеното с клавиатурата</translation>
@@ -1857,6 +1858,7 @@
 <translation id="2610780100389066815">Подписване от Microsoft на списък с гаранти на сертификати</translation>
 <translation id="261114180663074524">Влезте в профила си в Microsoft и опитайте отново</translation>
 <translation id="2611885296070244383">Микрофон (вътрешен)</translation>
+<translation id="2612346259364350954">Използване на съдържанието на страницата за обясняване на откроения текст</translation>
 <translation id="2612676031748830579">Номер на картата</translation>
 <translation id="261305050785128654">Информирайте уебсайтовете кои езици говорите, за да показват съдържание на съответните езици, когато е възможно.</translation>
 <translation id="2613210758071148851">Да не се разрешават никакви разширения на <ph name="RESTRICTED_SITE" /></translation>
@@ -2159,6 +2161,7 @@
 <translation id="284884486564166077">Търсене на което и да е изображение с Обектив</translation>
 <translation id="2849035674501872372">Търсене</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Още опции за <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2851291081585704741">Офлайн сте</translation>
 <translation id="285237063405807022">(зарежда се)</translation>
@@ -2230,6 +2233,7 @@
 Съобщение от сървъра: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Отваряйте файлове на Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Добавяне на медийна галерия по директория</translation>
+<translation id="2909334296570021569">Отворена група раздели</translation>
 <translation id="2909487040556589351">Изтеглете Chrome за мобилното си устройство</translation>
 <translation id="2910318910161511225">Свържете се с мрежа и опитайте отново</translation>
 <translation id="2910678330803525229">Вече можете да започнете да сърфирате</translation>
@@ -2396,6 +2400,7 @@
 <translation id="3042097545107738107">Промяна на стратегията за оптимизирано зареждане.</translation>
 <translation id="3043016484125065343">Влезте в профила си, за да видите отметките си</translation>
 <translation id="3043581297103810752">От <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Опции за <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Подобряване с AI</translation>
 <translation id="3045447014237878114">Този сайт е изтеглил автоматично няколко файла</translation>
 <translation id="304644035656848980">Визуализация на микрофона ви</translation>
@@ -3249,6 +3254,7 @@
 <translation id="3748424433435232460">На това устройство вече е запазена парола за този профил</translation>
 <translation id="3748466028423001972">Размяна с долния изглед</translation>
 <translation id="3748706263662799310">Подаване на сигнал за програмна грешка</translation>
+<translation id="3750406842345107892">Съдържанието и URL адресът на страницата, на която се намирате, и откроеният текст се изпращат до Google с цел генериране на обяснение</translation>
 <translation id="3752115502500640407">Споделяне на копие на паролата ви за <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Отваряне на страничния панел</translation>
 <translation id="3753585830134123417">Прозорците са преоразмерени наляво</translation>
@@ -4145,6 +4151,7 @@
 <translation id="4550926046134589611">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Скорошните ви теми с AI</translation>
 <translation id="4551763574344810652">Натиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за отмяна</translation>
+<translation id="4552721860956824254">Звукът е спрян</translation>
 <translation id="4553526521109675518">Трябва да рестартирате своя Chromebook, за да промените езика на устройството. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Изисква се нова версия на това приложение</translation>
 <translation id="4555769855065597957">Сянка</translation>
@@ -5093,6 +5100,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5379140238605961210">Достъпът до микрофона да продължи да се блокира</translation>
 <translation id="5382591305415226340">Управление на поддържаните връзки</translation>
 <translation id="5384401776498845256">Кой може да споделя с вас</translation>
+<translation id="5386856927586721327">Попитайте за съдържанието на екрана си с <ph name="LENS_ICON" />Google Обектив</translation>
 <translation id="5387116558048951800">Редактиране на <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Корпоративните правила бяха променени. Бутонът за експерименти бе добавен към лентата с инструменти. Кликнете върху него, за да се отвори диалогов прозорец за активиране на експериментите.</translation>
 <translation id="5388436023007579456">Камерата може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до нея, и от системните услуги. За да използвате камерата, може да се наложи да рестартирате приложението или да опресните страницата.</translation>
@@ -7399,6 +7407,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Персонализиране на синхронизирането</translation>
 <translation id="7399616692258236448">Заявките за местоположение се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
+<translation id="7399746352569282594">Затваряне на разделения изглед: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400059772197434086">не може да използва информацията ви на</translation>
 <translation id="7400418766976504921">URL адрес</translation>
@@ -8039,6 +8048,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7953955868932471628">Управление на преките пътища</translation>
 <translation id="7955105108888461311">Питане лично</translation>
 <translation id="7955177647836564772">Ако функцията Smart Lock е включена и телефонът ви е отключен, не е необходимо да въвеждате парола или ПИН код</translation>
+<translation id="7955672267519272700">Затваряне на <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Вашите запазени принтери</translation>
 <translation id="7956918070009672177">На устройството ви няма гласове за <ph name="LANGUAGE" />. Свържете се с интернет и опитайте отново.</translation>
 <translation id="7957074856830851026">Преглед на информация за устройството, като например серийния номер или идентификатора на актива</translation>

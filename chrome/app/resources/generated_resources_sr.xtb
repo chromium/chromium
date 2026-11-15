@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Самостално тестирање није успело</translation>
 <translation id="1257336506558170607">Извезите изабрани сертификат</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
+<translation id="1259453023447377372">Сачувана група картица</translation>
 <translation id="1260451001046713751">Увек дозволи искачуће прозоре и преусмеравања са <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Коришћење оптимизације JavaScript-а је увек дозвољено</translation>
 <translation id="1262564987698748643">Сајтови могу да траже да замене унос са тастатуре</translation>
@@ -1844,6 +1845,7 @@
 <translation id="2610780100389066815">Потписивање Microsoft листе поузданих</translation>
 <translation id="261114180663074524">Пријавите се на Microsoft налог и пробајте поново</translation>
 <translation id="2611885296070244383">Микрофон (интерни)</translation>
+<translation id="2612346259364350954">Користи садржај странице за објашњење истакнутог текста</translation>
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="261305050785128654">Омогућите веб-сајтовима да знају које језике говорите. Приказиваће садржај на тим језицима када је то могуће.</translation>
 <translation id="2613210758071148851">Не дозвољавај никакве додатке на сајту <ph name="RESTRICTED_SITE" /></translation>
@@ -2146,6 +2148,7 @@
 <translation id="284884486564166077">Претражите било коју слику помоћу Објектива</translation>
 <translation id="2849035674501872372">Потражите</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Још опција за групу картица <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2851291081585704741">Офлајн сте</translation>
 <translation id="285237063405807022">(учитавање)</translation>
@@ -2217,6 +2220,7 @@
     Порука сервера: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Отварајте Word, Excel и PowerPoint фајлове</translation>
 <translation id="2908162660801918428">Додавање галерије медија према директоријуму</translation>
+<translation id="2909334296570021569">Отвори групу картица</translation>
 <translation id="2909487040556589351">Преузмите Chrome на мобилни уређај</translation>
 <translation id="2910318910161511225">Повежите се на мрежу и пробајте поново</translation>
 <translation id="2910678330803525229">Сада можете да почнете да прегледате</translation>
@@ -2383,6 +2387,7 @@
 <translation id="3042097545107738107">Промените стратегију оптимизованог пуњења.</translation>
 <translation id="3043016484125065343">Пријавите се да бисте видели обележиваче</translation>
 <translation id="3043581297103810752">Са <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Опције за одељак <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Побољшајте помоћу вештачке интелигенције</translation>
 <translation id="3045447014237878114">Овај сајт је аутоматски преузео више датотека</translation>
 <translation id="304644035656848980">Преглед микрофона</translation>
@@ -3236,6 +3241,7 @@
 <translation id="3748424433435232460">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="3748466028423001972">Замени доњим приказом</translation>
 <translation id="3748706263662799310">Пријавите грешку</translation>
+<translation id="3750406842345107892">Садржај и URL странице на којој се налазите, као и истакнути текст, шаљу се Google-у ради генерисања објашњења</translation>
 <translation id="3752115502500640407">Делите копију лозинке за <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Отвори бочну таблу</translation>
 <translation id="3753585830134123417">Промењена величина прозора са леве стране</translation>
@@ -4132,6 +4138,7 @@
 <translation id="4550926046134589611">Неки подржани линкови ће се и даље отварати у <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Недавне теме вештачке интелигенције</translation>
 <translation id="4551763574344810652">Притисните <ph name="MODIFIER_KEY_DESCRIPTION" /> да бисте опозвали</translation>
+<translation id="4552721860956824254">Звук је искључен</translation>
 <translation id="4553526521109675518">Морате да рестартујете Chromebook да бисте променили језик уређаја. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Обавезна је нова верзија ове апликације</translation>
 <translation id="4555769855065597957">Нови профил</translation>
@@ -5079,6 +5086,7 @@
 <translation id="5379140238605961210">Настави да блокираш приступ микрофону</translation>
 <translation id="5382591305415226340">Управљај подржаним линковима</translation>
 <translation id="5384401776498845256">Ко може да дели са вама</translation>
+<translation id="5386856927586721327">Поставите питање о екрану помоћу <ph name="LENS_ICON" />Google објектива</translation>
 <translation id="5387116558048951800">Измените акредитив <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Смернице за предузећа су промењене. Дугме за експерименте је додато у траку с алаткама. Кликните на дугме да бисте отворили дијалог и омогућили експерименте.</translation>
 <translation id="5388436023007579456">Апликације и веб-сајтови са дозволом за камеру, као и системске услуге, могу да користе камеру. Да бисте користили камеру, можда ћете морати да рестартујете апликацију или да освежите страницу.</translation>
@@ -7389,6 +7397,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ће се покренути приликом покретања система и наставити да ради у позадини чак и када затворите све остале <ph name="PRODUCT_NAME" /> прозоре.</translation>
 <translation id="7399045143794278225">Прилагоди синхронизацију</translation>
 <translation id="7399616692258236448">Захтеви за локацију се аутоматски блокирају за све сајтове осим за оне које омогућите</translation>
+<translation id="7399746352569282594">Затвори подељени приказ: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Безбедносна провера</translation>
 <translation id="7400059772197434086">је онемогућен да користи ваше податке на</translation>
 <translation id="7400418766976504921">URL адреса</translation>
@@ -8029,6 +8038,7 @@
 <translation id="7953955868932471628">Управљај пречицама</translation>
 <translation id="7955105108888461311">Затражи лично</translation>
 <translation id="7955177647836564772">Ако је Smart Lock укључен и телефон је откључан, не морате да уносите лозинку или PIN</translation>
+<translation id="7955672267519272700">Затвори картицу <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7956918070009672177">Нема гласова (<ph name="LANGUAGE" />) на уређају. Повежите се на интернет и пробајте поново.</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>

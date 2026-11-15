@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
 <translation id="146522654774760805">Heslá a automatické dopĺňanie</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
+<translation id="1473344277210704336">Gemini a vaše nevyhnutnosti na novom dolnom paneli s nástrojmi</translation>
 <translation id="1477626028522505441">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so serverom.</translation>
 <translation id="147982357559798527">Zmenené</translation>
 <translation id="1480287803138246127">Časť vašej histórie sa tu nemusí zobraziť. Ak si chcete pozrieť celú históriu Chromu, otvorte ju.</translation>
@@ -907,6 +908,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4537987892902330164">Zostali ste prihlásený/-á ako <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> kariet, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Skratky pre webové stránky</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Členstvo <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Prihlásenie do spravovaného účtu</translation>
 <translation id="4577115723294378384">Zoradiť od A po Z</translation>
 <translation id="4578289292431526768">Začať</translation>
@@ -914,6 +916,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4585751637295612750">Otvorte novú kartu a pridajte tak dopyt do otázky</translation>
 <translation id="4585793705637313973">Úprava stránky</translation>
 <translation id="4587589328781138893">Weby</translation>
+<translation id="4587590257937792551">Chrome má nový dolný panel s nástrojmi vytvorený s dôrazom na pohodlie. V <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" /> sa kedykoľvek môžete prepnúť späť.</translation>
 <translation id="4594952190837476234">Táto offline stránka je z <ph name="CREATION_TIME" /> a líši sa od online verzie.</translation>
 <translation id="4595237294768457124">Otvorte stránku na novej karte</translation>
 <translation id="4595276580892809760">Priložiť obrázky z galérie</translation>
@@ -1448,6 +1451,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6633067410344541938">Odblokovať režim inkognito</translation>
 <translation id="6636623428211296678">Preskúmajte ďalšie nastavenia nižšie alebo dokončite kontrolu</translation>
 <translation id="6637100877383020115">Na účely zlepšovania aplikácie odosiela Chrome údaje o využití a pádoch Googlu. <ph name="BEGIN_UMA_LINK" />Spravovať<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">To najdôležitejšie priamo na dolnom paneli s nástrojmi. V <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" /> sa kedykoľvek môžete prepnúť späť.</translation>
 <translation id="6642299196749785472">Priložiť karty</translation>
 <translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
@@ -1646,6 +1650,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná pripnutá karta na zdieľanie</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
 <translation id="7314734791127433392">Heslá sa nepodarilo skontrolovať</translation>
+<translation id="7324177883197548771">Chrome má nový vzhľad vytvorený s dôrazom na pohodlie. V <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" /> sa kedykoľvek môžete prepnúť späť.</translation>
 <translation id="7324354302972299151">Odoslanie požiadavky Do Not Track</translation>
 <translation id="7333041109965360609">Odber upozornení bol zrušený</translation>
 <translation id="7335766481146072567">Stlačte Pokračovať</translation>
@@ -1748,6 +1753,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7697383401610880082">Presúvadlo</translation>
 <translation id="7698359219371678927">Vytvorte správu v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Dolný hárok nedávnej aktivity je otvorený na celú výšku</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Členstvo <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Používať mobilné dáta</translation>
 <translation id="7708994397325774423">Získajte všetky svoje heslá</translation>
 <translation id="7714077993070342304">Otvorenie Ponuky Chrome</translation>

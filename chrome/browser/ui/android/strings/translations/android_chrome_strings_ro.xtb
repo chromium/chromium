@@ -129,6 +129,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1460751212339734034">Economisește timp, tastează mai puțin</translation>
 <translation id="146522654774760805">Parole și completare automată</translation>
 <translation id="1466383950273130737">Alege limba pentru Chrome</translation>
+<translation id="1473344277210704336">Gemini și elementele esențiale în noua bară de instrumente de jos</translation>
 <translation id="1477626028522505441">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor probleme de server.</translation>
 <translation id="147982357559798527">Modificată</translation>
 <translation id="1480287803138246127">Este posibil ca o parte a istoricului să nu se afișeze aici. Pentru a vedea tot istoricul Chrome, deschide istoricul Chrome complet.</translation>
@@ -907,6 +908,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4537987892902330164">Ai rămas conectat(ă) ca <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_COUNT_MANY" /> file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> de file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Comenzi rapide pentru pagini web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Abonament <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Conectează-te la contul gestionat</translation>
 <translation id="4577115723294378384">Sortează de la A la Z</translation>
 <translation id="4578289292431526768">Să începem!</translation>
@@ -914,6 +916,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4585751637295612750">Deschide o filă nouă pentru a o adăuga la întrebare</translation>
 <translation id="4585793705637313973">Editează pagina</translation>
 <translation id="4587589328781138893">Site-uri</translation>
+<translation id="4587590257937792551">Chrome are o nouă bară de instrumente în partea de jos, creată pentru confort. Poți reveni oricând în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
 <translation id="4595237294768457124">Deschide o pagină Filă nouă</translation>
 <translation id="4595276580892809760">Atașează imagini din galerie</translation>
@@ -1448,6 +1451,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6633067410344541938">Deblochează modul incognito</translation>
 <translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
 <translation id="6637100877383020115">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Elementele esențiale, direct în bara de instrumente de jos. Poți reveni oricând în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Atașează file</translation>
 <translation id="6647441008198474441">Adresele URL pe care le accesezi sunt trimise la Google pentru a anticipa site-urile pe care le-ai putea accesa pe viitor</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1646,6 +1650,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, filă de trimitere fixată și selectată</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7314734791127433392">Nu se pot verifica parolele</translation>
+<translation id="7324177883197548771">Chrome are un nou aspect, creat pentru confort. Poți reveni oricând în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Trimite o solicitare Do Not Track</translation>
 <translation id="7333041109965360609">Te-ai dezabonat de la notificări</translation>
 <translation id="7335766481146072567">Apasă pe Continuă</translation>
@@ -1748,6 +1753,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7697383401610880082">Ghidaj de tragere</translation>
 <translation id="7698359219371678927">Creează un e-mail în <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Foaia din partea de jos pentru activitatea recentă este deschisă la înălțimea completă</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Abonament <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">va folosi datele mobile;</translation>
 <translation id="7708994397325774423">Accesează toate parolele</translation>
 <translation id="7714077993070342304">Deschide meniul Chrome</translation>

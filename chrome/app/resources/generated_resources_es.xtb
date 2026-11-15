@@ -331,6 +331,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1256143630373008432">Prueba automática fallida</translation>
 <translation id="1257336506558170607">Exportar certificado seleccionado</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="1259453023447377372">Grupo de pestañas guardado</translation>
 <translation id="1260451001046713751">Permitir siempre ventanas emergentes y redirecciones de <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Siempre tiene permiso para usar la optimización de JavaScript</translation>
 <translation id="1262564987698748643">Los sitios pueden solicitar permiso para anular la entrada de tu teclado</translation>
@@ -1846,6 +1847,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2610780100389066815">Firma de listas de confianza de Microsoft</translation>
 <translation id="261114180663074524">Inicia sesión en tu cuenta de Microsoft y vuelve a intentarlo</translation>
 <translation id="2611885296070244383">Micrófono (interno)</translation>
+<translation id="2612346259364350954">Usar el contenido de la página para explicar el texto resaltado</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas que hablas. Si es posible, mostrarán contenido en esos idiomas.</translation>
 <translation id="2613210758071148851">No permitir ninguna extensión en <ph name="RESTRICTED_SITE" /></translation>
@@ -2148,6 +2150,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="284884486564166077">Busca cualquier imagen con Lens</translation>
 <translation id="2849035674501872372">Buscar</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Más opciones de <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Cerrado</translation>
 <translation id="2851291081585704741">No tienes conexión</translation>
 <translation id="285237063405807022">(cargando)</translation>
@@ -2219,6 +2222,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Abrir archivos de Word, Excel y PowerPoint</translation>
 <translation id="2908162660801918428">Añadir galería de archivos por directorio</translation>
+<translation id="2909334296570021569">Abrir grupo de pestañas</translation>
 <translation id="2909487040556589351">Obtén Chrome en tu dispositivo móvil</translation>
 <translation id="2910318910161511225">Conéctate a una red y vuelve a intentarlo</translation>
 <translation id="2910678330803525229">Ya puedes empezar a navegar</translation>
@@ -2385,6 +2389,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3042097545107738107">Cambia la estrategia de carga optimizada.</translation>
 <translation id="3043016484125065343">Inicia sesión para ver tus marcadores</translation>
 <translation id="3043581297103810752">De <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Opciones de <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Mejorar con IA</translation>
 <translation id="3045447014237878114">Este sitio web ha descargado varios archivos automáticamente</translation>
 <translation id="304644035656848980">Vista previa de tu micrófono</translation>
@@ -3238,6 +3243,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3748424433435232460">Ya se ha guardado una contraseña para esta cuenta en este dispositivo</translation>
 <translation id="3748466028423001972">Intercambiar con vista inferior</translation>
 <translation id="3748706263662799310">Notifica un error</translation>
+<translation id="3750406842345107892">El contenido y la URL de la página en la que estás, así como el texto resaltado, se envían a Google para generar una explicación</translation>
 <translation id="3752115502500640407">Compartir una copia de tu contraseña de <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Abrir panel lateral</translation>
 <translation id="3753585830134123417">Ventanas redimensionadas a la izquierda</translation>
@@ -4133,6 +4139,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4550926046134589611">Algunos enlaces compatibles se seguirán abriendo en <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Tus temas recientes generados por IA</translation>
 <translation id="4551763574344810652">Pulsa <ph name="MODIFIER_KEY_DESCRIPTION" /> para deshacer</translation>
+<translation id="4552721860956824254">Audio silenciado</translation>
 <translation id="4553526521109675518">Debes reiniciar tu Chromebook para cambiar el idioma del dispositivo. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Se necesita una nueva versión de esta aplicación</translation>
 <translation id="4555769855065597957">Sombra</translation>
@@ -5079,6 +5086,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5379140238605961210">Seguir bloqueando el acceso al micrófono</translation>
 <translation id="5382591305415226340">Gestionar enlaces compatibles</translation>
 <translation id="5384401776498845256">Quién puede compartir contigo</translation>
+<translation id="5386856927586721327">Pregunta sobre tu pantalla con <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">La política de Enterprise ha cambiado. Se ha añadido el botón Experimentos a la barra de herramientas. Haz clic en el botón para abrir un cuadro de diálogo donde habilitar los experimentos.</translation>
 <translation id="5388436023007579456">Las aplicaciones y los sitios web que tengan el permiso de cámara, así como los servicios del sistema, pueden usar la cámara. Para usar la cámara, puede que tengas que reiniciar la aplicación o actualizar la página.</translation>
@@ -7384,6 +7392,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a ejecutarse cuando se inicie el sistema y seguirá ejecutándose en segundo plano aunque cierres todas las demás ventanas de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>
 <translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que las permitas</translation>
+<translation id="7399746352569282594">Cerrar vista dividida: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Comprobación de seguridad</translation>
 <translation id="7400059772197434086">no puede usar tu información en</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8024,6 +8033,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7953955868932471628">Gestionar accesos directos</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
+<translation id="7955672267519272700">Cerrar <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7956918070009672177">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>

@@ -344,6 +344,7 @@
 <translation id="4022972681110646219">翻譯這個畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome 內建，能幫你建立、儲存及自動填入高強度密碼。建議新增捷徑，方便隨時使用。</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />，<ph name="EMAIL" />，Google 會員。</translation>
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
@@ -941,6 +942,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9150331942025550505">在 <ph name="DEVICE_TYPE" /> 上使用 Chrome 應用程式，體驗強大的 AI 功能</translation>
 <translation id="919706545465235479">如要開始同步處理，請更新 Chrome</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />，Google 會員。</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
 <translation id="943390475793766444">這個檔案可能有危險內容，因此 Chrome 建議掃描檔案。</translation>

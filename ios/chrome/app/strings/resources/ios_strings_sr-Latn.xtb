@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Želite da zaustavite preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Skupljeno.</translation>
 <translation id="4800912004582762296">Kliktanje</translation>
+<translation id="4800930308997591052">Pređite na nalog <ph name="EMAIL" /> da biste lako delili kartice između uređaja i pristupali lozinkama, obeleživačima i drugom sadržaju sa Google naloga.</translation>
 <translation id="4802185666270672526">Sakrij opciju Zahtevaj verziju sajta za računar</translation>
 <translation id="4803185665210547709">Ovim upravlja organizacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -2149,6 +2150,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="7618220760967055820">Izaberite dugme koje će se prikazivati na traci s alatkama</translation>
 <translation id="7620522820075868385">Otkaži</translation>
 <translation id="762078666799342162">Ranija preuzimanja možete da pregledate u <ph name="BEGIN_LINK" />Fajlovima<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Nastavite tamo gde ste stali na računaru</translation>
 <translation id="7638584964844754484">Neispravna pristupna fraza</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="7640669552036055091">Kartice sa Android-a</translation>

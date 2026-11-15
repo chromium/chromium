@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Ինքնաստուգումը ձախողվել է</translation>
 <translation id="1257336506558170607">Արտահանել ընտրված հավաստագիրը</translation>
 <translation id="1258491128795710625">Նորություններ</translation>
+<translation id="1259453023447377372">Պահված ներդիրների խումբ</translation>
 <translation id="1260451001046713751">Միշտ թույլ տալ ելնող պատուհաններն ու վերահասցեավորումը <ph name="HOST" /> կայքում</translation>
 <translation id="1262395978737369974">Միշտ թույլատրվում է օգտագործել JavaScript-ի օպտիմալացումը</translation>
 <translation id="1262564987698748643">Թույլատրել կայքերին ստեղների փոխարինման հարցումներ ուղարկել</translation>
@@ -1843,6 +1844,7 @@
 <translation id="2610780100389066815">Վստահության ցուցակի ստորագրում (Microsoft)</translation>
 <translation id="261114180663074524">Մուտք գործեք ձեր Microsoft հաշիվ և նորից փորձեք</translation>
 <translation id="2611885296070244383">Ներկառուցված խոսափող</translation>
+<translation id="2612346259364350954">Օգտագործել էջի բովանդակությունը՝ ընդգծված տեքստը բացատրելու համար</translation>
 <translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="261305050785128654">Թույլ տվեք կայքերին իմանալ, թե ինչ լեզուներով եք խոսում։ Հնարավորության դեպքում կայքերը ձեզ կցուցադրեն բովանդակությունն այդ լեզուներով։</translation>
 <translation id="2613210758071148851">Արգելել բոլոր ընդլայնումները <ph name="RESTRICTED_SITE" /> կայքում</translation>
@@ -2145,6 +2147,7 @@
 <translation id="284884486564166077">Որոնեք ցանկացած պատկեր Տեսապակու միջոցով</translation>
 <translation id="2849035674501872372">Փնտրել</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" />․ այլ ընտրանքներ</translation>
 <translation id="285033512555869047">Փակ է</translation>
 <translation id="2851291081585704741">Դուք օֆլայն եք</translation>
 <translation id="285237063405807022">(բեռնվում է)</translation>
@@ -2216,6 +2219,7 @@
     Սերվերի հաղորդագրությունը՝ <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Բացեք Word, Excel և PowerPoint ֆայլեր</translation>
 <translation id="2908162660801918428">Մեդիա սրահի ավելացում գրացուցակից</translation>
+<translation id="2909334296570021569">Բացել ներդիրների խումբը</translation>
 <translation id="2909487040556589351">Ներբեռնեք Chrome-ը ձեր շարժական սարքում</translation>
 <translation id="2910318910161511225">Միացեք ցանցին և կրկին փորձեք</translation>
 <translation id="2910678330803525229">Այժմ կարող եք սկսել դիտարկումը</translation>
@@ -2382,6 +2386,7 @@
 <translation id="3042097545107738107">Փոխել օպտիմալացված լիցքավորման ռազմավարությունը։</translation>
 <translation id="3043016484125065343">Մուտք գործեք՝ ձեր էջանիշները տեսնելու համար</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> կայքից</translation>
+<translation id="3043977478651331629">«<ph name="SECTION_NAME" />» բաժնի կարգավորումներ</translation>
 <translation id="3044066905368192931">Բարելավել ԱԲ-ի օգնությամբ</translation>
 <translation id="3045447014237878114">Այս կայքն ավտոմատ ներբեռնել է մի քանի ֆայլ</translation>
 <translation id="304644035656848980">Բարձրախոսի փորձարկում</translation>
@@ -3233,6 +3238,7 @@
 <translation id="3748424433435232460">Այս հաշվի գաղտնաբառն արդեն պահված է այս սարքում</translation>
 <translation id="3748466028423001972">Տեղերով փոխել ներքևի դիտակերպի հետ</translation>
 <translation id="3748706263662799310">Հաղորդել վրիպակի մասին</translation>
+<translation id="3750406842345107892">Էջի բովանդակությունը, ձեր բացած URL-ը և ընդգծված տեքստն ուղարկվում են Google-ին՝ բացատրություն գեներացնելու համար</translation>
 <translation id="3752115502500640407">Կիսվեք <ph name="WEBSITE" /> կայքի համար ձեր գաղտնաբառի պատճենով</translation>
 <translation id="3753412199586870466">Բացել կողային վահանակը</translation>
 <translation id="3753585830134123417">Չափափոխված պատուհանները տեղափոխվեցին ձախ</translation>
@@ -4129,6 +4135,7 @@
 <translation id="4550926046134589611">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" /> հավելվածում։</translation>
 <translation id="4551379727767354516">Արհեստական բանականության օգնությամբ վերջերս ստեղծված ձեր թեմաները</translation>
 <translation id="4551763574344810652">Հետարկելու համար սեղմեք <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
+<translation id="4552721860956824254">Ձայնն անջատված է</translation>
 <translation id="4553526521109675518">Սարքի լեզուն փոխելու համար վերագործարկեք Chromebook-ը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Հավելվածի նոր տարբերակն է պահանջվում</translation>
 <translation id="4555769855065597957">Ստվեր</translation>
@@ -5076,6 +5083,7 @@
 <translation id="5379140238605961210">Շարունակել արգելափակել խոսափողի օգտագործումը</translation>
 <translation id="5382591305415226340">Կառավարել աջակցվող հղումները</translation>
 <translation id="5384401776498845256">Ով կարող է կիսվել ձեզ հետ</translation>
+<translation id="5386856927586721327">Հարցրեք ձեր էկրանի մասին <ph name="LENS_ICON" />Google Տեսապակու միջոցով</translation>
 <translation id="5387116558048951800">Փոփոխել <ph name="CREDENTIAL_TYPE" />ը</translation>
 <translation id="538822246583124912">Կորպորատիվ կանոն է փոխվել։ Գործիքագոտում ավելացվել է «Փորձարկումներ» կոճակը։ Սեղմեք կոճակը՝ փորձարկումները միացնելու պատուհանը բացելու համար։</translation>
 <translation id="5388436023007579456">«Տեսախցիկ» թույլտվությունն ունեցող հավելվածներն ու կայքերը, ինչպես նաև համակարգային ծառայությունները կարող են օգտագործել ձեր տեսախցիկը։ Տեսախցիկն օգտագործելու համար կարող է պահանջվել վերագործարկել հավելվածը կամ թարմացնել էջը։</translation>
@@ -7379,6 +7387,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" />-ը կգործարկվի համակարգի մեկնարկի ժամանակ և կշարունակի աշխատել հետնաշերտում, նույնիսկ եթե փակեք <ph name="PRODUCT_NAME" />-ի բոլոր պատուհանները:</translation>
 <translation id="7399045143794278225">Կարգավորել համաժամացումը</translation>
 <translation id="7399616692258236448">Տեղադրության հարցումները ավտոմատ արգելափակվում են բոլոր կայքերի համար՝ բացի ձեր նշած կայքերից:</translation>
+<translation id="7399746352569282594">Փակել տրոհված դիտակերպը՝ <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Անվտանգության ստուգում</translation>
 <translation id="7400059772197434086">տիրույթին արգելվել է օգտագործել ձեր մասին տեղեկությունները հետևյալ կայքում՝</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8019,6 +8028,7 @@
 <translation id="7953955868932471628">Կառավարել դյուրանցումները</translation>
 <translation id="7955105108888461311">Հարցնել անձամբ</translation>
 <translation id="7955177647836564772">Եթե Smart Lock-ը միացված է, և հեռախոսն ապակողպված է, PIN կոդ կամ գաղտնաբառ մուտքագրելու կարիք չկա</translation>
+<translation id="7955672267519272700">Փակել <ph name="TAB_TITLE" /> ներդիրը</translation>
 <translation id="7956373551960864128">Ձեր պահված տպիչները</translation>
 <translation id="7956918070009672177">Ձեր սարքում <ph name="LANGUAGE" /> լեզվով ձայներ չկան։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="7957074856830851026">Տեսնել սարքի մասին տեղեկություններ, օրինակ՝ սերիական համարը և օբյեկտի ID-ն</translation>

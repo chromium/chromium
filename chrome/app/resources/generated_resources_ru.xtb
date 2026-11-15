@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Самодиагностика не пройдена</translation>
 <translation id="1257336506558170607">Экспортировать выбранный сертификат</translation>
 <translation id="1258491128795710625">Что нового</translation>
+<translation id="1259453023447377372">Сохраненная группа вкладок</translation>
 <translation id="1260451001046713751">Всегда показывать всплывающие окна с сайта <ph name="HOST" /> и разрешить перенаправление с него</translation>
 <translation id="1262395978737369974">Всегда разрешено использовать оптимизацию JavaScript</translation>
 <translation id="1262564987698748643">Разрешить сайтам отправлять запросы на переопределение клавиш</translation>
@@ -1845,6 +1846,7 @@
 <translation id="2610780100389066815">Подписывание списка доверия (Microsoft)</translation>
 <translation id="261114180663074524">Войдите в аккаунт Microsoft и повторите попытку.</translation>
 <translation id="2611885296070244383">Встроенный микрофон</translation>
+<translation id="2612346259364350954">Использовать содержимое страницы для объяснения выделенного текста</translation>
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="261305050785128654">Укажите, какими языками вы владеете. Тогда контент на сайтах будет по возможности показываться на выбранных языках.</translation>
 <translation id="2613210758071148851">Запретить все расширения на сайте <ph name="RESTRICTED_SITE" /></translation>
@@ -2147,6 +2149,7 @@
 <translation id="284884486564166077">Поиск по изображению с помощью Объектива</translation>
 <translation id="2849035674501872372">Найти</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" />: другие действия</translation>
 <translation id="285033512555869047">Закрытая</translation>
 <translation id="2851291081585704741">Нет подключения к интернету</translation>
 <translation id="285237063405807022">(загружается)</translation>
@@ -2218,6 +2221,7 @@
     Сообщение сервера: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Открывайте файлы Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Добавление галереи мультимедиа из папки</translation>
+<translation id="2909334296570021569">Открыть группу вкладок</translation>
 <translation id="2909487040556589351">Установите Chrome на мобильное устройство</translation>
 <translation id="2910318910161511225">Подключитесь к сети и повторите попытку.</translation>
 <translation id="2910678330803525229">Теперь вы можете пользоваться браузером.</translation>
@@ -2384,6 +2388,7 @@
 <translation id="3042097545107738107">Изменить режим оптимизированной зарядки.</translation>
 <translation id="3043016484125065343">Чтобы получить доступ к закладкам, войдите в Chrome</translation>
 <translation id="3043581297103810752">Откуда: <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" />: параметры</translation>
 <translation id="3044066905368192931">Повышение эффективности работы с помощью ИИ</translation>
 <translation id="3045447014237878114">Этот сайт автоматически скачал несколько файлов</translation>
 <translation id="304644035656848980">Просмотр аудиопотока микрофона</translation>
@@ -3237,6 +3242,7 @@
 <translation id="3748424433435232460">Пароль аккаунта уже сохранен на этом устройстве.</translation>
 <translation id="3748466028423001972">Поменять местами с нижним окном</translation>
 <translation id="3748706263662799310">Сообщить об ошибке</translation>
+<translation id="3750406842345107892">Содержимое и URL страницы, на которой вы находитесь, а также выделенный текст отправляются в Google для генерации объяснения.</translation>
 <translation id="3752115502500640407">Поделитесь своим паролем к сайту <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Открыть боковую панель</translation>
 <translation id="3753585830134123417">Граница между окнами перемещена влево</translation>
@@ -4133,6 +4139,7 @@
 <translation id="4550926046134589611">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложении "<ph name="APP_NAME" />".</translation>
 <translation id="4551379727767354516">Недавно созданные темы</translation>
 <translation id="4551763574344810652">Чтобы отменить действие, нажмите <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
+<translation id="4552721860956824254">Звук отключен</translation>
 <translation id="4553526521109675518">Чтобы изменить язык устройства, нужно перезапустить Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Требуется новая версия этого приложения</translation>
 <translation id="4555769855065597957">Тень</translation>
@@ -5080,6 +5087,7 @@
 <translation id="5379140238605961210">Всегда блокировать доступ к микрофону</translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
 <translation id="5384401776498845256">Кто может отправлять контент на ваше устройство</translation>
+<translation id="5386856927586721327">Спросите <ph name="LENS_ICON" />Google Объектив о том, что видите на экране</translation>
 <translation id="5387116558048951800">Изменить <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Корпоративное правило изменилось. На панель инструментов добавлена кнопка экспериментов. Нажмите эту кнопку, чтобы открыть диалоговое окно и включить в нем эксперименты.</translation>
 <translation id="5388436023007579456">Камеру могут использовать приложения и сайты с разрешением на доступ к ней, а также системные сервисы. Чтобы использовать камеру, вам может потребоваться перезапустить приложение или обновить страницу.</translation>
@@ -7391,6 +7399,7 @@
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
 <translation id="7399616692258236448">Запросы местоположения от всех сайтов блокируются автоматически – кроме тех, которым вы дали разрешение.</translation>
+<translation id="7399746352569282594">Закрыть параллельный просмотр: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Проверка безопасности</translation>
 <translation id="7400059772197434086">запрещено использовать ваши данные на следующих сайтах:</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8031,6 +8040,7 @@
 <translation id="7953955868932471628">Управление ярлыками</translation>
 <translation id="7955105108888461311">Попросить лично</translation>
 <translation id="7955177647836564772">Если функция Smart Lock включена и телефон разблокирован, вводить пароль или PIN-код не нужно.</translation>
+<translation id="7955672267519272700">Закрыть вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7956918070009672177">На устройстве нет голосов для этого языка: <ph name="LANGUAGE" />. Подключитесь к интернету и повторите попытку.</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>

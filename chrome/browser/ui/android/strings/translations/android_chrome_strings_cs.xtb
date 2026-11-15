@@ -129,6 +129,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1460751212339734034">Ušetřete čas, pište méně</translation>
 <translation id="146522654774760805">Hesla a automatické vyplňování</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
+<translation id="1473344277210704336">Gemini a vaše nezbytnosti na nové spodní liště</translation>
 <translation id="1477626028522505441">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu problémů se serverem.</translation>
 <translation id="147982357559798527">Změněno</translation>
 <translation id="1480287803138246127">Je možné, že se zde nezobrazuje část vaší historie. Pokud chcete vidět celou svou historii Chromu, otevřete ji.</translation>
@@ -907,6 +908,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4537987892902330164">Zůstali jste přihlášeni jako <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4558311620361989323">Zkratky webových stránek</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Členství <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Přihlaste se ke spravovanému účtu</translation>
 <translation id="4577115723294378384">Seřadit od A do Z</translation>
 <translation id="4578289292431526768">Jdeme na to</translation>
@@ -914,6 +916,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4585751637295612750">Otevřete novou kartu a přidejte ji do otázky</translation>
 <translation id="4585793705637313973">Úprava stránky</translation>
 <translation id="4587589328781138893">Weby</translation>
+<translation id="4587590257937792551">Chrome má novou spodní lištu, která je navržena pro pohodlí. V <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> můžete kdykoli přepnout zpět.</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
 <translation id="4595237294768457124">Otevřete stránku Nová karta</translation>
 <translation id="4595276580892809760">Připojit obrázky z galerie</translation>
@@ -1448,6 +1451,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6633067410344541938">Odemknout anonymní karty</translation>
 <translation id="6636623428211296678">Níže prozkoumejte další nastavení nebo skončete</translation>
 <translation id="6637100877383020115">Za účelem vylepšování aplikace odesílá Chrome do Googlu údaje o využití a selháních. <ph name="BEGIN_UMA_LINK" />Spravovat<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">To nejdůležitější přímo na spodní liště. V <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> můžete kdykoli přepnout zpět.</translation>
 <translation id="6642299196749785472">Připojit karty</translation>
 <translation id="6647441008198474441">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
@@ -1646,6 +1650,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná připnutá sdílející karta</translation>
 <translation id="7311244614769792472">Žádné výsledky</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
+<translation id="7324177883197548771">Chrome má nový vzhled navržený pro pohodlí. V <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> můžete kdykoli přepnout zpět.</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
 <translation id="7333041109965360609">Odběr oznámení byl odhlášen</translation>
 <translation id="7335766481146072567">Stiskněte Pokračovat</translation>
@@ -1748,6 +1753,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Spodní panel s nedávnou aktivitou je otevřený na celou výšku</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Členství <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
 <translation id="7708994397325774423">Získejte všechna svá hesla</translation>
 <translation id="7714077993070342304">Otevřít nabídku Chrome</translation>

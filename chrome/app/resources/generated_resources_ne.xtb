@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">सेल्फ टेस्ट गर्न सकिएन</translation>
 <translation id="1257336506558170607">चयन गरिएको सर्टिफिकेट एक्स्पोर्ट गर्नुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
+<translation id="1259453023447377372">सेभ गरिएको ट्याब समूह</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> लाई पपअप देखाउन र रिडिरेक्ट गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1262395978737369974">साइटहरूलाई JavaScript अप्टिमाइजेसन प्रयोग गर्ने अनुमति सधैँ दिइन्छ</translation>
 <translation id="1262564987698748643">साइटहरूले तपाईंको किबोर्ड इन्पुट ओभरराइड गर्ने अनुमति माग्न सक्छन्</translation>
@@ -1845,6 +1846,7 @@
 <translation id="2610780100389066815">Microsoft विश्वास सूची साइनिङ</translation>
 <translation id="261114180663074524">आफ्नो Microsoft खातामा साइन इन गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2611885296070244383">माइक (अन्तर्निर्मित)</translation>
+<translation id="2612346259364350954">हाइलाइट गरिएको टेक्स्टका बारेमा व्याख्या गर्न पेजमा भएको कन्टेन्ट प्रयोग गर्नुहोस्</translation>
 <translation id="2612676031748830579">कार्ड नम्बर</translation>
 <translation id="261305050785128654">वेबसाइटहरूलाई तपाईंले बोल्ने भाषाहरूका बारेमा जानकारी दिनुहोस्। ती वेबसाइटहरूले सम्भव भएसम्म त्यस्ता भाषाहरूमा सामग्री देखाउने छन्।</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> मा कुनै पनि एक्स्टेन्सन प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
@@ -2147,6 +2149,7 @@
 <translation id="284884486564166077">लेन्स प्रयोग गरी कुनै पनि फोटो खोज्नुहोस्</translation>
 <translation id="2849035674501872372">खोज्नुहोस्</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> का थप विकल्पहरू</translation>
 <translation id="285033512555869047">बन्द छ</translation>
 <translation id="2851291081585704741">तपाईं अफलाइन हुनुहुन्छ</translation>
 <translation id="285237063405807022">(लोड गरिँदै छ)</translation>
@@ -2219,6 +2222,7 @@
     सर्भर सन्देश: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel, and PowerPoint फाइलहरू खोल्नुहोस्</translation>
 <translation id="2908162660801918428">डाइरेक्टरी अनुसार मिडिया ग्यालरी थप्नुहोस</translation>
+<translation id="2909334296570021569">ट्याब समूह खोल्नुहोस्</translation>
 <translation id="2909487040556589351">आफ्नो मोबाइल डिभाइसमा Chrome डाउनलोड गर्नुहोस्</translation>
 <translation id="2910318910161511225">नेटवर्कमा जडान गरेर फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2910678330803525229">तपाईं अब ब्राउज गर्न थाल्न सक्नुहुन्छ</translation>
@@ -2385,6 +2389,7 @@
 <translation id="3042097545107738107">अप्टिमाइज गरिएको चार्ज गर्ने तरिका बदल्नुहोस्।</translation>
 <translation id="3043016484125065343">आफ्ना बुकमार्कहरू हेर्न साइन इन गर्नुहोस्</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> बाट</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> का विकल्पहरू</translation>
 <translation id="3044066905368192931">AI प्रयोग गरी परिष्कार गर्नुहोस्</translation>
 <translation id="3045447014237878114">यो साइटले स्वतः एकभन्दा बढी फाइलहरू डाउनलोड गर्‍यो</translation>
 <translation id="304644035656848980">तपाईंको माइक्रोफोनको प्रिभ्यू</translation>
@@ -3236,6 +3241,7 @@
 <translation id="3748424433435232460">यो खाताको पासवर्ड यस डिभाइसमा सेभ गरिसकिएको छ</translation>
 <translation id="3748466028423001972">तल्लो भ्यूसँग अदलबदल गर्नुहोस्</translation>
 <translation id="3748706263662799310">बगका बारेमा रिपोर्ट गर्नुहोस्</translation>
+<translation id="3750406842345107892">तपाईंले खोलिरहनुभएको पेजमा भएको कन्टेन्ट र सो पेजको URL र हाइलाइट गरिएको टेक्स्ट व्याख्या जेनेरेट गर्ने प्रयोजनका लागि Google मा पठाइन्छन्</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> को आफ्नो पासवर्डको कपी सेयर गर्नुहोस्</translation>
 <translation id="3753412199586870466">साइड प्यानल खोल्नुहोस्</translation>
 <translation id="3753585830134123417">विन्डोहरूको आकार बायाँतिरबाट बदलिए</translation>
@@ -4131,6 +4137,7 @@
 <translation id="4550926046134589611">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" /> मा खुल्ने छन्।</translation>
 <translation id="4551379727767354516">तपाईंले हालसालै AI प्रयोग गरी सिर्जना गरेका थिमहरू</translation>
 <translation id="4551763574344810652">अन्डू गर्न <ph name="MODIFIER_KEY_DESCRIPTION" /> थिच्नुहोस्</translation>
+<translation id="4552721860956824254">अडियो म्युट गरिएको छ</translation>
 <translation id="4553526521109675518">तपाईंले आफ्नो Chromebook को भाषा परिवर्तन यसलाई रिस्टार्ट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">यो एपको नयाँ संस्करण चाहिन्छ</translation>
 <translation id="4555769855065597957">छाया</translation>
@@ -5079,6 +5086,7 @@
 <translation id="5379140238605961210">माइक्रोफोन पहुँच रोक्न जारी राख्नुहोस्</translation>
 <translation id="5382591305415226340">समर्थन गरिने लिंकहरूलाई व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5384401776498845256">कसकसले तपाईंसँग सेयर गर्न सक्छन्</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google लेन्स प्रयोग गरी आफ्नो स्क्रिनमा भएका कुराका बारेमा सोध्नुहोस्</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> सम्पादन गर्नुहोस्</translation>
 <translation id="538822246583124912">Enterprise सम्बन्धी नीति परिवर्तन भएको छ। टुलबारमा 'परीक्षणहरू' बटन थपिएको छ। परीक्षणको चरणमा रहेका सुविधाहरू अन गर्ने प्रयोजनका लागि डायलग खोल्न सो बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="5388436023007579456">क्यामेरा प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइटका साथै सिस्टमका सेवाहरू तपाईंको डिभाइसको क्यामेरा प्रयोग गर्न सक्छन्। क्यामेरा प्रयोग गर्न तपाईंले यो एप रिस्टार्ट गर्नु पर्ने वा यो पेज रिफ्रेस गर्नु पर्ने हुन सक्छ।</translation>
@@ -7381,6 +7389,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> सिस्टम स्टार्टअपमा लन्च हुनेछ र तपाईंले अन्य सबै <ph name="PRODUCT_NAME" /> विन्डोहरू बन्द गरिसक्नुभएपछि समेत पृष्ठभूमिमा चल्न जारी राख्नेछ।</translation>
 <translation id="7399045143794278225">सिंक  कस्टम पार्नुहोस्</translation>
 <translation id="7399616692258236448">तपाईंले लोकेसन प्रयोग गर्ने अनुमति दिएका साइटबाहेक अन्य सबै साइटहरूका लागि लोकेसन प्रयोग गर्ने अनुरोध स्वतः ब्लक गरिन्छ</translation>
+<translation id="7399746352569282594">स्प्लिट भ्यू बन्द गर्नुहोस्: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">सुरक्षा जाँच</translation>
 <translation id="7400059772197434086">यो साइटलाई निम्न साइटमा तपाईंको जानकारी प्रयोग गर्न रोक लगाइएको छ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8021,6 +8030,7 @@
 <translation id="7953955868932471628">सर्टकटहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="7955105108888461311">व्यक्तिगत रूपमा अनुरोध गर्नुहोस्</translation>
 <translation id="7955177647836564772">Smart Lock अन छ र तपाईंको फोन अनलक गरिएको छ भने तपाईंले कुनै पनि पासवर्ड वा PIN हालिराख्नु पर्दैन</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="7956373551960864128">तपाईंले सुरक्षित गर्नुभएका प्रिन्टरहरू</translation>
 <translation id="7956918070009672177">तपाईंको डिभाइसमा कुनै पनि <ph name="LANGUAGE" /> भ्वाइस उपलब्ध छैन। इन्टरनेटमा कनेक्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7957074856830851026">क्रम सङ्ख्या वा एसेट ID जस्ता यन्त्रसम्बन्धी जानकारी हेर्नुहोस्</translation>

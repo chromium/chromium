@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">Ο αυτοέλεγχος απέτυχε</translation>
 <translation id="1257336506558170607">Εξαγωγή επιλεγμένου πιστοποιητικού</translation>
 <translation id="1258491128795710625">Τι νέο υπάρχει</translation>
+<translation id="1259453023447377372">Αποθηκευμένη ομάδα καρτελών</translation>
 <translation id="1260451001046713751">Να εμφανίζονται πάντα αναδυόμενα παράθυρα από <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Να επιτρέπεται πάντα η χρήση της βελτιστοποίησης JavaScript</translation>
 <translation id="1262564987698748643">Οι ιστότοποι μπορούν να ζητήσουν την παράκαμψη των ενεργειών του πληκτρολογίου</translation>
@@ -1858,6 +1859,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Συνδεθείτε στον λογαριασμό σας Microsoft και δοκιμάστε ξανά</translation>
 <translation id="2611885296070244383">Μικρόφωνο (εσωτερικό)</translation>
+<translation id="2612346259364350954">Χρήση περιεχομένου σελίδας για την επεξήγηση επισημασμένου κειμένου</translation>
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="261305050785128654">Επιτρέψτε στους ιστοτόπους να γνωρίζουν τις γλώσσες που μιλάτε. Όταν είναι δυνατό, θα εμφανίζουν περιεχόμενο σε αυτές τις γλώσσες.</translation>
 <translation id="2613210758071148851">Να μην επιτρέπεται καμία επέκταση στον ιστότοπο <ph name="RESTRICTED_SITE" /></translation>
@@ -2160,6 +2162,7 @@
 <translation id="284884486564166077">Αναζήτηση οποιασδήποτε εικόνας με το Lens</translation>
 <translation id="2849035674501872372">Αναζήτηση</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Περισσότερες επιλογές για <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Κλειστή</translation>
 <translation id="2851291081585704741">Είστε εκτός σύνδεσης</translation>
 <translation id="285237063405807022">(γίνεται φόρτωση)</translation>
@@ -2231,6 +2234,7 @@
     μήνυμα διακομιστή: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Άνοιγμα αρχείων Word, Excel και PowerPoint</translation>
 <translation id="2908162660801918428">Προσθήκη συλλογής μέσων από τον κατάλογο</translation>
+<translation id="2909334296570021569">Άνοιγμα ομάδας καρτελών</translation>
 <translation id="2909487040556589351">Λήψη του Chrome στην κινητή συσκευή σας</translation>
 <translation id="2910318910161511225">Συνδεθείτε σε ένα δίκτυο και δοκιμάστε ξανά</translation>
 <translation id="2910678330803525229">Μπορείτε πλέον να ξεκινήσετε την περιήγηση</translation>
@@ -2397,6 +2401,7 @@
 <translation id="3042097545107738107">Αλλάξτε τη στρατηγική βελτιστοποιημένης φόρτισης.</translation>
 <translation id="3043016484125065343">Συνδεθείτε για να δείτε τους σελιδοδείκτες σας</translation>
 <translation id="3043581297103810752">Από <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Επιλογές για <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Βελτίωση με AI</translation>
 <translation id="3045447014237878114">Αυτός ο ιστότοπος κατέβασε αυτόματα πολλά αρχεία</translation>
 <translation id="304644035656848980">Προεπισκόπηση του μικροφώνου σας</translation>
@@ -3250,6 +3255,7 @@
 <translation id="3748424433435232460">Ένας κωδικός πρόσβασης για αυτόν τον λογαριασμό είναι ήδη αποθηκευμένος σε αυτήν τη συσκευή</translation>
 <translation id="3748466028423001972">Αντικατάσταση με την προβολή στο κάτω μέρος</translation>
 <translation id="3748706263662799310">Αναφορά σφάλματος</translation>
+<translation id="3750406842345107892">Το περιεχόμενο και το URL της σελίδας στην οποία βρίσκεστε, καθώς και το επισημασμένο κείμενο, αποστέλλονται στην Google για τη δημιουργία μιας επεξήγησης</translation>
 <translation id="3752115502500640407">Μοιραστείτε ένα αντίγραφο του κωδικού πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Άνοιγμα πλαϊνού πλαισίου</translation>
 <translation id="3753585830134123417">Το μέγεθος των παραθύρων άλλαξε στην αριστερή πλευρά</translation>
@@ -4146,6 +4152,7 @@
 <translation id="4550926046134589611">Ορισμένοι υποστηριζόμενοι σύνδεσμοι θα εξακολουθούν να ανοίγουν στην εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Τα πρόσφατα θέματα AI σας</translation>
 <translation id="4551763574344810652">Πατήστε <ph name="MODIFIER_KEY_DESCRIPTION" /> για αναίρεση.</translation>
+<translation id="4552721860956824254">Σίγαση ήχου</translation>
 <translation id="4553526521109675518">Πρέπει να επανεκκινήσετε το Chromebook για να αλλάξετε τη γλώσσα συσκευής. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Απαιτείται μια νέα έκδοση αυτής της εφαρμογής</translation>
 <translation id="4555769855065597957">Σκιά</translation>
@@ -5094,6 +5101,7 @@
 <translation id="5379140238605961210">Να συνεχιστεί ο αποκλεισμός πρόσβασης στο μικρόφωνο</translation>
 <translation id="5382591305415226340">Διαχείριση υποστηριζόμενων συνδέσμων</translation>
 <translation id="5384401776498845256">Ποιος μπορεί να σας κοινοποιεί περιεχόμενο</translation>
+<translation id="5386856927586721327">Ρωτήστε σχετικά με την οθόνη σας με το <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Επεξεργασία <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Η πολιτική επιχείρησης άλλαξε. Το κουμπί πειραμάτων προστέθηκε στη γραμμή εργαλείων. Κάντε κλικ στο κουμπί για να ανοίξετε ένα παράθυρο διαλόγου για την ενεργοποίηση των πειραμάτων.</translation>
 <translation id="5388436023007579456">Οι εφαρμογές και οι ιστότοποι με άδεια κάμερας καθώς και οι υπηρεσίες συστήματος μπορούν να χρησιμοποιούν την κάμερά σας. Για να χρησιμοποιήσετε την κάμερα, μπορεί να χρειαστεί να επανεκκινήσετε την εφαρμογή ή να ανανεώσετε τη σελίδα.</translation>
@@ -7400,6 +7408,7 @@
 <translation id="7396845648024431313">Η εφαρμογή <ph name="APP_NAME" /> θα εκκινείται κατά την εκκίνηση του συστήματος και θα συνεχίζει να εκτελείται στο παρασκήνιο αφού πρώτα κλείσετε όλα τα υπόλοιπα παράθυρα του <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Προσαρμογή συγχρονισμού</translation>
 <translation id="7399616692258236448">Τα αιτήματα τοποθεσίας αποκλείονται αυτόματα για όλους τους ιστοτόπους εκτός από αυτούς που επιτρέπετε</translation>
+<translation id="7399746352569282594">Κλείσιμο προβολής διαχωρισμού οθόνης: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Έλεγχος ασφαλείας</translation>
 <translation id="7400059772197434086">έχει αποκλειστεί από τη χρήση των πληροφοριών σας στο</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8040,6 +8049,7 @@
 <translation id="7953955868932471628">Διαχείριση συντομεύσεων</translation>
 <translation id="7955105108888461311">Ερώτηση αυτοπροσώπως</translation>
 <translation id="7955177647836564772">Εάν το Smart Lock είναι ενεργοποιημένο και το τηλέφωνό σας είναι ξεκλείδωτο, δεν χρειάζεται να εισαγάγετε κωδικό πρόσβασης ή PIN</translation>
+<translation id="7955672267519272700">Κλείσιμο <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Οι αποθηκευμένοι εκτυπωτές σας</translation>
 <translation id="7956918070009672177">Δεν υπάρχουν φωνές στα <ph name="LANGUAGE" /> στη συσκευή σας. Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="7957074856830851026">Προβολή πληροφοριών συσκευής, όπως του σειριακού αριθμού ή του αναγνωριστικού στοιχείου</translation>

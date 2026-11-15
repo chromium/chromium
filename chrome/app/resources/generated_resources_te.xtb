@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">సొంత టెస్టింగ్ విఫలమైంది</translation>
 <translation id="1257336506558170607">ఎంచుకున్న సర్టిఫికెట్‌ లను ఎగుమతి చేయండి</translation>
 <translation id="1258491128795710625">కొత్తగా ఏమి ఉన్నాయి</translation>
+<translation id="1259453023447377372">సేవ్ చేసిన ట్యాబ్ గ్రూప్</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> నుండి ఎల్లప్పుడూ పాప్-అప్‌లు మరియు మళ్ళింపులను అనుమతించండి</translation>
 <translation id="1262395978737369974">ఎల్లప్పుడూ JavaScript ఆప్టిమైజేషన్‌ను ఉపయోగించడానికి అనుమతి ఉంది</translation>
 <translation id="1262564987698748643">మీ కీబోర్డ్ ఇన్‌పుట్‌ను ఓవర్‌రైడ్ చేయడానికి సైట్‌లు అడగవచ్చు</translation>
@@ -1856,6 +1857,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">మీ Microsoft ఖాతాకు సైన్ ఇన్ చేసి, ఆపై మళ్లీ ట్రై చేయండి</translation>
 <translation id="2611885296070244383">మైక్ (ఇంటర్నల్)</translation>
+<translation id="2612346259364350954">హైలైట్ చేసిన టెక్స్ట్‌ను వివరించడానికి పేజీ కంటెంట్‌ను ఉపయోగించండి</translation>
 <translation id="2612676031748830579">కార్డ్ నంబర్</translation>
 <translation id="261305050785128654">మీరు మాట్లాడే భాషలను వెబ్‌సైట్‌లకు తెలియజేయండి. వీలైనప్పుడు అవి ఆ భాషల్లో కంటెంట్‌ను చూపిస్తాయి.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />‌లో ఎటువంటి ఎక్స్‌టెన్షన్‌లనూ అనుమతించకండి</translation>
@@ -2158,6 +2160,7 @@
 <translation id="284884486564166077">Lensతో ఏదైనా ఇమేజ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="2849035674501872372">వెతకండి</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> కోసం మరిన్ని ఎంపికలు</translation>
 <translation id="285033512555869047">మూసివేసి ఉంది</translation>
 <translation id="2851291081585704741">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు</translation>
 <translation id="285237063405807022">(లోడ్ అవుతోంది)</translation>
@@ -2229,6 +2232,7 @@
     సర్వర్ మెసేజ్‌: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel, అలాగే PowerPoint ఫైల్స్‌ను తెరవండి</translation>
 <translation id="2908162660801918428">డైరెక్టరీ ద్వారా మీడియా గ్యాలరీని జోడించండి</translation>
+<translation id="2909334296570021569">ట్యాబ్ గ్రూప్‌ను తెరవండి</translation>
 <translation id="2909487040556589351">మీ మొబైల్ పరికరంలో Chromeను పొందండి</translation>
 <translation id="2910318910161511225">నెట్‌వర్క్‌కి కనెక్ట్ చేసి మళ్లీ ట్రై చేయండి</translation>
 <translation id="2910678330803525229">ఇప్పుడు మీరు బ్రౌజింగ్ ప్రారంభించవచ్చు</translation>
@@ -2395,6 +2399,7 @@
 <translation id="3042097545107738107">ఆప్టిమైజ్ చేసిన ఛార్జింగ్ స్ట్రాటజీని మార్చండి.</translation>
 <translation id="3043016484125065343">మీ బుక్‌మార్క్‌లను చూడటం కోసం సైన్ ఇన్ చేయండి</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> నుండి</translation>
+<translation id="3043977478651331629"><ph name="SECTION_NAME" /> కోసం ఎంపికలు</translation>
 <translation id="3044066905368192931">AI సహాయంతో మెరుగుపరచండి</translation>
 <translation id="3045447014237878114">ఈ సైట్ పలు ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేసింది</translation>
 <translation id="304644035656848980">మీ మైక్రోఫోన్ ప్రివ్యూ</translation>
@@ -3248,6 +3253,7 @@
 <translation id="3748424433435232460">ఈ ఖాతా కోసం పాస్‌వర్డ్ ఇప్పటికే ఈ డివైజ్‌లో సేవ్ అయింది</translation>
 <translation id="3748466028423001972">కింది వీక్షణతో స్వాప్ చేయండి</translation>
 <translation id="3748706263662799310">ఒక బగ్‌ను రిపోర్ట్ చేయండి</translation>
+<translation id="3750406842345107892">మీరు ఉన్న పేజీలోని కంటెంట్, URL, హైలైట్ చేసిన టెక్స్ట్ వివరణను జెనరేట్ చేయడానికి Googleకు పంపబడతాయి</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> కోసం మీ పాస్‌వర్డ్ కాపీని షేర్ చేయండి</translation>
 <translation id="3753412199586870466">సైడ్ ప్యానెల్‌ను తెరవండి</translation>
 <translation id="3753585830134123417">సైజ్ మార్చిన విండోలు ఎడమ వైపునకు</translation>
@@ -4144,6 +4150,7 @@
 <translation id="4550926046134589611">కొన్ని సపోర్ట్ లింక్‌లు ఇప్పటికీ <ph name="APP_NAME" />లో తెరవబడతాయి.</translation>
 <translation id="4551379727767354516">మీ ఇటీవలి AI రూపాలు</translation>
 <translation id="4551763574344810652">చర్యరద్దు చేయడానికి <ph name="MODIFIER_KEY_DESCRIPTION" />ను నొక్కండి</translation>
+<translation id="4552721860956824254">ఆడియో మ్యూట్ అయింది</translation>
 <translation id="4553526521109675518">పరికర భాషను మార్చడానికి మీరు Chromebookను రీస్టార్ట్ చేయవలసి ఉంటుంది. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">ఈ యాప్‌నకు చెందిన కొత్త వెర్షన్ అందుబాటులో ఉంది</translation>
 <translation id="4555769855065597957">నీడ</translation>
@@ -5091,6 +5098,7 @@
 <translation id="5379140238605961210">మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయడాన్ని కొనసాగించండి</translation>
 <translation id="5382591305415226340">మద్దతు గల లింక్‌లను నిర్వహించండి</translation>
 <translation id="5384401776498845256">మీకు ఎవరు షేర్ చేయవచ్చు</translation>
+<translation id="5386856927586721327"><ph name="LENS_ICON" />Google Lensతో మీ స్క్రీన్ గురించి అడగండి</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />ను ఎడిట్ చేయండి</translation>
 <translation id="538822246583124912">ఎంటర్‌ప్రైజ్ పాలసీ మార్చబడింది. టూల్‌బార్‌కు ప్రయోగాల బటన్ జోడించబడింది. ప్రయోగాలను ఎనేబుల్ చేసేందుకు డైలాగ్‌ను తెరవడానికి బటన్‌ను క్లిక్ చేయండి.</translation>
 <translation id="5388436023007579456">కెమెరా అనుమతి, అలాగే సిస్టమ్ సర్వీస్‌లు గల యాప్‌లు, వెబ్‌సైట్‌లు మీ కెమెరాను ఉపయోగించగలవు. కెమెరాను ఉపయోగించడానికి, మీరు యాప్‌ను రీస్టార్ట్ చేయాల్సిరావచ్చు లేదా పేజీని రిఫ్రెష్ చేయాల్సిరావచ్చు.</translation>
@@ -7396,6 +7404,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> సిస్టమ్ ప్రారంభంలో ప్రారంభమవ్వడమే కాక, అన్ని ఇతర <ph name="PRODUCT_NAME" /> విండోలను మీరు మూసివేసిన తర్వాత కూడా బ్యాక్‌గ్రౌండ్‌లో అమలవడం కొనసాగుతుంది.</translation>
 <translation id="7399045143794278225">సింక్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="7399616692258236448">మీరు అనుమతించే సైట్‌లు మినహా అన్ని సైట్‌లకు లొకేషన్ రిక్వెస్ట్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడతాయి</translation>
+<translation id="7399746352569282594">స్ప్లిట్ వ్యూను మూసివేయండి: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">సేఫ్టీ చెక్</translation>
 <translation id="7400059772197434086">ఈ సైట్‌లో ఉండే మీ సమాచారం ఉపయోగించకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8036,6 +8045,7 @@
 <translation id="7953955868932471628">షార్ట్‌కట్‌లను నిర్వహించండి</translation>
 <translation id="7955105108888461311">స్వయంగా అడగండి</translation>
 <translation id="7955177647836564772">Smart Lock ఆన్ చేసి, మీ ఫోన్ అన్‌లాక్ చేసి ఉన్నప్పుడు, మీరు పాస్‌వర్డ్‌ను లేదా ఫోన్‌ను ఎంటర్ చేయాల్సిన అవసరం లేదు</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" />‌ను మూసివేయండి</translation>
 <translation id="7956373551960864128">మీరు సేవ్ చేసిన ప్రింటర్‌లు</translation>
 <translation id="7956918070009672177">మీ పరికరంలో <ph name="LANGUAGE" /> భాష వాయిస్‌లు లేవు. ఇంటర్నెట్‌కు కనెక్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7957074856830851026">పరికరం క్రమ సంఖ్య లేదా అస్సెట్ ID వంటి పరికర సమాచారాన్ని చూడండి</translation>

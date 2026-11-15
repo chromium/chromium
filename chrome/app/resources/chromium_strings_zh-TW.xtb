@@ -267,6 +267,7 @@
 <translation id="3561853857681580870">如要分享螢幕內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登入 Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />，<ph name="EMAIL" />，會員。</translation>
 <translation id="3639635944603682591">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。你的無痕視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
@@ -599,6 +600,7 @@
 <translation id="67706546131546258">這個檔案可能有危險內容，因此 Chromium 建議掃描檔案。</translation>
 <translation id="6779406956731413166">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="6804256634866838775">關閉進行中的搜尋</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />，會員。</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6847869444787758381">Chromium 會通知你密碼是否曾遭外洩</translation>
 <translation id="684888714667046800">無法連上網際網路。如果你使用防火牆，請確認 <ph name="PRODUCT_EXE_NAME" /> 已加入許可清單。</translation>

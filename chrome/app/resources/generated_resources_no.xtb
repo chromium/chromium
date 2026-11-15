@@ -331,6 +331,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1256143630373008432">Selvtesten mislyktes</translation>
 <translation id="1257336506558170607">Eksporter det valgte sertifikatet</translation>
 <translation id="1258491128795710625">Hva er nytt?</translation>
+<translation id="1259453023447377372">Lagret fanegruppe</translation>
 <translation id="1260451001046713751">Tillat alltid forgrunnsvinduer og viderekoblinger fra <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Nettsteder som alltid har lov til å bruke JavaScript-optimalisering</translation>
 <translation id="1262564987698748643">Nettsteder kan be om å få overstyre tastaturinndataene dine</translation>
@@ -1855,6 +1856,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2610780100389066815">Signering med Microsoft-klareringsliste</translation>
 <translation id="261114180663074524">Logg på Microsoft-kontoen, og prøv igjen</translation>
 <translation id="2611885296070244383">Mikrofon (intern)</translation>
+<translation id="2612346259364350954">Bruk sideinnhold til å forklare fremhevet tekst</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
 <translation id="2613210758071148851">Ikke tillat utvidelser på <ph name="RESTRICTED_SITE" /></translation>
@@ -2157,6 +2159,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="284884486564166077">Søk etter bilder med Lens</translation>
 <translation id="2849035674501872372">Slå opp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Flere alternativer for <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Lukket</translation>
 <translation id="2851291081585704741">Du er uten nett</translation>
 <translation id="285237063405807022">(laster inn)</translation>
@@ -2228,6 +2231,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     Tjenermelding: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Åpne Word-, Excel- og PowerPoint-filer</translation>
 <translation id="2908162660801918428">Legg til mediegalleri etter katalog</translation>
+<translation id="2909334296570021569">Åpen fanegruppe</translation>
 <translation id="2909487040556589351">Få Chrome på mobilen</translation>
 <translation id="2910318910161511225">Koble til et nettverk og prøv igjen</translation>
 <translation id="2910678330803525229">Nå kan du begynne å surfe</translation>
@@ -2394,6 +2398,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3042097545107738107">Endre strategien for optimalisert lading.</translation>
 <translation id="3043016484125065343">Logg på for å se bokmerkene dine</translation>
 <translation id="3043581297103810752">Fra <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Alternativer for <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Gjør forbedringer med AI</translation>
 <translation id="3045447014237878114">Dette nettstedet har lastet ned flere filer automatisk</translation>
 <translation id="304644035656848980">Forhåndsvisning av mikrofon</translation>
@@ -3247,6 +3252,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3748424433435232460">Et passord for denne kontoen er allerede lagret på denne enheten</translation>
 <translation id="3748466028423001972">Bytt med nederste visning</translation>
 <translation id="3748706263662799310">Rapporter feil</translation>
+<translation id="3750406842345107892">Innholdet og nettadressen til siden du er på, og den markerte teksten, sendes til Google for å generere en forklaring</translation>
 <translation id="3752115502500640407">Del en kopi av passordet ditt for <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Åpne sidepanelet</translation>
 <translation id="3753585830134123417">Størrelsen på vinduer er endret til venstre</translation>
@@ -4141,6 +4147,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4550926046134589611">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Nylige AI-temaer</translation>
 <translation id="4551763574344810652">Trykk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for å angre</translation>
+<translation id="4552721860956824254">Lyden er kuttet</translation>
 <translation id="4553526521109675518">Du må starte Chromebooken på nytt for å bytte enhetsspråket. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">En ny versjon av denne appen er påkrevd.</translation>
 <translation id="4555769855065597957">Skygge</translation>
@@ -5087,6 +5094,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5379140238605961210">Fortsett blokkering av mikrofontilgang</translation>
 <translation id="5382591305415226340">Administrer støttede linker</translation>
 <translation id="5384401776498845256">Hvem kan dele ting med deg?</translation>
+<translation id="5386856927586721327">Spør om noe på skjermen med <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Endre <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">En Enterprise-regel er endret. Eksperimenter-knappen er lagt til på verktøyraden. Klikk på knappen for å åpne en dialogboks for å slå på eksperimenter.</translation>
 <translation id="5388436023007579456">Apper og nettsteder med kameratillatelsen, samt systemtjenester, kan bruke kameraet. For å bruke kameraet må du kanskje starte appen på nytt eller laste inn siden på nytt.</translation>
@@ -7392,6 +7400,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7396845648024431313"><ph name="APP_NAME" /> starter ved systemoppstart, og fortsetter å kjøre i bakgrunnen selv når du har lukket alle andre vinduer for <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Tilpass synkronisering</translation>
 <translation id="7399616692258236448">Posisjonsforespørsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
+<translation id="7399746352569282594">Lukk delt visning: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7400059772197434086">er blokkert fra å bruke informasjonen din på</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
@@ -8032,6 +8041,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7953955868932471628">Administrer snarveier</translation>
 <translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
+<translation id="7955672267519272700">Lukk <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
 <translation id="7956918070009672177">Det finnes ingen stemmer på <ph name="LANGUAGE" /> på enheten din. Koble til internett, og prøv på nytt.</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>

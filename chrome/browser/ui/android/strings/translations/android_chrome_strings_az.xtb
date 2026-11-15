@@ -129,6 +129,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1460751212339734034">Vaxta qənaət edin, az yazın</translation>
 <translation id="146522654774760805">Parollar və avtodoldurma</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
+<translation id="1473344277210704336">Gemini və vacib elementlər yeni aşağı alətlər panelindədir</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> faylının endirilməsi server problemləri səbəbindən alınmadı.</translation>
 <translation id="147982357559798527">Dəyişdirildi</translation>
 <translation id="1480287803138246127">Tarixçənin bir hissəsi burada görünməyə bilər. Bütün Chrome tarixçənizi görmək üçün tam Chrome tarixçəsini açın.</translation>
@@ -907,6 +908,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> kimi daxil olmağa davam edirsiniz.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> anonim}}</translation>
 <translation id="4558311620361989323">Veb səhifə qısayolları</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> üzvlüyü.</translation>
 <translation id="4572422548854449519">İdarə olunan hesablara daxil olun</translation>
 <translation id="4577115723294378384">A-dan Z-yə sıralayın</translation>
 <translation id="4578289292431526768">Başlayaq</translation>
@@ -914,6 +916,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4585751637295612750">Suala əlavə etmək üçün yeni tab açın</translation>
 <translation id="4585793705637313973">Səhifəni redaktə edin</translation>
 <translation id="4587589328781138893">Saytlar</translation>
+<translation id="4587590257937792551">Rahatlıq üçün Chrome-un aşağı alətlər paneli yeniləndi. İstənilən vaxt <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> əvvəlki versiyaya dəyişə bilərsiniz.</translation>
 <translation id="4594952190837476234">Bu səhifə <ph name="CREATION_TIME" /> tarixində yaradılıb və onlayn versiyadan fərqli ola bilər.</translation>
 <translation id="4595237294768457124">Yeni tab səhifəsi açın</translation>
 <translation id="4595276580892809760">Qalereyadan şəkillər əlavə edin</translation>
@@ -1446,6 +1449,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6633067410344541938">Anonim rejimi kiliddən çıxarın</translation>
 <translation id="6636623428211296678">Aşağıda digər ayarları araşdırın və ya indi bitirin</translation>
 <translation id="6637100877383020115">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_UMA_LINK" />İdarə edin<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Əsas funksiyalar aşağı alətlər panelindədir. İstənilən vaxt <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> əvvəlki versiyaya dəyişə bilərsiniz.</translation>
 <translation id="6642299196749785472">Tablar əlavə edin</translation>
 <translation id="6647441008198474441">Ziyarət etdiyiniz keçidlər növbəti dəfə hansı saytlara daxil ola biləcəyinizi proqnozlaşdırmaq üçün Google'a göndərilir</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> digəri}other{<ph name="CONTACT_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> digəri}}</translation>
@@ -1644,6 +1648,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş paylaşım tabı</translation>
 <translation id="7311244614769792472">Nəticə tapılmadı</translation>
 <translation id="7314734791127433392">Parolları yoxlamaq olmur</translation>
+<translation id="7324177883197548771">Rahatlıq üçün Chrome-un görünüşü yeniləndi. İstənilən vaxt <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> əvvəlki versiyaya dəyişə bilərsiniz.</translation>
 <translation id="7324354302972299151">"Do Not Track" sorğusu göndərin</translation>
 <translation id="7333041109965360609">Bildirişlərə abunəlik dayandırıldı</translation>
 <translation id="7335766481146072567">Davam edin düyməsinə basın</translation>
@@ -1746,6 +1751,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7697383401610880082">Dəstəyi çəkin</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> tətbiqində e-poçt yaradın</translation>
 <translation id="7702420606070050505">Son fəaliyyət üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> üzvlüyü.</translation>
 <translation id="7707922173985738739">Mobil data istifadə edin</translation>
 <translation id="7708994397325774423">Bütün parollarınızı əldə edin</translation>
 <translation id="7714077993070342304">Chrome menyusunu açın</translation>

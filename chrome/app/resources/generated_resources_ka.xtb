@@ -331,6 +331,7 @@
 <translation id="1256143630373008432">თვითტესტირება შეფერხდა</translation>
 <translation id="1257336506558170607">არჩეული სერტიფიკატის ექსპორტირება</translation>
 <translation id="1258491128795710625">სიახლეები</translation>
+<translation id="1259453023447377372">შენახული ჩანართების ჯგუფი</translation>
 <translation id="1260451001046713751"><ph name="HOST" />-დან გადამისამართებებისა და ამომხტარი ფანჯრების ყოველთვის დაშვება</translation>
 <translation id="1262395978737369974">ყოველთვის დაშვებულია JavaScript ოპტიმიზაციის გამოყენება</translation>
 <translation id="1262564987698748643">საიტებმა შეიძლება ითხოვონ ნებართვა თქვენი კლავიატურის შენატანის უგულებელყოფის შესახებ</translation>
@@ -1845,6 +1846,7 @@
 <translation id="2610780100389066815">Microsoft-ის სანდო ელემენტების სიის ხელმოწერა</translation>
 <translation id="261114180663074524">შედით თქვენს Microsoft ანგარიშში და შემდეგ ცადეთ ხელახლა</translation>
 <translation id="2611885296070244383">მიკროფონი (შიდა)</translation>
+<translation id="2612346259364350954">გვერდის კონტენტის გამოყენება გამოყოფილი ტექსტის ასახსნელად</translation>
 <translation id="2612676031748830579">ბარათის ნომერი</translation>
 <translation id="261305050785128654">აცნობეთ ვებსაიტებს, რომელ ენებზე საუბრობთ. მათზე კონტენტი, შეძლებისდაგვარად, ამ ენებზე გამოჩნდება.</translation>
 <translation id="2613210758071148851">გაფართოებების აკრძალვა <ph name="RESTRICTED_SITE" />-ზე</translation>
@@ -2147,6 +2149,7 @@
 <translation id="284884486564166077">მოძებნეთ ნებისმიერი სურათი Lens-ით</translation>
 <translation id="2849035674501872372">ზევით აიხედეთ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">მეტი ვარიანტი <ph name="TAB_GROUP_NAME" />-ისთვის</translation>
 <translation id="285033512555869047">დაკეტილია</translation>
 <translation id="2851291081585704741">თქვენ ხაზგარეშე რეჟიმში ხართ</translation>
 <translation id="285237063405807022">(იტვირთება)</translation>
@@ -2218,6 +2221,7 @@
     სერვერის შეტყობინება: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">გახსენით Word, Excel და PowerPoint ფაილები</translation>
 <translation id="2908162660801918428">მედია გალერეის დამატება დირექტორიის მიხედვით</translation>
+<translation id="2909334296570021569">ჩანართების ჯგუფის გახსნა</translation>
 <translation id="2909487040556589351">დააყენეთ Chrome თქვენს მობილურ მოწყობილობაში</translation>
 <translation id="2910318910161511225">დაუკავშირდით ქსელს და ცადეთ ხელახლა</translation>
 <translation id="2910678330803525229">ახლა შეგიძლიათ დათვალიერების დაწყება</translation>
@@ -2384,6 +2388,7 @@
 <translation id="3042097545107738107">შეცვალეთ ოპტიმიზებული დატენის სტრატეგია.</translation>
 <translation id="3043016484125065343">სანიშნეების სანახავად შედით სისტემაში</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />-დან</translation>
+<translation id="3043977478651331629">ვარიანტები <ph name="SECTION_NAME" />-ისთვის</translation>
 <translation id="3044066905368192931">გაძლიერება ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="3045447014237878114">ამ საიტმა ავტომატურად ჩამოტვირთა რამდენიმე ფაილი</translation>
 <translation id="304644035656848980">თქვენი მიკროფონის წინასწარი ვერსია</translation>
@@ -3237,6 +3242,7 @@
 <translation id="3748424433435232460">ამ ანგარიშის პაროლი უკვე შენახულია ამ მოწყობილობაზე</translation>
 <translation id="3748466028423001972">ქვედა ხედის ჩანაცვლება</translation>
 <translation id="3748706263662799310">ხარვეზის შესახებ შეტყობინება</translation>
+<translation id="3750406842345107892">იმ გვერდის კონტენტი და URL, რომელზეც იმყოფებით, და გამოყოფილი ტექსტი გაეგზავნება Google-ს განმარტების გენერირებისთვის</translation>
 <translation id="3752115502500640407">გააზიარეთ თქვენი პაროლის ასლი <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="3753412199586870466">გვერდითი პანელის გახსნა</translation>
 <translation id="3753585830134123417">ფანჯრების ზომა შეიცვალა მარცხნივ</translation>
@@ -4133,6 +4139,7 @@
 <translation id="4550926046134589611">ზოგიერთი მხარდაჭერილი ბმული კვლავ გაიხსნება <ph name="APP_NAME" />-ში.</translation>
 <translation id="4551379727767354516">ხელოვნური ინტელექტით შექმნილი თქვენი ბოლოდროინდელი თემები</translation>
 <translation id="4551763574344810652">მოქმედების გასაუქმებლად დაჭერით აირჩიეთ „<ph name="MODIFIER_KEY_DESCRIPTION" />“</translation>
+<translation id="4552721860956824254">აუდიო დადუმებულია</translation>
 <translation id="4553526521109675518">მოწყობილობის ენის შესაცვლელად საჭიროა თქვენი Chromebook-ის გადატვირთვა. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">საჭიროა ამ აპის ახალი ვერსია</translation>
 <translation id="4555769855065597957">ჩრდილი</translation>
@@ -5081,6 +5088,7 @@
 <translation id="5379140238605961210">გაგრძელება მიკროფონზე წვდომის დაბლოკვით</translation>
 <translation id="5382591305415226340">მხარდაჭერილი ბმულების მართვა</translation>
 <translation id="5384401776498845256">ვის შეუძლია თქვენთან გაზიარება</translation>
+<translation id="5386856927586721327">იკითხეთ თქვენი ეკრანის შესახებ <ph name="LENS_ICON" />Google Lens-ით</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />-ის რედაქტირება</translation>
 <translation id="538822246583124912">კორპორაციული წესები შეიცვალა. ხელსაწყოთა ზოლს დაემატა ექსპერიმენტების ღილაკი. დააწკაპუნეთ ღილაკზე, რომ გახსნათ ექსპერიმენტების ჩართვის დიალოგი.</translation>
 <translation id="5388436023007579456">აპებსა და ვებსაიტებს, რომელთაც კამერის გამოყენების ნებართვა აქვს, ასევე, სისტემის სერვისებს შეუძლია თქვენი კამერის გამოყენება. კამერის გამოსაყენებლად, შესაძლოა, დაგჭირდეთ აპის გადატვირთვა ან გვერდის განახლება.</translation>
@@ -7385,6 +7393,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> დაიწყება სისტემის ჩატვირთვისას და გააგრძელებს მუშაობას ფონურ რეჟიმში, მაშინაც კი, როცა დახურული გაქვთ ყველა სხვა <ph name="PRODUCT_NAME" /> ფანჯარა.</translation>
 <translation id="7399045143794278225">სინქრონიზაციის მორგება</translation>
 <translation id="7399616692258236448">მდებარეობის მოთხოვნები ავტომატურად დაბლოკილია ყველა საიტისთვის, გარდა თქვენ მიერ დაშვებულისა</translation>
+<translation id="7399746352569282594">გაყოფილი ხედის დახურვა: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">უსაფრთხოების შემოწმება</translation>
 <translation id="7400059772197434086">ვერ გამოიყენებს თქვენს ინფორმაციას</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8025,6 +8034,7 @@
 <translation id="7953955868932471628">მალსახმობების მართვა</translation>
 <translation id="7955105108888461311">პირადად კითხვა</translation>
 <translation id="7955177647836564772">თუ Smart Lock ჩართულია და თქვენი ტელეფონი განბლოკილია, პაროლის ან PIN-კოდის შეყვანა არ დაგჭირდებათ</translation>
+<translation id="7955672267519272700"><ph name="TAB_TITLE" />-ის დახურვა</translation>
 <translation id="7956373551960864128">თქვენი შენახული პრინტერები</translation>
 <translation id="7956918070009672177">თქვენს მოწყობილობაში არ არის <ph name="LANGUAGE" /> ხმები. დაუკავშირდით ინტერნეტს და ცადეთ ხელახლა.</translation>
 <translation id="7957074856830851026">მოწყობილობის ინფორმაციის (მაგ., მისი სერიული ნომრის ან აქტივის ID-ს) ნახვა</translation>
