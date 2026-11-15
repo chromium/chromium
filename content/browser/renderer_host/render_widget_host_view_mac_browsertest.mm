@@ -39,6 +39,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -480,18 +481,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
               blink::kWebTextInputFlagAutocorrectOff);
 }
 
-// TODO(crbug.com/421820726): Enable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_InputTextPreventedSyncsCursorLocation \
-  DISABLED_InputTextPreventedSyncsCursorLocation
-#else
-#define MAYBE_InputTextPreventedSyncsCursorLocation \
-  InputTextPreventedSyncsCursorLocation
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
-                       MAYBE_InputTextPreventedSyncsCursorLocation) {
-  class InputMethodObserver {};
-
+                       InputTextPreventedSyncsCursorLocation) {
   GURL url("data:text/html,<!doctype html><textarea id=ta></textarea>");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -505,6 +496,15 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
       shell(),
       "ta.addEventListener('keypress', (evt) => {evt.preventDefault();}); "
       "ta.focus();"));
+  FocusPrimaryMainFrame(shell());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return rwhv_cocoa.textInputType == ui::TEXT_INPUT_TYPE_TEXT_AREA;
+  }));
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
 
   // Before typing anything, we're at position 0.
   EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
