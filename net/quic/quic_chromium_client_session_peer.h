@@ -15,6 +15,8 @@
 namespace net {
 
 class QuicChromiumClientStream;
+class QuicMigrationAttemptContext;
+enum class QuicSocketConfigStep;
 
 namespace test {
 
@@ -51,6 +53,19 @@ class QuicChromiumClientSessionPeer {
 
   static void SetEchConfigList(QuicChromiumClientSession* session,
                                std::vector<uint8_t> ech_config_list);
+
+  static void StartProbing(
+      QuicChromiumClientSession* session,
+      QuicMigrationAttemptCause migration_cause,
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
+      base::OnceCallback<void(ProbingResult)> probing_callback);
+
+  static bool CanFallbackToIpv4OnConnectError(
+      const QuicChromiumClientSession* session,
+      const QuicMigrationAttemptContext& context,
+      int rv,
+      QuicSocketConfigStep error_step);
 };
 
 }  // namespace test

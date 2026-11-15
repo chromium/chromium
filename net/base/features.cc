@@ -517,6 +517,8 @@ inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
 BASE_FEATURE(kMigrateSessionsOnNetworkChangeV2,
              kMigrateSessionsOnNetworkChangeV2Default);
 
+BASE_FEATURE(kEnableQuicV6ToV4Migration, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables binding of cookies to the port that originally set them by default.
 BASE_FEATURE(kEnablePortBoundCookies, base::FEATURE_DISABLED_BY_DEFAULT);
 

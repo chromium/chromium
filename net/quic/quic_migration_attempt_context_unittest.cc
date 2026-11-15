@@ -33,14 +33,13 @@ namespace net {
 namespace {
 
 const IPEndPoint kIpEndPoint{IPAddress::IPv4Localhost(), 443};
+const IPEndPoint kIpv6EndPoint{IPAddress::IPv6Localhost(), 443};
 
 class QuicMigrationAttemptContextTest : public ::testing::Test {
  public:
-  std::unique_ptr<QuicMigrationAttemptContext> CreateAttemptContext(
-      QuicMigrationAttemptCause cause,
-      base::RepeatingCallback<bool()> is_session_alive =
-          base::BindRepeating([]() { return true; }),
-      bool is_google_host = false) {
+  std::pair<std::unique_ptr<QuicChromiumPacketReader>,
+            std::unique_ptr<QuicChromiumPacketWriter>>
+  CreateReaderAndWriter(const IPEndPoint& endpoint = kIpEndPoint) {
     auto reads = std::make_unique<std::vector<MockRead>>();
     reads->push_back(MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0));
     auto socket_data =
@@ -53,9 +52,7 @@ class QuicMigrationAttemptContextTest : public ::testing::Test {
         socket_factory_.CreateDatagramClientSocket(
             DatagramSocket::RANDOM_BIND, handles::kInvalidNetworkHandle,
             NetLog::Get(), NetLogSource());
-    EXPECT_THAT(socket->Connect(kIpEndPoint), test::IsOk());
-    IPEndPoint peer_address;
-    socket->GetPeerAddress(&peer_address);
+    EXPECT_THAT(socket->Connect(endpoint), test::IsOk());
     auto reader = std::make_unique<QuicChromiumPacketReader>(
         std::move(socket), &clock_, /*visitor=*/nullptr,
         /*yield_after_packets=*/100,
@@ -64,10 +61,31 @@ class QuicMigrationAttemptContextTest : public ::testing::Test {
     auto writer = std::make_unique<QuicChromiumPacketWriter>(
         reader->socket(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
+    return {std::move(reader), std::move(writer)};
+  }
+
+  std::unique_ptr<QuicMigrationAttemptContext> CreateAttemptContext(
+      QuicMigrationAttemptCause cause,
+      base::RepeatingCallback<bool()> is_session_alive =
+          base::BindRepeating([]() { return true; }),
+      bool is_google_host = false,
+      const IPEndPoint& endpoint = kIpEndPoint) {
+    auto [reader, writer] = CreateReaderAndWriter(endpoint);
+    IPEndPoint peer_address;
+    reader->socket()->GetPeerAddress(&peer_address);
     return std::make_unique<QuicMigrationAttemptContext>(
         cause, /*from_network=*/1, /*target_network=*/2,
         ToQuicSocketAddress(peer_address), std::move(reader), std::move(writer),
         std::move(is_session_alive), is_google_host);
+  }
+
+  std::unique_ptr<QuicMigrationAttemptContext> CreateV6ToV4FallbackContext(
+      std::unique_ptr<QuicMigrationAttemptContext> ipv6_context,
+      const IPEndPoint& fallback_endpoint = kIpEndPoint) {
+    auto [reader, writer] = CreateReaderAndWriter(fallback_endpoint);
+    return QuicMigrationAttemptContext::CreateV6ToV4Fallback(
+        std::move(ipv6_context), ToQuicSocketAddress(fallback_endpoint),
+        std::move(reader), std::move(writer));
   }
 
  protected:
@@ -512,7 +530,206 @@ TEST_F(QuicMigrationAttemptContextTest, RecordWaitForNewNetworkDuration) {
       base::Milliseconds(1200), 1);
 }
 
+TEST_F(QuicMigrationAttemptContextTest, CreateV6ToV4Fallback) {
+  base::HistogramTester histogram_tester;
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([]() { return true; }), /*is_google_host=*/false,
+        kIpv6EndPoint);
+    EXPECT_FALSE(ipv6_context->is_v6_to_v4_fallback());
+
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    EXPECT_TRUE(v4_context->is_v6_to_v4_fallback());
+    EXPECT_EQ(v4_context->cause(),
+              QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading);
+    EXPECT_EQ(v4_context->from_network(), 1);
+    EXPECT_EQ(v4_context->target_network(), 2);
+    EXPECT_EQ(v4_context->target_peer_address(),
+              ToQuicSocketAddress(kIpEndPoint));
+
+    // Consuming `ipv6_context` must not have recorded any outcome histograms.
+    histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
+    histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+
+    v4_context->SetSuccess();
+  }
+
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Superseded", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.UnclassifiedOutcome", 0);
+
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      true, 1);
+}
+
+TEST_F(QuicMigrationAttemptContextTest,
+       CreateV6ToV4Fallback_FailureAndSocketConfigFailure) {
+  base::HistogramTester histogram_tester;
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([]() { return true; }), /*is_google_host=*/true,
+        kIpv6EndPoint);
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    v4_context->SetFailure(QuicMigrationAttemptFailureReason::kProbeTimeout);
+  }
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([]() { return true; }), /*is_google_host=*/true,
+        kIpv6EndPoint);
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    v4_context->SetSocketConfigFailure(QuicSocketConfigStep::kConnect,
+                                       ERR_CONNECTION_REFUSED);
+  }
+
+  histogram_tester.ExpectBucketCount("Net.Quic.Migration.Attempt.Eligible",
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", false, 2);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.FailureReason",
+      QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kSocketConfigFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.FailureReason",
+      QuicMigrationAttemptFailureReason::kSocketConfigFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kSocketConfigFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kSocketConfigFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.Step",
+      QuicSocketConfigStep::kConnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.SocketConfigError.Step",
+      QuicSocketConfigStep::kConnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError",
+      -ERR_CONNECTION_REFUSED, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.SocketConfigError.NetError",
+      -ERR_CONNECTION_REFUSED, 1);
+}
+
+TEST_F(QuicMigrationAttemptContextTest, CreateV6ToV4Fallback_SetSuperseded) {
+  base::HistogramTester histogram_tester;
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([]() { return true; }), /*is_google_host=*/false,
+        kIpv6EndPoint);
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    v4_context->SetSuperseded(
+        QuicMigrationAttemptCause::kOnNetworkDisconnected);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Superseded",
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Superseded.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Superseded",
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Superseded.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, 1);
+}
+
+TEST_F(QuicMigrationAttemptContextTest,
+       CreateV6ToV4Fallback_DestructorOutcomes) {
+  base::HistogramTester histogram_tester;
+  bool session_alive = true;
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([](bool* alive) { return *alive; },
+                            base::Unretained(&session_alive)),
+        /*is_google_host=*/false, kIpv6EndPoint);
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    session_alive = false;
+    // v4_context destroyed when session is not alive.
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kSessionDestroyed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kSessionDestroyed, 1);
+
+  {
+    auto ipv6_context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+        base::BindRepeating([]() { return true; }), /*is_google_host=*/false,
+        kIpv6EndPoint);
+    auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+    // v4_context destroyed with unknown outcome while session is alive.
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.UnclassifiedOutcome", true, 1);
+}
+
 #if GTEST_HAS_DEATH_TEST
+TEST_F(QuicMigrationAttemptContextTest,
+       CreateV6ToV4FallbackFromFallbackContextCrashes) {
+  auto ipv6_context = CreateAttemptContext(
+      QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+      base::BindRepeating([]() { return true; }), /*is_google_host=*/false,
+      kIpv6EndPoint);
+  auto v4_context = CreateV6ToV4FallbackContext(std::move(ipv6_context));
+  EXPECT_CHECK_DEATH(CreateV6ToV4FallbackContext(std::move(v4_context)));
+}
+
+TEST_F(QuicMigrationAttemptContextTest,
+       CreateV6ToV4FallbackFromCompletedContextCrashes) {
+  auto ipv6_context = CreateAttemptContext(
+      QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+      base::BindRepeating([]() { return true; }), /*is_google_host=*/false,
+      kIpv6EndPoint);
+  ipv6_context->SetSuccess();
+  EXPECT_CHECK_DEATH(CreateV6ToV4FallbackContext(std::move(ipv6_context)));
+}
+
 TEST_F(QuicMigrationAttemptContextTest, SetFailureSocketConfigFailedCrashes) {
   auto context =
       CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkMadeDefault);

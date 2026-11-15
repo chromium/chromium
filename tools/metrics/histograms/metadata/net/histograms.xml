@@ -219,6 +219,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->
 
+<variants name="QuicMigrationFallbackType">
+  <variant name=""
+      summary="Recorded for all migration attempts (including IPv6-to-IPv4
+               fallbacks)."/>
+  <variant name=".V6ToV4Fallback"
+      summary="For IPv6-to-IPv4 fallback attempts only."/>
+</variants>
+
 <!-- LINT.IfChange(QuicSocketConfigStep) -->
 
 <variants name="QuicSocketConfigStep">
@@ -5491,142 +5499,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Quic.Migration.Attempt.Eligible" enum="BooleanSuccess"
-    expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records whether an eligible QUIC connection migration attempt succeeded or
-    failed. Ineligible and superseded attempts are not recorded here. Failures
-    are broken down by reason in Net.Quic.Migration.Attempt.FailureReason.
-  </summary>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.Eligible.ByTrigger.{Trigger}"
-    enum="BooleanSuccess" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.Eligible, but partitioned by the
-    migration cause {Trigger}.
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-</histogram>
-
-<histogram
-    name="Net.Quic.Migration.Attempt.FailureReason.ByTrigger.{Trigger}{HostType}"
-    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.FailureReason, but partitioned by the
-    migration cause {Trigger}. {HostType}
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-  <token key="HostType">
-    <variant name=""/>
-    <variant name=".GoogleHost" summary="For Google hosts only."/>
-  </token>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.FailureReason{HostType}"
-    enum="QuicMigrationAttemptFailureReason" expires_after="2027-04-04">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records the failure reason for eligible QUIC connection migration attempts
-    that failed. {HostType}
-  </summary>
-  <token key="HostType">
-    <variant name=""/>
-    <variant name=".GoogleHost" summary="For Google hosts only."/>
-  </token>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.Ineligible"
-    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records the reason a QUIC connection was ineligible for migration when an
-    event occurred that would otherwise trigger migration. Recorded at the time
-    migration eligibility check fails.
-  </summary>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.Ineligible.ByTrigger.{Trigger}"
-    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.Ineligible, but partitioned by the
-    migration cause {Trigger}.
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.SocketConfigError.NetError"
-    enum="NetErrorCodes" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records the net error code when socket configuration failed during an
-    eligible QUIC connection migration attempt.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByStep.{Step}"
-    enum="NetErrorCodes" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
-    partitioned by the socket configuration step {Step}. We expect the majority
-    (all?) of the failures to be in the connect step, so this should be
-    deprecated shortly after verifying that belief.
-  </summary>
-  <token key="Step" variants="QuicSocketConfigStep"/>
-</histogram>
-
-<histogram
-    name="Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger.{Trigger}"
-    enum="NetErrorCodes" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
-    partitioned by the migration cause {Trigger}.
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.SocketConfigError.Step"
-    enum="QuicSocketConfigStep" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records the socket configuration step that failed during an eligible QUIC
-    connection migration attempt. We expect the majority (all?) of the failures
-    to be in the connect step, so this should be deprecated shortly after
-    verifying that belief.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.Quic.Migration.Attempt.SocketConfigError.Step.ByTrigger.{Trigger}"
-    enum="QuicSocketConfigStep" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.SocketConfigError.Step, but partitioned
-    by the migration cause {Trigger}. We expect the majority (all?) of the
-    failures to be in the connect step, so this should be deprecated shortly
-    after verifying that belief.
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-</histogram>
-
 <histogram name="Net.Quic.Migration.Attempt.SpuriousOutcome" enum="Boolean"
     expires_after="2027-08-01">
   <owner>stefanoduo@google.com</owner>
@@ -5639,35 +5511,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Quic.Migration.Attempt.Superseded"
-    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
+<histogram name="Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback"
+    enum="Boolean" expires_after="2027-08-01">
   <owner>stefanoduo@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    Records the type of migration attempts that superseded another QUIC
-    connection migration attempt.
-  </summary>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.Superseded.ByTrigger.{Trigger}"
-    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Same as Net.Quic.Migration.Attempt.Superseded, but partitioned by the
-    migration cause {Trigger} of the superseded attempt.
-  </summary>
-  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
-</histogram>
-
-<histogram name="Net.Quic.Migration.Attempt.UnclassifiedOutcome" enum="Boolean"
-    expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records when a QuicMigrationAttemptContext is destroyed without having an
-    explicit outcome set while its associated QuicChromiumClientSession is still
-    alive. This should never happen and indicates a bug.
+    Records whether a usable DNS-resolved IPv4 fallback address is available
+    when an IPv6 QUIC connection migration attempt fails socket configuration.
+    Only recorded when kEnableQuicV6ToV4Migration is enabled and the initial
+    socket configuration for an IPv6 network migration (i.e. not a port change,
+    server preferred address or multi-port migration) fails at the connect step
+    with ERR_ADDRESS_UNREACHABLE. True if a fallback IPv4 address is present
+    and, when the current peer address is publicly routable, the fallback IPv4
+    address is publicly routable too.
   </summary>
 </histogram>
 
@@ -5692,6 +5548,199 @@ chromium-metrics-reviews@google.com.
     partitioned by the migration cause {Trigger}.
   </summary>
   <token key="Trigger" variants="WaitForNewNetworkCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt{FallbackType}.Eligible"
+    enum="BooleanSuccess" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records whether an eligible QUIC connection migration attempt succeeded or
+    failed. Ineligible and superseded attempts are not recorded here. Failures
+    are broken down by reason in Net.Quic.Migration.Attempt.FailureReason.
+    {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.Eligible.ByTrigger.{Trigger}"
+    enum="BooleanSuccess" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Eligible, but partitioned by the
+    migration cause {Trigger}. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.FailureReason.ByTrigger.{Trigger}{HostType}"
+    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.FailureReason, but partitioned by the
+    migration cause {Trigger}. {FallbackType} {HostType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="For Google hosts only."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.FailureReason{HostType}"
+    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the failure reason for eligible QUIC connection migration attempts
+    that failed. {FallbackType} {HostType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="For Google hosts only."/>
+  </token>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt{FallbackType}.Ineligible"
+    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the reason a QUIC connection was ineligible for migration when an
+    event occurred that would otherwise trigger migration, or became ineligible
+    mid-flight (e.g. session was closed). Recorded at the time migration
+    eligibility check fails or when an in-flight attempt becomes ineligible.
+    Pre-attempt eligibility failures are only recorded in the unsuffixed
+    histogram; the .V6ToV4Fallback variant only captures fallback attempts that
+    became ineligible mid-flight. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.Ineligible.ByTrigger.{Trigger}"
+    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Ineligible, but partitioned by the
+    migration cause {Trigger}. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.SocketConfigError.NetError"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the net error code when socket configuration failed during an
+    eligible QUIC connection migration attempt. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.SocketConfigError.NetError.ByStep.{Step}"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
+    partitioned by the socket configuration step {Step}. We expect the majority
+    (all?) of the failures to be in the connect step, so this should be
+    deprecated shortly after verifying that belief. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Step" variants="QuicSocketConfigStep"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.SocketConfigError.NetError.ByTrigger.{Trigger}"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
+    partitioned by the migration cause {Trigger}. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.SocketConfigError.Step"
+    enum="QuicSocketConfigStep" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the socket configuration step that failed during an eligible QUIC
+    connection migration attempt. We expect the majority (all?) of the failures
+    to be in the connect step, so this should be deprecated shortly after
+    verifying that belief. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.SocketConfigError.Step.ByTrigger.{Trigger}"
+    enum="QuicSocketConfigStep" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.Step, but partitioned
+    by the migration cause {Trigger}. We expect the majority (all?) of the
+    failures to be in the connect step, so this should be deprecated shortly
+    after verifying that belief. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt{FallbackType}.Superseded"
+    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the type of migration attempts that superseded another QUIC
+    connection migration attempt. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt{FallbackType}.Superseded.ByTrigger.{Trigger}"
+    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Superseded, but partitioned by the
+    migration cause {Trigger} of the superseded attempt. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt{FallbackType}.UnclassifiedOutcome"
+    enum="Boolean" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records when a QuicMigrationAttemptContext is destroyed without having an
+    explicit outcome set while its associated QuicChromiumClientSession is still
+    alive. This should never happen and indicates a bug. {FallbackType}
+  </summary>
+  <token key="FallbackType" variants="QuicMigrationFallbackType"/>
 </histogram>
 
 <histogram name="Net.QuicActiveSessionCount.{GoingAwayReason}" units="sesions"

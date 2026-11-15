@@ -526,6 +526,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kMaxReportBodySizeKB);
 // but not on WebView (until crbug.com/1430082 has been fixed).
 NET_EXPORT BASE_DECLARE_FEATURE(kMigrateSessionsOnNetworkChangeV2);
 
+// Enables falling back to the initial DNS-resolved IPv4 address when a QUIC
+// session connected over IPv6 attempts to migrate to an IPv4-only network.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableQuicV6ToV4Migration);
+
 // Enables binding of cookies to the port that originally set them by default.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 

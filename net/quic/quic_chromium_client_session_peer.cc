@@ -5,13 +5,16 @@
 #include "net/quic/quic_chromium_client_session_peer.h"
 
 #include <string>
+#include <utility>
 
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/quic/quic_migration_attempt_context.h"
 #include "net/quic/quic_session_key.h"
+#include "net/quic/quic_socket_config_step.h"
 #include "net/socket/socket_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -93,6 +96,26 @@ void QuicChromiumClientSessionPeer::SetEchConfigList(
     QuicChromiumClientSession* session,
     std::vector<uint8_t> ech_config_list) {
   session->ech_config_list_ = std::move(ech_config_list);
+}
+
+// static
+void QuicChromiumClientSessionPeer::StartProbing(
+    QuicChromiumClientSession* session,
+    QuicMigrationAttemptCause migration_cause,
+    handles::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    base::OnceCallback<void(ProbingResult)> probing_callback) {
+  session->StartProbing(migration_cause, network, peer_address,
+                        std::move(probing_callback));
+}
+
+// static
+bool QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+    const QuicChromiumClientSession* session,
+    const QuicMigrationAttemptContext& context,
+    int rv,
+    QuicSocketConfigStep error_step) {
+  return session->CanFallbackToIpv4OnConnectError(context, rv, error_step);
 }
 
 }  // namespace net::test

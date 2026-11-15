@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
@@ -105,6 +106,25 @@ namespace {
 base::OnceClosure& MidMigrationCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
   return *callback;
+}
+
+bool IsNetworkMigrationCause(QuicMigrationAttemptCause cause) {
+  switch (cause) {
+    case QuicMigrationAttemptCause::kUnknown:
+    case QuicMigrationAttemptCause::kChangePortOnPathDegrading:
+    case QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable:
+    case QuicMigrationAttemptCause::kMultiPortPath:
+      return false;
+    case QuicMigrationAttemptCause::kOnNetworkDisconnected:
+    case QuicMigrationAttemptCause::kOnWriteError:
+    case QuicMigrationAttemptCause::kOnNetworkMadeDefault:
+    case QuicMigrationAttemptCause::kOnMigrateBackToDefaultNetwork:
+    case QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading:
+    case QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading:
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected:
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError:
+      return true;
+  }
 }
 
 // IPv6 packets have an additional 20 bytes of overhead than IPv4 packets.
@@ -3018,6 +3038,12 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       disconnected_network, peer_address(),
       ProbingCancellationReason::kNetworkDisconnected,
       /*superseded_cause=*/std::nullopt);
+  if (fallback_ipv4_peer_address_.has_value()) {
+    MaybeCancelSpecificInFlightProbe(
+        disconnected_network, *fallback_ipv4_peer_address_,
+        ProbingCancellationReason::kNetworkDisconnected,
+        /*superseded_cause=*/std::nullopt);
+  }
 
   if (disconnected_network == default_network_) {
     DVLOG(1) << "Default network: " << default_network_ << " is disconnected.";
@@ -3191,6 +3217,11 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
     MaybeCancelSpecificInFlightProbe(network, peer_address(),
                                      ProbingCancellationReason::kSuperseded,
                                      migration_cause);
+    if (fallback_ipv4_peer_address_.has_value()) {
+      MaybeCancelSpecificInFlightProbe(network, *fallback_ipv4_peer_address_,
+                                       ProbingCancellationReason::kSuperseded,
+                                       migration_cause);
+    }
   }
   pending_migrate_network_immediately_ = true;
   MaybeMigrateWithoutProbing(
@@ -3728,10 +3759,16 @@ void QuicChromiumClientSession::StartProbing(
     const quic::QuicSocketAddress& peer_address,
     ProbingCallback probing_callback) {
   // Check if probing manager is probing the same path.
+  // TODO(crbug.com/580868331): Restructure probe tracking. This currently
+  // treats any IPv6 probe on `network` as a duplicate of an in-flight IPv4
+  // fallback probe, regardless of its migration cause or peer address.
   auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
       connection()->GetPathValidationContext());
   if (existing_context && existing_context->network() == network &&
-      existing_context->peer_address() == peer_address) {
+      (existing_context->peer_address() == peer_address ||
+       (peer_address.host().IsIPv6() &&
+        fallback_ipv4_peer_address_.has_value() &&
+        existing_context->peer_address() == *fallback_ipv4_peer_address_))) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(std::move(probing_callback),
                                           ProbingResult::DISABLED_BY_CONFIG));
@@ -3776,6 +3813,12 @@ void QuicChromiumClientSession::FinishStartProbing(
     std::optional<QuicSocketConfigStep> error_step) {
   if (rv != OK) {
     CHECK(error_step.has_value());
+    if (CanFallbackToIpv4OnConnectError(*context, rv, *error_step)) {
+      StartProbing(CreateV6ToV4FallbackContext(std::move(context),
+                                               *fallback_ipv4_peer_address_),
+                   std::move(probing_callback));
+      return;
+    }
     context->SetSocketConfigFailure(*error_step, rv);
     LogMigrationFailure(connection_id(), "Socket configuration failed");
     task_runner_->PostTask(FROM_HERE,
@@ -3783,6 +3826,10 @@ void QuicChromiumClientSession::FinishStartProbing(
                                           ProbingResult::INTERNAL_ERROR));
 
     return;
+  }
+
+  if (context->is_v6_to_v4_fallback()) {
+    connection()->AddKnownServerAddress(context->target_peer_address());
   }
 
   QuicMigrationAttemptCause cause = context->cause();
@@ -4435,6 +4482,65 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
                                            session_key_.socket_tag());
 }
 
+std::unique_ptr<QuicMigrationAttemptContext>
+QuicChromiumClientSession::CreateV6ToV4FallbackContext(
+    std::unique_ptr<QuicMigrationAttemptContext> ipv6_context,
+    const quic::QuicSocketAddress& fallback_ipv4_peer_address) {
+  CHECK(session_pool_);
+  // Create socket on `ipv6_context->target_network()`.
+  // TODO(crbug.com/518753285): Once we no longer bindToNetwork via
+  // `ConnectAndConfigureSocket`, bind the socket via this `CreateSocket` call,
+  // by passing in `ipv6_context->target_network()` instead of
+  // `handles::kInvalidNetworkHandle`.
+  std::unique_ptr<DatagramClientSocket> socket = session_pool_->CreateSocket(
+      handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source());
+  DatagramClientSocket* socket_ptr = socket.get();
+  return QuicMigrationAttemptContext::CreateV6ToV4Fallback(
+      std::move(ipv6_context), fallback_ipv4_peer_address,
+      std::make_unique<QuicChromiumPacketReader>(
+          std::move(socket), clock_, this, yield_after_packets_,
+          yield_after_duration_, net_log_),
+      std::make_unique<QuicChromiumPacketWriter>(socket_ptr, task_runner_));
+}
+
+void QuicChromiumClientSession::set_fallback_ipv4_peer_address(
+    const quic::QuicSocketAddress& ipv4_peer_address) {
+  if (!base::FeatureList::IsEnabled(features::kEnableQuicV6ToV4Migration)) {
+    return;
+  }
+  CHECK(ipv4_peer_address.host().IsIPv4());
+  fallback_ipv4_peer_address_ = ipv4_peer_address;
+}
+
+bool QuicChromiumClientSession::CanFallbackToIpv4OnConnectError(
+    const QuicMigrationAttemptContext& context,
+    int rv,
+    QuicSocketConfigStep error_step) const {
+  if (!base::FeatureList::IsEnabled(features::kEnableQuicV6ToV4Migration) ||
+      context.is_v6_to_v4_fallback()) {
+    return false;
+  }
+
+  const bool is_candidate_error =
+      IsNetworkMigrationCause(context.cause()) &&
+      context.target_peer_address().host().IsIPv6() &&
+      error_step == QuicSocketConfigStep::kConnect &&
+      rv == ERR_ADDRESS_UNREACHABLE;
+  if (!is_candidate_error) {
+    return false;
+  }
+
+  const bool is_safe_fallback_address =
+      fallback_ipv4_peer_address_.has_value() &&
+      (!ToIPAddress(peer_address().host()).IsPubliclyRoutable() ||
+       ToIPAddress(fallback_ipv4_peer_address_->host()).IsPubliclyRoutable());
+
+  base::UmaHistogramBoolean(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback",
+      is_safe_fallback_address);
+  return is_safe_fallback_address;
+}
+
 void QuicChromiumClientSession::FinishMigrateWithoutProbing(
     std::unique_ptr<QuicMigrationAttemptContext> migration_context,
     bool close_session_on_error,
@@ -4443,6 +4549,20 @@ void QuicChromiumClientSession::FinishMigrateWithoutProbing(
     std::optional<QuicSocketConfigStep> error_step) {
   if (rv != OK) {
     CHECK(error_step.has_value());
+    if (CanFallbackToIpv4OnConnectError(*migration_context, rv, *error_step)) {
+      // Unlike a regular non-probing migration, the fallback also changes the
+      // peer address, to the DNS-resolved IPv4 address, which has not been
+      // validated via PATH_CHALLENGE/PATH_RESPONSE. This is an intentional
+      // interim trade-off: non-probing migration only happens when the current
+      // path is unusable, so probing first would only delay recovery. Once
+      // draft-munizaga-quic-alternative-server-address is supported, the
+      // server-advertised address should be used instead.
+      MigrateWithoutProbing(
+          CreateV6ToV4FallbackContext(std::move(migration_context),
+                                      *fallback_ipv4_peer_address_),
+          close_session_on_error, std::move(callback));
+      return;
+    }
     migration_context->SetSocketConfigFailure(*error_step, rv);
     LogMigrationFailure(connection_id(), "Socket configuration failed");
     static_cast<QuicChromiumPacketWriter*>(connection()->writer())
@@ -4466,6 +4586,9 @@ void QuicChromiumClientSession::FinishMigrateWithoutProbing(
       ->set_delegate(nullptr);
   migration_context->writer()->set_delegate(this);
 
+  // Unlike when probing, an IPv6-to-IPv4 fallback does not need
+  // AddKnownServerAddress() here: CommitMigration() makes the IPv4 address the
+  // default peer address, so its packets are accepted.
   if (!CommitMigration(std::move(migration_context))) {
     task_runner_->PostTask(
         FROM_HERE,

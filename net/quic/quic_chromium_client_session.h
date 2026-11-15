@@ -1045,6 +1045,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     return received_connection_options_;
   }
 
+  void set_fallback_ipv4_peer_address(
+      const quic::QuicSocketAddress& ipv4_peer_address);
+
+  const std::optional<quic::QuicSocketAddress>& fallback_ipv4_peer_address()
+      const {
+    return fallback_ipv4_peer_address_;
+  }
+
  protected:
   // quic::QuicSession methods:
   bool ShouldCreateIncomingStream(quic::QuicStreamId id) override;
@@ -1093,12 +1101,30 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool close_session_on_error,
       MigrationCallback migration_callback);
 
+  // Returns whether a migration attempt whose socket configuration failed with
+  // `rv` at `error_step` should fall back to `fallback_ipv4_peer_address_`.
+  // For candidate errors (an IPv6 network migration failing to connect with
+  // ERR_ADDRESS_UNREACHABLE), this also records
+  // Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback, so it must be
+  // called at most once per failed attempt.
+  bool CanFallbackToIpv4OnConnectError(
+      const QuicMigrationAttemptContext& context,
+      int rv,
+      QuicSocketConfigStep error_step) const;
+
   // Creates a new socket, packet reader, and packet writer, and wraps them in a
   // `QuicMigrationAttemptContext` for a new migration attempt.
   std::unique_ptr<QuicMigrationAttemptContext> CreateMigrationAttemptContext(
       QuicMigrationAttemptCause cause,
       handles::NetworkHandle target_network,
       const quic::QuicSocketAddress& target_peer_address);
+
+  // Creates a new socket, packet reader, and packet writer, and wraps them in a
+  // `QuicMigrationAttemptContext` that consumes `ipv6_context` for an
+  // IPv6-to-IPv4 fallback attempt.
+  std::unique_ptr<QuicMigrationAttemptContext> CreateV6ToV4FallbackContext(
+      std::unique_ptr<QuicMigrationAttemptContext> ipv6_context,
+      const quic::QuicSocketAddress& fallback_ipv4_peer_address);
 
   // Probe on <network, peer_address>.
   // If <network, peer_addres> is identical to the current path, the probe
@@ -1426,6 +1452,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool enable_periodic_ping_ = false;
 
   bool crypto_handshake_complete_ = false;
+
+  // Alternative IPv4 peer address learned from DNS resolution at connection
+  // time. Used as a fallback target if an IPv6 connection needs to migrate
+  // to an IPv4-only network.
+  // TODO(crbug.com/580868331): Consider updating or clearing this address if
+  // the session migrates to a Server Preferred Address.
+  std::optional<quic::QuicSocketAddress> fallback_ipv4_peer_address_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

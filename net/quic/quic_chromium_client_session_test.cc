@@ -18,6 +18,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -57,6 +58,7 @@
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
+#include "net/quic/quic_socket_config_step.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/socket/datagram_client_socket.h"
@@ -396,6 +398,19 @@ class QuicChromiumClientSessionTest
       SocketDataProvider* socket_data,
       base::RepeatingCallback<bool()> is_session_alive = base::NullCallback(),
       bool is_google_host = false) {
+    return CreateMigrationAttemptContextForPath(
+        cause, session_->GetCurrentNetwork(), ToQuicSocketAddress(kIpEndPoint),
+        socket_data, std::move(is_session_alive), is_google_host);
+  }
+
+  std::unique_ptr<QuicMigrationAttemptContext>
+  CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause cause,
+      handles::NetworkHandle target_network,
+      const quic::QuicSocketAddress& target_peer_address,
+      SocketDataProvider* socket_data,
+      base::RepeatingCallback<bool()> is_session_alive = base::NullCallback(),
+      bool is_google_host = false) {
     if (socket_data) {
       socket_factory_.AddSocketDataProvider(socket_data);
     }
@@ -403,7 +418,7 @@ class QuicChromiumClientSessionTest
         socket_factory_.CreateDatagramClientSocket(
             DatagramSocket::RANDOM_BIND, handles::kInvalidNetworkHandle,
             NetLog::Get(), NetLogSource());
-    EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
+    EXPECT_THAT(new_socket->Connect(ToIPEndPoint(target_peer_address)), IsOk());
     auto new_reader = std::make_unique<QuicChromiumPacketReader>(
         std::move(new_socket), &clock_, session_.get(),
         kQuicYieldAfterPacketsRead,
@@ -413,15 +428,13 @@ class QuicChromiumClientSessionTest
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
-    IPEndPoint peer_address;
-    new_reader->socket()->GetPeerAddress(&peer_address);
     if (!is_session_alive) {
       is_session_alive = session_->CreateSessionAliveCallback();
     }
     return std::make_unique<QuicMigrationAttemptContext>(
-        cause, session_->GetCurrentNetwork(), session_->GetCurrentNetwork(),
-        ToQuicSocketAddress(peer_address), std::move(new_reader),
-        std::move(new_writer), std::move(is_session_alive), is_google_host);
+        cause, session_->GetCurrentNetwork(), target_network,
+        target_peer_address, std::move(new_reader), std::move(new_writer),
+        std::move(is_session_alive), is_google_host);
   }
 
   quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) {
@@ -4972,6 +4985,437 @@ TEST_P(QuicChromiumClientSessionTest, SupersededReasonMapping) {
           quic::PathValidationFailure::Reason::
               kNewerValidationOnNetworkConnected),
       QuicMigrationAttemptCause::kUnknown);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       OnNetworkDisconnectedV2CancelsFallbackIpv4Probe) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  const quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  int peer_packet_num = 1;
+  socket_data_.reset();
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddWrite(ASYNC,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_on_new_path,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  default_network_ = kDefaultNetworkForTests;
+  Initialize(/*migrate_session_on_network_change_v2=*/true);
+  CompleteCryptoHandshake();
+
+  quic_data.Resume();
+  // Wait for the NEW_CONNECTION_ID frame to be processed, so that the session
+  // has an unused connection ID for the probe.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return quic::test::QuicConnectionPeer::HasUnusedPeerIssuedConnectionId(
+        session_->connection());
+  }));
+
+  const quic::QuicSocketAddress fallback_ipv4_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443));
+  session_->set_fallback_ipv4_peer_address(fallback_ipv4_address);
+
+  MockRead probe_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite probe_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData probe_socket_data(probe_reads, probe_writes);
+  auto probe_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, kNewNetworkForTests,
+      fallback_ipv4_address, &probe_socket_data);
+
+  IPEndPoint probe_local_address;
+  probe_context->reader()->socket()->GetLocalAddress(&probe_local_address);
+  auto path_validation_context = std::make_unique<
+      QuicChromiumClientSession::QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(probe_local_address), std::move(probe_context));
+
+  session_->connection()->ValidatePath(
+      std::move(path_validation_context),
+      std::make_unique<QuicChromiumClientSession::
+                           ConnectionMigrationValidationResultDelegate>(
+          session_.get()),
+      quic::PathValidationReason::kConnectionMigration);
+  ASSERT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  // Disconnecting an unrelated network does not cancel the probe.
+  session_->OnNetworkDisconnectedV2(kNewNetworkForTests + 10);
+  EXPECT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  base::HistogramTester histogram_tester;
+  // Disconnecting kNewNetworkForTests cancels the probe targeting fallback
+  // IPv4.
+  session_->OnNetworkDisconnectedV2(kNewNetworkForTests);
+  EXPECT_FALSE(session_->connection()->HasPendingPathValidation());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kDisconnectedDuringProbing, 1);
+}
+
+TEST_P(
+    QuicChromiumClientSessionTest,
+    OnNetworkDisconnectedV2DoesNotCancelFallbackIpv4ProbeWhenFeatureDisabled) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  const quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  int peer_packet_num = 1;
+  socket_data_.reset();
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddWrite(ASYNC,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_on_new_path,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  default_network_ = kDefaultNetworkForTests;
+  Initialize(/*migrate_session_on_network_change_v2=*/true);
+  CompleteCryptoHandshake();
+
+  quic_data.Resume();
+  // Wait for the NEW_CONNECTION_ID frame to be processed, so that the session
+  // has an unused connection ID for the probe.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return quic::test::QuicConnectionPeer::HasUnusedPeerIssuedConnectionId(
+        session_->connection());
+  }));
+
+  const quic::QuicSocketAddress fallback_ipv4_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443));
+  session_->set_fallback_ipv4_peer_address(fallback_ipv4_address);
+  EXPECT_FALSE(session_->fallback_ipv4_peer_address().has_value());
+
+  MockRead probe_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite probe_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData probe_socket_data(probe_reads, probe_writes);
+  auto probe_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, kNewNetworkForTests,
+      fallback_ipv4_address, &probe_socket_data);
+
+  IPEndPoint probe_local_address;
+  probe_context->reader()->socket()->GetLocalAddress(&probe_local_address);
+  auto path_validation_context = std::make_unique<
+      QuicChromiumClientSession::QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(probe_local_address), std::move(probe_context));
+
+  session_->connection()->ValidatePath(
+      std::move(path_validation_context),
+      std::make_unique<QuicChromiumClientSession::
+                           ConnectionMigrationValidationResultDelegate>(
+          session_.get()),
+      quic::PathValidationReason::kConnectionMigration);
+  ASSERT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  // Because the feature is disabled, the fallback IPv4 address is never
+  // stored on the session, so the probe targeting it is not cancelled.
+  session_->OnNetworkDisconnectedV2(kNewNetworkForTests);
+  EXPECT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  session_->connection()->CancelPathValidation(quic::PathValidationFailure{
+      quic::PathValidationFailure::Reason::kRetryTimeout});
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       StartProbingDeduplicatesExistingFallbackIpv4Probe) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  const quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  int peer_packet_num = 1;
+  socket_data_.reset();
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddWrite(ASYNC,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_on_new_path,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  default_network_ = kDefaultNetworkForTests;
+  Initialize(/*migrate_session_on_network_change_v2=*/true);
+  CompleteCryptoHandshake();
+
+  quic_data.Resume();
+  // Wait for the NEW_CONNECTION_ID frame to be processed, so that the session
+  // has an unused connection ID for the probe.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return quic::test::QuicConnectionPeer::HasUnusedPeerIssuedConnectionId(
+        session_->connection());
+  }));
+
+  const quic::QuicSocketAddress fallback_ipv4_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443));
+  session_->set_fallback_ipv4_peer_address(fallback_ipv4_address);
+
+  MockRead probe_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite probe_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData probe_socket_data(probe_reads, probe_writes);
+  auto probe_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, kNewNetworkForTests,
+      fallback_ipv4_address, &probe_socket_data);
+
+  IPEndPoint probe_local_address;
+  probe_context->reader()->socket()->GetLocalAddress(&probe_local_address);
+  auto path_validation_context = std::make_unique<
+      QuicChromiumClientSession::QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(probe_local_address), std::move(probe_context));
+
+  session_->connection()->ValidatePath(
+      std::move(path_validation_context),
+      std::make_unique<QuicChromiumClientSession::
+                           ConnectionMigrationValidationResultDelegate>(
+          session_.get()),
+      quic::PathValidationReason::kConnectionMigration);
+  ASSERT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  // Probing the IPv6 peer address on kNewNetworkForTests should be deduplicated
+  // against the existing probe to the fallback IPv4 address on that same
+  // network.
+  const quic::QuicSocketAddress ipv6_peer_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv6Localhost(), 443));
+  base::test::TestFuture<ProbingResult> future;
+  QuicChromiumClientSessionPeer::StartProbing(
+      session_.get(), QuicMigrationAttemptCause::kOnNetworkMadeDefault,
+      kNewNetworkForTests, ipv6_peer_address, future.GetCallback());
+  EXPECT_EQ(future.Get(), ProbingResult::DISABLED_BY_CONFIG);
+
+  session_->connection()->CancelPathValidation(quic::PathValidationFailure{
+      quic::PathValidationFailure::Reason::kRetryTimeout});
+}
+
+// Sets a publicly routable IPv6 peer address on `session`, so that the
+// public-to-non-public fallback check in CanFallbackToIpv4OnConnectError() is
+// exercised.
+quic::QuicSocketAddress SetPublicIpv6PeerAddress(
+    QuicChromiumClientSession* session) {
+  const quic::QuicSocketAddress public_ipv6_peer = ToQuicSocketAddress(
+      IPEndPoint(*IPAddress::FromIPLiteral("2001:4860:4860::8888"), 443));
+  quic::test::QuicConnectionPeer::SetPeerAddress(session->connection(),
+                                                 public_ipv6_peer);
+  quic::test::QuicConnectionPeer::SetEffectivePeerAddress(session->connection(),
+                                                          public_ipv6_peer);
+  return public_ipv6_peer;
+}
+
+TEST_P(QuicChromiumClientSessionTest, CanFallbackToIpv4OnConnectError) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  const quic::QuicSocketAddress ipv6_address =
+      SetPublicIpv6PeerAddress(session_.get());
+  ASSERT_TRUE(
+      ToIPAddress(session_->peer_address().host()).IsPubliclyRoutable());
+  const quic::QuicSocketAddress fallback_ipv4_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress(8, 8, 8, 8), 443));
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data(reads, base::span<MockWrite>());
+  auto v6_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, kNewNetworkForTests,
+      ipv6_address, &socket_data);
+
+  base::HistogramTester histogram_tester;
+
+  // Candidate error without fallback_ipv4_peer_address configured emits false.
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", false, 1);
+
+  session_->set_fallback_ipv4_peer_address(fallback_ipv4_address);
+
+  // Positive case: ERR_ADDRESS_UNREACHABLE during kConnect for an IPv6 target,
+  // with a publicly routable fallback IPv4 address.
+  EXPECT_TRUE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", true, 1);
+
+  // Non-fallback error code returns false without logging CanFallback.
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_CONNECTION_REFUSED,
+      QuicSocketConfigStep::kConnect));
+
+  // Non-connect error step returns false without logging CanFallback.
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kSetReceiveBufferSize));
+
+  // IPv4 target address returns false without logging CanFallback.
+  MockRead reads_v4[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data_v4(reads_v4, base::span<MockWrite>());
+  auto v4_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, kNewNetworkForTests,
+      fallback_ipv4_address, &socket_data_v4);
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v4_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+
+  // Non-network migration cause returns false without logging CanFallback.
+  MockRead reads_port[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data_port(reads_port, base::span<MockWrite>());
+  auto port_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kChangePortOnPathDegrading,
+      kNewNetworkForTests, ipv6_address, &socket_data_port);
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *port_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+
+  // Only the two candidate errors above were logged.
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", 2);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       CanFallbackToIpv4OnConnectErrorRejectsNonPublicFallbackForPublicPeer) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  const quic::QuicSocketAddress ipv6_address =
+      SetPublicIpv6PeerAddress(session_.get());
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data(reads, base::span<MockWrite>());
+  auto v6_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, kNewNetworkForTests,
+      ipv6_address, &socket_data);
+
+  base::HistogramTester histogram_tester;
+
+  // Loopback fallback address is rejected for a publicly routable peer.
+  session_->set_fallback_ipv4_peer_address(
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443)));
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+
+  // Private fallback address is rejected for a publicly routable peer.
+  session_->set_fallback_ipv4_peer_address(
+      ToQuicSocketAddress(IPEndPoint(IPAddress(192, 168, 1, 1), 443)));
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", false, 2);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       CanFallbackToIpv4OnConnectErrorAllowsNonPublicFallbackForNonPublicPeer) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  // The default test peer address is not publicly routable, so a non-public
+  // fallback address is allowed.
+  ASSERT_FALSE(
+      ToIPAddress(session_->peer_address().host()).IsPubliclyRoutable());
+
+  const quic::QuicSocketAddress ipv6_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv6Localhost(), 443));
+  session_->set_fallback_ipv4_peer_address(
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443)));
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data(reads, base::span<MockWrite>());
+  auto v6_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, kNewNetworkForTests,
+      ipv6_address, &socket_data);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", true, 1);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       CanFallbackToIpv4OnConnectErrorFeatureDisabled) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kEnableQuicV6ToV4Migration);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  const quic::QuicSocketAddress ipv6_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv6Localhost(), 443));
+  const quic::QuicSocketAddress fallback_ipv4_address =
+      ToQuicSocketAddress(IPEndPoint(IPAddress::IPv4Localhost(), 443));
+  session_->set_fallback_ipv4_peer_address(fallback_ipv4_address);
+  EXPECT_FALSE(session_->fallback_ipv4_peer_address().has_value());
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData socket_data(reads, base::span<MockWrite>());
+  auto v6_context = CreateMigrationAttemptContextForPath(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, kNewNetworkForTests,
+      ipv6_address, &socket_data);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(QuicChromiumClientSessionPeer::CanFallbackToIpv4OnConnectError(
+      session_.get(), *v6_context, ERR_ADDRESS_UNREACHABLE,
+      QuicSocketConfigStep::kConnect));
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", 0);
 }
 
 }  // namespace

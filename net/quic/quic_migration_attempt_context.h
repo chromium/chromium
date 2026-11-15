@@ -103,6 +103,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
     kFailure,
     kIneligible,
     kSuperseded,
+    kConsumedByV6ToV4Fallback,
   };
 
   // Records an ineligible migration when an attempt is classified as such
@@ -120,6 +121,15 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   // connects before timing out.
   static void RecordWaitForNewNetworkDuration(QuicMigrationAttemptCause cause,
                                               base::TimeDelta duration);
+
+  // Creates a new context for an IPv6-to-IPv4 fallback attempt, consuming
+  // `ipv6_context` so that `ipv6_context` does not record its own outcome
+  // histograms when destroyed.
+  static std::unique_ptr<QuicMigrationAttemptContext> CreateV6ToV4Fallback(
+      std::unique_ptr<QuicMigrationAttemptContext> ipv6_context,
+      const quic::QuicSocketAddress& fallback_ipv4_peer_address,
+      std::unique_ptr<QuicChromiumPacketReader> reader,
+      std::unique_ptr<QuicChromiumPacketWriter> writer);
 
   // Note: This does not accept a `self_address` because that is not known until
   // the underlying datagram socket has been configured and connected. This
@@ -163,6 +173,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
     return target_peer_address_;
   }
   bool is_google_host() const { return is_google_host_; }
+  bool is_v6_to_v4_fallback() const { return is_v6_to_v4_fallback_; }
 
   const QuicMigrationAttemptFailureReason* failure_reason() const {
     return std::get_if<QuicMigrationAttemptFailureReason>(&outcome_details_);
@@ -183,6 +194,19 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   }
 
  private:
+  QuicMigrationAttemptContext(
+      QuicMigrationAttemptCause cause,
+      handles::NetworkHandle from_network,
+      handles::NetworkHandle target_network,
+      const quic::QuicSocketAddress& target_peer_address,
+      std::unique_ptr<QuicChromiumPacketReader> reader,
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      base::RepeatingCallback<bool()> is_session_alive,
+      bool is_google_host,
+      bool is_v6_to_v4_fallback);
+
+  void RecordOutcomeHistograms(std::string_view prefix) const;
+
   const QuicMigrationAttemptCause cause_;
   const handles::NetworkHandle from_network_;
   const handles::NetworkHandle target_network_;
@@ -204,6 +228,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
 
   base::RepeatingCallback<bool()> is_session_alive_;
   const bool is_google_host_;
+  const bool is_v6_to_v4_fallback_;
 };
 
 }  // namespace net
