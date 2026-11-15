@@ -10,6 +10,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
+#include "net/base/port_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
 #include "net/log/net_log_with_source.h"
@@ -178,6 +179,11 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
   net_log_.BeginEventWithStringParams(
       NetLogEventType::QUIC_SESSION_POOL_PROXY_JOB_CREATE_PROXY_SESSION,
       "destination", destination.Serialize());
+
+  // Defense-in-depth check of proxy ports for direct ProxyJob callers.
+  if (!IsProxyChainPortAllowed(session_key.proxy_chain())) {
+    return ERR_PROXY_CONNECTION_FAILED;
+  }
 
   // Select the default QUIC version for the session to the proxy, since there
   // is no DNS or Alt-Svc information to use.

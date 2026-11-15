@@ -44,8 +44,8 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
       connection_->socket(),
       connection_->reuse_type() ==
           StreamSocketHandle::SocketReuseType::kReusedIdle,
-      request_info->url, request_info->method, request_info->upload_data_stream,
-      read_buf_.get(), net_log);
+      is_for_get_to_http_proxy_, request_info->url, request_info->method,
+      request_info->upload_data_stream, read_buf_.get(), net_log);
 }
 
 void HttpBasicState::Close(bool not_reusable) {

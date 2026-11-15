@@ -17384,6 +17384,151 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
   EXPECT_THAT(rv, IsOk());
 }
 
+TEST_P(HttpNetworkTransactionTest, ProxyRestrictedPort) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // A single proxy on a restricted port fails with ERR_PROXY_CONNECTION_FAILED
+  // without attempting any socket connection.
+  {
+    session_deps_.proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "PROXY 127.0.0.1:6667", TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsError(ERR_PROXY_CONNECTION_FAILED));
+  }
+
+  // When a fallback proxy or DIRECT is configured after a restricted-port
+  // proxy, proxy fallback succeeds.
+  {
+    MockWrite data_writes[] = {
+        MockWrite("GET / HTTP/1.1\r\n"
+                  "Host: www.example.org\r\n"
+                  "Connection: keep-alive\r\n\r\n"),
+    };
+    MockRead data_reads[] = {
+        MockRead("HTTP/1.1 200 OK\r\n\r\n"),
+        MockRead("hello world"),
+        MockRead(SYNCHRONOUS, OK),
+    };
+    StaticSocketDataProvider data(data_reads, data_writes);
+    session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+    session_deps_.proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "PROXY 127.0.0.1:6667; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("hello world", response_data);
+  }
+
+  // Disabling the `kRestrictProxyPorts` killswitch restores legacy behavior.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(features::kRestrictProxyPorts);
+
+    MockWrite data_writes[] = {
+        MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
+                  "Host: www.example.org\r\n"
+                  "Proxy-Connection: keep-alive\r\n\r\n"),
+    };
+    MockRead data_reads[] = {
+        MockRead("HTTP/1.1 200 OK\r\n\r\n"),
+        MockRead("hello world"),
+        MockRead(SYNCHRONOUS, OK),
+    };
+    StaticSocketDataProvider data(data_reads, data_writes);
+    session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+    session_deps_.proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "PROXY 127.0.0.1:6667", TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+  }
+}
+
+TEST_P(HttpNetworkTransactionTest, ProxyHttp09Rejected) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  for (std::string_view raw_response :
+       {"220 smtp.example.org ESMTP\r\n", "ICY 200 OK\r\n\r\n", "small"}) {
+    MockWrite data_writes[] = {
+        MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
+                  "Host: www.example.org\r\n"
+                  "Proxy-Connection: keep-alive\r\n\r\n"),
+    };
+    MockRead data_reads[] = {
+        MockRead(raw_response),
+        MockRead(SYNCHRONOUS, OK),
+    };
+    StaticSocketDataProvider data(data_reads, data_writes);
+    session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+    session_deps_.proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "PROXY 127.0.0.1:8080", TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsError(ERR_INVALID_HTTP_RESPONSE));
+  }
+
+  // Disabling the `kRejectHttp09FromHttpProxy` killswitch restores legacy
+  // behavior.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kRejectHttp09FromHttpProxy);
+
+    MockWrite data_writes[] = {
+        MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
+                  "Host: www.example.org\r\n"
+                  "Proxy-Connection: keep-alive\r\n\r\n"),
+    };
+    MockRead data_reads[] = {
+        MockRead("220 smtp.example.org ESMTP\r\n"),
+        MockRead(SYNCHRONOUS, OK),
+    };
+    StaticSocketDataProvider data(data_reads, data_writes);
+    session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+    session_deps_.proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "PROXY 127.0.0.1:8080", TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+  }
+}
+
 TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   HttpRequestInfo request;
   request.method = "GET";

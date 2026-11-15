@@ -11,6 +11,7 @@
 #include "build/buildflag.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -853,6 +854,51 @@ TEST_P(QuicSessionPoolProxyJobTest, GoAwayOnProxySessionBeforeStreamCreated) {
 
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_CONNECTION_CLOSED));
   EXPECT_TRUE(socket_data.AllDataConsumed());
+}
+
+TEST_P(QuicSessionPoolProxyJobTest, RestrictedProxyPort) {
+  Initialize();
+
+  constexpr uint16_t kRestrictedPort = 6667;
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "https"));
+
+  GURL url("https://www.example.org/");
+  GURL proxy1(kProxy1Url);
+  auto origin = url::SchemeHostPort(url);
+
+  std::vector<ProxyChain> chains = {
+      ProxyChain({
+          ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             proxy1.host(), kRestrictedPort),
+      }),
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      ProxyChain({
+          ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             proxy1.host(), 443),
+          ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             GURL(kProxy2Url).host(),
+                                             kRestrictedPort),
+      }),
+      ProxyChain({
+          ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             proxy1.host(), kRestrictedPort),
+          ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             GURL(kProxy2Url).host(), 443),
+      }),
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  };
+
+  for (const ProxyChain& proxy_chain : chains) {
+    ASSERT_TRUE(proxy_chain.IsValid());
+
+    RequestBuilder builder(this);
+    builder.destination = origin;
+    builder.proxy_chain = proxy_chain;
+    builder.http_user_agent_settings = &http_user_agent_settings_;
+    builder.url = url;
+
+    EXPECT_THAT(builder.CallRequest(), IsError(ERR_PROXY_CONNECTION_FAILED));
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)

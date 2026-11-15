@@ -684,6 +684,12 @@ int HttpStreamFactory::Job::DoStart() {
     return ERR_UNSAFE_PORT;
   }
 
+  // Main gate for proxy port restrictions on HTTP/HTTPS/WS/WSS requests. The
+  // ConnectJob checks are defense-in-depth for direct ConnectJob callers.
+  if (!IsProxyChainPortAllowed(proxy_info_.proxy_chain())) {
+    return ReconsiderProxyAfterError(ERR_PROXY_CONNECTION_FAILED);
+  }
+
   next_state_ = STATE_WAIT;
   return OK;
 }

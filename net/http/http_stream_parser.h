@@ -51,10 +51,14 @@ class NET_EXPORT_PRIVATE HttpStreamParser final {
   // It is not safe to call into the HttpStreamParser after destroying the
   // |stream_socket|.
   //
+  // `is_for_get_to_http_proxy` must be `true` when sending a non-tunneled HTTP
+  // request to an HTTP or HTTPS proxy.
+  //
   // `upload_data_stream` must remain valid until the SendRequest() callback is
   // invoked or the HttpStreamParser has been destroyed.
   HttpStreamParser(StreamSocket* stream_socket,
                    bool connection_is_reused,
+                   bool is_for_get_to_http_proxy,
                    const GURL& url,
                    const std::string& method,
                    UploadDataStream* upload_data_stream,
@@ -313,6 +317,11 @@ class NET_EXPORT_PRIVATE HttpStreamParser final {
   // Whether the socket has already been used. Only used in HTTP/0.9 detection
   // logic.
   const bool connection_is_reused_;
+
+  // Whether this request is a non-tunneled HTTP request to an HTTP or HTTPS
+  // proxy. When `features::kRejectHttp09FromHttpProxy` is enabled, HTTP/0.9
+  // responses are rejected on such requests.
+  const bool is_for_get_to_http_proxy_;
 
   NetLogWithSource net_log_;
 

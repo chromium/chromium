@@ -46,7 +46,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Use a NetLog that listens to events, to get coverage of logging
   // callbacks.
   net::HttpStreamParser parser(
-      &fuzzed_socket, false /* is_reused */, GURL("http://localhost/"), "GET",
+      &fuzzed_socket, false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost/"), "GET",
       /*upload_data_stream=*/nullptr, read_buffer.get(), net_log_with_source);
 
   net::HttpResponseInfo response_info;

@@ -136,6 +136,7 @@ TEST(HttpStreamParser, DataReadErrorSynchronous) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -178,6 +179,7 @@ TEST(HttpStreamParser, DataReadErrorAsynchronous) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -255,6 +257,7 @@ TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -476,10 +479,10 @@ TEST(HttpStreamParser, SentBytesNoHeaders) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   HttpResponseInfo response;
   TestCompletionCallback callback;
@@ -503,10 +506,10 @@ TEST(HttpStreamParser, SentBytesWithHeaders) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   HttpRequestHeaders headers;
   headers.SetHeader("Host", "localhost");
@@ -533,10 +536,10 @@ TEST(HttpStreamParser, SentBytesWithHeadersMultiWrite) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   HttpRequestHeaders headers;
   headers.SetHeader("Host", "localhost");
@@ -564,10 +567,10 @@ TEST(HttpStreamParser, SentBytesWithErrorWritingHeaders) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   HttpRequestHeaders headers;
   headers.SetHeader("Host", "localhost");
@@ -604,6 +607,7 @@ TEST(HttpStreamParser, SentBytesPost) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -642,6 +646,7 @@ TEST(HttpStreamParser, MergedUploadDataStreamNotReadOneByteAtATime) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -678,6 +683,7 @@ TEST(HttpStreamParser, SentBytesChunkedPostError) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_data_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -743,6 +749,7 @@ TEST(HttpStreamParser, AsyncSingleChunkAndAsyncSocket) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "POST", &upload_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -822,6 +829,7 @@ TEST(HttpStreamParser, SyncSingleChunkAndAsyncSocket) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "GET", &upload_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -906,6 +914,7 @@ TEST(HttpStreamParser, AsyncChunkAndAsyncSocketWithMultipleChunks) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "GET", &upload_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -994,6 +1003,7 @@ TEST(HttpStreamParser, AsyncEmptyChunkedUpload) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "GET", &upload_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -1068,6 +1078,7 @@ TEST(HttpStreamParser, SyncEmptyChunkedUpload) {
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
   HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          /*is_for_get_to_http_proxy=*/false,
                           GURL("http://localhost"), "GET", &upload_stream,
                           read_buffer.get(), NetLogWithSource());
 
@@ -1169,9 +1180,10 @@ TEST(HttpStreamParser, TruncatedHeaders) {
 
       scoped_refptr<GrowableIOBuffer> read_buffer =
           base::MakeRefCounted<GrowableIOBuffer>();
-      HttpStreamParser parser(stream_socket.get(), false /* is_reused */, url,
-                              "GET", /*upload_data_stream=*/nullptr,
-                              read_buffer.get(), NetLogWithSource());
+      HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                              /*is_for_get_to_http_proxy=*/false, url, "GET",
+                              /*upload_data_stream=*/nullptr, read_buffer.get(),
+                              NetLogWithSource());
 
       HttpRequestHeaders request_headers;
       HttpResponseInfo response_info;
@@ -1222,10 +1234,10 @@ TEST(HttpStreamParser, WebSocket101Response) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   HttpRequestHeaders request_headers;
   HttpResponseInfo response_info;
@@ -1260,6 +1272,9 @@ class SimpleGetRunner {
   }
 
   void set_url(const GURL& url) { url_ = url; }
+  void set_is_for_get_to_http_proxy(bool is_for_get_to_http_proxy) {
+    is_for_get_to_http_proxy_ = is_for_get_to_http_proxy;
+  }
 
   HttpStreamParser* parser() { return parser_.get(); }
   GrowableIOBuffer* read_buffer() { return read_buffer_.get(); }
@@ -1292,7 +1307,8 @@ class SimpleGetRunner {
     stream_socket_ = CreateConnectedSocket(data_.get());
 
     parser_ = std::make_unique<HttpStreamParser>(
-        stream_socket_.get(), false /* is_reused */, url_, "GET",
+        stream_socket_.get(), false /* is_reused */, is_for_get_to_http_proxy_,
+        url_, "GET",
         /*upload_data_stream=*/nullptr, read_buffer(), NetLogWithSource());
 
     TestCompletionCallback callback;
@@ -1345,6 +1361,7 @@ class SimpleGetRunner {
   std::unique_ptr<SequencedSocketData> data_;
   std::unique_ptr<HttpStreamParser> parser_;
   int sequence_number_ = 0;
+  bool is_for_get_to_http_proxy_ = false;
 };
 
 // Test that HTTP/0.9 works as expected, only on ports where it should be
@@ -1426,6 +1443,23 @@ TEST(HttpStreamParser, Http09PortTests) {
               get_runner.parser()->received_bytes());
     EXPECT_EQ(HttpConnectionInfo::kHTTP0_9,
               get_runner.response_info()->connection_info);
+  }
+}
+
+// Test that HTTP/0.9 (including Shoutcast) is disallowed for non-tunneled HTTP
+// proxy requests even when the destination URL uses the default port.
+TEST(HttpStreamParser, Http09DisallowedForHttpProxy) {
+  for (const char* url :
+       {"http://foo.com/", "http://foo.com:80/", "http://foo.com:8080/"}) {
+    for (const char* response :
+         {"hello\r\nworld\r\n", "ICY 200 blah\r\n\r\n", "small"}) {
+      SimpleGetRunner get_runner;
+      get_runner.set_url(GURL(url));
+      get_runner.set_is_for_get_to_http_proxy(true);
+      get_runner.AddRead(response);
+      get_runner.SetupParserAndSendRequest();
+      get_runner.ReadHeadersExpectingError(ERR_INVALID_HTTP_RESPONSE);
+    }
   }
 }
 
@@ -1851,10 +1885,10 @@ TEST(HttpStreamParser, NonInformationalResponseStart) {
 
   // Set up the http stream parser.
   auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), /*connection_is_reused=*/false,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   // Send a request.
   HttpResponseInfo response;
@@ -1927,10 +1961,10 @@ TEST(HttpStreamParser, NonInformationalResponseStartWithoutBody) {
 
   // Set up the http stream parser.
   auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), /*connection_is_reused=*/false,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   // Send a request.
   HttpResponseInfo response;
@@ -2017,10 +2051,10 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
 
   // Set up the http stream parser.
   auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), /*connection_is_reused=*/false,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   // Send a request.
   HttpResponseInfo response;
@@ -2152,10 +2186,10 @@ TEST(HttpStreamParser, EarlyHints) {
 
   // Set up the http stream parser.
   auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), /*connection_is_reused=*/false,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   // Send a request.
   HttpResponseInfo response;
@@ -2285,10 +2319,10 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
 
   // Set up the http stream parser.
   auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
-                          GURL("http://localhost"), "GET",
-                          /*upload_data_stream=*/nullptr, read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), /*connection_is_reused=*/false,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://localhost"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), NetLogWithSource());
 
   // Send a request.
   HttpResponseInfo response;
@@ -2397,10 +2431,10 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
 
   scoped_refptr<GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<GrowableIOBuffer>();
-  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
-                          GURL("http://somewhere/foo.html"), "POST",
-                          upload_data_stream.get(), read_buffer.get(),
-                          NetLogWithSource());
+  HttpStreamParser parser(
+      stream_socket.get(), false /* is_reused */,
+      /*is_for_get_to_http_proxy=*/false, GURL("http://somewhere/foo.html"),
+      "POST", upload_data_stream.get(), read_buffer.get(), NetLogWithSource());
 
   auto request_headers = std::make_unique<HttpRequestHeaders>();
   request_headers->SetHeader("Content-Length", "3");

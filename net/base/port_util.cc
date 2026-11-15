@@ -22,6 +22,8 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/parse_number.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -210,6 +212,19 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
   }
 
   return true;
+}
+
+bool IsProxyPortAllowed(int port) {
+  if (!base::FeatureList::IsEnabled(features::kRestrictProxyPorts)) {
+    return true;
+  }
+  return IsPortAllowedForScheme(port, /*url_scheme=*/"");
+}
+
+bool IsProxyChainPortAllowed(const ProxyChain& proxy_chain) {
+  return !proxy_chain.AnyProxy([](const ProxyServer& server) {
+    return !IsProxyPortAllowed(server.GetPort());
+  });
 }
 
 bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {

@@ -6,9 +6,11 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
@@ -152,6 +154,14 @@ int SOCKSConnectJob::DoLoop(int result) {
 
 int SOCKSConnectJob::DoTransportConnect() {
   DCHECK(!transport_connect_job_);
+
+  // Defense-in-depth check of proxy port for direct ConnectJob callers.
+  const uint16_t proxy_port =
+      std::visit([](const auto& endpoint) { return endpoint.port(); },
+                 socks_params_->transport_params()->destination());
+  if (!IsProxyPortAllowed(proxy_port)) {
+    return ERR_PROXY_CONNECTION_FAILED;
+  }
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   transport_connect_job_ = TransportConnectJob::Factory::CreateJob(

@@ -29,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
+#include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
@@ -2949,6 +2950,126 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
   EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
 }
 #endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+TEST_F(HttpProxyConnectQuicJobTest, RestrictedPort) {
+  constexpr uint16_t kRestrictedPort = 6667;
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "https"));
+
+  SSLConfig quic_proxy_ssl_config;
+  quic_proxy_ssl_config.disable_cert_verification_network_fetches = true;
+
+  std::vector<ProxyChain> chains = {
+      ProxyChain({ProxyServer(ProxyServer::SCHEME_QUIC,
+                              HostPortPair(kQuicProxyHost, kRestrictedPort))}),
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      ProxyChain(
+          {ProxyServer(ProxyServer::SCHEME_QUIC,
+                       HostPortPair(kQuicProxyHost, 443)),
+           ProxyServer(ProxyServer::SCHEME_QUIC,
+                       HostPortPair("quic2.proxy.test", kRestrictedPort))}),
+      ProxyChain({ProxyServer(ProxyServer::SCHEME_QUIC,
+                              HostPortPair(kQuicProxyHost, kRestrictedPort)),
+                  ProxyServer(ProxyServer::SCHEME_QUIC,
+                              HostPortPair("quic2.proxy.test", 443))}),
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  };
+
+  for (const ProxyChain& proxy_chain : chains) {
+    scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
+        base::MakeRefCounted<HttpProxySocketParams>(
+            quic_proxy_ssl_config, HostPortPair(kEndpointHost, 443),
+            proxy_chain, /*proxy_chain_index=*/0, /*tunnel=*/true,
+            TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
+            SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle);
+
+    TestConnectJobDelegate test_delegate;
+    auto connect_job = std::make_unique<HttpProxyConnectJob>(
+        DEFAULT_PRIORITY, SocketTag(), common_connect_job_params_.get(),
+        std::move(http_proxy_socket_params), &test_delegate,
+        /*net_log=*/nullptr);
+
+    EXPECT_CALL(mock_quic_session_pool_, RequestSession).Times(0);
+    EXPECT_THAT(connect_job->Connect(),
+                test::IsError(ERR_PROXY_CONNECTION_FAILED));
+  }
+
+  // Disabling `kRestrictProxyPorts` allows the request to proceed.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(features::kRestrictProxyPorts);
+
+    scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
+        base::MakeRefCounted<HttpProxySocketParams>(
+            quic_proxy_ssl_config, HostPortPair(kEndpointHost, 443), chains[0],
+            /*proxy_chain_index=*/0, /*tunnel=*/true,
+            TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
+            SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle);
+
+    TestConnectJobDelegate test_delegate;
+    auto connect_job = std::make_unique<HttpProxyConnectJob>(
+        DEFAULT_PRIORITY, SocketTag(), common_connect_job_params_.get(),
+        std::move(http_proxy_socket_params), &test_delegate,
+        /*net_log=*/nullptr);
+
+    EXPECT_CALL(mock_quic_session_pool_, RequestSession)
+        .WillOnce(testing::Return(ERR_IO_PENDING));
+    EXPECT_CALL(mock_quic_session_pool_, CancelRequest).Times(1);
+    EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  }
+}
 #endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+TEST_P(HttpProxyConnectJobTest, RestrictedPort) {
+  constexpr uint16_t kRestrictedPort = 6667;
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "http"));
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "https"));
+
+  const ProxyServer proxy_server(
+      GetParam() == HTTP ? ProxyServer::SCHEME_HTTP : ProxyServer::SCHEME_HTTPS,
+      HostPortPair(GetParam() == HTTP ? kHttpProxyHost : kHttpsProxyHost,
+                   kRestrictedPort));
+  const ProxyChain proxy_chain(proxy_server);
+
+  auto create_params = [&]() {
+    auto transport_params = base::MakeRefCounted<TransportSocketParams>(
+        proxy_server.host_port_pair(), NetworkAnonymizationKey(),
+        SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+        OnHostResolutionCallback(),
+        /*supported_alpns=*/base::flat_set<std::string>());
+    ConnectJobParams nested_params =
+        GetParam() == HTTP
+            ? ConnectJobParams(std::move(transport_params))
+            : ConnectJobParams(base::MakeRefCounted<SSLSocketParams>(
+                  ConnectJobParams(std::move(transport_params)),
+                  proxy_server.host_port_pair(), SSLConfig(),
+                  NetworkAnonymizationKey()));
+    return base::MakeRefCounted<HttpProxySocketParams>(
+        std::move(nested_params), HostPortPair(kEndpointHost, 80), proxy_chain,
+        /*proxy_chain_index=*/0, /*tunnel=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        handles::kInvalidNetworkHandle);
+  };
+
+  {
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> connect_job =
+        CreateConnectJob(create_params(), &test_delegate, DEFAULT_PRIORITY);
+    EXPECT_THAT(connect_job->Connect(),
+                test::IsError(ERR_PROXY_CONNECTION_FAILED));
+  }
+
+  {
+    ScopedPortException port_exception(kRestrictedPort);
+    session_deps_.host_resolver->set_synchronous_mode(true);
+    Initialize(base::span<MockRead>(), base::span<MockWrite>(),
+               base::span<MockRead>(), base::span<MockWrite>(), SYNCHRONOUS);
+
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> connect_job =
+        CreateConnectJob(create_params(), &test_delegate, DEFAULT_PRIORITY);
+    test_delegate.StartJobExpectingResult(connect_job.get(), OK,
+                                          /*expect_sync_result=*/true);
+  }
+}
 
 }  // namespace net

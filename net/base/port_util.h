@@ -16,6 +16,8 @@
 
 namespace net {
 
+class ProxyChain;
+
 // Checks if |port| is in the valid range (0 to 65535, though 0 is technically
 // reserved).  Should be used before casting a port to a uint16_t.
 NET_EXPORT bool IsPortValid(int port);
@@ -28,6 +30,14 @@ NET_EXPORT bool IsWellKnownPort(int port);
 // with SetExplicitlyAllowedPorts() or by using ScopedPortException() will be
 // considered allowed for any scheme.
 NET_EXPORT bool IsPortAllowedForScheme(int port, std::string_view url_scheme);
+
+// Checks if `port` is an allowed port for a proxy server when
+// `features::kRestrictProxyPorts` is enabled.
+NET_EXPORT bool IsProxyPortAllowed(int port);
+
+// Checks if all proxy server ports in `proxy_chain` are allowed when
+// `features::kRestrictProxyPorts` is enabled.
+NET_EXPORT bool IsProxyChainPortAllowed(const ProxyChain& proxy_chain);
 
 NET_EXPORT bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint);
 

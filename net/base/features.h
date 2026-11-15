@@ -1212,6 +1212,18 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 // `use_rust_brotli_decoder` in //net/BUILD.gn).
 NET_EXPORT BASE_DECLARE_FEATURE(kRustBrotliInNet);
 
+// If enabled, proxy server ports are checked against
+// `IsPortAllowedForScheme()`.
+// TODO(crbug.com/574902296): Remove the `base::Feature` once it has been
+// verified safe.
+NET_EXPORT BASE_DECLARE_FEATURE(kRestrictProxyPorts);
+
+// If enabled, statusless (`HTTP/0.9` / `ICY`) responses are rejected for
+// non-tunneled HTTP proxy requests.
+// TODO(crbug.com/574902296): Remove the `base::Feature` once it has been
+// verified safe.
+NET_EXPORT BASE_DECLARE_FEATURE(kRejectHttp09FromHttpProxy);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

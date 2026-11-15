@@ -8,14 +8,17 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/port_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
@@ -545,6 +548,80 @@ TEST_F(SOCKSConnectJobTest, CancelDuringHandshake) {
   // Socket should have been destroyed.
   EXPECT_FALSE(sequenced_socket_data.socket());
   EXPECT_TRUE(sequenced_socket_data.AllWriteDataConsumed());
+}
+
+TEST_F(SOCKSConnectJobTest, RestrictedPort) {
+  constexpr uint16_t kRestrictedPort = 6667;
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "socks4"));
+  ASSERT_FALSE(IsPortAllowedForScheme(kRestrictedPort, "socks5"));
+
+  host_resolver_.set_ondemand_mode(true);
+
+  for (bool is_socks_v5 : {false, true}) {
+    auto socket_params = base::MakeRefCounted<SOCKSSocketParams>(
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
+            HostPortPair(kProxyHostName, kRestrictedPort),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>())),
+        is_socks_v5,
+        is_socks_v5 ? HostPortPair(kSOCKS5TestHost, kSOCKS5TestPort)
+                    : HostPortPair(kSOCKS4TestHost, kSOCKS4TestPort),
+        NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    TestConnectJobDelegate test_delegate;
+    SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                      &common_connect_job_params_,
+                                      socket_params, &test_delegate,
+                                      /*net_log=*/nullptr);
+    EXPECT_THAT(socks_connect_job.Connect(),
+                test::IsError(ERR_PROXY_CONNECTION_FAILED));
+    EXPECT_FALSE(host_resolver_.has_pending_requests());
+  }
+
+  // Explicitly allowing the port permits the connection to proceed to DNS.
+  {
+    ScopedPortException port_exception(kRestrictedPort);
+    auto socket_params = base::MakeRefCounted<SOCKSSocketParams>(
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
+            HostPortPair(kProxyHostName, kRestrictedPort),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>())),
+        /*socks_v5=*/true, HostPortPair(kSOCKS5TestHost, kSOCKS5TestPort),
+        NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    TestConnectJobDelegate test_delegate;
+    SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                      &common_connect_job_params_,
+                                      socket_params, &test_delegate,
+                                      /*net_log=*/nullptr);
+    EXPECT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_TRUE(host_resolver_.has_pending_requests());
+  }
+
+  // Disabling `kRestrictProxyPorts` also permits the connection to proceed.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(features::kRestrictProxyPorts);
+
+    auto socket_params = base::MakeRefCounted<SOCKSSocketParams>(
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
+            HostPortPair(kProxyHostName, kRestrictedPort),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>())),
+        /*socks_v5=*/true, HostPortPair(kSOCKS5TestHost, kSOCKS5TestPort),
+        NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    TestConnectJobDelegate test_delegate;
+    SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                      &common_connect_job_params_,
+                                      socket_params, &test_delegate,
+                                      /*net_log=*/nullptr);
+    EXPECT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_TRUE(host_resolver_.has_pending_requests());
+  }
 }
 
 }  // namespace

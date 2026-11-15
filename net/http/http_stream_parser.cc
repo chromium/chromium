@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -185,6 +186,7 @@ const size_t HttpStreamParser::kChunkHeaderFooterSize = 12;
 
 HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
                                    bool connection_is_reused,
+                                   bool is_for_get_to_http_proxy,
                                    const GURL& url,
                                    const std::string& method,
                                    UploadDataStream* upload_data_stream,
@@ -197,6 +199,7 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
       response_header_start_offset_(std::string::npos),
       stream_socket_(stream_socket),
       connection_is_reused_(connection_is_reused),
+      is_for_get_to_http_proxy_(is_for_get_to_http_proxy),
       net_log_(net_log),
       truncate_to_content_length_enabled_(base::FeatureList::IsEnabled(
           features::kTruncateBodyToContentLength)) {
@@ -1063,9 +1066,12 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
     // Enough data was read -- there is no status line, so this is HTTP/0.9, or
     // the server is broken / doesn't speak HTTP.
 
-    if (has_seen_status_line_) {
+    if (has_seen_status_line_ ||
+        (is_for_get_to_http_proxy_ &&
+         base::FeatureList::IsEnabled(features::kRejectHttp09FromHttpProxy))) {
       // If we saw a status line previously, the server can speak HTTP/1.x so it
       // is not reasonable to interpret the response as an HTTP/0.9 response.
+      // HTTP/0.9 responses are also never valid from an HTTP proxy.
       return ERR_INVALID_HTTP_RESPONSE;
     }
 

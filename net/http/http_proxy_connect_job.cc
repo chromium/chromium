@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
@@ -28,6 +29,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/scheduler/task_runner.h"
 #include "net/base/session_usage.h"
@@ -54,6 +56,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -478,6 +481,11 @@ int HttpProxyConnectJob::DoLoop(int result) {
 }
 
 int HttpProxyConnectJob::DoBeginConnect() {
+  // Defense-in-depth check of proxy ports for direct ConnectJob callers.
+  if (!IsProxyChainPortAllowed(params_->proxy_chain())) {
+    return ERR_PROXY_CONNECTION_FAILED;
+  }
+
   connect_start_time_ = base::TimeTicks::Now();
   ResetTimer(
       AlternateNestedConnectionTimeout(*params_, network_quality_estimator()));
