@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
@@ -23,6 +24,8 @@
 #import "components/sync/test/test_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -31,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -41,6 +45,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using AccountPreviewPreference =
@@ -179,6 +185,37 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
         changeProfileContinuationProvider:DoNothingContinuationProvider()];
     mediator_.consumer = consumer_;
     return mediator_;
+  }
+
+  // Starts `AuthenticationFlow` on `mediator_` and completes it with `identity`
+  // and `cancelation_reason`.
+  void SimulateSignInWithIdentity(
+      id<SystemIdentity> identity,
+      signin_ui::CancelationReason cancelation_reason) {
+    AuthenticationFlow* authentication_flow_mock =
+        OCMStrictClassMock([AuthenticationFlow class]);
+    __block id<AuthenticationFlowDelegate> authentication_flow_delegate = nil;
+    __block bool completion_called = false;
+    OCMExpect([authentication_flow_mock
+        setDelegate:[OCMArg checkWithBlock:^BOOL(
+                                id<AuthenticationFlowDelegate> value) {
+          authentication_flow_delegate = value;
+          return value == static_cast<id>(mediator_);
+        }]]);
+    OCMExpect([authentication_flow_mock startSignIn])
+        .andDo(^(NSInvocation* invocation) {
+          [authentication_flow_delegate
+              authenticationFlowDidSignInInSameProfileWithIdentity:identity
+                                                 cancelationReason:
+                                                     cancelation_reason
+                                                        completion:^{
+                                                          completion_called =
+                                                              true;
+                                                        }];
+        });
+    [mediator_ startSignInWithAuthenticationFlow:authentication_flow_mock];
+    EXPECT_TRUE(completion_called);
+    EXPECT_OCMOCK_VERIFY(static_cast<id>(authentication_flow_mock));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -637,4 +674,217 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
   EXPECT_EQ(nil, consumer_.subtitleOverride);
+}
+
+// Tests that `SignedInWithDefaultAccount` is recorded when signing in with the
+// default account in the FRE.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWhenSignedInWithDefaultAccount) {
+  base::HistogramTester histogram_tester;
+  CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+
+  SimulateSignInWithIdentity(default_identity_,
+                             signin_ui::CancelationReason::kNotCanceled);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::
+          SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+      signin_metrics::AccessPoint::kStartPage, 1);
+}
+
+// Tests that `SignedInWithDefaultAccount` is recorded when a preferred account
+// is pre-selected in the FRE and the user signs in with it, and that
+// `SignedInWithNonDefaultAccount` is recorded if the user switches back to the
+// first device account.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWithPreferredAccountInFRE) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewPreferredAccountFRE);
+  account_preview_data_service_.SetPreferredAccountForSignin(
+      CreatePreference(preferred_identity_.gaiaId));
+
+  {
+    base::HistogramTester histogram_tester;
+    FullscreenSigninScreenMediator* mediator =
+        CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return !consumer_.contentLoading; }));
+    EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
+
+    SimulateSignInWithIdentity(preferred_identity_,
+                               signin_ui::CancelationReason::kNotCanceled);
+
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction",
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+        signin_metrics::AccessPoint::kStartPage, 1);
+    histogram_tester.ExpectTotalCount(
+        "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount",
+        0);
+    [mediator disconnect];
+    mediator_ = nil;
+  }
+
+  {
+    consumer_ = [[FakeFullscreenSigninScreenConsumer alloc] init];
+    base::HistogramTester histogram_tester;
+    FullscreenSigninScreenMediator* mediator =
+        CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return !consumer_.contentLoading; }));
+    EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
+
+    mediator.selectedIdentity = default_identity_;
+    SimulateSignInWithIdentity(default_identity_,
+                               signin_ui::CancelationReason::kNotCanceled);
+
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction",
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount",
+        signin_metrics::AccessPoint::kStartPage, 1);
+    histogram_tester.ExpectTotalCount(
+        "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount", 0);
+  }
+}
+
+// Tests that `SignedInWithNonDefaultAccount` is recorded when signing in with a
+// non-default account in the FRE.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWhenSignedInWithNonDefaultAccount) {
+  base::HistogramTester histogram_tester;
+  FullscreenSigninScreenMediator* mediator =
+      CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+  mediator.selectedIdentity = preferred_identity_;
+
+  SimulateSignInWithIdentity(preferred_identity_,
+                             signin_ui::CancelationReason::kNotCanceled);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::
+          SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction.SignedInWithNonDefaultAccount",
+      signin_metrics::AccessPoint::kStartPage, 1);
+}
+
+// Tests that `SignedInWithAddedAccount` is recorded when signing in with an
+// account added during the FRE flow, and that `SignedInWithDefaultAccount` is
+// recorded if the user adds an account and then switches back to the default
+// account.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWhenSignedInWithAddedAccount) {
+  FakeSystemIdentity* added_identity = [FakeSystemIdentity fakeIdentity3];
+  GetSystemIdentityManager()->AddIdentity(added_identity);
+
+  {
+    base::HistogramTester histogram_tester;
+    FullscreenSigninScreenMediator* mediator =
+        CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+    [mediator systemIdentityAdded:added_identity];
+    mediator.selectedIdentity = added_identity;
+
+    SimulateSignInWithIdentity(added_identity,
+                               signin_ui::CancelationReason::kNotCanceled);
+
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction",
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNED_IN_WITH_ADDED_ACCOUNT,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount",
+        signin_metrics::AccessPoint::kStartPage, 1);
+    [mediator disconnect];
+    mediator_ = nil;
+  }
+
+  {
+    consumer_ = [[FakeFullscreenSigninScreenConsumer alloc] init];
+    base::HistogramTester histogram_tester;
+    FullscreenSigninScreenMediator* mediator =
+        CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+    [mediator systemIdentityAdded:added_identity];
+    mediator.selectedIdentity = added_identity;
+    mediator.selectedIdentity = default_identity_;
+
+    SimulateSignInWithIdentity(default_identity_,
+                               signin_ui::CancelationReason::kNotCanceled);
+
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction",
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+        signin_metrics::AccessPoint::kStartPage, 1);
+    histogram_tester.ExpectTotalCount(
+        "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount", 0);
+  }
+}
+
+// Tests that `SignedInWithNoDeviceAccount` is recorded when the screen starts
+// with no accounts on the device and the user adds an account and signs in.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWhenSignedInWithNoDeviceAccount) {
+  GetSystemIdentityManager()->ForgetIdentityFromOtherApplication(
+      default_identity_);
+  GetSystemIdentityManager()->ForgetIdentityFromOtherApplication(
+      preferred_identity_);
+
+  base::HistogramTester histogram_tester;
+  FullscreenSigninScreenMediator* mediator =
+      CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+  EXPECT_EQ(nil, mediator.selectedIdentity);
+
+  FakeSystemIdentity* added_identity = [FakeSystemIdentity fakeIdentity3];
+  GetSystemIdentityManager()->AddIdentity(added_identity);
+  [mediator systemIdentityAdded:added_identity];
+  mediator.selectedIdentity = added_identity;
+
+  SimulateSignInWithIdentity(added_identity,
+                             signin_ui::CancelationReason::kNotCanceled);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::
+          SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction.SignedInWithNoDeviceAccount",
+      signin_metrics::AccessPoint::kStartPage, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithAddedAccount", 0);
+}
+
+// Tests that `DismissedButton` is recorded when the sign-in screen is canceled
+// in the FRE.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       RecordsHistogramsWhenDismissedWithButton) {
+  base::HistogramTester histogram_tester;
+  FullscreenSigninScreenMediator* mediator =
+      CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+
+  [mediator cancelSignInScreenWithCompletion:nil];
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountConsistencyPromoAction.DismissedButton",
+      signin_metrics::AccessPoint::kStartPage, 1);
 }

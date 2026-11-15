@@ -254,8 +254,8 @@
   [self stopAddAccountCoordinator];
   if (signinResult.has_value() && self.accountManagerService->IsValidIdentity(
                                       signinResult.value().gaiaId)) {
+    [self.mediator systemIdentityAdded:signinResult.value()];
     self.mediator.selectedIdentity = signinResult.value();
-    self.mediator.addedAccount = YES;
   }
 }
 
