@@ -67,6 +67,10 @@ class MockContextualSearchContextController
               GetFileInfo,
               (const base::UnguessableToken& file_token),
               (override));
+  MOCK_METHOD(const FileInfo*,
+              MarkFileSuperceded,
+              (const base::UnguessableToken& file_token),
+              (override));
   MOCK_METHOD(std::vector<raw_ptr<const FileInfo>>,
               GetFileInfoList,
               (),

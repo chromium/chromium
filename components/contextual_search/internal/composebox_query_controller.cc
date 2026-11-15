@@ -3103,6 +3103,17 @@ const contextual_search::FileInfo* ComposeboxQueryController::GetFileInfo(
   return GetMutableFileInfo(file_token);
 }
 
+const contextual_search::FileInfo*
+ComposeboxQueryController::MarkFileSuperceded(
+    const base::UnguessableToken& file_token) {
+  auto* file_info = GetMutableFileInfo(file_token);
+  if (!file_info) {
+    return nullptr;
+  }
+  file_info->is_superceded = true;
+  return file_info;
+}
+
 std::vector<raw_ptr<const contextual_search::FileInfo>>
 ComposeboxQueryController::GetFileInfoList() {
   std::vector<raw_ptr<const contextual_search::FileInfo>> file_infos;

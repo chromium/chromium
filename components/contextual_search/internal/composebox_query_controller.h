@@ -153,6 +153,8 @@ class ComposeboxQueryController
       override;
   const contextual_search::FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) override;
+  const contextual_search::FileInfo* MarkFileSuperceded(
+      const base::UnguessableToken& file_token) override;
   std::vector<raw_ptr<const contextual_search::FileInfo>> GetFileInfoList()
       override;
   void SetAuthUserIndex(size_t auth_user_index) override;
