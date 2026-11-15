@@ -4,6 +4,7 @@
 
 #include "content/browser/digital_credentials/digital_identity_request_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -64,6 +65,7 @@ constexpr char kGetPhoneNumberTestSingleSimVctValue[] =
     "number-verification/device-phone-number/test-ts43-single-sim";
 constexpr char kGetPhoneNumberTestMultiSimVctValue[] =
     "number-verification/device-phone-number/test-ts43-multi-sim";
+constexpr char kUserInfoCredentialVctValue[] = "UserInfoCredential";
 
 constexpr char kDpcVctValue[] = "com.emvco.dpc";
 constexpr char kDpcCredCardVctValue[] = "dpc.cred.card";
@@ -111,7 +113,8 @@ bool CanVctValueBypassInterstitial(const std::string& vct_value) {
   return vct_value == kGetPhoneNumberVctValue ||
          vct_value == kVerifyPhoneNumberVctValue ||
          vct_value == kGetPhoneNumberTestSingleSimVctValue ||
-         vct_value == kGetPhoneNumberTestMultiSimVctValue;
+         vct_value == kGetPhoneNumberTestMultiSimVctValue ||
+         vct_value == kUserInfoCredentialVctValue;
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
@@ -215,19 +218,22 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
                                *format == "dc-authorization+sd-jwt");
 
-    // Phone Number Verification (PNV) requests via Digital Credentials API do
-    // not return user PII in response to requested claims; claims serve solely
-    // as operational hints/parameters (e.g. `disallowed_carriers`). Therefore,
-    // PNV credentials bypass the safety interstitial based on their VCT values
-    // without inspecting the requested claims.
+    // Phone Number Verification (PNV) and UserInfoCredential requests do not
+    // expose high-risk government ID PII; PNV claims serve solely as
+    // operational hints/parameters (e.g. `disallowed_carriers`) and
+    // UserInfoCredential only holds basic profile attributes (with the
+    // credential provider enforcing the supported profile claim set).
+    // Therefore, these credentials intentionally bypass the safety interstitial
+    // based on their VCT values without inspecting `claims` (even if `claims`
+    // is omitted or specifies unrecognized claim names).
     //
     // Requiring `doctype_value.empty()` and `is_sdjwt` ensures that mDL or
     // hybrid cross-format requests cannot evade claim inspection by attaching
-    // PNV VCT values.
-    bool is_phone =
+    // allowlisted VCT values.
+    bool can_vct_bypass =
         is_sdjwt && doctype_value.empty() && !vct_values.empty() &&
         std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
-    if (is_phone) {
+    if (can_vct_bypass) {
       continue;
     }
 
@@ -258,7 +264,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       continue;
     }
 
-    // If it doesn't qualify as a DPC, MDL, SD-JWT, or phone-carrier bypass,
+    // If it doesn't qualify as a DPC, MDL, SD-JWT, or allowlisted VCT bypass,
     // it requires an interstitial.
     return false;
   }

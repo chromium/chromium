@@ -525,6 +525,36 @@ base::Value GenerateEmptyCredentialsOpenid4VpRequest() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateUserInfoOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+    "response_type": "vp_token",
+    "response_mode": "dc_api",
+    "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "user_info_query",
+          "format": "dc+sd-jwt",
+          "meta": {
+            "vct_values": ["UserInfoCredential"]
+          },
+          "claims": [
+            {"path": ["email"]},
+            {"path": ["name"]},
+            {"path": ["given_name"]},
+            {"path": ["family_name"]},
+            {"path": ["picture"]},
+            {"path": ["hd"]},
+            {"path": ["email_verified"]},
+            {"path": ["sub"]}
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
 base::Value GenerateDpcExample1() {
   constexpr char kJson[] = R"({
     "client_metadata": {
@@ -1267,6 +1297,23 @@ TEST_F(
   EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol,
                                   GenerateEmptyCredentialsOpenid4VpRequest()),
             UiWarningLevel::kHintCaution);
+}
+
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpUnsignedProtocolDCQL_ComputeUiWarningLevel_UserInfoCredential) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpUnsignedProtocol,
+                                  GenerateUserInfoOpenid4VpRequest()),
+            UiWarningLevel::kHintNoIssues);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpUnsignedProtocolDCQL_ComputeUiWarningLevel_UserInfoCredentialWithArbitraryClaims) {
+  base::Value request = GenerateUserInfoOpenid4VpRequest();
+  ASSERT_TRUE(SetDCQLPathItem(request, "arbitrary_custom_claim"));
+  EXPECT_EQ(
+      ComputeUiWarningLevel(kOpenid4vpUnsignedProtocol, std::move(request)),
+      UiWarningLevel::kHintNoIssues);
 }
 
 class DigitalIdentityRequestImplWithCreationEnabledTest
