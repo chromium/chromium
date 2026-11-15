@@ -129,6 +129,7 @@ OfflineAudioContext* CreateOfflineAudioContext(
       MakeGarbageCollected<OfflineAudioContext>(
           window, number_of_channels, number_of_frames, sample_rate,
           exception_state, render_quantum_frames);
+  audio_context->UpdateStateIfNeeded();
 
   if (audio_context->HasAllocationFailed()) {
     exception_state.ThrowDOMException(
@@ -136,8 +137,6 @@ OfflineAudioContext* CreateOfflineAudioContext(
         "The audio context could not be created due to memory limitations.");
     return nullptr;
   }
-
-  audio_context->UpdateStateIfNeeded();
 
 #if DEBUG_AUDIONODE_REFERENCES
   fprintf(stderr, "[%16p]: OfflineAudioContext::OfflineAudioContext()\n",

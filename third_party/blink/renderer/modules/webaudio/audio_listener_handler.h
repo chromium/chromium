@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_LISTENER_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_LISTENER_HANDLER_H_
 
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -14,7 +15,7 @@ namespace blink {
 class HRTFDatabaseLoader;
 class PannerHandler;
 
-class AudioListenerHandler final
+class MODULES_EXPORT AudioListenerHandler final
     : public ThreadSafeRefCounted<AudioListenerHandler> {
  public:
   static scoped_refptr<AudioListenerHandler> Create(
@@ -30,6 +31,8 @@ class AudioListenerHandler final
       unsigned int render_quantum_frames);
 
   ~AudioListenerHandler();
+
+  bool HasAllocationFailed() const { return has_allocation_failed_; }
 
   const gfx::Point3F GetPosition() const {
     return gfx::Point3F(position_x_handler_->Value(),
@@ -144,6 +147,8 @@ class AudioListenerHandler final
 
   // HRTF database loader used by PannerHandlers in the same context.
   scoped_refptr<HRTFDatabaseLoader> hrtf_database_loader_;
+
+  bool has_allocation_failed_ = false;
 };
 
 }  // namespace blink

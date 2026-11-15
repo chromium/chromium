@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_listener_handler.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 
@@ -45,16 +47,25 @@ AudioListenerHandler::AudioListenerHandler(
       forward_z_handler_(&forward_z_handler),
       up_x_handler_(&up_x_handler),
       up_y_handler_(&up_y_handler),
-      up_z_handler_(&up_z_handler),
-      position_x_values_(render_quantum_frames),
-      position_y_values_(render_quantum_frames),
-      position_z_values_(render_quantum_frames),
-      forward_x_values_(render_quantum_frames),
-      forward_y_values_(render_quantum_frames),
-      forward_z_values_(render_quantum_frames),
-      up_x_values_(render_quantum_frames),
-      up_y_values_(render_quantum_frames),
-      up_z_values_(render_quantum_frames) {
+      up_z_handler_(&up_z_handler) {
+  // The render quantum size comes from the user-provided renderSizeHint, so
+  // an allocation failure here must not crash. On failure, release any arrays
+  // that were already allocated and report the failure to the owner, which
+  // propagates it to the context so that the context creation is rejected.
+  const std::array<AudioFloatArray*, 9> value_arrays = {
+      &position_x_values_, &position_y_values_, &position_z_values_,
+      &forward_x_values_,  &forward_y_values_,  &forward_z_values_,
+      &up_x_values_,       &up_y_values_,       &up_z_values_};
+  for (AudioFloatArray* values : value_arrays) {
+    if (!values->TryAllocate(render_quantum_frames)) {
+      has_allocation_failed_ = true;
+      for (AudioFloatArray* allocated_values : value_arrays) {
+        *allocated_values = {};
+      }
+      break;
+    }
+  }
+
   // Initialize the cached values with the current values.  Thus, we don't need
   // to notify any panners because we haved moved.
   last_position_ = GetPosition();
