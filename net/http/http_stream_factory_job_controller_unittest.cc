@@ -5164,6 +5164,8 @@ void HttpStreamFactoryJobControllerTest::
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  tcp_data2_ = std::make_unique<SequencedSocketData>();
+  tcp_data2_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
 
   HttpRequestInfo request_info;
   request_info.method = "GET";

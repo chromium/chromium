@@ -47,9 +47,17 @@ BASE_FEATURE(kAsyncDns,
 #endif
 );
 
-BASE_FEATURE(kOptimisticDnsForTcp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimisticDnsForTcp,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet is excluded because it disables HappyEyeballsV2 and has
+             // not gathered field data for OptimisticDnsForTcp.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 const base::FeatureParam<bool> kUseStaleConnectorsForOptimisticDns{
-    &kOptimisticDnsForTcp, "use_stale_connectors", false};
+    &kOptimisticDnsForTcp, "use_stale_connectors", true};
 
 BASE_FEATURE(kOptimisticDnsForQuic, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -138,7 +146,15 @@ BASE_FEATURE(kHappyEyeballsV2,
 
 BASE_FEATURE(kHappyEyeballsV3, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableIntermediateDnsResults, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableIntermediateDnsResults,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet uses TransportConnectJob and has not gathered field data
+             // for intermediate DNS per-transaction sorting.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE_PARAM(bool,
                    kEnableIntermediateDnsResultsSortTransactionsIndividually,
                    &kEnableIntermediateDnsResults,
@@ -151,20 +167,36 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kKeepHostResolverJobAliveForCache,
                    base::Seconds(2));
 
-BASE_FEATURE(kAdjustIPv6FallbackTime, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAdjustIPv6FallbackTime,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet uses TransportConnectJob and has not gathered field data
+             // for the adjusted IPv6 fallback timer.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kIPv6FallbackTime,
                    &kAdjustIPv6FallbackTime,
                    "fallback_time",
-                   TcpConnectJob::kIPv6FallbackTime);
+                   base::Milliseconds(100));
 
-BASE_FEATURE(kIPv6FallbackBasedOnRTT, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPv6FallbackBasedOnRTT,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet uses TransportConnectJob and has not gathered field data
+             // for RTT-based IPv6 fallback timing.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(double,
                    kIPv6FallbackRTTMultiplier,
                    &kIPv6FallbackBasedOnRTT,
-                   1.5);
+                   1.1);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kIPv6FallbackMin,

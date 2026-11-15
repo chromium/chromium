@@ -14664,37 +14664,6 @@
             ]
         }
     ],
-    "OptimisticDnsForTcp": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260709",
-                    "params": {
-                        "IPv6FallbackMax": "1500ms",
-                        "IPv6FallbackMin": "50ms",
-                        "IPv6FallbackRTTMultiplier": "1.1",
-                        "fallback_time": "100ms",
-                        "use_stale_connectors": "true"
-                    },
-                    "enable_features": [
-                        "AdjustIPv6FallbackTime",
-                        "EnableIntermediateDnsResults",
-                        "IPv6FallbackBasedOnRTT",
-                        "OptimisticDnsForTcp"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizationGuideProactivePersonalizedHintsFetching": [
         {
             "platforms": [

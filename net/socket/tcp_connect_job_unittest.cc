@@ -57,7 +57,8 @@ class TcpConnectJobTestBase {
  public:
   explicit TcpConnectJobTestBase(
       const std::vector<base::test::FeatureRefAndParams>& enabled_features =
-          {{features::kHappyEyeballsV2, {}}},
+          {{features::kHappyEyeballsV2, {}},
+           {features::kAdjustIPv6FallbackTime, {}}},
       const std::vector<base::test::FeatureRef>& disabled_features = {}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -72,7 +73,8 @@ class TcpConnectJobTest : public TcpConnectJobTestBase,
  public:
   explicit TcpConnectJobTest(
       const std::vector<base::test::FeatureRefAndParams>& enabled_features =
-          {{features::kHappyEyeballsV2, {}}},
+          {{features::kHappyEyeballsV2, {}},
+           {features::kAdjustIPv6FallbackTime, {}}},
       const std::vector<base::test::FeatureRef>& disabled_features = {})
       : TcpConnectJobTestBase(enabled_features, disabled_features),
         TestWithTaskEnvironment(
@@ -2201,7 +2203,7 @@ TEST_F(TcpConnectJobTest, OneConnectorSlowDns) {
   AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
 
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
 
   request->add_endpoint(service_endpoint)
       .CallOnServiceEndpointRequestFinished(OK);
@@ -2240,7 +2242,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneIpSuccess) {
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
   connect_completer.WaitForConnect();
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
 
   connect_completer.Complete(OK);
@@ -2265,7 +2267,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneIpFailure) {
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
   connect_completer.WaitForConnect();
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
 
   connect_completer.Complete(ERR_FAILED);
@@ -2296,7 +2298,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneUsedTwoIpsSuccess) {
   // Check time to make sure that the IPv4 Connector wasn't created.
   EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
 
   connect_completer.Complete(OK);
@@ -2335,7 +2337,8 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsOneNeverCompletes) {
     // time has passed.
     connect_completers[1].WaitForConnect();
     EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-    EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+    EXPECT_EQ(base::Time::Now() - start_time,
+              features::kIPv6FallbackTime.Get());
 
     connect_completers[successful_index].Complete(OK);
 
@@ -2373,7 +2376,8 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsOneFails) {
     // time has passed.
     connect_completers[1].WaitForConnect();
     EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-    EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+    EXPECT_EQ(base::Time::Now() - start_time,
+              features::kIPv6FallbackTime.Get());
 
     connect_completers[1 - successful_index].Complete(ERR_FAILED);
     connect_completers[successful_index].Complete(OK);
@@ -2503,7 +2507,8 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsBothFail) {
     // time has passed.
     connect_completers[1].WaitForConnect();
     EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-    EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+    EXPECT_EQ(base::Time::Now() - start_time,
+              features::kIPv6FallbackTime.Get());
 
     connect_completers[first_failure].Complete(errors[first_failure]);
     connect_completers[second_failure].Complete(errors[second_failure]);
@@ -2550,7 +2555,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsSixIps) {
   // has passed.
   connect_completers[1].WaitForConnect();
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 
   // kIpV4Endpoint1 fails. The IPv4 Connector should try kIpV4Endpoint2.
   connect_completers[1].Complete(ERR_FAILED);
@@ -2580,7 +2585,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsSixIps) {
   // No more time should have passed since the slow job was started, since time
   // wasn't simulated advancing, and there should have been no other timed delay
   // by TcpConnectJob.
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 }
 
 // Test the case where there are two Connectors, and all the IPv6 IPs come in
@@ -2617,7 +2622,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsIPv6ThenIpv4) {
   EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
 
   // Wait for the IPv4 job to start.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
   // Since only IPv6 IPs are available, it should not connect.
   EXPECT_FALSE(connect_completers[1].is_connecting());
@@ -2663,7 +2668,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsIPv6ThenIpv4) {
   // No more time should have passed since the slow job was started, since time
   // wasn't simulated advancing, and there should have been no other timed delay
   // by TcpConnectJob.
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 }
 
 // Test the case where there are two Connectors with multiple service endpoints,
@@ -2709,7 +2714,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsMultipleServiceEndpoints) {
   // has passed.
   connect_completers[1].WaitForConnect();
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 
   // kIpV6Endpoint1 and kIpV6Endpoint2 fail. The primary Connector should sit
   // idle, waiting for the last IP from `service_endpoint1` to complete.
@@ -2826,7 +2831,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsEndpointIndexBackwards) {
   // has passed.
   connect_completers[2].WaitForConnect();
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 
   // DNS request completes, with two more ServiceEndpoints.
   request
@@ -2911,7 +2916,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsBlockedOnOtherConnector) {
   EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
 
   // Wait for the IPv4 job to start.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
   // Since only IPv6 IPs are available, it should not connect.
   EXPECT_FALSE(connect_completers[1].is_connecting());
@@ -2953,7 +2958,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsBlockedOnOtherConnector) {
   // No more time should have passed since the second connector was started,
   // since time wasn't simulated advancing, and there should have been no other
   // timed delay by TcpConnectJob.
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 }
 
 // Just like the above test, but the DNS request completes immediately, rather
@@ -2993,7 +2998,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsNotBlockedOnOtherConnector) {
 
   // Wait for the IPv4 connector to start.
   connect_completers[1].WaitForConnect();
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 
   // The first IPv6 destination fails. Primary connector should stall, waiting
   // for the "IPv4" connector to fail before advancing to the next
@@ -3034,7 +3039,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsNotBlockedOnOtherConnector) {
   // No more time should have passed since the second connector was started,
   // since time wasn't simulated advancing, and there should have been no other
   // timed delay by TcpConnectJob.
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_EQ(base::Time::Now() - start_time, features::kIPv6FallbackTime.Get());
 }
 
 ////////////////////////
@@ -3132,6 +3137,73 @@ TEST_F(TcpConnectJobTest, TwoConnectorsGetLoadState) {
   WaitForSuccess(kIpV6Endpoint1, service_endpoint);
 }
 
+class TcpConnectJobUnadjustedFallbackTest : public TcpConnectJobTest {
+ public:
+  TcpConnectJobUnadjustedFallbackTest()
+      : TcpConnectJobTest(
+            /*enabled_features=*/{{features::kHappyEyeballsV2, {}}},
+            /*disabled_features=*/{features::kAdjustIPv6FallbackTime,
+                                   features::kIPv6FallbackBasedOnRTT}) {}
+};
+
+TEST_F(TcpConnectJobUnadjustedFallbackTest,
+       UsesDefaultFallbackTimeWhenAdjustDisabled) {
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  base::Time start_time = base::Time::Now();
+
+  host_resolver_.ConfigureDefaultResolution()
+      .add_endpoint(service_endpoint)
+      .CompleteStartSynchronously(OK);
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  connect_completers[0].WaitForConnect();
+  EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
+
+  connect_completers[1].WaitForConnect();
+  EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
+  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+
+  connect_completers[1].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+}
+
+class TcpConnectJobOptimisticDnsDisabledTest : public TcpConnectJobTest {
+ public:
+  TcpConnectJobOptimisticDnsDisabledTest()
+      : TcpConnectJobTest(
+            /*enabled_features=*/{{features::kHappyEyeballsV2, {}},
+                                  {features::kAdjustIPv6FallbackTime, {}}},
+            /*disabled_features=*/{features::kOptimisticDnsForTcp}) {}
+};
+
+TEST_F(TcpConnectJobOptimisticDnsDisabledTest, DoesNotUseStaleDnsWhenDisabled) {
+  const auto fresh_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(request->resolve_host_params().cache_usage,
+            HostResolver::ResolveHostParameters::CacheUsage::ALLOWED);
+  EXPECT_EQ(0u, connect_job_->GetStaleConnectorCountForTesting());
+
+  request->set_crypto_ready(true)
+      .set_endpoints({fresh_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  EXPECT_TRUE(connect_completer.is_connecting());
+  connect_completer.Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, fresh_endpoint);
+  EXPECT_FALSE(connect_job_->IsConnectedViaStaleDns());
+}
+
 class TcpConnectJobRTTFallbackTest : public TcpConnectJobTest {
  public:
   TcpConnectJobRTTFallbackTest()
@@ -3191,7 +3263,8 @@ class TcpConnectJobOptimisticDnsTest
             {{features::kOptimisticDnsForTcp,
               {{features::kUseStaleConnectorsForOptimisticDns.name,
                 GetParam() ? "true" : "false"}}},
-             {features::kHappyEyeballsV2, {}}},
+             {features::kHappyEyeballsV2, {}},
+             {features::kAdjustIPv6FallbackTime, {}}},
             {}) {}
 
   bool UseStaleConnectors() const { return GetParam(); }
@@ -3261,7 +3334,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshA) {
 
   // t=50ms: Fresh A provided.
   constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
@@ -3269,17 +3342,17 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshA) {
 
   if (!UseStaleConnectors()) {
     // The TCPConnectJob should not immediately connect to the Fresh A
-    // because it is waiting for Stale A to complete or the slow_timer_ (300ms)
-    // to fire.
+    // because it is waiting for Stale A to complete or `slow_timer_` to fire.
     EXPECT_TRUE(connect_completers[0].is_connecting());
     EXPECT_FALSE(connect_completers[1].is_connecting());
 
-    // Fast forward to t=299ms. Still no new connection.
-    FastForwardBy(TcpConnectJob::kIPv6FallbackTime - kFreshAArrivalTime -
+    // Fast forward to 1ms before the fallback timer fires. Still no new
+    // connection.
+    FastForwardBy(features::kIPv6FallbackTime.Get() - kFreshAArrivalTime -
                   base::Milliseconds(1));
     EXPECT_FALSE(connect_completers[1].is_connecting());
 
-    // Fast forward to t=300ms. Now the slow_timer_ fires.
+    // Fast forward 1ms to the fallback time. Now `slow_timer_` fires.
     FastForwardBy(base::Milliseconds(1));
 
     // Since DNS is not complete, the second connector is restricted to IPv6.
@@ -3299,7 +3372,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshA) {
     EXPECT_TRUE(connect_completers[0].is_connecting());
     EXPECT_TRUE(connect_completers[1].is_connecting());
 
-    FastForwardBy(TcpConnectJob::kIPv6FallbackTime - kFreshAArrivalTime);
+    FastForwardBy(features::kIPv6FallbackTime.Get() - kFreshAArrivalTime);
     request->CallOnServiceEndpointRequestFinished(OK);
     EXPECT_TRUE(connect_completers[0].is_connecting());
     EXPECT_TRUE(connect_completers[1].is_connecting());
@@ -3345,8 +3418,8 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
   EXPECT_EQ(1u, connect_job_->GetStaleConnectorCountForTesting());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
 
-  // t=300ms: slow_timer_ fires.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  // Once the fallback time elapses, `slow_timer_` fires.
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_TRUE(connect_completers[1].is_connecting());  // Stale A starts
   EXPECT_EQ(2u, connect_job_->GetStaleConnectorCountForTesting());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
@@ -3427,7 +3500,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
   // Wait for the slow timer duration.
   // Because the slow timer was stopped by fresh DNS and should not be
   // restarted, Stale A should not start.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
 
   // Complete the DNS request.
   request->CallOnServiceEndpointRequestFinished(OK);
@@ -3472,7 +3545,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshAAAAThenFreshA) {
 
   // t=15ms: Fresh AAAA provided.
   constexpr base::TimeDelta kFreshAAAAArrivalTime = base::Milliseconds(15);
-  CHECK_LT(kFreshAAAAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshAAAAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAAAAArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint_v6})
@@ -3489,7 +3562,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshAAAAThenFreshA) {
 
   // t=20ms: Fresh A provided.
   constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(20);
-  CHECK_LT(kFreshAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAArrivalTime - kFreshAAAAArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint_merged})
@@ -3498,28 +3571,28 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAThenFreshAAAAThenFreshA) {
   EXPECT_FALSE(connect_completers[2].is_connecting());
 
   if (!UseStaleConnectors()) {
-    // t=300ms: slow_timer_ fires. It should start connecting to the preferred
-    // Fresh AAAA.
-    FastForwardBy(TcpConnectJob::kIPv6FallbackTime - kFreshAArrivalTime);
+    // At `t = fallback_time`, `slow_timer_` fires. It should start connecting
+    // to the preferred Fresh AAAA.
+    FastForwardBy(features::kIPv6FallbackTime.Get() - kFreshAArrivalTime);
     EXPECT_TRUE(connect_completers[1].is_connecting());
 
-    // t=600ms: another slow_timer_ fires, but TcpConnectJob only supports 2
-    // concurrent connections.
-    FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+    // Another fallback duration later, another `slow_timer_` fires, but
+    // TcpConnectJob only supports 2 concurrent connections.
+    FastForwardBy(features::kIPv6FallbackTime.Get());
     EXPECT_FALSE(connect_completers[2].is_connecting());
   } else {
     // For dual race, fresh_state_ has Fresh AAAA (v6) running. It started at
-    // t=15ms. The slow timer for fresh_state_ will fire 300ms after t=15ms,
-    // which is t=315ms.
+    // t=15ms. The slow timer for fresh_state_ will fire `fallback_time` after
+    // t=15ms (i.e. at `t = fallback_time + 15ms`).
 
-    // First, fast forward exactly to t=300ms to ensure the fresh_state_ timer
-    // didn't start prematurely at t=0ms.
-    FastForwardBy(TcpConnectJob::kIPv6FallbackTime - kFreshAArrivalTime);
+    // First, fast forward to `t = fallback_time` to ensure the fresh_state_
+    // timer didn't start prematurely at t=0ms.
+    FastForwardBy(features::kIPv6FallbackTime.Get() - kFreshAArrivalTime);
     EXPECT_FALSE(connect_completers[2].is_connecting());
     EXPECT_EQ(1u, connect_job_->GetStaleConnectorCountForTesting());
     EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
 
-    // Now fast forward the remaining 15ms to t=315ms.
+    // Now fast forward the remaining 15ms to `t = fallback_time + 15ms`.
     FastForwardBy(kFreshAAAAArrivalTime);
 
     // Since the Fresh A IPv4 address is part of the same ServiceEndpoint as
@@ -3584,12 +3657,12 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAAAAThenDelayedFreshA) {
 
   // t=500ms: Fresh A provided.
   constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(500);
-  CHECK_GT(kFreshAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_GT(kFreshAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAArrivalTime);
 
-  // Since 500ms > 300ms, the slow_timer_ has already fired and created
-  // `ipv4_connector_`. When Fresh A arrives, `ipv4_connector_` is free and
-  // handles IPv4.
+  // Since `kFreshAArrivalTime` exceeds the fallback time, `slow_timer_` has
+  // already fired and created `ipv4_connector_`. When Fresh A arrives,
+  // `ipv4_connector_` is free and handles IPv4.
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
       .CallOnServiceEndpointsUpdated();
@@ -3620,9 +3693,9 @@ TEST_P(TcpConnectJobOptimisticDnsTest, NoStale_DelayedFreshAAAAThenA) {
 
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
 
-  // t=50ms: Fresh AAAA provided.
-  constexpr base::TimeDelta kFreshAAAAArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshAAAAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  // t=25ms: Fresh AAAA provided.
+  constexpr base::TimeDelta kFreshAAAAArrivalTime = base::Milliseconds(25);
+  ASSERT_LT(kFreshAAAAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAAAAArrivalTime);
   request->set_crypto_ready(true)
       .set_endpoints({fresh_endpoint_v6})
@@ -3636,14 +3709,14 @@ TEST_P(TcpConnectJobOptimisticDnsTest, NoStale_DelayedFreshAAAAThenA) {
     EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
   }
 
-  // t=100ms: Fresh A provided.
-  constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(100);
-  CHECK_LT(kFreshAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  // t=50ms: Fresh A provided.
+  constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(50);
+  ASSERT_LT(kFreshAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAArrivalTime - kFreshAAAAArrivalTime);
   request->set_endpoints({fresh_endpoint_v6, fresh_endpoint_v4})
       .CallOnServiceEndpointsUpdated();
 
-  // Because it has only been 50ms since the FIRST connection (Fresh AAAA)
+  // Because it has only been 25ms since the FIRST connection (Fresh AAAA)
   // started, we do not start connecting to Fresh A yet.
   EXPECT_FALSE(connect_completers[1].is_connecting());
   if (GetParam()) {
@@ -3651,8 +3724,9 @@ TEST_P(TcpConnectJobOptimisticDnsTest, NoStale_DelayedFreshAAAAThenA) {
     EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
   }
 
-  // t=350ms (300ms after Fresh AAAA started):
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime -
+  // Fallback timer fires `features::kIPv6FallbackTime` after Fresh AAAA
+  // started:
+  FastForwardBy(features::kIPv6FallbackTime.Get() -
                 (kFreshAArrivalTime - kFreshAAAAArrivalTime));
   // ipv4_connector_ is created, but it is queued because primary_connector_ is
   // still occupied.
@@ -3696,18 +3770,18 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAAAA_FailsBeforeFreshArrives) {
 
   EXPECT_TRUE(connect_completers[0].is_connecting());
 
-  // t=100ms: Stale AAAA connection fails.
-  constexpr base::TimeDelta kStaleFailureTime = base::Milliseconds(100);
-  CHECK_LT(kStaleFailureTime, TcpConnectJob::kIPv6FallbackTime);
+  // t=30ms: Stale AAAA connection fails before the fallback timer fires.
+  constexpr base::TimeDelta kStaleFailureTime = base::Milliseconds(30);
+  ASSERT_LT(kStaleFailureTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kStaleFailureTime);
   connect_completers[0].Complete(ERR_CONNECTION_REFUSED);
 
   // No connection is established yet.
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 
-  // t=200ms: Fresh A arrives.
-  constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(200);
-  CHECK_LT(kFreshAArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  // t=60ms: Fresh A arrives.
+  constexpr base::TimeDelta kFreshAArrivalTime = base::Milliseconds(60);
+  ASSERT_LT(kFreshAArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshAArrivalTime - kStaleFailureTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
@@ -3751,7 +3825,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StalePromotedToFresh) {
 
   // t=50ms: Fresh endpoint (same IP) arrives.
   constexpr base::TimeDelta kFreshArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({endpoint})
@@ -3763,10 +3837,10 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StalePromotedToFresh) {
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
 
   // Fast forward past the fallback time (e.g., 400ms) to prove there's no
-  // waiting for the 300ms stale timer or any secondary fallback if it's
+  // waiting for the stale fallback timer or any secondary fallback if it's
   // already promoted.
   constexpr base::TimeDelta kFutureTime = base::Milliseconds(400);
-  CHECK_GT(kFutureTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_GT(kFutureTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFutureTime - kFreshArrivalTime);
 
   // The connection should still be running as a fresh attempt.
@@ -3880,7 +3954,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
 
   // t=50ms: Fresh endpoint (same IP, plus another) arrives.
   constexpr base::TimeDelta kFreshArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
@@ -3942,8 +4016,8 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
   EXPECT_EQ(1u, connect_job_->GetStaleConnectorCountForTesting());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
 
-  // t=300ms: Fast-forward to trigger Happy Eyeballs for stale IPv4.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  // Fast-forward by the fallback time to trigger Happy Eyeballs for stale IPv4.
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_TRUE(connect_completers[1].is_connecting());
   EXPECT_EQ(2u, connect_job_->GetStaleConnectorCountForTesting());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
@@ -4198,9 +4272,11 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
   EXPECT_TRUE(connect_completers[0].is_connecting());
   EXPECT_FALSE(connect_completers[1].is_connecting());
 
-  // Fast forward 200ms. The timer for IPv4 fallback needs 300ms, so it
-  // shouldn't fire.
-  FastForwardBy(base::Milliseconds(200));
+  // Fast forward part of the fallback time so the IPv4 fallback timer does not
+  // fire yet.
+  constexpr base::TimeDelta kElapsedBeforeFresh = base::Milliseconds(60);
+  ASSERT_LT(kElapsedBeforeFresh, features::kIPv6FallbackTime.Get());
+  FastForwardBy(kElapsedBeforeFresh);
   EXPECT_FALSE(connect_completers[1].is_connecting());
 
   // Fresh arrives, matches stale endpoint, and is promoted.
@@ -4208,12 +4284,14 @@ TEST_P(TcpConnectJobOptimisticDnsTest,
       .set_endpoints({fresh_endpoint})
       .CallOnServiceEndpointsUpdated();
 
-  // The fresh state's timer should have been started with 100ms remaining,
-  // since 200ms of the 300ms fallback time has already elapsed.
-  FastForwardBy(base::Milliseconds(99));
+  // The fresh state's timer should have been started with the remaining
+  // fallback duration, accounting for the time already elapsed.
+  const base::TimeDelta remaining_fallback_time =
+      features::kIPv6FallbackTime.Get() - kElapsedBeforeFresh;
+  FastForwardBy(remaining_fallback_time - base::Milliseconds(1));
   EXPECT_FALSE(connect_completers[1].is_connecting());
 
-  // 1ms later, the 300ms total elapsed time is reached, and the IPv4 fallback
+  // 1ms later, the total fallback time is reached, and the IPv4 fallback
   // starts.
   FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(connect_completers[1].is_connecting());
@@ -4257,7 +4335,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, StaleAndFreshRacingIndependently) {
 
   // t=50ms: Fresh B provided (different IP).
   constexpr base::TimeDelta kFreshBArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshBArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshBArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshBArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
@@ -4309,7 +4387,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, UnstartedStaleCleared) {
 
   // t=50ms: Fresh endpoint arrives. It does not include the stale endpoints.
   constexpr base::TimeDelta kFreshArrivalTime = base::Milliseconds(50);
-  CHECK_LT(kFreshArrivalTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_LT(kFreshArrivalTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFreshArrivalTime);
   request->set_is_stale_while_refreshing(false)
       .set_endpoints({fresh_endpoint})
@@ -4322,10 +4400,10 @@ TEST_P(TcpConnectJobOptimisticDnsTest, UnstartedStaleCleared) {
   EXPECT_EQ(1u, connect_job_->GetStaleConnectorCountForTesting());
   EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
 
-  // Fast forward past the 300ms timer point (e.g. 400ms).
+  // Fast forward past the fallback timer point (e.g. 400ms).
   // The unstarted Stale IP 2 should not start because it was cleared.
   constexpr base::TimeDelta kFutureTime = base::Milliseconds(400);
-  CHECK_GT(kFutureTime, TcpConnectJob::kIPv6FallbackTime);
+  ASSERT_GT(kFutureTime, features::kIPv6FallbackTime.Get());
   FastForwardBy(kFutureTime - kFreshArrivalTime);
   EXPECT_TRUE(connect_completers[0].is_connecting());
   EXPECT_TRUE(connect_completers[1].is_connecting());
@@ -4526,7 +4604,7 @@ TEST_F(TcpConnectJobTest, HistogramsSlowTimerConnectorSupersedesPrimary) {
   EXPECT_TRUE(connect_completers[0].is_connecting());
   EXPECT_FALSE(connect_completers[1].is_connecting());
 
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_TRUE(connect_completers[0].is_connecting());
   EXPECT_TRUE(connect_completers[1].is_connecting());
 
@@ -4536,7 +4614,7 @@ TEST_F(TcpConnectJobTest, HistogramsSlowTimerConnectorSupersedesPrimary) {
 
   histogram_tester.ExpectUniqueTimeSample(
       "Net.TcpConnectJob.CompleteTime.Succeeded",
-      TcpConnectJob::kIPv6FallbackTime + base::Milliseconds(20), 1);
+      features::kIPv6FallbackTime.Get() + base::Milliseconds(20), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.TcpConnectJob.AttemptsPerJob.Succeeded", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -4565,7 +4643,7 @@ TEST_F(TcpConnectJobTest, HistogramsSupersededConnectorWaitingForCryptoReady) {
   // Trigger the slow timer so both connectors have in-flight TCP handshakes,
   // then complete both TCP sockets while DNS is still not crypto-ready so both
   // enter State::kWaitForCryptoReady.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_TRUE(connect_completers[1].is_connecting());
   connect_completers[0].Complete(OK);
   connect_completers[1].Complete(OK);
@@ -4867,7 +4945,7 @@ TEST_P(TcpConnectJobOptimisticDnsTest, HistogramsMultipleSupersededAttempts) {
   EXPECT_TRUE(connect_completers[0].is_connecting());
 
   // Start the stale slow-timer connector so two stale connectors are in flight.
-  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  FastForwardBy(features::kIPv6FallbackTime.Get());
   EXPECT_TRUE(connect_completers[1].is_connecting());
 
   // Fresh DNS arrives with a distinct IP; the fresh connector wins while both

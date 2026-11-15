@@ -129,11 +129,9 @@ class WebSocketTransportClientSocketPoolTest
               &common_connect_job_params_) {
     pool_.SetAdditionalCapacityForTest(
         SocketPoolAdditionalCapacity::CreateEmpty());
-    if (use_happy_eyeballs_v2()) {
-      AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV2);
-    } else {
-      AddScopedFeatureList().InitAndDisableFeature(features::kHappyEyeballsV2);
-    }
+    AddScopedFeatureList().InitWithFeatureStates(
+        {{features::kHappyEyeballsV2, use_happy_eyeballs_v2()},
+         {features::kAdjustIPv6FallbackTime, true}});
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(
         base::TimeDelta());
   }
@@ -692,7 +690,7 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
           MockTransportClientSocketFactory::Type::kStalled)};
 
   client_socket_factory_.SetRules(rules);
-  client_socket_factory_.set_delay(TransportConnectJob::kIPv6FallbackTime +
+  client_socket_factory_.set_delay(features::kIPv6FallbackTime.Get() +
                                    base::Milliseconds(50));
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
@@ -745,7 +743,13 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
   IPEndPoint endpoint;
   handle.socket()->GetLocalAddress(&endpoint);
   EXPECT_TRUE(endpoint.address().IsIPv6());
-  EXPECT_EQ(1, client_socket_factory_.allocation_count());
+  // With Happy Eyeballs v2 (`TcpConnectJob`), once the fallback timer
+  // (`features::kIPv6FallbackTime`, 100ms < 250ms socket delay) fires and DNS
+  // is complete, the second connector connects to the second IPv6 address when
+  // no IPv4 addresses are available. `TransportConnectJob` only creates a
+  // fallback subjob when IPv4 addresses exist.
+  EXPECT_EQ(use_happy_eyeballs_v2() ? 2 : 1,
+            client_socket_factory_.allocation_count());
 }
 
 TEST_P(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
@@ -836,8 +840,7 @@ TEST_P(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
 
   base::TimeTicks start(base::TimeTicks::Now());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_LT(base::TimeTicks::Now() - start,
-            TransportConnectJob::kIPv6FallbackTime);
+  EXPECT_LT(base::TimeTicks::Now() - start, features::kIPv6FallbackTime.Get());
   ASSERT_TRUE(handle.socket());
 
   IPEndPoint endpoint;
@@ -886,7 +889,7 @@ TEST_P(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 TEST_P(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kDelayedFailing);
-  base::TimeDelta delay = TransportConnectJob::kIPv6FallbackTime / 3;
+  base::TimeDelta delay = features::kIPv6FallbackTime.Get() / 3;
   client_socket_factory_.set_delay(delay);
 
   // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
@@ -897,11 +900,12 @@ TEST_P(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
                                             std::string());
 
   // Expected order of events:
-  // After 100ms: Connect to 1:abcd::3:4:ff times out
-  // After 200ms: Connect to 2:abcd::3:4:ff times out
-  // After 300ms: Connect to 3:abcd::3:4:ff times out, IPv4 fallback starts
-  // After 400ms: Connect to 4:abcd::3:4:ff and 1.1.1.1 time out
-  // After 500ms: Connect to 2.2.2.2 times out
+  // After `delay`: Connect to 1:abcd::3:4:ff times out
+  // After `2 * delay`: Connect to 2:abcd::3:4:ff times out
+  // After `3 * delay`: Connect to 3:abcd::3:4:ff times out, IPv4 fallback
+  // starts
+  // After `4 * delay`: Connect to 4:abcd::3:4:ff and 1.1.1.1 time out
+  // After `5 * delay`: Connect to 2.2.2.2 times out
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;

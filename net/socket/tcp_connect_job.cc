@@ -965,10 +965,11 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
       if (disable_stale_dns_) {
         return false;
       }
-      if (features::kUseStaleConnectorsForOptimisticDns.Get()) {
-        // If the feature is enabled, stale connectors are completely isolated
-        // in `stale_state_`. If the winning connector is from `stale_state_`,
-        // it is guaranteed to be a connection to a stale endpoint.
+      if (IsDualRaceOptimisticDnsEnabled()) {
+        // If dual-race optimistic DNS is enabled, stale connectors are
+        // completely isolated in `stale_state_`. If the winning connector is
+        // from `stale_state_`, it is guaranteed to be a connection to a stale
+        // endpoint.
         return IsStaleConnector(*connector);
       }
       if (dns_request_) {

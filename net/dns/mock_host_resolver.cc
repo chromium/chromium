@@ -1189,7 +1189,9 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
   bool cache_allowed =
       cache_usage == HostResolver::ResolveHostParameters::CacheUsage::ALLOWED ||
       cache_usage ==
-          HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
+          HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED ||
+      cache_usage == HostResolver::ResolveHostParameters::CacheUsage::
+                         STALE_ALLOWED_WHILE_REFRESHING;
   if (cache_.get() && cache_allowed) {
     // Local-only requests search the cache for non-local-only results.
     HostResolverSource effective_source =
