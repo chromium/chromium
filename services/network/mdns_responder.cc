@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <numeric>
 #include <optional>
 #include <queue>
@@ -1105,17 +1106,19 @@ int MdnsResponderManager::SocketHandler::HandlePacket(int result) {
   if (result < 0)
     return responder_manager_->IsFatalError(result) ? result : net::OK;
 
+  const size_t bytes_read = base::checked_cast<size_t>(result);
   net::DnsQuery query(io_buffer_.get());
-  bool parsed_as_query = query.Parse(result);
+  bool parsed_as_query = query.Parse(bytes_read);
   if (parsed_as_query) {
     responder_manager_->OnMdnsQueryReceived(query, id_);
     return result;
   }
 
-  net::DnsResponse response(io_buffer_.get(), io_buffer_->size());
-  if (!response.InitParseWithoutQuery(io_buffer_->size()) ||
-      response.answer_count() == 0)
+  net::DnsResponse response(io_buffer_.get(), bytes_read);
+  if (!response.InitParseWithoutQuery(bytes_read) ||
+      response.answer_count() == 0) {
     return result;
+  }
 
   // There could be multiple records for the same name in the response.
   std::map<std::string, std::set<net::IPAddress>> external_address_maps;
@@ -1123,10 +1126,18 @@ int MdnsResponderManager::SocketHandler::HandlePacket(int result) {
   auto parser = response.Parser();
   DCHECK_GT(response.answer_count(), 0u);
   for (size_t i = 0; i < response.answer_count(); ++i) {
+    const size_t offset = parser.GetOffset();
     auto parsed_record =
         net::RecordParsed::CreateFrom(&parser, base::Time::Now());
-    if (!parsed_record || !parsed_record->ttl())
+    if (!parsed_record) {
+      if (offset == parser.GetOffset()) {
+        break;
+      }
       continue;
+    }
+    if (!parsed_record->ttl()) {
+      continue;
+    }
 
     switch (parsed_record->type()) {
       case net::ARecordRdata::kType:
