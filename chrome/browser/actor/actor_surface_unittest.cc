@@ -9,8 +9,11 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_tab_data.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,6 +73,23 @@ TEST_F(ActorSurfaceTest, HeadlessBacked) {
 
   surface.reset();
   EXPECT_EQ(actor_surface_handle.Get(), nullptr);
+}
+
+// A headless page has no TabFeatures, so the surface attaches the autofill and
+// password manager clients that actor tools depend on.
+TEST_F(ActorSurfaceTest, HeadlessAttachesToolHelpers) {
+  ASSERT_FALSE(
+      autofill::ContentAutofillClient::FromWebContents(web_contents()));
+  ASSERT_FALSE(ChromePasswordManagerClient::FromWebContents(web_contents()));
+
+  auto surface = std::make_unique<ActorSurfaceImpl>(
+      ActorSurfaceHandle::CreateForTesting(), web_contents());
+
+  EXPECT_TRUE(autofill::ContentAutofillClient::FromWebContents(web_contents()));
+  EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(web_contents()));
+  EXPECT_TRUE(
+      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+          web_contents()));
 }
 
 // A tab's WebContents can be swapped out, e.g. on discard. The surface must

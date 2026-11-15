@@ -15,9 +15,12 @@
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/actor_features.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -98,6 +101,21 @@ TEST_F(ActorSurfaceRegistryTest,
   EXPECT_EQ(surface->GetWebContents()->GetDelegate(), headless_manager_.get());
   EXPECT_EQ(registry_->GetForHeadless(surface->GetWebContents()), surface);
   EXPECT_EQ(registry_->size(), 1u);
+}
+
+// Actor tools such as ChangePasswordTool, AttemptLoginTool and
+// AttemptFormFillingTool need the autofill and password manager clients. A tab
+// gets them from TabFeatures; a headless page gets them from the registry.
+TEST_F(ActorSurfaceRegistryTest, CreateHeadlessWebContentsAttachesToolHelpers) {
+  ActorSurface* surface = registry_->CreateHeadlessWebContents(TestPassKey());
+  ASSERT_TRUE(surface);
+  content::WebContents* contents = surface->GetWebContents();
+
+  EXPECT_TRUE(autofill::ContentAutofillClient::FromWebContents(contents));
+  EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(contents));
+  EXPECT_TRUE(
+      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+          contents));
 }
 
 TEST_F(ActorSurfaceRegistryTest, DestroyHeadlessSurfaceDestroysContents) {
