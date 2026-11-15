@@ -1570,6 +1570,10 @@ void LocalFrameMojoHandler::GetScrollPosition(
       frame_->LocalFrameRoot().View()->LayoutViewport()->ScrollPosition()));
 }
 
+void LocalFrameMojoHandler::SetWantErrorMessageStackTrace() {
+  frame_->SetWantErrorMessageStackTrace();
+}
+
 void LocalFrameMojoHandler::RequestFullscreenVideoElement() {
   // Find the first video element of the frame.
   for (auto* child = frame_->GetDocument()->documentElement(); child;

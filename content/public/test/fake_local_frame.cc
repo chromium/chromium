@@ -270,4 +270,6 @@ void FakeLocalFrame::NotifyInspectorOfCrossDocumentScriptToolResult(
 void FakeLocalFrame::PerformFullContentSpellCheck() {}
 #endif
 
+void FakeLocalFrame::SetWantErrorMessageStackTrace() {}
+
 }  // namespace content

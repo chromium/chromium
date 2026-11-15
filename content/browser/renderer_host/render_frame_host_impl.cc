@@ -3739,7 +3739,7 @@ void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
 }
 
 void RenderFrameHostImpl::SetWantErrorMessageStackTrace() {
-  GetMojomFrameInRenderer()->SetWantErrorMessageStackTrace();
+  GetAssociatedLocalFrame()->SetWantErrorMessageStackTrace();
 }
 
 std::optional<gfx::Point>

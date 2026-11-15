@@ -254,6 +254,7 @@ class LocalFrameMojoHandler
       const String& normalized_server_timing,
       mojom::blink::SubframeResourceLengthsPtr resource_lengths) final;
   void GetScrollPosition(GetScrollPositionCallback callback) final;
+  void SetWantErrorMessageStackTrace() final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

@@ -15938,4 +15938,114 @@ TEST_F(WebFrameTest, FromWindow) {
             WebFrame::FromWindow(isolate, v8::Number::New(isolate, 123)));
 }
 
+class TestConsoleLocalFrameHost : public FakeLocalFrameHost {
+ public:
+  struct ConsoleMessage {
+    mojom::blink::ConsoleMessageLevel level;
+    String message;
+    String untrusted_stack_trace;
+  };
+
+  void DidAddMessageToConsole(mojom::blink::ConsoleMessageLevel log_level,
+                              const String& message,
+                              uint32_t line_no,
+                              const String& source_id,
+                              const String& untrusted_stack_trace) override {
+    messages_.emplace_back(log_level, message, untrusted_stack_trace);
+  }
+
+  const Vector<ConsoleMessage>& messages() const { return messages_; }
+  void ClearMessages() { messages_.clear(); }
+
+ private:
+  Vector<ConsoleMessage> messages_;
+};
+
+TEST_F(WebFrameTest, SetWantErrorMessageStackTrace) {
+  TestConsoleLocalFrameHost frame_host;
+  frame_test_helpers::TestWebFrameClient web_frame_client;
+  frame_host.Init(web_frame_client.GetRemoteNavigationAssociatedInterfaces());
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize(&web_frame_client);
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(
+      main_frame, "<html><body></body></html>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  RunPendingTasks();
+  frame_host.ClearMessages();
+
+  const KURL script_url = url_test_helpers::ToKURL("http://example.com/app.js");
+
+  // Before SetWantErrorMessageStackTrace(), neither console.error nor uncaught
+  // exceptions include a stack trace.
+  main_frame->ExecuteScript(
+      WebScriptSource("function errOuter() { errInner(); }\n"
+                      "function errInner() { console.error('error before'); }\n"
+                      "errOuter();",
+                      script_url));
+  main_frame->ExecuteScript(WebScriptSource(
+      "function throwOuter() { throwInner(); }\n"
+      "function throwInner() { throw new Error('uncaught before'); }\n"
+      "throwOuter();",
+      script_url));
+  RunPendingTasks();
+
+  ASSERT_EQ(2u, frame_host.messages().size());
+  EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kError,
+            frame_host.messages()[0].level);
+  EXPECT_TRUE(frame_host.messages()[0].untrusted_stack_trace.empty());
+  EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kError,
+            frame_host.messages()[1].level);
+  EXPECT_TRUE(frame_host.messages()[1].untrusted_stack_trace.empty());
+  frame_host.ClearMessages();
+
+  // Enable stack trace capture and restore isolate state on exit.
+  v8::Isolate* isolate = main_frame->GetAgentGroupScheduler()->Isolate();
+  base::ScopedClosureRunner reset_capture(base::BindOnce(
+      [](v8::Isolate* isolate) {
+        isolate->SetCaptureStackTraceForUncaughtExceptions(false);
+      },
+      isolate));
+  main_frame->GetFrame()->SetWantErrorMessageStackTrace();
+
+  // Non-error messages still do not include a stack trace.
+  main_frame->ExecuteScript(
+      WebScriptSource("function warnOuter() { warnInner(); }\n"
+                      "function warnInner() { console.warn('warn after'); }\n"
+                      "warnOuter();",
+                      script_url));
+  // console.error and uncaught exceptions include stack traces.
+  main_frame->ExecuteScript(
+      WebScriptSource("function errOuter2() { errInner2(); }\n"
+                      "function errInner2() { console.error('error after'); }\n"
+                      "errOuter2();",
+                      script_url));
+  main_frame->ExecuteScript(WebScriptSource(
+      "function throwOuter2() { throwInner2(); }\n"
+      "function throwInner2() { throw new Error('uncaught after'); }\n"
+      "throwOuter2();",
+      script_url));
+  RunPendingTasks();
+
+  ASSERT_EQ(3u, frame_host.messages().size());
+  EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kWarning,
+            frame_host.messages()[0].level);
+  EXPECT_TRUE(frame_host.messages()[0].untrusted_stack_trace.empty());
+
+  EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kError,
+            frame_host.messages()[1].level);
+  EXPECT_THAT(frame_host.messages()[1].untrusted_stack_trace.Utf8(),
+              testing::AllOf(testing::HasSubstr("errOuter2"),
+                             testing::HasSubstr("errInner2")));
+
+  EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kError,
+            frame_host.messages()[2].level);
+  EXPECT_THAT(frame_host.messages()[2].untrusted_stack_trace.Utf8(),
+              testing::AllOf(testing::HasSubstr("throwOuter2"),
+                             testing::HasSubstr("throwInner2")));
+
+  web_view_helper.Reset();
+}
+
 }  // namespace blink

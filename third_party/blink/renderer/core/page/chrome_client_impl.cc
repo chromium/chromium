@@ -469,15 +469,13 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
+bool ChromeClientImpl::ShouldReportDetailedMessageForSource(
     LocalFrame& local_frame,
-    mojom::blink::ConsoleMessageLevel log_level,
     const String& url) {
   WebLocalFrameImpl* webframe =
       WebLocalFrameImpl::FromFrame(local_frame.LocalFrameRoot());
   return webframe && webframe->Client() &&
-         webframe->Client()->ShouldReportDetailedMessageForSourceAndSeverity(
-             log_level, url);
+         webframe->Client()->ShouldReportDetailedMessageForSource(url);
 }
 
 void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,

@@ -265,6 +265,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "v8/include/v8-isolate.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -4613,5 +4614,10 @@ void LocalFrame::PerformFullContentSpellCheck() {
       container_node);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+void LocalFrame::SetWantErrorMessageStackTrace() {
+  want_error_message_stack_trace_ = true;
+  ToIsolate(this)->SetCaptureStackTraceForUncaughtExceptions(true);
+}
 
 }  // namespace blink

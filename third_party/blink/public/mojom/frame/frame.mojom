@@ -677,8 +677,8 @@ interface LocalFrameHost {
   // |untrusted_stack_trace| should only be printed or sent to other services;
   // it's untrusted and should not be parsed to get a structured stack trace.
   // The stack trace is only present if
-  // content.mojom.Frame.SetWantErrorMessageStackTrace has been called for this
-  // frame and the log_level is kError.
+  // blink.mojom.LocalFrame.SetWantErrorMessageStackTrace has been called for
+  // this frame and the log_level is kError.
   DidAddMessageToConsole(ConsoleMessageLevel log_level,
                          mojo_base.mojom.BigString16 msg,
                          uint32 line_number,
@@ -1278,6 +1278,11 @@ interface LocalFrame {
   // Request to perform spell check for full text content.
   [EnableIf=is_android]
   PerformFullContentSpellCheck();
+
+  // Indicates that the frame host (browser) wants the `untrusted_stack_trace`
+  // parameter of LocalFrameHost.DidAddMessageToConsole() filled in for Error
+  // messages if at all possible.
+  SetWantErrorMessageStackTrace();
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

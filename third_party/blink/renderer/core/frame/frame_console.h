@@ -72,6 +72,9 @@ class CORE_EXPORT FrameConsole final : public GarbageCollected<FrameConsole> {
   void Trace(Visitor*) const;
 
  private:
+  bool ShouldReportDetailedMessage(mojom::blink::ConsoleMessageLevel,
+                                   const String& url) const;
+
   Member<LocalFrame> frame_;
 };
 

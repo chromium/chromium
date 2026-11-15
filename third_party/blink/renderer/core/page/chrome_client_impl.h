@@ -134,10 +134,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void FinishScrollFocusedEditableIntoView(
       const gfx::RectF& caret_rect_in_root_frame,
       mojom::blink::ScrollIntoViewParamsPtr params) override;
-  bool ShouldReportDetailedMessageForSourceAndSeverity(
-      LocalFrame&,
-      mojom::blink::ConsoleMessageLevel log_level,
-      const String&) override;
+  bool ShouldReportDetailedMessageForSource(LocalFrame&,
+                                            const String&) override;
   void AddMessageToConsole(LocalFrame*,
                            mojom::ConsoleMessageSource,
                            mojom::ConsoleMessageLevel,

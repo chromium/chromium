@@ -203,6 +203,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
 #if BUILDFLAG(IS_ANDROID)
   void PerformFullContentSpellCheck() override;
 #endif
+  void SetWantErrorMessageStackTrace() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
