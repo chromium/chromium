@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -27,6 +28,8 @@
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -128,22 +131,6 @@ FormSuggestion* PasskeyFormSuggestion(NSString* username,
        acceptanceA11yAnnouncement:nil];
 }
 
-// Finds the first `FormSuggestionLabel` inside `suggestion_view`.
-FormSuggestionLabel* FindFirstFormSuggestionLabel(
-    FormSuggestionView* suggestion_view) {
-  for (UIView* subview in suggestion_view.subviews) {
-    if (UIStackView* stack_view = base::apple::ObjCCast<UIStackView>(subview)) {
-      for (UIView* arranged_subview in stack_view.arrangedSubviews) {
-        if (FormSuggestionLabel* label =
-                base::apple::ObjCCast<FormSuggestionLabel>(arranged_subview)) {
-          return label;
-        }
-      }
-    }
-  }
-  return nil;
-}
-
 }  // namespace
 
 class FormInputAccessoryViewControllerTest : public PlatformTest {
@@ -157,6 +144,18 @@ class FormInputAccessoryViewControllerTest : public PlatformTest {
   }
 
  protected:
+  // Returns the unique `FormSuggestionView` subview inside
+  // `view_controller_.view` and expects it to be non-nil (reporting failures
+  // at `location`).
+  FormSuggestionView* GetFormSuggestionView(
+      const base::Location& location = FROM_HERE) {
+    FormSuggestionView* suggestion_view =
+        chrome_test_util::FindViewByClass<FormSuggestionView>(
+            view_controller_.view, /*expect_uniqueness=*/true, location);
+    EXPECT_NE(suggestion_view, nil) << location.ToString();
+    return suggestion_view;
+  }
+
   FormInputAccessoryViewController* view_controller_;
 };
 
@@ -384,8 +383,7 @@ TEST_F(FormInputAccessoryViewControllerTest,
   NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
   [view_controller_ showAccessorySuggestions:suggestions];
 
-  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
-  EXPECT_NE(suggestion_view, nil);
+  FormSuggestionView* suggestion_view = GetFormSuggestionView();
 
   NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
       displayDescriptionForSuggestion:suggestion1];
@@ -422,8 +420,7 @@ TEST_F(FormInputAccessoryViewControllerTest,
   NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
   [view_controller_ showAccessorySuggestions:suggestions];
 
-  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
-  EXPECT_NE(suggestion_view, nil);
+  FormSuggestionView* suggestion_view = GetFormSuggestionView();
 
   NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
       displayDescriptionForSuggestion:suggestion1];
@@ -457,8 +454,7 @@ TEST_F(FormInputAccessoryViewControllerTest,
   NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
   [view_controller_ showAccessorySuggestions:suggestions];
 
-  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
-  EXPECT_NE(suggestion_view, nil);
+  FormSuggestionView* suggestion_view = GetFormSuggestionView();
 
   NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
       displayDescriptionForSuggestion:suggestion1];
@@ -493,8 +489,7 @@ TEST_F(FormInputAccessoryViewControllerTest,
   NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
   [view_controller_ showAccessorySuggestions:suggestions];
 
-  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
-  EXPECT_NE(suggestion_view, nil);
+  FormSuggestionView* suggestion_view = GetFormSuggestionView();
 
   NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
       displayDescriptionForSuggestion:suggestion1];
@@ -638,7 +633,8 @@ TEST_F(FormInputAccessoryViewControllerTest,
   [view_controller_ showAccessorySuggestions:@[ suggestion ]];
 
   FormSuggestionLabel* label =
-      FindFirstFormSuggestionLabel(view_controller_.formSuggestionView);
+      chrome_test_util::FindViewByClass<FormSuggestionLabel>(
+          view_controller_.view);
   ASSERT_NE(label, nil);
 
   std::u16string base_label = l10n_util::GetStringFUTF16(
@@ -657,7 +653,9 @@ TEST_F(FormInputAccessoryViewControllerTest,
       u"value", autofill::SuggestionType::kAutocompleteEntry) ];
   [view_controller_ showAccessorySuggestions:suggestions];
 
-  UIStackView* container_view = view_controller_.formSuggestionContainerView;
+  FormSuggestionView* suggestion_view = GetFormSuggestionView();
+  UIStackView* container_view =
+      base::apple::ObjCCastStrict<UIStackView>(suggestion_view.superview);
   ASSERT_NE(container_view, nil);
   ASSERT_NE(container_view.layer.mask, nil);
 

@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -265,36 +266,26 @@ TEST_F(FormSuggestionLabelTest, AmbientAutofillTwoLineLayoutAndIcon) {
                                             isCompact:YES
                                              delegate:delegate];
 
-  ASSERT_EQ(label.subviews.count, 1u);
-  UIStackView* compact_horizontal_stack =
-      base::apple::ObjCCastStrict<UIStackView>(label.subviews[0]);
-  ASSERT_EQ(compact_horizontal_stack.arrangedSubviews.count, 2u);
-  UIImageView* compact_icon_view = base::apple::ObjCCastStrict<UIImageView>(
-      compact_horizontal_stack.arrangedSubviews[0]);
+  UIImageView* compact_icon_view =
+      chrome_test_util::FindViewByClass<UIImageView>(label);
+  ASSERT_NE(compact_icon_view, nil);
   EXPECT_EQ(compact_icon_view.image, icon);
 
-  UIStackView* vertical_text_stack = base::apple::ObjCCastStrict<UIStackView>(
-      compact_horizontal_stack.arrangedSubviews[1]);
-  ASSERT_EQ(vertical_text_stack.arrangedSubviews.count, 2u);
-  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
-      vertical_text_stack.arrangedSubviews[0]);
-  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
-      vertical_text_stack.arrangedSubviews[1]);
-  EXPECT_NSEQ(title_label.text, kTestSuggestionValue);
-  EXPECT_NSEQ(subtitle_label.text, kTestDisplayDescription);
+  chrome_test_util::ExpectSubviewCount<UILabel>(label, 2u);
+  EXPECT_NE(chrome_test_util::FindLabelWithText(label, kTestSuggestionValue),
+            nil);
+  EXPECT_NE(chrome_test_util::FindLabelWithText(label, kTestDisplayDescription),
+            nil);
 
   // Switch to non-compact mode and verify the attributed two-line label.
   [label setIsCompact:NO];
-  ASSERT_EQ(label.subviews.count, 1u);
-  UIStackView* non_compact_horizontal_stack =
-      base::apple::ObjCCastStrict<UIStackView>(label.subviews[0]);
-  ASSERT_EQ(non_compact_horizontal_stack.arrangedSubviews.count, 2u);
-  UIImageView* non_compact_icon_view = base::apple::ObjCCastStrict<UIImageView>(
-      non_compact_horizontal_stack.arrangedSubviews[0]);
+  UIImageView* non_compact_icon_view =
+      chrome_test_util::FindViewByClass<UIImageView>(label);
+  ASSERT_NE(non_compact_icon_view, nil);
   EXPECT_EQ(non_compact_icon_view.image, icon);
 
-  UILabel* attributed_label = base::apple::ObjCCastStrict<UILabel>(
-      non_compact_horizontal_stack.arrangedSubviews[1]);
+  UILabel* attributed_label = chrome_test_util::FindViewByClass<UILabel>(label);
+  ASSERT_NE(attributed_label, nil);
   EXPECT_EQ(attributed_label.numberOfLines, 2);
   NSString* expected_combined_text =
       [NSString stringWithFormat:@"%@\n%@", kTestSuggestionValue,

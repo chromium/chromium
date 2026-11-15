@@ -207,12 +207,6 @@ bool ContainsFetchingAmbientDataSuggestion(
 // The custom view that should be shown in the input accessory view.
 @property(nonatomic, strong) FormInputAccessoryView* formInputAccessoryView;
 
-// The view with the suggestions in FormInputAccessoryView.
-@property(nonatomic, strong) FormSuggestionView* formSuggestionView;
-
-// The view which contains `formSuggestionView` and its mask.
-@property(nonatomic, strong) UIStackView* formSuggestionContainerView;
-
 // The gradient used to fade out suggestions at the end of the form suggestion
 // view.
 @property(nonatomic, strong) CAGradientLayer* formSuggestionViewMask;
@@ -248,6 +242,12 @@ bool ContainsFetchingAmbientDataSuggestion(
   // was shown on the keyboard accessory bar. Reset once a batch of suggestions
   // without it is shown or the view disappears.
   std::optional<ElapsedTimer> _fetchingAmbientDataTimer;
+
+  // The view with the suggestions in `FormInputAccessoryView`.
+  FormSuggestionView* _formSuggestionView;
+
+  // The view which contains `_formSuggestionView` and its mask.
+  UIStackView* _formSuggestionContainerView;
 }
 
 @synthesize addressButtonHidden = _addressButtonHidden;
@@ -335,7 +335,7 @@ bool ContainsFetchingAmbientDataSuggestion(
 }
 
 - (void)resetLoadingStates {
-  [self.formSuggestionView setActivityIndicatorEnabled:NO];
+  [_formSuggestionView setActivityIndicatorEnabled:NO];
 }
 
 #pragma mark - FormInputAccessoryConsumer
@@ -390,7 +390,7 @@ bool ContainsFetchingAmbientDataSuggestion(
   ManualFillDataType dataType =
       [ManualFillUtil manualFillDataTypeFromFillingProduct:_mainFillingProduct];
   LogManualFallbackEntryThroughExpandIcon(
-      dataType, self.formSuggestionView.suggestions.count);
+      dataType, _formSuggestionView.suggestions.count);
   [self manualFillButtonPressed:button forDataType:dataType];
 }
 
@@ -403,7 +403,7 @@ bool ContainsFetchingAmbientDataSuggestion(
 - (void)creditCardManualFillButtonPressed:(UIButton*)button {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenCreditCard"));
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenCreditCards",
-                           self.formSuggestionView.suggestions.count);
+                           _formSuggestionView.suggestions.count);
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kPaymentMethod];
 }
@@ -462,7 +462,7 @@ bool ContainsFetchingAmbientDataSuggestion(
   }
   return !(self.addressButtonHidden && self.creditCardButtonHidden &&
            self.passwordButtonHidden && self.atMemoryButtonHidden &&
-           self.formSuggestionView.suggestions.count == 0);
+           _formSuggestionView.suggestions.count == 0);
 }
 
 #pragma mark - Setters
@@ -527,7 +527,7 @@ bool ContainsFetchingAmbientDataSuggestion(
     self.formSuggestionViewMask.colors =
         @[ (id)[UIColor whiteColor].CGColor, (id)[UIColor clearColor].CGColor ];
   }
-  self.formSuggestionContainerView.layer.mask = self.formSuggestionViewMask;
+  _formSuggestionContainerView.layer.mask = self.formSuggestionViewMask;
 }
 
 // Returns whether to use the single manual fill button.
@@ -554,7 +554,7 @@ bool ContainsFetchingAmbientDataSuggestion(
 - (void)resetAnimated:(BOOL)animated {
   self.formInputAccessoryView.hidden = NO;
 
-  [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
+  [_formSuggestionView resetContentInsetAndDelegateAnimated:animated];
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
 }
@@ -588,9 +588,9 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   [self.leadingView addArrangedSubview:self.brandingViewController.view];
   [self.brandingViewController didMoveToParentViewController:self];
 
-  [self.leadingView addArrangedSubview:self.formSuggestionContainerView];
-  [self.formSuggestionContainerView addArrangedSubview:self.formSuggestionView];
-  self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
+  [self.leadingView addArrangedSubview:_formSuggestionContainerView];
+  [_formSuggestionContainerView addArrangedSubview:_formSuggestionView];
+  self.formSuggestionViewMask.frame = _formSuggestionContainerView.bounds;
 
   BOOL isTabletFormFactor =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
@@ -659,7 +659,7 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
       weakSelf.showScrollHint = NO;
     }
   };
-  [self.formSuggestionView
+  [_formSuggestionView
           updateSuggestions:suggestions
              showScrollHint:self.showScrollHint
       accessoryTrailingView:self.formInputAccessoryView.trailingView
@@ -667,7 +667,7 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   // Check if the view is in the current hierarchy before performing the layout.
   if (self.formInputAccessoryView.window) {
     [self.formInputAccessoryView layoutIfNeeded];
-    self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
+    self.formSuggestionViewMask.frame = _formSuggestionContainerView.bounds;
   }
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
@@ -694,17 +694,16 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
 
 // Creates formSuggestionView if not done yet.
 - (void)createFormSuggestionViewIfNeeded {
-  if (!self.formSuggestionView) {
-    self.formSuggestionView = [[FormSuggestionView alloc] init];
-    self.formSuggestionView.isContextMenuEnabled = _isContextMenuEnabled;
-    self.formSuggestionView.formSuggestionViewDelegate = self;
-    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
-    self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.formSuggestionView setIsCompact:[self isCompact]];
+  if (!_formSuggestionView) {
+    _formSuggestionView = [[FormSuggestionView alloc] init];
+    _formSuggestionView.isContextMenuEnabled = _isContextMenuEnabled;
+    _formSuggestionView.formSuggestionViewDelegate = self;
+    _formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
+    _formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_formSuggestionView setIsCompact:[self isCompact]];
 
-    self.formSuggestionContainerView =
-        [[FormSuggestionContainerView alloc] init];
-    self.formSuggestionContainerView.axis = UILayoutConstraintAxisHorizontal;
+    _formSuggestionContainerView = [[FormSuggestionContainerView alloc] init];
+    _formSuggestionContainerView.axis = UILayoutConstraintAxisHorizontal;
 
     // Put a mask on the formSuggestionView's container view so that the mask
     // doesn't move along with the scroll view.
@@ -829,7 +828,7 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
     BOOL isCompact = [self isCompact];
     [self.formInputAccessoryView setIsCompact:isCompact];
     self.formInputAccessoryView.accessibilityViewIsModal = isCompact;
-    [self.formSuggestionView setIsCompact:isCompact];
+    [_formSuggestionView setIsCompact:isCompact];
     [self updateFormSuggestionViewMaskLayout];
 
     BOOL shouldUsePopover = [ManualFillUtil shouldUsePopover:self];
@@ -854,7 +853,7 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
     // contrast. In this case, since a glass tint is used, the contrast is
     // maximized by forcing a user interface style which will contrast with the
     // tint color.
-    self.formSuggestionView.overrideUserInterfaceStyle =
+    _formSuggestionView.overrideUserInterfaceStyle =
         self.traitCollection.userInterfaceStyle;
     [self.formInputAccessoryView
         setSubviewsOverrideUserInterfaceStyle:self.traitCollection
