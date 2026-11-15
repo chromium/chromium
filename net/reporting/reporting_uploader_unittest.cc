@@ -10,10 +10,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
@@ -28,6 +32,9 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_filter.h"
+#include "net/url_request/url_request_interceptor.h"
+#include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -127,6 +134,7 @@ class TestUploadCallback {
     run_loop.Run();
   }
 
+  bool called() const { return called_; }
   ReportingUploader::Outcome outcome() const { return outcome_; }
 
  private:
@@ -901,6 +909,130 @@ TEST_F(ReportingUploaderTest, PrepareUploadRequestCallback) {
   // request.
   EXPECT_EQ(2, prepare_count);
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
+}
+
+// A `URLRequestJob` that remains pending until killed, and when killed
+// synchronously fails its sibling job (if still alive) to exercise re-entrant
+// `URLRequest::Delegate::OnResponseStarted()` calls during teardown.
+class ReentrantKillJob : public URLRequestJob {
+ public:
+  ReentrantKillJob(URLRequest* request, int* synchronous_failure_count)
+      : URLRequestJob(request),
+        synchronous_failure_count_(synchronous_failure_count) {}
+  ~ReentrantKillJob() override = default;
+
+  void set_sibling(base::WeakPtr<ReentrantKillJob> sibling) {
+    sibling_ = std::move(sibling);
+  }
+
+  base::WeakPtr<ReentrantKillJob> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  void Start() override {}
+
+  void Kill() override {
+    URLRequestJob::Kill();
+    if (sibling_) {
+      sibling_->FailSynchronously();
+    }
+  }
+
+ private:
+  void FailSynchronously() {
+    sibling_.reset();
+    if (!is_done() && !has_response_started()) {
+      ++(*synchronous_failure_count_);
+      NotifyStartError(ERR_CONNECTION_CLOSED);
+    }
+  }
+
+  raw_ptr<int> synchronous_failure_count_;
+  base::WeakPtr<ReentrantKillJob> sibling_;
+  base::WeakPtrFactory<ReentrantKillJob> weak_factory_{this};
+};
+
+class ReentrantKillInterceptor : public URLRequestInterceptor {
+ public:
+  explicit ReentrantKillInterceptor(int* synchronous_failure_count)
+      : synchronous_failure_count_(synchronous_failure_count) {}
+  ~ReentrantKillInterceptor() override = default;
+
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    auto job =
+        std::make_unique<ReentrantKillJob>(request, synchronous_failure_count_);
+    if (!first_job_) {
+      first_job_ = job->GetWeakPtr();
+    } else {
+      first_job_->set_sibling(job->GetWeakPtr());
+      job->set_sibling(first_job_);
+    }
+    return job;
+  }
+
+ private:
+  raw_ptr<int> synchronous_failure_count_;
+  mutable base::WeakPtr<ReentrantKillJob> first_job_;
+};
+
+TEST_F(ReportingUploaderTest, OnShutdownWithReentrantCompletion) {
+  int synchronous_failure_count = 0;
+  base::ScopedClosureRunner clear_filter(base::BindOnce(
+      []() { URLRequestFilter::GetInstance()->ClearHandlers(); }));
+  URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+      "https", "origin",
+      std::make_unique<ReentrantKillInterceptor>(&synchronous_failure_count));
+
+  TestUploadCallback callback1;
+  uploader_->StartUpload(kOrigin, GURL("https://origin/1"),
+                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+                         kUploadBody, 0, false, callback1.callback());
+  TestUploadCallback callback2;
+  uploader_->StartUpload(kOrigin, GURL("https://origin/2"),
+                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+                         kUploadBody, 0, false, callback2.callback());
+  EXPECT_EQ(2, uploader_->GetPendingUploadCountForTesting());
+
+  // Canceling one request during `OnShutdown()` synchronously triggers
+  // `OnResponseStarted()` on the other request. This must not mutate or
+  // corrupt the map while it is being cleared.
+  uploader_->OnShutdown();
+
+  EXPECT_EQ(1, synchronous_failure_count);
+  EXPECT_EQ(0, uploader_->GetPendingUploadCountForTesting());
+  EXPECT_FALSE(callback1.called());
+  EXPECT_FALSE(callback2.called());
+}
+
+TEST_F(ReportingUploaderTest, DestructorWithReentrantCompletion) {
+  int synchronous_failure_count = 0;
+  base::ScopedClosureRunner clear_filter(base::BindOnce(
+      []() { URLRequestFilter::GetInstance()->ClearHandlers(); }));
+  URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+      "https", "origin",
+      std::make_unique<ReentrantKillInterceptor>(&synchronous_failure_count));
+
+  TestUploadCallback callback1;
+  uploader_->StartUpload(kOrigin, GURL("https://origin/1"),
+                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+                         kUploadBody, 0, false, callback1.callback());
+  TestUploadCallback callback2;
+  uploader_->StartUpload(kOrigin, GURL("https://origin/2"),
+                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+                         kUploadBody, 0, false, callback2.callback());
+  EXPECT_EQ(2, uploader_->GetPendingUploadCountForTesting());
+
+  // Destroying the uploader cancels pending requests and runs failure
+  // callbacks. A synchronous `OnResponseStarted()` on a sibling request during
+  // teardown must not mutate the map or invoke its callback a second time.
+  uploader_.reset();
+
+  EXPECT_EQ(1, synchronous_failure_count);
+  EXPECT_TRUE(callback1.called());
+  EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback1.outcome());
+  EXPECT_TRUE(callback2.called());
+  EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback2.outcome());
 }
 
 }  // namespace
