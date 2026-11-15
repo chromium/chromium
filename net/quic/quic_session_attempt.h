@@ -147,6 +147,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   QuicChromiumClientSession* session() const { return session_.get(); }
 
+  void SetFallbackIpv4PeerAddress(const IPEndPoint& ipv4_address);
+
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
 
  private:
@@ -216,6 +218,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
   const QuicConnectionReuseDetails quic_connection_reuse_details_;
   std::optional<ConnectionManagementConfig> connection_management_config_;
+  std::optional<IPEndPoint> fallback_ipv4_peer_address_;
 
   State next_state_ = State::kNone;
   bool in_loop_ = false;

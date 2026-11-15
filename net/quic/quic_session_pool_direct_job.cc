@@ -305,6 +305,15 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       session_creation_initiator_, quic_connection_reuse_details_,
       connection_management_config_);
 
+  if (endpoint_result.ip_endpoints.front().address().IsIPv6()) {
+    for (const auto& ip_endpoint : endpoint_result.ip_endpoints) {
+      if (ip_endpoint.address().IsIPv4()) {
+        session_attempt_->SetFallbackIpv4PeerAddress(ip_endpoint);
+        break;
+      }
+    }
+  }
+
   return session_attempt_->Start(
       base::BindOnce(&DirectJob::OnSessionAttemptComplete, GetWeakPtr()));
 }

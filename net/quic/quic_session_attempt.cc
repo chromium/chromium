@@ -186,6 +186,15 @@ void QuicSessionAttempt::CancelInternal(CancelReason reason) {
                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
 }
 
+void QuicSessionAttempt::SetFallbackIpv4PeerAddress(
+    const IPEndPoint& ipv4_address) {
+  CHECK(ipv4_address.address().IsIPv4());
+  fallback_ipv4_peer_address_ = ipv4_address;
+  if (session_) {
+    session_->set_fallback_ipv4_peer_address(ToQuicSocketAddress(ipv4_address));
+  }
+}
+
 void QuicSessionAttempt::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_) {
@@ -325,6 +334,10 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
   }
 
   CHECK(session_);
+  if (fallback_ipv4_peer_address_.has_value()) {
+    session_->set_fallback_ipv4_peer_address(
+        ToQuicSocketAddress(*fallback_ipv4_peer_address_));
+  }
   session_->StartReading();
   if (!session_->connection()->connected()) {
     if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {

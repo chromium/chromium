@@ -22620,4 +22620,316 @@ TEST_P(QuicSessionPoolTest,
       alternative_service2, NetworkAnonymizationKey()));
 }
 
+TEST_P(QuicSessionPoolTest, V6ToV4MigrationProbingSuccess) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+  quic_params_->migrate_idle_sessions = true;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  // The fallback IPv4 address must be publicly routable, since the IPv6 peer
+  // address is (2001:db8::/32 falls within 2000::/3).
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "2001:db8::1,1.2.3.4", "");
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  int packet_num = 1;
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // First probing socket on the new network fails Connect() to IPv6 with
+  // ERR_ADDRESS_UNREACHABLE.
+  SequencedSocketData failed_v6_probe_data(
+      MockConnect(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE), base::span<MockRead>(),
+      base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&failed_v6_probe_data);
+
+  // Second probing socket on the new network connects to the fallback IPv4
+  // address and succeeds.
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  // The session was created on an IPv6 path, so its max packet length was
+  // reduced by 20 bytes of additional IPv6 header overhead. The PATH_CHALLENGE
+  // is padded to that length even though it is sent to the IPv4 address.
+  client_maker_.set_max_plaintext_size(quic::kDefaultMaxPacketSize - 20);
+  MockQuicData v4_probe_data(version_);
+  v4_probe_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                          .AddPathChallengeFrame()
+                                          .AddPaddingFrame()
+                                          .Build());
+  v4_probe_data.AddReadPause();
+  v4_probe_data.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
+  v4_probe_data.AddReadPauseForever();
+  v4_probe_data.AddWrite(ASYNC,
+                         client_maker_.MakeRetransmissionPacket(
+                             /*original_packet_number=*/1, packet_num++));
+  v4_probe_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                          .AddRetireConnectionIdFrame(0u)
+                                          .Build());
+  v4_probe_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->peer_address().host().IsIPv6());
+  ASSERT_TRUE(session->fallback_ipv4_peer_address().has_value());
+  EXPECT_TRUE(session->fallback_ipv4_peer_address()->host().IsIPv4());
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  base::HistogramTester histogram_tester;
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+
+  v4_probe_data.Resume();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return v4_probe_data.AllWriteDataConsumed(); }));
+
+  EXPECT_EQ(session->peer_address(), *session->fallback_ipv4_peer_address());
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkMadeDefault",
+      true, 1);
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible.ByTrigger."
+      "OnNetworkMadeDefault",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", true, 1);
+
+  v4_probe_data.ExpectAllReadDataConsumed();
+  v4_probe_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, V6ToV4MigrationWithoutProbingSuccess) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+  quic_params_->migrate_idle_sessions = true;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  // The fallback IPv4 address must be publicly routable, since the IPv6 peer
+  // address is (2001:db8::/32 falls within 2000::/3).
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "2001:db8::1,1.2.3.4", "");
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  MockQuicData default_socket_data(version_);
+  default_socket_data.AddReadPauseForever();
+  int packet_num = 1;
+  default_socket_data.AddWrite(SYNCHRONOUS,
+                               ConstructInitialSettingsPacket(packet_num++));
+  default_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // First migration socket on the alternate network fails Connect() to IPv6
+  // with ERR_ADDRESS_UNREACHABLE.
+  SequencedSocketData failed_v6_socket_data(
+      MockConnect(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE), base::span<MockRead>(),
+      base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&failed_v6_socket_data);
+
+  // Second migration socket connects to the fallback IPv4 address and succeeds.
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  MockQuicData v4_socket_data(version_);
+  v4_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  v4_socket_data.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(1, packet_num++));
+  v4_socket_data.AddWrite(
+      SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
+  v4_socket_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                           .AddRetireConnectionIdFrame(0u)
+                                           .Build());
+  v4_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  auto* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->peer_address().host().IsIPv6());
+  ASSERT_TRUE(session->fallback_ipv4_peer_address().has_value());
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  base::HistogramTester histogram_tester;
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(session->peer_address(), *session->fallback_ipv4_peer_address());
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkDisconnected",
+      true, 1);
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible.ByTrigger."
+      "OnNetworkDisconnected",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", true, 1);
+
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
+  v4_socket_data.ExpectAllReadDataConsumed();
+  v4_socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, V6ToV4MigrationWithoutProbingNoFallbackAddress) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+  quic_params_->migrate_idle_sessions = true;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "2001:db8::1", "");
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  MockQuicData default_socket_data(version_);
+  default_socket_data.AddReadPauseForever();
+  int packet_num = 1;
+  default_socket_data.AddWrite(SYNCHRONOUS,
+                               ConstructInitialSettingsPacket(packet_num++));
+  default_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SequencedSocketData failed_v6_socket_data(
+      MockConnect(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE), base::span<MockRead>(),
+      base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&failed_v6_socket_data);
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  auto* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->peer_address().host().IsIPv6());
+  EXPECT_FALSE(session->fallback_ipv4_peer_address().has_value());
+
+  base::HistogramTester histogram_tester;
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !HasActiveSession(kDefaultDestination); }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", false, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger."
+      "OnNetworkDisconnected",
+      -ERR_ADDRESS_UNREACHABLE, 1);
+
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
+}
+
+// Verifies that when the IPv4 fallback itself fails, the migration fails
+// without attempting a second fallback, and the single attempt is recorded once
+// in both the base and the V6ToV4Fallback histograms.
+TEST_P(QuicSessionPoolTest, V6ToV4MigrationWithoutProbingFallbackFailure) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kEnableQuicV6ToV4Migration);
+  quic_params_->migrate_idle_sessions = true;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  // The fallback IPv4 address must be publicly routable, since the IPv6 peer
+  // address is (2001:db8::/32 falls within 2000::/3).
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "2001:db8::1,1.2.3.4", "");
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  MockQuicData default_socket_data(version_);
+  default_socket_data.AddReadPauseForever();
+  int packet_num = 1;
+  default_socket_data.AddWrite(SYNCHRONOUS,
+                               ConstructInitialSettingsPacket(packet_num++));
+  default_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // First migration socket on the alternate network fails Connect() to IPv6
+  // with ERR_ADDRESS_UNREACHABLE.
+  SequencedSocketData failed_v6_socket_data(
+      MockConnect(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE), base::span<MockRead>(),
+      base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&failed_v6_socket_data);
+
+  // Second migration socket fails Connect() to the fallback IPv4 address with
+  // the same error, which must not trigger another fallback.
+  SequencedSocketData failed_v4_socket_data(
+      MockConnect(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE), base::span<MockRead>(),
+      base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&failed_v4_socket_data);
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  auto* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->peer_address().host().IsIPv6());
+  ASSERT_TRUE(session->fallback_ipv4_peer_address().has_value());
+
+  base::HistogramTester histogram_tester;
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !HasActiveSession(kDefaultDestination); }));
+
+  // CanFallback is only recorded for the IPv6 attempt, not for the fallback.
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.Eligible", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger."
+      "OnNetworkDisconnected",
+      -ERR_ADDRESS_UNREACHABLE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.V6ToV4Fallback.SocketConfigError.NetError."
+      "ByTrigger.OnNetworkDisconnected",
+      -ERR_ADDRESS_UNREACHABLE, 1);
+
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test
