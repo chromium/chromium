@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -466,8 +467,15 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
       tab.uploaded = !contextual_input_data->is_implicit_upload;
       attached_tab = std::move(tab);
     }
+    // `StartFileUploadFlow()` can synchronously fail a pending search URL
+    // request and run a callback that destroys `this` (see
+    // crbug.com/584243604).
+    base::WeakPtr<ContextualSearchSessionHandle> weak_this = AsWeakPtr();
     controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), image_options);
+    if (!weak_this) {
+      return;
+    }
     if (attached_tab.has_value()) {
       // Updates in place if the tab is already attached (e.g. it was
       // attached before upload, or is being re-uploaded with a new token).
