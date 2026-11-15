@@ -15,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -705,7 +704,8 @@ std::u16string WebAppBrowserController::GetTitle() const {
   // Settings), as ChromeOS window management and Tast tests rely on the active
   // page/tab title being present in the window title.
   if (system_app()) {
-    return base::StrCat({app_name, u" - ", raw_title});
+    return l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE, app_name,
+                                      raw_title);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -714,7 +714,8 @@ std::u16string WebAppBrowserController::GetTitle() const {
     return app_name;
   }
 
-  return base::StrCat({app_name, u" - ", raw_title});
+  return l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE, app_name,
+                                    raw_title);
 }
 
 std::u16string WebAppBrowserController::GetAppShortName() const {
