@@ -4,17 +4,22 @@
 
 #include "components/critical_actions/core/browser/critical_action_database.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +30,7 @@ namespace critical_actions {
 
 using ::testing::HasSubstr;
 using ::testing::Not;
+using InitStatus = CriticalActionDatabase::InitStatus;
 
 class CriticalActionDatabaseTest : public testing::Test {
  public:
@@ -54,14 +60,14 @@ class CriticalActionDatabaseTest : public testing::Test {
 
 TEST_F(CriticalActionDatabaseTest, InitDatabase) {
   CriticalActionDatabase database(db_path_);
-  EXPECT_TRUE(database.Init());
+  EXPECT_EQ(database.Init(), InitStatus::kOk);
   EXPECT_TRUE(base::PathExists(db_path_));
   database.Close();
 }
 
 TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   CriticalActionEntry entry = CreateDefaultEntry();
   entry.visit_id = base::RandIntInclusive(1, 1000000);
@@ -88,7 +94,7 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
 // version, or corrupted) are read as ActionType::kUnknown.
 TEST_F(CriticalActionDatabaseTest, UnknownActionTypeReadsAsUnknown) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   CriticalActionEntry newer_entry = CreateDefaultEntry();
   newer_entry.action_type =
@@ -115,7 +121,7 @@ TEST_F(CriticalActionDatabaseTest, UnknownActionTypeReadsAsUnknown) {
 TEST_F(CriticalActionDatabaseTest, AddDuplicateEntryFails) {
   base::HistogramTester histogram_tester;
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   CriticalActionEntry entry = CreateDefaultEntry();
   entry.action_type = ActionType::kDownload;
@@ -138,7 +144,7 @@ TEST_F(CriticalActionDatabaseTest, AddDuplicateEntryFails) {
 
 TEST_F(CriticalActionDatabaseTest, GetNonExistentReturnsNullopt) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   auto retrieved = database.GetCriticalAction(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -149,7 +155,7 @@ TEST_F(CriticalActionDatabaseTest, GetNonExistentReturnsNullopt) {
 
 TEST_F(CriticalActionDatabaseTest, DeleteSingleEntry) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   CriticalActionEntry entry = CreateDefaultEntry();
   entry.action_type = ActionType::kSettingChange;
@@ -165,7 +171,7 @@ TEST_F(CriticalActionDatabaseTest, DeleteSingleEntry) {
 
 TEST_F(CriticalActionDatabaseTest, DeleteInTimeRange) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   base::Time base_time = base::Time::Now();
 
@@ -202,7 +208,7 @@ TEST_F(CriticalActionDatabaseTest, DeleteInTimeRange) {
 
 TEST_F(CriticalActionDatabaseTest, DeleteByVisitIds) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   int64_t visit_id_1 = base::RandIntInclusive(1, 1000000);
   int64_t visit_id_2 = visit_id_1 + 1;
@@ -239,7 +245,7 @@ TEST_F(CriticalActionDatabaseTest, DeleteByVisitIds) {
 
 TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   base::Time base_time = base::Time::Now();
 
@@ -361,7 +367,7 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
 
 TEST_F(CriticalActionDatabaseTest, GetCriticalActionsBatchesLargeVisitIds) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   base::Time base_time = base::Time::Now();
 
@@ -458,7 +464,7 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
   // 2. Open via CriticalActionDatabase, which must auto-migrate to V2.
   {
     CriticalActionDatabase database(db_path_);
-    ASSERT_TRUE(database.Init());
+    ASSERT_EQ(database.Init(), InitStatus::kOk);
 
     // Legacy table should be dropped.
     EXPECT_FALSE(database.GetDBForTesting().DoesTableExist("CriticalActions"));
@@ -556,7 +562,7 @@ TEST_F(CriticalActionDatabaseTest, MigrationV2ToV3) {
   }
 
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
   auto& db = database.GetDBForTesting();
 
   EXPECT_FALSE(db.DoesColumnExist("CriticalActionEntries", "url"));
@@ -624,7 +630,7 @@ TEST_F(CriticalActionDatabaseTest, MigrationV3ToV4) {
   }
 
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
   auto& db = database.GetDBForTesting();
 
   EXPECT_TRUE(
@@ -724,7 +730,7 @@ TEST_F(CriticalActionDatabaseTest, V3StatementsWorkOnV4Database) {
   v4_entry.metadata = "meta_v4";
   {
     CriticalActionDatabase database(db_path_);
-    ASSERT_TRUE(database.Init());
+    ASSERT_EQ(database.Init(), InitStatus::kOk);
     ASSERT_TRUE(database.AddCriticalAction(v4_entry));
     database.Close();
   }
@@ -792,7 +798,7 @@ TEST_F(CriticalActionDatabaseTest, V3StatementsWorkOnV4Database) {
   // The row written by the v3 statements reads back in v4 with an empty
   // anchor (NULL column), and the v4 row keeps its anchor.
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
   auto act_v3 = database.GetCriticalAction("act_v3");
   ASSERT_TRUE(act_v3.has_value());
   EXPECT_EQ(act_v3->timestamp, v3_timestamp);
@@ -814,13 +820,13 @@ TEST_F(CriticalActionDatabaseTest, FreshDatabaseDoesNotVacuum) {
   base::HistogramTester histograms;
   {
     CriticalActionDatabase database(db_path_);
-    ASSERT_TRUE(database.Init());
+    ASSERT_EQ(database.Init(), InitStatus::kOk);
     histograms.ExpectTotalCount(
         "CriticalActions.Database.MigrationVacuumResult", 0);
   }
   {
     CriticalActionDatabase database(db_path_);
-    ASSERT_TRUE(database.Init());
+    ASSERT_EQ(database.Init(), InitStatus::kOk);
     histograms.ExpectTotalCount(
         "CriticalActions.Database.MigrationVacuumResult", 0);
   }
@@ -828,7 +834,7 @@ TEST_F(CriticalActionDatabaseTest, FreshDatabaseDoesNotVacuum) {
 
 TEST_F(CriticalActionDatabaseTest, SchemaHasNoUrlColumn) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
   auto& db = database.GetDBForTesting();
   EXPECT_FALSE(db.DoesColumnExist("CriticalActionEntries", "url"));
   EXPECT_FALSE(db.DoesIndexExist("idx_entries_url"));
@@ -929,7 +935,7 @@ TEST(CriticalActionDatabaseHelpersTest,
 
 TEST_F(CriticalActionDatabaseTest, SetCriticalActionsConversationId) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   const std::string action_id1 = "action_1";
   const std::string action_id2 = "action_2";
@@ -966,7 +972,7 @@ TEST_F(CriticalActionDatabaseTest, SetCriticalActionsConversationId) {
 TEST_F(CriticalActionDatabaseTest,
        SetCriticalActionsConversationIdEmptyActionIds) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   // Empty action IDs is a no-op that returns true.
   EXPECT_TRUE(database.SetCriticalActionsConversationId({}, "conv_1"));
@@ -977,7 +983,7 @@ TEST_F(CriticalActionDatabaseTest,
 TEST_F(CriticalActionDatabaseTest,
        SetCriticalActionsConversationIdEmptyConversationId) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   const std::string action_id = "action_1";
   CriticalActionEntry entry = CreateDefaultEntry();
@@ -996,7 +1002,7 @@ TEST_F(CriticalActionDatabaseTest,
 TEST_F(CriticalActionDatabaseTest,
        SetCriticalActionsConversationIdPreservesConversationAnchorId) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   CriticalActionEntry entry = CreateDefaultEntry();
   entry.conversation_id = "initial_conv";
@@ -1015,7 +1021,7 @@ TEST_F(CriticalActionDatabaseTest,
 
 TEST_F(CriticalActionDatabaseTest, ConversationAnchorIdMaxLengthGuard) {
   CriticalActionDatabase database(db_path_);
-  ASSERT_TRUE(database.Init());
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
 
   const base::Time base_time = base::Time::Now();
   const std::string max_len_anchor(kMaxConversationAnchorIdLength, 'a');
@@ -1070,6 +1076,184 @@ TEST_F(CriticalActionDatabaseTest, ConversationAnchorIdMaxLengthGuard) {
   EXPECT_TRUE(all_entries[0].conversation_anchor_id.empty());
   EXPECT_EQ(all_entries[1], valid_entry);
 
+  database.Close();
+}
+
+TEST_F(CriticalActionDatabaseTest,
+       SecondConnectionDoesNotDeadlockExistingDatabase) {
+  // First create the database at the current schema version and close it, so
+  // that the subsequent Init() opens an already-initialized database where no
+  // schema or migration writes occur.
+  {
+    CriticalActionDatabase setup_db(db_path_);
+    ASSERT_EQ(setup_db.Init(), InitStatus::kOk);
+    setup_db.Close();
+  }
+
+  base::HistogramTester histogram_tester;
+  CriticalActionDatabase db1(db_path_);
+  ASSERT_EQ(db1.Init(), InitStatus::kOk);
+
+  // Attempting to initialize a second connection while `db1` is open must fail
+  // fast during Init() rather than acquiring a second SHARED lock that
+  // deadlocks subsequent writes on `db1`.
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_BUSY);
+
+    CriticalActionDatabase db2(db_path_);
+    EXPECT_EQ(db2.Init(), InitStatus::kBusyTimeout);
+    EXPECT_FALSE(db2.GetDBForTesting().is_open());
+    EXPECT_FALSE(db2.GetDBForTesting().has_error_callback());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  histogram_tester.ExpectUniqueSample("CriticalActions.Database.SqliteError",
+                                      sql::SqliteLoggedResultCode::kBusy, 1);
+
+  // Verify `db1` can still perform writes and reads without hitting
+  // SQLITE_BUSY.
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.visit_id = 42;
+  EXPECT_TRUE(db1.AddCriticalAction(entry));
+
+  auto retrieved = db1.GetCriticalAction(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(*retrieved, entry);
+
+  EXPECT_TRUE(db1.DeleteCriticalActionsByVisitIds({42}));
+  EXPECT_FALSE(db1.GetCriticalAction(entry.critical_action_id).has_value());
+
+  // No additional errors should have been recorded on `db1`.
+  histogram_tester.ExpectUniqueSample("CriticalActions.Database.SqliteError",
+                                      sql::SqliteLoggedResultCode::kBusy, 1);
+
+  db1.Close();
+}
+
+TEST_F(CriticalActionDatabaseTest,
+       TransientLockDuringInitSucceedsWithoutLoggingBusyError) {
+  {
+    CriticalActionDatabase setup_db(db_path_);
+    ASSERT_EQ(setup_db.Init(), InitStatus::kOk);
+    setup_db.Close();
+  }
+
+  base::HistogramTester histogram_tester;
+  base::Thread holder_thread("LockHolder");
+  ASSERT_TRUE(holder_thread.Start());
+
+  std::unique_ptr<sql::Database> holder_db;
+  bool holder_opened = false;
+  base::WaitableEvent holder_locked;
+  holder_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        holder_db = std::make_unique<sql::Database>(
+            sql::Database::Tag("CriticalActions"));
+        holder_opened = holder_db->Open(db_path_);
+        if (!holder_opened) {
+          holder_db.reset();
+        }
+        holder_locked.Signal();
+      }));
+
+  holder_locked.Wait();
+  ASSERT_TRUE(holder_opened);
+
+  int busy_retries = 0;
+  CriticalActionDatabase db2(db_path_);
+  db2.SetBusyRetryCallbackForTesting(base::BindLambdaForTesting([&] {
+    if (++busy_retries == 1) {
+      holder_thread.task_runner()->PostTask(FROM_HERE,
+                                            base::BindLambdaForTesting([&] {
+                                              holder_db->Close();
+                                              holder_db.reset();
+                                            }));
+    }
+  }));
+
+  EXPECT_EQ(db2.Init(), InitStatus::kOk);
+
+  holder_thread.Stop();
+
+  EXPECT_GE(busy_retries, 1);
+  histogram_tester.ExpectTotalCount("CriticalActions.Database.SqliteError", 0);
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  EXPECT_TRUE(db2.AddCriticalAction(entry));
+  EXPECT_TRUE(db2.GetCriticalAction(entry.critical_action_id).has_value());
+
+  db2.Close();
+}
+
+TEST_F(CriticalActionDatabaseTest,
+       NonBusyOpenFailureFailsFastAndClearsErrorCallback) {
+  base::HistogramTester histogram_tester;
+
+  // Point `db_path_` at a directory so `db_.Open()` fails with a non-busy
+  // error (`SQLITE_CANTOPEN`) on the first attempt without retrying.
+  CriticalActionDatabase db(temp_dir_.GetPath());
+  EXPECT_EQ(db.Init(), InitStatus::kError);
+  EXPECT_FALSE(db.GetDBForTesting().is_open());
+  EXPECT_FALSE(db.GetDBForTesting().has_error_callback());
+
+  histogram_tester.ExpectTotalCount(
+      "Sql.Database.Open.FirstAttempt.Error.CriticalActions", 1);
+  histogram_tester.ExpectBucketCount("CriticalActions.Database.SqliteError",
+                                     sql::SqliteLoggedResultCode::kBusy, 0);
+  EXPECT_FALSE(
+      histogram_tester.GetAllSamples("CriticalActions.Database.SqliteError")
+          .empty());
+
+  // Calling `Init()` again on the same instance must also fail cleanly without
+  // invoking a dangling error callback.
+  EXPECT_EQ(db.Init(), InitStatus::kError);
+  EXPECT_FALSE(db.GetDBForTesting().is_open());
+  EXPECT_FALSE(db.GetDBForTesting().has_error_callback());
+}
+
+TEST_F(CriticalActionDatabaseTest, ErrorCallbackRestoredAfterInit) {
+  base::HistogramTester histogram_tester;
+  CriticalActionDatabase database(db_path_);
+  ASSERT_EQ(database.Init(), InitStatus::kOk);
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  ASSERT_TRUE(database.AddCriticalAction(entry));
+
+  // Verify non-busy statement errors record
+  // `CriticalActions.Database.SqliteError`.
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CONSTRAINT_PRIMARYKEY);
+    EXPECT_FALSE(database.AddCriticalAction(entry));
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.Database.SqliteError",
+      sql::SqliteLoggedResultCode::kConstraintPrimaryKey, 1);
+
+  // Switch `database` to NORMAL locking for testing so another connection can
+  // hold an EXCLUSIVE lock, then verify that a post-Init() `SQLITE_BUSY` error
+  // also invokes `DatabaseErrorCallback` rather than being swallowed by
+  // Init()'s temporary callback.
+  ASSERT_TRUE(database.GetDBForTesting().Execute("PRAGMA locking_mode=NORMAL"));
+  ASSERT_TRUE(database.GetDBForTesting().Execute("BEGIN IMMEDIATE"));
+  ASSERT_TRUE(database.GetDBForTesting().Execute("COMMIT"));
+
+  sql::Database raw_locker(sql::Database::Tag("CriticalActions"));
+  ASSERT_TRUE(raw_locker.Open(db_path_));
+  ASSERT_TRUE(raw_locker.Execute("BEGIN EXCLUSIVE"));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_BUSY);
+    EXPECT_FALSE(database.AddCriticalAction(CreateDefaultEntry()));
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+  histogram_tester.ExpectBucketCount("CriticalActions.Database.SqliteError",
+                                     sql::SqliteLoggedResultCode::kBusy, 1);
+
+  raw_locker.Close();
   database.Close();
 }
 

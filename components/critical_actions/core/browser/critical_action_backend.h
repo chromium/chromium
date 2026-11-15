@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 
 namespace critical_actions {
@@ -68,10 +69,22 @@ class CriticalActionBackend {
   // Deletes all critical action records associated with the given visit IDs.
   void DeleteCriticalActionsByVisitIds(const std::vector<int64_t>& visit_ids);
 
+  // Overrides the per-attempt busy lock wait timeout used by Init() in tests.
+  void SetBusyTimeoutForTesting(base::TimeDelta busy_timeout);
+
  private:
+  void TryInit(bool advance_backoff);
+  bool EnsureInitialized();
+
   const base::FilePath db_path_;
+  base::TimeDelta busy_timeout_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<CriticalActionDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  int init_retry_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  bool early_retry_used_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::TimeTicks last_busy_failure_ticks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OneShotTimer init_retry_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

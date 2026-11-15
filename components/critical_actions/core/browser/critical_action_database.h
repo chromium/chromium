@@ -9,10 +9,12 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -27,6 +29,14 @@ namespace critical_actions {
 // backend thread.
 class CriticalActionDatabase {
  public:
+  enum class InitStatus {
+    kOk,
+    kBusyTimeout,
+    kError,
+  };
+
+  static constexpr base::TimeDelta kDefaultBusyTimeout = base::Seconds(1);
+
   explicit CriticalActionDatabase(const base::FilePath& db_path);
   CriticalActionDatabase(const CriticalActionDatabase&) = delete;
   CriticalActionDatabase& operator=(const CriticalActionDatabase&) = delete;
@@ -34,8 +44,7 @@ class CriticalActionDatabase {
 
   // Opens/initializes the database. Main entry point on the backend thread.
   // Performs the table and index initialization inside a transaction.
-  // Returns true on success.
-  bool Init();
+  InitStatus Init(base::TimeDelta busy_timeout = kDefaultBusyTimeout);
 
   // Adds a new critical action record to the database.
   // Returns true if successfully added, or false if an entry with the same ID
@@ -83,6 +92,12 @@ class CriticalActionDatabase {
 
   // Exposes underlying database for testing or verification.
   sql::Database& GetDBForTesting() { return db_; }
+
+  // Registers a callback invoked before each SQLITE_BUSY retry sleep in Init().
+  void SetBusyRetryCallbackForTesting(base::RepeatingClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    busy_retry_callback_for_testing_ = std::move(callback);
+  }
 
   // Generates a comma-separated list of placeholder question marks for SQL
   // parameterized queries, e.g. "?, ?, ?". Returns an empty string if `count`
@@ -154,6 +169,8 @@ class CriticalActionDatabase {
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool needs_vacuum_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::RepeatingClosure busy_retry_callback_for_testing_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
