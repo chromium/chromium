@@ -993,6 +993,12 @@ bool IsContextualTasksEphemeralPinButtonRefactorEnabled() {
              kContextualTasksEphemeralPinButtonRefactor);
 }
 
+bool IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled() {
+  return base::FeatureList::IsEnabled(
+             kEphemeralPinningVisibleWhenPermanentlyPinned) &&
+         !IsContextualTasksEphemeralPinButtonRefactorEnabled();
+}
+
 bool IsContextualTasksEphemeralEntryPointEnabled() {
   return kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded ||
          IsContextualTasksEphemeralPinButtonRefactorEnabled();

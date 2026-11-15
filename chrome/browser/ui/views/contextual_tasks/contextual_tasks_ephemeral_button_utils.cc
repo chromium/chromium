@@ -146,9 +146,9 @@ void HandleEphemeralButtonPressed(BrowserWindowInterface* browser,
   // When `kEphemeralPinningVisibleWhenPermanentlyPinned` is enabled, the
   // ephemeral button remains visible alongside the pinned button, and presses
   // on this button should always be logged as EphemeralToolbarButton actions.
-  const bool is_pinned = !base::FeatureList::IsEnabled(
-                             kEphemeralPinningVisibleWhenPermanentlyPinned) &&
-                         GetEffectivePinState(browser->GetProfile());
+  const bool is_pinned =
+      !IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled() &&
+      GetEffectivePinState(browser->GetProfile());
 
   if (controller->IsPanelOpenForContextualTask()) {
     base::RecordAction(base::UserMetricsAction(

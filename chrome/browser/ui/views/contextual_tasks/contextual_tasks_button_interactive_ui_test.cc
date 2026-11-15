@@ -4623,3 +4623,58 @@ IN_PROC_BROWSER_TEST_F(
             true, 1);
       }));
 }
+
+// The two-button `kEphemeralPinningVisibleWhenPermanentlyPinned` mode is not
+// supported under the ephemeral pin button refactor, since the ephemeral and
+// permanent buttons are the same toolbar action. A pinned user must only see
+// the permanent button and must not record ephemeral button metrics.
+class ContextualTasksEphemeralPinButtonRefactorVisibleWhenPinnedInteractiveTest
+    : public ContextualTasksEphemeralPinButtonRefactorInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralPinButtonRefactorInteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned, {}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralPinButtonRefactorVisibleWhenPinnedInteractiveTest,
+    PinnedButtonDoesNotRecordEphemeralMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      EnsurePresent(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([&]() {
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown"));
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.Shown", 0);
+      }),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel"));
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenSidePanel"));
+        EXPECT_TRUE(
+            histogram_tester
+                .GetTotalCountsForPrefix(
+                    "ContextualTasks.EphemeralToolbarButton.ShownDuration")
+                .empty());
+      }));
+}
