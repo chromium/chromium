@@ -2428,6 +2428,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5026121202864677765">Kirish xatini yozib ber</translation>
 <translation id="5030338702439866405">Berilgan vaqt:</translation>
 <translation id="503069730517007720">“<ph name="SOFTWARE_NAME" />” uchun negiz sertifikati zarur, lekin o‘rnatilmagan. Tarmoq administratori bu muammoning yechimini “<ph name="SOFTWARE_NAME" />” konfiguratsiyasi ko‘rsatmalaridan izlashi zarur. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> nomingizdan Google Parollar menejeridan foydalanishi mumkin. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> maʼlumotlaringizni qanday qayta ishlashi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTN raqamini Google Walletga xavfsiz saqlang</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kamera va mikrofoningizdan foydalanishni istaydi</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3898,6 +3899,7 @@ Batafsil axborot:
 <translation id="7490622939531327327">Shakllarni aqlliroq anglash</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
 <translation id="7499188644237027195">Chrome orqali xarid qilish vaqtida eWallet va Pix tanlovlari chiqsin</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> sizning nomingizdan <ph name="DOMAIN" /> hisobiga kirishiga ruxsat berilsinmi?</translation>
 <translation id="7500917112031739411">Guruh asosida saralash</translation>
 <translation id="7501663406926337752">Oldindagi sayt tashkilotingiz tomonidan belgilandi</translation>
 <translation id="7502044688973049724">axborotlaringizni boshqaring</translation>

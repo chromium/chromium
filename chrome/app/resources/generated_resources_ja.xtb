@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
-<translation id="1406812885827747674">今回のみ許可</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="140723521119632973">モバイル有効化</translation>
@@ -600,7 +599,7 @@
 <translation id="1456849775870359518">タブが再度開きます</translation>
 <translation id="146000042969587795">このフレームにはセキュリティで保護されていないコンテンツが含まれているためブロックされました。</translation>
 <translation id="1460573197675781671">言語メニューを閉じる</translation>
-<translation id="1460751212339734034">入力を省いて、時間を節約</translation>
+<translation id="1460751212339734034">入力せずに効率化</translation>
 <translation id="1461041542809785877">パフォーマンス</translation>
 <translation id="1461177659295855031">ブックマーク バー フォルダに移動</translation>
 <translation id="1461288887896722288">管理対象アカウントにログインしました。管理対象プロファイルを新規作成すると、アカウントにリンクされている一部のリソースにアクセスできます。</translation>
@@ -4532,7 +4531,7 @@
 <translation id="44137799675104237">自然な音声でテキストを聴く</translation>
 <translation id="4414051792721275732">ジェスチャーを行ってクリックすると、マウスの速度が遅くなり、操作性が向上します。もう一度ジェスチャーを行うと、クリックを完了します。</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY" /></translation>
-<translation id="4415276339145661267">Google アカウントの管理</translation>
+<translation id="4415276339145661267">Google アカウントを管理</translation>
 <translation id="4415815425191869676">常にアクティブにするサイト</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{このタブを一時停止}other{これらのタブを一時停止}}</translation>
@@ -5327,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{住所}=1{住所（{SELECTED_ITEMS}）}other{住所（{SELECTED_ITEMS}）}}</translation>
 <translation id="5032430150487044192">QR コードを作成できません</translation>
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> は Google パスワード マネージャーを使用して、ユーザーに代わってログイン操作を行えます。<ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> によるユーザーデータの取り扱いについて<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">下の [詳細] を選択して、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
 <translation id="5038621320029329200">信頼できる証明書</translation>
@@ -6792,7 +6790,7 @@
 <translation id="6192333916571137726">ファイルをダウンロード</translation>
 <translation id="6192413564913825901">すべてのブックマークに移動</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
-<translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
+<translation id="6196640612572343990">サードパーティ Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
 <translation id="6198223452299275399">ページ間をスワイプ</translation>
@@ -7476,7 +7474,7 @@
 <translation id="6721972322305477112">ファイル(&amp;F)</translation>
 <translation id="672208878794563299">次回、このサイトからもう一度許可を求められます。</translation>
 <translation id="6723661294526996303">ブックマークと設定をインポート...</translation>
-<translation id="6723740634201835758">Google アカウント</translation>
+<translation id="6723740634201835758">Google アカウントに保存</translation>
 <translation id="6723839827191551955">キャスト メディアを操作できます</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">別のプロフィールを選択</translation>
@@ -8088,7 +8086,7 @@
 <translation id="718512729823942418">使用できるマイクがありません</translation>
 <translation id="7186088072322679094">ツールバーに残す</translation>
 <translation id="7186303001964993981">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダを開くことができません</translation>
-<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
+<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理します</translation>
 <translation id="7186903260115204164">新しい図形描画ツールで、手書きの図形描画、署名、ハイライトを追加できます</translation>
 <translation id="7186935534137027449">アプリのコマンド</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
@@ -8510,13 +8508,12 @@
 <translation id="7495149565104413027">Android アプリ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">最近記録された WebRTC テキストログはありません。</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> へのログインを <ph name="ACTOR_NAME" /> に許可しますか？</translation>
 <translation id="7501957181231305652">または</translation>
 <translation id="7502220299952823578">常にアクティブにするサイトのリストに追加</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> へのタブのキャストを一時停止する</translation>
 <translation id="750275011730776314">Gemini に戻る</translation>
 <translation id="7502804472671406749">共有タブのスクロールとズームが許可されています</translation>
-<translation id="750314150962284310">行のフォーカス</translation>
+<translation id="750314150962284310">ライン フォーカス</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503259455663961898">自動で変更</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>

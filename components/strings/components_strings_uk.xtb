@@ -2433,6 +2433,7 @@
 <translation id="5026121202864677765">Напиши супровідний лист</translation>
 <translation id="5030338702439866405">Ким видано:</translation>
 <translation id="503069730517007720">Для програмного забезпечення <ph name="SOFTWARE_NAME" /> потрібен кореневий сертифікат, однак його не встановлено. Вашому IT-адміністратору потрібно переглянути вказівки з налаштування <ph name="SOFTWARE_NAME" />, щоб вирішити цю проблему. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може використовувати ваші дані з Google Менеджера паролів, щоб входити в облікові записи за вас. <ph name="BEGIN_LINK" />Дізнайтесь, як <ph name="ACTOR_NAME" /> обробляє ваші дані.<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Безпечно збережіть номер надійного мандрівника в Google Гаманці</translation>
 <translation id="503498442187459473">Сайт <ph name="HOST" /> хоче отримати доступ до ваших камери й мікрофона</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@
 <translation id="7490622939531327327">Покращене розпізнавання форм</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>
 <translation id="7499188644237027195">Роблячи покупки в Chrome, ви бачитимете серед способів оплати електронний гаманець і систему Pix</translation>
+<translation id="7499684925421947861">Надати <ph name="ACTOR_NAME" /> дозвіл увійти в сервіс <ph name="DOMAIN" /> за вас?</translation>
 <translation id="7500917112031739411">Показувати за групами</translation>
 <translation id="7501663406926337752">Адміністратор вашої організації позначив указаний сайт як такий, що порушує правила</translation>
 <translation id="7502044688973049724">керувати цією інформацією</translation>

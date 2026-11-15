@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">मिलती-जुलती साइटों को नए टैब में देखने के बारे में ज़्यादा जानें</translation>
 <translation id="1402426911829176748">आपके डिवाइस से कनेक्ट किया जा रहा है</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
-<translation id="1406812885827747674">अभी के लिए अनुमति दें</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="140723521119632973">सेल्युलर एक्टिवेशन</translation>
@@ -5342,7 +5341,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{पते}=1{पते ({SELECTED_ITEMS})}one{पते ({SELECTED_ITEMS})}other{पते ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5033137252639132982">मोशन सेंसर इस्तेमाल करने की अनुमति नहीं है</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, Google Password Manager का इस्तेमाल करके आपके लिए साइन इन कर सकता है. <ph name="BEGIN_LINK" />जानें कि <ph name="ACTOR_NAME" /> आपके डेटा को कैसे मैनेज करता है<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5037676449506322593">सभी को चुनें</translation>
 <translation id="5038621320029329200">भरोसेमंद सर्टिफ़िकेट</translation>
@@ -8528,7 +8526,6 @@
 <translation id="7495149565104413027">Android ऐप्लिकेशन</translation>
 <translation id="7497322070873193353">Google का एआई</translation>
 <translation id="7497981768003291373">आपके पास हाल ही में कैप्चर किया गया कोई WebRTC लेख लॉग नहीं है.</translation>
-<translation id="7499684925421947861">क्या आपको <ph name="ACTOR_NAME" /> को आपकी ओर से <ph name="DOMAIN" /> में साइन इन करने की अनुमति देनी है?</translation>
 <translation id="7501957181231305652">या</translation>
 <translation id="7502220299952823578">"इन साइटों को हमेशा चालू रखें" सूची में जोड़ें</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> पर, टैब कास्ट करना रोकें</translation>

@@ -535,7 +535,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1401216725754314428">Saiba mais sobre os sites relacionados em uma nova guia</translation>
 <translation id="1402426911829176748">Conectando ao seu dispositivo</translation>
 <translation id="1405779994569073824">Falha.</translation>
-<translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Ativação da rede celular</translation>
@@ -5344,7 +5343,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Endereço}=1{Endereço ({SELECTED_ITEMS})}one{Endereço ({SELECTED_ITEMS})}other{Endereços ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Não é possível criar o QR code</translation>
 <translation id="5033137252639132982">Bloquear o uso de sensores de movimento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> pode usar o Gerenciador de Senhas do Google para fazer login por você. <ph name="BEGIN_LINK" />Saiba como o <ph name="ACTOR_NAME" /> trata seus dados<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Selecione "Mais detalhes" abaixo para saber mais informações sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecionar todas</translation>
 <translation id="5038621320029329200">Certificados confiáveis</translation>
@@ -8533,7 +8531,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7495149565104413027">App Android</translation>
 <translation id="7497322070873193353">IA do Google</translation>
 <translation id="7497981768003291373">Você não tem nenhum registro de texto WebRTC capturado recentemente.</translation>
-<translation id="7499684925421947861">Permitir que <ph name="ACTOR_NAME" /> faça login por você neste serviço: <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Adicionar à lista "Sempre manter estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar a transmissão da guia para <ph name="DEVICE_NAME" /></translation>

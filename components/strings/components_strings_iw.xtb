@@ -2437,6 +2437,7 @@ Del</translation>
 <translation id="5026121202864677765">תכתוב לי מכתב מקדים</translation>
 <translation id="5030338702439866405">הונפק על ידי</translation>
 <translation id="503069730517007720">‏יש צורך באישור שורש בשביל "<ph name="SOFTWARE_NAME" />", אבל לא מותקן אישור כזה. על מנהל ה-IT לבדוק את הוראות התצורה של "<ph name="SOFTWARE_NAME" />" כדי לפתור את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> יכול להשתמש במנהל הסיסמאות של Google כדי להכניס אותך לחשבון. <ph name="BEGIN_LINK" />איך <ph name="ACTOR_NAME" /> מטפל בנתונים שלך<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">‏שמירת מספר ה-KTN באופן מאובטח ב-Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> רוצה להשתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3910,6 +3911,7 @@ Del</translation>
 <translation id="7490622939531327327">הבנה חכמה יותר של טפסים</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
 <translation id="7499188644237027195">‏כשמבצעים רכישות ב-Chrome, הארנק האלקטרוני ו-Pix יופיעו כאפשרויות</translation>
+<translation id="7499684925421947861">לאפשר ל-<ph name="ACTOR_NAME" /> להתחבר אל <ph name="DOMAIN" /> בשבילך?</translation>
 <translation id="7500917112031739411">הצגה לפי קבוצה</translation>
 <translation id="7501663406926337752">האתר שבכתובת הזו סומן על ידי הארגון שלך</translation>
 <translation id="7502044688973049724">ניהול המידע</translation>

@@ -2434,6 +2434,7 @@
 <translation id="5026121202864677765">အလုပ်လျှောက်လွှာ အမှာစာ ရေးပေးပါ</translation>
 <translation id="5030338702439866405">ထုတ်ပေးခဲ့သူ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" အတွက် ပင်မအသိအမှတ်ပြုလက်မှတ် လိုအပ်သော်လည်း ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် IT စီမံခန့်ခွဲသူသည် "<ph name="SOFTWARE_NAME" />" အတွက် စီစဉ်သတ်မှတ်ခြင်း လမ်းညွှန်ချက်များကို ကြည့်သင့်ပါသည်။ <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> သည် သင့်ကိုယ်စား လက်မှတ်ထိုးဝင်ရန် Google Password Manager ကို သုံးနိုင်သည်။ <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> က သင့်ဒေတာကို စီမံပုံအကြောင်း လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Google Wallet တွင် KTN ကို လုံခြုံစွာသိမ်းပါ</translation>
 <translation id="503498442187459473"><ph name="HOST" /> သည် သင့်ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို အသုံးပြုလိုသည်</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@
 <translation id="7490622939531327327">ဖောင်များကို ပိုမိုစမတ်ကျစွာ နားလည်ခြင်း</translation>
 <translation id="7495528107193238112">ဤအကြောင်းအရာကို ပိတ်ထားသည်။ ပြဿနာကို ဖြေရှင်းရန် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="7499188644237027195">Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ eWallet နှင့် Pix တို့ကို ရွေးစရာများအနေနှင့် ကြည့်နိုင်သည်</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> ကို <ph name="DOMAIN" /> သို့ သင့်ကိုယ်စား လက်မှတ်ထိုးဝင်ခွင့်ပြုမလား</translation>
 <translation id="7500917112031739411">အုပ်စုအလိုက် ပြပါ</translation>
 <translation id="7501663406926337752">ဖွင့်မည့်ဝဘ်ဆိုက်ကို သင့်အဖွဲ့အစည်းက အလံပြထားသည်</translation>
 <translation id="7502044688973049724">သင့်အချက်အလက်ကို စီမံရန်</translation>

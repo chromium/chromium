@@ -535,7 +535,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
 <translation id="1402426911829176748">Conectando con tu dispositivo</translation>
 <translation id="1405779994569073824">Error.</translation>
-<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación de datos móviles</translation>
@@ -5330,7 +5329,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Direcciones}=1{Direcciones ({SELECTED_ITEMS})}other{Direcciones ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> puede usar el Gestor de contraseñas de Google para iniciar sesión por ti. <ph name="BEGIN_LINK" />Consulta cómo trata <ph name="ACTOR_NAME" /> tus datos<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Selecciona el botón Más detalles para consultar más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038621320029329200">Certificados de confianza</translation>
@@ -8515,7 +8513,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7495149565104413027">Aplicación Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">No has capturado ningún registro de texto de WebRTC recientemente.</translation>
-<translation id="7499684925421947861">¿Permitir que <ph name="ACTOR_NAME" /> inicie sesión en <ph name="DOMAIN" /> por ti?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Añadir a la lista Mantener siempre activos estos sitios</translation>
 <translation id="7502528909759062987">Pausar envío de pestaña a <ph name="DEVICE_NAME" /></translation>

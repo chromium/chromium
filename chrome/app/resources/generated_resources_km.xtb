@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ស្វែងយល់បន្ថែម​អំពីគេហទំព័រ​ដែល​ពាក់ព័ន្ធ​នៅ​ក្នុង​ផ្ទាំង​ថ្មី</translation>
 <translation id="1402426911829176748">កំពុងភ្ជាប់ទៅឧបករណ៍របស់អ្នក</translation>
 <translation id="1405779994569073824">បានគាំង។</translation>
-<translation id="1406812885827747674">អនុញ្ញាត​លើកនេះ</translation>
 <translation id="1407069428457324124">​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
 <translation id="140723521119632973">ការបើកដំណើរការ​បណ្ដាញចល័ត</translation>
@@ -5341,7 +5340,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{អាសយដ្ឋាន}=1{អាសយដ្ឋាន ({SELECTED_ITEMS})}other{អាសយដ្ឋាន ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">មិនអាចបង្កើតកូដ QR បានទេ</translation>
 <translation id="5033137252639132982">មិនអនុញ្ញាតឱ្យប្រើឧបករណ៍​ចាប់​ចលនាទេ</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> អាចប្រើ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់ ដើម្បី​ចូលគណនី​ជំនួសអ្នក។ <ph name="BEGIN_LINK" />ស្វែងយល់​អំពី​របៀបដែល <ph name="ACTOR_NAME" /> ចាត់ចែង​ទិន្នន័យ​របស់អ្នក<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">ជ្រើសរើស "ព័ត៌មាន​លម្អិត​បន្ថែម" ខាងក្រោម ដើម្បី​ទទួលបាន​ព័ត៌មាន​បន្ថែមពី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
 <translation id="5037676449506322593">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5038621320029329200">វិញ្ញាបនបត្រដែលទុកចិត្តបាន</translation>
@@ -8526,7 +8524,6 @@
 <translation id="7495149565104413027">កម្មវិធី Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">អ្នកមិនមានកំណត់ហេតុអត្ថបទ WebRTC ដែលបាន​ថតថ្មីៗ​នេះទេ។</translation>
-<translation id="7499684925421947861">អនុញ្ញាតឱ្យ <ph name="ACTOR_NAME" /> ចូលគណនី <ph name="DOMAIN" /> ជំនួសអ្នកឬ?</translation>
 <translation id="7501957181231305652">ឬ</translation>
 <translation id="7502220299952823578">បញ្ចូល​ទៅ​ក្នុង​បញ្ជី "រក្សា​គេហទំព័រ​ទាំងនេះ​ឱ្យសកម្ម​ជានិច្ច"</translation>
 <translation id="7502528909759062987">ផ្អាក​ការបញ្ជូន​ផ្ទាំងទៅ <ph name="DEVICE_NAME" /></translation>

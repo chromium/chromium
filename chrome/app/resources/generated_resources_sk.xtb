@@ -535,7 +535,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1401216725754314428">Ďalšie informácie o súvisiacich weboch na novej karte</translation>
 <translation id="1402426911829176748">Pripája sa k zariadeniu</translation>
 <translation id="1405779994569073824">Karta zlyhala.</translation>
-<translation id="1406812885827747674">Povoliť teraz</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="140723521119632973">Aktivácia mobilnej siete</translation>
@@ -5330,7 +5329,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresy}=1{Addresa ({SELECTED_ITEMS})}few{Adresy ({SELECTED_ITEMS})}many{Addresses ({SELECTED_ITEMS})}other{Adresy ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR kód sa nedá vytvoriť</translation>
 <translation id="5033137252639132982">Nemôže používať senzory pohybu</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> sa môže za vás prihlasovať pomocou Správcu hesiel Google. <ph name="BEGIN_LINK" />Ako <ph name="ACTOR_NAME" /> spracúva vaše údaje<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Ak chcete získať ďalšie informácie od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, vyberte Ďalšie podrobnosti nižšie.</translation>
 <translation id="5037676449506322593">Vybrať všetko</translation>
 <translation id="5038621320029329200">Dôveryhodné certifikáty</translation>
@@ -8518,7 +8516,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7495149565104413027">Aplikácia pre Android</translation>
 <translation id="7497322070873193353">Umelá inteligencia od Googlu</translation>
 <translation id="7497981768003291373">Nemáte žiadne nedávno zaznamenané textové denníky WebRTC.</translation>
-<translation id="7499684925421947861">Chcete povoliť agentovi <ph name="ACTOR_NAME" /> prihlasovať sa za vás do domény <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">alebo</translation>
 <translation id="7502220299952823578">Pridať do zoznamu Vždy nechať tieto weby aktívne</translation>
 <translation id="7502528909759062987">Pozastaviť prenos karty do zariadenia <ph name="DEVICE_NAME" /></translation>

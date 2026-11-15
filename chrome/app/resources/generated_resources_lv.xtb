@@ -535,7 +535,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1401216725754314428">Skatīt plašāku informāciju par saistītajām vietnēm jaunā cilnē</translation>
 <translation id="1402426911829176748">Notiek savienojuma izveide ar jūsu ierīci</translation>
 <translation id="1405779994569073824">Avarējusi.</translation>
-<translation id="1406812885827747674">Atļaut šajā reizē</translation>
 <translation id="1407069428457324124">Tumšais motīvs</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="140723521119632973">Mobilā tīkla aktivizācija</translation>
@@ -5329,7 +5328,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adreses}=1{Adrese ({SELECTED_ITEMS})}zero{Adreses ({SELECTED_ITEMS})}one{Adreses ({SELECTED_ITEMS})}other{Adreses ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Nevar izveidot kvadrātkodu</translation>
 <translation id="5033137252639132982">Nedrīkst izmantot kustību sensorus</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> var izmantot Google paroļu pārvaldnieku, lai pierakstītos jūsu vietā. <ph name="BEGIN_LINK" />Uzziniet, kā <ph name="ACTOR_NAME" /> apstrādā jūsu datus<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Lai iegūtu plašāku informāciju no uzņēmuma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, tālāk atlasiet pogu “Plašāka informācija”.</translation>
 <translation id="5037676449506322593">Atlasīt visu</translation>
 <translation id="5038621320029329200">Uzticami sertifikāti</translation>
@@ -8515,7 +8513,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7495149565104413027">Android lietotne</translation>
 <translation id="7497322070873193353">Google MI</translation>
 <translation id="7497981768003291373">Jums nav nesen ierakstītu WebRTC tekstu žurnālu.</translation>
-<translation id="7499684925421947861">Vai atļaut <ph name="ACTOR_NAME" /> pierakstīties produktā <ph name="DOMAIN" /> jūsu vietā?</translation>
 <translation id="7501957181231305652">vai</translation>
 <translation id="7502220299952823578">Pievienot sarakstam “Vienmēr saglabāt šīs vietnes aktīvas”</translation>
 <translation id="7502528909759062987">Apturēt cilnes apraidi ierīcē <ph name="DEVICE_NAME" /></translation>

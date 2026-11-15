@@ -2433,6 +2433,7 @@
 <translation id="5026121202864677765">დამიწერე სამოტივაციო წერილი</translation>
 <translation id="5030338702439866405">გამცემი:</translation>
 <translation id="503069730517007720">საჭიროა „<ph name="SOFTWARE_NAME" />“-ის ძირეული სერტიფიკატი, რომელიც არ არის დაინსტალირებული. ამ პრობლემის მოსაგვარებლად თქვენმა IT ადმინისტრატორმა უნდა გადახედოს „<ph name="SOFTWARE_NAME" />“-ის კონფიგურაციის ინსტრუქციას. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" />-ს შეუძლია, შესასვლელად გამოიყენოს Google პაროლების მმართველი. <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ ამუშავებს <ph name="ACTOR_NAME" /> თქვენს მონაცემებს<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTN-ის უსაფრთხოდ შენახვა Google საფულეში</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ითხოვს თქვენი კამერისა და მიკროფონის გამოყენების ნებართვას</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@
 <translation id="7490622939531327327">ფორმის უფრო გონივრული გაგება</translation>
 <translation id="7495528107193238112">ეს კონტენტი დაბლოკილია. დაუკავშირდით საიტის მფლობელს ამ პრობლემის მოსაგვარებლად.</translation>
 <translation id="7499188644237027195">Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად დაინახეთ ელსაფულე და Pix</translation>
+<translation id="7499684925421947861">ნებას დართავთ <ph name="ACTOR_NAME" />-ს, თქვენი სახელით შევიდეს <ph name="DOMAIN" />-ზე?</translation>
 <translation id="7500917112031739411">ჯგუფების მიხედვით ჩვენება</translation>
 <translation id="7501663406926337752">ეს საიტი მონიშნულია საეჭვოდ თქვენი ორგანიზაციის მიერ</translation>
 <translation id="7502044688973049724">თქვენი ინფორმაციის მართვა</translation>

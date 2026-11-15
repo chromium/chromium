@@ -535,7 +535,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1401216725754314428">Preberite več o sorodnih spletnih mestih na novem zavihku</translation>
 <translation id="1402426911829176748">Povezovanje z napravo</translation>
 <translation id="1405779994569073824">Zrušitev.</translation>
-<translation id="1406812885827747674">Dovoli tokrat</translation>
 <translation id="1407069428457324124">Temna tema</translation>
 <translation id="1407135791313364759">Odpri vse</translation>
 <translation id="140723521119632973">Aktiviranje mobilnega omrežja</translation>
@@ -5343,7 +5342,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Naslovi}=1{Naslovi ({SELECTED_ITEMS})}one{Naslovi ({SELECTED_ITEMS})}two{Naslovi ({SELECTED_ITEMS})}few{Naslovi ({SELECTED_ITEMS})}other{Naslovi ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Kode QR ni mogoče ustvariti.</translation>
 <translation id="5033137252639132982">Ni dovoljena uporaba tipal gibanja</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> lahko uporabi Googlovega upravitelja gesel, da vas prijavi. <ph name="BEGIN_LINK" />Preberite, kako <ph name="ACTOR_NAME" /> ravna z vašimi podatki<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Če želite več informacij od ponudnika identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, izberite »Več podrobnosti«.</translation>
 <translation id="5037676449506322593">Izberi vse</translation>
 <translation id="5038621320029329200">Zaupanja vredna potrdila</translation>
@@ -8536,7 +8534,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7495149565104413027">Aplikacija za Android</translation>
 <translation id="7497322070873193353">Googlova umetna inteligenca</translation>
 <translation id="7497981768003291373">Nimate nedavno zajetih besedilnih dnevnikov za WebRTC.</translation>
-<translation id="7499684925421947861">Ali dovolite, da vas <ph name="ACTOR_NAME" /> prijavi v storitev <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ali</translation>
 <translation id="7502220299952823578">Dodaj na seznam »Ta spletna mesta naj bodo vedno aktivna«</translation>
 <translation id="7502528909759062987">Začasno zaustavi predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>

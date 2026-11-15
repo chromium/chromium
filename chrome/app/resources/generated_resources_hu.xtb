@@ -535,7 +535,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1401216725754314428">További információ a kapcsolódó webhelyekről új lapon</translation>
 <translation id="1402426911829176748">Csatlakozás az eszközhöz…</translation>
 <translation id="1405779994569073824">Összeomlott.</translation>
-<translation id="1406812885827747674">Egyszeri engedélyezés</translation>
 <translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="140723521119632973">Mobilhálózati aktiválás</translation>
@@ -5341,7 +5340,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Címek}=1{Címek ({SELECTED_ITEMS})}other{Címek ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
 <translation id="5033137252639132982">Nem használhatnak mozgásérzékelőket</translation>
-<translation id="5034158480345261097">A(z) <ph name="ACTOR_NAME" /> használhatja a Google Jelszókezelőt az Ön nevében történő bejelentkezéshez. <ph name="BEGIN_LINK" />További információ arról, hogy a(z) <ph name="ACTOR_NAME" /> hogyan kezeli az Ön adatait<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Az alábbi „További részletek” lehetőséget választva további információt kaphat a következőről: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Összes kiválasztása</translation>
 <translation id="5038621320029329200">Megbízható tanúsítványok</translation>
@@ -8527,7 +8525,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7495149565104413027">Android-alkalmazás</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Nincsenek mostanában rögzített szöveges WebRTC-naplói.</translation>
-<translation id="7499684925421947861">Engedélyezi a(z) <ph name="ACTOR_NAME" /> számára, hogy bejelentkezzen az Ön nevében a(z) <ph name="DOMAIN" /> szolgáltatásba?</translation>
 <translation id="7501957181231305652">vagy</translation>
 <translation id="7502220299952823578">Hozzáadás az „Ezek a webhelyek mindig legyenek aktívak” listához</translation>
 <translation id="7502528909759062987">Lap következőre való átküldésének szüneteltetése: <ph name="DEVICE_NAME" /></translation>

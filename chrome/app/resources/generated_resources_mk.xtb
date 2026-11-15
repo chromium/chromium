@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Дознајте повеќе за поврзаните сајтови во нова картичка</translation>
 <translation id="1402426911829176748">Се поврзува со уредот</translation>
 <translation id="1405779994569073824">Падна.</translation>
-<translation id="1406812885827747674">Дозволи овој пат</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="140723521119632973">Активирање мобилна мрежа</translation>
@@ -5344,7 +5343,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адреси}=1{Адреси ({SELECTED_ITEMS})}one{Адреси ({SELECTED_ITEMS})}other{Адреси ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Не може да се создаде QR-код</translation>
 <translation id="5033137252639132982">Не им е дозволено да ги користат сензорите за движење</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може да ја користи Google Password Manager за да се најавува наместо вас. <ph name="BEGIN_LINK" />Дознајте како <ph name="ACTOR_NAME" /> постапува со податоците<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Изберете „Повеќе детали“ подолу за да добиете повеќе информации од <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Избери сè</translation>
 <translation id="5038621320029329200">Доверливи сертификати</translation>
@@ -8531,7 +8529,6 @@
 <translation id="7495149565104413027">Апликација на Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Немате неодамна снимена текстуална евиденција на WebRTC.</translation>
-<translation id="7499684925421947861">Да му се дозволи на агентот <ph name="ACTOR_NAME" /> да се најавува на <ph name="DOMAIN" /> наместо вас?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Додајте на списокот со „Овие сајтови секогаш нека бидат активни“</translation>
 <translation id="7502528909759062987">Паузирај со емитување картичка на <ph name="DEVICE_NAME" /></translation>

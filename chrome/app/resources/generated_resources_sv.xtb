@@ -535,7 +535,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1401216725754314428">Läs mer om relaterade webbplatser på en ny flik</translation>
 <translation id="1402426911829176748">Ansluter till enheten</translation>
 <translation id="1405779994569073824">Har kraschat.</translation>
-<translation id="1406812885827747674">Tillåt den här gången</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="140723521119632973">Aktivering av mobilnätverk</translation>
@@ -5344,7 +5343,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresser}=1{Adresser ({SELECTED_ITEMS})}other{Adresser ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
 <translation id="5033137252639132982">Får inte använda rörelsesensorer</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan använda Google Lösenordshantering för att logga in åt dig. <ph name="BEGIN_LINK" />Läs mer om hur <ph name="ACTOR_NAME" /> hanterar din data<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Välj Mer information nedan om du vill ha mer information från <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Markera alla</translation>
 <translation id="5038621320029329200">Betrodda certifikat</translation>
@@ -8530,7 +8528,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7495149565104413027">Android-app</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Du har inga nyligen registrerade WebRTC-textloggar.</translation>
-<translation id="7499684925421947861">Vill du tillåta att <ph name="ACTOR_NAME" /> loggar in dig på <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502220299952823578">Lägg till i listan Låt alltid dessa webbplatser vara aktiva</translation>
 <translation id="7502528909759062987">Pausa castingen av fliken till <ph name="DEVICE_NAME" /></translation>
@@ -9184,7 +9181,7 @@ Nyckelfil: <ph name="KEY_FILE" />
 
 Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versioner av ditt tillägg.</translation>
 <translation id="8000020256436988724">Verktygsfält</translation>
-<translation id="800117767980299235">Ljudinspelning av mötespunkter</translation>
+<translation id="800117767980299235">Röstmarkering</translation>
 <translation id="8001561107130904792">Sidinnehållsdelning</translation>
 <translation id="8002274832045662704">Avancerad skrivarkonfiguration</translation>
 <translation id="8002597610026749658">Chrome kan skapa textning för de språk som visas här</translation>

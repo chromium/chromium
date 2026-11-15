@@ -535,7 +535,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1401216725754314428">Learn more about related sites in a new tab</translation>
 <translation id="1402426911829176748">Connecting to your device</translation>
 <translation id="1405779994569073824">Crashed.</translation>
-<translation id="1406812885827747674">Allow this time</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="140723521119632973">Mobile activation</translation>
@@ -5344,7 +5343,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Addresses}=1{Address ({SELECTED_ITEMS})}other{Addresses ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> can use Google Password Manager to sign in for you. <ph name="BEGIN_LINK" />Learn how <ph name="ACTOR_NAME" /> handles your data<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Select all</translation>
 <translation id="5038621320029329200">Trusted certificates</translation>
@@ -8530,7 +8528,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7495149565104413027">Android app</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">You have no recently captured WebRTC text logs.</translation>
-<translation id="7499684925421947861">Allow <ph name="ACTOR_NAME" /> to sign in to <ph name="DOMAIN" /> for you?</translation>
 <translation id="7501957181231305652">or</translation>
 <translation id="7502220299952823578">Add to the ‘always keep these sites active’ list</translation>
 <translation id="7502528909759062987">Pause casting tab to <ph name="DEVICE_NAME" /></translation>

@@ -5319,7 +5319,7 @@ WebSQL は M112 で削除されました。</translation>
 <translation id="4461400898496433231">IPv6 のネットワーク到達性チェックをオーバーライドしない。デバイスがグローバル IPv6 ホストに到達可能な場合のみ、AAAA レコードをクエリしてホスト名を解決する。</translation>
 <translation id="4463675333222095358">クイック アンサーの単位変換を有効にする</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> を無効にする</translation>
-<translation id="4467952432486360968">サードパーティの Cookie をブロックする</translation>
+<translation id="4467952432486360968">サードパーティ Cookie をブロックする</translation>
 <translation id="4468220154891570994">キオスクモードで「ピンチしてズーム」を許可する</translation>
 <translation id="4472740647327683596">ページの幅（マイクロメートル）</translation>
 <translation id="4474167089968829729">パスワード マネージャーへのパスワード保存を有効にする</translation>

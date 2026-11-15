@@ -535,7 +535,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1401216725754314428">Dowiedz się więcej o powiązanych witrynach w nowej karcie</translation>
 <translation id="1402426911829176748">Łączę z Twoim urządzeniem</translation>
 <translation id="1405779994569073824">Awaria</translation>
-<translation id="1406812885827747674">Zezwól tym razem</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="140723521119632973">Aktywowanie sieci komórkowej</translation>
@@ -5318,7 +5317,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresy}=1{Adres ({SELECTED_ITEMS})}few{Adresy ({SELECTED_ITEMS})}many{Adresy ({SELECTED_ITEMS})}other{Adresy ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
 <translation id="5033137252639132982">Nie zezwolono na używanie czujników ruchu</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> może używać Menedżera haseł Google, żeby logować się za Ciebie. <ph name="BEGIN_LINK" />Dowiedz się, jak <ph name="ACTOR_NAME" /> przetwarza Twoje dane<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Aby dowiedzieć się więcej od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, kliknij „Więcej szczegółów” poniżej.</translation>
 <translation id="5037676449506322593">Wybierz wszystko</translation>
 <translation id="5038621320029329200">Certyfikaty zaufane</translation>
@@ -8503,7 +8501,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7495149565104413027">Aplikacja na Androida</translation>
 <translation id="7497322070873193353">AI od Google</translation>
 <translation id="7497981768003291373">Nie ma zapisanych ostatnio logów tekstowych WebRTC.</translation>
-<translation id="7499684925421947861">Zezwolić <ph name="ACTOR_NAME" /> na logowanie Cię na stronie <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">lub</translation>
 <translation id="7502220299952823578">Dodaj do listy „Zawsze pozostawiaj te witryny aktywne”</translation>
 <translation id="7502528909759062987">Wstrzymaj przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>

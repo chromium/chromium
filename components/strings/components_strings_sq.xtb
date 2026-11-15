@@ -2433,6 +2433,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5026121202864677765">Shkruaj letrën time të motivimit</translation>
 <translation id="5030338702439866405">Lëshuar nga</translation>
 <translation id="503069730517007720">Për "<ph name="SOFTWARE_NAME" />" kërkohet një certifikatë rrënjë, por ajo nuk është instaluar. Administratori i TI-së duhet të shikojë udhëzimet e konfigurimit për "<ph name="SOFTWARE_NAME" />" për të rregulluar këtë problem. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> mund të përdorë "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar për ty. <ph name="BEGIN_LINK" />Mëso se si i administron <ph name="ACTOR_NAME" /> të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Ruaj numrin KTN në mënyrë të sigurt te "Portofoli i Google"</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kërkon të përdorë kamerën dhe mikrofonin</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3903,6 +3904,7 @@ Detaje shtesë:
 <translation id="7490622939531327327">Kuptim më inteligjent i formularit</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="7499188644237027195">Kur bën blerje në Chrome, shiko "Portofolin elektronik" dhe Pix si opsione</translation>
+<translation id="7499684925421947861">Të lejohet që <ph name="ACTOR_NAME" /> të identifikohet në <ph name="DOMAIN" /> për ty?</translation>
 <translation id="7500917112031739411">Shfaq sipas grupit</translation>
 <translation id="7501663406926337752">Sajti ku je drejtuar është raportuar nga organizata jote</translation>
 <translation id="7502044688973049724">menaxhosh informacionet e tua</translation>

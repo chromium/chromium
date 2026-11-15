@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Окшош сайттар жөнүндө кошумча маалыматты жаңы өтмөктө көрүү</translation>
 <translation id="1402426911829176748">Түзмөгүңүзгө туташууда</translation>
 <translation id="1405779994569073824">Бузулду.</translation>
-<translation id="1406812885827747674">Бул жолу уруксат берүү</translation>
 <translation id="1407069428457324124">Караңгы тема</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="140723521119632973">Мобилдик тармакты жандыруу</translation>
@@ -5344,7 +5343,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Даректер}=1{Даректер ({SELECTED_ITEMS})}other{Даректер ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
 <translation id="5033137252639132982">Кыймыл сенсорлорун колдоно албайт</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> аккаунтка Сырсөздөрдү башкаргыч аркылуу сиздин атыңыздан кирет. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> маалыматыңызды кантип иштетерин билип алыңыз<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> камсыздоочусунан көбүрөөк маалымат алуу үчүн төмөндөгү "Толук маалымат" параметрин тандаңыз.</translation>
 <translation id="5037676449506322593">Баарын тандоо</translation>
 <translation id="5038621320029329200">Ишенимдүү тастыктамалар</translation>
@@ -8529,7 +8527,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7495149565104413027">Android колдонмосу</translation>
 <translation id="7497322070873193353">Google'дун жасалма интеллекти</translation>
 <translation id="7497981768003291373">Текст түрүндө сакталган акыркы WebRTC таржымалдары жок.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> кызматына <ph name="DOMAIN" /> аккаунтуңузга кирүүгө уруксат бересизби?</translation>
 <translation id="7501957181231305652">же</translation>
 <translation id="7502220299952823578">"Бул сайттар ар дайым жигердүү бойдон калсын" тизмесине кошуңуз</translation>
 <translation id="7502528909759062987">Өтмөктү <ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну тындыруу</translation>

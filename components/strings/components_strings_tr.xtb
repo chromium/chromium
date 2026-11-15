@@ -1004,7 +1004,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2647086987482648627">Kumaş (Yarı Parlak)</translation>
 <translation id="264810637653812429">Uyumlu cihaz bulunamadı.</translation>
 <translation id="2650446666397867134">Dosyaya erişim reddedildi</translation>
-<translation id="2651465929321991146">Geçmiş ve Sekmeler</translation>
+<translation id="2651465929321991146">Geçmiş ve sekmeler</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2656194288057285221">Chrome İpucunu Kapat düğmesi, kapatmak için Enter'a basın</translation>
 <translation id="2657637947725373811">{0,plural, =1{Gizli dosya aktarılsın mı?}other{Gizli dosyalar aktarılsın mı?}}</translation>
@@ -1033,7 +1033,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2699273987028089219">Alt menü mevcut. Ek seçeneklere gitmek için <ph name="SHORTCUT" /> öğesini kullanın.</translation>
 <translation id="2701514975700770343">Aşağı dönük</translation>
 <translation id="2702592986366989640">Düşük fiyatlı seçenek</translation>
-<translation id="2702801445560668637">Okuma Listesi</translation>
+<translation id="2702801445560668637">Okuma listesi</translation>
 <translation id="270415722347413271">Optik Disk (Mat)</translation>
 <translation id="2704192696317130398">Fareniz kilitlensin mi?</translation>
 <translation id="2704283930420550640">Değer, biçimle eşleşmiyor.</translation>
@@ -2433,6 +2433,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5026121202864677765">Başvuru yazımı yaz</translation>
 <translation id="5030338702439866405">Veren:</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" için bir kök sertifika gerekli, ancak yüklenmemiş. BT yöneticiniz bu sorunu çözmek için "<ph name="SOFTWARE_NAME" />" ile ilgili yapılandırma talimatlarına bakmalıdır. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, sizin yerinize oturum açmak için Google Şifre Yöneticisi'ni kullanabilir. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> tarafından verilerinizin nasıl işlendiğini öğrenin<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTN'yi Google Cüzdan'a güvenli bir şekilde kaydedin</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kameranızı ve mikrofonunuzu kullanmak istiyor</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2709,7 +2710,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5485973315555778056">Bulut makinesi</translation>
 <translation id="5488367146069768854">Web uygulaması yüklemeleri</translation>
 <translation id="5488590678320979185">Not oluştur düğmesi, Google Keep'te hızlıca yeni bir not oluşturmak için etkinleştirin</translation>
-<translation id="5490432419156082418">Adresler ve Daha Fazlası</translation>
+<translation id="5490432419156082418">Adresler ve daha fazlası</translation>
 <translation id="5492298309214877701">Şirket, kuruluş veya okul intranet'indeki bu site harici bir web sitesiyle aynı URL'ye sahip.
     <ph name="LINE_BREAK" />
     Sistem yöneticinize başvurmayı deneyin.</translation>
@@ -3905,6 +3906,7 @@ Ek ayrıntılar:
 <translation id="7490622939531327327">Formları daha akıllıca anlama</translation>
 <translation id="7495528107193238112">Bu içerik engellenmiştir. Sorunu gidermek için site sahibiyle iletişime geçin.</translation>
 <translation id="7499188644237027195">Chrome'da alışveriş yaparken e-cüzdan ve Pix seçenekleri gösterilir</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> tarafından sizin adınıza <ph name="DOMAIN" /> uygulamasında/hizmetinde oturum açılmasına izin verilsin mi?</translation>
 <translation id="7500917112031739411">Gruba göre göster</translation>
 <translation id="7501663406926337752">Gideceğiniz site kuruluşunuz tarafından işaretlendi</translation>
 <translation id="7502044688973049724">bilgilerinizi yönetebilirsiniz</translation>

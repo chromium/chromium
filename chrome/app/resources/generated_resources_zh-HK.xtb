@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">喺新分頁度進一步了解相關網站</translation>
 <translation id="1402426911829176748">正在連接您的裝置</translation>
 <translation id="1405779994569073824">已當機。</translation>
-<translation id="1406812885827747674">此次允許</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用流動網絡</translation>
@@ -5340,7 +5339,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{地址}=1{地址 ({SELECTED_ITEMS})}other{地址 ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5033137252639132982">不允許使用動作感應器</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> 可使用「Google 密碼管理工具」代你登入。<ph name="BEGIN_LINK" />瞭解 <ph name="ACTOR_NAME" /> 如何處理你的資料<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="5037676449506322593">全部選取</translation>
 <translation id="5038621320029329200">可信任的憑證</translation>
@@ -8521,7 +8519,6 @@
 <translation id="7495149565104413027">Android 應用程式</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">您最近並未擷取 WebRTC 文字記錄。</translation>
-<translation id="7499684925421947861">要允許 <ph name="ACTOR_NAME" /> 為你登入 <ph name="DOMAIN" /> 嗎？</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">加去「一律啟用這些網站」清單</translation>
 <translation id="7502528909759062987">暫停將分頁投放去 <ph name="DEVICE_NAME" /></translation>

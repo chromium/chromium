@@ -535,7 +535,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1401216725754314428">Matuto pa tungkol sa mga kaugnay na site sa isang bagong tab</translation>
 <translation id="1402426911829176748">Kumokonekta sa iyong device</translation>
 <translation id="1405779994569073824">Nag-crash.</translation>
-<translation id="1406812885827747674">Payagan sa ngayon</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="140723521119632973">Pag-activate ng Cellular Network</translation>
@@ -5344,7 +5343,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Mga address}=1{Mga address ({SELECTED_ITEMS})}one{Mga address ({SELECTED_ITEMS})}other{Mga address ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
 <translation id="5033137252639132982">Hindi pinapayagang gumamit ng mga sensor ng paggalaw</translation>
-<translation id="5034158480345261097">Puwedeng gamitin ng <ph name="ACTOR_NAME" /> ang Google Password Manager para mag-sign in para sa iyo. <ph name="BEGIN_LINK" />Alamin kung paano pinapangasiwaan ng <ph name="ACTOR_NAME" /> ang iyong data<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Piliin ang "Higit pang detalye" sa ibaba para kumuha ng higit pang impormasyon mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038621320029329200">Mga Pinagkakatiwalaang Certificate</translation>
@@ -8532,7 +8530,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7495149565104413027">Android App</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Wala kang kamakailang nakuhang log ng text ng WebRTC.</translation>
-<translation id="7499684925421947861">Payagan ang <ph name="ACTOR_NAME" /> na mag-sign in sa <ph name="DOMAIN" /> para sa iyo?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Idagdag sa listahang "palaging panatilihing aktibo ang mga site na ito"</translation>
 <translation id="7502528909759062987">I-pause ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>

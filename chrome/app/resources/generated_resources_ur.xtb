@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ایک نئے ٹیب میں متعلقہ سائٹس کے بارے میں مزید جانیں</translation>
 <translation id="1402426911829176748">آپ کے آلے سے منسلک ہو رہا ہے</translation>
 <translation id="1405779994569073824">کریش ہو گیا</translation>
-<translation id="1406812885827747674">اس وقت اجازت دیں</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="140723521119632973">سیلولر فعالیت</translation>
@@ -5328,7 +5327,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{پتے}=1{پتے ({SELECTED_ITEMS})}other{پتے ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">‏QR کوڈ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5033137252639132982">موشن سینسرز استعمال کرنے کی اجازت نہیں ہے</translation>
-<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> آپ کے لیے سائن ان کرنے کے لیے Google پاس ورڈ مینیجر کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK" />جانیں کہ <ph name="ACTOR_NAME" /> آپ کے ڈیٹا کو کیسے ہینڈل کرتا ہے<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے مزید معلومات حاصل کرنے کے لیے نیچے "مزید تفصیلات" کا انتخاب کریں۔</translation>
 <translation id="5037676449506322593">سبھی منتخب کریں</translation>
 <translation id="5038621320029329200">قابل اعتماد سرٹیفکیٹس</translation>
@@ -8511,7 +8509,6 @@
 <translation id="7495149565104413027">‏Android ایپ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">‏آپ کے پاس حالیہ کیپچر کردہ کوئی WebRTC ٹیکسٹ لاگ نہیں ہے۔</translation>
-<translation id="7499684925421947861">‫<ph name="ACTOR_NAME" /> کو آپ کیلئے <ph name="DOMAIN" /> میں سائن ان کرنے کی اجازت دیں؟</translation>
 <translation id="7501957181231305652">یا</translation>
 <translation id="7502220299952823578">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں شامل کریں</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> پر ٹیب کو کاسٹ کرنا روکیں</translation>

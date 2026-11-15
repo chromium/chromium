@@ -391,7 +391,7 @@
 <translation id="126768002343224824">16배</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />지원되는 링크<ph name="END_LINK" /> 열기</translation>
-<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리해 보세요.</translation>
+<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리합니다</translation>
 <translation id="1274997165432133392">쿠키 및 기타 사이트 데이터</translation>
 <translation id="1275936815032730048">런처 + 오른쪽 화살표</translation>
 <translation id="1275963833368139883">방문 기록을 검색하면 페이지 콘텐츠를 기반으로 답변과 검색 결과가 제시되어 더 개선된 결과를 얻을 수 있습니다.</translation>
@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">새 탭에서 관련 사이트 자세히 알아보기</translation>
 <translation id="1402426911829176748">기기에 연결 중</translation>
 <translation id="1405779994569073824">비정상 종료됨</translation>
-<translation id="1406812885827747674">이번에만 허용</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="140723521119632973">모바일 활성화</translation>
@@ -5343,7 +5342,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{주소}=1{주소({SELECTED_ITEMS})}other{주소({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />에서 Google 비밀번호 관리자를 사용하여 나를 대신해 로그인할 수 있습니다. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" />에서 데이터를 처리하는 방식 알아보기<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038621320029329200">신뢰할 수 있는 인증서</translation>
@@ -8107,7 +8105,7 @@
 <translation id="718512729823942418">사용 가능한 마이크 없음</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
 <translation id="7186303001964993981">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 열 수 없습니다.</translation>
-<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
+<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식을 제어합니다</translation>
 <translation id="7186903260115204164">새로운 그리기 도구를 활용하여 자유롭게 그림을 그리고, 서명하고, 강조 표시하세요.</translation>
 <translation id="7186935534137027449">앱 명령어</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
@@ -8528,7 +8526,6 @@
 <translation id="7495149565104413027">Android 앱</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" />에서 나를 대신하여 <ph name="DOMAIN" />에 로그인하도록 허용하시겠습니까?</translation>
 <translation id="7501957181231305652">또는</translation>
 <translation id="7502220299952823578">'항상 사이트를 활성 상태로 유지' 목록에 추가</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> 기기로의 탭 전송 일시중지</translation>

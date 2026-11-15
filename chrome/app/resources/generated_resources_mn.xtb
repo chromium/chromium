@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Холбоотой сайтуудын талаарх нэмэлт мэдээллийг шинэ табд авах</translation>
 <translation id="1402426911829176748">Таны төхөөрөмжид холбогдож байна</translation>
 <translation id="1405779994569073824">Эвдэрсэн.</translation>
-<translation id="1406812885827747674">Энэ удаад зөвшөөрөх</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="140723521119632973">Үүрэн сүлжээний идэвхжүүлэлт</translation>
@@ -5342,7 +5341,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Хаяг}=1{Хаяг ({SELECTED_ITEMS})}other{Хаяг ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR код үүсгэх боломжгүй байна</translation>
 <translation id="5033137252639132982">Хөдөлгөөн мэдрэгч ашиглахыг зөвшөөрөөгүй</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> танд нэвтэрч өгөхийн тулд Google Нууц үгний менежерийг ашиглаж болно. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> таны өгөгдлийг хэрхэн зохицуулдгийг мэдэж авах<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с нэмэлт мэдээлэл авахын тулд доорх "Дэлгэрэнгүй мэдээлэл"-ийг сонгоно уу.</translation>
 <translation id="5037676449506322593">Бүгдийг сонгох</translation>
 <translation id="5038621320029329200">Итгэмжлэгдсэн сертификат</translation>
@@ -8527,7 +8525,6 @@
 <translation id="7495149565104413027">Android Апп</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Танд саяхан авсан WebRTC текст лог алга.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" />-д таны өмнөөс <ph name="DOMAIN" />-д нэвтрэхийг зөвшөөрөх үү?</translation>
 <translation id="7501957181231305652">эсвэл</translation>
 <translation id="7502220299952823578">"Эдгээр сайтыг үргэлж идэвхтэй байлгах" жагсаалтад нэмнэ үү</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-д таб дамжуулахыг түр зогсоох</translation>

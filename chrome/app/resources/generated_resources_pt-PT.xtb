@@ -535,7 +535,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1401216725754314428">Saiba mais sobre sites relacionados num novo separador</translation>
 <translation id="1402426911829176748">A ligar ao seu dispositivo</translation>
 <translation id="1405779994569073824">Falhou.</translation>
-<translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="140723521119632973">Ativação de rede móvel</translation>
@@ -5332,7 +5331,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Moradas}=1{Moradas ({SELECTED_ITEMS})}other{Moradas ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5033137252639132982">Sem autorização para usar sensores de movimentos</translation>
-<translation id="5034158480345261097">O <ph name="ACTOR_NAME" /> pode usar o Gestor de Palavras-passe da Google para iniciar sessão por si. <ph name="BEGIN_LINK" />Saiba como o <ph name="ACTOR_NAME" /> trata os seus dados<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Escolha "Mais detalhes" abaixo para receber mais informações de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecionar tudo</translation>
 <translation id="5038621320029329200">Certificados fidedignos</translation>
@@ -8519,7 +8517,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7495149565104413027">App Android</translation>
 <translation id="7497322070873193353">IA da Google</translation>
 <translation id="7497981768003291373">Não existem registos de textos WebRTC capturados recentemente.</translation>
-<translation id="7499684925421947861">Permitir que o <ph name="ACTOR_NAME" /> inicie sessão em <ph name="DOMAIN" /> por si?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Adicionar à lista "manter sempre estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
@@ -10219,7 +10216,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8788008845761123079">Selecione um gesto para <ph name="SELECTED_ACTION" /></translation>
 <translation id="878862491037637275">Este grupo de separadores está cheio</translation>
 <translation id="8791157330927639737">Saber mais sobre as atualizações</translation>
-<translation id="8791534160414513928">Enviar um pedido "Não monitorizar" com o seu tráfego de navegação</translation>
+<translation id="8791534160414513928">Enviar um pedido "Do Not Track" com o seu tráfego de navegação</translation>
 <translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (modo isolado)</translation>
 <translation id="8793390639824829328">Os sites usam esta funcionalidade para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="8793895150509408038">Ver detalhes do site de <ph name="SITE" /> da lista <ph name="SECTION_HEADER" /></translation>

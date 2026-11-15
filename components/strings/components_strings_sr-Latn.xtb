@@ -2433,6 +2433,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5026121202864677765">Napiši propratno pismo</translation>
 <translation id="5030338702439866405">Izdao/la</translation>
 <translation id="503069730517007720">Osnovni sertifikat za softver „<ph name="SOFTWARE_NAME" />“ je obavezan, ali nije instaliran. IT administrator treba da pregleda uputstva za konfiguraciju softvera „<ph name="SOFTWARE_NAME" />“ da bi rešio ovaj problem. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> može da vas prijavi pomoću Google menadžera lozinki. <ph name="BEGIN_LINK" />Saznajte kako <ph name="ACTOR_NAME" /> postupa sa vašim podacima<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Bezbedno sačuvajte KTN u Google novčaniku</translation>
 <translation id="503498442187459473"><ph name="HOST" /> želi da koristi kameru i mikrofon</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@ Dodatni detalji:
 <translation id="7490622939531327327">Bolje razumevanje obrazaca</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Obratite se vlasniku sajta da biste rešili problem.</translation>
 <translation id="7499188644237027195">Kada kupujete u Chrome-u, pogledajte e-novčanik i Pix kao opcije</translation>
+<translation id="7499684925421947861">Želite da dozvolite da vas <ph name="ACTOR_NAME" /> prijavljuje na domen <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Prikaži prema grupi</translation>
 <translation id="7501663406926337752">Organizacija je obeležila sajt u nastavku</translation>
 <translation id="7502044688973049724">upravljate informacijama</translation>

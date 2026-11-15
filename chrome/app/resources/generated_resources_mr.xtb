@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">नवीन टॅबमध्ये संबंधित साइटविषयी अधिक जाणून घ्या</translation>
 <translation id="1402426911829176748">तुमच्या डिव्हाइसशी कनेक्ट करत आहे</translation>
 <translation id="1405779994569073824">क्रॅश झाले</translation>
-<translation id="1406812885827747674">यावेळेस अनुमती द्या</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="140723521119632973">सेल्युलर अ‍ॅक्टिव्हेशन</translation>
@@ -5342,7 +5341,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Addresses}=1{पत्ता ({SELECTED_ITEMS})}other{पत्ते ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR कोड तयार करता आला नाही</translation>
 <translation id="5033137252639132982">मोशन सेन्सर वापरण्याची अनुमती नाही</translation>
-<translation id="5034158480345261097">तुमच्यासाठी साइन इन करण्याकरिता <ph name="ACTOR_NAME" /> हे Google Password Manager वापरू शकते. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> तुमचा डेटा कसा हाताळते हे जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून अधिक माहिती मिळवण्यासाठी खाली "आणखी तपशील" निवडा.</translation>
 <translation id="5037676449506322593">सर्व निवडा</translation>
 <translation id="5038621320029329200">विश्वसनीय प्रमाणपत्रे</translation>
@@ -8530,7 +8528,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7495149565104413027">Android अ‍ॅप</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">तुमच्याकडे नुकतेच कॅप्चर केलेले कोणतेही WebRTC मजकूर लॉग नाहीत.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> ला तुमच्यासाठी <ph name="DOMAIN" /> मध्ये साइन इन करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502220299952823578">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये जोडा</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे थांबवा</translation>

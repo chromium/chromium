@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">નવા ટૅબમાં સંબંધિત સાઇટ વિશે વધુ જાણો</translation>
 <translation id="1402426911829176748">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
-<translation id="1406812885827747674">આ વખત માટે મંજૂરી આપો</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="140723521119632973">સેલ્યુલર સક્રિયકરણ</translation>
@@ -5332,7 +5331,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{સરનામું}=1{સરનામું ({SELECTED_ITEMS})}one{સરનામું ({SELECTED_ITEMS})}other{સરનામા ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="5033137252639132982">મોશન સેન્સરનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
-<translation id="5034158480345261097">તમારા માટે સાઇન ઇન કરવા, <ph name="ACTOR_NAME" /> Google Password Managerનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" />ની તમારો ડેટા હૅન્ડલ કરવાની રીત વિશે જાણો<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માંથી વધુ માહિતી મેળવવા માટે, નીચે "વધુ માહિતી" પસંદ કરો.</translation>
 <translation id="5037676449506322593">બધા પસંદ કરો</translation>
 <translation id="5038621320029329200">વિશ્વસનીય સર્ટિફિકેટ</translation>
@@ -8522,7 +8520,6 @@ USB ડિવાઇસ</translation>
 <translation id="7495149565104413027">Android ઍપ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">તમારી પાસે તાજેતરમાં કૅપ્ચર કરેલ કોઈ WebRTC ટેક્સ્ટ લૉગ નથી.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" />ને તમારા માટે <ph name="DOMAIN" />માં સાઇન ઇન કરવાની મંજૂરી આપીએ?</translation>
 <translation id="7501957181231305652">અથવા</translation>
 <translation id="7502220299952823578">"આ સાઇટને હંમેશાં સક્રિય રાખો" સૂચિમાં ઉમેરો</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> પર ટૅબ કાસ્ટ કરવાનું થોભાવો</translation>

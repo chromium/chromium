@@ -2433,6 +2433,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5026121202864677765">Niandikie barua ya kuomba kazi</translation>
 <translation id="5030338702439866405">Kimetolewa Na</translation>
 <translation id="503069730517007720">Cheti cha msingi cha "<ph name="SOFTWARE_NAME" />" kinahitajika lakini hakijasakinishwa. Ni lazima msimamizi wako wa TEHAMA asome mipangilio ya "<ph name="SOFTWARE_NAME" />" ili atatue tatizo hili. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> inaweza kutumia Kidhibiti cha Manenosiri cha Google kukusaidia kuingia katika akaunti. <ph name="BEGIN_LINK" />Pata maelezo kuhusu jinsi <ph name="ACTOR_NAME" /> hushughulikia data yako<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Hifadhi namba ya KTN kwa njia salama kwenye Pochi ya Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> inataka kutumia kamera na maikrofoni yako</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3903,6 +3904,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7490622939531327327">Utambuzi mahiri wa fomu</translation>
 <translation id="7495528107193238112">Maudhui haya yamezuiwa. Wasiliana na mmiliki wa tovuti ili asuluhishe tatizo.</translation>
 <translation id="7499188644237027195">Unapofanya ununuzi katika Chrome, angalia Pochi pepe na Pix kama chaguo</translation>
+<translation id="7499684925421947861">Ungependa kuruhusu <ph name="ACTOR_NAME" /> ikusaidie kuingia katika akaunti ya <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Onyesha kulingana na kikundi</translation>
 <translation id="7501663406926337752">Tovuti unayoelekea kuifungua imetiwa alama na shirika lako</translation>
 <translation id="7502044688973049724">dhibiti taarifa zako</translation>

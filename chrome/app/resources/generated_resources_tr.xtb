@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Yeni bir sekmedeki ilgili siteler hakkında daha fazla bilgi</translation>
 <translation id="1402426911829176748">Cihazınıza bağlanılıyor</translation>
 <translation id="1405779994569073824">Yüklenemedi.</translation>
-<translation id="1406812885827747674">Bu defalık izin ver</translation>
 <translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="140723521119632973">Hücresel Etkinleştirme</translation>
@@ -2215,7 +2214,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2701737434167469065"><ph name="EMAIL" /> hesabında oturum açın</translation>
 <translation id="2701960282717219666">Ağ MAC Adresi</translation>
 <translation id="2702720509009999256">İnternet bağlantınızı kontrol edip "Tekrar dene"yi seçin veya sınırlı görüntüleme ve düzenleme seçeneklerini kullanmak için "Temel düzenleyicide aç"ı seçin.</translation>
-<translation id="2702801445560668637">Okuma Listesi</translation>
+<translation id="2702801445560668637">Okuma listesi</translation>
 <translation id="2703151507515080771">{NUM_TABS,plural, =1{Sekmenin odağını kaldır}other{Sekmelerin odağını kaldır}}</translation>
 <translation id="270414148003105978">Mobil ağlar</translation>
 <translation id="2704184184447774363">Microsoft Belge İmzalama</translation>
@@ -5329,7 +5328,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresler}=1{Adresler ({SELECTED_ITEMS})}other{Adresler ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR Kodu oluşturulamıyor</translation>
 <translation id="5033137252639132982">Hareket sensörlerini kullanmasına izin verilmeyenler</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, sizin yerinize oturum açmak için Google Şifre Yöneticisi'ni kullanabilir. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> tarafından verilerinizin nasıl işlendiğini öğrenin<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile ilgili daha fazla bilgi edinmek için aşağıda "Diğer ayrıntılar"ı seçin.</translation>
 <translation id="5037676449506322593">Tümünü Seç</translation>
 <translation id="5038621320029329200">Güvenilen Sertifikalar</translation>
@@ -5581,7 +5579,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5220011581825921581">arama + yukarı ok</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> yayınlanamıyor</translation>
 <translation id="5222403284441421673">Güvenli olmayan indirme işlemi engellendi</translation>
-<translation id="5222676887888702881">Çıkış</translation>
+<translation id="5222676887888702881">Oturumu kapat</translation>
 <translation id="5222710719845250566">Pencereyi Geri Yükle</translation>
 <translation id="5225324770654022472">Uygulamalar kısayolunu göster</translation>
 <translation id="52254442782792731">Mevcut görünürlük ayarı henüz yapılmamış</translation>
@@ -8514,7 +8512,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7495149565104413027">Android Uygulaması</translation>
 <translation id="7497322070873193353">Google Yapay Zeka</translation>
 <translation id="7497981768003291373">Yakın zamanda yakalanmış herhangi bir WebRTC metin günlüğünüz yok.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> tarafından sizin adınıza <ph name="DOMAIN" /> uygulamasında/hizmetinde oturum açılmasına izin verilsin mi?</translation>
 <translation id="7501957181231305652">veya</translation>
 <translation id="7502220299952823578">"Her zaman etkin kalacak siteler" listesine ekleyin</translation>
 <translation id="7502528909759062987">Sekmeyi <ph name="DEVICE_NAME" /> adlı cihazda yayınlamayı duraklatın</translation>

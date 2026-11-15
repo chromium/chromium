@@ -125,7 +125,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1437543266176261764"><ph name="APP_NAME" /> で実行中</translation>
 <translation id="1452651021404174820">デバイスを選択</translation>
 <translation id="1455845192930279203">このまま <ph name="DOWNLOAD_DOMAIN" /> から「<ph name="FILE_NAME" />」（<ph name="FILE_SIZE" />）をダウンロードしますか？</translation>
-<translation id="1460751212339734034">入力を省いて、時間を節約</translation>
+<translation id="1460751212339734034">入力せずに効率化</translation>
 <translation id="146522654774760805">パスワードと自動入力</translation>
 <translation id="1466383950273130737">Chrome の言語を選択</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
@@ -870,7 +870,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4412123112245770507">セクションを閉じる</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> を削除しました</translation>
-<translation id="4415276339145661267">Google アカウントの管理</translation>
+<translation id="4415276339145661267">Google アカウントを管理</translation>
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
 <translation id="4425173294238317796">パスキー確認シート</translation>
 <translation id="442518031075347249">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
@@ -1454,7 +1454,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6710213216561001401">前へ</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
 <translation id="6716434912087331834">新しいウィンドウを復元するには、アクティブなウィンドウの合計数を <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下に減らしてください。アクティブでないウィンドウは 6 か月後に削除されます。</translation>
-<translation id="6723740634201835758">Google アカウント</translation>
+<translation id="6723740634201835758">Google アカウントに保存</translation>
 <translation id="6725340821578440069">デバイスでフィルタ</translation>
 <translation id="6734310707649923383">アクセスしたページを確認したり履歴から削除したりできます</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />、録画中の固定のシークレット タブ</translation>
@@ -1594,7 +1594,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7182051712900867547">別のアカウントを使用</translation>
 <translation id="7182520625618447753">アドレスバーの位置を上または下に変更して、ブラウジング環境をカスタマイズできます</translation>
 <translation id="7183517696921903380">アプリのフィルタシートが開いています。</translation>
-<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
+<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理します</translation>
 <translation id="7189516830800112767">{NUM_TABS,plural, =1{固定タブを閉じるには、もう一度 ^W キーを押してください}other{固定タブを閉じるには、もう一度 ^W キーを押してください}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> さんをブロックしますか？</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>

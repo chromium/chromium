@@ -535,7 +535,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1401216725754314428">Ketahui lebih lanjut tentang laman berkaitan dalam tab baharu</translation>
 <translation id="1402426911829176748">Menyambung kepada peranti anda</translation>
 <translation id="1405779994569073824">Ranap.</translation>
-<translation id="1406812885827747674">Benarkan kali ini sahaja</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="140723521119632973">Pengaktifan Selular</translation>
@@ -5344,7 +5343,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Alamat}=1{Alamat ({SELECTED_ITEMS})}other{Alamat ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
 <translation id="5033137252639132982">Tidak dibenarkan untuk menggunakan penderia gerakan</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> boleh menggunakan Google Password Manager untuk log masuk bagi pihak anda. <ph name="BEGIN_LINK" />Ketahui cara <ph name="ACTOR_NAME" /> mengendalikan data anda<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Pilih "Lagi butiran" di bawah untuk mendapatkan maklumat lanjut daripada <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
 <translation id="5038621320029329200">Sijil yang Dipercayai</translation>
@@ -8530,7 +8528,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7495149565104413027">Apl Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Anda tiada log teks WebRTC yang dirakam baru-baru ini.</translation>
-<translation id="7499684925421947861">Benarkan <ph name="ACTOR_NAME" /> log masuk ke <ph name="DOMAIN" /> bagi pihak anda?</translation>
 <translation id="7501957181231305652">atau</translation>
 <translation id="7502220299952823578">Tambahkan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="7502528909759062987">Jeda penghantaran tab pada <ph name="DEVICE_NAME" /></translation>

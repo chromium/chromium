@@ -535,7 +535,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1401216725754314428">Əlaqədar saytlar haqqında ətraflı məlumat yeni tabda</translation>
 <translation id="1402426911829176748">Cihazınıza qoşulur</translation>
 <translation id="1405779994569073824">Xəta baş verdi.</translation>
-<translation id="1406812885827747674">Bu dəfə icazə verin</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="140723521119632973">Mobil Aktivasiya</translation>
@@ -5332,7 +5331,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Ünvan}=1{Ünvan ({SELECTED_ITEMS})}other{Ünvan ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR kod yaratmaq olmur</translation>
 <translation id="5033137252639132982">Hərəkət sensorlarından istifadəyə icazə verilməyib</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> sizin yerinizə daxil olmaq üçün Google Parol Menecerindən istifadə edə bilər. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> tətbiqinin datanızı necə idarə etdiyini öyrənin<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tərəfindən ətraflı məlumat əldə etmək üçün aşağıda "Ətraflı məlumat" seçin.</translation>
 <translation id="5037676449506322593">Hamısını seçin</translation>
 <translation id="5038621320029329200">Etibar edilən sertifikatlar</translation>
@@ -8517,7 +8515,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7495149565104413027">Android Tətbiqi</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Son vaxtlar WebRTC mətn girişləri çəkməmisiniz.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> tətbiqinin sizin üçün <ph name="DOMAIN" /> tətbiqinə daxil olmasına icazə verilsin?</translation>
 <translation id="7501957181231305652">və ya</translation>
 <translation id="7502220299952823578">"Bu saytları həmişə aktiv saxlayın" siyahısına əlavə edin</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> cihazında tab yayımını durdurun</translation>

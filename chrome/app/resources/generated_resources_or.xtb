@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="1402426911829176748">ଆପଣଙ୍କ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
-<translation id="1406812885827747674">ଏହି ଥର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1407069428457324124">ଡାର୍କ ଥିମ</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
@@ -5331,7 +5330,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ଠିକଣା}=1{ଠିକଣା ({SELECTED_ITEMS})}other{ଠିକଣା ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR କୋଡ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5033137252639132982">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
-<translation id="5034158480345261097">ଆପଣଙ୍କ ପାଇଁ ସାଇନ ଇନ କରିବାକୁ <ph name="ACTOR_NAME" />, Google Password Managerକୁ ବ୍ୟବହାର କରିପାରିବ। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରେ ତାହା ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ ଅଧିକ ସୂଚନା ପାଇବା ପାଇଁ ନିମ୍ନରେ "ଅଧିକ ବିବରଣୀ"କୁ ବାଛନ୍ତୁ।</translation>
 <translation id="5037676449506322593">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5038621320029329200">ବିଶ୍ୱାସ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟଗୁଡ଼ିକ</translation>
@@ -8515,7 +8513,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7495149565104413027">Android ଆପ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ କ୍ୟାପଚର୍‌ କରାଯାଇଥିବା କୌଣସି WebRTC ଇଭେଣ୍ଟ ଲଗ୍‌ ନାହିଁ।</translation>
-<translation id="7499684925421947861">ଆପଣଙ୍କ ପାଇଁ <ph name="DOMAIN" />ରେ ସାଇନ ଇନ କରିବାକୁ <ph name="ACTOR_NAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="7501957181231305652">କିମ୍ବା</translation>
 <translation id="7502220299952823578">"ଏହି ସାଇଟଗୁଡ଼ିକୁ ସର୍ବଦା ସକ୍ରିୟ ରଖନ୍ତୁ" ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />ରେ ଟାବ କାଷ୍ଟ କରିବା ବିରତ କରନ୍ତୁ</translation>

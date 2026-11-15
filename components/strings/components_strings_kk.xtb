@@ -3,7 +3,7 @@
 <translationbundle lang="kk">
 <translation id="1008557486741366299">Қазір емес</translation>
 <translation id="100957008357583611">Геодерегіңізді пайдалану керек пе?</translation>
-<translation id="1010148478459329879">Google аккаунтыңызда <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайындағы <ph name="BEGIN_LINK_GAA" />Gemini тарихы<ph name="END_LINK_GAA" /> сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін.</translation>
+<translation id="1010148478459329879">Google аккаунтыңызда <ph name="BEGIN_LINK_GAA" />Gemini тарихы<ph name="END_LINK_GAA" /> сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін. Ол <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> бетінде орналасқан.</translation>
 <translation id="1010200102790553230">Бетті кейінірек жүктеу</translation>
 <translation id="1010225406377140704">Жіберушіге хабарласып, жаңа сілтеме сұраңыз.</translation>
 <translation id="1011206368273183593">Файлдар дайындалуда</translation>
@@ -2432,6 +2432,7 @@
 <translation id="5026121202864677765">Ілеспе хат жазып бер</translation>
 <translation id="5030338702439866405">Берген</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" түбірлік сертификаты қажет, бірақ ол орнатылмаған. АТ әкімшіңіз мәселені шешу үшін "<ph name="SOFTWARE_NAME" />" конфигурациялық нұсқауларын қарауы керек. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> сіздің атыңыздан кіру үшін Google Password Manager-ді пайдалана алады. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> деректеріңізді қалай өңдейтіні туралы ақпарат<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTN нөмірін Google Wallet-ке қауіпсіз сақтаңыз</translation>
 <translation id="503498442187459473"><ph name="HOST" /> хосты камераңыз бен микрофоныңызды пайдаланғысы келеді</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3903,6 +3904,7 @@
 <translation id="7490622939531327327">Үлгіні жақсырақ түсіну</translation>
 <translation id="7495528107193238112">Бұл контент блокталған. Мәселені шешу үшін сайт иесімен байланыс орнатыңыз.</translation>
 <translation id="7499188644237027195">Chrome-да тауар сатып алатын кезде, электрондық әмиян және Pix опциялар ретінде көрсетіледі.</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> сіздің атыңыздан <ph name="DOMAIN" /> қызметіне кіре берсін бе?</translation>
 <translation id="7500917112031739411">Топ бойынша көрсету</translation>
 <translation id="7501663406926337752">Ұйымыңыз сіз ашайын деп жатқан сайтты белгіледі</translation>
 <translation id="7502044688973049724">ақпаратты басқару</translation>
@@ -4970,7 +4972,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" бағдарламалық құралын жойып не өшіріп көріңіз&lt;/li&gt;
     &lt;li&gt;Басқа желіге қосылып көріңіз&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="992501626255096403">Google аккаунтыңызда <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайындағы <ph name="BEGIN_LINK_GAA" />Gemini тарихындағы<ph name="END_LINK_GAA" /> автоматты түрде шолу сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін.</translation>
+<translation id="992501626255096403">Google аккаунтыңызда <ph name="BEGIN_LINK_GAA" />Gemini тарихындағы<ph name="END_LINK_GAA" /> автоматты түрде шолу сияқты браузерді қолдану тарихының басқа да түрлері болуы мүмкін. Ол <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> бетінде орналасқан.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN нөмірін қосу</translation>
 <translation id="995782501881226248">YouTube</translation>

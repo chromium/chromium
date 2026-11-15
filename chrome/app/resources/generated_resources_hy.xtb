@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Իմանալ ավելին նոր ներդիրում առնչվող կայքերի մասին</translation>
 <translation id="1402426911829176748">Միանում է ձեր սարքին</translation>
 <translation id="1405779994569073824">Չհաջողվեց բեռնել:</translation>
-<translation id="1406812885827747674">Թույլատրել այս անգամ</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="140723521119632973">Բջջային ցանցի ակտիվացում</translation>
@@ -5327,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Հասցեներ}=1{Հասցեներ ({SELECTED_ITEMS})}one{Հասցեներ ({SELECTED_ITEMS})}other{Հասցեներ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5033137252639132982">Չի թույլատրվում օգտագործել շարժման տվիչները</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />-ը կարող է օգտագործել Google գաղտնաբառերի կառավարիչը՝ ձեր փոխարեն մուտք գործելու համար։ <ph name="BEGIN_LINK" />Իմացեք, թե ինչպես է <ph name="ACTOR_NAME" />-ը մշակում ձեր տվյալները<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Ընտրեք «Այլ մանրամասներ» ստորև՝ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից լրացուցիչ տեղեկություններ ստանալու համար։</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038621320029329200">Ստուգված հավաստագրեր</translation>
@@ -8510,7 +8508,6 @@
 <translation id="7495149565104413027">Android հավելված</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Վերջերս ստեղծված WebRTC տեքստային մատյաններ չկան:</translation>
-<translation id="7499684925421947861">Թույլատրե՞լ <ph name="ACTOR_NAME" />-ին մուտք գործել <ph name="DOMAIN" /> ձեր փոխարեն</translation>
 <translation id="7501957181231305652">կամ</translation>
 <translation id="7502220299952823578">Ավելացնել «Միշտ ակտիվ պահել այս կայքերը» ցանկում</translation>
 <translation id="7502528909759062987">Դադարեցնել ներդիրի հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>

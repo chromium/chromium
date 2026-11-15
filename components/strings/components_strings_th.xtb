@@ -1004,7 +1004,7 @@
 <translation id="2647086987482648627">ผ้า (กึ่งเงา)</translation>
 <translation id="264810637653812429">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2650446666397867134">การเข้าถึงไฟล์ถูกปฏิเสธ</translation>
-<translation id="2651465929321991146">ประวัติและแท็บ</translation>
+<translation id="2651465929321991146">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2656194288057285221">ปุ่ม "ปิดเคล็ดลับสำหรับ Chrome" กด Enter เพื่อปิด</translation>
 <translation id="2657637947725373811">{0,plural, =1{โอนไฟล์ลับใช่ไหม}other{โอนไฟล์ลับใช่ไหม}}</translation>
@@ -2432,6 +2432,7 @@
 <translation id="5026121202864677765">เขียนจดหมายสมัครงานให้ฉัน</translation>
 <translation id="5030338702439866405">ออกโดย</translation>
 <translation id="503069730517007720">ไม่ได้ติดตั้งใบรับรองรากที่จำเป็นของ "<ph name="SOFTWARE_NAME" />" ผู้ดูแลระบบ IT ควรดูวิธีการกำหนดค่าของ "<ph name="SOFTWARE_NAME" />" เพื่อแก้ไขปัญหานี้ <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> สามารถใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ให้คุณได้ <ph name="BEGIN_LINK" />ดูวิธีที่ <ph name="ACTOR_NAME" /> จัดการข้อมูลของคุณ<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">บันทึก KTN อย่างปลอดภัยใน Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ต้องการใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@
 <translation id="7490622939531327327">ทำความเข้าใจแบบฟอร์มได้ดียิ่งขึ้น</translation>
 <translation id="7495528107193238112">เนื้อหานี้ถูกบล็อก โปรดติดต่อเจ้าของเว็บไซต์เพื่อให้แก้ปัญหา</translation>
 <translation id="7499188644237027195">เมื่อทำการซื้อใน Chrome คุณจะเห็นอีวอลเล็ตและ Pix เป็นตัวเลือก</translation>
+<translation id="7499684925421947861">อนุญาตให้ <ph name="ACTOR_NAME" /> ลงชื่อเข้าใช้ <ph name="DOMAIN" /> แทนคุณไหม</translation>
 <translation id="7500917112031739411">แสดงตามกลุ่ม</translation>
 <translation id="7501663406926337752">เว็บไซต์ที่กำลังจะเข้าชมนั้นองค์กรของคุณได้ติดธงไว้ว่าไม่เหมาะสม</translation>
 <translation id="7502044688973049724">จัดการข้อมูลของคุณ</translation>

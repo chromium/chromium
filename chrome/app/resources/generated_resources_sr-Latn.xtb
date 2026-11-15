@@ -535,7 +535,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1401216725754314428">Saznajte više o srodnim sajtovima na novoj kartici</translation>
 <translation id="1402426911829176748">Povezuje se sa uređajem</translation>
 <translation id="1405779994569073824">Kartica je otkazala.</translation>
-<translation id="1406812885827747674">Dozvoli ovaj put</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Mobilna aktivacija</translation>
@@ -5330,7 +5329,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adrese}=1{Adrese ({SELECTED_ITEMS})}one{Adrese ({SELECTED_ITEMS})}few{Adrese ({SELECTED_ITEMS})}other{Adrese ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Pravljenje QR koda nije uspelo</translation>
 <translation id="5033137252639132982">Nije im dozvoljeno da koriste senzore pokreta</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> može da vas prijavi pomoću Google menadžera lozinki. <ph name="BEGIN_LINK" />Saznajte kako <ph name="ACTOR_NAME" /> postupa sa vašim podacima<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Izaberite Još detalja ispod da biste pronašli više informacija od: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Izaberi sve</translation>
 <translation id="5038621320029329200">Pouzdani sertifikati</translation>
@@ -8519,7 +8517,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7495149565104413027">Android aplikacija</translation>
 <translation id="7497322070873193353">Google veštačka inteligencija</translation>
 <translation id="7497981768003291373">Niste nedavno snimili nijednu WebRTC evidenciju teksta.</translation>
-<translation id="7499684925421947861">Želite da dozvolite da vas <ph name="ACTOR_NAME" /> prijavljuje na domen <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ili</translation>
 <translation id="7502220299952823578">Dodaj na listu Uvek zadrži ove sajtove aktivnim</translation>
 <translation id="7502528909759062987">Pauzirajte karticu za prebacivanje na <ph name="DEVICE_NAME" /></translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Жаңа қойындыдағы қатысты сайттар туралы толық ақпарат</translation>
 <translation id="1402426911829176748">Құрылғыңызға қосылып жатыр</translation>
 <translation id="1405779994569073824">Бұзылды.</translation>
-<translation id="1406812885827747674">Осы уақытқа рұқсат ету</translation>
 <translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1407135791313364759">Барлығын ашу</translation>
 <translation id="140723521119632973">Ұялы байланысты іске қосу</translation>
@@ -5328,7 +5327,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Мекенжайлар}=1{Мекенжайлар ({SELECTED_ITEMS})}other{Мекенжайлар ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR кодын жасау мүмкін емес.</translation>
 <translation id="5033137252639132982">Қозғалыс датчиктерін пайдалануға рұқсаты жоқтар</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> сіздің атыңыздан кіру үшін Google Password Manager-ді пайдалана алады. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> деректеріңізді қалай өңдейтіні туралы ақпарат<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерінен қосымша ақпарат алу үшін төмендегі "Қосымша мәліметтер" опциясын таңдаңыз.</translation>
 <translation id="5037676449506322593">Барлығын таңдау</translation>
 <translation id="5038621320029329200">Сенімді сертификаттар</translation>
@@ -8508,7 +8506,6 @@
 <translation id="7495149565104413027">Android қолданбасы</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Жақында WebRTC мәтіндік журналдарын жазып алмадыңыз.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> сіздің атыңыздан <ph name="DOMAIN" /> қызметіне кіре берсін бе?</translation>
 <translation id="7501957181231305652">немесе</translation>
 <translation id="7502220299952823578">"Осы сайттарды әрдайым қосулы күйде қалдыру" тізіміне қосу</translation>
 <translation id="7502528909759062987">Қойындыны <ph name="DEVICE_NAME" /> құрылғысына трансляциялауды кідірту</translation>

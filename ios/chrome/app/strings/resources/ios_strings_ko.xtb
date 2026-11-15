@@ -94,7 +94,7 @@
 <translation id="126737128831326059">내보내기 완료</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1273416271143914096">{count,plural, =1{비밀번호 {count}개}other{비밀번호 {count}개}}</translation>
-<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리해 보세요.</translation>
+<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리합니다</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1279024913354609713">허용 안함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -1864,11 +1864,11 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6722638373100589752">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에서 패스 사용'을 사용 설정하세요.</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
 <translation id="6724024423419410528">색상</translation>
-<translation id="672735642903863329">모든 기기에 북마크, 비밀번호 등을 가져오세요.</translation>
+<translation id="672735642903863329">모든 기기에서 내 북마크, 비밀번호 등을 사용하세요.</translation>
 <translation id="6729493062119577923">공유 탭 그룹 활동</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6736243959894955139">주소</translation>
-<translation id="6746338529702829275">계정 데이터 검토</translation>
+<translation id="6746338529702829275">계정 데이터를 검토합니다</translation>
 <translation id="6749473226660745022">사진</translation>
 <translation id="6750456911389438250">{count,plural, =1{방문 기록 항목 {count}개 가져옴}other{방문 기록 항목 {count}개 가져옴}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}other{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}}</translation>
@@ -2005,7 +2005,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7173114856073700355">설정 열기</translation>
 <translation id="7173721738069475737">{count,plural, =1{북마크 저장됨}other{북마크 {count}개 저장됨}}</translation>
 <translation id="7176183551031110427">축소</translation>
-<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
+<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식을 제어합니다</translation>
 <translation id="719133302483559673">관심분야 및 환경설정을 관리합니다.</translation>
 <translation id="7191382490098297347">카메라 롤 이미지</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>

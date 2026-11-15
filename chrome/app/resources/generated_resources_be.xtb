@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Даведацца больш пра звязаныя сайты ў новай укладцы</translation>
 <translation id="1402426911829176748">Ідзе падключэнне да вашай прылады</translation>
 <translation id="1405779994569073824">Збой.</translation>
-<translation id="1406812885827747674">Дазволіць толькі ў гэты раз</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="140723521119632973">Актывацыя SIM-карты ў мабільнай сетцы</translation>
@@ -5328,7 +5327,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адрасы}=1{Адрасы ({SELECTED_ITEMS})}one{Адрасы ({SELECTED_ITEMS})}few{Адрасы ({SELECTED_ITEMS})}many{Адрасы ({SELECTED_ITEMS})}other{Адрасы ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5033137252639132982">Не дазволена выкарыстоўваць датчыкі руху</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> можа выконваць уваход ад вашага імя з дапамогай Менеджара пароляў Google. <ph name="BEGIN_LINK" />Даведацца, як праграма "<ph name="ACTOR_NAME" />" апрацоўвае вашы даныя<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Каб атрымаць больш звестак пра памылку ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", націсніце на кнопку "Дадатковая інфармацыя" ўнізе.</translation>
 <translation id="5037676449506322593">Выбраць усё</translation>
 <translation id="5038621320029329200">Давераныя сертыфікаты</translation>
@@ -8518,7 +8516,6 @@
 <translation id="7495149565104413027">Праграма для Android</translation>
 <translation id="7497322070873193353">AI ад Google</translation>
 <translation id="7497981768003291373">У вас няма апошніх тэкставых журналаў WebRTC.</translation>
-<translation id="7499684925421947861">Дазволіць праграме "<ph name="ACTOR_NAME" />" выконваць уваход у сэрвіс "<ph name="DOMAIN" />" ад вашага імя?</translation>
 <translation id="7501957181231305652">або</translation>
 <translation id="7502220299952823578">Дадаць у спіс сайтаў, укладкі з якімі заўсёды павінны заставацца актыўнымі</translation>
 <translation id="7502528909759062987">Прыпыніць трансляцыю ўкладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>

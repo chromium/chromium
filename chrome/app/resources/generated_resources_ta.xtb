@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">தொடர்புடைய தளங்களைப் பற்றி புதிய பக்கத்தில் மேலும் அறியலாம்</translation>
 <translation id="1402426911829176748">உங்கள் சாதனத்துடன் இணைக்கிறது</translation>
 <translation id="1405779994569073824">சிதைந்துவிட்டது.</translation>
-<translation id="1406812885827747674">இந்த முறை அனுமதி</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1407135791313364759">எல்லாவற்றையும் திற</translation>
 <translation id="140723521119632973">செல்லுலார் செயல்படுத்தல்</translation>
@@ -5344,7 +5343,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{முகவரிகள்}=1{முகவரிகள் ({SELECTED_ITEMS})}other{முகவரிகள் ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5033137252639132982">மோஷன் சென்சார்களைப் பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
-<translation id="5034158480345261097">உங்களுக்காக உள்நுழைய Google Password Managerரை <ph name="ACTOR_NAME" /> பயன்படுத்தலாம். <ph name="BEGIN_LINK" />உங்கள் தரவை <ph name="ACTOR_NAME" /> எப்படிக் கையாள்கிறது என்று தெரிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> இடமிருந்து கூடுதல் தகவல்களைப் பெற, கீழே உள்ள "கூடுதல் விவரங்கள்" என்பதைத் தேர்வுசெய்யுங்கள்.</translation>
 <translation id="5037676449506322593">எல்லாம் தேர்ந்தெடு</translation>
 <translation id="5038621320029329200">நம்பகமான சான்றிதழ்கள்</translation>
@@ -8531,7 +8529,6 @@
 <translation id="7495149565104413027">Android ஆப்ஸ்</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">சமீபத்தில் எடுக்கப்பட்ட WebRTC உரைப் பதிவுகள் எதுவும் இல்லை.</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> இல் உங்களுக்காக <ph name="ACTOR_NAME" />உள்நுழைய அனுமதிக்கவா?</translation>
 <translation id="7501957181231305652">அல்லது</translation>
 <translation id="7502220299952823578">"இந்தத் தளங்களை எப்போதும் செயலில் வைத்திரு" என்ற பட்டியலில் சேர்க்கும்</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />க்குப் பக்கத்தை அலைபரப்புவதை இடைநிறுத்தும்</translation>

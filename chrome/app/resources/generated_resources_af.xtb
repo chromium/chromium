@@ -535,7 +535,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1401216725754314428">Kom in ’n nuwe oortjie meer te wete oor verwante werwe</translation>
 <translation id="1402426911829176748">Koppel tans aan jou toestel</translation>
 <translation id="1405779994569073824">Omgeval.</translation>
-<translation id="1406812885827747674">Laat dié keer toe</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="140723521119632973">Sellulêre aktivering</translation>
@@ -5344,7 +5343,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresse}=1{Adresse ({SELECTED_ITEMS})}other{Adresse ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Kan nie QR-kode skep nie</translation>
 <translation id="5033137252639132982">Mag nie bewegingsensors gebruik nie</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan Google Wagwoordbestuurder gebruik om vir jou aan te meld. <ph name="BEGIN_LINK" />Vind uit hoe <ph name="ACTOR_NAME" /> jou data hanteer<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Kies “Meer besonderhede” hier onder om meer inligting van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> te kry.</translation>
 <translation id="5037676449506322593">Kies alles</translation>
 <translation id="5038621320029329200">Vertroude sertifikate</translation>
@@ -8530,7 +8528,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7495149565104413027">Android-app</translation>
 <translation id="7497322070873193353">Google KI</translation>
 <translation id="7497981768003291373">Jy het geen onlangs vasgevangde WebRTC-teksloglêers nie.</translation>
-<translation id="7499684925421947861">Laat <ph name="ACTOR_NAME" /> toe om vir jou by <ph name="DOMAIN" /> aan te meld?</translation>
 <translation id="7501957181231305652">of</translation>
 <translation id="7502220299952823578">Voeg by die "hou hierdie werwe altyd aktief"-lys</translation>
 <translation id="7502528909759062987">Onderbreek uitsending van die oortjie na <ph name="DEVICE_NAME" /></translation>

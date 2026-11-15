@@ -2432,6 +2432,7 @@
 <translation id="5026121202864677765">撰寫求職信</translation>
 <translation id="5030338702439866405">發行者：</translation>
 <translation id="503069730517007720">未安裝「<ph name="SOFTWARE_NAME" />」必要的「根憑證」。IT 管理員應查看「<ph name="SOFTWARE_NAME" />」的設定指示，才能修正此問題。<ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> 可使用「Google 密碼管理工具」代你登入。<ph name="BEGIN_LINK" />瞭解 <ph name="ACTOR_NAME" /> 如何處理你的資料<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">將 KTN 安全地儲存至「Google 錢包」</translation>
 <translation id="503498442187459473"><ph name="HOST" /> 要求使用相機和麥克風</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@
 <translation id="7490622939531327327">更智能的表格理解能力</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="7499188644237027195">在 Chrome 購物時會看到電子錢包和 Pix 選項</translation>
+<translation id="7499684925421947861">要允許 <ph name="ACTOR_NAME" /> 為你登入 <ph name="DOMAIN" /> 嗎？</translation>
 <translation id="7500917112031739411">按群組顯示</translation>
 <translation id="7501663406926337752">您的機構已標示您將要瀏覽的網站</translation>
 <translation id="7502044688973049724">管理資料</translation>

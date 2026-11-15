@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບເວັບໄຊທີ່ກ່ຽວຂ້ອງໃນແຖບໃໝ່</translation>
 <translation id="1402426911829176748">ກຳລັງເຊື່ອມຕໍ່ກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1405779994569073824">ຂັດຂ້ອງ.</translation>
-<translation id="1406812885827747674">ອະນຸຍາດໃຫ້ໃນເທື່ອນີ້</translation>
 <translation id="1407069428457324124">ຮູບແບບສີສັນມືດ</translation>
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="140723521119632973">ການເປີດນຳໃຊ້ເຄືອຂ່າຍມືຖື</translation>
@@ -5343,7 +5342,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ທີ່ຢູ່}=1{ທີ່ຢູ່ ({SELECTED_ITEMS})}other{ທີ່ຢູ່ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້</translation>
 <translation id="5033137252639132982">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> ສາມາດໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບໃຫ້ທ່ານໄດ້. <ph name="BEGIN_LINK" />ສຶກສາວິທີທີ່ <ph name="ACTOR_NAME" /> ຈັດການຂໍ້ມູນຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">ເລືອກ "ລາຍລະອຽດເພີ່ມເຕີມ" ຢູ່ລຸ່ມນີ້ເພື່ອເບິ່ງຂໍ້ມູນເພີ່ມເຕີມຈາກ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5038621320029329200">ໃບຮັບຮອງທີ່ເຊື່ອຖືໄດ້</translation>
@@ -8526,7 +8524,6 @@
 <translation id="7495149565104413027">ແອັບ Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">ທ່ານບໍ່ມີບັນທຶກຂໍ້ຄວາມ WebRTC ທີ່ບັນທຶກໄວ້ເມື່ອບໍ່ດົນມານີ້.</translation>
-<translation id="7499684925421947861">ອະນຸຍາດໃຫ້ <ph name="ACTOR_NAME" /> ເຂົ້າສູ່ລະບົບ <ph name="DOMAIN" /> ແທນທ່ານບໍ?</translation>
 <translation id="7501957181231305652">ຫຼື</translation>
 <translation id="7502220299952823578">ເພີ່ມໃສ່ລາຍຊື່ "ເປີດໃຊ້ເວັບໄຊເຫຼົ່ານີ້ໄວ້ຕະຫຼອດ"</translation>
 <translation id="7502528909759062987">ຢຸດສົ່ງສັນຍານແຖບໄປຫາ <ph name="DEVICE_NAME" /> ຊົ່ວຄາວ</translation>

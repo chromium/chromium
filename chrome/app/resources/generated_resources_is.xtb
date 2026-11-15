@@ -535,7 +535,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1401216725754314428">Nánar um tengd vefsvæði í nýjum flipa</translation>
 <translation id="1402426911829176748">Tengist tækinu þínu</translation>
 <translation id="1405779994569073824">Hrundi.</translation>
-<translation id="1406812885827747674">Leyfa í þetta skipti</translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
 <translation id="1407135791313364759">Opna alla</translation>
 <translation id="140723521119632973">Virkjun um farsímanet</translation>
@@ -5344,7 +5343,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Heimilisföng}=1{Heimilisföng ({SELECTED_ITEMS})}one{Heimilisföng ({SELECTED_ITEMS})}other{Heimilisföng ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Ekki hægt að búa til QR-kóða</translation>
 <translation id="5033137252639132982">Mega ekki nota hreyfiskynjara</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> getur notað Google-aðgangsorðastjórnun til að skrá þig inn. <ph name="BEGIN_LINK" />Kynntu þér hvernig <ph name="ACTOR_NAME" /> meðhöndlar gögnin þín<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Veldu „Meiri upplýsingar“ hér að neðan til að fá meiri upplýsingar frá <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Velja allt</translation>
 <translation id="5038621320029329200">Traust vottorð</translation>
@@ -8531,7 +8529,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7495149565104413027">Android forrit</translation>
 <translation id="7497322070873193353">Gervigreind Google</translation>
 <translation id="7497981768003291373">Þú ert ekki með neina nýlega WebRTC-textaannála.</translation>
-<translation id="7499684925421947861">Leyfa <ph name="ACTOR_NAME" /> að skrá þig inn á <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">eða</translation>
 <translation id="7502220299952823578">Bæta við listann „halda þessum vefsvæðum ávallt virkum“</translation>
 <translation id="7502528909759062987">Gera hlé á vörpun flipa yfir í <ph name="DEVICE_NAME" /></translation>

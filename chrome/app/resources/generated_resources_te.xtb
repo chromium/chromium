@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">కొత్త ట్యాబ్‌లో సంబంధిత సైట్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="1402426911829176748">మీ పరికరానికి కనెక్ట్ చేస్తోంది</translation>
 <translation id="1405779994569073824">క్రాష్ అయింది.</translation>
-<translation id="1406812885827747674">ఈ సారికి అనుమతించండి</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="140723521119632973">సెల్యులార్ యాక్టివేషన్</translation>
@@ -5342,7 +5341,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{అడ్రస్‌లు}=1{అడ్రస్‌లు ({SELECTED_ITEMS})}other{అడ్రస్‌లు ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR కోడ్‌ను క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="5033137252639132982">మోషన్ సెన్సార్‌లను ఉపయోగించడానికి అనుమతించబడలేదు</translation>
-<translation id="5034158480345261097">మీ తరపున సైన్ ఇన్ చేయడానికి <ph name="ACTOR_NAME" />, Google Password Managerను ఉపయోగించగలదు. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> మీ డేటాను ఎలా హ్యాండిల్ చేస్తుందో తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి మరింత సమాచారాన్ని పొందడానికి దిగువున "మరిన్ని వివరాలు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="5037676449506322593">అన్నీ ఎంచుకోండి</translation>
 <translation id="5038621320029329200">విశ్వసించదగిన సర్టిఫికెట్‌లు</translation>
@@ -8527,7 +8525,6 @@
 <translation id="7495149565104413027">Android యాప్</translation>
 <translation id="7497322070873193353">Googleకు చెందిన AI టెక్నాలజీలు</translation>
 <translation id="7497981768003291373">మీ వద్ద ఇటీవల క్యాప్చర్ చేయబడిన WebRTC వచన లాగ్‌లు ఏవీ లేవు.</translation>
-<translation id="7499684925421947861">మీ తరపున <ph name="DOMAIN" />‌లోకి సైన్ ఇన్ చేయడానికి <ph name="ACTOR_NAME" />‌ను అనుమతించాలా?</translation>
 <translation id="7501957181231305652">లేదా</translation>
 <translation id="7502220299952823578">"ఈ సైట్‌లను ఎల్లప్పుడూ యాక్టివ్‌గా ఉంచండి" లిస్ట్‌కు జోడించండి</translation>
 <translation id="7502528909759062987">ట్యాబ్‌ను <ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>

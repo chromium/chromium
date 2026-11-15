@@ -2432,6 +2432,7 @@
 <translation id="5026121202864677765">എന്റെ കവർ ലെറ്റർ എഴുതുക</translation>
 <translation id="5030338702439866405">ഇനിപ്പറയുന്നത് നല്‍‌കിയത്</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിന് ഒരു റൂട്ട് സർട്ടിഫിക്കറ്റ് ആവശ്യമാണ്, എന്നാൽ അത് ഇൻസ്‌റ്റാൾ ചെയ്‌‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ, "<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിനുള്ള കോൺഫിഗറേഷൻ നിർദ്ദേശങ്ങൾ ഐടി അഡ്‌മിൻ പരിശോധിക്കേണ്ടതുണ്ട്. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">നിങ്ങൾക്ക് വേണ്ടി സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിന് Google Password Manager ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ കൈകാര്യം ചെയ്യുന്നുവെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Google Wallet-ൽ KTN സുരക്ഷിതമായി സംരക്ഷിക്കുക</translation>
 <translation id="503498442187459473">നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കാൻ <ph name="HOST" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3902,6 +3903,7 @@
 <translation id="7490622939531327327">ഫോം സംബന്ധിച്ച മികച്ച ധാരണ</translation>
 <translation id="7495528107193238112">ഈ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പ്രശ്‌നം പരിഹരിക്കാൻ സൈറ്റിന്റെ ഉടമയുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="7499188644237027195">നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി ഇ-വാലറ്റും Pix-ഉം കാണുക</translation>
+<translation id="7499684925421947861">നിങ്ങൾക്ക് വേണ്ടി <ph name="DOMAIN" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="7500917112031739411">ഗ്രൂപ്പ് പ്രകാരം കാണിക്കുക</translation>
 <translation id="7501663406926337752">നിങ്ങൾ പോകാനിരിക്കുന്ന സൈറ്റ് നിങ്ങളുടെ സ്ഥാപനം ഫ്ലാഗ് ചെയ്‌തതാണ്</translation>
 <translation id="7502044688973049724">നിങ്ങളുടെ വിവരങ്ങൾ മാനേജ് ചെയ്യാം</translation>

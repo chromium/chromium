@@ -2433,6 +2433,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5026121202864677765">Escreva minha carta de apresentação</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> pode usar o Gerenciador de Senhas do Google para fazer login por você. <ph name="BEGIN_LINK" />Saiba como o <ph name="ACTOR_NAME" /> trata seus dados<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Salvar número de identificação do passageiro (KTN) com segurança na Carteira do Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> quer usar sua câmera e seu microfone</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@ Mais detalhes:
 <translation id="7490622939531327327">Preenchimento inteligente de formulários</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="7499188644237027195">Ao fazer compras no Chrome, veja a carteira digital e o Pix como opções</translation>
+<translation id="7499684925421947861">Permitir que <ph name="ACTOR_NAME" /> faça login por você neste serviço: <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">O site a seguir foi sinalizado pela sua organização</translation>
 <translation id="7502044688973049724">gerenciar as informações</translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">নতুন ট্যাবে সম্পর্কিত সাইটের বিষয়ে আরও জানুন</translation>
 <translation id="1402426911829176748">আপনার ডিভাইসে কানেক্ট করা হচ্ছে</translation>
 <translation id="1405779994569073824">ক্র্যাশ করেছে।</translation>
-<translation id="1406812885827747674">একবারের জন্য অনুমতি দিন</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="140723521119632973">সেলুলার চালু করা</translation>
@@ -5344,7 +5343,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ঠিকানা}=1{ঠিকানা ({SELECTED_ITEMS}টি)}one{ঠিকানা ({SELECTED_ITEMS}টি)}other{ঠিকানা ({SELECTED_ITEMS}টি)}}</translation>
 <translation id="5032430150487044192">QR কোড তৈরি করা যায়নি</translation>
 <translation id="5033137252639132982">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />, আপনার হয়ে সাইন-ইন করার জন্য Google Password Manager ব্যবহার করতে পারবে। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> কীভাবে আপনার ডেটা ম্যানেজ করে তা জানুন<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে আরও তথ্য পেতে নিচে "আরও বিবরণ" বিকল্প বেছে নিন।</translation>
 <translation id="5037676449506322593">সকল বেছে নিন</translation>
 <translation id="5038621320029329200">বিশ্বস্ত সার্টিফিকেট</translation>
@@ -8533,7 +8531,6 @@
 <translation id="7495149565104413027">Android অ্যাপ</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">আপনার সাম্প্রতিক কোনও ক্যাপচার করা WebRTC টেক্সট লগ নেই।</translation>
-<translation id="7499684925421947861">আপনার হয়ে <ph name="DOMAIN" />-এ সাইন-ইন করতে <ph name="ACTOR_NAME" />-কে অনুমতি দেবেন?</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502220299952823578">"এইসব সাইট সব সময় অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা পজ করুন</translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Сазнајте више о сродним сајтовима на новој картици</translation>
 <translation id="1402426911829176748">Повезује се са уређајем</translation>
 <translation id="1405779994569073824">Картица је отказала.</translation>
-<translation id="1406812885827747674">Дозволи овај пут</translation>
 <translation id="1407069428457324124">Тамна тема</translation>
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="140723521119632973">Мобилна активација</translation>
@@ -5330,7 +5329,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адресе}=1{Адресе ({SELECTED_ITEMS})}one{Адресе ({SELECTED_ITEMS})}few{Адресе ({SELECTED_ITEMS})}other{Адресе ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Прављење QR кода није успело</translation>
 <translation id="5033137252639132982">Није им дозвољено да користе сензоре покрета</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може да вас пријави помоћу Google менаџера лозинки. <ph name="BEGIN_LINK" />Сазнајте како <ph name="ACTOR_NAME" /> поступа са вашим подацима<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Изаберите Још детаља испод да бисте пронашли више информација од: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Изабери све</translation>
 <translation id="5038621320029329200">Поуздани сертификати</translation>
@@ -8519,7 +8517,6 @@
 <translation id="7495149565104413027">Android апликација</translation>
 <translation id="7497322070873193353">Google вештачка интелигенција</translation>
 <translation id="7497981768003291373">Нисте недавно снимили ниједну WebRTC евиденцију текста.</translation>
-<translation id="7499684925421947861">Желите да дозволите да вас <ph name="ACTOR_NAME" /> пријављује на домен <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Додај на листу Увек задржи ове сајтове активним</translation>
 <translation id="7502528909759062987">Паузирајте картицу за пребацивање на <ph name="DEVICE_NAME" /></translation>

@@ -2433,6 +2433,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5026121202864677765">Skriv søknadsbrevet mitt</translation>
 <translation id="5030338702439866405">Utstedt av</translation>
 <translation id="503069730517007720">Et rotsertifikat for «<ph name="SOFTWARE_NAME" />» kreves, men er ikke installert. IT-administratoren din bør se på konfigurasjonsveiledningen for «<ph name="SOFTWARE_NAME" />» for å løse dette problemet. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan bruke Google Passordlagring til å logge på for deg. <ph name="BEGIN_LINK" />Finn ut hvordan <ph name="ACTOR_NAME" /> håndterer dataene dine<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Lagre KTN trygt i Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ber om å bruke kameraet ditt og mikrofonen din</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7490622939531327327">Smartere skjemaforståelse</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="7499188644237027195">Når du kjøper noe i Chrome, kan du se e-lommebok og Pix som alternativer</translation>
+<translation id="7499684925421947861">Vil du la <ph name="ACTOR_NAME" /> logge på <ph name="DOMAIN" /> for deg?</translation>
 <translation id="7500917112031739411">Vis etter gruppe</translation>
 <translation id="7501663406926337752">Organisasjonen din har flagget nettstedet du prøver å besøke</translation>
 <translation id="7502044688973049724">administrer informasjonen din</translation>

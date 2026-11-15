@@ -2433,6 +2433,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5026121202864677765">Escribe a miña carta de presentación</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Precísase un certificado raíz para <ph name="SOFTWARE_NAME" />, pero non está instalado. O teu administrador de TI debe comprobar as instrucións de configuración de <ph name="SOFTWARE_NAME" /> para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> pode usar o xestor de contrasinais de Google para iniciar sesión por ti. <ph name="BEGIN_LINK" />Máis información sobre como xestiona os teus datos <ph name="ACTOR_NAME" /><ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Garda o KTN de forma segura en Google Wallet</translation>
 <translation id="503498442187459473">O host <ph name="HOST" /> quere utilizar a túa cámara e o micrófono</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@ Detalles adicionais:
 <translation id="7490622939531327327">Comprensión de formularios máis intelixente</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="7499188644237027195">Cando fagas compras en Chrome, verás o moedeiro electrónico e Pix como opcións</translation>
+<translation id="7499684925421947861">Queres permitir que <ph name="ACTOR_NAME" /> inicie sesión por ti en <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">A túa organización marcou como inadecuado o sitio anteriormente</translation>
 <translation id="7502044688973049724">xestionar a túa información</translation>

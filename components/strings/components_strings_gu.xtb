@@ -2433,6 +2433,7 @@
 <translation id="5026121202864677765">મારો કવર લેટર લખો</translation>
 <translation id="5030338702439866405">આના દ્વારા રજૂ કરાયું</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" માટેનું રૂટ પ્રમાણપત્ર આવશ્યક છે પરંતુ તે ઇન્સ્ટૉલ કરેલું નથી. આ સમસ્યાના નિવારણ માટે તમારા IT વ્યવસ્થાપકે "<ph name="SOFTWARE_NAME" />" ની ગોઠવણી માટેની સૂચના જોવી જરૂરી છે. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">તમારા માટે સાઇન ઇન કરવા, <ph name="ACTOR_NAME" /> Google Password Managerનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" />ની તમારો ડેટા હૅન્ડલ કરવાની રીત વિશે જાણો<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Google Walletમાં KTN સુરક્ષિત રીતે સાચવો</translation>
 <translation id="503498442187459473"><ph name="HOST" /> તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@
 <translation id="7490622939531327327">ફોર્મની વધુ સ્માર્ટ સમજ</translation>
 <translation id="7495528107193238112">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે. સમસ્યાનાં નિરાકરણ માટે, સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="7499188644237027195">જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે ઇ-વૉલેટ અને Pixને વિકલ્પો તરીકે જુઓ</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" />ને તમારા માટે <ph name="DOMAIN" />માં સાઇન ઇન કરવાની મંજૂરી આપીએ?</translation>
 <translation id="7500917112031739411">ગ્રૂપ અનુસાર બતાવો</translation>
 <translation id="7501663406926337752">આગળની સાઇટ તમારી સંસ્થા દ્વારા ચિહ્નિત કરવામાં આવી છે</translation>
 <translation id="7502044688973049724">તમારી માહિતી મેનેજ કરો</translation>

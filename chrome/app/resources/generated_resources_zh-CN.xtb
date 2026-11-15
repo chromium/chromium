@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1402426911829176748">正在连接到您的设备</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
-<translation id="1406812885827747674">仅此一次</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="140723521119632973">移动网络激活</translation>
@@ -3253,7 +3252,7 @@
 <translation id="3471687177769494956">修改导航快捷键</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
-<translation id="3474624961160222204">继续用“<ph name="NAME" />”的账号登录</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3478038704461103178">已关闭拆分视图</translation>
@@ -5327,7 +5326,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{地址}=1{地址（{SELECTED_ITEMS} 个）}other{地址（{SELECTED_ITEMS} 个）}}</translation>
 <translation id="5032430150487044192">无法创建二维码</translation>
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> 可以使用 Google 密码管理工具为您登录账号。<ph name="BEGIN_LINK" />了解 <ph name="ACTOR_NAME" /> 如何处理您的数据<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">选择下方的“更多详情”可从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5038621320029329200">可信证书</translation>
@@ -8509,7 +8507,6 @@
 <translation id="7495149565104413027">Android 应用</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">您最近未记录 WebRTC 文本日志。</translation>
-<translation id="7499684925421947861">要允许 <ph name="ACTOR_NAME" /> 为您登录 <ph name="DOMAIN" /> 吗？</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">添加到“始终让这些网站保持活动状态”列表</translation>
 <translation id="7502528909759062987">暂停将标签页投放到“<ph name="DEVICE_NAME" />”</translation>

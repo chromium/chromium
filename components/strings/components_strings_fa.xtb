@@ -2434,6 +2434,7 @@
 <translation id="5026121202864677765">نامه معرفی بنویسید</translation>
 <translation id="5030338702439866405">صدور توسط</translation>
 <translation id="503069730517007720">برای «<ph name="SOFTWARE_NAME" />» گواهینامه ریشه‌ لازم است اما نصب نشده است. برای رفع این مشکل، سرپرست فناوری اطلاعات شما باید دستورالعمل‌های پیکربندی مربوط به «<ph name="SOFTWARE_NAME" />» را بررسی کند. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">‏‫<ph name="ACTOR_NAME" /> می‌تواند از «مدیر گذرواژه Google» برای ورود به سیستم ازطرف شما استفاده کند. <ph name="BEGIN_LINK" />درباره این‌که <ph name="ACTOR_NAME" /> چگونه داده‌هایتان را مدیریت می‌کند، بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">‏ذخیره کردن KTN به‌طور امن در «کیف پول Google»</translation>
 <translation id="503498442187459473"><ph name="HOST" /> می‌خواهد از دوربین و میکروفن شما استفاده کند</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3906,6 +3907,7 @@
 <translation id="7490622939531327327">درک هوشمندتر فرم</translation>
 <translation id="7495528107193238112">این محتوا مسدود شده است. برای برطرف کردن مشکل با مالک سایت تماس بگیرید.</translation>
 <translation id="7499188644237027195">‏هنگام خرید کردن در Chrome، «کیف پول الکترونیکی» و Pix را به‌عنوان گزینه‌های پرداخت می‌بینید</translation>
+<translation id="7499684925421947861">به <ph name="ACTOR_NAME" /> اجازه می‌دهید ازطرف شما به سیستم <ph name="DOMAIN" /> وارد شود؟</translation>
 <translation id="7500917112031739411">نمایش براساس گروه</translation>
 <translation id="7501663406926337752">سازمان شما سایت پیش‌رو را پرچم‌گذاری کرده است</translation>
 <translation id="7502044688973049724">اطلاعات خود را مدیریت کنید</translation>

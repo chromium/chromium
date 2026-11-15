@@ -535,7 +535,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1401216725754314428">Meer informatie over gerelateerde sites in een nieuw tabblad</translation>
 <translation id="1402426911829176748">Verbinding maken met je apparaat</translation>
 <translation id="1405779994569073824">Gecrasht</translation>
-<translation id="1406812885827747674">Deze keer toestaan</translation>
 <translation id="1407069428457324124">Donker thema</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="140723521119632973">Mobiele activering</translation>
@@ -5327,7 +5326,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adressen}=1{Adressen ({SELECTED_ITEMS})}other{Adressen ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Kan geen QR-code maken</translation>
 <translation id="5033137252639132982">Geen toestemming om bewegingssensoren te gebruiken</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan Google Wachtwoordmanager gebruiken om voor je in te loggen. <ph name="BEGIN_LINK" />Meer informatie over hoe <ph name="ACTOR_NAME" /> omgaat met je gegevens<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Kies hieronder Meer informatie voor meer informatie van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecteer alles</translation>
 <translation id="5038621320029329200">Vertrouwde certificaten</translation>
@@ -8508,7 +8506,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7495149565104413027">Android-app</translation>
 <translation id="7497322070873193353">AI van Google</translation>
 <translation id="7497981768003291373">Je hebt geen onlangs vastgelegde WebRTC-tekstlogboeken.</translation>
-<translation id="7499684925421947861">Toestaan dat <ph name="ACTOR_NAME" /> voor je inlogt bij <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">of</translation>
 <translation id="7502220299952823578">Toevoegen aan de lijst Deze sites altijd actief houden</translation>
 <translation id="7502528909759062987">Tabblad casten naar <ph name="DEVICE_NAME" /> onderbreken</translation>

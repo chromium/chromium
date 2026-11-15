@@ -535,7 +535,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1401216725754314428">Aloqador saytlar haqida yangi varaqda batafsil axborot oling</translation>
 <translation id="1402426911829176748">Qurilmangizga ulanmoqda</translation>
 <translation id="1405779994569073824">Ishdan chiqdi.</translation>
-<translation id="1406812885827747674">Bu safar ruxsat berish</translation>
 <translation id="1407069428457324124">Tungi mavzu</translation>
 <translation id="1407135791313364759">Barchasini ochish</translation>
 <translation id="140723521119632973">Mobil tarmoqni faollashtirish</translation>
@@ -5333,7 +5332,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Manzillar}=1{Manzillar ({SELECTED_ITEMS})}other{Manzillar ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR kod yaratilmadi</translation>
 <translation id="5033137252639132982">Harakat sensorlaridan foydalanish taqiqlangan</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> nomingizdan Google Parollar menejeridan foydalanishi mumkin. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> maʼlumotlaringizni qanday qayta ishlashi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali batafsil axborot olish uchun "Batafsil" bandini tanlang.</translation>
 <translation id="5037676449506322593">Hammasini belgilash</translation>
 <translation id="5038621320029329200">Ishonchli sertifikatlar</translation>
@@ -8518,7 +8516,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7495149565104413027">Android ilovasi</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Yaqinda yozilgan WebRTC matnli jurnallari topilmadi.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> sizning nomingizdan <ph name="DOMAIN" /> hisobiga kirishiga ruxsat berilsinmi?</translation>
 <translation id="7501957181231305652">yoki</translation>
 <translation id="7502220299952823578">“quyidagi saytlar doim faol qolsin” roʻyxatiga kiritish</translation>
 <translation id="7502528909759062987">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini pauza qilish</translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Научете повече за сродните сайтове в нов раздел</translation>
 <translation id="1402426911829176748">Установява се връзка с устройството ви</translation>
 <translation id="1405779994569073824">Възникна срив.</translation>
-<translation id="1406812885827747674">Разрешаване този път</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="140723521119632973">Активиране на мобилна мрежа</translation>
@@ -5343,7 +5342,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адреси}=1{Адреси ({SELECTED_ITEMS})}other{Адреси ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
 <translation id="5033137252639132982">Сайтове без разрешение за използване на сензорите за движение</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> може да използва Google Мениджър на пароли, за да влезе в профила вместо вас. <ph name="BEGIN_LINK" />Научете как <ph name="ACTOR_NAME" /> обработва данните ви<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Изберете „Още подробности“ по-долу, за да получите повече информация от <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Избиране на всички</translation>
 <translation id="5038621320029329200">Надеждни сертификати</translation>
@@ -8530,7 +8528,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7495149565104413027">Приложение за Android</translation>
 <translation id="7497322070873193353">AI на Google</translation>
 <translation id="7497981768003291373">Нямате наскоро записани регистрационни файлове за предаване на текст с WebRTC.</translation>
-<translation id="7499684925421947861">Да се разреши ли на <ph name="ACTOR_NAME" /> да влиза в профила ви в(ъв) <ph name="DOMAIN" /> вместо вас?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Добавяне в списъка „Сайтове, които да са винаги активни“</translation>
 <translation id="7502528909759062987">Поставяне на пауза на предаването на раздела към „<ph name="DEVICE_NAME" />“</translation>

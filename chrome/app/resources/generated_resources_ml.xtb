@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">പുതിയൊരു ടാബിൽ അനുബന്ധ സൈറ്റുകളെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1402426911829176748">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="1405779994569073824">ക്രാഷായി.</translation>
-<translation id="1406812885827747674">ഇത്തവണ അനുവദിക്കുക</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="140723521119632973">സെല്ലുലാൽ നെറ്റ്‌വർക്ക് സജീവമാക്കൽ</translation>
@@ -5329,7 +5328,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{വിലാസങ്ങൾ}=1{വിലാസങ്ങൾ ({SELECTED_ITEMS})}other{വിലാസങ്ങൾ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
 <translation id="5033137252639132982">മോഷൻ സെൻസറുകൾ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
-<translation id="5034158480345261097">നിങ്ങൾക്ക് വേണ്ടി സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിന് Google Password Manager ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ കൈകാര്യം ചെയ്യുന്നുവെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് കൂടുതൽ വിവരങ്ങൾ നേടാൻ ചുവടെയുള്ള "കൂടുതൽ വിശദാംശങ്ങൾ" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5037676449506322593">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5038621320029329200">അംഗീകൃത സർട്ടിഫിക്കറ്റുകൾ</translation>
@@ -8514,7 +8512,6 @@
 <translation id="7495149565104413027">Android ആപ്പ്</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">നിങ്ങൾക്ക് അടുത്തിടെ രേഖപ്പെടുത്തിയ WebRTC ടെക്‌സ്‌റ്റ് ലോഗുകളൊന്നുമില്ല.</translation>
-<translation id="7499684925421947861">നിങ്ങൾക്ക് വേണ്ടി <ph name="DOMAIN" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="7501957181231305652">അല്ലെങ്കിൽ</translation>
 <translation id="7502220299952823578">"ഈ സൈറ്റുകൾ എപ്പോഴും സജീവമായി നിലനിർത്തുക" ലിസ്റ്റിലേക്ക് ചേർക്കുക</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തുക</translation>

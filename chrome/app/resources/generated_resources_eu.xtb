@@ -535,7 +535,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1401216725754314428">Lortu erlazionatutako webguneei buruzko informazio gehiago beste fitxa batean</translation>
 <translation id="1402426911829176748">Gailura konektatzen</translation>
 <translation id="1405779994569073824">Huts egin du.</translation>
-<translation id="1406812885827747674">Eman baimena bisita honetan</translation>
 <translation id="1407069428457324124">Gai iluna</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
 <translation id="140723521119632973">Sare mugikorretarako SIM txartelak aktibatzea</translation>
@@ -5327,7 +5326,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Helbideak}=1{Helbideak ({SELECTED_ITEMS})}other{Helbideak ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Ezin da sortu QR kodea</translation>
 <translation id="5033137252639132982">Ezin dituzte erabili mugimendu-sentsoreak</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> zerbitzuak Google-ren Pasahitz-kudeatzailea erabil dezake zure izenean saioa hasteko. <ph name="BEGIN_LINK" />Lortu <ph name="ACTOR_NAME" /> zerbitzuak zure datuak kudeatzeko duen moduari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearengandik informazio gehiago lortzeko, aukeratu beheko "Xehetasun gehiago" aukera.</translation>
 <translation id="5037676449506322593">Hautatu guztiak</translation>
 <translation id="5038621320029329200">Ziurtagiri fidagarriak</translation>
@@ -8507,7 +8505,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7495149565104413027">Android-erako aplikazioa</translation>
 <translation id="7497322070873193353">Google-ren AA</translation>
 <translation id="7497981768003291373">Ez duzu duela gutxi hartutako WebRTC testu-erregistrorik.</translation>
-<translation id="7499684925421947861"><ph name="DOMAIN" /> domeinuan zure izenean saioa hasteko baimena eman nahi diozu <ph name="ACTOR_NAME" /> zerbitzuari?</translation>
 <translation id="7501957181231305652">edo</translation>
 <translation id="7502220299952823578">Gehitu mantendu beti webgune hauek aktibo zerrendan</translation>
 <translation id="7502528909759062987">Pausatu fitxa <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Μάθετε περισσότερα για τους σχετικούς ιστοτόπους σε μια νέα καρτέλα</translation>
 <translation id="1402426911829176748">Σύνδεση στη συσκευή σας</translation>
 <translation id="1405779994569073824">Παρουσιάστηκε σφάλμα.</translation>
-<translation id="1406812885827747674">Να επιτραπεί αυτήν τη φορά</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="140723521119632973">Ενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
@@ -5344,7 +5343,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Διευθύνσεις}=1{Διεύθυνση ({SELECTED_ITEMS})}other{Διευθύνσεις ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Δεν είναι δυνατή η δημιουργία κωδικού QR</translation>
 <translation id="5033137252639132982">Δεν επιτρέπεται να χρησιμοποιούν αισθητήρες κίνησης</translation>
-<translation id="5034158480345261097">Το <ph name="ACTOR_NAME" /> μπορεί να χρησιμοποιήσει τη Διαχείριση κωδικών πρόσβασης Google για να πραγματοποιήσει τη σύνδεση για εσάς. <ph name="BEGIN_LINK" />Μάθετε πώς το <ph name="ACTOR_NAME" /> χειρίζεται τα δεδομένα σας<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Επιλέξτε παρακάτω Περισσότερες λεπτομέρειες για να λάβετε περισσότερες πληροφορίες από το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Επιλογή Όλων</translation>
 <translation id="5038621320029329200">Αξιόπιστα πιστοποιητικά</translation>
@@ -8531,7 +8529,6 @@
 <translation id="7495149565104413027">Εφαρμογή Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Δεν υπάρχουν αρχεία καταγραφής κειμένου WebRTC τα οποία λήφθηκαν πρόσφατα.</translation>
-<translation id="7499684925421947861">Επιτρέπετε στο <ph name="ACTOR_NAME" /> να συνδέεται στο <ph name="DOMAIN" /> για εσάς;</translation>
 <translation id="7501957181231305652">ή</translation>
 <translation id="7502220299952823578">Προσθήκη στη λίστα "να διατηρούνται πάντα ενεργοί αυτοί οι ιστότοποι"</translation>
 <translation id="7502528909759062987">Παύση καρτέλας μετάδοσης στη συσκευή <ph name="DEVICE_NAME" /></translation>

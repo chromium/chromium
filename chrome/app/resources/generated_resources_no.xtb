@@ -535,7 +535,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1401216725754314428">Finn ut mer om relaterte nettsteder på en ny fane</translation>
 <translation id="1402426911829176748">Kobler til enheten din</translation>
 <translation id="1405779994569073824">Kræsjet.</translation>
-<translation id="1406812885827747674">Tillat denne gangen</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="140723521119632973">Aktivering med mobiltelefon</translation>
@@ -5338,7 +5337,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresser}=1{Adresser ({SELECTED_ITEMS})}other{Adresser ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Kan ikke opprette QR-kode</translation>
 <translation id="5033137252639132982">Nettsteder som ikke har lov til å bruke bevegelsessensorer</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan bruke Google Passordlagring til å logge på for deg. <ph name="BEGIN_LINK" />Finn ut hvordan <ph name="ACTOR_NAME" /> håndterer dataene dine<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Velg «Flere detaljer» under for å få mer informasjon fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Velg alle</translation>
 <translation id="5038621320029329200">Klarerte sertifikater</translation>
@@ -8522,7 +8520,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7495149565104413027">Android-app</translation>
 <translation id="7497322070873193353">AI fra Google</translation>
 <translation id="7497981768003291373">Du har ingen nylig lagrede WebRTC-tekstlogger.</translation>
-<translation id="7499684925421947861">Vil du la <ph name="ACTOR_NAME" /> logge på <ph name="DOMAIN" /> for deg?</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502220299952823578">Legg til på «La disse nettstedene alltid være aktive»-listen</translation>
 <translation id="7502528909759062987">Sett casting av fanen til <ph name="DEVICE_NAME" /> på pause</translation>

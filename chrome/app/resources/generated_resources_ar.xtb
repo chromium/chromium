@@ -391,7 +391,7 @@
 <translation id="126768002343224824">16 ضعفًا</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1272508081857842302">فتح <ph name="BEGIN_LINK" />الروابط المتوافقة<ph name="END_LINK" /></translation>
-<translation id="1274721046703404848">‏يمكنك إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
+<translation id="1274721046703404848">‏إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
 <translation id="1274997165432133392">ملفات تعريف الارتباط والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="1275936815032730048">مفتاح مشغِّل التطبيقات + السهم المتّجه لليمين</translation>
 <translation id="1275963833368139883">عند البحث في سجلّ التصفّح، تستنِد الإجابات ونتائج البحث إلى محتوى الصفحة، ما يساهم في تحسين النتائج</translation>
@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
-<translation id="1406812885827747674">السماح هذه المرة</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="140723521119632973">تفعيل شبكة الجوّال</translation>
@@ -4783,7 +4782,7 @@
 <translation id="4624054169152573743">مظهر ملوَّن</translation>
 <translation id="4625350031596795804">نمط التركيز على نطاق كبير</translation>
 <translation id="4625905218692741757">اللون التلقائي الرمادي</translation>
-<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بالانتقال إلى استخدام مفاتيح المرور في حساباتها الحالية</translation>
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
 <translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
 <translation id="4629803160911640220">موثوق بها</translation>
@@ -5332,7 +5331,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{العناوين}=1{العناوين ({SELECTED_ITEMS})}two{العناوين ({SELECTED_ITEMS})}few{العناوين ({SELECTED_ITEMS})}many{العناوين ({SELECTED_ITEMS})}other{العناوين ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5033137252639132982">المواقع الإلكترونية التي لا يُسمح لها باستخدام مستشعرات الحركة</translation>
-<translation id="5034158480345261097">‏بإمكان "<ph name="ACTOR_NAME" />" استخدام "مدير كلمات المرور في Google" لتسجيل الدخول نيابةً عنك. <ph name="BEGIN_LINK" />كيفية معالجة "<ph name="ACTOR_NAME" />" لبياناتك<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">يُرجى اختيار "مزيد من التفاصيل" أدناه للحصول على مزيد من المعلومات من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">اختيار الكل</translation>
 <translation id="5038621320029329200">الشهادات الموثوق بها</translation>
@@ -8526,7 +8524,6 @@
 <translation id="7495149565104413027">‏تطبيق Android</translation>
 <translation id="7497322070873193353">‏تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
-<translation id="7499684925421947861">هل المطلوب السماح لـ "<ph name="ACTOR_NAME" />" بتسجيل الدخول إلى "<ph name="DOMAIN" />" نيابةً عنك؟</translation>
 <translation id="7501957181231305652">أو</translation>
 <translation id="7502220299952823578">الإضافة إلى قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="7502528909759062987">إيقاف بث علامة التبويب مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>

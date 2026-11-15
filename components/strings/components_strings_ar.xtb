@@ -2433,6 +2433,7 @@
 <translation id="5026121202864677765">أريد كتابة رسالة طلب عمل</translation>
 <translation id="5030338702439866405">جهة الإصدار</translation>
 <translation id="503069730517007720">يلزم شهادة جذر لـ "<ph name="SOFTWARE_NAME" />" ولكن لم يتم تثبيتها. ينبغي على مشرف تقنية المعلومات أن يلقي نظرة على تعليمات الإعداد لـ "<ph name="SOFTWARE_NAME" />" لإصلاح تلك المشكلة. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097">‏بإمكان "<ph name="ACTOR_NAME" />" استخدام "مدير كلمات المرور في Google" لتسجيل الدخول نيابةً عنك. <ph name="BEGIN_LINK" />كيفية معالجة "<ph name="ACTOR_NAME" />" لبياناتك<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">‏حفظ "رقم المسافر المعروف" بأمان في "محفظة Google"</translation>
 <translation id="503498442187459473">يريد <ph name="HOST" /> استخدام الكاميرا والميكروفون.</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@
 <translation id="7490622939531327327">فهم النماذج بشكل أفضل</translation>
 <translation id="7495528107193238112">هذا المحتوى محظور. يمكنك التواصل مع مالك الموقع الإلكتروني لحلّ المشكلة.</translation>
 <translation id="7499188644237027195">‏عند إجراء عمليات شراء على Chrome، يمكنك استخدام المحفظة الإلكترونية وPix كخيارين للدفع</translation>
+<translation id="7499684925421947861">هل المطلوب السماح لـ "<ph name="ACTOR_NAME" />" بتسجيل الدخول إلى "<ph name="DOMAIN" />" نيابةً عنك؟</translation>
 <translation id="7500917112031739411">العرض حسب المجموعة</translation>
 <translation id="7501663406926337752">أبلغت مؤسستك عن الموقع الإلكتروني الذي تحاول زيارته</translation>
 <translation id="7502044688973049724">إدارة معلوماتك</translation>

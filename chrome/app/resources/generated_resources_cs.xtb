@@ -535,7 +535,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1401216725754314428">Další informace o souvisejících webech na nové kartě</translation>
 <translation id="1402426911829176748">Probíhá připojování k vašemu zařízení</translation>
 <translation id="1405779994569073824">Selhalo.</translation>
-<translation id="1406812885827747674">Tentokrát povolit</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="140723521119632973">Aktivace mobilní sítě</translation>
@@ -5327,7 +5326,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresy}=1{Adresy ({SELECTED_ITEMS})}few{Adresy ({SELECTED_ITEMS})}many{Adresy ({SELECTED_ITEMS})}other{Adresy ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR kód nelze vytvořit</translation>
 <translation id="5033137252639132982">Zákaz používat senzory pohybu</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> se za vás může přihlásit pomocí Správce hesel Google. <ph name="BEGIN_LINK" />Jak <ph name="ACTOR_NAME" /> nakládá s vašimi daty<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Pokud chcete získat další informace od poskytovatele <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, vyberte níže možnost Další podrobnosti.</translation>
 <translation id="5037676449506322593">Vybrat vše</translation>
 <translation id="5038621320029329200">Důvěryhodné certifikáty</translation>
@@ -8512,7 +8510,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7495149565104413027">Aplikace pro Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Nemáte žádné nedávno zaznamenané textové protokoly WebRTC.</translation>
-<translation id="7499684925421947861">Povolit službě <ph name="ACTOR_NAME" /> přihlásit vás do aplikace <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">nebo</translation>
 <translation id="7502220299952823578">Přidat do seznamu webů, které mají být vždy ponechány aktivní</translation>
 <translation id="7502528909759062987">Pozastavit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>

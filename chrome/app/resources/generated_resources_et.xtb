@@ -535,7 +535,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1401216725754314428">Seotud saitide lisateave uuel vahelehel</translation>
 <translation id="1402426911829176748">Teie seadmega ühendamine</translation>
 <translation id="1405779994569073824">Jooksis kokku.</translation>
-<translation id="1406812885827747674">Luba sel korral</translation>
 <translation id="1407069428457324124">Tume teema</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="140723521119632973">Mobiilsidevõrgu aktiveerimine</translation>
@@ -691,7 +690,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1526560967942511387">Pealkirjata dokument</translation>
 <translation id="1527336312600375509">Kuvari värskendamissagedus</translation>
 <translation id="152913213824448541">Läheduses jagamine – kontaktid</translation>
-<translation id="1529769834253316556">Rea kõrgus</translation>
+<translation id="1529769834253316556">Reavahe</translation>
 <translation id="1529891865407786369">Toiteallikas</translation>
 <translation id="1530376661400379364">Chrome lähtestas need seaded</translation>
 <translation id="1530466164747090379"><ph name="FILE_NAME" /> sisaldab delikaatseid või ohtlikke andmeid.</translation>
@@ -5335,7 +5334,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Aadressid}=1{Address ({SELECTED_ITEMS})}other{Addressid ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR-koodi ei saa luua</translation>
 <translation id="5033137252639132982">Pole luba kasutada liikumisandureid</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> saab teie eest sisselogimiseks kasutada Google'i paroolihaldurit. <ph name="BEGIN_LINK" />Vaadake, kuidas <ph name="ACTOR_NAME" /> teie andmeid töötleb<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Valige allpool „Rohkem üksikasju”, et saada rohkem teavet teenuselt <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Vali kõik</translation>
 <translation id="5038621320029329200">Usaldusväärsed sertifikaadid</translation>
@@ -6200,7 +6198,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5722086096420375088">Roheline ja valge</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723508132121499792">Taustal rakendusi ei tööta</translation>
-<translation id="5724723163580775373">Suur fookus</translation>
+<translation id="5724723163580775373">Suur esiletõst</translation>
 <translation id="5725112283692663422">Saatke tagasisidet teema loomise kohta AI-ga</translation>
 <translation id="5727728807527375859">Laiendid, rakendused ja teemad võivad teie arvutit kahjustada. Kas soovite kindlasti jätkata?</translation>
 <translation id="5727872803091928075">Asjakohasemate vastuste andmiseks jagatakse vahelehti. Google kasutab uue vestluse alustamisel teie avatud vahelehe sisu ja URL-i. Seda seadet saab igal ajal muuta.</translation>
@@ -7403,7 +7401,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6659213950629089752">Seda lehte suumis laiendus „<ph name="NAME" />”</translation>
 <translation id="6659594942844771486">Tabulaator</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – kaamera salvestab</translation>
-<translation id="6660301751798595791">Hääle valik</translation>
+<translation id="6660301751798595791">Hääle valimine</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>
 <translation id="666099631117081440">Prindiserverid</translation>
 <translation id="6662339038589469159">Geminilt küsimiseks teksti valimine</translation>
@@ -7459,7 +7457,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6702639462873609204">&amp;Muuda ...</translation>
 <translation id="6702859741546259407">Funktsiooni <ph name="FEATURE_NAME" /> kasutamiseks lülitage sisse Bluetooth ja WiFi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="670431355064244920">Väike fookus</translation>
+<translation id="670431355064244920">Väike esiletõst</translation>
 <translation id="6706210727756204531">Ulatus</translation>
 <translation id="6707122714992751648">ChromeOS-i diagnostikatestide käitamine</translation>
 <translation id="6707389671160270963">SSL-kliendi sertifikaat</translation>
@@ -8371,7 +8369,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7389615853658756494">Muuda seda saidil</translation>
 <translation id="7392118418926456391">Viiruste skannimine ebaõnnestus</translation>
 <translation id="7392915005464253525">A&amp;va suletud aken uuesti</translation>
-<translation id="739299645392306071">Keskmine fookus</translation>
+<translation id="739299645392306071">Keskmine esiletõst</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 üksus kopeeriti}other{{COUNT} üksust kopeeriti}}</translation>
 <translation id="7393435859300249877">Saate märguande, kui räägite teatud rakenduste (nt videovestlusrakenduste) kasutamisel mikrofoni vaigistamise ajal. Heli ei lahku teie seadmest.</translation>
 <translation id="7395008140803590549">Sertifikaadi kustutamine ebaõnnestus</translation>
@@ -8521,13 +8519,12 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7495149565104413027">Androidi rakendus</translation>
 <translation id="7497322070873193353">Google'i AI</translation>
 <translation id="7497981768003291373">Teil pole ühtegi hiljuti jäädvustatud WebRTC tekstilogi.</translation>
-<translation id="7499684925421947861">Kas lubada teenusel <ph name="ACTOR_NAME" /> teie eest teenusesse <ph name="DOMAIN" /> sisse logida?</translation>
 <translation id="7501957181231305652">või</translation>
 <translation id="7502220299952823578">Loendisse „Järgmised saidid hoitakse alati aktiivsena“ lisamine</translation>
 <translation id="7502528909759062987">Peata vahelehe ülekandmine seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Tagasi Geminisse</translation>
 <translation id="7502804472671406749">Jagatud vahelehti saab kerida ja suumida</translation>
-<translation id="750314150962284310">Rea fookus</translation>
+<translation id="750314150962284310">Rea esiletõstmine</translation>
 <translation id="7503191893372251637">Netscape'i sertifikaadi tüüp</translation>
 <translation id="7503259455663961898">Muuda seda minu eest</translation>
 <translation id="7503985202154027481">Kirje teie külastusest sellele saidile säilitatakse turvavõtmes.</translation>

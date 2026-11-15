@@ -2433,6 +2433,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5026121202864677765">Escríbeme una carta de presentación</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Se necesita un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. El administrador de TI debe comprobar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> puede usar el Gestor de contraseñas de Google para iniciar sesión por ti. <ph name="BEGIN_LINK" />Consulta cómo trata <ph name="ACTOR_NAME" /> tus datos<ph name="END_LINK" />.</translation>
 <translation id="5034488401832901795">Guarda el KTN de forma segura en Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> quiere usar la cámara y el micrófono</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3905,6 +3906,7 @@ Más información:
 <translation id="7490622939531327327">Comprensión de formularios más inteligente</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Para solucionar el problema, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="7499188644237027195">Cuando hagas compras en Chrome, verás tu cartera electrónica y Pix como opciones</translation>
+<translation id="7499684925421947861">¿Permitir que <ph name="ACTOR_NAME" /> inicie sesión en <ph name="DOMAIN" /> por ti?</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">Tu organización ha marcado el sitio al que vas a acceder</translation>
 <translation id="7502044688973049724">gestionar tu información</translation>

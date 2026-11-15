@@ -535,7 +535,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1401216725754314428">En savoir plus sur les sites associés dans un nouvel onglet</translation>
 <translation id="1402426911829176748">Connexion à votre appareil…</translation>
 <translation id="1405779994569073824">A planté.</translation>
-<translation id="1406812885827747674">Autoriser cette fois-ci</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation mobile</translation>
@@ -3323,7 +3322,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
 <translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
 <translation id="3523447078673133727">Ne pas autoriser les sites à suivre vos mains</translation>
-<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3524518036046613664">Découvrir les appareils de votre réseau local, comme les imprimantes</translation>
 <translation id="3524965460886318643">Exporter les activités</translation>
 <translation id="3525606571546393707">Essayez d'ouvrir le fichier depuis un autre dossier ou sélectionnez "Ouvrir dans l'éditeur de base" pour utiliser des options d'affichage et de modification limitées.</translation>
@@ -5328,7 +5327,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresses}=1{Adresses ({SELECTED_ITEMS})}one{Adresses ({SELECTED_ITEMS})}other{Adresses ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Impossible de créer le QR code</translation>
 <translation id="5033137252639132982">Non autorisé à utiliser des capteurs de mouvement</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> peut utiliser le Gestionnaire de mots de passe de Google pour vous connecter. <ph name="BEGIN_LINK" />Découvrez comment <ph name="ACTOR_NAME" /> traite vos données<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Sélectionnez "Plus d'informations" ci-dessous pour obtenir des informations complémentaires auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5038621320029329200">Certificats approuvés</translation>
@@ -8516,7 +8514,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7495149565104413027">Appli Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">Aucun journal texte WebRTC n'a été créé récemment.</translation>
-<translation id="7499684925421947861">Autoriser <ph name="ACTOR_NAME" /> à se connecter à <ph name="DOMAIN" /> pour vous ?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Ajouter à la liste "Toujours laisser ces sites actifs"</translation>
 <translation id="7502528909759062987">Suspendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
@@ -9978,7 +9975,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8619803522055190423">Ombre projetée</translation>
 <translation id="8620206585293032550">Apparence des onglets inactifs</translation>
 <translation id="8621979332865976405">Partager l'intégralité de votre écran</translation>
-<translation id="8622145666696249878">Mode IA de la recherche Google et applis connectées</translation>
+<translation id="8622145666696249878">Mode IA de la Recherche Google et applis connectées</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" /> : <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Lire les numéros de série des appareils Chrome OS et leurs composants</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>

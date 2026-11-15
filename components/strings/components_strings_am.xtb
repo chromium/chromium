@@ -2432,6 +2432,7 @@
 <translation id="5026121202864677765">የሽፋን ደብዳቤዬን ጻፍ</translation>
 <translation id="5030338702439866405">የቀረበው</translation>
 <translation id="503069730517007720">ለ«<ph name="SOFTWARE_NAME" />» ስር እውቅና ማረጋገጫ ያስፈልጋል፣ ነገር ግን አልተጫነም። የእርስዎ አይቲ አስተዳዳሪ ይህን ችግር ለመፍታት የ«<ph name="SOFTWARE_NAME" />» ውቅረት መመሪያዎችን መመልከት አለበት። <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> ለእርስዎ ለመግባት Google የይለፍ ቃል አስተዳዳሪን መጠቀም ይችላል። <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> እንዴት ውሂብዎን እንደሚይዝ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTNን በGoogle Wallet ውስጥ ደኅንነቱ በተጠበቀ ሁኔታ ያስቀምጡ</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ካሜራዎን እና ማይክሮፎንዎን መጠቀም ይፈልጋል</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@
 <translation id="7490622939531327327">ይበልጥ ዘመናዊ የሆነ የቅጽ ግንዛቤ</translation>
 <translation id="7495528107193238112">ይህ ይዘት ታግዷል። ችግሩን ለማስተካከል የጣቢያውን ባለቤት ያነጋግሩ።</translation>
 <translation id="7499188644237027195">Chrome ውስጥ ግዢዎችን ሲፈጽሙ ኢ-ኪስ ቦርሳ እና Pixን እንደ አማራጮች ይመልከቱ</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> ለእርስዎ ወደ <ph name="DOMAIN" /> እንዲገባ ይፈቀድ?</translation>
 <translation id="7500917112031739411">በቡድን አሳይ</translation>
 <translation id="7501663406926337752">ከፊት ያለው ጣቢያ በድርጅትዎ ተጠቁሟል</translation>
 <translation id="7502044688973049724">መረጃዎን ያስተዳድሩ</translation>

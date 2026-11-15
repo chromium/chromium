@@ -2433,6 +2433,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5026121202864677765">Skrifaðu kynningarbréf fyrir mig</translation>
 <translation id="5030338702439866405">Gefið út af</translation>
 <translation id="503069730517007720">Rótarvottorðs er krafist fyrir „<ph name="SOFTWARE_NAME" />“ en það er ekki sett upp. Kerfisstjóri ætti að athuga leiðbeiningar fyrir stillingu á „<ph name="SOFTWARE_NAME" />“ til að lagfæra vandamálið. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> getur notað Google-aðgangsorðastjórnun til að skrá þig inn. <ph name="BEGIN_LINK" />Kynntu þér hvernig <ph name="ACTOR_NAME" /> meðhöndlar gögnin þín<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Vistaðu KTN á öruggan hátt í Google-veski</translation>
 <translation id="503498442187459473"><ph name="HOST" /> vill fá að nota myndavélina og hljóðnemann</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3904,6 +3905,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7490622939531327327">Betri skilningur á eyðublöðum</translation>
 <translation id="7495528107193238112">Þetta efni er á bannlista. Hafðu samband við eiganda vefsvæðisins til að lagfæra vandamálið.</translation>
 <translation id="7499188644237027195">Sjáðu rafveski og Pix sem valkosti þegar þú gengur frá kaupum í Chrome</translation>
+<translation id="7499684925421947861">Leyfa <ph name="ACTOR_NAME" /> að skrá þig inn á <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Sýna eftir hópum</translation>
 <translation id="7501663406926337752">Fyrirtækið þitt hefur flaggað vefsvæðið sem þú ert að reyna að opna</translation>
 <translation id="7502044688973049724">haft umsjón með upplýsingunum þínum</translation>

@@ -535,7 +535,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1401216725754314428">Saznajte više o povezanim web-lokacijama na novoj kartici</translation>
 <translation id="1402426911829176748">Povezivanje s uređajem</translation>
 <translation id="1405779994569073824">Srušilo se.</translation>
-<translation id="1406812885827747674">Dopusti ovaj put</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Mobilna aktivacija</translation>
@@ -5330,7 +5329,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adrese}=1{Adrese ({SELECTED_ITEMS})}one{Adrese ({SELECTED_ITEMS})}few{Adrese ({SELECTED_ITEMS})}other{Adrese ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Izrada QR koda nije uspjela</translation>
 <translation id="5033137252639132982">Nije dopuštena upotreba senzora kretanja</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> se može prijaviti umjesto vas pomoću Google upravitelja zaporki. <ph name="BEGIN_LINK" />Saznajte kako <ph name="ACTOR_NAME" /> postupa s vašim podacima<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Odaberite Više pojedinosti u nastavku da biste saznali više informacija od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
 <translation id="5038621320029329200">Pouzdani certifikati</translation>
@@ -8516,7 +8514,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7495149565104413027">Android aplikacija</translation>
 <translation id="7497322070873193353">Googleov AI</translation>
 <translation id="7497981768003291373">Nemate nedavno snimljenih WebRTC tekstnih zapisnika.</translation>
-<translation id="7499684925421947861">Želite li dopustiti da vas <ph name="ACTOR_NAME" /> prijavi na domenu <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">ili</translation>
 <translation id="7502220299952823578">Dodaj na popis Neka ove web-lokacije uvijek budu aktivne</translation>
 <translation id="7502528909759062987">Pauziranje kartice za emitiranje na uređaj <ph name="DEVICE_NAME" /></translation>

@@ -2429,6 +2429,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5026121202864677765">Idatzi eskaera-gutuna</translation>
 <translation id="5030338702439866405">Jaulkitzailea:</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" softwareak instalatuta ez dagoen erroko ziurtagiri bat behar du. Arazoa konpontzeko, IKT saileko administratzaileak "<ph name="SOFTWARE_NAME" />" bilatu behar du konfigurazio-argibideetan. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> zerbitzuak Google-ren Pasahitz-kudeatzailea erabil dezake zure izenean saioa hasteko. <ph name="BEGIN_LINK" />Lortu <ph name="ACTOR_NAME" /> zerbitzuak zure datuak kudeatzeko duen moduari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">Gorde KTN zenbakia modu seguruan Google Wallet-en</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ostalariak zure kamera eta mikrofonoa erabili nahi ditu</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3899,6 +3900,7 @@ Xehetasun gehiago:
 <translation id="7490622939531327327">Inprimakien ulermen adimentsuagoa</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
 <translation id="7499188644237027195">Chrome-n erosketak egitean, izan diru-zorro digitala eta Pix kontuan</translation>
+<translation id="7499684925421947861"><ph name="DOMAIN" /> domeinuan zure izenean saioa hasteko baimena eman nahi diozu <ph name="ACTOR_NAME" /> zerbitzuari?</translation>
 <translation id="7500917112031739411">Erakutsi taldearen arabera</translation>
 <translation id="7501663406926337752">Zure erakundeak webgune hori salatu du</translation>
 <translation id="7502044688973049724">informazioa kudeatzeko</translation>

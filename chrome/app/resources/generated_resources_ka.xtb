@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">შეიტყვეთ მეტი დაკავშირებული საიტების შესახებ ახალ ჩანართში</translation>
 <translation id="1402426911829176748">მიმდინარეობს თქვენს მოწყობილობასთან დაკავშირება</translation>
 <translation id="1405779994569073824">ავარიულად გათიშული.</translation>
-<translation id="1406812885827747674">ამჯერად დაშვება</translation>
 <translation id="1407069428457324124">მუქი თემა</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="140723521119632973">მობილური ქსელის გააქტიურება</translation>
@@ -5331,7 +5330,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{მისამართები}=1{მისამართი ({SELECTED_ITEMS})}other{მისამართი ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR კოდის შექმნა ვერ მოხერხდა</translation>
 <translation id="5033137252639132982">მოძრაობის სენსორების გამოყენება დაუშვებელია</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />-ს შეუძლია, შესასვლელად გამოიყენოს Google პაროლების მმართველი. <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ ამუშავებს <ph name="ACTOR_NAME" /> თქვენს მონაცემებს<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან დამატებითი ინფორმაციის მისაღებად ქვემოთ აირჩიეთ „დაწვრილებით“.</translation>
 <translation id="5037676449506322593">აირჩიეთ ყველა</translation>
 <translation id="5038621320029329200">სანდო სერტიფიკატები</translation>
@@ -8515,7 +8513,6 @@
 <translation id="7495149565104413027">Android აპი</translation>
 <translation id="7497322070873193353">Google-ის ხელოვნური ინტელექტი</translation>
 <translation id="7497981768003291373">ახლახან აღბეჭდილი WebRTC-ის ტექსტური ჟურნალები არ არის.</translation>
-<translation id="7499684925421947861">ნებას დართავთ <ph name="ACTOR_NAME" />-ს, თქვენი სახელით შევიდეს <ph name="DOMAIN" />-ზე?</translation>
 <translation id="7501957181231305652">ან</translation>
 <translation id="7502220299952823578">„ამ საიტების ყოველთვის აქტიურად შენარჩუნების“ სიაში დამატება</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-ზე ჩანართის ტრანსლირების დაპაუზება</translation>

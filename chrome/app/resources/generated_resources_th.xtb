@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ดูข้อมูลเพิ่มเติมเกี่ยวกับเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="1402426911829176748">กำลังเชื่อมต่อกับอุปกรณ์</translation>
 <translation id="1405779994569073824">ขัดข้อง</translation>
-<translation id="1406812885827747674">อนุญาตในครั้งนี้</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="140723521119632973">การเปิดใช้งานเครือข่ายมือถือ</translation>
@@ -5328,7 +5327,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ที่อยู่}=1{ที่อยู่ ({SELECTED_ITEMS})}other{ที่อยู่ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">สร้างคิวอาร์โค้ดไม่ได้</translation>
 <translation id="5033137252639132982">ไม่ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> สามารถใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ให้คุณได้ <ph name="BEGIN_LINK" />ดูวิธีที่ <ph name="ACTOR_NAME" /> จัดการข้อมูลของคุณ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">เลือก "รายละเอียดเพิ่มเติม" ด้านล่างเพื่อดูข้อมูลเพิ่มเติมจาก <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5037676449506322593">เลือก&amp;ทั้งหมด</translation>
 <translation id="5038621320029329200">ใบรับรองที่เชื่อถือได้</translation>
@@ -8509,7 +8507,6 @@
 <translation id="7495149565104413027">แอป Android</translation>
 <translation id="7497322070873193353">AI ของ Google</translation>
 <translation id="7497981768003291373">คุณไม่มีบันทึกข้อความ WebRTC ที่จับภาพเมื่อเร็วๆ นี้</translation>
-<translation id="7499684925421947861">อนุญาตให้ <ph name="ACTOR_NAME" /> ลงชื่อเข้าใช้ <ph name="DOMAIN" /> แทนคุณไหม</translation>
 <translation id="7501957181231305652">หรือ</translation>
 <translation id="7502220299952823578">เพิ่มไปยังรายการ "ให้เว็บไซต์เหล่านี้ทำงานอยู่เสมอ"</translation>
 <translation id="7502528909759062987">หยุดแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ชั่วคราว</translation>

@@ -535,7 +535,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1401216725754314428">Scopri di più sui siti correlati in una nuova scheda</translation>
 <translation id="1402426911829176748">Collegamento al dispositivo in corso…</translation>
 <translation id="1405779994569073824">Arresto anomalo.</translation>
-<translation id="1406812885827747674">Consenti questa volta</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="140723521119632973">Attivazione della rete mobile</translation>
@@ -4778,7 +4777,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4622051949285931942">Vuoi disattivare gli aggiornamenti automatici?</translation>
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4623894491222334521">Documenti di identità</translation>
-<translation id="4624054169152573743">Tema a colori</translation>
+<translation id="4624054169152573743">Tema cromatico</translation>
 <translation id="4625350031596795804">Stile selezione grande</translation>
 <translation id="4625905218692741757">Colore predefinito grigio</translation>
 <translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
@@ -5329,7 +5328,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Indirizzi}=1{Indirizzo ({SELECTED_ITEMS})}other{Indirizzi ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5033137252639132982">Non possono utilizzare i sensori di movimento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> può usare Gestore delle password di Google per accedere per conto tuo. <ph name="BEGIN_LINK" />Scopri come <ph name="ACTOR_NAME" /> gestisce i tuoi dati<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5038621320029329200">Certificati attendibili</translation>
@@ -8512,13 +8510,12 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7495149565104413027">App per Android</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Nessun log di testo WebRTC acquisito di recente.</translation>
-<translation id="7499684925421947861">Consentire a <ph name="ACTOR_NAME" /> di accedere a <ph name="DOMAIN" /> per te?</translation>
 <translation id="7501957181231305652">oppure</translation>
 <translation id="7502220299952823578">Aggiungi all'elenco "mantieni questi siti sempre attivi"</translation>
 <translation id="7502528909759062987">Metti in pausa la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Torna a Gemini</translation>
 <translation id="7502804472671406749">È possibile scorrere e aumentare lo zoom delle schede condivise</translation>
-<translation id="750314150962284310">Selezione riga</translation>
+<translation id="750314150962284310">Evidenziazione riga</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
 <translation id="7503259455663961898">Modifica per me</translation>
 <translation id="7503985202154027481">Sul tuo token di sicurezza verrà memorizzato un record della tua visita a questo sito.</translation>
@@ -9166,7 +9163,7 @@ File di chiave: <ph name="KEY_FILE" />
 
 Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove versioni dell'estensione.</translation>
 <translation id="8000020256436988724">Barra degli strumenti</translation>
-<translation id="800117767980299235">Punto saliente vocale</translation>
+<translation id="800117767980299235">Evidenziazione vocale</translation>
 <translation id="8001561107130904792">Condivisione dei contenuti della pagina</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
 <translation id="8002597610026749658">Chrome può creare sottotitoli codificati per le lingue mostrate qui</translation>

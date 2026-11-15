@@ -535,7 +535,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
 <translation id="1402426911829176748">Estableciendo conexión con el dispositivo</translation>
 <translation id="1405779994569073824">Falló</translation>
-<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación del teléfono celular</translation>
@@ -1248,7 +1247,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="194174710521904357">Permitiste temporalmente que este sitio use cookies de terceros, lo que significa menos protección de navegación, pero es más probable que las funciones del sitio puedan usarse según lo previsto.</translation>
 <translation id="1942128823046546853">Leer y cambiar todos tus datos en todos los sitios web</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
-<translation id="1944921356641260203">Actualización encontrada</translation>
+<translation id="1944921356641260203">Se encontró una actualización</translation>
 <translation id="1947136734041527201">Te permite acceder a sitios web a través de una cuenta con servicio de identidad</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1949054568937504107">Popular en tu región</translation>
@@ -4765,7 +4764,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4610637590575890427">¿Tal vez quieres ir a <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Cuando se selecciona el botón izquierdo del mouse, usa “/” para hacer doble clic</translation>
 <translation id="4613271546271159013">Una extensión cambió la página que se muestra al abrir una nueva pestaña.</translation>
-<translation id="461613135510474570">Frase</translation>
+<translation id="461613135510474570">Oración</translation>
 <translation id="461661862154729886">Fuente de energía</translation>
 <translation id="4617001782309103936">Demasiado corto</translation>
 <translation id="4617270414136722281">Opciones de las extensiones</translation>
@@ -5331,7 +5330,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Direcciones}=1{Direcciones ({SELECTED_ITEMS})}other{Direcciones ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> puede usar el Administrador de contraseñas de Google para acceder por ti. <ph name="BEGIN_LINK" />Obtén información sobre cómo <ph name="ACTOR_NAME" /> maneja tus datos<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Elige "Más detalles" a continuación para obtener más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038621320029329200">Certificados de confianza</translation>
@@ -8517,13 +8515,12 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7495149565104413027">App para Android</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">No capturaste ningún registro de texto de WebRTC recientemente.</translation>
-<translation id="7499684925421947861">¿Quieres permitir que <ph name="ACTOR_NAME" /> acceda a <ph name="DOMAIN" /> por ti?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Agregar a la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="7502528909759062987">Pausar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Volver a Gemini</translation>
 <translation id="7502804472671406749">Se puede hacer zoom en las pestañas compartidas y desplazarse en ellas</translation>
-<translation id="750314150962284310">Enfoque de línea</translation>
+<translation id="750314150962284310">Enfoque en la línea</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503259455663961898">Cambiarla por mí</translation>
 <translation id="7503985202154027481">En tu llave de seguridad, se guardará un registro de tu visita a este sitio.</translation>

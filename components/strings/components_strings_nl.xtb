@@ -2427,6 +2427,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5026121202864677765">Schrijf mijn sollicitatiebrief</translation>
 <translation id="5030338702439866405">Verleend door</translation>
 <translation id="503069730517007720">Er is een rootcertificaat voor '<ph name="SOFTWARE_NAME" />' vereist, maar niet geïnstalleerd. Je IT-beheerder moet de configuratie-instructies voor '<ph name="SOFTWARE_NAME" />' raadplegen om dit probleem op te lossen. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kan Google Wachtwoordmanager gebruiken om voor je in te loggen. <ph name="BEGIN_LINK" />Meer informatie over hoe <ph name="ACTOR_NAME" /> omgaat met je gegevens<ph name="END_LINK" /></translation>
 <translation id="5034488401832901795">KTN beveiligd opslaan in Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> wil gebruikmaken van je camera en microfoon</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -3898,6 +3899,7 @@ Aanvullende informatie:
 <translation id="7490622939531327327">Slimmer inzicht in formulieren</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="7499188644237027195">Als je aankopen doet in Chrome, zie je eWallet en Pix als opties</translation>
+<translation id="7499684925421947861">Toestaan dat <ph name="ACTOR_NAME" /> voor je inlogt bij <ph name="DOMAIN" />?</translation>
 <translation id="7500917112031739411">Tonen op groep</translation>
 <translation id="7501663406926337752">De site die je wilt bezoeken, is gemarkeerd door je organisatie</translation>
 <translation id="7502044688973049724">je gegevens beheren</translation>

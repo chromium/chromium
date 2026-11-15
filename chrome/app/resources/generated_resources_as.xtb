@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">এটা নতুন টেবত জড়িত হৈ থকা ছাইটসমূহৰ বিষয়ে অধিক জানক</translation>
 <translation id="1402426911829176748">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="1405779994569073824">ক্ৰেশ্ব হ’ল।</translation>
-<translation id="1406812885827747674">এইবাৰ অনুমতি দিয়ক</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="140723521119632973">চেলুলাৰ সক্ৰিয়কৰণ</translation>
@@ -5343,7 +5342,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ঠিকনা}=1{ঠিকনা ({SELECTED_ITEMS})}one{ঠিকনা ({SELECTED_ITEMS})}other{ঠিকনা ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="5033137252639132982">ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" />এ আপোনাৰ হৈ ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰিব পাৰে। <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" />এ আপোনাৰ ডেটা কেনেকৈ পৰিচালনা কৰে জানক<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ পৰা অধিক তথ্য লাভ কৰিবলৈ তলত "অধিক সবিশেষ" বাছনি কৰক।</translation>
 <translation id="5037676449506322593">সকলো বাছনি কৰক</translation>
 <translation id="5038621320029329200">বিশ্বাসী প্ৰমাণপত্ৰ</translation>
@@ -8530,7 +8528,6 @@
 <translation id="7495149565104413027">Android এপ্</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">আপোনাৰ শেহতীয়াকৈ কেপশ্বাৰ কৰা কোনো WebRTC পাঠ লগ নাই।</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" />ক আপোনাৰ বাবে <ph name="DOMAIN" />ত ছাইন ইন কৰিবলৈ অনুমতি দিবনে?</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502220299952823578">"এই ছাইটসমূহ সদায় সক্ৰিয় কৰি ৰাখক"ৰ সূচীত যোগ দিয়ক</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />লৈ টেব কাষ্ট কৰাটো পজ কৰক</translation>

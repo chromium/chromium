@@ -535,7 +535,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1401216725754314428">Tìm hiểu thêm về các trang web liên quan trong thẻ mới</translation>
 <translation id="1402426911829176748">Đang kết nối với thiết bị của bạn</translation>
 <translation id="1405779994569073824">Đã bị lỗi.</translation>
-<translation id="1406812885827747674">Cho phép lần này</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="140723521119632973">Kích hoạt mạng di động</translation>
@@ -3112,7 +3111,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3354972872297836698">Không ghép nối được với thiết bị <ph name="DEVICE_NAME" />; hãy chọn thiết bị để thử lại</translation>
 <translation id="335581015389089642">Giọng nói</translation>
 <translation id="3355936511340229503">Lỗi kết nối</translation>
-<translation id="335678817537689040">Tĩnh</translation>
+<translation id="335678817537689040">Cố định</translation>
 <translation id="3359256513598016054">Giới hạn Chính sách của Chứng chỉ</translation>
 <translation id="3359465538772230055">Không có tác vụ nào</translation>
 <translation id="3360297538363969800">Không in được. Vui lòng kiểm tra máy in và thử lại.</translation>
@@ -4624,7 +4623,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4486333480498805415">Độ chính xác của vị trí</translation>
 <translation id="4488257340342212116">Được phép sử dụng máy ảnh của bạn</translation>
 <translation id="4490798467014431984">Các tiện ích không được phép hoạt động trên trang web này</translation>
-<translation id="449126573531210296">Mã hóa các mật khẩu đã đồng bộ hóa bằng Tài khoản Google của bạn</translation>
+<translation id="449126573531210296">Mã hoá các mật khẩu đã đồng bộ hoá bằng Tài khoản Google của bạn</translation>
 <translation id="4492265221907525667">Vui lòng đăng nhập để sử dụng tính năng thử nghiệm mới này.</translation>
 <translation id="449232563137139956">Các trang web thường hiển thị hình ảnh để cung cấp hình minh họa, như ảnh cho cửa hàng trực tuyến hoặc tin bài</translation>
 <translation id="4493167769966437077">Xoá <ph name="LANGUAGE_NAME" /> khỏi danh sách ngôn ngữ không cần đề xuất dịch</translation>
@@ -5344,7 +5343,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Địa chỉ}=1{Địa chỉ ({SELECTED_ITEMS})}other{Địa chỉ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Không thể tạo mã QR</translation>
 <translation id="5033137252639132982">Không được phép sử dụng cảm biến chuyển động</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> có thể sử dụng Trình quản lý mật khẩu của Google để đăng nhập thay cho bạn. <ph name="BEGIN_LINK" />Tìm hiểu cách <ph name="ACTOR_NAME" /> xử lý dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Chọn "Thông tin chi tiết khác" bên dưới để tìm hiểu thêm thông tin từ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Chọn Tất cả</translation>
 <translation id="5038621320029329200">Chứng chỉ đáng tin cậy</translation>
@@ -7162,7 +7160,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6468485451923838994">Phông chữ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> tệp</translation>
 <translation id="6469557521904094793">Bật Mạng di động</translation>
-<translation id="6469702164109431067">Mật khẩu và khoá đăng nhập</translation>
+<translation id="6469702164109431067">Mật khẩu và khoá truy cập</translation>
 <translation id="6470120577693311302">Nháy sáng khi có thông báo</translation>
 <translation id="6470499912143282503">Để chia sẻ thẻ và cộng tác với người khác, hãy đăng nhập vào Chrome và đồng bộ hoá nhật ký cũng như các thẻ của bạn. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
 <translation id="6470823736074966819">Ẩn thông báo</translation>
@@ -8532,7 +8530,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7495149565104413027">Ứng dụng Android</translation>
 <translation id="7497322070873193353">AI của Google</translation>
 <translation id="7497981768003291373">Bạn không ghi nhật ký văn bản WebRTC nào gần đây.</translation>
-<translation id="7499684925421947861">Cho phép <ph name="ACTOR_NAME" /> thay bạn đăng nhập vào <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">hoặc</translation>
 <translation id="7502220299952823578">Thêm vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="7502528909759062987">Tạm dừng truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
@@ -10003,7 +10000,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8626569226218260115">Hồ sơ này sẽ được quản lý</translation>
 <translation id="862750493060684461">Bộ nhớ đệm CSS</translation>
 <translation id="8627795981664801467">Chỉ kết nối an toàn</translation>
-<translation id="8628674746770065790">Dòng con trỏ</translation>
+<translation id="8628674746770065790">Di chuyển theo con trỏ</translation>
 <translation id="862907440446514309">Quản trị viên đang ghi lại màn hình của bạn bằng <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Chế độ ngủ trong khi sạc</translation>
 <translation id="8631032106121706562">Cánh hoa</translation>

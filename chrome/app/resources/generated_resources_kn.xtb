@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳ ಕುರಿತು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="1402426911829176748">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1405779994569073824">ಕ್ರ್ಯಾಶ್ ಆಗಿದೆ.</translation>
-<translation id="1406812885827747674">ಈ ಬಾರಿ ಅನುಮತಿಸಿ</translation>
 <translation id="1407069428457324124">ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="140723521119632973">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ</translation>
@@ -5334,7 +5333,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ವಿಳಾಸಗಳು}=1{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}one{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}other{ವಿಳಾಸಗಳು ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5033137252639132982">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
-<translation id="5034158480345261097">ನಿಮ್ಮ ಪರವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="ACTOR_NAME" />, Google Password Manager ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ "ಇನ್ನಷ್ಟು ವಿವರಗಳು" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5037676449506322593">ಎಲ್ಲವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5038621320029329200">ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
@@ -8522,7 +8520,6 @@
 <translation id="7495149565104413027">Android ಆ್ಯಪ್‌</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">ನಿಮ್ಮಲ್ಲಿ ಇತ್ತೀಚೆಗೆ ಕ್ಯಾಪ್ಚರ್‌ ಆಗಿರುವ WebRTC ಪಠ್ಯ ಲಾಗ್‌ಗಳು ಇಲ್ಲ.</translation>
-<translation id="7499684925421947861">ನಿಮ್ಮ ಪರವಾಗಿ <ph name="DOMAIN" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="ACTOR_NAME" /> ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="7501957181231305652">ಅಥವಾ</translation>
 <translation id="7502220299952823578">"ಯಾವಾಗಲೂ ಈ ಸೈಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯವಾಗಿರಿಸಿಕೊಳ್ಳಿ" ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="7502528909759062987">ಟ್ಯಾಬ್ <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>

@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Lue lisää aiheeseen liittyvistä sivustoista uudella välilehdellä</translation>
 <translation id="1402426911829176748">Yhdistetään laitteeseesi</translation>
 <translation id="1405779994569073824">Kaatui</translation>
-<translation id="1406812885827747674">Salli tällä kertaa</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1407135791313364759">Avaa kaikki</translation>
 <translation id="140723521119632973">Mobiiliyhteyden aktivointi</translation>
@@ -5340,7 +5339,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Osoitteet}=1{Osoitteet ({SELECTED_ITEMS})}other{Osoitteet ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR-koodin luominen ei onnistu</translation>
 <translation id="5033137252639132982">Liiketunnistimien käyttö kielletty</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> voi käyttää Google Salasanoja kirjautuakseen sisään puolestasi. <ph name="BEGIN_LINK" />Lue, miten <ph name="ACTOR_NAME" /> käsittelee dataasi<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Valitse alta Lisätietoja, niin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> antaa lisäohjeita.</translation>
 <translation id="5037676449506322593">Valitse kaikki</translation>
 <translation id="5038621320029329200">Luotetut varmenteet</translation>
@@ -8526,7 +8524,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7495149565104413027">Android-sovellus</translation>
 <translation id="7497322070873193353">Googlen tekoäly</translation>
 <translation id="7497981768003291373">Sinulla ei ole äskettäin tallennettuja WebRTC-tekstilokeja.</translation>
-<translation id="7499684925421947861">Sallitaanko, että <ph name="ACTOR_NAME" /> kirjautuu tänne puolestasi: <ph name="DOMAIN" />?</translation>
 <translation id="7501957181231305652">tai</translation>
 <translation id="7502220299952823578">Lisää "Pidä nämä sivustot aina aktiivisina" ‐luetteloon</translation>
 <translation id="7502528909759062987">Keskeytä välilehden striimaus: <ph name="DEVICE_NAME" /></translation>

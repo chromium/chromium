@@ -535,7 +535,6 @@
 <translation id="1401216725754314428">Открыть сведения о связанных сайтах в новой вкладке</translation>
 <translation id="1402426911829176748">Подключение…</translation>
 <translation id="1405779994569073824">Произошел сбой</translation>
-<translation id="1406812885827747674">Разрешить в этот раз</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="140723521119632973">Активация мобильной сети</translation>
@@ -5330,7 +5329,6 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Адреса}=1{{SELECTED_ITEMS} адрес}one{{SELECTED_ITEMS} адрес}few{{SELECTED_ITEMS} адреса}many{{SELECTED_ITEMS} адресов}other{{SELECTED_ITEMS} адреса}}</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5033137252639132982">Запретить сайтам использовать датчики движения</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> сможет использовать Google Менеджер паролей, чтобы входить в аккаунт за вас. Узнайте, <ph name="BEGIN_LINK" />как <ph name="ACTOR_NAME" /> обрабатывает ваши данные<ph name="END_LINK" />.</translation>
 <translation id="5035846135112863536">Чтобы изучить информацию, предоставленную сервисом "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", нажмите "Подробнее" ниже.</translation>
 <translation id="5037676449506322593">Выделить все</translation>
 <translation id="5038621320029329200">Доверенные сертификаты</translation>
@@ -8521,7 +8519,6 @@
 <translation id="7495149565104413027">Приложение Android</translation>
 <translation id="7497322070873193353">ИИ от Google</translation>
 <translation id="7497981768003291373">Не обнаружено недавно сохраненных текстовых журналов WebRTC.</translation>
-<translation id="7499684925421947861">Разрешить сервису "<ph name="ACTOR_NAME" />" входить на сайт <ph name="DOMAIN" /> за вас?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Добавить в список сайтов, которые всегда активны</translation>
 <translation id="7502528909759062987">Приостановить трансляцию вкладки на устройство "<ph name="DEVICE_NAME" />"</translation>

@@ -535,7 +535,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1401216725754314428">Weitere Informationen zu ähnlichen Websites in einem neuen Tab</translation>
 <translation id="1402426911829176748">Verbindung zum Gerät wird hergestellt</translation>
 <translation id="1405779994569073824">Abgestürzt.</translation>
-<translation id="1406812885827747674">Dieses Mal erlauben</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="140723521119632973">Mobilfunkaktivierung</translation>
@@ -5328,7 +5327,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adressen}=1{Adresse ({SELECTED_ITEMS})}other{Adressen ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR-Code konnte nicht erstellt werden</translation>
 <translation id="5033137252639132982">Dürfen keine Bewegungssensoren verwenden</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> kann den Google Passwortmanager verwenden, um dich anzumelden. <ph name="BEGIN_LINK" />Informationen dazu, wie <ph name="ACTOR_NAME" /> mit deinen Daten umgeht<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Wähle unten „Weitere Details“ aus, um mehr Informationen von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> zu erhalten.</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
 <translation id="5038621320029329200">Vertrauenswürdige Zertifikate</translation>
@@ -8510,7 +8508,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7495149565104413027">Android-App</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Es sind keine kürzlich erfassten WebRTC-Textprotokolle vorhanden.</translation>
-<translation id="7499684925421947861"><ph name="ACTOR_NAME" /> erlauben, dich bei <ph name="DOMAIN" /> anzumelden?</translation>
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502220299952823578">Zur Liste „Diese Websites immer aktiv lassen“ hinzufügen</translation>
 <translation id="7502528909759062987">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ pausieren</translation>

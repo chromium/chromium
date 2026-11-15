@@ -186,7 +186,7 @@
 <translation id="5190139289262548459">내가 로그인한 계정 및 Chrome이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
 <translation id="5209238444239954363">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5305440589062022504">Chrome에서 비밀번호 관리자를 엽니다.</translation>
-<translation id="5310957470610282541">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+<translation id="5310957470610282541">아직 Google 계정에 저장되지 않은 Chrome 데이터가 있습니다.
 잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="5342685492141499976">데이터가 <ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="5389212809648216794">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chrome에서 카메라를 사용할 수 없습니다.</translation>

@@ -535,7 +535,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1401216725754314428">Naujame skirtuke sužinokite daugiau apie susijusias svetaines</translation>
 <translation id="1402426911829176748">Prisijungiama prie įrenginio</translation>
 <translation id="1405779994569073824">Užstrigo.</translation>
-<translation id="1406812885827747674">Leisti šį kartą</translation>
 <translation id="1407069428457324124">Tamsioji tema</translation>
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="140723521119632973">Mobiliojo ryšio aktyvinimas</translation>
@@ -5344,7 +5343,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresai}=1{Adresai ({SELECTED_ITEMS})}one{Adresai ({SELECTED_ITEMS})}few{Adresai ({SELECTED_ITEMS})}many{Adresai ({SELECTED_ITEMS})}other{Adresai ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5033137252639132982">Neleidžiama naudoti judesio jutiklių</translation>
-<translation id="5034158480345261097">„<ph name="ACTOR_NAME" />“ gali naudoti „Google“ slaptažodžių tvarkyklę, kad prisijungtų už jus. <ph name="BEGIN_LINK" />Sužinokite, kaip „<ph name="ACTOR_NAME" />“ tvarko jūsų duomenis<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536">Toliau pasirinkite „Daugiau išsamios informacijos“, kad gautumėte daugiau informacijos iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
 <translation id="5037676449506322593">Pasirinkti viską</translation>
 <translation id="5038621320029329200">Patikimi sertifikatai</translation>
@@ -8537,7 +8535,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7495149565104413027">„Android“ programa</translation>
 <translation id="7497322070873193353">„Google“ DI</translation>
 <translation id="7497981768003291373">Neturite neseniai užfiksuotų „WebRTC“ teksto žurnalų.</translation>
-<translation id="7499684925421947861">Leisti „<ph name="ACTOR_NAME" />“ prisijungti prie <ph name="DOMAIN" /> už jus?</translation>
 <translation id="7501957181231305652">arba</translation>
 <translation id="7502220299952823578">Pridėti prie sąrašo „Visada suaktyvinti šias svetaines“</translation>
 <translation id="7502528909759062987">Pristabdyti skirtuko perdavimą į „<ph name="DEVICE_NAME" />“</translation>
