@@ -135,12 +135,14 @@ export class OmniboxEverywhereAppElement extends
         reflect: true,
         attribute: 'is-active',
       },
+      isExpanded_: {type: Boolean},
       isPendingContextUpload_: {type: Boolean},
     };
   }
 
   protected accessor isHotkeyDropdownOpen_: boolean = false;
   protected accessor isActive_: boolean = true;
+  private accessor isExpanded_: boolean = true;
   protected accessor isComposeboxMode_: boolean = false;
   protected accessor isPendingContextUpload_: boolean = false;
   protected accessor searchboxLayoutMode_: string =
@@ -204,6 +206,9 @@ export class OmniboxEverywhereAppElement extends
     this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
     this.eventTracker_.add(window, 'click', this.onAppClick_.bind(this));
+    this.eventTracker_.add(this, 'text-input-focused', () => {
+      this.isExpanded_ = true;
+    });
     this.eventTracker_.add(
         document, 'visibilitychange', this.onVisibilitychange_.bind(this));
     this.eventTracker_.add(
@@ -222,10 +227,11 @@ export class OmniboxEverywhereAppElement extends
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (this.dynamicSizing_) {
-      // In persistent mode, rest in the small 480px state (4 MVT tiles) when
-      // inactive, and expand both the searchbox and MVT row (5 tiles) when
-      // focused.
-      this.smallLoomnibox_ = this.isPersistentMode_ && !this.isActive_;
+      // In persistent mode, rest in the small 480px state (4 MVT tiles) until
+      // the text input is focused; then stay expanded (5 tiles) until the
+      // browser demotes the widget (`onDemoted_`). Transient window blurs
+      // (e.g. native menus) intentionally do not shrink it.
+      this.smallLoomnibox_ = this.isResting_();
     }
   }
 
@@ -270,6 +276,11 @@ export class OmniboxEverywhereAppElement extends
     const onContextMenuClosed = () => {
       this.composebox?.onContextMenuClosed();
       this.searchbox?.onContextMenuClosed();
+      // The composebox restores input focus after its context menu closes,
+      // except at the 480px resting size, where focusing would expand it.
+      if (this.isComposeboxMode_ && !this.isResting_()) {
+        this.focusActiveInput_();
+      }
     };
 
     const onScreenshotCaptureCancelled = async () => {
@@ -326,6 +337,15 @@ export class OmniboxEverywhereAppElement extends
             () => this.searchbox?.onOverflowMenuClosed()),
         omniboxEverywhereCallbackRouter.onScreenshotCaptureCancelled
             .addListener(onScreenshotCaptureCancelled),
+        omniboxEverywhereCallbackRouter.focusInput.addListener(() => {
+          // Expand even if the input can't take focus (e.g. under the FRE
+          // intro modal).
+          this.isExpanded_ = true;
+          this.focusActiveInput_();
+        }),
+        omniboxEverywhereCallbackRouter.onDemoted.addListener(() => {
+          this.onDemoted_();
+        }),
     );
   }
 
@@ -381,6 +401,11 @@ export class OmniboxEverywhereAppElement extends
       if (state.model !== undefined && state.model !== ModelMode.kUnspecified) {
         this.composebox.getSearchboxHandler().setActiveModelMode(
             state.model, false);
+      }
+      // Focus the input after a + menu action (e.g. picking a model), as
+      // entering composebox mode does below.
+      if (!isPendingContextUpload) {
+        this.composebox.focusInput();
       }
       return;
     }
@@ -580,7 +605,9 @@ export class OmniboxEverywhereAppElement extends
     this.contextUploadOriginWasSearchbox_ = false;
     this.setIsComposebox_(false);
     await this.updateComplete;
-    this.focusActiveInput_();
+    if (!this.isResting_()) {
+      this.focusActiveInput_();
+    }
   }
 
   private onKeyDown_(e: KeyboardEvent) {
@@ -622,7 +649,16 @@ export class OmniboxEverywhereAppElement extends
     this.isPendingContextUpload_ = false;
     this.contextUploadOriginWasSearchbox_ = false;
     await this.updateComplete;
-    this.focusActiveInput_();
+    if (!this.isResting_()) {
+      this.focusActiveInput_();
+    }
+  }
+
+  // Whether the window is in its 480px resting state (persistent dynamic sizing
+  // mode, not yet expanded by the text input). Focusing the input expands it,
+  // so automatic refocusing is skipped while resting.
+  private isResting_(): boolean {
+    return this.dynamicSizing_ && this.isPersistentMode_ && !this.isExpanded_;
   }
 
   private shouldAutoFocusInput_(): boolean {
@@ -645,12 +681,31 @@ export class OmniboxEverywhereAppElement extends
     } else {
       this.searchbox?.focusInput();
     }
+    this.isExpanded_ = true;
+  }
+
+  private onDemoted_() {
+    this.isExpanded_ = false;
+    // Clear active element focus on demotion so Blink's `FocusController`
+    // does not auto-restore `<input>` focus when `web_contents()->Focus()`
+    // runs on `WM_ACTIVATE(WA_CLICKACTIVE)` before `WM_LBUTTONDOWN`.
+    const activeEl = getDeepActiveElement();
+    if (activeEl instanceof HTMLElement && activeEl !== document.body) {
+      activeEl.blur();
+    }
+    this.clearActivationTimeout_();
   }
 
   private onWindowFocus_() {
     this.isActive_ = true;
-    this.focusActiveInput_();
     this.maybeRecordFreImpression_();
+    // In persistent dynamic sizing mode, only the text input expands the
+    // window. Activation (e.g. a click on a button, a drag, or closing a menu)
+    // only restores input focus if the window is already expanded.
+    if (this.isResting_()) {
+      return;
+    }
+    this.focusActiveInput_();
     this.wasJustActivated_ = true;
     if (this.activationTimeoutId_ !== null) {
       clearTimeout(this.activationTimeoutId_);
@@ -698,13 +753,17 @@ export class OmniboxEverywhereAppElement extends
     }
 
     await this.updateComplete;
-    this.focusActiveInput_();
     this.maybeRecordFreImpression_();
+    if (this.isResting_()) {
+      return;
+    }
+    this.focusActiveInput_();
   }
 
   // TODO(b/540973063): Extract common voice search lifecycle handling into
   // SearchboxMixin.
   protected async onOpenVoiceSearch_() {
+    this.isExpanded_ = true;
     this.showVoiceSearchOverlay_ = true;
     this.voiceSearchListening_ = true;
     this.voiceSearchReceivedSpeech_ = false;

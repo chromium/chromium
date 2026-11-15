@@ -704,6 +704,9 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   if (web_contents()) {
     web_contents()->Focus();
   }
+  if (auto* ui = GetOmniboxEverywhereUI()) {
+    ui->FocusInput();
+  }
 
   MaybeShowLensPromo();
 }
@@ -844,6 +847,9 @@ void OmniboxEverywhereUIManager::Demote() {
     return;
   }
   is_demoted_ = true;
+  if (auto* ui = GetOmniboxEverywhereUI()) {
+    ui->OnDemoted();
+  }
   EndLensPromo();
   widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
   // Deactivate only if the widget is currently active to avoid deactivating
@@ -873,6 +879,9 @@ void OmniboxEverywhereUIManager::Minimize() {
   }
   CancelTransientUiState();
   if (!std::exchange(is_demoted_, true)) {
+    if (auto* ui = GetOmniboxEverywhereUI()) {
+      ui->OnDemoted();
+    }
     EndLensPromo();
   }
   widget_->Minimize();
@@ -1028,6 +1037,9 @@ void OmniboxEverywhereUIManager::OnWidgetShowStateChanged(
   }
   CancelTransientUiState();
   if (!std::exchange(is_demoted_, true)) {
+    if (auto* ui = GetOmniboxEverywhereUI()) {
+      ui->OnDemoted();
+    }
     EndLensPromo();
   }
   if (prefs::IsEphemeralModelEnabled() && !HasOpenModalDialog()) {

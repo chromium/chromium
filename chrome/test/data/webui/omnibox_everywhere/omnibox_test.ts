@@ -3183,21 +3183,37 @@ suite('OmniboxEverywhereAppTest', () => {
 
         const mv = dynamicApp.shadowRoot.querySelector('cr-most-visited')!;
         assertTrue(!!mv);
+        const searchbox =
+            dynamicApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
 
-        // Deactivate window to enter resting state in persistent mode.
-        window.dispatchEvent(new Event('blur'));
+        // Demote window to enter resting state in persistent mode.
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
 
-        // Focus window (active state) expands searchbox and MVT to 5 tiles.
+        // Focus window (active state) keeps small-loomnibox until the text
+        // input is focused, then expands searchbox and MVT to 5 tiles.
         window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals('4', mv.getAttribute('max-tiles'));
+
+        searchbox.$.input.inputElement.dispatchEvent(
+            new FocusEvent('focusin', {bubbles: true, composed: true}));
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals('5', mv.getAttribute('max-tiles'));
 
-        // Blur window again.
+        // A transient window blur (e.g. a native menu) keeps it expanded; only
+        // demotion shrinks it back.
         window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
@@ -3240,18 +3256,297 @@ suite('OmniboxEverywhereAppTest', () => {
         assertEquals('600', dynamicApp600.getAttribute('dynamic-sizing-width'));
         const mv = dynamicApp600.shadowRoot.querySelector('cr-most-visited')!;
         assertTrue(!!mv);
+        const searchbox = dynamicApp600.shadowRoot.querySelector(
+            'omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
 
         // Resting state uses 4 tiles.
-        window.dispatchEvent(new Event('blur'));
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
 
-        // Active state in 600px variant expands to 5 tiles.
+        // Active state in 600px variant expands to 5 tiles once the text input
+        // is focused.
         window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
+        assertEquals('4', mv.getAttribute('max-tiles'));
+
+        searchbox.$.input.inputElement.dispatchEvent(
+            new FocusEvent('focusin', {bubbles: true, composed: true}));
         await microtasksFinished();
         assertFalse(dynamicApp600.hasAttribute('small-loomnibox'));
         assertEquals('5', mv.getAttribute('max-tiles'));
+      });
+
+  test(
+      'dynamicSizing only expands when text input is focused and stays ' +
+          'expanded until demotion',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          isPersistentMode: true,
+          isFuseboxEnabled: true,
+          searchboxLensSearch: true,
+          searchboxShowComposeEntrypoint: true,
+          initialFreStage: 0,
+        });
+        const dynamicApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(dynamicApp);
+        await microtasksFinished();
+
+        const searchbox =
+            dynamicApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
+        const lensButton = searchbox.shadowRoot.querySelector<HTMLElement>(
+            '#lensSearchButton')!;
+        assertTrue(!!lensButton);
+        const composeButton =
+            searchbox.$.input.querySelector<HTMLElement>('#composeButton')!;
+        assertTrue(!!composeButton);
+
+        const inputElement = searchbox.$.input.inputElement;
+
+        // 1. Demotion collapses to 480px and clears input focus, so that Blink
+        // does not restore it (and expand mid-click) on click-activation.
+        searchbox.$.input.focus();
+        assertEquals(inputElement, getDeepActiveElement());
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+
+        // 2. Activating the demoted window (e.g. a click on the background, a
+        // drag, or a button) stays at 480px and doesn't focus the input.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('is-active'));
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        dynamicApp.click();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+
+        // Focus on the AI Mode button slotted inside the input doesn't count.
+        composeButton.dispatchEvent(
+            new FocusEvent('focusin', {bubbles: true, composed: true}));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // Opening and closing the Lens menu keeps it at 480px.
+        lensButton.focus();
+        lensButton.click();
+        await microtasksFinished();
+        assertTrue(searchbox.isScreenshotMenuOpen);
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        testProxy.page.onScreenshotMenuClosed();
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(searchbox.isScreenshotMenuOpen);
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // Closing the + context menu keeps it at 480px.
+        testEverywhereProxy.page.onContextMenuClosed();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // 3. Regression: focusing the input while a button inside the same
+        // shadow tree (Lens) holds focus, and while the window is blurred
+        // (e.g. by a native menu), still expands. Blink trims this `focusin`
+        // at the omnibox host (target and relatedTarget retarget to the same
+        // element), so the app never sees it; the searchbox reports it.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertEquals(lensButton, getDeepActiveElement());
+        let appSawFocusin = false;
+        dynamicApp.addEventListener('focusin', () => {
+          appSawFocusin = true;
+        }, {once: true});
+        searchbox.$.input.focus();
+        await microtasksFinished();
+        assertFalse(appSawFocusin);
+        assertEquals(inputElement, getDeepActiveElement());
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // 4. Moving focus from the input to a button doesn't shrink it.
+        lensButton.focus();
+        await microtasksFinished();
+        assertEquals(lensButton, getDeepActiveElement());
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // 5. A transient window blur (e.g. a native context menu) doesn't
+        // shrink it, and refocusing the window restores input focus.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('is-active'));
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('is-active'));
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(inputElement, getDeepActiveElement());
+
+        // 6. Demotion shrinks it, and becoming visible while demoted doesn't
+        // expand it or focus the input.
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+        Object.defineProperty(
+            document, 'visibilityState',
+            {value: 'visible', configurable: true});
+        try {
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+          assertEquals(document.body, getDeepActiveElement());
+        } finally {
+          delete (document as {visibilityState?: string}).visibilityState;
+        }
+
+        // 7. Hotkey/tray invocation: `ActivateAndFocus()` focuses the
+        // WebContents before sending `FocusInput`, so the window 'focus'
+        // arrives first (and stays at 480px); `focusInput` then expands and
+        // focuses the input.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+        testEverywhereProxy.page.focusInput();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(inputElement, getDeepActiveElement());
+
+        // 8. Composebox mode: after demotion, closing the + menu stays at
+        // 480px, and focusing the composebox input expands.
+        searchbox.fire(
+            'open-composebox', {text: '', files: [], mode: 0, model: 0});
+        await microtasksFinished();
+        const composebox = dynamicApp.shadowRoot.querySelector(
+            'omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+        const composeboxInputElement =
+            composebox.$.composeboxInput.inputElement;
+
+        // While expanded, closing the + context menu restores input focus.
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        blurActiveElement();
+        testEverywhereProxy.page.onContextMenuClosed();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertEquals(composeboxInputElement, getDeepActiveElement());
+
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+
+        // Closing the + context menu (or the menu being canceled by demotion)
+        // doesn't focus the composebox input, so it stays at 480px.
+        testEverywhereProxy.page.onContextMenuClosed();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+
+        composeboxInputElement.focus();
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // A + menu action that reopens the composebox (e.g. picking a model)
+        // focuses the input, so it expands.
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        testEverywhereProxy.page.openComposebox(null);
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(composeboxInputElement, getDeepActiveElement());
+
+        // 9. Leaving composebox mode in the background (e.g. the AI Mode pref
+        // turning off) while demoted stays at 480px and doesn't focus the
+        // input.
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        testProxy.page.updateAimPopupEligibility(false);
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(!!dynamicApp.shadowRoot.querySelector(
+            'omnibox-everywhere-composebox'));
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals(document.body, getDeepActiveElement());
+      });
+
+  test('dynamicSizing clicking the voice search button expands', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      dynamicSizing: true,
+      isPersistentMode: true,
+      initialFreStage: 0,
+    });
+    const dynamicApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(dynamicApp);
+    await microtasksFinished();
+    const searchbox =
+        dynamicApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    const voiceButton =
+        searchbox.shadowRoot.querySelector<HTMLElement>('#voiceSearchButton')!;
+    assertTrue(!!voiceButton);
+
+    testEverywhereProxy.page.onDemoted();
+    await testEverywhereProxy.page.$.flushForTesting();
+    await microtasksFinished();
+    assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+
+    voiceButton.click();
+    await microtasksFinished();
+    assertTrue(!!dynamicApp.shadowRoot.querySelector('#voiceSearchDialog'));
+    assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+  });
+
+  test(
+      'dynamicSizing hotkey expands even while the FRE intro modal shows',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          isPersistentMode: true,
+          initialFreStage: FreStage.kIntroModal,
+        });
+        const dynamicApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(dynamicApp);
+        await microtasksFinished();
+        assertTrue(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
+
+        testEverywhereProxy.page.onDemoted();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+
+        // The input can't take focus under the modal, but the hotkey still
+        // expands Loomnibox (and the FRE modal with it).
+        testEverywhereProxy.page.focusInput();
+        await testEverywhereProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertFalse(
+            dynamicApp.shadowRoot.querySelector('fre-modal')!.hasAttribute(
+                'small-loomnibox'));
       });
 
   test(

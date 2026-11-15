@@ -117,6 +117,13 @@ export class OmniboxEverywhereComposeboxElement extends
         new Event('open-voice-search', {bubbles: true, composed: true}));
   }
 
+  // Report text input focus to the app. A `focusin` moving between two
+  // controls inside this shadow tree is not dispatched past it.
+  override onInputFocusin() {
+    super.onInputFocusin();
+    this.fire('text-input-focused');
+  }
+
   private wasScreenshotMenuOpenOnPointerDown_: boolean = false;
 
   protected onLensSearchPointerdown_(e: PointerEvent) {
@@ -334,9 +341,15 @@ export class OmniboxEverywhereComposeboxElement extends
     this.showDropdown = this.computeShowDropdown();
   }
 
+  // Mirrors ComposeboxMixin.onContextMenuClosed() minus focusInput(); keep in
+  // sync. Focusing the input expands the window, so closing the menu at the
+  // 480px resting size (or when it's canceled by demotion) would expand it. The
+  // app restores focus when the window isn't resting.
   override async onContextMenuClosed(): Promise<void> {
     this.isContextMenuOpen = false;
-    await super.onContextMenuClosed();
+    this.contextMenuOpened = false;
+    this.shareTabsFlyoutOpen = false;
+    await this.updateComplete;
     this.showDropdown = this.computeShowDropdown();
   }
 
