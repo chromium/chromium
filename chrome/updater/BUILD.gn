@@ -449,6 +449,8 @@ if (is_win || is_mac || is_linux) {
         "usage_stats_permissions_linux.cc",
       ]
 
+      deps += [ "//net" ]
+
       libs = [
         "curl",
         "systemd",
@@ -1282,7 +1284,10 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_linux) {
-      sources += [ "test/integration_tests_linux.cc" ]
+      sources += [
+        "net/network_fetcher_libcurl_unittest.cc",
+        "test/integration_tests_linux.cc",
+      ]
 
       data += [
         "//chrome/test/data/updater/updater_qualification_app.crx",

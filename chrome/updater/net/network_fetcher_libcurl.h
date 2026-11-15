@@ -23,6 +23,10 @@ class LibcurlNetworkFetcherImpl;
 // LibcurlNetworkFetcher wraps a `LibcurlNetworkFetcherImpl` in a
 // `base::SequenceBound`. This allows the wrapped fetcher to run solely in a
 // dedicated io sequence.
+//
+// A fetcher performs a single transfer, which is how update_client uses it:
+// it creates one per request or download. Starting a second transfer is a
+// programming error.
 class LibcurlNetworkFetcher final : public update_client::NetworkFetcher {
  public:
   using ResponseStartedCallback =
@@ -34,8 +38,11 @@ class LibcurlNetworkFetcher final : public update_client::NetworkFetcher {
       ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   // Creates a fetcher backed by a new libcurl easy handle. Returns nullptr if
-  // the handle cannot be initialized.
-  static std::unique_ptr<LibcurlNetworkFetcher> Create();
+  // the handle cannot be initialized. `proxy` is a proxy in libcurl's syntax,
+  // such as "http://proxy:3128". Empty means libcurl's defaults, which honor
+  // the proxy environment variables.
+  static std::unique_ptr<LibcurlNetworkFetcher> Create(
+      std::string proxy = std::string());
 
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
@@ -65,6 +72,7 @@ class LibcurlNetworkFetcher final : public update_client::NetworkFetcher {
       base::SequenceBound<LibcurlNetworkFetcherImpl> impl);
 
   base::SequenceBound<LibcurlNetworkFetcherImpl> impl_;
+  bool transfer_started_ = false;
 };
 
 }  // namespace updater

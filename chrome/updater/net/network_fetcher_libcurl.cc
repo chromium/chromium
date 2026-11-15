@@ -28,18 +28,22 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
+#include "net/base/net_errors.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -49,6 +53,34 @@ struct CurlDeleter {
   void operator()(CURL* curl) { curl_easy_cleanup(curl); }
 };
 using CurlUniquePtr = std::unique_ptr<CURL, CurlDeleter>;
+
+// Set by the cancel closure on the fetcher's sequence and read by libcurl's
+// progress callback on the transfer sequence.
+using CancelFlag = base::RefCountedData<base::AtomicFlag>;
+
+// Bounds on how long an unresponsive endpoint can hold a transfer.
+constexpr base::TimeDelta kConnectTimeout = base::Seconds(30);
+constexpr long kLowSpeedLimitBytesPerSecond = 1;
+constexpr base::TimeDelta kLowSpeedTime = base::Seconds(60);
+
+constexpr long kMaxRedirects = 5;
+
+// Restricts `curl` to HTTP and HTTPS, for the request and for the redirects
+// it follows. Older libcurl versions follow redirects to FTP by default.
+//
+// CURLOPT_PROTOCOLS and CURLOPT_REDIR_PROTOCOLS are deprecated since libcurl
+// 7.85.0 in favor of their _STR variants, but the Linux sysroot ships 7.74.0,
+// which only has the bitmask options. They keep working in newer versions, so
+// using them unconditionally keeps a single code path on all platforms. Newer
+// curl.h marks them deprecated for clang too, hence the pragma.
+bool RestrictProtocolsToHttp(CURL* curl) {
+  constexpr long kHttpProtocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  return !(curl_easy_setopt(curl, CURLOPT_PROTOCOLS, kHttpProtocols) ||
+           curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, kHttpProtocols));
+#pragma clang diagnostic pop
+}
 
 }  // namespace
 
@@ -70,7 +102,8 @@ class LibcurlNetworkFetcherImpl {
 
   LibcurlNetworkFetcherImpl(
       CurlUniquePtr curl,
-      scoped_refptr<base::SequencedTaskRunner> callback_sequence_);
+      scoped_refptr<base::SequencedTaskRunner> callback_sequence_,
+      std::string proxy);
 
   void PostRequest(
       const GURL& url,
@@ -86,7 +119,8 @@ class LibcurlNetworkFetcherImpl {
       const base::FilePath& file_path,
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
-      DownloadToFileCompleteCallback download_to_file_complete_callback);
+      DownloadToFileCompleteCallback download_to_file_complete_callback,
+      scoped_refptr<CancelFlag> cancel_flag);
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -110,7 +144,20 @@ class LibcurlNetworkFetcherImpl {
                                   curl_off_t ultotal,
                                   curl_off_t ulnow);
 
+  // Reports the response's status and download progress. `total` and
+  // `current` describe the response body.
   void OnTransferInfo(curl_off_t total, curl_off_t current);
+
+  // Applies the options every transfer shares, and the proxy if one is set.
+  bool SetTransferOptions();
+
+  // Reports the status of a completed transfer's final response, unless
+  // `OnTransferInfo` already did.
+  void ReportResponseStarted(curl_off_t content_length);
+
+  bool IsCancelled() const {
+    return cancel_flag_ && cancel_flag_->data.IsSet();
+  }
 
   // Helper function to find the value of a header or return an empty string.
   static std::string GetHeaderValue(
@@ -126,17 +173,22 @@ class LibcurlNetworkFetcherImpl {
 
   // Sequence to post callbacks to.
   scoped_refptr<base::SequencedTaskRunner> callback_sequence_;
+  const std::string proxy_;
 
   ResponseStartedCallback response_started_callback_;
   ProgressCallback progress_callback_;
+  scoped_refptr<CancelFlag> cancel_flag_;
 
   base::WeakPtrFactory<LibcurlNetworkFetcherImpl> weak_factory_{this};
 };
 
 LibcurlNetworkFetcherImpl::LibcurlNetworkFetcherImpl(
     CurlUniquePtr curl,
-    scoped_refptr<base::SequencedTaskRunner> callback_sequence)
-    : curl_(std::move(curl)), callback_sequence_(callback_sequence) {}
+    scoped_refptr<base::SequencedTaskRunner> callback_sequence,
+    std::string proxy)
+    : curl_(std::move(curl)),
+      callback_sequence_(callback_sequence),
+      proxy_(std::move(proxy)) {}
 LibcurlNetworkFetcherImpl::~LibcurlNetworkFetcherImpl() = default;
 
 void LibcurlNetworkFetcherImpl::PostRequest(
@@ -167,6 +219,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPPOST, 1L) ||
+      !SetTransferOptions() ||
       curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
                        GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPHEADER, headers) ||
@@ -187,6 +240,11 @@ void LibcurlNetworkFetcherImpl::PostRequest(
                        curl_error_buf_.data())) {
     VLOG(1) << "Failed to set curl options for HTTP POST.";
     curl_slist_free_all(headers);
+    callback_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(post_request_complete_callback), std::nullopt,
+                       CURLE_FAILED_INIT, std::string(), std::string(),
+                       std::string(), -1));
     return;
   }
 
@@ -199,6 +257,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
     VLOG(1) << "Failed to perform HTTP POST. "
             << (curl_error_buf_[0] ? curl_error_buf_.data() : "")
             << " (CURLcode " << result << ")";
+  } else {
+    ReportResponseStarted(response_body->size());
   }
 
   int x_retry_after;
@@ -213,7 +273,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       FROM_HERE,
       base::BindOnce(
           std::move(post_request_complete_callback), std::move(response_body),
-          CURLE_OK,
+          result,
           GetHeaderValue(response_headers,
                          update_client::NetworkFetcher::kHeaderEtag),
           GetHeaderValue(response_headers,
@@ -230,7 +290,8 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
-    DownloadToFileCompleteCallback download_to_file_complete_callback) {
+    DownloadToFileCompleteCallback download_to_file_complete_callback,
+    scoped_refptr<CancelFlag> cancel_flag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;
 
@@ -251,6 +312,9 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPGET, 1L) ||
+      !SetTransferOptions() ||
+      curl_easy_setopt(curl_.get(), CURLOPT_FOLLOWLOCATION, 1L) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_MAXREDIRS, kMaxRedirects) ||
       curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
                        GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEFUNCTION,
@@ -263,11 +327,15 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
       curl_easy_setopt(curl_.get(), CURLOPT_ERRORBUFFER,
                        curl_error_buf_.data())) {
     VLOG(1) << "Failed to set curl options for HTTP GET.";
+    callback_sequence_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(download_to_file_complete_callback),
+                                  CURLE_FAILED_INIT, 0));
     return;
   }
 
   response_started_callback_ = std::move(response_started_callback);
   progress_callback_ = std::move(progress_callback);
+  cancel_flag_ = std::move(cancel_flag);
 
   curl_off_t downloaded_bytes = 0;
   curl_error_buf_[0] = '\0';
@@ -281,34 +349,89 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
     VLOG(1) << "Cannot retrieve downloaded bytes for finished transfer";
     downloaded_bytes = 0;
   }
+  if (result == CURLE_OK) {
+    ReportResponseStarted(downloaded_bytes);
+  }
+
+  // update_client expects a cancelled download to complete with ERR_ABORTED.
+  const int net_error = result == CURLE_ABORTED_BY_CALLBACK
+                            ? static_cast<int>(net::ERR_ABORTED)
+                            : static_cast<int>(result);
 
   file.Close();
   callback_sequence_->PostTask(
       FROM_HERE, base::BindOnce(std::move(download_to_file_complete_callback),
-                                result, downloaded_bytes));
+                                net_error, downloaded_bytes));
 }
 
 void LibcurlNetworkFetcherImpl::OnTransferInfo(curl_off_t total,
                                                curl_off_t current) {
+  long response_code = 0;
+  if (curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code) !=
+      CURLE_OK) {
+    VLOG(1) << "Cannot retrieve HTTP response code for ongoing transfer.";
+    return;
+  }
+  // Nothing is reported until the final response arrives: not before any
+  // status is known, not for an interim 1xx such as the reply to
+  // `Expect: 100-continue`, and not for a redirect that is about to be
+  // followed, whose body would otherwise show up as progress.
+  if (response_code < 200 || (response_code >= 300 && response_code < 400)) {
+    return;
+  }
+
   if (response_started_callback_ && total) {
-    // Query for an HTTP response code. If one has not been sent yet, the
-    // transfer has not started.
-    long response_code = 0;
-    if (curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE,
-                          &response_code) != CURLE_OK) {
-      VLOG(1) << "Cannot retrieve HTTP response code for ongoing transfer.";
-      return;
-    } else if (response_code) {
-      callback_sequence_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(response_started_callback_),
-                                    response_code, total));
-    }
+    callback_sequence_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_started_callback_),
+                                  response_code, total));
   }
 
   if (progress_callback_ && current) {
     callback_sequence_->PostTask(FROM_HERE,
                                  base::BindOnce(progress_callback_, current));
   }
+}
+
+void LibcurlNetworkFetcherImpl::ReportResponseStarted(
+    curl_off_t content_length) {
+  // OnTransferInfo reports the status only once libcurl knows the body
+  // length, so a response without one (no body, chunked, or ending in a
+  // redirect) is reported here instead.
+  if (!response_started_callback_) {
+    return;
+  }
+  long response_code = 0;
+  if (curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code) ==
+          CURLE_OK &&
+      response_code) {
+    callback_sequence_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_started_callback_),
+                                  response_code, content_length));
+  }
+}
+
+bool LibcurlNetworkFetcherImpl::SetTransferOptions() {
+  CURL* curl = curl_.get();
+  // CURLOPT_NOSIGNAL keeps the timeouts from using signals in a multithreaded
+  // process.
+  if (!RestrictProtocolsToHttp(curl) ||
+      curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L) ||
+      curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT,
+                       static_cast<long>(kConnectTimeout.InSeconds())) ||
+      curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT,
+                       kLowSpeedLimitBytesPerSecond) ||
+      curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME,
+                       static_cast<long>(kLowSpeedTime.InSeconds()))) {
+    return false;
+  }
+  if (proxy_.empty()) {
+    return true;
+  }
+  // An empty CURLOPT_NOPROXY overrides the no_proxy environment variable, and
+  // the proxy's CONNECT reply is kept out of the header callback.
+  return !(curl_easy_setopt(curl, CURLOPT_PROXY, proxy_.c_str()) ||
+           curl_easy_setopt(curl, CURLOPT_NOPROXY, "") ||
+           curl_easy_setopt(curl, CURLOPT_SUPPRESS_CONNECT_HEADERS, 1L));
 }
 
 size_t LibcurlNetworkFetcherImpl::CurlWriteStringCallback(void* data,
@@ -380,25 +503,25 @@ int LibcurlNetworkFetcherImpl::CurlTransferCallback(void* userp,
                                                     curl_off_t dlnow,
                                                     curl_off_t ultotal,
                                                     curl_off_t ulnow) {
-  if (!dltotal && !dlnow && !ultotal && !ulnow) {
-    return 0;
-  }
-
   base::WeakPtr<LibcurlNetworkFetcherImpl> wrapper =
       *static_cast<base::WeakPtr<LibcurlNetworkFetcherImpl>*>(userp);
-  if (wrapper) {
-    if (dltotal || dlnow) {
-      wrapper->OnTransferInfo(dltotal, dlnow);
-    } else {
-      wrapper->OnTransferInfo(ultotal, ulnow);
-    }
+  // A non-zero return aborts the transfer with CURLE_ABORTED_BY_CALLBACK.
+  if (wrapper && wrapper->IsCancelled()) {
+    return 1;
+  }
+  // The NetworkFetcher callbacks describe the response only, so the upload of
+  // the request body is not reported. The response without a body is
+  // reported once the transfer completes.
+  if (wrapper && (dltotal || dlnow)) {
+    wrapper->OnTransferInfo(dltotal, dlnow);
   }
 
   return 0;
 }
 
 // static
-std::unique_ptr<LibcurlNetworkFetcher> LibcurlNetworkFetcher::Create() {
+std::unique_ptr<LibcurlNetworkFetcher> LibcurlNetworkFetcher::Create(
+    std::string proxy) {
   CurlUniquePtr curl{curl_easy_init()};
   if (!curl) {
     VLOG(1) << "Failed to initialize a curl handle.";
@@ -407,7 +530,8 @@ std::unique_ptr<LibcurlNetworkFetcher> LibcurlNetworkFetcher::Create() {
   return base::WrapUnique(
       new LibcurlNetworkFetcher(base::SequenceBound<LibcurlNetworkFetcherImpl>(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-          std::move(curl), base::SequencedTaskRunner::GetCurrentDefault())));
+          std::move(curl), base::SequencedTaskRunner::GetCurrentDefault(),
+          std::move(proxy))));
 }
 
 LibcurlNetworkFetcher::LibcurlNetworkFetcher(
@@ -424,6 +548,8 @@ void LibcurlNetworkFetcher::PostRequest(
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
     PostRequestCompleteCallback post_request_complete_callback) {
+  CHECK(!std::exchange(transfer_started_, true))
+      << "A LibcurlNetworkFetcher performs a single transfer.";
   impl_.AsyncCall(&LibcurlNetworkFetcherImpl::PostRequest)
       .WithArgs(url, post_data, content_type, post_additional_headers,
                 std::move(response_started_callback),
@@ -437,11 +563,16 @@ base::OnceClosure LibcurlNetworkFetcher::DownloadToFile(
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
     DownloadToFileCompleteCallback download_to_file_complete_callback) {
+  CHECK(!std::exchange(transfer_started_, true))
+      << "A LibcurlNetworkFetcher performs a single transfer.";
+  auto cancel_flag = base::MakeRefCounted<CancelFlag>();
   impl_.AsyncCall(&LibcurlNetworkFetcherImpl::DownloadToFile)
       .WithArgs(url, file_path, std::move(response_started_callback),
                 std::move(progress_callback),
-                std::move(download_to_file_complete_callback));
-  return base::DoNothing();
+                std::move(download_to_file_complete_callback), cancel_flag);
+  return base::BindOnce(
+      [](scoped_refptr<CancelFlag> flag) { flag->data.Set(); },
+      std::move(cancel_flag));
 }
 
 }  // namespace updater
