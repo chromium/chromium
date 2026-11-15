@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.IconType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.search_engines.StarterPackId;
@@ -269,6 +270,11 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else {
             textLine2 = getSuggestionDescription(suggestion);
+            if (textLine2 != null) {
+                // The parser puts the server's bolding of the secondary text in the description
+                // classifications.
+                applyHighlightToMatchRegions(textLine2, suggestion.getDescriptionClassifications());
+            }
             textLine2Color = mUiContext.resourceProvider.getSuggestionSecondaryTextColor();
         }
 
@@ -277,6 +283,16 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                         suggestion, !isSearchSuggestion && !isDocumentSuggestion, !urlHighlighted);
 
         applyTextColor(textLine2, textLine2Color);
+        // The classifications don't carry the server's colors, so take them from the template.
+        SuggestTemplateInfo suggestTemplate = suggestion.getSuggestTemplate();
+        if (suggestTemplate != null) {
+            textLine1.applyFormattedStringColors(
+                    suggestTemplate.getPrimaryText(), mUiContext.resourceProvider);
+            if (textLine2 != null) {
+                textLine2.applyFormattedStringColors(
+                        suggestTemplate.getSecondaryText(), mUiContext.resourceProvider);
+            }
+        }
 
         // Tab search on desktop is exempt from the standard single-line desktop layout.
         if (!isTabSearch

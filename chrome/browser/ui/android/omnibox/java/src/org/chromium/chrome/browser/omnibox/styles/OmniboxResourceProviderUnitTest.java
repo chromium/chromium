@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.FormattedStringProtoIntDef.ColorType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 
@@ -307,6 +308,31 @@ public class OmniboxResourceProviderUnitTest {
                 "Wrong suggestion url text color for DEFAULT.",
                 defaultColor,
                 mProvider.getSuggestionUrlTextColor());
+    }
+
+    @Test
+    public void colorTypeToSuggestionTextColor() {
+        for (@BrandedColorScheme
+        int scheme : new int[] {BrandedColorScheme.APP_DEFAULT, BrandedColorScheme.INCOGNITO}) {
+            mProvider.setBrandedColorScheme(scheme);
+            assertEquals(
+                    mProvider.getSuggestionPrimaryTextColor(),
+                    mProvider.colorTypeToSuggestionTextColor(ColorType.COLOR_SUGGEST_QUERY_TEXT));
+            assertEquals(
+                    mProvider.getSuggestionSecondaryTextColor(),
+                    mProvider.colorTypeToSuggestionTextColor(ColorType.COLOR_SUGGEST_HINT_TEXT));
+            assertEquals(
+                    mProvider.getSuggestionUrlTextColor(),
+                    mProvider.colorTypeToSuggestionTextColor(ColorType.COLOR_SUGGEST_ACTION_HIGH));
+            // Types without a suggestion text color, including future ones, get the primary
+            // text color.
+            assertEquals(
+                    mProvider.getSuggestionPrimaryTextColor(),
+                    mProvider.colorTypeToSuggestionTextColor(ColorType.COLOR_PRIMARY));
+            assertEquals(
+                    mProvider.getSuggestionPrimaryTextColor(),
+                    mProvider.colorTypeToSuggestionTextColor(/* colorType= */ 1000));
+        }
     }
 
     @Test

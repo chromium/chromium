@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
+import org.chromium.components.omnibox.FormattedStringProtoIntDef.ColorType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -324,6 +325,19 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return isIncognito()
                 ? mCache.getColor(R.color.suggestion_url_color_incognito)
                 : SemanticColorUtils.getDefaultTextColorLink(mContext);
+    }
+
+    /**
+     * Returns the suggestion text color for {@code colorType}. HINT_TEXT and ACTION_HIGH get the
+     * secondary and URL text colors. Every other type, including QUERY_TEXT, gets the primary text
+     * color.
+     */
+    public @ColorInt int colorTypeToSuggestionTextColor(@ColorType int colorType) {
+        return switch (colorType) {
+            case ColorType.COLOR_SUGGEST_HINT_TEXT -> getSuggestionSecondaryTextColor();
+            case ColorType.COLOR_SUGGEST_ACTION_HIGH -> getSuggestionUrlTextColor();
+            default -> getSuggestionPrimaryTextColor();
+        };
     }
 
     /** Get status separator color. */

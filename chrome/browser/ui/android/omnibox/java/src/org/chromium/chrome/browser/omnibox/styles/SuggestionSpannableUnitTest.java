@@ -37,7 +37,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.ColorType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.FormattedStringFragment;
 
 import java.util.List;
 
@@ -51,6 +55,7 @@ public class SuggestionSpannableUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private Context mContext;
+    private OmniboxResourceProvider mResourceProvider;
     @Mock private ColorStateList mColor1;
     @Mock private ColorStateList mColor2;
 
@@ -59,6 +64,7 @@ public class SuggestionSpannableUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
@@ -509,6 +515,106 @@ public class SuggestionSpannableUnitTest {
         assertFalse(
                 SuggestionSpannable.contentEquals(
                         new SpannedString(original), twoBoldRegionsPlusColor(0, 10, 10, 17)));
+    }
+
+    @Test
+    public void applyFormattedStringColors_colorsFragments() {
+        String description = "Open now - Closes 9 PM";
+        SuggestionSpannable text = new SuggestionSpannable(description);
+
+        text.applyFormattedStringColors(
+                createFormattedString(description, "Open now".length()), mResourceProvider);
+
+        // Only the color of the bold fragment is applied, not the bolding.
+        assertEquals(createColoredText(description, 0, "Open now".length()), text);
+    }
+
+    @Test
+    public void applyFormattedStringColors_ignoresFormattedStringWithOtherText() {
+        // Dedupe can change the description without updating the SuggestTemplateInfo.
+        String description = "Open now - Closes 10 PM";
+        SuggestionSpannable text = new SuggestionSpannable(description);
+
+        text.applyFormattedStringColors(
+                createFormattedString("Open now - Closes 9 PM", "Open now".length()),
+                mResourceProvider);
+
+        assertEquals(new SuggestionSpannable(description), text);
+    }
+
+    @Test
+    public void applyFormattedStringColors_skipsFragmentWithoutStartIndex() {
+        String description = "Pizza - Open now";
+        int styledStart = "Pizza - ".length();
+        FormattedString formattedString =
+                FormattedString.newBuilder()
+                        .setText(description)
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("Pizza - "))
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(styledStart)
+                                        .setText("Open now")
+                                        .setColor(ColorType.COLOR_SUGGEST_ACTION_HIGH)
+                                        .setIsBolded(true))
+                        .addFragments(FormattedStringFragment.newBuilder().setText("ignored"))
+                        .build();
+        SuggestionSpannable text = new SuggestionSpannable(description);
+
+        text.applyFormattedStringColors(formattedString, mResourceProvider);
+
+        assertEquals(createColoredText(description, styledStart, description.length()), text);
+    }
+
+    @Test
+    public void applyFormattedStringColors_clampsFragmentEndToTextLength() {
+        String description = "Open now - Closes 9 PM";
+        // The second fragment starts past the end of the text.
+        FormattedString formattedString =
+                createFormattedString(description, "Open now".length()).toBuilder()
+                        .setFragments(
+                                1,
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(description.length() + 1))
+                        .build();
+        SuggestionSpannable text = new SuggestionSpannable(description);
+
+        text.applyFormattedStringColors(formattedString, mResourceProvider);
+
+        assertEquals(createColoredText(description, 0, description.length()), text);
+    }
+
+    /**
+     * Returns a FormattedString for {@code text} whose first {@code prefixLength} characters are
+     * bold and use the ACTION_HIGH color. The rest of the text has no style.
+     */
+    private static FormattedString createFormattedString(String text, int prefixLength) {
+        return FormattedString.newBuilder()
+                .setText(text)
+                .addFragments(
+                        FormattedStringFragment.newBuilder()
+                                .setStartIndex(0)
+                                .setText(text.substring(0, prefixLength))
+                                .setColor(ColorType.COLOR_SUGGEST_ACTION_HIGH)
+                                .setIsBolded(true))
+                .addFragments(
+                        FormattedStringFragment.newBuilder()
+                                .setStartIndex(prefixLength)
+                                .setText(text.substring(prefixLength)))
+                .build();
+    }
+
+    /** Returns {@code text} that uses the ACTION_HIGH color from start to end. */
+    private SuggestionSpannable createColoredText(String text, int start, int end) {
+        SuggestionSpannable coloredText = new SuggestionSpannable(text);
+        coloredText.setSpan(
+                new ForegroundColorSpan(mResourceProvider.getSuggestionUrlTextColor()),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return coloredText;
     }
 
     /**

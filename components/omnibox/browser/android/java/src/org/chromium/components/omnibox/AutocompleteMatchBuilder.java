@@ -185,6 +185,16 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
+     * @param classifications Classifications of the description text.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setDescriptionClassifications(
+            List<MatchClassification> classifications) {
+        mDescriptionClassifications = classifications;
+        return this;
+    }
+
+    /**
      * @param text The text to replace the Omnibox content with.
      * @return Omnibox suggestion builder.
      */

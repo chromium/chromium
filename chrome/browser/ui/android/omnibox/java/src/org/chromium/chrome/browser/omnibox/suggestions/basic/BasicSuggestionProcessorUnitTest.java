@@ -22,11 +22,16 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 
 import org.junit.After;
@@ -47,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.BadgedIconDrawable;
@@ -54,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState.IconSize;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -67,8 +74,12 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.DocumentType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.ColorType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
@@ -209,6 +220,57 @@ public class BasicSuggestionProcessorUnitTest {
         mSuggestion = createSuggestionBuilder(type, title).setIsSearch(true).build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+    }
+
+    /**
+     * Create search suggestion with a description, its classifications and a SuggestTemplateInfo
+     * for test.
+     */
+    private void createSearchSuggestionWithTemplate(
+            String title,
+            String description,
+            List<MatchClassification> descriptionClassifications,
+            SuggestTemplateInfo template) {
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, title)
+                        .setIsSearch(true)
+                        .setDescription(description)
+                        .setDescriptionClassifications(descriptionClassifications)
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+    }
+
+    /**
+     * Returns a FormattedString for {@code text} whose first {@code prefixLength} characters are
+     * bold and use the ACTION_HIGH color. The rest of the text has no style.
+     */
+    private static FormattedString createFormattedString(String text, int prefixLength) {
+        return FormattedString.newBuilder()
+                .setText(text)
+                .addFragments(
+                        FormattedStringFragment.newBuilder()
+                                .setStartIndex(0)
+                                .setText(text.substring(0, prefixLength))
+                                .setColor(ColorType.COLOR_SUGGEST_ACTION_HIGH)
+                                .setIsBolded(true))
+                .addFragments(
+                        FormattedStringFragment.newBuilder()
+                                .setStartIndex(prefixLength)
+                                .setText(text.substring(prefixLength)))
+                .build();
+    }
+
+    /** Returns {@code text} with a {@code color} span over the whole text. */
+    private static SuggestionSpannable createColoredText(String text, @ColorInt int color) {
+        SuggestionSpannable coloredText = new SuggestionSpannable(text);
+        coloredText.setSpan(
+                new ForegroundColorSpan(color),
+                /* start= */ 0,
+                /* end= */ text.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return coloredText;
     }
 
     /** Create URL suggestion with supplied text and target URL for test. */
@@ -876,6 +938,64 @@ public class BasicSuggestionProcessorUnitTest {
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
         assertTrue(mModel.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
+    }
+
+    @Test
+    public void searchSuggestions_secondaryTextTakesFormattedStringStyles() {
+        String description = "Open now - Closes 9 PM";
+        int prefixLength = "Open now".length();
+        // The parser classifies the bold fragment of the secondary text as MATCH.
+        createSearchSuggestionWithTemplate(
+                "pizza",
+                description,
+                List.of(
+                        new MatchClassification(
+                                0, MatchClassificationStyle.MATCH | MatchClassificationStyle.DIM),
+                        new MatchClassification(prefixLength, MatchClassificationStyle.DIM)),
+                SuggestTemplateInfo.newBuilder()
+                        .setSecondaryText(createFormattedString(description, prefixLength))
+                        .build());
+
+        SuggestionSpannable expected = new SuggestionSpannable(description);
+        expected.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                /* start= */ 0,
+                prefixLength,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        expected.setSpan(
+                new ForegroundColorSpan(mResourceProvider.getSuggestionSecondaryTextColor()),
+                /* start= */ 0,
+                /* end= */ description.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        expected.setSpan(
+                new ForegroundColorSpan(mResourceProvider.getSuggestionUrlTextColor()),
+                /* start= */ 0,
+                prefixLength,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        assertEquals(expected, mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+    }
+
+    @Test
+    public void searchSuggestions_primaryTextTakesFormattedStringStyles() {
+        String title = "pizza near me";
+        int prefixLength = "pizza".length();
+        createSearchSuggestionWithTemplate(
+                title,
+                "",
+                List.of(new MatchClassification(0, MatchClassificationStyle.NONE)),
+                SuggestTemplateInfo.newBuilder()
+                        .setPrimaryText(createFormattedString(title, prefixLength))
+                        .build());
+
+        // The bolding comes from the match classifications, so the template only adds its color.
+        SuggestionSpannable expected =
+                createColoredText(title, mResourceProvider.getSuggestionPrimaryTextColor());
+        expected.setSpan(
+                new ForegroundColorSpan(mResourceProvider.getSuggestionUrlTextColor()),
+                /* start= */ 0,
+                prefixLength,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        assertEquals(expected, mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
     }
 
     @Test
