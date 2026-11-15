@@ -150,6 +150,7 @@ void V5UpdateProtocolManager::IssueUpdateRequest(
              "The state of the local DB is sent so the server can send just "
              "the changes. This doesn't include any user data."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "safebrowsing.googleapis.com"
           internal {
             contacts {
               email: "thefrog@chromium.org"

@@ -268,6 +268,7 @@ void V5GetHashProtocolManager::GetFullHashes(
              "The 32-bit hash prefix of any potentially bad URLs. The URLs "
              "themselves are not sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "safebrowsing.googleapis.com"
           internal {
             contacts {
               email: "thefrog@chromium.org"
