@@ -208,36 +208,31 @@ class AimEligibilityTestBase : public InProcessBrowserTest {
   }
 
  protected:
-  explicit AimEligibilityTestBase(bool use_null_factory = true)
-      : use_null_factory_(use_null_factory) {}
+  AimEligibilityTestBase() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     signin_client_with_url_loader_helper_.SetUp();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &AimEligibilityTestBase::OnWillCreateBrowserContextServices,
-                use_null_factory_));
+                &AimEligibilityTestBase::OnWillCreateBrowserContextServices));
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   static void OnWillCreateBrowserContextServices(
-      bool use_null_factory,
       content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
 
-    if (use_null_factory) {
-      // Prevent the service from being created automatically during profile
-      // initialization. Tests will call `GetAimEligibilityService()` when
-      // ready.
-      AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-          context,
-          base::BindRepeating([](content::BrowserContext* context)
-                                  -> std::unique_ptr<KeyedService> {
-            return nullptr;
-          }));
-    }
+    // Prevent the service from being created automatically during profile
+    // initialization. Tests will call `GetAimEligibilityService()` when
+    // ready.
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            }));
   }
 
   void SetUpOnMainThread() override {
@@ -261,9 +256,6 @@ class AimEligibilityTestBase : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-
- private:
-  const bool use_null_factory_;
 };
 
 class ChromeAimEligibilityServiceBrowserTest
@@ -1261,8 +1253,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOffTheRecordBrowserTest,
 class ChromeAimEligibilityServiceOAuthBrowserTest
     : public AimEligibilityTestBase {
  public:
-  ChromeAimEligibilityServiceOAuthBrowserTest()
-      : AimEligibilityTestBase(false) {}
+  ChromeAimEligibilityServiceOAuthBrowserTest() = default;
   ~ChromeAimEligibilityServiceOAuthBrowserTest() override = default;
 
  protected:
@@ -1337,9 +1328,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
-// TODO(crbug.com/488467253): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       DISABLED_OTRRequestIsNotDropped) {
+                       OTRRequestIsNotDropped) {
   // Expectation: The request should include the Authorization header.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
@@ -1394,9 +1384,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   base::test::TestFuture<void> eligibility_changed_future;
   auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
       eligibility_changed_future.GetRepeatingCallback());
-  // Set the cookies to be empty so they are fresh and the first request is not
-  // dropped.
-  identity_test_env()->SetCookieAccounts({{}});
 
   // Wait for initial startup request (anonymous/no primary account).
   EXPECT_TRUE(request_handled_future.Take());
@@ -1462,7 +1449,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   base::test::TestFuture<void> eligibility_changed_future;
   auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
       eligibility_changed_future.GetRepeatingCallback());
-  identity_test_env()->SetCookieAccounts({{}});
 
   EXPECT_TRUE(request_handled_future.Take());
   EXPECT_TRUE(eligibility_changed_future.Wait());
@@ -1486,7 +1472,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   base::test::TestFuture<void> eligibility_changed_future;
   auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
       eligibility_changed_future.GetRepeatingCallback());
-  identity_test_env()->SetCookieAccounts({{}});
 
   // Wait for the first request (Startup) to be handled.
   EXPECT_TRUE(request_handled_future.Take());
@@ -1536,7 +1521,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   base::test::TestFuture<void> eligibility_changed_future;
   auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
       eligibility_changed_future.GetRepeatingCallback());
-  identity_test_env()->SetCookieAccounts({{}});
 
   // Wait for initial startup request (anonymous/cookie).
   EXPECT_TRUE(request_handled_future.Take());
