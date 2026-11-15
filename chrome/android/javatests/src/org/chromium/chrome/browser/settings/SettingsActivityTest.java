@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -217,7 +217,7 @@ public class SettingsActivityTest {
                 });
 
         // The root settings title should be unambiguous, i.e. only rendered once.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.search_engine_settings));
     }
 
     /** Regression test for https://crbug.com/548848118. */
@@ -249,13 +249,13 @@ public class SettingsActivityTest {
                             .setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
                 });
 
-        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.search_box));
 
         Rect searchBoxBounds = getViewScreenBounds(R.id.search_box);
         Rect searchIconBounds = getViewScreenBounds(R.id.search_icon);
 
-        onViewWaiting(withId(R.id.search_box)).perform(click());
-        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.search_box)).click();
+        waitForView(withId(R.id.search_query_container));
 
         Rect queryBounds = getViewScreenBounds(R.id.search_query_container);
         Rect backArrowBounds = getViewScreenBounds(R.id.back_arrow_icon);
@@ -281,7 +281,7 @@ public class SettingsActivityTest {
         ensureActivityOrientation(activity, Configuration.ORIENTATION_LANDSCAPE);
 
         ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
-        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.search_box));
 
         Rect searchBoxBoundsAfterRotate = getViewScreenBounds(R.id.search_box);
         Rect searchIconBoundsAfterRotate = getViewScreenBounds(R.id.search_icon);
@@ -344,11 +344,9 @@ public class SettingsActivityTest {
             assertFalse(
                     "Recreated settings fragment should still not be shown in tab",
                     SettingsHostUtil.isShownInTab(recreated.getMainFragment()));
-            onViewWaiting(
-                            Matchers.allOf(
-                                    withText(R.string.search_engine_settings),
-                                    isDescendantOfA(withId(R.id.preferences_header))))
-                    .check(matches(isDisplayed()));
+            waitForView(
+                    withText(R.string.search_engine_settings),
+                    isDescendantOfA(withId(R.id.preferences_header)));
         } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
@@ -403,8 +401,8 @@ public class SettingsActivityTest {
         assumeNotLandscapeDeviceOnAndroid14OrEarlier(activity);
 
         ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
-        onViewWaiting(withId(R.id.search_box)).perform(click());
-        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.search_box)).click();
+        waitForView(withId(R.id.search_query_container));
 
         ensureActivityOrientation(activity, Configuration.ORIENTATION_LANDSCAPE);
         ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
@@ -422,11 +420,9 @@ public class SettingsActivityTest {
      * to be checked directly.
      */
     private void assertRootSettingsShown(SettingsActivity activity) {
-        onViewWaiting(
-                        Matchers.allOf(
-                                withText(R.string.search_engine_settings),
-                                isDescendantOfA(withId(R.id.preferences_header))))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withText(R.string.search_engine_settings),
+                isDescendantOfA(withId(R.id.preferences_header)));
 
         boolean rootShown =
                 ThreadUtils.runOnUiThreadBlocking(

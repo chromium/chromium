@@ -14,7 +14,6 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -30,7 +29,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -138,7 +137,7 @@ public class PrivacyGuideFragmentTest {
 
     private void launchPrivacyGuide() {
         mPrivacyGuideTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
+        waitForView(withText(R.string.privacy_guide_fragment_title));
     }
 
     private final Map<Integer, Integer> mTitleNames =
@@ -173,14 +172,14 @@ public class PrivacyGuideFragmentTest {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition < numberOfMaxSteps - 1);
         if (cardPosition == 0) {
-            onViewWaiting(withText(R.string.privacy_guide_start_button)).perform(click());
+            waitForView(withText(R.string.privacy_guide_start_button)).click();
         } else if (cardPosition == numberOfMaxSteps - 2) {
-            onViewWaiting(withText(R.string.privacy_guide_finish_button)).perform(click());
+            waitForView(withText(R.string.privacy_guide_finish_button)).click();
         } else {
-            onViewWaiting(withText(R.string.next)).perform(click());
+            waitForView(withText(R.string.next)).click();
         }
         @FragmentType int nextCardType = getNextCardType(cardType);
-        onViewWaiting(withText(mTitleNames.get(nextCardType)));
+        waitForView(withText(mTitleNames.get(nextCardType)));
         CriteriaHelper.pollUiThread(
                 () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
     }
@@ -188,9 +187,9 @@ public class PrivacyGuideFragmentTest {
     private void navigateFromCardToPrevious(@FragmentType int cardType) {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition > 0);
-        onViewWaiting(withText(R.string.back)).perform(click());
+        waitForView(withText(R.string.back)).click();
         @FragmentType int previousCardType = getPreviousCardType(cardType);
-        onViewWaiting(withText(mTitleNames.get(previousCardType)));
+        waitForView(withText(mTitleNames.get(previousCardType)));
         CriteriaHelper.pollUiThread(
                 () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
     }
@@ -200,7 +199,7 @@ public class PrivacyGuideFragmentTest {
         assertTrue(cardPosition > 0);
         pressBack();
         @FragmentType int previousCardType = getPreviousCardType(cardType);
-        onViewWaiting(withText(mTitleNames.get(previousCardType)));
+        waitForView(withText(mTitleNames.get(previousCardType)));
         // FragmentStateAdapter defers transitioning the incoming fragment to RESUMED (which
         // triggers MSBBFragment#onResume to refresh the switch state) until ViewPager2 reaches
         // SCROLL_STATE_IDLE.
@@ -283,12 +282,20 @@ public class PrivacyGuideFragmentTest {
     }
 
     private void clickOnArrowNextToRadioButtonWithText(int textId) {
-        onViewWaiting(
+        var expandArrow =
+                waitForView(
                         allOf(
                                 withId(R.id.expand_arrow),
                                 withParent(hasSibling(withChild(withText(textId))))),
-                        displayingAtLeastOption(0))
-                .perform(scrollTo(), click());
+                        displayingAtLeastOption(0));
+        expandArrow.performViewAction(scrollTo());
+        expandArrow.click();
+    }
+
+    private void scrollToAndClickWaaButton() {
+        var waaButton = waitForView(withId(R.id.waa_button), displayingAtLeastOption(0));
+        waaButton.performViewAction(scrollTo());
+        waaButton.click();
     }
 
     private ViewInteraction onInternalRadioButtonOfViewWithId(int viewId) {
@@ -411,22 +418,22 @@ public class PrivacyGuideFragmentTest {
         goToCard(FragmentType.DONE);
 
         navigateBackFromCard(FragmentType.DONE);
-        onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
+        waitForView(withId(R.id.block_third_party), displayingAtLeastOption(100));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         navigateBackFromCard(FragmentType.COOKIES);
-        onViewWaiting(allOf(withId(R.id.enhanced_option), isCompletelyDisplayed()));
+        waitForView(withId(R.id.enhanced_option), displayingAtLeastOption(100));
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         navigateBackFromCard(FragmentType.SAFE_BROWSING);
-        onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
+        waitForView(withId(R.id.history_sync_switch), displayingAtLeastOption(100));
         onView(withId(R.id.history_sync_switch)).perform(click());
         onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
         navigateBackFromCard(FragmentType.HISTORY_SYNC);
-        onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
+        waitForView(withId(R.id.msbb_switch), displayingAtLeastOption(100));
         // msbb_switch is checked because history_sync_switch was checked above.
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
@@ -501,8 +508,7 @@ public class PrivacyGuideFragmentTest {
 
         executeWhileCapturingIntents(
                 () -> {
-                    onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
-                            .perform(scrollTo(), click());
+                    scrollToAndClickWaaButton();
                     intended(
                             IntentMatchers.hasData(
                                     UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL));
@@ -516,10 +522,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
 
-        executeWhileCapturingIntents(
-                () ->
-                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
-                                .perform(scrollTo(), click()));
+        executeWhileCapturingIntents(this::scrollToAndClickWaaButton);
 
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.CompletionSWAAClick"));
@@ -536,10 +539,7 @@ public class PrivacyGuideFragmentTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
 
-        executeWhileCapturingIntents(
-                () ->
-                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
-                                .perform(scrollTo(), click()));
+        executeWhileCapturingIntents(this::scrollToAndClickWaaButton);
 
         histogram.assertExpected();
     }
@@ -1014,11 +1014,10 @@ public class PrivacyGuideFragmentTest {
         goToCard(FragmentType.SAFE_BROWSING);
 
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.sb_enhanced_sheet));
 
         pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.privacy_guide_safe_browsing_enhanced_title));
     }
 
     @Test
@@ -1211,6 +1210,6 @@ public class PrivacyGuideFragmentTest {
         goToCard(FragmentType.SAFE_BROWSING);
         mPrivacyGuideTestRule.recreateActivity();
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.sb_enhanced_sheet));
     }
 }

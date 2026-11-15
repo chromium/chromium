@@ -12,7 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -340,8 +340,8 @@ public class PermissionClapperQuietTest {
         mPermissionRule.checkPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
         // Wait for and click the "Subscribe" button.
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
+                .click();
 
         // Verify permission is granted.
         mPermissionRule.waitForPermissionSettingForOrigin(
@@ -365,12 +365,11 @@ public class PermissionClapperQuietTest {
         clickClapperQuietIcon();
 
         // Wait for and click the "Reset permissions" button.
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID)).click();
 
         // Confirm the reset in the dialog.
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
+                .click();
 
         // Because of the embargo logic for quiet permission prompts the permission gets blocked
         // after the first dismissal for this origin.
@@ -658,8 +657,8 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForDialogShownState(true);
 
         // Page Info should still be open. Attempt to Subscribe.
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
+                .click();
 
         // Verify that the permission was granted.
         mPermissionRule.checkPermissionSettingForOrigin(
@@ -697,10 +696,9 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForDialogShownState(true);
 
         // Attempt to Reset.
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
-                .perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID)).click();
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
+                .click();
 
         // Verify that the permission was NOT blocked (default for reset) or changed.
         mPermissionRule.checkPermissionSettingForOrigin(

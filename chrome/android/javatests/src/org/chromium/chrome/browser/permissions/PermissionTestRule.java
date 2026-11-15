@@ -11,8 +11,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -53,7 +54,6 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -681,11 +681,9 @@ public class PermissionTestRule implements TestRule {
         ViewAction clickAction =
                 useForgivingClick ? ForgivingClickAction.forgivingClick() : click();
 
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withTagValue(is(ModalDialogView.getTagForButtonType(buttonId))),
-                                isDisplayed()))
-                .perform(clickAction);
+        // isDisplayed() disambiguates from a GONE button with the same tag in the dialog.
+        waitForView(withTagValue(is(ModalDialogView.getTagForButtonType(buttonId))), isDisplayed())
+                .performViewAction(clickAction);
     }
 
     /** Wait for the permission dialog to be in the expected shown state. */

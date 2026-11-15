@@ -31,10 +31,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DASHBOARD_INTERACTIONS_HISTOGRAM_NAME;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -346,8 +346,8 @@ public final class SafetyHubTest {
         onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(doesNotExist());
 
         // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(PERMISSIONS_DATA_1.getOrigin())).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(PERMISSIONS_DATA_1.getOrigin()));
 
         histogramWatcher.assertExpected();
     }
@@ -401,13 +401,12 @@ public final class SafetyHubTest {
 
         // Verify tha the permissions subpage has been dismissed and the state of the permissions
         // module has changed.
-        onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.safety_hub_permissions_ok_title));
 
         // Click on the snackbar action button and verify that the info state is displayed
         // again.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(permissionsTitle));
 
         histogramWatcher.assertExpected();
     }
@@ -446,7 +445,7 @@ public final class SafetyHubTest {
         onView(withText(R.string.got_it)).check(matches(not(isEnabled())));
 
         // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
+        waitForView(withText(R.string.undo)).click();
 
         // Check that the button is enabled.
         onView(withText(R.string.got_it)).check(matches(isEnabled()));
@@ -463,15 +462,12 @@ public final class SafetyHubTest {
                         PermissionsModuleInteractions.GO_TO_SETTINGS);
 
         openActionBarOverflowOrOptionsMenu(mPermissionsFragmentTestRule.getActivity());
-        onViewWaiting(withText(R.string.safety_hub_go_to_site_settings_button)).perform(click());
-        onViewWaiting(
-                        allOf(
-                                withText(R.string.prefs_site_settings),
-                                anyOf(
-                                        withParent(withId(R.id.action_bar)),
-                                        withParent(withId(R.id.settings_title_in_detailed_pane))),
-                                isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.safety_hub_go_to_site_settings_button)).click();
+        waitForView(
+                withText(R.string.prefs_site_settings),
+                anyOf(
+                        withParent(withId(R.id.action_bar)),
+                        withParent(withId(R.id.settings_title_in_detailed_pane))));
 
         histogramWatcher.assertExpected();
     }
@@ -504,8 +500,7 @@ public final class SafetyHubTest {
         // Click on the secondary button and verity that the Safe Browsing settings is opened.
         scrollToExpandedPreference(safeBrowsingTitle);
         clickOnSecondaryButtonNextToText(safeBrowsingTitle);
-        onViewWaiting(allOf(withText(R.string.prefs_safe_browsing_title), isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.prefs_safe_browsing_title));
 
         histogramWatcher.assertExpected();
     }
@@ -1091,7 +1086,7 @@ public final class SafetyHubTest {
                                 totalCompromisedPasswordsCount);
 
         // Wait for the loading to disappear and the final state to be shown.
-        onViewWaiting(withText(compromisedPasswordsTitle)).check(matches(isDisplayed()));
+        waitForView(withText(compromisedPasswordsTitle));
 
         // Verify that unified passwords module which is in the warning state is expanded by
         // default.
@@ -1614,7 +1609,7 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
 
         // Wait for the loading to disappear and the final state to be shown.
-        onViewWaiting(withText(unavailablePasswordsTitle)).check(matches(isDisplayed()));
+        waitForView(withText(unavailablePasswordsTitle));
 
         // Verify that unified passwords module which is in the unavailable state is expanded by
         // default.
@@ -1652,7 +1647,7 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.safety_hub_no_passwords_title);
 
         // Wait for the loading to disappear and the final state to be shown.
-        onViewWaiting(withText(noAccountAndLocalPasswords)).check(matches(isDisplayed()));
+        waitForView(withText(noAccountAndLocalPasswords));
 
         // Verify that unified passwords module which is in the info state is expanded by
         // default.
@@ -1694,7 +1689,7 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
 
         // Wait for the loading to disappear and the final state to be shown.
-        onViewWaiting(withText(unavailableTitle)).check(matches(isDisplayed()));
+        waitForView(withText(unavailableTitle));
 
         // Verify that unified passwords module which is in the unavailable state is expanded by
         // default.
@@ -1745,13 +1740,12 @@ public final class SafetyHubTest {
         // Click on the Got it button and verify the permissions module has changed to a safe
         // state.
         clickOnPrimaryButtonNextToText(permissionsTitle);
-        onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.safety_hub_permissions_ok_title));
 
         // Click on the snackbar action button and verify that the info state is displayed
         // again.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(permissionsTitle));
 
         List<PermissionsData> permissionsList =
                 Arrays.asList(
@@ -1790,14 +1784,11 @@ public final class SafetyHubTest {
         // Click on the secondary button and verify that the site settings page is opened.
         scrollToExpandedPreference(permissionsTitle);
         clickOnSecondaryButtonNextToText(permissionsTitle);
-        onViewWaiting(
-                        allOf(
-                                withText(R.string.prefs_site_settings),
-                                anyOf(
-                                        withParent(withId(R.id.action_bar)),
-                                        withParent(withId(R.id.settings_title_in_detailed_pane))),
-                                isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withText(R.string.prefs_site_settings),
+                anyOf(
+                        withParent(withId(R.id.action_bar)),
+                        withParent(withId(R.id.settings_title_in_detailed_pane))));
 
         histogramWatcher.assertExpected();
     }
@@ -1898,7 +1889,7 @@ public final class SafetyHubTest {
                 mSafetyHubFragmentTestRule
                         .getActivity()
                         .getString(R.string.safety_hub_safety_tips_incognito_title);
-        onViewWaiting(withText(incognitoTitle)).check(matches(isDisplayed()));
+        waitForView(withText(incognitoTitle));
         clickOnPreferenceWithTextAndWaitForActivity(
                 withText(incognitoTitle), SafetyHubFragment.INCOGNITO_LEARN_MORE_URL);
         pressBack();
@@ -1987,8 +1978,8 @@ public final class SafetyHubTest {
         onView(withText(PERMISSIONS_DATA_3.getOrigin())).check(doesNotExist());
 
         // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(PERMISSIONS_DATA_3.getOrigin())).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(PERMISSIONS_DATA_3.getOrigin()));
 
         histogramWatcher.assertExpected();
     }
@@ -2043,13 +2034,12 @@ public final class SafetyHubTest {
 
         // Verify tha the permissions subpage has been dismissed and the state of the permissions
         // module has changed.
-        onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.safety_hub_permissions_ok_title));
 
         // Click on the snackbar action button and verify that the info state is displayed
         // again.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(permissionsTitle));
 
         histogramWatcher.assertExpected();
     }
@@ -2077,8 +2067,8 @@ public final class SafetyHubTest {
         onView(withText(PERMISSIONS_DATA_4.getOrigin())).check(doesNotExist());
 
         // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(PERMISSIONS_DATA_4.getOrigin())).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(PERMISSIONS_DATA_4.getOrigin()));
 
         histogramWatcher.assertExpected();
     }
@@ -2108,8 +2098,8 @@ public final class SafetyHubTest {
         onView(withText(PERMISSIONS_DATA_5.getOrigin())).check(doesNotExist());
 
         // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(PERMISSIONS_DATA_5.getOrigin())).check(matches(isDisplayed()));
+        waitForView(withText(R.string.undo)).click();
+        waitForView(withText(PERMISSIONS_DATA_5.getOrigin()));
 
         histogramWatcher.assertExpected();
     }
@@ -2131,24 +2121,21 @@ public final class SafetyHubTest {
     }
 
     private void clickOnButtonNextToText(String text) {
-        onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
-                .perform(click());
+        waitForView(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))).click();
     }
 
     private void clickOnPrimaryButtonNextToText(String text) {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.primary_button),
-                                withParent(hasSibling(withChild(withChild(withText(text)))))))
-                .perform(click());
+        waitForView(
+                        withId(R.id.primary_button),
+                        withParent(hasSibling(withChild(withChild(withText(text))))))
+                .click();
     }
 
     private void clickOnSecondaryButtonNextToText(String text) {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.secondary_button),
-                                withParent(hasSibling(withChild(withChild(withText(text)))))))
-                .perform(click());
+        waitForView(
+                        withId(R.id.secondary_button),
+                        withParent(hasSibling(withChild(withChild(withText(text))))))
+                .click();
     }
 
     private void expandPreferenceWithText(String text) {
@@ -2161,7 +2148,7 @@ public final class SafetyHubTest {
                         withId(R.id.buttons_container),
                         hasSibling(withChild(withChild(withText(text)))));
         if (visible) {
-            onViewWaiting(allOf(viewMatcher, isDisplayed())).check(matches(isDisplayed()));
+            waitForView(viewMatcher);
         } else {
             onView(viewMatcher).check(matches(not(isDisplayed())));
         }
@@ -2173,11 +2160,9 @@ public final class SafetyHubTest {
     }
 
     static View getRootViewSanitized(int text) {
-        View[] view = {null};
-        onViewWaiting(allOf(withText(text), isDisplayed()))
-                .check((v, e) -> view[0] = v.getRootView());
-        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
-        return view[0];
+        View view = waitForView(withText(text)).getView().getRootView();
+        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
+        return view;
     }
 
     private void scrollToPreference(Matcher<View> matcher) {

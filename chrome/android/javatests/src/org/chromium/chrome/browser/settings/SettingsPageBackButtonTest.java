@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -20,8 +17,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -207,9 +204,10 @@ public class SettingsPageBackButtonTest {
                 allOf(
                         withText(R.string.prefs_privacy_security),
                         isDescendantOfA(mainSettingsListMatcher));
-        onViewWaiting(mainSettingsListMatcher)
-                .perform(scrollTo(hasDescendant(withText(R.string.prefs_privacy_security))));
-        onViewWaiting(privacySecurityItemMatcher).perform(click());
+        waitForView(mainSettingsListMatcher)
+                .performViewAction(
+                        scrollTo(hasDescendant(withText(R.string.prefs_privacy_security))));
+        waitForView(privacySecurityItemMatcher).click();
 
         // 1a. Wait for PrivacySettings to be loaded in the detail pane
         String privacySettings = PrivacySettings.class.getSimpleName();
@@ -237,9 +235,10 @@ public class SettingsPageBackButtonTest {
                 allOf(
                         withText(R.string.clear_browsing_data_title),
                         isDescendantOfA(withId(R.id.preferences_detail)));
-        onViewWaiting(detailSettingsListMatcher)
-                .perform(scrollTo(hasDescendant(withText(R.string.clear_browsing_data_title))));
-        onViewWaiting(clearBrowsingDataPreferenceMatcher).perform(click());
+        waitForView(detailSettingsListMatcher)
+                .performViewAction(
+                        scrollTo(hasDescendant(withText(R.string.clear_browsing_data_title))));
+        waitForView(clearBrowsingDataPreferenceMatcher).click();
 
         // 2a. Wait for ClearBrowsingDataFragment to be loaded in the detail pane
         String clearBrowsingData = ClearBrowsingDataFragment.class.getSimpleName();
@@ -268,8 +267,8 @@ public class SettingsPageBackButtonTest {
                         isDescendantOfA(withId(R.id.settings_title_in_detailed_pane)));
         var cookiesAndSiteDataOptionMatcher = withText(R.string.clear_cookies_and_site_data_title);
 
-        onViewWaiting(clearBrowsingDataBreadcrumbMatcher).check(matches(isDisplayed()));
-        onViewWaiting(cookiesAndSiteDataOptionMatcher).check(matches(isDisplayed()));
+        waitForView(clearBrowsingDataBreadcrumbMatcher);
+        waitForView(cookiesAndSiteDataOptionMatcher);
         onView(clearBrowsingDataPreferenceMatcher).check(doesNotExist());
 
         // 4. Click back button in title container and 5. Verify back navigation returned to
@@ -280,7 +279,7 @@ public class SettingsPageBackButtonTest {
         // - The "Delete browsing data" preference button inside the fragment list is present again.
         // - The "Delete browsing data" breadcrumb title is gone.
         // - The suboption "Cookies and site data" is gone.
-        onViewWaiting(clearBrowsingDataPreferenceMatcher).check(matches(isDisplayed()));
+        waitForView(clearBrowsingDataPreferenceMatcher);
         onView(clearBrowsingDataBreadcrumbMatcher).check(doesNotExist());
         onView(cookiesAndSiteDataOptionMatcher).check(doesNotExist());
     }

@@ -6,13 +6,12 @@ package org.chromium.chrome.browser.permissions;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 
@@ -162,9 +161,9 @@ public class PermissionGestureGatedTest {
         // No gesture -> Quiet UI (MessageUI).
         mPermissionRule.waitForMessageShownState(true);
 
-        onViewWaiting(withText("Location blocked")).check(matches(isDisplayed()));
+        waitForView(withText("Location blocked"));
 
-        onViewWaiting(withText("OK")).perform(click());
+        waitForView(withText("OK")).click();
         mPermissionRule.waitForGeolocationSettingForOrigin(
                 /* usePrecise= */ true, ContentSetting.BLOCK, PAGE_URL);
     }
@@ -199,8 +198,8 @@ public class PermissionGestureGatedTest {
         mPermissionRule.waitForMessageShownState(false);
 
         clickClapperQuietIcon();
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
-                .perform(click());
+        waitForView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
+                .click();
         pressBack();
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
@@ -216,9 +215,9 @@ public class PermissionGestureGatedTest {
         // With gesture -> Loud UI (MessageUI with ClapperQuiet).
         mPermissionRule.waitForMessageShownState(true);
 
-        onViewWaiting(withText("Get notifications?")).check(matches(isDisplayed()));
+        waitForView(withText("Get notifications?"));
         // Verify Allow. Clapper Loud uses a message UI.
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID)).perform(click());
+        waitForView(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID)).click();
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
     }

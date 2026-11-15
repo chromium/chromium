@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -17,7 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.res.Configuration;
 import android.view.View;
@@ -103,7 +101,7 @@ public class SettingsPageSigninTest {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
         // Wait for settings page to load.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.search_engine_settings));
 
         // Skip test if portrait mode happens to be wide enough for two-column mode.
         Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn());
@@ -114,17 +112,17 @@ public class SettingsPageSigninTest {
                         withId(R.id.recycler_view),
                         isDescendantOfA(withId(R.id.preferences_header)),
                         hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail())));
-        onViewWaiting(headerRecyclerViewMatcher)
-                .perform(scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
+        waitForView(headerRecyclerViewMatcher)
+                .performViewAction(
+                        scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
         var headerAccountMatcher =
                 allOf(
                         isDescendantOfA(withId(R.id.preferences_header)),
                         withText(TestAccounts.ACCOUNT1.getEmail()));
-        onViewWaiting(headerAccountMatcher).perform(click());
+        waitForView(headerAccountMatcher).click();
 
         // Verify Account settings (ManageSyncSettings) is displayed.
-        onViewWaiting(allOf(withText(R.string.account_settings_title), isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.account_settings_title));
 
         // 1. Sign out while in single-column mode.
         mSigninTestRule.signOut();
@@ -148,7 +146,7 @@ public class SettingsPageSigninTest {
 
         // In two-column mode, verify that the detail pane shows the default Google Services
         // settings and NOT the stale Account/ManageSyncSettings fragment.
-        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.allow_chrome_signin_title));
         onView(withText(R.string.account_settings_title)).check(doesNotExist());
     }
 
@@ -173,7 +171,7 @@ public class SettingsPageSigninTest {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
         // Wait for settings page to load.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.search_engine_settings));
 
         // Skip test if portrait mode happens to be wide enough for two-column mode.
         Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn());
@@ -184,17 +182,17 @@ public class SettingsPageSigninTest {
                         withId(R.id.recycler_view),
                         isDescendantOfA(withId(R.id.preferences_header)),
                         hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail())));
-        onViewWaiting(headerRecyclerViewMatcher)
-                .perform(scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
+        waitForView(headerRecyclerViewMatcher)
+                .performViewAction(
+                        scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
         var headerAccountMatcher =
                 allOf(
                         isDescendantOfA(withId(R.id.preferences_header)),
                         withText(TestAccounts.ACCOUNT1.getEmail()));
-        onViewWaiting(headerAccountMatcher).perform(click());
+        waitForView(headerAccountMatcher).click();
 
         // Verify Account settings (ManageSyncSettings) is displayed.
-        onViewWaiting(allOf(withText(R.string.account_settings_title), isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.account_settings_title));
 
         // Remove the account from device.
         mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
@@ -214,7 +212,7 @@ public class SettingsPageSigninTest {
                 });
 
         // Verify MainSettings header pane is visible and Account settings is not displayed.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.search_engine_settings));
         onView(allOf(withText(R.string.account_settings_title), isDisplayed()))
                 .check(doesNotExist());
     }

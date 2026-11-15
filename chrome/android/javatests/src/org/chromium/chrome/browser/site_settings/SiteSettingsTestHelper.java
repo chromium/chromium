@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,7 +11,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 
@@ -444,7 +443,7 @@ public class SiteSettingsTestHelper {
                 });
         if (type == SiteSettingsCategory.Type.SITE_DATA && !enabled) {
             int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
-            onViewWaiting(withText(id)).perform(click());
+            waitForView(withText(id)).click();
         }
         settingsActivity.finish();
     }

@@ -13,7 +13,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
@@ -92,7 +92,7 @@ public class AllSiteSettingsTest {
     public void testAllSitesViewEmpty() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
+        waitForView(withText(containsString("Delete browsing")));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -121,7 +121,7 @@ public class AllSiteSettingsTest {
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
+        waitForView(withText(containsString("Delete browsing")));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -156,7 +156,7 @@ public class AllSiteSettingsTest {
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
+        waitForView(withText(containsString("Delete browsing")));
         onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
 
@@ -187,7 +187,7 @@ public class AllSiteSettingsTest {
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
+        waitForView(withText(containsString("Delete browsing")));
         onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
 

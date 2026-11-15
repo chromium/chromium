@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.settings;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -19,7 +18,6 @@ import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption
 import static org.chromium.base.test.transit.ViewElement.initialSettleTimeOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.NotificationManager;
 import android.view.View;
@@ -92,15 +90,14 @@ public class SettingsSearchTestUtils {
      * @param childMatcher Matcher for a descendant view within the search result row.
      */
     public static void clickSearchResult(Matcher<View> childMatcher) {
-        // onViewWaiting for debounce and Search results to appear.
-        onViewWaiting(
-                        allOf(
-                                withParent(
-                                        allOf(
-                                                withId(R.id.recycler_view),
-                                                isDescendantOfA(withId(R.id.preferences_detail)))),
-                                hasDescendant(childMatcher)))
-                .perform(click());
+        // Wait for debounce and search results to appear.
+        waitForView(
+                        withParent(
+                                allOf(
+                                        withId(R.id.recycler_view),
+                                        isDescendantOfA(withId(R.id.preferences_detail)))),
+                        hasDescendant(childMatcher))
+                .click();
     }
 
     /**
