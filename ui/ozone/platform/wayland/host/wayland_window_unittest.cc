@@ -4715,6 +4715,66 @@ TEST_P(WaylandWindowTest, DestroyingBubbleHidesChildPopups) {
   });
 }
 
+// Tooltips parented to a bubble must not be xdg_popups: their anchor would be
+// relative to the bubble's toplevel and may lie outside its window geometry,
+// which xdg_positioner doesn't allow. Verify they are subsurfaces of the bubble
+// instead. See https://crbug.com/474226842.
+TEST_P(WaylandWindowTest, TooltipParentedToBubbleIsSubsurface) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 100, 100),
+      &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+
+  MockWaylandPlatformWindowDelegate tooltip_delegate(connection_.get());
+  auto tooltip = CreateWaylandWindowWithParams(
+      PlatformWindowType::kTooltip, gfx::Rect(90, 30, 60, 20),
+      &tooltip_delegate, bubble->GetWidget());
+  ASSERT_TRUE(tooltip);
+  EXPECT_FALSE(tooltip->AsWaylandPopup());
+  ASSERT_TRUE(tooltip->AsWaylandBubble());
+  ASSERT_TRUE(tooltip->IsVisible());
+
+  const uint32_t bubble_surface_id = bubble->root_surface()->get_surface_id();
+  const uint32_t tooltip_surface_id = tooltip->root_surface()->get_surface_id();
+  PostToServerAndWait([bubble_surface_id, tooltip_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    auto* tooltip_surface =
+        server->GetObject<wl::MockSurface>(tooltip_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(tooltip_surface);
+    EXPECT_FALSE(tooltip_surface->xdg_surface());
+    ASSERT_TRUE(tooltip_surface->sub_surface());
+    EXPECT_EQ(tooltip_surface->sub_surface()->parent_resource(),
+              bubble_surface->resource());
+    // The position is relative to the bubble.
+    EXPECT_EQ(tooltip_surface->sub_surface()->position(), gfx::PointF(80, 20));
+  });
+
+  tooltip->Hide();
+  EXPECT_FALSE(tooltip->IsVisible());
+}
+
+// Menus parented to a bubble still need a grab, so they remain xdg_popups.
+TEST_P(WaylandWindowTest, MenuParentedToBubbleIsPopup) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 100, 100),
+      &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(bubble);
+
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(20, 20, 50, 50), &menu_delegate,
+      bubble->GetWidget());
+  ASSERT_TRUE(menu);
+  EXPECT_TRUE(menu->AsWaylandPopup());
+  EXPECT_FALSE(menu->AsWaylandBubble());
+}
+
 TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 

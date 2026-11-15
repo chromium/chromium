@@ -40,6 +40,18 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
     case PlatformWindowType::kMenu:
       if (auto* parent = connection->window_manager()->GetWindow(
               properties.parent_widget)) {
+        if (properties.type == PlatformWindowType::kTooltip &&
+            parent->AsWaylandBubble()) {
+          // A bubble is a wl_subsurface, so an xdg_popup for its tooltip would
+          // have to use the bubble's xdg_toplevel as its parent. xdg_positioner
+          // doesn't allow the anchor rect to extend outside the parent's window
+          // geometry, so the tooltip doesn't show up on some compositors when
+          // the bubble extends outside the toplevel. Tooltips don't need a
+          // grab, so make them subsurfaces of the bubble instead.
+          window =
+              std::make_unique<WaylandBubble>(delegate, connection, parent);
+          break;
+        }
         window = std::make_unique<WaylandPopup>(delegate, connection, parent);
       } else {
         DLOG(WARNING) << "Failed to determine parent for menu/tooltip window.";
