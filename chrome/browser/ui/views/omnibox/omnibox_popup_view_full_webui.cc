@@ -127,18 +127,20 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps,
   SyncNativeStateToWebUIImpl(
       query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
                 : omnibox_popup::mojom::MatchesUpdate::kDefault,
-      show_full_url);
+      show_full_url, /*focus_state_to_restore=*/std::nullopt);
 }
 
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIPreservingMatches() {
   SyncNativeStateToWebUIImpl(
       omnibox_popup::mojom::MatchesUpdate::kPreserveMatches,
-      /*show_full_url=*/false);
+      /*show_full_url=*/false, /*focus_state_to_restore=*/std::nullopt);
 }
 
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
     omnibox_popup::mojom::MatchesUpdate matches_update,
-    bool show_full_url) {
+    bool show_full_url,
+    std::optional<OmniboxPopupFullPresenter::FocusStateToRestore>
+        focus_state_to_restore) {
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
               "matches_update", matches_update);
   auto* edit_model = controller()->edit_model();
@@ -215,6 +217,16 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
     // non-empty selection range (e.g. from user highlighting text in WebUI),
     // preserve it.
     selection = handler_selection;
+  }
+
+  // Restore the selection the omnibox had before a modal dialog blurred it, if
+  // the text sent is still the text it had. See `OnFocus()`.
+  if (focus_state_to_restore &&
+      focus_state_to_restore->text ==
+          (should_show_full_url ? full_url : text) &&
+      focus_state_to_restore->selection.GetMax() <=
+          focus_state_to_restore->text.length()) {
+    selection = focus_state_to_restore->selection;
   }
 
   bool selection_changed = selection != handler_selection;
@@ -398,6 +410,10 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // rather than `OmniboxPopupViewFullWebUI::OnBlur()`, which would otherwise
   // leave `focused_` stale at `true`.
   focused_ = should_focus_popup;
+  // Any state recorded for a modal dialog belongs to the previous tab.
+  if (presenter()) {
+    static_cast<OmniboxPopupFullPresenter*>(presenter())->OnTabChanged();
+  }
 
   // Request focus before pushing content state so our `SetInputState` IPC
   // overrides any OS-default focus selection (such as macOS Select-All).
@@ -520,6 +536,24 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
     last_consumed_native_selection_.reset();
   }
 
+  // A modal dialog closes the popup while it's shown. When the omnibox is
+  // refocused after the dialog closes, restore the selection the omnibox had,
+  // and whether it showed the full URL. The Views omnibox also restores its
+  // selection when its window is reactivated. Take the state before
+  // `OnSetFocus()` below, which focuses the omnibox. Take it even if the focus
+  // requests a different selection, so that it isn't left for a later refocus.
+  std::optional<OmniboxPopupFullPresenter::FocusStateToRestore>
+      focus_state_to_restore;
+  if (changed && presenter()) {
+    std::optional<OmniboxPopupFullPresenter::FocusStateToRestore> restored =
+        static_cast<OmniboxPopupFullPresenter*>(presenter())
+            ->TakeFocusStateToRestoreAfterModalDialog();
+    if (restored && !query_zps && !show_full_url) {
+      show_full_url = restored->show_full_url;
+      focus_state_to_restore = std::move(restored);
+    }
+  }
+
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
   controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
@@ -529,7 +563,10 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
   popup_host()->RequestFocus();
 
   if (changed) {
-    SyncNativeStateToWebUI(query_zps, show_full_url);
+    SyncNativeStateToWebUIImpl(
+        query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
+                  : omnibox_popup::mojom::MatchesUpdate::kDefault,
+        show_full_url, std::move(focus_state_to_restore));
   } else if (auto* popup_handler = GetPopupHandler()) {
     // If the popup was already open (`!changed`), explicitly send
     // `SetFocus(true, query_zps, select_all, show_full_url)` via IPC to ensure

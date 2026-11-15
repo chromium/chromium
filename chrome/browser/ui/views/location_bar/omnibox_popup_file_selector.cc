@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -52,6 +51,40 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+namespace {
+
+// Returns the presenter of the omnibox popup that opened the file dialog, in
+// the browser window that `web_contents` belongs to: the AI Mode popup's if
+// `was_ai_mode_open`, or the omnibox popup's otherwise. Returns null if there
+// is none, such as for Omnibox Everywhere.
+OmniboxPopupPresenterBase* GetOmniboxPopupPresenter(
+    content::WebContents* web_contents,
+    bool was_ai_mode_open) {
+  if (!web_contents ||
+      OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
+    return nullptr;
+  }
+  auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
+  if (!browser_window) {
+    return nullptr;
+  }
+  LocationBar* location_bar =
+      BrowserWindow::FromBrowser(browser_window)->GetLocationBar();
+  if (!location_bar) {
+    return nullptr;
+  }
+  if (was_ai_mode_open) {
+    auto* presenter_delegate = location_bar->GetPresenterDelegate();
+    return presenter_delegate
+               ? presenter_delegate->GetOmniboxPopupAimPresenter()
+               : nullptr;
+  }
+  auto* popup_view = location_bar->GetOmniboxPopupView();
+  return popup_view ? popup_view->presenter() : nullptr;
+}
+
+}  // namespace
 
 OmniboxPopupFileSelector::OmniboxPopupFileSelector(
     gfx::NativeWindow owning_window)
@@ -81,6 +114,9 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
     OmniboxEditModel* edit_model,
     std::optional<lens::ImageEncodingOptions> image_encoding_options,
     bool was_ai_mode_open) {
+  // Close any dialog that is still open first, so that the popup that opened it
+  // is told it closed.
+  CancelFileSelection();
   web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
   edit_model_ = edit_model;
   image_encoding_options_ = image_encoding_options;
@@ -89,31 +125,12 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   if (file_chooser_opened_callback_) {
     file_chooser_opened_callback_.Run();
   }
-  if (!OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
-    if (auto* browser_window = webui::GetBrowserWindowInterface(web_contents)) {
-      if (auto* location_bar =
-              BrowserWindow::FromBrowser(browser_window)->GetLocationBar()) {
-        if (was_ai_mode_open) {
-          if (auto* presenter_delegate = location_bar->GetPresenterDelegate()) {
-            if (auto* presenter =
-                    presenter_delegate->GetOmniboxPopupAimPresenter()) {
-              deactivation_blocker_ = presenter->CreateDeactivationBlocker();
-            }
-          }
-        } else {
-          if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-            if (auto* popup_host = popup_view->popup_host()) {
-              deactivation_blocker_ = popup_host->CreateDeactivationBlocker();
-            }
-          }
-        }
-      }
+  if (auto* presenter =
+          GetOmniboxPopupPresenter(web_contents, was_ai_mode_open)) {
+    if (!was_ai_mode_open) {
+      presenter->OnFileDialogOpened();
     }
-  }
-
-  if (file_dialog_) {
-    file_dialog_->ListenerDestroyed();
-    file_dialog_.reset();
+    deactivation_blocker_ = presenter->CreateDeactivationBlocker();
   }
 
   file_dialog_ = ui::SelectFileDialog::Create(
@@ -154,7 +171,7 @@ void OmniboxPopupFileSelector::CancelFileSelection() {
   file_dialog_->ListenerDestroyed();
   file_dialog_.reset();
   deactivation_blocker_.reset();
-  NotifyFileSelectionClosed();
+  NotifyFileSelectionClosed(/*file_selected=*/false);
 }
 
 namespace {
@@ -296,7 +313,10 @@ void OmniboxPopupFileSelector::MultiFilesSelected(
         base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
                        weak_factory_.GetWeakPtr()));
   }
-  NotifyFileSelectionClosed();
+  // This opens AI Mode however many of the files are valid, to show any
+  // errors. If no file is read, it opens below. Otherwise `OnFileDataReady()`
+  // opens it, even for a file that can't be attached.
+  NotifyFileSelectionClosed(/*file_selected=*/true);
   deactivation_blocker_.reset();
   file_dialog_.reset();
 
@@ -306,7 +326,7 @@ void OmniboxPopupFileSelector::MultiFilesSelected(
 }
 
 void OmniboxPopupFileSelector::FileSelectionCanceled() {
-  NotifyFileSelectionClosed();
+  NotifyFileSelectionClosed(/*file_selected=*/false);
   deactivation_blocker_.reset();
   file_dialog_.reset();
   if (was_ai_mode_open_) {
@@ -408,33 +428,22 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
                                                mime_string, result);
 }
 
-void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {
+void OmniboxPopupFileSelector::NotifyFileSelectionClosed(bool file_selected) {
   if (file_chooser_closed_callback_) {
     file_chooser_closed_callback_.Run();
   }
-  if (was_ai_mode_open_ && web_contents_ &&
-      !OmniboxContextMenuController::GetOmniboxEverywhereUI(
-          web_contents_.get())) {
-    auto* browser_window =
-        webui::GetBrowserWindowInterface(web_contents_.get());
-    if (!browser_window) {
-      return;
-    }
-
-    auto* location_bar =
-        BrowserWindow::FromBrowser(browser_window)->GetLocationBar();
-    if (!location_bar) {
-      return;
-    }
-
-    auto* presenter_delegate = location_bar->GetPresenterDelegate();
-    if (!presenter_delegate) {
-      return;
-    }
-
-    if (auto* presenter = presenter_delegate->GetOmniboxPopupAimPresenter()) {
-      presenter->OnFileSelectionClosed();
-    }
+  auto* presenter =
+      GetOmniboxPopupPresenter(web_contents_.get(), was_ai_mode_open_);
+  if (!presenter) {
+    return;
+  }
+  if (was_ai_mode_open_) {
+    presenter->OnFileSelectionClosed();
+  } else {
+    // The full popup's presenter blurs the omnibox while a dialog opened from
+    // the popup is shown, and refocuses it once the dialog closes. See
+    // `OmniboxPopupFullPresenter::OnFileDialogOpened()`.
+    presenter->OnFileDialogClosed(file_selected);
   }
 }
 

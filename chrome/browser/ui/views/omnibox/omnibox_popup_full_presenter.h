@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
@@ -20,6 +22,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
@@ -87,6 +90,37 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   bool ShouldReceiveFocus() const override;
 
+  // Called when a native file dialog opened from the popup's "+" menu is shown
+  // and closed. See `OnModalDialogShown()`. Selecting files opens AI Mode with
+  // them, so the omnibox isn't refocused then.
+  //
+  // Other modal dialogs are detected through
+  // `OnWidgetWindowModalVisibilityChanged()`. That can't tell whether a file
+  // was selected, though. Also, it reports native file dialogs on macOS, which
+  // are window-modal sheets, but not on other platforms (crbug.com/450705434).
+  // TODO(b/581984657): Handle other native file dialogs on those platforms,
+  // such as the one Ctrl+O opens.
+  void OnFileDialogOpened() override;
+  void OnFileDialogClosed(bool file_selected) override;
+
+  // The text and selection the omnibox had when a modal dialog blurred it, and
+  // whether it showed the full URL rather than the elided one.
+  struct FocusStateToRestore {
+    std::u16string text;
+    gfx::Range selection;
+    bool show_full_url = false;
+  };
+
+  // Called when the omnibox is refocused. Returns the focus state the omnibox
+  // had when a modal dialog blurred it, so that the caller restores it. Only
+  // the first call after the dialog closes returns it. Returns nullopt if there
+  // is none, or if the omnibox text has changed since.
+  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog();
+
+  // Called when the active tab changes. Forgets any state recorded for a modal
+  // dialog, which belongs to the previous tab's omnibox.
+  void OnTabChanged();
+
  protected:
   // OmniboxPopupPresenterBase:
   // Returns true so that explicit focus requests (`focus_requested_`) are
@@ -126,6 +160,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // parent is resized from the top edge.
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  // Stops observing the browser widget, which may still be observed while the
+  // popup is hidden. See `Hide()`.
+  void OnWidgetDestroying(views::Widget* widget) override;
+  // Reports window-modal dialogs to `OnModalDialogShown()` and
+  // `OnModalDialogClosed()`.
+  void OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
+                                            bool visible) override;
   void StopForwardingEvents();
 
   // Tells this window's popup view that the adopted page's handler is ready,
@@ -166,7 +207,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void BlurIfBrowserOrPopupInactive();
   // If the omnibox is focused with the full popup open, blurs it after another
   // window, such as a bubble, took activation, and sets what the browser window
-  // restores focus to when it's reactivated.
+  // restores focus to when it's reactivated. If a modal dialog took
+  // activation, also closes the popup, even if a draft would keep it open, and
+  // even if the omnibox was already blurred. See `OnModalDialogShown()`.
   void BlurForWindowDeactivation();
   // Hands focus to the popup if the omnibox is still focused with the popup
   // open. Runs after the browser window or popup is activated while
@@ -189,6 +232,34 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // or the organizer tray covers, which also sends events there to the view
   // beneath.
   void UpdatePopupOcclusion();
+
+  // Called when a modal dialog, e.g. a native file dialog, is shown over the
+  // browser window or the popup, and when it closes. While it's shown, the
+  // omnibox is blurred, like for any other window taking activation, and the
+  // popup is closed even if it shows a draft, so that it can't be used until
+  // the dialog closes, as with the classic omnibox. Once the dialog closes and
+  // the browser window is reactivated, the omnibox is refocused with the text
+  // (including any draft) and selection it had when the dialog was shown. If
+  // the omnibox wasn't focused, but a draft kept the popup open, the popup is
+  // reopened unfocused instead.
+  void OnModalDialogShown();
+  void OnModalDialogClosed();
+
+  // Posts `BlurIfBrowserOrPopupInactive()` after `OnModalDialogShown()`.
+  void BlurIfBrowserOrPopupInactiveSoon();
+
+  // Refocuses the omnibox after a modal dialog closed, if the dialog blurred it
+  // and the browser window is active again. See `OnModalDialogShown()`.
+  void RestoreFocusAfterModalDialog();
+
+  // Clears `focus_state_before_modal_dialog_`. If the popup is hidden, also
+  // stops observing the browser window, which `Hide()` keeps observing while
+  // that state is set.
+  void ClearFocusStateBeforeModalDialog();
+
+  // Returns the text shown in the omnibox: the user's text while editing, and
+  // otherwise the full URL if `show_full_url`, or the permanent display text.
+  std::u16string GetOmniboxText(bool show_full_url);
 
   // Returns the browser window's widget. In macOS immersive fullscreen this is
   // not the location bar's widget, which is then a non-activatable overlay.
@@ -269,6 +340,26 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
+
+  // Set when a modal dialog is shown while the popup is open. If the omnibox
+  // was focused, holds its text and selection, and whether it showed the full
+  // URL. Cleared once the omnibox is refocused, or the popup reopened, after
+  // the dialog closes. Also cleared if the omnibox is still focused when the
+  // dialog closes. That happens if the dialog never took activation. For
+  // example, when policy blocks a file dialog, it reports that it closed
+  // without ever being shown.
+  struct FocusStateBeforeModalDialog {
+    // False if the popup was open with a draft while the omnibox wasn't
+    // focused. The popup is then reopened, unfocused, once the dialog closes.
+    bool had_focus = false;
+    std::u16string text;
+    gfx::Range selection;
+    bool show_full_url = false;
+  };
+  std::optional<FocusStateBeforeModalDialog> focus_state_before_modal_dialog_;
+  // Whether a native file dialog opened from the popup's "+" menu is open. See
+  // `OnFileDialogOpened()`.
+  bool file_dialog_open_ = false;
 
   base::WeakPtrFactory<OmniboxPopupFullPresenter> weak_factory_{this};
 };

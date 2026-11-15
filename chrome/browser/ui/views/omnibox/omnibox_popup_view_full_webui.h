@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,7 +23,6 @@ class NavigationHandle;
 class LocationBar;
 class OmniboxController;
 class OmniboxView;
-class OmniboxPopupFullPresenter;
 class OmniboxPopupPresenterDelegate;
 class OmniboxPopupHandler;
 
@@ -66,6 +66,8 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // synchronizes full input state (`SyncNativeStateToWebUI()`). If the popup
   // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
   // DOM input focus in the WebUI is restored without resetting input state.
+  // If a modal dialog blurred the omnibox and closed the popup, restores the
+  // selection the omnibox had instead.
   void OnFocus(bool query_zps, bool select_all, bool show_full_url) override;
   void FocusSearchWithDefaultSearchEngineKeywordMode() override;
   // Called when the native omnibox loses focus. Sends a dedicated
@@ -110,10 +112,14 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // Implements `SyncNativeStateToWebUI()` and
   // `SyncNativeStateToWebUIPreservingMatches()`. For
   // `MatchesUpdate::kPreserveMatches`, the input state is sent even if
-  // unchanged, so that WebUI stops any in-flight query.
+  // unchanged, so that WebUI stops any in-flight query. If set, and its text is
+  // the text sent, `focus_state_to_restore` overrides the selection sent. See
+  // `OnFocus()`.
   void SyncNativeStateToWebUIImpl(
       omnibox_popup::mojom::MatchesUpdate matches_update,
-      bool show_full_url);
+      bool show_full_url,
+      std::optional<OmniboxPopupFullPresenter::FocusStateToRestore>
+          focus_state_to_restore);
 
   // Caches the last text string sent to the WebUI to avoid redundant IPCs.
   // Null after a state reset (e.g., tab switch).
