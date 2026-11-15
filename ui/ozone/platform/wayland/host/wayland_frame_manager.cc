@@ -932,8 +932,9 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
   // whether it has already been acked. A buffer may have already been acked
   // if it is the first buffer submitted and it is destroyed before being
   // explicitly released. In that case, don't send an OnSubmission.
-  if (submitted_frames_.size() == 1u &&
-      !submitted_frames_.front()->submission_acked) {
+  // Multiple unacked frames can also be present when Hide() moves pending
+  // frames into an empty `submitted_frames_` queue before calling this method.
+  if (!submitted_frames_.front()->submission_acked) {
     ProcessOldSubmittedFrame(submitted_frames_.front().get());
     on_submission_begin = submitted_frames_.begin();
     on_submission_count = 1;

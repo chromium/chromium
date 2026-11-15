@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/threading/platform_thread.h"
@@ -18,8 +20,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/presentation_feedback.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
+#include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -33,11 +39,41 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::InSequence;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
+using ::testing::Property;
 
 namespace ui {
 
 namespace {
+
+class MockSurfaceGpu : public WaylandSurfaceGpu {
+ public:
+  MockSurfaceGpu(WaylandBufferManagerGpu* buffer_manager,
+                 gfx::AcceleratedWidget widget)
+      : buffer_manager_(buffer_manager), widget_(widget) {
+    buffer_manager_->RegisterSurface(widget_, this);
+  }
+  MockSurfaceGpu(const MockSurfaceGpu&) = delete;
+  MockSurfaceGpu& operator=(const MockSurfaceGpu&) = delete;
+  ~MockSurfaceGpu() override { buffer_manager_->UnregisterSurface(widget_); }
+
+  MOCK_METHOD(void,
+              OnSubmission,
+              (uint32_t frame_id,
+               const gfx::SwapResult& swap_result,
+               gfx::GpuFenceHandle release_fence),
+              (override));
+  MOCK_METHOD(void,
+              OnPresentation,
+              (uint32_t frame_id, const gfx::PresentationFeedback& feedback),
+              (override));
+
+ private:
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
+  const gfx::AcceleratedWidget widget_;
+};
 
 base::ScopedFD MakeFD() {
   base::FilePath temp_path;
@@ -866,6 +902,136 @@ TEST_F(WaylandFrameManagerTest,
   EXPECT_EQ(1u, NumPendingFrames());
 
   frame_manager_->ClearStates();
+}
+
+// Regression test for crbug.com/582622866: hiding when multiple GPU frames are
+// queued in `pending_frames_` with an empty `submitted_frames_` queue must ack
+// all moved frames in submission order without hitting
+// `CHECK((*iter)->submission_acked)`.
+TEST_F(WaylandFrameManagerTest, HideWithMultipleUnconfiguredPendingFrames) {
+  InitBufferManager();
+  {
+    MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                    window_->GetWidget());
+    PostToServerAndWait([] {});
+
+    // Put `window_` into the unconfigured state so `RecordFrame()` keeps frames
+    // in `pending_frames_` without populating `submitted_frames_`.
+    window_->Hide();
+    ASSERT_FALSE(window_->received_configure_event());
+    ASSERT_EQ(0u, NumPendingFrames());
+    ASSERT_EQ(0u, NumSubmittedFrames());
+
+    for (uint32_t frame_id = 1; frame_id <= 3; ++frame_id) {
+      buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
+                                                frame_id);
+      PostToServerAndWait([] {});
+
+      wl::WaylandOverlayConfig config;
+      config.buffer_id = frame_id;
+      config.bounds_rect = {0, 0, kWidth, kHeight};
+      auto frame = std::make_unique<WaylandFrame>(frame_id, gfx::FrameData(),
+                                                  window_->root_surface(),
+                                                  std::move(config));
+      frame_manager_->RecordFrame(std::move(frame));
+    }
+
+    EXPECT_EQ(3u, NumPendingFrames());
+    EXPECT_EQ(0u, NumSubmittedFrames());
+
+    base::RunLoop presentation_loop;
+    {
+      InSequence submission_seq;
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(1u, gfx::SwapResult::SWAP_ACK, _));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(2u, gfx::SwapResult::SWAP_ACK, _));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(3u, gfx::SwapResult::SWAP_ACK, _));
+    }
+    {
+      InSequence presentation_seq;
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(
+                      1u, Property(&gfx::PresentationFeedback::failed, true)));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(
+                      2u, Property(&gfx::PresentationFeedback::failed, true)));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(
+                      3u, Property(&gfx::PresentationFeedback::failed, true)))
+          .WillOnce(
+              InvokeWithoutArgs(&presentation_loop, &base::RunLoop::Quit));
+    }
+
+    frame_manager_->Hide();
+    presentation_loop.Run();
+
+    EXPECT_EQ(0u, NumPendingFrames());
+    EXPECT_EQ(1u, NumSubmittedFrames());
+    EXPECT_TRUE(LastSubmittedFrameAcked());
+    Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+  }
+  PostToServerAndWait([] {});
+}
+
+// End-to-end regression test for crbug.com/582622866: hiding an unconfigured
+// `WaylandPopup` after multiple GPU swaps have been committed queues >=2
+// unacked frames in `pending_frames_` and acks them in order on `Hide()`.
+TEST_F(WaylandFrameManagerTest,
+       HideUnconfiguredPopupWithMultiplePendingFrames) {
+  InitBufferManager();
+
+  ::testing::NiceMock<MockWaylandPlatformWindowDelegate> popup_delegate(
+      connection_.get());
+  auto popup = CreateWaylandWindowWithParams(
+      PlatformWindowType::kTooltip, gfx::Rect(10, 10, 100, 40), &popup_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(popup);
+  ASSERT_FALSE(popup->received_configure_event());
+
+  {
+    MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                    popup->GetWidget());
+    PostToServerAndWait([] {});
+
+    constexpr gfx::Rect kPopupBounds(0, 0, 100, 40);
+    for (uint32_t id = 1; id <= 2; ++id) {
+      buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
+                                                id);
+      buffer_manager_gpu_->CommitBuffer(
+          popup->GetWidget(), /*frame_id=*/id, /*buffer_id=*/id,
+          gfx::FrameData(), kPopupBounds, /*enable_blend=*/true,
+          gfx::RoundedCornersF(), /*surface_scale_factor=*/1.0f, kPopupBounds);
+    }
+    PostToServerAndWait([] {});
+    ASSERT_FALSE(popup->received_configure_event());
+
+    base::RunLoop presentation_loop;
+    {
+      InSequence submission_seq;
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(1u, gfx::SwapResult::SWAP_ACK, _));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(2u, gfx::SwapResult::SWAP_ACK, _));
+    }
+    {
+      InSequence presentation_seq;
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(
+                      1u, Property(&gfx::PresentationFeedback::failed, true)));
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(
+                      2u, Property(&gfx::PresentationFeedback::failed, true)))
+          .WillOnce(
+              InvokeWithoutArgs(&presentation_loop, &base::RunLoop::Quit));
+    }
+
+    popup->Hide();
+    presentation_loop.Run();
+    Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+  }
+  PostToServerAndWait([] {});
 }
 
 }  // namespace ui
