@@ -523,46 +523,52 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
     return nullptr;
   }
 
-  // Pre-validation for renderSizeHint if sampleRate is provided. This prevents
-  // allocating excessive memory for clearly invalid renderSizeHint values
-  // before the AudioContext is fully constructed.
-  bool render_quantum_frames_validated = false;
-  if (sample_rate.has_value() && render_quantum_frames.has_value()) {
+  // Validate renderSizeHint before constructing the context, because the
+  // render quantum size drives the size of the buffers allocated during
+  // construction. When sampleRate is not provided the context sample rate is
+  // not known until the audio device has been created, so validate against the
+  // maximum supported sample rate here; the actual bound is checked below.
+  if (render_quantum_frames.has_value()) {
+    const float validation_sample_rate =
+        sample_rate.value_or(audio_utilities::MaxAudioBufferSampleRate());
     if (!audio_utilities::IsValidRenderQuantumSize(
-            render_quantum_frames.value(), sample_rate.value())) {
+            render_quantum_frames.value(), validation_sample_rate)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           ExceptionMessages::IndexOutsideRange(
               "renderSizeHint", render_quantum_frames.value(),
               audio_utilities::MinRenderQuantumSize(),
               ExceptionMessages::kInclusiveBound,
-              audio_utilities::MaxRenderQuantumSize(sample_rate.value()),
+              audio_utilities::MaxRenderQuantumSize(validation_sample_rate),
               ExceptionMessages::kInclusiveBound));
       return nullptr;
     }
-    render_quantum_frames_validated = true;
   }
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
       window, latency_hint, sample_rate, sink_descriptor,
       update_echo_cancellation_on_first_start, render_quantum_frames);
+  // Must be called exactly once after construction, even if the context is
+  // rejected below.
+  audio_context->UpdateStateIfNeeded();
 
+  // A context rejected after construction must be uninitialized. Otherwise it
+  // stays alive with pending activity until the execution context is destroyed.
   if (audio_context->HasAllocationFailed()) {
+    audio_context->UninitializeRejectedContext();
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The context could not be created due to memory limitation.");
     return nullptr;
   }
 
-  ++hardware_context_count;
-  audio_context->UpdateStateIfNeeded();
-
-  // If the render quantum size was not able to be validated before due to the
-  // sample rate or hardware buffer size not being known, validate it here.
-  if (!render_quantum_frames_validated &&
-      !audio_utilities::IsValidRenderQuantumSize(
+  // Now that the context sample rate is known, validate the render quantum
+  // size against it. This cannot fail when sampleRate was provided, because
+  // the exact bound was already checked above.
+  if (!audio_utilities::IsValidRenderQuantumSize(
           audio_context->renderQuantumSize(), audio_context->sampleRate())) {
+    audio_context->UninitializeRejectedContext();
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         ExceptionMessages::IndexOutsideRange(
@@ -633,6 +639,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       use_audibility_hysteresis_(base::FeatureList::IsEnabled(
           blink::features::kWebAudioAudibilityHysteresis)),
       stats_update_restrictor_(std::make_unique<StatsUpdateRestrictor>()) {
+  ++hardware_context_count;
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
 
@@ -683,12 +690,14 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   // AudioContext caused by the rendering quantum size or the hardware buffer
   // size, whichever is greater.
   //
-  size_t base_latency_frames =
-      std::max(static_cast<size_t>(destinationNode()
-                                       ->GetAudioDestinationHandler()
-                                       .GetFramesPerBuffer()),
-               static_cast<size_t>(renderQuantumSize()));
-  base_latency_ = base_latency_frames / static_cast<double>(sampleRate());
+  size_t base_latency_frames = std::max(
+      static_cast<size_t>(
+          destinationNode()->GetAudioDestinationHandler().GetFramesPerBuffer()),
+      static_cast<size_t>(renderQuantumSize()));
+  const double context_sample_rate = sampleRate();
+  base_latency_ = context_sample_rate > 0.0
+                      ? base_latency_frames / context_sample_rate
+                      : 0.0;
   SendLogMessage(__func__,
                  Format("=> (base latency={:.3f} seconds))", base_latency_));
 
@@ -724,6 +733,14 @@ AudioContext::AudioContext(LocalDOMWindow& window,
 
 void AudioContext::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  // This runs for a context rejected by Create(), via
+  // UninitializeRejectedContext(), and again from ContextDestroyed() if the
+  // context has not been collected by then. Check `is_cleared_` directly rather
+  // than the override, which also reports true for a context that was only
+  // close()d.
+  if (BaseAudioContext::IsContextCleared()) {
+    return;
+  }
   DCHECK_NE(hardware_context_count, 0u);
   SendLogMessage(__func__, "");
   --hardware_context_count;
@@ -732,6 +749,16 @@ void AudioContext::Uninitialize() {
   RecordAutoplayMetrics();
   BaseAudioContext::Uninitialize();
   DCHECK_EQ(pending_resume_resolvers_.size(), 0u);
+}
+
+void AudioContext::UninitializeRejectedContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  // The constructor provisionally sets `autoplay_status_` to kFailed, which
+  // MaybeAllowAutoplayWithUnlockType() would have upgraded had the context been
+  // accepted. Drop it so that Uninitialize() does not record it.
+  DCHECK(!autoplay_unlock_type_.has_value());
+  autoplay_status_.reset();
+  Uninitialize();
 }
 
 AudioContext::~AudioContext() {
