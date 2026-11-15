@@ -62,6 +62,10 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   // anchored message, or false if it was shown as the collapsed chip.
   void OnCueShown(bool is_anchored_message);
 
+  // Records that the user clicked the collapsed chip of the contextual cue for
+  // this tab's journey.
+  void OnCueChipClicked();
+
   // content::WebContentsObserver:
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -67,6 +69,73 @@ void RecordCueSliceMetrics(std::string_view interaction,
     for (AimPromoQueryHint hint : journey.query_hints) {
       base::UmaHistogramEnumeration(base::StrCat({prefix, "QueryHint"}), hint);
     }
+  }
+}
+
+// Returns the `ContextualTasks.SearchJourney.CueOutcome{JourneyType}` suffix
+// for journeys labeled with `hint`.
+std::string_view GetQueryHintJourneyType(AimPromoQueryHint hint) {
+  switch (hint) {
+    case AimPromoQueryHint::kNone:
+      return ".NoQueryHint";
+    case AimPromoQueryHint::kEduHomework:
+      return ".EduHomework";
+    case AimPromoQueryHint::kEduConceptual:
+      return ".EduConceptual";
+    case AimPromoQueryHint::kHowToWebApp:
+      return ".HowToWebApp";
+  }
+  NOTREACHED();
+}
+
+SearchJourneyCueOutcome GetCueOutcome(const JourneyState& journey,
+                                      SearchJourneyEndReason reason) {
+  if (!journey.cue_shown) {
+    return SearchJourneyCueOutcome::kNoCue;
+  }
+  const bool clicked = reason == SearchJourneyEndReason::kRestored;
+  if (!journey.cue_shown_as_anchored_message) {
+    return clicked ? SearchJourneyCueOutcome::kChipClicked
+                   : SearchJourneyCueOutcome::kChipIgnored;
+  }
+  if (!clicked) {
+    return SearchJourneyCueOutcome::kAnchoredMessageIgnored;
+  }
+  return journey.cue_chip_clicked
+             ? SearchJourneyCueOutcome::kAnchoredMessageCollapsedThenClicked
+             : SearchJourneyCueOutcome::kAnchoredMessageClicked;
+}
+
+// Records why `journey` ended and, if its cue was eligible, what happened to
+// the cue, sliced by each journey type that applies.
+void RecordJourneyEnd(const JourneyState& journey,
+                      SearchJourneyEndReason reason) {
+  base::UmaHistogramEnumeration("ContextualTasks.SearchJourney.EndReason",
+                                reason);
+  if (!journey.eligible_recorded) {
+    return;
+  }
+  static constexpr char kCueOutcome[] =
+      "ContextualTasks.SearchJourney.CueOutcome";
+  const SearchJourneyCueOutcome outcome = GetCueOutcome(journey, reason);
+  base::UmaHistogramEnumeration(kCueOutcome, outcome);
+  if (journey.matched_copy) {
+    base::UmaHistogramEnumeration(base::StrCat({kCueOutcome, ".CopyMatch"}),
+                                  outcome);
+  }
+  if (journey.is_context_menu_search) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({kCueOutcome, ".ContextMenuSearch"}), outcome);
+  }
+  if (journey.query_hints.empty()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kCueOutcome, GetQueryHintJourneyType(AimPromoQueryHint::kNone)}),
+        outcome);
+  }
+  for (AimPromoQueryHint hint : journey.query_hints) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({kCueOutcome, GetQueryHintJourneyType(hint)}), outcome);
   }
 }
 
@@ -185,13 +254,17 @@ bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
     if (source_tab_id == tab_id) {
       // Only a return to the page the user left counts.
       returned = journey.source_nav_entry_id == nav_entry_id;
+      if (!returned) {
+        RecordJourneyEnd(journey, SearchJourneyEndReason::kSourceTabNavigated);
+      }
       return !returned;
     }
-    if (journey.search_tab_id == tab_id) {
+    if (journey.search_tab_id == tab_id || allow_intermediate_tabs) {
       return false;
     }
     // Any other tab is an intermediate tab, as in A -> B -> C -> A.
-    return !allow_intermediate_tabs;
+    RecordJourneyEnd(journey, SearchJourneyEndReason::kIntermediateTab);
+    return true;
   });
   if (returned) {
     base::RecordAction(base::UserMetricsAction(
@@ -256,7 +329,11 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
 
   // A new search in Tab B replaces the journey tied to its previous search.
   std::erase_if(active_journeys_, [search_tab_id](const auto& pair) {
-    return pair.second.search_tab_id == search_tab_id;
+    if (pair.second.search_tab_id != search_tab_id) {
+      return false;
+    }
+    RecordJourneyEnd(pair.second, SearchJourneyEndReason::kReplacedByNewSearch);
+    return true;
   });
 
   // Only a search in the tab the user is looking at, after they left a
@@ -277,6 +354,11 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
           FindMatchingCopyFromTab(source_tab_->tab_id, search_terms)) {
     journey.matched_copy = true;
     journey.is_context_menu_search = matching_copy->is_context_menu_search;
+  }
+  // A new journey for Tab A replaces its earlier one, as in A -> B -> A -> C.
+  if (auto it = active_journeys_.find(source_tab_->tab_id);
+      it != active_journeys_.end()) {
+    RecordJourneyEnd(it->second, SearchJourneyEndReason::kReplacedByNewSearch);
   }
   active_journeys_.insert_or_assign(source_tab_->tab_id, std::move(journey));
   base::RecordAction(
@@ -342,6 +424,7 @@ void SearchJourneyTracker::OnJourneyRestored(SessionID source_tab_id) {
   }
   base::RecordAction(
       base::UserMetricsAction("ContextualTasks.SearchJourney.Restored"));
+  RecordJourneyEnd(it->second, SearchJourneyEndReason::kRestored);
   active_journeys_.erase(it);
 }
 
@@ -360,6 +443,7 @@ void SearchJourneyTracker::OnJourneyCueShown(SessionID source_tab_id,
   auto it = active_journeys_.find(source_tab_id);
   if (it != active_journeys_.end() && !it->second.cue_shown) {
     it->second.cue_shown = true;
+    it->second.cue_shown_as_anchored_message = is_anchored_message;
     base::RecordAction(
         base::UserMetricsAction("ContextualTasks.SearchJourney.Cue.Shown"));
     base::RecordAction(
@@ -372,11 +456,26 @@ void SearchJourneyTracker::OnJourneyCueShown(SessionID source_tab_id,
   }
 }
 
+void SearchJourneyTracker::OnJourneyCueChipClicked(SessionID source_tab_id) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it == active_journeys_.end() || !it->second.cue_shown) {
+    return;
+  }
+  it->second.cue_chip_clicked = true;
+  base::RecordAction(
+      base::UserMetricsAction("ContextualTasks.SearchJourney.Cue.ChipClicked"));
+}
+
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
+  // Journeys past their TTL are recorded as expired rather than closed.
+  EvictExpiredRecords();
   std::erase_if(ring_buffer_, [tab_id](const CopyRecord& record) {
     return record.source_tab_id == tab_id;
   });
-  active_journeys_.erase(tab_id);
+  if (auto it = active_journeys_.find(tab_id); it != active_journeys_.end()) {
+    RecordJourneyEnd(it->second, SearchJourneyEndReason::kSourceTabClosed);
+    active_journeys_.erase(it);
+  }
   for (auto& [source_tab_id, journey] : active_journeys_) {
     if (journey.search_tab_id == tab_id) {
       journey.search_tab_closed = true;
@@ -391,6 +490,11 @@ void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
 }
 
 void SearchJourneyTracker::ClearState() {
+  // Journeys past their TTL are recorded as expired rather than cleared.
+  EvictExpiredRecords();
+  for (const auto& [source_tab_id, journey] : active_journeys_) {
+    RecordJourneyEnd(journey, SearchJourneyEndReason::kStateCleared);
+  }
   ring_buffer_.clear();
   source_tab_.reset();
   active_journeys_.clear();
@@ -406,7 +510,11 @@ void SearchJourneyTracker::EvictExpiredRecords() {
     source_tab_.reset();
   }
   std::erase_if(active_journeys_, [now, ttl](const auto& pair) {
-    return now - pair.second.search_committed_time > ttl;
+    if (now - pair.second.search_committed_time <= ttl) {
+      return false;
+    }
+    RecordJourneyEnd(pair.second, SearchJourneyEndReason::kExpired);
+    return true;
   });
 }
 

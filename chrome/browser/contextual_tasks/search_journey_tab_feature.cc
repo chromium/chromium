@@ -162,6 +162,13 @@ void SearchJourneyTabFeature::OnCueShown(bool is_anchored_message) {
   }
 }
 
+void SearchJourneyTabFeature::OnCueChipClicked() {
+  if (tracker_ && web_contents()) {
+    tracker_->OnJourneyCueChipClicked(
+        sessions::SessionTabHelper::IdForTab(web_contents()));
+  }
+}
+
 void SearchJourneyTabFeature::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
