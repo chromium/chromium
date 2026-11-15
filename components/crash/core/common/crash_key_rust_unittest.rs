@@ -8,7 +8,7 @@ chromium::import! {
     "//components/crash/core/common:crash_key_rust_for_testing" as crash_key_rust;
 }
 
-use crash_key_rust::CrashKeyString;
+use crash_key_rust::{scoped_crash_key, CrashKeyString};
 use rust_gtest_interop::prelude::*;
 
 #[cxx::bridge(namespace = "crash_reporter::rust::test")]
@@ -26,6 +26,7 @@ mod ffi {
         fn AnnotationIsGuarded(annotation: &Annotation) -> bool;
         fn AnnotationValue(annotation: &Annotation) -> String;
         fn IsInAnnotationList(annotation: &Annotation) -> bool;
+        fn GetAnnotationValueByName(name: &str) -> String;
     }
 }
 
@@ -147,4 +148,38 @@ fn test_set_display_truncation() {
     let second = "\u{e9}".repeat(10);
     KEY.set(format_args!("{first}{second}"));
     expect_eq!(ffi::AnnotationValue(annotation), format!("{first}{}", "\u{e9}".repeat(6)));
+}
+
+#[gtest(RustCrashKeyTest, SetScoped)]
+fn test_set_scoped() {
+    static KEY: CrashKeyString<32> = CrashKeyString::new(c"rust-set-scoped");
+    let annotation = as_annotation(&KEY);
+    {
+        let _scoper = KEY.set_scoped("value");
+        expect_eq!(ffi::AnnotationValue(annotation), "value");
+    }
+    expect_eq!(ffi::AnnotationValueSize(annotation), 0);
+}
+
+/// Returns the value of the registered crash key named `name`, or `None` if it
+/// isn't set.
+fn get_value_by_name(name: &str) -> Option<String> {
+    let value = ffi::GetAnnotationValueByName(name);
+    if value.is_empty() {
+        None
+    } else {
+        Some(value)
+    }
+}
+
+#[gtest(RustCrashKeyTest, ScopedMacro)]
+fn test_scoped_macro() {
+    {
+        scoped_crash_key!("RustCategory", "str", 32, "value");
+        scoped_crash_key!("RustCategory", "number", 64, 42);
+        expect_eq!(get_value_by_name("RustCategory-str"), Some("value".to_string()));
+        expect_eq!(get_value_by_name("RustCategory-number"), Some("42".to_string()));
+    }
+    expect_eq!(get_value_by_name("RustCategory-str"), None);
+    expect_eq!(get_value_by_name("RustCategory-number"), None);
 }

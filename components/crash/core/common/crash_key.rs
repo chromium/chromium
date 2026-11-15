@@ -187,6 +187,17 @@ impl<const N: usize> CrashKeyString<N> {
         self.register();
     }
 
+    /// Stores `value` in the crash key (see `set()`) until the returned
+    /// `ScopedCrashKeyString` is dropped, at which point the crash key is
+    /// cleared.
+    ///
+    /// Prefer the `scoped_crash_key!` macro when the crash key is only used
+    /// within a single scope.
+    pub fn set_scoped(&'static self, value: impl Display) -> ScopedCrashKeyString<N> {
+        self.set(value);
+        ScopedCrashKeyString { crash_key: self }
+    }
+
     /// Can be called from any thread; see `set()` for details.
     pub fn clear(&'static self) {
         let Some(_lock) = self.try_lock_writer() else {
@@ -241,6 +252,53 @@ impl<const N: usize> CrashKeyString<N> {
 // own in-process readers of annotation values are debug-only and already
 // accept racing with writers, as for C++ crash keys.)
 unsafe impl<const N: usize> Sync for CrashKeyString<N> {}
+
+/// Clears a crash key when dropped. Returned by
+/// `CrashKeyString::set_scoped()`. Rust equivalent of
+/// `crash_reporter::ScopedCrashKeyString`.
+#[must_use = "the crash key is cleared as soon as the ScopedCrashKeyString is dropped"]
+pub struct ScopedCrashKeyString<const N: usize> {
+    crash_key: &'static CrashKeyString<N>,
+}
+
+impl<const N: usize> Drop for ScopedCrashKeyString<N> {
+    fn drop(&mut self) {
+        self.crash_key.clear();
+    }
+}
+
+/// Sets a crash key for the rest of the enclosing scope, typically right before
+/// triggering a crash or calling `DumpWithoutCrashing()`. Rust equivalent of
+/// the `SCOPED_CRASH_KEY_STRING*` macros in `base/debug/crash_logging.h`.
+///
+/// `$category` and `$name` must be string literals. The crash key is named
+/// `"$category-$name"`. `$size` must be an integer literal (32, 64, 256, or
+/// 1024), and `$value` can be anything that implements `Display`.
+///
+/// # Example
+///
+/// ```
+/// use crash_key_rust::scoped_crash_key;
+///
+/// scoped_crash_key!("SomeCategory", "some_name", 256, "foo");
+/// // `SomeCategory-some_name` is set until the end of the enclosing block.
+/// ```
+#[macro_export]
+macro_rules! scoped_crash_key {
+    ($category:literal, $name:literal, $size:literal, $value:expr $(,)?) => {
+        let _scoped_crash_key = {
+            static CRASH_KEY: $crate::CrashKeyString<$size> = $crate::CrashKeyString::new(
+                match ::std::ffi::CStr::from_bytes_with_nul(
+                    concat!($category, "-", $name, "\0").as_bytes(),
+                ) {
+                    Ok(name) => name,
+                    Err(_) => panic!("Crash key names must not contain NUL characters."),
+                },
+            );
+            CRASH_KEY.set_scoped($value)
+        };
+    };
+}
 
 /// Releases `CrashKeyString::writer_lock` when dropped.
 struct WriterLockGuard<'a> {

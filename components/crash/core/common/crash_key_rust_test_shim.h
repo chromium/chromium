@@ -25,6 +25,10 @@ bool AnnotationIsGuarded(const crashpad::Annotation& annotation);
 
 bool IsInAnnotationList(const crashpad::Annotation& annotation);
 
+// Returns the value of the first set annotation in Crashpad's list named
+// `name`, or an empty string if there is none.
+::rust::String GetAnnotationValueByName(::rust::Str name);
+
 }  // namespace crash_reporter::rust::test
 
 #endif  // COMPONENTS_CRASH_CORE_COMMON_CRASH_KEY_RUST_TEST_SHIM_H_

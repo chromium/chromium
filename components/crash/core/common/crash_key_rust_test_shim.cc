@@ -4,6 +4,8 @@
 
 #include "components/crash/core/common/crash_key_rust_test_shim.h"
 
+#include <string_view>
+
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 
 namespace crash_reporter::rust::test {
@@ -45,6 +47,20 @@ bool IsInAnnotationList(const crashpad::Annotation& annotation) {
     }
   }
   return false;
+}
+
+::rust::String GetAnnotationValueByName(::rust::Str name) {
+  crashpad::AnnotationList* list = crashpad::AnnotationList::Get();
+  if (!list) {
+    return ::rust::String();
+  }
+  for (const crashpad::Annotation* annotation : *list) {
+    if (annotation->is_set() &&
+        std::string_view(annotation->name()) == std::string_view(name)) {
+      return AnnotationValue(*annotation);
+    }
+  }
+  return ::rust::String();
 }
 
 }  // namespace crash_reporter::rust::test
