@@ -2312,6 +2312,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4850886885716139402">Wyświetl</translation>
 <translation id="4854853140771946034">Szybko utwórz nową notatkę w Google Keep</translation>
 <translation id="4855395119669662878">Administrator zacznie przesyłać Twoje pliki do usługi <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Dopóki pliki nie zostaną przesłane, nie odłączaj urządzenia. Podczas przesyłania możliwy będzie tylko odczyt plików lokalnych.</translation>
+<translation id="4856655096879441213">Wykorzystaj <ph name="GOOGLE_WALLET_TITLE" />, aby zapisać swoje dane i szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Możesz zarządzać tym, <ph name="HOW_INFO_IS_USED_LINK" /> w ustawieniach dokumentu prywatnego na koncie <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Weryfikuję kod...</translation>
 <translation id="4860260582253463350">Zanim przejdziesz do YouTube, musimy się upewnić, że to Ty. Włączymy ustawienia skonfigurowane przez rodzica lub opiekuna w Family Link.</translation>
 <translation id="4861514638281352187">Bezpiecznie dodaj numer redress</translation>
@@ -4894,7 +4895,6 @@ Dodatkowe informacje:
 <translation id="9192361865877479444">Metal (matowy)</translation>
 <translation id="9193018794001479794">Rozwiń myśl</translation>
 <translation id="9194783551575429711">Zapytaj <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Gdy Twoja organizacja ogranicza zapisywanie danych na koncie Google, nie możesz udostępniać grup kart ani do nich dołączać</translation>
 <translation id="9198613052465150219">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Drukowanie jest zablokowane</translation>
 <translation id="9204089334327209740">Po zakończeniu przesyłania możesz zmodyfikować pliki w usłudze <ph name="CLOUD_PROVIDER" />. Dane z pamięci lokalnej, w tym wszystkie pliki w koszu, zostaną automatycznie usunięte.</translation>

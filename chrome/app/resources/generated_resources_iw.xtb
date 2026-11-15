@@ -17,7 +17,6 @@
 <translation id="100881991356161927">שם האתר</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{הדף אינו מגיב}one{הדפים אינם מגיבים}two{הדפים אינם מגיבים}other{הדפים אינם מגיבים}}</translation>
 <translation id="1011431628606634753">‏עליך לשנות את קוד האימות לשחזור של מנהל הסיסמאות של Google</translation>
-<translation id="1012876632442809908">‏מכשיר עם יציאת USB-C (יציאה קדמית)</translation>
 <translation id="1015318665228971643">עריכת שם התיקייה</translation>
 <translation id="1016566241875885511">מידע נוסף (אופציונלי)</translation>
 <translation id="1016876401615857435">כדי להשתמש במפתחות הגישה במכשיר הזה, עליך לאמת את הזהות שלך</translation>
@@ -275,7 +274,6 @@
 <translation id="1245331638296910488">‏הקבצים יועברו ל-OneDrive כשהם ייפתחו ב-Microsoft 365</translation>
 <translation id="1246420197935327230">בחירת אזור</translation>
 <translation id="125097549534200450">למחוק</translation>
-<translation id="1251578593170406502">מתבצעת סריקה של רשתות נתונים סלולריות…</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{‏סימנייה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}one{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}two{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}other{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}}</translation>
 <translation id="125220115284141797">ברירת מחדל</translation>
 <translation id="1252597096488926946">ביטול ההצמדה של לחצני הגלילה</translation>
@@ -309,7 +307,6 @@
 <translation id="1285484354230578868">‏אחסון נתונים בחשבון Google Drive</translation>
 <translation id="1286901453440314450">אישורים לא מהימנים</translation>
 <translation id="1288235441231062220">הגעת למגבלת התווים של <ph name="MAX_CHARS" /></translation>
-<translation id="1293264513303784526">‏מכשיר עם יציאת USB-C (יציאה שמאלית)</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="12951065153783848">החשבון שלך מנוהל על ידי הארגון</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
@@ -863,7 +860,6 @@
 <translation id="1863182668524159459">לא נמצאו יציאות טוריות</translation>
 <translation id="1863374797460198869">הצ'אט מוסתר</translation>
 <translation id="1864111464094315414">התחברות</translation>
-<translation id="1864454756846565995">‏מכשיר עם יציאת USB-C (יציאה אחורית)</translation>
 <translation id="186594096341696655">האטת הקצב</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" יכול לקרוא ולכתוב קובצי תמונות, וידאו ואודיו במיקומים המסומנים.</translation>
 <translation id="1869433484041798909">כפתור סימניה</translation>
@@ -948,7 +944,6 @@
 <translation id="1936931585862840749">יש להזין מספר שמציין כמה עותקים יש להדפיס (1 עד <ph name="MAX_COPIES" />).</translation>
 <translation id="1940221956626514677">התאמה אישית של סרגל הכלים</translation>
 <translation id="194081218158106711">מאשרים את שינוי הסיסמה…</translation>
-<translation id="1941410638996203291">שעת ההתחלה <ph name="TIME" /></translation>
 <translation id="1941553344801134989">גרסה: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏לפי הגדרת האדמין שלך, החשבון אמור להתחבר אוטומטית ל-Microsoft OneDrive, אבל משהו השתבש.</translation>
 <translation id="194174710521904357">‏אישרת לאתר הזה להשתמש בקובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות.</translation>
@@ -1307,7 +1302,6 @@
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
 <translation id="2318143611928805047">גודל נייר</translation>
 <translation id="2322193970951063277">כותרות עליונות ותחתונות</translation>
-<translation id="2322622365472107569">שעת הסיום: <ph name="TIME" /></translation>
 <translation id="2323685460575935191">הסתרת כפתורי הגלילה</translation>
 <translation id="2325004050205455346">היסטוריה מהזמן האחרון</translation>
 <translation id="2326583548923775947">‏כתובת האימייל הזו לא שייכת לחשבון Google. פריטים ששמרת ב-Chrome לא יהיו זמינים במכשירים אחרים.</translation>
@@ -1558,7 +1552,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{המכשיר הזה יישמר למשך שנה אחת ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}one{המכשיר הזה יישמר למשך {YEARS} שנים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}two{המכשיר הזה יישמר למשך שנתיים ({YEARS}) ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}other{המכשיר הזה יישמר למשך {YEARS} שנים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}}</translation>
 <translation id="2577981599306533385">‏הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", וגם האפשרות ליצור איתך אינטראקציה בשירותי Google, יאבדו באופן מיידי.</translation>
 <translation id="2580889980133367162">תמיד אפשר ל-<ph name="HOST" /> להוריד קבצים מרובים</translation>
-<translation id="2581992808349413349">‏חיפוש כתובות IP של אתרים ב-DNS יתבצע בחיבור מאובטח. ההגדרה הזו פועלת באמצעות ספק שירות מנוהל בכתובת <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2583877283803564049">הצמדה לסרגל הכלים</translation>
 <translation id="2583905535229480958">כל קורא כרטיסים חכמים</translation>
 <translation id="2586672484245266891">יש להזין כתובת אתר קצרה יותר</translation>
@@ -1802,7 +1795,6 @@
 <translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
 <translation id="2806891468525657116">קיצור הדרך כבר קיים</translation>
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
-<translation id="2811205483104563968">חשבונות</translation>
 <translation id="2814489978934728345">הפסקת טעינת הדף</translation>
 <translation id="281678554528702272">‏הערה: יכול להיות שכללי מדיניות ארגוניים או ממשקי API חזקים יבטלו את הגדרות הגישה האלה לאתר.</translation>
 <translation id="2817861546829549432">הפעלת התכונה 'ללא מעקב' תגרום להכללת בקשה בתנועת הגלישה שלך. ההשפעה שלה תלויה בנכונות של אתר להגיב לבקשה, ובאופן שבו הבקשה תפורש. לדוגמה, אתרים מסוימים עשויים להגיב לבקשה זו על ידי הצגת מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרי אינטרנט רבים עדיין יאספו את נתוני הגלישה שלך וישתמשו בהם - למשל, כדי לשפר את האבטחה, לספק תוכן, שירותים, מודעות והמלצות באתרי האינטרנט שלהם ולהפיק סטטיסטיקת דיווח.</translation>
@@ -1832,7 +1824,6 @@
 <translation id="2842013086666334835">ניתן להתחבר לרשת '<ph name="NETWORK_ID" />'</translation>
 <translation id="2843698124892775282">הנפח שהתפנה: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844154481025280030">המדיניות הוגדרה.</translation>
-<translation id="2844169650293029770">‏מכשיר עם יציאת USB-C (יציאה שמאלית-קדמית)</translation>
 <translation id="284491292807422921">להסיר את האתר?</translation>
 <translation id="2845276301195220700">‏פעולות נוספות ביומן Google</translation>
 <translation id="2845382757467349449">תמיד להציג את סרגל הסימניות</translation>
@@ -2361,7 +2352,6 @@
 <translation id="3365651640097487828">כדי לשתף כרטיסיות ולעבוד עם אנשים אחרים, צריך לאמת את הזהות ולסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="3368662179834713970">בית</translation>
 <translation id="3369624026883419694">המערכת מבררת את כתובת השרת המארח...</translation>
-<translation id="3371140690572404006">‏מכשיר עם יציאת USB-C (יציאה ימנית-קדמית)</translation>
 <translation id="3372602033006349389">במכשירים אחרים</translation>
 <translation id="337286756654493126">קריאת תיקיות שנפתחות באפליקציה</translation>
 <translation id="3373059063088819384">פתיחה במצב קריאה</translation>
@@ -2447,7 +2437,6 @@
 <translation id="3445140416168872040">הסרת ההרשאה לאתר <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344537926140058498">הקובץ הזה כולל תוכן רגיש או מסוכן ולכן הוא נחסם על ידי הארגון שלך. עליך לבקש מהבעלים שלו לתקן אותו.</translation>
-<translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
 <translation id="344630545793878684">קריאת הנתונים שלך במספר אתרים</translation>
 <translation id="3447797901512053632">מתבצעת העברה של <ph name="TAB_NAME" /> אל <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">עדכון חשבון</translation>
@@ -3040,7 +3029,6 @@
 <translation id="3994522032746736727">כניסה בתור <ph name="EMAIL" /></translation>
 <translation id="3994708120330953242">חלק מהסיסמאות שלך נחשפו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, עליך לשנות את הסיסמאות האלה עכשיו.</translation>
 <translation id="3994878504415702912">מרחק מתצוגה</translation>
-<translation id="3995138139523574647">‏מכשיר עם יציאת USB-C (יציאה ימנית-אחורית)</translation>
 <translation id="3995963973192100066">הפעלת האנימציה</translation>
 <translation id="399788104667917863">הצמדה לסרגל הכלים</translation>
 <translation id="3998431043924115701">אפשר לשאול שאלות בזמן הגלישה</translation>
@@ -4315,7 +4303,6 @@
 <translation id="5327912693242073631">תכונות שצריכות התראות לא יפעלו</translation>
 <translation id="5328551442597731838">כרטיסיות ממכשירים אחרים</translation>
 <translation id="5329858601952122676">&amp;מחיקה</translation>
-<translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="5334142896108694079">מטמון של סקריפט</translation>
 <translation id="5335370353987155592">‏חשוב להשתמש ב-Gemini בזהירות וב<ph name="BEGIN_LINK1" />אופן בטוח<ph name="LINK_END1" />. הפעולות ש-Gemini מבצע במהלך המשימה הן באחריותך, כולל טעויות ו<ph name="BEGIN_LINK2" />תוצאות לא צפויות<ph name="LINK_END2" /> כמו רכישות.</translation>
 <translation id="5336688142483283574">הדף הזה יוסר גם מההיסטוריה שלך ומהפעילות של <ph name="SEARCH_ENGINE" />.</translation>
@@ -4422,7 +4409,6 @@
 <translation id="5444452275167152925">‏יובאו מ-ChromeOS</translation>
 <translation id="5446836766119801744">‎⌥L</translation>
 <translation id="5447289297870286353">סיעור מוחות</translation>
-<translation id="5449551289610225147">סיסמה לא חוקית</translation>
 <translation id="5449588825071916739">הוספת סימנייה לכל הכרטיסיות</translation>
 <translation id="5449716055534515760">סגירת ח&amp;לון</translation>
 <translation id="5449932659532574495">‏‫<ph name="TURN_ON_BLUETOOTH_LINK" /> כדי למצוא מכשירי Bluetooth</translation>
@@ -5381,7 +5367,6 @@
 <translation id="6459488832681039634">שימוש בבחירה לחיפוש</translation>
 <translation id="6459799433792303855">החלון הפעיל הועבר אל צג אחר.</translation>
 <translation id="6460601847208524483">חיפוש של הבא</translation>
-<translation id="6461170143930046705">המכשיר מחפש רשתות...</translation>
 <translation id="6463668944631062248">‏צריך לאשר את הבקשה להפעלת Cast במכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;עריכה</translation>
 <translation id="6464825623202322042">מכשיר זה</translation>
@@ -5404,7 +5389,6 @@
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{לשמור את קבוצת הכרטיסיות?}one{לשמור את קבוצות הכרטיסיות?}two{לשמור את קבוצות הכרטיסיות?}other{לשמור את קבוצות הכרטיסיות?}}</translation>
 <translation id="6486301003991593638">‏כדי לנהל מפתחות גישה יש להשתמש בגרסה חדשה יותר של Windows</translation>
 <translation id="6488266788670893993">ל<ph name="BRAND" /> אין אפשרות לבדוק אם הסיסמאות שלך נחשפו בפרצות באבטחת מידע. יש לבדוק את החיבור לאינטרנט.</translation>
-<translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
 <translation id="6491890991754498129">פתיחה &amp;באמצעות...</translation>
 <translation id="649396225532207613">הקובץ הזה יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות</translation>
 <translation id="6493991254603208962">הפחתת הבהירות</translation>
@@ -6035,7 +6019,6 @@
 <translation id="7094768688212290897">הפירמידה הגדולה של גיזה</translation>
 <translation id="7094834615934458012">לאפשר לאתר הזה לערוך קבצים?</translation>
 <translation id="7096904522553867921">כדי להחזיר את הכרטיסיות לחלק העליון, אפשר ללחוץ לחיצה ימנית על כרטיסייה כלשהי ולבחור באפשרות "הצגת הכרטיסיות לרוחב"</translation>
-<translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
 <translation id="7098447629416471489">כאן יופיעו מנועי חיפוש אחרים ששמרת</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{הסרת האפליקציה}one{הסרת האפליקציות}two{הסרת האפליקציות}other{הסרת האפליקציות}}</translation>
 <translation id="7099027177878709408">&amp;סגירה</translation>
@@ -6283,7 +6266,6 @@
 <translation id="7341834142292923918">רוצה גישה לאתר הזה</translation>
 <translation id="7343372807593926528">יש לתאר את הבעיה לפני שליחת המשוב.</translation>
 <translation id="7344585835349671209">‏ניהול אישורי HTTPS/SSL במכשיר שלך</translation>
-<translation id="7345706641791090287">עליך לאשר את הסיסמה שלך</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7347751611463936647">‏כדי להשתמש בתוסף הזה, יש להקליד "<ph name="EXTENSION_KEYWORD" />" ואז "TAB", ולאחר מכן להקליד את הפקודה או את מונח החיפוש.</translation>
 <translation id="7347943691222276892">אפשר ללחוץ על הלחצן הזה כדי לצאת מדף המשנה <ph name="SUBPAGE_TITLE" />.</translation>
@@ -7480,7 +7462,6 @@
 <translation id="8551647092888540776">לא ניתן לפתוח את <ph name="FILE_NAMES" /> במצב אופליין</translation>
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="8552947739661397736">‏השתלטות על המשימה, Gemini שולט כרגע</translation>
-<translation id="8554899698005018844">לא הוגדרה שפה</translation>
 <translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> – תוכן מורחב מוצג</translation>
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
 <translation id="8557100046150195444">‏צריך לגעת בחיישן Touch ID כדי להמשיך</translation>
@@ -7838,7 +7819,6 @@
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" />יצר סיסמה חזקה לאתר הזה</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909833622202089127">האתר עוקב אחרי המיקום שלך</translation>
-<translation id="8910222113987937043">‏שינויים בסימניות, בהיסטוריה, בסיסמאות ובהגדרות אחרות לא יסונכרנו עוד עם חשבון Google שלך. עם זאת, הנתונים הקיימים עדיין יישארו בחשבון Google וניתן לנהל אותם ב<ph name="BEGIN_LINK" />מרכז השליטה של Google<ph name="END_LINK" />.</translation>
 <translation id="8911478306361447917">קיצורי דרך לתכונות ולתוספים</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8913485523736543337">כלי עדכון</translation>
@@ -7865,7 +7845,6 @@
 <translation id="8933709832356869375">אפליקציה אחת שהותקנה תוסר</translation>
 <translation id="8933960630081805351">‏ה&amp;צגה ב-Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{‏התוסף <ph name="EXTENSION1" /> ניגש להתקני USB}=2{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ועוד {3}}other{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ועוד {3}}}</translation>
-<translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{הייתה בשימוש היום (<ph name="TIME_COUNT" />)}=1{הייתה בשימוש לפני <ph name="TIME_COUNT" /> ימים}=2{הייתה בשימוש לפני שבוע (<ph name="TIME_COUNT" />)}one{הייתה בשימוש לפני <ph name="TIME_COUNT" /> שבועות}other{הייתה בשימוש לפני <ph name="TIME_COUNT" /> שבועות}}</translation>
 <translation id="8940081510938872932">המחשב מבצע יותר מדי פעולות כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="8941173171815156065">ביטול ההרשאה '<ph name="PERMISSION" />'</translation>

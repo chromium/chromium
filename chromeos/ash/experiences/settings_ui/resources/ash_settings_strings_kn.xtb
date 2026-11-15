@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">ಡೇಟಾ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1011003645819296594">ಉಳಿಸಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1011355516189274711">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ವಾಲ್ಯೂಮ್</translation>
+<translation id="1012876632442809908">USB-C ಸಾಧನ (ಮುಂದಿನ ಪೋರ್ಟ್)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ನೆಟ್‌ವರ್ಕ್ ಡೀಫಾಲ್ಟ್</translation>
 <translation id="1026655690966755180">ಪೋರ್ಟ್ ಸೇರಿಸಿ</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">ಸ್ಥಳೀಯ ಡೇಟಾ ಮರುಪಡೆಯುವಿಕೆ</translation>
 <translation id="1247372569136754018">ಮೈಕ್ರೊಫೋನ್ (ಆಂತರಿಕ)</translation>
 <translation id="1251366534849411931">ಓಪನಿಂಗ್ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">ಮೊಬೈಲ್ ಡೇಟಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1254593899333212300">ನೇರ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
 <translation id="1261380933454402672">ಸಾಧಾರಣ</translation>
 <translation id="1263733306853729545">ಕ್ಯಾಂಡಿಡೇಟ್ ಪಟ್ಟಿಯನ್ನು ವಿಭಾಗಿಸಲು <ph name="MINUS" /> ಮತ್ತು <ph name="EQUAL" /> ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">ಧ್ವನಿ ಗುಣಲಕ್ಷಣಗಳು</translation>
 <translation id="1291057703584594733">ಈಗಾಗಲೇ ನಿಯೋಜಿಸಲಾದ ಜೆಸ್ಚರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಅದನ್ನು ಅದರ ಮೂಲ ಕ್ರಿಯೆಯಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="1291421198328146277">ಕೀಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
+<translation id="1293264513303784526">USB-C ಸಾಧನ (ಎಡ ಪೋರ್ಟ್)</translation>
 <translation id="1293360286536751243">"<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" ಮತ್ತು "<ph name="CONFLICTING_GESTURE_THREE" />" ಜೊತೆ "<ph name="MAIN_GESTURE" />" ಓವರ್‌ಲ್ಯಾಪ್ ಆಗಬಹುದು. ಸಾಧ್ಯವಾದರೆ, ವಿಭಿನ್ನ ಜೆಸ್ಚರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1313405956111467313">ಸ್ವಯಂಚಾಲಿತ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">ಲಿಡ್‌ ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="185970820835152459">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ Google ಖಾತೆಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು Chromium ಬ್ರೌಸರ್, Play Store ‌‌, Gmail ಹಾಗೂ ಮುಂತಾದವುಗಳಲ್ಲಿ ಬಳಸಲಾಗುತ್ತದೆ. ಕುಟುಂಬದ ಸದಸ್ಯರಂತಹ ಬೇರೊಬ್ಬರಿಗೆ ನೀವು ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ಬದಲಿಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">ಕೂಲರ್</translation>
+<translation id="1864454756846565995">USB-C ಸಾಧನ (ಹಿಂದಿನ ಪೋರ್ಟ್)</translation>
 <translation id="1866589962721094893">ಈ Chromebook ನಲ್ಲಿ USB ಸಾಧನಗಳ ಮೇಲೆ Android ಆ್ಯಪ್‌ಗಳ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಿ. ಪ್ರತಿ ಬಾರಿ ನೀವು USB ಸಾಧನವನ್ನು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗುತ್ತದೆ. ಪ್ರತ್ಯೇಕ Android ಆ್ಯಪ್‌ಗಳು ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ಕೇಳುತ್ತವೆ.</translation>
 <translation id="1877377290348678128">ಲೇಬಲ್ (ಐಚ್ಛಿಕ)</translation>
 <translation id="1877860345998737529">ಕ್ರಿಯೆಯ ನಿಯೋಜನೆಯನ್ನು ಬದಲಿಸಿ</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="1938351510777341717">ಬಾಹ್ಯ ಕಮಾಂಡ್ ಕೀ</translation>
 <translation id="1940546824932169984">ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು</translation>
+<translation id="1941410638996203291">ಪ್ರಾರಂಭ ಸಮಯ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ಆವೃತ್ತಿ: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">ಅಪ್‌ಡೇಟ್‌‌ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="1948528728718281125">ಕ್ಯಾಮರಾ ಅನುಮತಿಯಿರುವ ಆ್ಯಪ್‌ಗಳು, ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಮತ್ತು ಸಿಸ್ಟಂ ಸರ್ವಿಸ್‌ಗಳಿಗೆ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಅನುಮತಿಯಿದೆ</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸುವಾಗ ಬಳಸುವ ಭಾಷೆ</translation>
 <translation id="2319459402137712349">ಕೀಬೋರ್ಡ್ ತೆರೆಯಲು ಪಠ್ಯ ಕ್ಷೇತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿರುವ ಕೀಬೋರ್ಡ್ ಐಕಾನ್ ಅನ್ನು ಸಹ ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="2319993584768066746">ಸೈನ್-ಇನ್ ಸ್ಕ್ರೀನ್ ಫೋಟೋಗಳು</translation>
+<translation id="2322622365472107569">ಮುಕ್ತಾಯದ ಸಮಯ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2325444234681128157">ಪಾಸ್‌ವರ್ಡ್‌ ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ</translation>
 <translation id="2326188115274135041">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನ್‌ಲಾಕ್ ಆನ್ ಮಾಡಲು, ಪಿನ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">ನಿಧಾನವಾಗಿ ಕಣ್ಣನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="258095186877893873">ದೀರ್ಘ</translation>
 <translation id="2581786034175502848">ಅದನ್ನು ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಲು 5 ಬಾರಿ shift ಕೀ ಒತ್ತಿರಿ</translation>
+<translation id="2581992808349413349">DNS (ಡೊಮೇನ್ ಹೆಸರು ಸಿಸ್ಟಮ್) ನಲ್ಲಿ ಸೈಟ್‌ನ IP ವಿಳಾಸವನ್ನು ಹುಡುಕಲು ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಿ. ಇದು <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ನಲ್ಲಿ ನಿರ್ವಹಿಸಲಾದ ಸೇವೆ ಒದಗಿಸುವವರನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="2584109212074498965">Kerberos ಟಿಕೆಟ್ ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಸಾಧನ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. (ದೋಷ ಕೋಡ್ <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome ನಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಮೈಕ್ರೊಫೋನ್‌ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2609980095400624569">ಕನೆಕ್ಷನ್ ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">ಹೆಚ್ಚುವರಿ ವಿವರಗಳು</translation>
 <translation id="2808985063107661499">"<ph name="CONFLICTING_GESTURE_ONE" />" ಮತ್ತು "<ph name="CONFLICTING_GESTURE_TWO" />" ಜೊತೆ "<ph name="MAIN_GESTURE" />" ಓವರ್‌ಲ್ಯಾಪ್ ಆಗಬಹುದು. ಸಾಧ್ಯವಾದರೆ, ವಿಭಿನ್ನ ಜೆಸ್ಚರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2809346626032021864">ಓದುವುದು</translation>
+<translation id="2811205483104563968">ಖಾತೆಗಳು</translation>
 <translation id="2813094189969465044">ಪೋಷಕ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="2817435998497102771">ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಮತ್ತು ಸ್ಟೈಲ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="2818476747334107629">ಪ್ರಿಂಟರ್ ವಿವರಗಳು</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">ಕುಗ್ಗಿಸಿ/ವಿಸ್ತರಿಸಿ</translation>
 <translation id="2833144527504272627">ಪಠ್ಯ ಕರ್ಸರ್ ಮೂಲಕ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="2835177225987815960">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಕ್ಯಾನಿಂಗ್ ಸೆಟಪ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಇದರಲ್ಲಿ ಯಾವುದೇ ನಿಯೋಜಿತ ಸ್ವಿಚ್‌ಗಳು ಮತ್ತು ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್‌ನ ವೇಗದ ಆದ್ಯತೆಗಳೂ ಸೇರಿರುತ್ತವೆ.</translation>
+<translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="2844809857160214557">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2849035674501872372">ಲುಕ್ ಅಪ್</translation>
 <translation id="2860710618359053450">ದವಡೆಯನ್ನು ಬಲಕ್ಕೆ ಸರಿಸುವುದು</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369067987974711168">ಈ ಪೋರ್ಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಇನ್ನಷ್ಟು ಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3370260763947406229">ಸ್ವಯಂ-ತಿದ್ದುಪಡಿ</translation>
+<translation id="3371140690572404006">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="3371351218553893534">ಸಾಲು ತುಂಬಾ ಉದ್ದವಾಗಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam ‌ಗೆ ನೀಡಿದ ಅನುಮತಿಗಳು ಎಲ್ಲಾ Steam ಗೇಮ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಅನ್ವಯಿಸುತ್ತವೆ.</translation>
 <translation id="338323348408199233">VPN ಬಳಸದೇ ಟ್ರಾಫಿಕ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಟ್ರಾಫಿಕ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುವ ಜನರಿಗೆ ನೀವು ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನೋಡಲು ಕಷ್ಟವಾಗುವಂತೆ ಮಾಡಿ. DNS (ಡೊಮೇನ್ ಹೆಸರು ಸಿಸ್ಟಮ್) ನಲ್ಲಿ ಸೈಟ್‌ನ IP ವಿಳಾಸವೊಂದನ್ನು ಹುಡುಕಲು <ph name="PRODUCT_NAME" /> ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಒಂದನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> ಅನ್ನು ಸುಧಾರಿಸಲು ನೆರವಾಗಲು Google ಗೆ ನಿಮ್ಮ ಹಾರ್ಡ್‌ವೇರ್ ಡೇಟಾ ಬಳಸಲು ಅನುಮತಿಸಿ. ನೀವು ನಿರಾಕರಿಸಿದರೆ, ಸೂಕ್ತವಾದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ಧರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಈಗಲೂ Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಅದನ್ನು ಬೇರೆ ರೀತಿಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3445465968953598059">ಫೇಶಿಯಲ್‌ ಕಂಟ್ರೋಲ್‌</translation>
+<translation id="3445925074670675829">USB-C ಸಾಧನ</translation>
 <translation id="3448492834076427715">ಖಾತೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="345078987193237421">ಇದು ಕ್ಯಾಮರಾ ಅನುಮತಿಯಿರುವ ಆ್ಯಪ್‌ಗಳು, ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಮತ್ತು ಸಿಸ್ಟಂ ಸರ್ವಿಸ್‌ಗಳಿಗೆ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="3453082738208775226">ಆಫ್‌ಲೈನ್ ಸಂಗ್ರಹಣೆಯನ್ನು ತೆರವುಗೊಳಿಸಬೇಕೆ?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">ತ್ವರಿತ ಉತ್ತರಗಳು ವಿವರಣೆ</translation>
 <translation id="3994075804072562819">USB ಸಾಧನಗಳ ಮೇಲೆ <ph name="SPECIFIC_NAME" /> ನಿಯಂತ್ರಣ ನೀಡಿ.</translation>
 <translation id="3994530503403062649">ನಿಮ್ಮ ಟ್ಯಾಬ್ಲೆಟ್‌ನಲ್ಲಿ ಬಟನ್‌ಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
+<translation id="3995138139523574647">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="3997429360543082038">ChromiumOS ಕುರಿತು</translation>
 <translation id="4001540981461989979">ಮೌಸ್ ಕರ್ಸರ್ ಚಲಿಸುವಾಗ ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="4005817994523282006">ಸಮಯವಲಯ ಪತ್ತೆಹಚ್ಚುವಿಕೆ ವಿಧಾನ</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸುವ ಮೂಲಕ ಸಮಯ ವಲಯವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="5327248766486351172">ಹೆಸರು</translation>
 <translation id="5331568967879689647">ChromeOS ಸಿಸ್ಟಂ ಆ್ಯಪ್</translation>
+<translation id="5331975486040154427">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="5334113802138581043">ಮೈಕ್ರೊಫೋನ್ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="5336689872433667741">ಕರ್ಸರ್ ಮತ್ತು ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="5337926771328966926">ಪ್ರಸ್ತುತ ಸಾಧನದ ಹೆಸರು <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">ಇಯರ್‌ಕಾನ್‌ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5441133529460183413">Chrome ಬ್ರೌಸರ್‌ನಿಂದ ವೆಬ್ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5450469615146335984">ಪ್ರತಿ ಕ್ರಿಯೆಗೆ ಶಾರ್ಟ್‌ಕಟ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5452446625764825792">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">ಐಟಂಗಳ ನಡುವೆ ಸರಿಸಲು, ಸ್ಕ್ರೀನ್‌ ಮೇಲಿರುವ “ಮುಂದಿನದು” ಮತ್ತು “ಹಿಂದಿನದು” ಬಟನ್ ಬಳಸಿ</translation>
 <translation id="6452961788130242735">ನೆಟ್‌ವರ್ಕ್ ಸಮಸ್ಯೆ ಅಥವಾ ಕಳಪೆ ಸಂಪರ್ಕ ಸ್ಥಿತಿ</translation>
 <translation id="6453921811609336127">ಮುಂದಿನ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />ಸ್ಪೇಸ್<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ಒತ್ತಿರಿ</translation>
+<translation id="6461170143930046705">ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6463488491707167747">ಈ ನಿಘಂಟನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6463596731306859179">ಅನಗತ್ಯ ಪಾಪ್-ಅಪ್‌ಗಳು ಅಥವಾ ಇತರ ಅನಿರೀಕ್ಷಿತ ನಡವಳಿಕೆಯನ್ನು ಪಡೆಯುತ್ತಿದ್ದೀರಾ? ಕೆಲವೊಮ್ಮೆ, ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ನಿಮಗೆ ತಿಳಿಯದಂತೆಯೇ ನಿಮ್ಮ ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="6465841119675156448">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೇ</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು <ph name="SPECIFIC_NAME" /> ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="6482559668224714696">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="648927581764831596">ಯಾವುದೂ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="6490471652906364588">USB-C ಸಾಧನ (ಬಲ ಪೋರ್ಟ್)</translation>
 <translation id="6497784818439587832">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಮೇಲಿನ ಐಟಂಗಳನ್ನು ಚಿಕ್ಕದಾಗಿಸಲು ಅಥವಾ ದೊಡ್ಡದಾಗಿ ಮಾಡಲು ಡಿಸ್‌ಪ್ಲೇ ಗಾತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6497789971060331894">ಮೌಸ್ ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="650185290742160385">ಥ್ರೆಶೋಲ್ಡ್‌ ಅನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="7092504544229909737">Android ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7093220653036489319">ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
+<translation id="7098389117866926363">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿ ಎಡ ಪೋರ್ಟ್‌)</translation>
 <translation id="7099337801055912064">ದೊಡ್ಡ ಗಾತ್ರದ PPD ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಗರಿಷ್ಠ ಗಾತ್ರ 250 kB ಆಗಿದೆ.</translation>
 <translation id="7107609441453408294">ಎಲ್ಲಾ ಸ್ಪೀಕರ್‌ಗಳ ಮೂಲಕ ಒಂದೇ ಆಡಿಯೊವನ್ನು ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="7116931001458704701">ಕರ್ಸರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಅಲುಗಾಡಿಸಿ</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">ಕರ್ಸರ್ ಪ್ರದೇಶದ ಗಾತ್ರ</translation>
 <translation id="7325209047678309347">ಪೇಪರ್ ಜಾಮ್ ಆಗಿದೆ</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
+<translation id="7345706641791090287">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7348093485538360975">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="7360333718677093875">ಎಮೋಜಿ ಪಿಕರ್</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">ಮೇಲಿನ-ಸಾಲುಗಳ ಕೀಗಳ ನಡುವಳಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಹುಡುಕಾಟದ ಕೀ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿಯಿರಿ</translation>
 <translation id="8551588720239073785">ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8553342806078037065">ಇತರ ವ್ಯಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸು</translation>
+<translation id="8554899698005018844">ಭಾಷೆ ನಮೂದಿಸಿಲ್ಲ</translation>
 <translation id="8555444629041783356">ಸ್ವಯಂಚಾಲಿತ ಸೂರ್ಯಾಸ್ತದ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="8563043098557365232">ಸಿಸ್ಟಮ್ ಸೇವೆಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8571687764447439720">Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8902667442496790482">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8903733144777177139">ಮೈಕ್ರೊಫೋನ್ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="8910222113987937043">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮಾಡಲಾಗುವ ಬದಲಾವಣೆಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್‌ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ ಮತ್ತು <ph name="BEGIN_LINK" />Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌<ph name="END_LINK" />ನಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದಾಗಿದೆ.</translation>
 <translation id="8912810933860534797">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8922624386829239660">ಮೌಸ್, ಪರದೆಯ ಅಂಚುಗಳನ್ನು ಸ್ಪರ್ಶಿಸುವಾಗ ಪರದೆಯನ್ನು ಸರಿಸಿ</translation>
 <translation id="8929738682246584251">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್/ಆಫ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
 <translation id="8931713990831679796">ಈ ಪ್ರಿಂಟರ್‌ಗಳು ಕನೆಕ್ಟ್ ಆಗಿವೆ ಮತ್ತು ಬಳಸಲು ಸಿದ್ಧವಾಗಿವೆ. ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.</translation>
 <translation id="8932654652795262306">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್ ವಿವರಗಳು</translation>
+<translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>
 <translation id="8940888110818450052">ಸೈನ್ ಇನ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="8944099748578356325">ಇನ್ನಷ್ಟು ತ್ವರಿತವಾಗಿ ಬ್ಯಾಟರಿ ಬಳಸಿ (ಪ್ರಸ್ತುತವಾಗಿ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ಐಕಾನ್ ಗಾತ್ರ</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">ಪ್ರಸ್ತುತ ರೋಮಿಂಗ್‌ನಲ್ಲಿದೆ</translation>
 <translation id="93393615658292258">ಪಾಸ್‌ವರ್ಡ್ ಮಾತ್ರ</translation>
 <translation id="942296794412775122">ಮೈಕ್ರೊಫೋನ್ ಆನ್/ಆಫ್</translation>
+<translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="950307215746360464">ಸೆಟಪ್ ಗೈಡ್</translation>
 <translation id="952471655966876828">ಸಾಧನವನ್ನು ಆನ್ ಮಾಡಿದಾಗ ಮತ್ತು ಬಳಸುತ್ತಿರುವಾಗ ಅದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ</translation>
 <translation id="956013912698841780">ಕಂಟೆಂಟ್ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಲು, ವ್ಯಾಖ್ಯಾನಗಳನ್ನು ಪಡೆಯಲು, ಹೆಚ್ಚು ಆತ್ಮವಿಶ್ವಾಸದಿಂದ ಬರೆಯಲು, ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ಇನ್ನೂ ಇತ್ಯಾದಿಗಳನ್ನು ಮಾಡಲು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ. ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.</translation>

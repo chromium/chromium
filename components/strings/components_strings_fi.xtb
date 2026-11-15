@@ -2313,6 +2313,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4854853140771946034">Luo uusi muistiinpano nopeasti Google Keepissa</translation>
 <translation id="4855395119669662878"><ph name="DATE_TIME" /> järjestelmänvalvojasi aloittaa tiedostojen lataamisen tänne: <ph name="CLOUD_PROVIDER" />. Pidä laite yhteydessä, kunnes tiedostojen lataus on valmis. Latauksen aikana voit vain lukea paikallisia tiedostoja.</translation>
+<translation id="4856655096879441213">Tallenna tietosi <ph name="GOOGLE_WALLET_TITLE" /> -palveluun, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit valita, <ph name="HOW_INFO_IS_USED_LINK" />, yksityisten korttien asetuksista tällä tilillä: <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Vahvistetaan koodia…</translation>
 <translation id="4860260582253463350">Meidän on vahvistettava henkilöllisyytesi, jotta voit jatkaa YouTubeen. Saat käyttöösi asetukset, jotka vanhempasi tai huoltajasi on määrittänyt Family Linkissä.</translation>
 <translation id="4861514638281352187">Lisää korjausnumero turvallisesti</translation>
@@ -4897,7 +4898,6 @@ Lisätietoja:
 <translation id="9192361865877479444">Metalli (matta)</translation>
 <translation id="9193018794001479794">Kerro lisää</translation>
 <translation id="9194783551575429711">Kysy: <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Kun organisaatiosi rajoittaa tallentamista Google-tilillesi, et voi jakaa välilehtiryhmiä tai liittyä niihin</translation>
 <translation id="9198613052465150219">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tulostus on estetty</translation>
 <translation id="9204089334327209740">Kun lataus on valmis, voit muokata tiedostoja täällä: <ph name="CLOUD_PROVIDER" />. Paikallisen tallennustilan sisältö, myös roskakorissa olevat tiedostot, poistetaan automaattisesti.</translation>

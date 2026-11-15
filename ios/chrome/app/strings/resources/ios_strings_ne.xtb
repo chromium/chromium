@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">डाउनलोड गर्न छाड्ने हो?</translation>
 <translation id="4796496140132859135">ट्याब समूह। कोल्याप्स गरिएको छ।</translation>
 <translation id="4800912004582762296">क्लिक गरिँदै छ</translation>
+<translation id="4800930308997591052">आफ्ना डिभाइसहरूका बिचमा निर्बाध रूपमा ट्याबहरू सेयर गर्न र आफ्नो Google खाताबाट पासवर्ड, बुकमार्क र अन्य कुराहरू प्राप्त गर्न आफ्नो खाता बदलेर <ph name="EMAIL" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="4802185666270672526">"डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="4803185665210547709">तपाईंको सङ्गठनले व्यवस्थापन गरेको।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@
 <translation id="7618220760967055820">टुलबारमा कुन बटन देखाउने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7620522820075868385">रद्द गर्नुहोस्</translation>
 <translation id="762078666799342162">तपाईं <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> मा गई यसअघि डाउनलोड गरिएका कन्टेन्ट हेर्न सक्नुहुन्छ</translation>
+<translation id="7636034359405891151">आफ्नो कम्प्युटरमा छाडेकै ठाउँबाट सुरु गर्नुहोस्</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{अरूले देखेका पासवर्डहरू}=1{अरूले देखेका {COUNT} पासवर्ड}other{अरूले देखेका {COUNT} वटा पासवर्ड}}</translation>
 <translation id="7640669552036055091">Android मा हालसालै खोलिएका ट्याबहरू</translation>

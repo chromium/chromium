@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組已收合。</translation>
 <translation id="4800912004582762296">點選中</translation>
+<translation id="4800930308997591052">切換至 <ph name="EMAIL" />，即可在裝置間順暢共用分頁，並存取 Google 帳戶中的密碼、書籤等資料。</translation>
 <translation id="4802185666270672526">隱藏「切換為電腦版網站」</translation>
 <translation id="4803185665210547709">由貴機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@
 <translation id="7618220760967055820">選擇工具列要顯示的按鈕</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="762078666799342162">你可以前往「<ph name="BEGIN_LINK" />檔案<ph name="END_LINK" />」查看先前下載的項目</translation>
+<translation id="7636034359405891151">接續電腦上的瀏覽進度</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{遭外洩的密碼}=1{有 {COUNT} 組遭外洩的密碼}other{有 {COUNT} 組遭外洩的密碼}}</translation>
 <translation id="7640669552036055091">Android 裝置上的分頁</translation>
@@ -2648,6 +2650,7 @@
 <translation id="91023216973987714">付款方式</translation>
 <translation id="9106655997975673326">來源：<ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
+<translation id="9115035712231910133">附加圖片「{title}」</translation>
 <translation id="9119764377203471454">無法新增附件</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9124978074365039456">使用相機和相片庫購物、翻譯及辨識所見內容</translation>

@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">გსურთ ჩამოტვირთვის შეწყვეტა?</translation>
 <translation id="4796496140132859135">ჩანართების ჯგუფი. ჩაკეცილია.</translation>
 <translation id="4800912004582762296">დაწკაპუნება</translation>
+<translation id="4800930308997591052">გადართეთ <ph name="EMAIL" />-ზე, რომ შეუფერხებლად გააზიაროთ ჩანართები თქვენს მოწყობილობებს შორის და მიიღოთ თქვენი პაროლები, სანიშნეები და სხვა მონაცემები თქვენი Google ანგარიშიდან.</translation>
 <translation id="4802185666270672526">დესკტოპის საიტის მოთხოვნის დამალვა</translation>
 <translation id="4803185665210547709">მართავს თქვენი ორგანიზაცია.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7618220760967055820">აირჩიეთ, რომელი ღილაკი გამოჩნდეს ხელსაწყოთა ზოლში</translation>
 <translation id="7620522820075868385">გაუქმება</translation>
 <translation id="762078666799342162">წინა ჩამოტვირთვების ნახვა შეგიძლიათ <ph name="BEGIN_LINK" />ფაილებში<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">გააგრძელეთ იქიდან, სადაც შეჩერდით თქვენს კომპიუტერზე</translation>
 <translation id="7638584964844754484">საიდუმლო ფრაზა არასწორია</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{გატეხილი პაროლი}=1{{COUNT} გატეხილი პაროლი}other{{COUNT} გატეხილი პაროლი}}</translation>
 <translation id="7640669552036055091">ჩანართები Android-იდან</translation>

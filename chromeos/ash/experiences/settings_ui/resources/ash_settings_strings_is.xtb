@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Dulkóðun notendagagna</translation>
 <translation id="1011003645819296594">Vistuð tæki</translation>
 <translation id="1011355516189274711">Hljóðstyrkur talgervils</translation>
+<translation id="1012876632442809908">USB-C-tæki (tengi að framan)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Sjálfgefnar stillingar netkerfis</translation>
 <translation id="1026655690966755180">Bæta við tengi</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Endurheimt staðbundinna gagna</translation>
 <translation id="1247372569136754018">Hljóðnemi (innbyggður)</translation>
 <translation id="1251366534849411931">Búist var við opnum slaufusviga: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Skannar eftir farsímagagnanetum...</translation>
 <translation id="1254593899333212300">Beintenging við internetið</translation>
 <translation id="1261380933454402672">Hófleg</translation>
 <translation id="1263733306853729545">Nota lyklana <ph name="MINUS" /> og <ph name="EQUAL" /> til að fara á milli tillögusíðna</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Eiginleikar fyrir tal</translation>
 <translation id="1291057703584594733">Þegar valin er bending með úthlutun verður hún aftengd við núverandi aðgerð.</translation>
 <translation id="1291421198328146277">Endurstilla lykla</translation>
+<translation id="1293264513303784526">USB-C-tæki (vinstra tengi)</translation>
 <translation id="1293360286536751243">„<ph name="MAIN_GESTURE" />“ gæti skarast við „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ og „<ph name="CONFLICTING_GESTURE_THREE" />“. Veldu aðra bendingu ef mögulegt er.</translation>
 <translation id="1293556467332435079">Skrár</translation>
 <translation id="1313405956111467313">Sjálfvirk proxy-stilling</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Skrá út þegar lokið er sett niður</translation>
 <translation id="185970820835152459">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chromium vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kaldara</translation>
+<translation id="1864454756846565995">USB-C-tæki (tengi að aftan)</translation>
 <translation id="1866589962721094893">Leyfa Android-forritum að stjórna USB-tækjum í þessari Chromebook. Beðið verður um heimild í hvert sinn sem þú stingur USB-tæki í samband. Hvert og eitt Android-forrit mun biðja um viðbótarheimildir.</translation>
 <translation id="1877377290348678128">Merki (valfrjálst)</translation>
 <translation id="1877860345998737529">Úthlutun rofaaðgerðar</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Uppfærslur</translation>
 <translation id="1938351510777341717">Ytri skipanalykill</translation>
 <translation id="1940546824932169984">Tengd tæki</translation>
+<translation id="1941410638996203291">Upphafstími <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Útgáfa: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Uppfærsla fannst</translation>
 <translation id="1948528728718281125">Aðgangur að myndavél er heimill fyrir forrit, vefsvæði með myndavélarheimild og kerfisþjónustur</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Tungumál sem notað er þegar síður eru þýddar</translation>
 <translation id="2319459402137712349">Veldu textareit til að opna lyklaborðið. Þú getur einnig valið lyklaborðstáknið neðst á skjánum.</translation>
 <translation id="2319993584768066746">Myndir á innskráningarskjá</translation>
+<translation id="2322622365472107569">Lokatími <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Vistuð Wi-Fi net</translation>
 <translation id="2325444234681128157">Muna aðgangsorð</translation>
 <translation id="2326188115274135041">Staðfestu PIN-númer til að kveikja á sjálfvirkri opnun</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Lokaðu báðum augum skamma stund</translation>
 <translation id="258095186877893873">Löng</translation>
 <translation id="2581786034175502848">Ýttu fimm sinnum á Shift til að kveikja aftur á honum</translation>
+<translation id="2581992808349413349">Notaðu örugga tengingu til að leita að IP-tölu vefsvæðis í DNS (nafnakerfi léna, Domain Name System). Þetta notar stýrðan þjónustuaðila á <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Ekki var hægt að sækja Kerberos-miða. Reyndu aftur eða hafðu samband við tækjastjóra fyrirtækisins. (Villukóði <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Stjórna hljóðnemaheimildum vefsvæða í Chrome</translation>
 <translation id="2609980095400624569">Tenging mistókst</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Viðbótarupplýsingar</translation>
 <translation id="2808985063107661499">„<ph name="MAIN_GESTURE" />“ gæti skarast við „<ph name="CONFLICTING_GESTURE_ONE" />“ og „<ph name="CONFLICTING_GESTURE_TWO" />“. Veldu aðra bendingu ef mögulegt er.</translation>
 <translation id="2809346626032021864">Lestur</translation>
+<translation id="2811205483104563968">Reikningar</translation>
 <translation id="2813094189969465044">Barnalæsing</translation>
 <translation id="2817435998497102771">Velja veggfóður og stíl</translation>
 <translation id="2818476747334107629">Upplýsingar um prentara</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Minnka/stækka</translation>
 <translation id="2833144527504272627">Fletta með textabendli</translation>
 <translation id="2835177225987815960">Núverandi uppsetning skönnunar verður endurstillt, þ.m.t. úthlutaðir rofar og hraðastillingar sjálfvirkrar skönnunar.</translation>
+<translation id="2844169650293029770">USB-C tæki (tengi vinstra megin að framan)</translation>
 <translation id="2844809857160214557">Skoða og stjórna prentverkum</translation>
 <translation id="2849035674501872372">Horfðu upp</translation>
 <translation id="2860710618359053450">Beindu vörunum til hægri</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369067987974711168">Sýna fleiri aðgerðir fyrir þessa gátt</translation>
 <translation id="3370260763947406229">Sjálfvirk leiðrétting</translation>
+<translation id="3371140690572404006">USB-C tæki (tengi hægra megin að framan)</translation>
 <translation id="3371351218553893534">Línan er of löng: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Heimildir sem eru veittar Steam gilda um alla leiki og forrit Steam.</translation>
 <translation id="338323348408199233">Loka á umferð án VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. <ph name="PRODUCT_NAME" /> notar örugga tengingu til að finna IP-tölu vefsvæðis í nafnakerfi léna (DNS).</translation>
 <translation id="3442674350323953953">Leyfa Google að nota vélbúnaðargögnin þín til að bæta <ph name="DEVICE_OS" />. Ef þú hafnar því verða þessi gögn samt send til Google til að leita að viðeigandi uppfærslum en gögnin verða hvorki vistuð né notuð í nokkrum öðrum tilgangi.</translation>
 <translation id="3445465968953598059">Andlitsstýring</translation>
+<translation id="3445925074670675829">USB-C-tæki</translation>
 <translation id="3448492834076427715">Uppfæra reikning</translation>
 <translation id="345078987193237421">Þetta veitir forritum, vefsvæðum með myndavélarheimild og kerfisþjónustu aðgang að myndavélinni</translation>
 <translation id="3453082738208775226">Hreinsa til í geymslurými án nettengingar?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Skilgreining skjótra svara</translation>
 <translation id="3994075804072562819">Leyfa <ph name="SPECIFIC_NAME" /> að stjórna USB-tækjum.</translation>
 <translation id="3994530503403062649">Finndu hnappana á spjaldtölvunni</translation>
+<translation id="3995138139523574647">USB-C tæki (tengi hægra megin að aftan)</translation>
 <translation id="3997429360543082038">Um ChromiumOS</translation>
 <translation id="4001540981461989979">Merkja músarbendilinn þegar hann hreyfist</translation>
 <translation id="4005817994523282006">Aðferð við val á tímabelti</translation>
@@ -1327,6 +1339,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5324780743567488672">Stilla tímabelti sjálfkrafa eftir staðsetningunni þinni</translation>
 <translation id="5327248766486351172">Heiti</translation>
 <translation id="5331568967879689647">Kerfisforrit ChromeOS</translation>
+<translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
 <translation id="5334113802138581043">Aðgangur að hljóðnema</translation>
 <translation id="5336689872433667741">Bendill og snertiflötur</translation>
 <translation id="5337926771328966926">Núverandi heiti tækis er <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5435274640623994081">Kveikja á skráningu hljóðmerkja</translation>
 <translation id="5441133529460183413">Vefforrit sótt í Chrome vafra</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Ógilt aðgangsorð</translation>
 <translation id="5450469615146335984">Veldu flýtilykil fyrir hverja aðgerð</translation>
 <translation id="5452446625764825792">Nú geturðu séð nýlegar myndir, margmiðlunarefni og forrit símans</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (virkar án nettengingar)</translation>
@@ -1645,6 +1659,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6444147596556711162">Ýttu á „Áfram“ og „Til baka“ til að fara á milli atriða á skjánum</translation>
 <translation id="6452961788130242735">Netvilla eða rangt svæði</translation>
 <translation id="6453921811609336127">Til að skipta yfir í næstu innfærsluaðferð skaltu ýta á <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Bilslá<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Leitar að netum...</translation>
 <translation id="6463488491707167747">Eyða þessari orðabók</translation>
 <translation id="6463596731306859179">Færðu óumbeðna sprettiglugga eða annarskonar óvænta virkni? Í einhverjum tilfellum geta forrit og viðbætur sem þú setur upp breytt ChromeOS-stillingunum þínum án þinnar vitundar.</translation>
 <translation id="6465841119675156448">Án nettengingar</translation>
@@ -1661,6 +1676,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="648204537326351595">Veittu <ph name="SPECIFIC_NAME" /> aðgang að hljóðnemanum</translation>
 <translation id="6482559668224714696">Stækkunargler á öllum skjánum</translation>
 <translation id="648927581764831596">Ekki í boði</translation>
+<translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
 <translation id="650185290742160385">Lækka mörk</translation>
@@ -1825,6 +1841,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7090714929377281710">Slökkva sjálfkrafa á heitum reit</translation>
 <translation id="7092504544229909737">Ekki hægt að nota með Android-forritum</translation>
 <translation id="7093220653036489319">Skjót svör</translation>
+<translation id="7098389117866926363">USB-C tæki (vinstra tengi að aftan)</translation>
 <translation id="7099337801055912064">Ekki er hægt að hlaða inn stórri PPD-skrá. Hámarksstærð er 250 kB.</translation>
 <translation id="7107609441453408294">Spila sama hljóð í öllum hátölurum</translation>
 <translation id="7116931001458704701">Hrista til að finna bendil</translation>
@@ -1886,6 +1903,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7323315405936922211">Stærð bendilssvæðis</translation>
 <translation id="7325209047678309347">Pappír er fastur</translation>
 <translation id="7331646370422660166">alt + ör niður</translation>
+<translation id="7345706641791090287">Staðfestu aðgangsorðið þitt</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7360333718677093875">emoji-val</translation>
@@ -2262,6 +2280,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="85486688517848470">Haltu leitarhnappinum inni til að breyta hegðun hnappa í efstu röðinni</translation>
 <translation id="8551588720239073785">Dagsetningar- og tímastillingar</translation>
 <translation id="8553342806078037065">Stjórna öðrum notendum</translation>
+<translation id="8554899698005018844">Ekkert tungumál</translation>
 <translation id="8555444629041783356">Sjálfvirk sólsetursáætlun</translation>
 <translation id="8563043098557365232">Aðeins kerfisþjónustur hafa aðgang</translation>
 <translation id="8571687764447439720">Bæta Kerberos miða við</translation>
@@ -2368,12 +2387,14 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="8900413463156971200">Virkja farsímakerfi</translation>
 <translation id="8902667442496790482">Opna stillingar fyrir textaupplestur</translation>
 <translation id="8903733144777177139">Lokað fyrir aðgang að hljóðnema</translation>
+<translation id="8910222113987937043">Breytingar á bókamerkjum, ferlum, aðgangsorðum og öðrum stillingum verða ekki lengur samstilltar við Google reikninginn þinn. Gögnin þín verða þó áfram vistuð á Google reikningnum þínum og hægt er að hafa umsjón með þeim á <ph name="BEGIN_LINK" />stjórnborði Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Kveikja á sjálfvirkri skönnun</translation>
 <translation id="8922624386829239660">Hreyfa skjáinn þegar bendillinn snertir skjájaðarinn</translation>
 <translation id="8929738682246584251">Kveikt/slökkt á stækkunargleri</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>
 <translation id="8931713990831679796">Þessir prentarar eru tengdir og tilbúnir til notkunar. Vistaðu þá á prófílnum þínum til að hafa greiðari aðgang.</translation>
 <translation id="8932654652795262306">Upplýsingar um skynditjóðrun</translation>
+<translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8940888110818450052">Innskráningarkostir</translation>
 <translation id="8944099748578356325">Nota rafhlöðu hraðar (<ph name="BATTERY_PERCENTAGE" />% að svo stöddu)</translation>
 <translation id="8945274638472141382">Stærð tákns</translation>
@@ -2470,6 +2491,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="930893132043726269">Í reiki núna</translation>
 <translation id="93393615658292258">Einungis aðgangsorð</translation>
 <translation id="942296794412775122">Kveikt/slökkt á hljóðnema</translation>
+<translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="950307215746360464">Uppsetningarleiðbeiningar</translation>
 <translation id="952471655966876828">Tækið tengist sjálfkrafa þegar kveikt er á því og það notað</translation>
 <translation id="956013912698841780">Hægrismelltu til að taka saman efni, fá skilgreiningar, skrifa af meira sjálfstrausti, búa til myndir og fleira. Tiltækileiki er takmarkaður eins og stendur.</translation>

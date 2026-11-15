@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Leállítja a letöltést?</translation>
 <translation id="4796496140132859135">Lapcsoport. Összecsukva.</translation>
 <translation id="4800912004582762296">Kattintás…</translation>
+<translation id="4800930308997591052">Váltson a(z) <ph name="EMAIL" /> fiókra, hogy zökkenőmentesen megoszthassa a lapokat az eszközei között, és hozzáférhessen a Google-fiókjában tárolt jelszavaihoz, könyvjelzőihez és egyebekhez.</translation>
 <translation id="4802185666270672526">Az „Asztali webhely kérése” művelet elrejtése</translation>
 <translation id="4803185665210547709">Az Ön szervezete kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -2148,6 +2149,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7618220760967055820">Az eszköztáron megjelenő gomb kiválasztása</translation>
 <translation id="7620522820075868385">Mégse</translation>
 <translation id="762078666799342162">A korábbi letöltéseit a <ph name="BEGIN_LINK" />Fájlok<ph name="END_LINK" /> alkalmazásban tekintheti meg</translation>
+<translation id="7636034359405891151">Ott folytathatja, ahol abbahagyta a számítógépén</translation>
 <translation id="7638584964844754484">Hibás összetett jelszó</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Jelszavak, amelyekhez illetéktelenül hozzáfértek}=1{{COUNT} jelszavához illetéktelenül hozzáfértek}other{{COUNT} jelszavához illetéktelenül hozzáfértek}}</translation>
 <translation id="7640669552036055091">Lapok Androidról</translation>

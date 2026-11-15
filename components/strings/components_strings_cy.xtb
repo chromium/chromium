@@ -1308,6 +1308,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3196374699162453920">Cod archebu</translation>
 <translation id="3196902089458890316">Rhannu tabiau perthnasol bob amser i gael gwell ymatebion?</translation>
 <translation id="3197136577151645743">Yn gallu gofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
+<translation id="3201749168732432347">Cynigion a chardiau teyrngarwch</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="3203025201812691413">Ni all URL fod yn wag</translation>
 <translation id="320323717674993345">Canslo'r Taliad</translation>
@@ -2312,6 +2313,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4850886885716139402">Gweld</translation>
 <translation id="4854853140771946034">Creu nodyn newydd yn Google Keep yn gyflym</translation>
 <translation id="4855395119669662878">Bydd eich gweinyddwr yn dechrau uwchlwytho'ch ffeiliau i <ph name="CLOUD_PROVIDER" /> ar <ph name="DATE_TIME" />. Cadwch eich dyfais wedi'i chysylltu nes bod eich uwchlwythiad ffeil wedi'i gwblhau. Wrth uwchlwytho, dim ond ffeiliau lleol y byddwch yn gallu eu darllen.</translation>
+<translation id="4856655096879441213">Cadwch eich gwybodaeth yn <ph name="GOOGLE_WALLET_TITLE" /> a chyflawni pethau'n gyflymach, megis llenwi ffurflenni ar draws cynhyrchion Google. Gallwch reoli <ph name="HOW_INFO_IS_USED_LINK" /> yn eich gosodiadau pas preifat ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Wrthi'n dilysu'r cod...</translation>
 <translation id="4860260582253463350">Er mwyn parhau i YouTube, mae angen i ni sicrhau mai chi sydd yno. Byddwch yn cael y gosodiadau a sefydlwyd gan eich rhiant neu warcheidwad yn Family Link.</translation>
 <translation id="4861514638281352187">Ychwanegu rhif unioni cam yn ddiogel</translation>
@@ -4894,7 +4896,6 @@ Manylion ychwanegol:
 <translation id="9192361865877479444">Metel (Matte)</translation>
 <translation id="9193018794001479794">Ymhelaethwch</translation>
 <translation id="9194783551575429711">Gofyn i <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Pan fydd eich sefydliad yn cyfyngu ar gynilo i'ch Cyfrif Google, ni allwch rannu neu ymuno â grwpiau tabiau</translation>
 <translation id="9198613052465150219">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ni chewch argraffu</translation>
 <translation id="9204089334327209740">Unwaith y bydd y llwythiad wedi'i gwblhau, gallwch chi addasu'ch ffeiliau yn <ph name="CLOUD_PROVIDER" />. Bydd storfa leol, gan gynnwys unrhyw ffeiliau yn y Sbwriel, yn cael eu tynnu'n awtomatig.</translation>

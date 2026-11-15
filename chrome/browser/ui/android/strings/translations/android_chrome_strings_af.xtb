@@ -129,6 +129,7 @@ Gaan na <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer 
 <translation id="1460751212339734034">Spaar tyd, tik minder</translation>
 <translation id="146522654774760805">Wagwoorde en outovul</translation>
 <translation id="1466383950273130737">Kies Chrome se taal</translation>
+<translation id="1473344277210704336">Gemini en jou noodsaaklikhede op die nuwe onderste nutsbalk</translation>
 <translation id="1477626028522505441">Kon <ph name="FILE_NAME" /> weens bedienerkwessies nie aflaai nie.</translation>
 <translation id="147982357559798527">Het verander</translation>
 <translation id="1480287803138246127">Sommige van jou geskiedenis sal dalk nie hier verskyn nie. Maak die volle Chrome-geskiedenis oop om al jou Chrome-geskiedenis te sien.</translation>
@@ -907,6 +908,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4537987892902330164">Jy het as <ph name="NAME_OR_EMAIL" /> aangemeld gebly.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> oortjie}other{<ph name="TAB_COUNT_MANY" /> oortjies, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Webbladkortpaaie</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-lidmaatskap.</translation>
 <translation id="4572422548854449519">Meld by 'n bestuurde rekening aan</translation>
 <translation id="4577115723294378384">Rangskik volgens A na Z</translation>
 <translation id="4578289292431526768">Kom ons begin</translation>
@@ -914,6 +916,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4585751637295612750">Maak ’n nuwe oortjie oop om dit by jou vraag te voeg</translation>
 <translation id="4585793705637313973">Wysig bladsy</translation>
 <translation id="4587589328781138893">Werwe</translation>
+<translation id="4587590257937792551">Chrome het ’n nuwe onderste nutsbalk wat vir gerief gebou is. Jy kan enige tyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> terugskakel.</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
 <translation id="4595237294768457124">Maak ’n Nuwe oortjie-bladsy oop</translation>
 <translation id="4595276580892809760">Heg prente uit galery aan</translation>
@@ -1451,6 +1454,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6633067410344541938">Ontsluit Incognito</translation>
 <translation id="6636623428211296678">Verken meer instellings hieronder of maak nou klaar</translation>
 <translation id="6637100877383020115">Chrome stuur gebruik- en omvaldata na Google toe om te help om die app beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Jou noodsaaklikhede, direk op die onderste nutsbalk. Jy kan enige tyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> terugskakel.</translation>
 <translation id="6642299196749785472">Heg oortjies aan</translation>
 <translation id="6647441008198474441">URL'e wat jy besoek, word na Google toe gestuur om te voorspel watter werwe jy dalk volgende sal besoek</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1649,6 +1653,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, gekose vasgespelde oortjie wat gedeel word</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7314734791127433392">Kan nie wagwoorde kontroleer nie</translation>
+<translation id="7324177883197548771">Chrome het ’n nuwe voorkoms wat vir gerief gebou is. Jy kan enige tyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> terugskakel.</translation>
 <translation id="7324354302972299151">Stuur ’n “Do Not Track”-versoek</translation>
 <translation id="7333041109965360609">Uitgeteken van kennisgewings</translation>
 <translation id="7335766481146072567">Druk gaan voort</translation>
@@ -1750,6 +1755,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7697383401610880082">Sleephandvatsel</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Onderste blad van onlangse aktiwiteit is teen volle hoogte oopgemaak</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-lidmaatskap.</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
 <translation id="7708994397325774423">Kry al jou wagwoorde</translation>
 <translation id="7714077993070342304">Maak Chrome-kieslys oop</translation>

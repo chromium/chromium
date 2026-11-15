@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Endirmə dayandırılsın?</translation>
 <translation id="4796496140132859135">Tab qrupu. Yığcamlaşdırıldı.</translation>
 <translation id="4800912004582762296">Klikləmə</translation>
+<translation id="4800930308997591052">Cihazlarınız arasında tabları asanlıqla paylaşmaq və Google Hesabınızdan parolları, əlfəcinləri və daha çoxunu əldə etmək üçün <ph name="EMAIL" /> hesabına keçin.</translation>
 <translation id="4802185666270672526">"Masaüstü sayt sorğusu" seçimini gizlədin</translation>
 <translation id="4803185665210547709">Təşkilatınız tərəfindən idarə olunur.
 <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7618220760967055820">Alətlər panelində hansı düymənin göstəriləcəyini seçin</translation>
 <translation id="7620522820075868385">Ləğv edin</translation>
 <translation id="762078666799342162">Əvvəlki endirmələrə <ph name="BEGIN_LINK" />Fayllar<ph name="END_LINK" /> tətbiqində baxa bilərsiniz</translation>
+<translation id="7636034359405891151">Kompüterdə qaldığınız yerdən davam edin</translation>
 <translation id="7638584964844754484">Yanlış parol</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Oğurlanmış parol}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
 <translation id="7640669552036055091">Android-dəki tablar</translation>

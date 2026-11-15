@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="201759455285471444">Zabaldu fitxa taldea.</translation>
 <translation id="2022431790688770637">Kudeatu Gemini-ren iradokizunak</translation>
+<translation id="2023265063803387188">Gemini ez dago erabilgarri ezkutuko moduan</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Ireki fitxen sareta</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Deskarga gelditu nahi duzu?</translation>
 <translation id="4796496140132859135">Fitxa taldea. Tolestuta.</translation>
 <translation id="4800912004582762296">Klik egiten</translation>
+<translation id="4800930308997591052">Aldatu <ph name="EMAIL" /> kontura, zure gailuen artean fitxak erraz partekatzeko eta Google-ko kontuko pasahitzak, laster-markak eta beste eduki batzuk eskuratzeko.</translation>
 <translation id="4802185666270672526">Ezkutatu "Eskatu ordenagailuetarako webgunea"</translation>
 <translation id="4803185665210547709">Erakundeak kudeatzen du.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -2147,6 +2149,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7618220760967055820">Aukeratu tresna-barran zer botoi erakutsi</translation>
 <translation id="7620522820075868385">Utzi</translation>
 <translation id="762078666799342162">Aurreko deskargak <ph name="BEGIN_LINK" />Fitxategiak<ph name="END_LINK" /> atalean ikus ditzakezu</translation>
+<translation id="7636034359405891151">Jarraitu utzitako tokitik ordenagailuan</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Arriskuan dauden pasahitzak}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
 <translation id="7640669552036055091">Android-eko fitxak</translation>
@@ -2647,6 +2650,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="91023216973987714">Ordainketa-metodoak</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" gailukoa</translation>
 <translation id="9107664647686727385">Egiaztatu ea badagoen pasahitzik arriskuan</translation>
+<translation id="9115035712231910133">Erantsitako irudia {title}</translation>
 <translation id="9119764377203471454">Ezin da gehitu eranskinik</translation>
 <translation id="9124387962554796433">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>
 <translation id="9124978074365039456">Erosi, itzuli eta identifikatu ikusten duzuna kameraren eta argazki-galeriaren bidez</translation>

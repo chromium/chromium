@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Versleuteling van gebruikersgegevens</translation>
 <translation id="1011003645819296594">Opgeslagen apparaten</translation>
 <translation id="1011355516189274711">Volume voor tekst-naar-spraak</translation>
+<translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Netwerkstandaard</translation>
 <translation id="1026655690966755180">Poort toevoegen</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Herstel van lokale gegevens</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
 <translation id="1251366534849411931">Verwachte openingsaccolade <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Scannen naar mobiele gegevensnetwerken...</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
 <translation id="1261380933454402672">Normaal</translation>
 <translation id="1263733306853729545">De toetsen <ph name="MINUS" /> en <ph name="EQUAL" /> gebruiken om door een kandidatenlijst te bladeren</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Spraakeigenschappen</translation>
 <translation id="1291057703584594733">Als je een gebaar selecteert dat al is toegewezen, wordt het verwijderd uit de oorspronkelijke actie.</translation>
 <translation id="1291421198328146277">Toetsen resetten</translation>
+<translation id="1293264513303784526">USB-C-apparaat (poort aan linkerkant)</translation>
 <translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> kan overlappen met <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> en <ph name="CONFLICTING_GESTURE_THREE" />. Kies zo mogelijk een ander gebaar.</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1313405956111467313">Automatische proxyconfiguratie</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Uitloggen wanneer de klep wordt gesloten</translation>
 <translation id="185970820835152459">Je kunt je ingelogde Google-accounts beheren. Je Google-accounts worden gebruikt voor onder andere de Chromium-browser, Play Store, en Gmail. Als je een account wilt toevoegen voor iemand anders, bijvoorbeeld een gezinslid, voeg je een nieuw persoon toe aan je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Koeler</translation>
+<translation id="1864454756846565995">USB-C-apparaat (poort aan achterkant)</translation>
 <translation id="1866589962721094893">Geef Android-apps controle over USB-apparaten op deze Chromebook. Telkens als je een USB-apparaat aansluit, wordt er toestemming gevraagd. Afzonderlijke Android-apps vragen om aanvullende rechten.</translation>
 <translation id="1877377290348678128">Label (optioneel)</translation>
 <translation id="1877860345998737529">Toewijzing van acties voor schakelaar</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Updates</translation>
 <translation id="1938351510777341717">Externe opdracht</translation>
 <translation id="1940546824932169984">Verbonden apparaten</translation>
+<translation id="1941410638996203291">Begintijd: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versie: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Update gevonden</translation>
 <translation id="1948528728718281125">Cameratoegang is toegestaan voor apps, websites met camerarechten en systeemservices</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Gebruikte taal tijdens het vertalen van pagina's</translation>
 <translation id="2319459402137712349">Selecteer een tekstveld om het toetsenbord te openen. Je kunt ook het toetsenbordicoon onderaan je scherm selecteren.</translation>
 <translation id="2319993584768066746">Foto's voor inlogscherm</translation>
+<translation id="2322622365472107569">Eindtijd: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Opgeslagen wifi-netwerken</translation>
 <translation id="2325444234681128157">Wachtwoord onthouden</translation>
 <translation id="2326188115274135041">Bevestig je pincode om automatisch ontgrendelen aan te zetten</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Beide ogen kort sluiten</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581786034175502848">Druk 5 keer op Shift om de touchpad weer aan te zetten</translation>
+<translation id="2581992808349413349">Gebruik een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System). Hiervoor wordt een beheerde serviceprovider gebruikt op <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2584109212074498965">Kan Kerberos-ticket niet ophalen. Probeer het opnieuw of neem contact op met de apparaatbeheerder van je organisatie. (Foutcode <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Microfoonrechten voor websites beheren in Chrome</translation>
 <translation id="2609980095400624569">Kan geen verbinding maken</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Aanvullende informatie</translation>
 <translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> kan overlappen met <ph name="CONFLICTING_GESTURE_ONE" /> en <ph name="CONFLICTING_GESTURE_TWO" />. Kies zo mogelijk een ander gebaar.</translation>
 <translation id="2809346626032021864">Lezen</translation>
+<translation id="2811205483104563968">Accounts</translation>
 <translation id="2813094189969465044">Ouderlijk toezicht</translation>
 <translation id="2817435998497102771">Je achtergrond en stijl instellen</translation>
 <translation id="2818476747334107629">Printergegevens</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Verkleinen/vergroten</translation>
 <translation id="2833144527504272627">Navigeren met tekstcursor</translation>
 <translation id="2835177225987815960">Je huidige instellingen voor scannen worden gereset, waaronder toegewezen schakelaars en voorkeuren voor de snelheid van automatisch scannen.</translation>
+<translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
 <translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
 <translation id="2849035674501872372">Omhoog kijken</translation>
 <translation id="2860710618359053450">Je kaak naar rechts bewegen</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369067987974711168">Meer acties voor deze poort bekijken</translation>
 <translation id="3370260763947406229">Autocorrectie</translation>
+<translation id="3371140690572404006">USB-C-apparaat (poort rechts aan de voorkant)</translation>
 <translation id="3371351218553893534">De regel is te lang: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Rechten die je toestaat voor Steam, gelden voor alle Steam-games en -apps.</translation>
 <translation id="338323348408199233">Verkeer zonder VPN blokkeren</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Maak het moeilijker voor mensen met toegang tot je internetverkeer om te zien welke sites je bezoekt. <ph name="PRODUCT_NAME" /> gebruikt een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog steeds naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt.</translation>
 <translation id="3445465968953598059">Gezichtsbediening</translation>
+<translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3448492834076427715">Account updaten</translation>
 <translation id="345078987193237421">Zo geef je cameratoegang aan apps, websites met camerarechten en systeemservices.</translation>
 <translation id="3453082738208775226">Offline opslag opschonen?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definitie van Snelle antwoorden</translation>
 <translation id="3994075804072562819">Geef <ph name="SPECIFIC_NAME" /> controle over USB-apparaten.</translation>
 <translation id="3994530503403062649">Knoppen vinden op je tablet</translation>
+<translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="3997429360543082038">Over Chromium OS</translation>
 <translation id="4001540981461989979">Muisaanwijzer markeren tijdens bewegen</translation>
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
@@ -1327,6 +1339,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5324780743567488672">Tijdzone automatisch instellen op basis van je locatie</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5331568967879689647">Chrome OS-systeem-app</translation>
+<translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="5334113802138581043">Microfoontoegang</translation>
 <translation id="5336689872433667741">Cursor en touchpad</translation>
 <translation id="5337926771328966926">De huidige apparaatnaam is <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5435274640623994081">Earconregistratie aanzetten</translation>
 <translation id="5441133529460183413">Web-app geïnstalleerd vanuit Chrome-browser</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Ongeldig wachtwoord</translation>
 <translation id="5450469615146335984">Een sneltoets voor elke actie selecteren</translation>
 <translation id="5452446625764825792">Je kunt nu de recente foto's, media en apps van je telefoon bekijken</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (werkt offline)</translation>
@@ -1645,6 +1659,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6444147596556711162">Gebruik Volgende en Vorige om door items op het scherm te navigeren</translation>
 <translation id="6452961788130242735">Netwerkprobleem of onjuist domein</translation>
 <translation id="6453921811609336127">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />spatiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Zoeken naar netwerken...</translation>
 <translation id="6463488491707167747">Dit woordenboek verwijderen</translation>
 <translation id="6463596731306859179">Krijg je ongewenste pop-ups of ander onverwacht gedrag? Soms kunnen je ChromeOS-instellingen zonder je medeweten worden aangepast door apps en extensies die je installeert.</translation>
 <translation id="6465841119675156448">Zonder internet</translation>
@@ -1661,6 +1676,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> toegang geven tot de microfoon</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
 <translation id="648927581764831596">Niet beschikbaar</translation>
+<translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
 <translation id="6497784818439587832">Wijzig de weergavegrootte om items op het scherm kleiner of groter te maken.</translation>
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="650185290742160385">Drempelwaarde verlagen</translation>
@@ -1825,6 +1841,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="7090714929377281710">Hotspot automatisch uitzetten</translation>
 <translation id="7092504544229909737">Kan niet worden gebruikt met Android-apps</translation>
 <translation id="7093220653036489319">Snelle antwoorden</translation>
+<translation id="7098389117866926363">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="7099337801055912064">Grote PPD kan niet worden geladen. Maximum grootte is 250 KB.</translation>
 <translation id="7107609441453408294">Dezelfde audio afspelen via alle speakers</translation>
 <translation id="7116931001458704701">Schudden om cursor te vinden</translation>
@@ -1886,6 +1903,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="7323315405936922211">Grootte van cursorgebied</translation>
 <translation id="7325209047678309347">Er is een papierstoring</translation>
 <translation id="7331646370422660166">alt + pijl-omlaag</translation>
+<translation id="7345706641791090287">Je wachtwoord bevestigen</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7360333718677093875">emoji-kiezer</translation>
@@ -2261,6 +2279,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="85486688517848470">Houd de zoektoets ingedrukt om het gedrag van de toetsen in de bovenste rij om te schakelen</translation>
 <translation id="8551588720239073785">Instellingen voor datum en tijd</translation>
 <translation id="8553342806078037065">Andere mensen beheren</translation>
+<translation id="8554899698005018844">Geen taal</translation>
 <translation id="8555444629041783356">Automatische planning voor beëindiging</translation>
 <translation id="8563043098557365232">Alleen toegestaan voor systeemservices</translation>
 <translation id="8571687764447439720">Kerberos-ticket toevoegen</translation>
@@ -2367,12 +2386,14 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="8900413463156971200">Mobiel netwerk aanzetten</translation>
 <translation id="8902667442496790482">Instellingen voor 'Selecteer om voor te lezen' openen</translation>
 <translation id="8903733144777177139">Microfoontoegang is geblokkeerd</translation>
+<translation id="8910222113987937043">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Automatisch scannen aanzetten</translation>
 <translation id="8922624386829239660">Scherm bewegen zodra de muis aan de rand van het scherm komt</translation>
 <translation id="8929738682246584251">Vergrootglas aan/uit</translation>
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8931713990831679796">Deze printers zijn verbonden en klaar voor gebruik. Sla ze op in je profiel voor makkelijkere toegang.</translation>
 <translation id="8932654652795262306">Gegevens van instant tethering</translation>
+<translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8940888110818450052">Inlogopties</translation>
 <translation id="8944099748578356325">De batterij sneller gebruiken (momenteel <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Icoonformaat</translation>
@@ -2469,6 +2490,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="930893132043726269">Roaming staat momenteel aan</translation>
 <translation id="93393615658292258">Alleen wachtwoord</translation>
 <translation id="942296794412775122">Microfoon aan/uit</translation>
+<translation id="945522503751344254">Feedback sturen</translation>
 <translation id="950307215746360464">Instelgids</translation>
 <translation id="952471655966876828">Het apparaat maakt automatisch verbinding als het wordt aangezet en wordt gebruikt</translation>
 <translation id="956013912698841780">Klik met de rechtermuisknop om bijvoorbeeld content samen te vatten, definities op te zoeken, met meer vertrouwen te schrijven en afbeeldingen te maken. Deze functie is op dit moment beperkt beschikbaar.</translation>

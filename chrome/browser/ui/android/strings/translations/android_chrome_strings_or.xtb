@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">ସମୟ ବଞ୍ଚାନ୍ତୁ, କମ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="146522654774760805">ପାସୱାର୍ଡ ଏବଂ ଅଟୋଫିଲ</translation>
 <translation id="1466383950273130737">Chromeର ଭାଷା ବାଛନ୍ତୁ</translation>
+<translation id="1473344277210704336">ନୂଆ ନିମ୍ନ ଟୁଲବାରରେ Gemini ଏବଂ ଆପଣଙ୍କର ଏସେନସିଆଲ୍ସ</translation>
 <translation id="1477626028522505441">ସର୍ଭର୍ ସମସ୍ୟା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="147982357559798527">ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="1480287803138246127">ଆପଣଙ୍କର କିଛି ଇତିହାସ ଏଠାରେ ଦେଖାଯାଇନପାରେ। ଆପଣଙ୍କର ସମସ୍ତ Chrome ଇତିହାସ ଦେଖିବାକୁ ସମ୍ପୂର୍ଣ୍ଣ Chrome ଇତିହାସ ଖୋଲନ୍ତୁ।</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">ଆପଣ <ph name="NAME_OR_EMAIL" /> ଭାବେ ସାଇନ ଇନ କରି ରହିଛନ୍ତି।</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TAB_COUNT_MANY" />ଟି ଟାବ୍, <ph name="TAB_COUNT_INCOGNITO" />ଟି ଇନକଗ୍ନିଟୋ}}</translation>
 <translation id="4558311620361989323">ୱେବ୍‍ପୃଷ୍ଟା ସର୍ଟକଟ୍</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="SUBSCRIPTION_NAME" /> ସଦସ୍ୟତା।</translation>
 <translation id="4572422548854449519">ପରିଚାଳିତ ଆକାଉଣ୍ଟରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
 <translation id="4577115723294378384">Aରୁ Z ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4578289292431526768">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">ଏହାକୁ ଆପଣଙ୍କ ପ୍ରଶ୍ନରେ ଯୋଗ କରିବା ପାଇଁ ଏକ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="4585793705637313973">ପୃଷ୍ଠା ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="4587589328781138893">ସାଇଟଗୁଡ଼ିକ</translation>
+<translation id="4587590257937792551">Chromeରେ ଏକ ନୂଆ ନିମ୍ନ ଟୁଲବାର ଅଛି, ଯାହା ସୁବିଧା ପାଇଁ ତିଆରି କରାଯାଇଛି। ଆପଣ ଯେ କୌଣସି ସମୟରେ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ପୁଣି ସ୍ୱିଚ କରିପାରିବେ।</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="4595237294768457124">ଏକ ନୂଆ ଟାବ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="4595276580892809760">ଗେଲେରୀରୁ ଇମେଜଗୁଡ଼ିକୁ ଆଟାଚ କରନ୍ତୁ</translation>
@@ -1451,6 +1454,7 @@
 <translation id="6633067410344541938">ଇନକଗ୍ନିଟୋକୁ ଅନଲକ କରନ୍ତୁ</translation>
 <translation id="6636623428211296678">ନିମ୍ନରେ ଅଧିକ ସେଟିଂସକୁ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ କିମ୍ବା ବର୍ତ୍ତମାନ ଶେଷ କରନ୍ତୁ</translation>
 <translation id="6637100877383020115">ଆପକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chrome, Googleକୁ ବ୍ୟବହାର ଏବଂ କ୍ରାସ ଡାଟା ପଠାଏ। <ph name="BEGIN_UMA_LINK" />ପରିଚାଳନା କରନ୍ତୁ<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">ଆପଣଙ୍କର ଏସେନସିଆଲ୍ସ, ନିମ୍ନ ଟୁଲବାରରେ ହିଁ ମିଳେ। ଆପଣ ଯେ କୌଣସି ସମୟରେ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ପୁଣି ସ୍ୱିଚ କରିପାରିବେ।</translation>
 <translation id="6642299196749785472">ଟାବଗୁଡ଼ିକୁ ଆଟାଚ କରନ୍ତୁ</translation>
 <translation id="6647441008198474441">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣ କେଉଁ ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କରିପାରନ୍ତି ତାହାର ପୂର୍ବାନୁମାନ କରିବା ପାଇଁ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକ Googleକୁ ପଠାଯାଏ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ଅଧିକ}other{<ph name="CONTACT_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ଅଧିକ}}</translation>
@@ -1649,6 +1653,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ସେୟାର କରୁଥିବା ଟାବ</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7314734791127433392">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="7324177883197548771">Chromeରେ ଏକ ନୂଆ ଲୁକ ଅଛି, ଯାହା ସୁବିଧା ପାଇଁ ତିଆରି କରାଯାଇଛି। ଆପଣ ଯେ କୌଣସି ସମୟରେ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ପୁଣି ସ୍ୱିଚ କରିପାରିବେ।</translation>
 <translation id="7324354302972299151">ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
 <translation id="7333041109965360609">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକର ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି</translation>
 <translation id="7335766481146072567">ଜାରି ରଖନ୍ତୁକୁ ଦବାନ୍ତୁ</translation>
@@ -1750,6 +1755,7 @@
 <translation id="7697383401610880082">ଡ୍ରାଗ ହେଣ୍ଡେଲ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ରେ ଇମେଲ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7702420606070050505">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />। <ph name="SUBSCRIPTION_NAME" /> ସଦସ୍ୟତା।</translation>
 <translation id="7707922173985738739">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7708994397325774423">ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡ ପାଆନ୍ତୁ</translation>
 <translation id="7714077993070342304">Chrome ମେନୁ ଖୋଲନ୍ତୁ</translation>

@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">उपयोगकर्ता का डेटा एन्क्रिप्ट (सुरक्षित) करने की सेटिंग</translation>
 <translation id="1011003645819296594">सेव किए गए डिवाइस</translation>
 <translation id="1011355516189274711">लिखाई को बोली में बदलने की आवाज़ का लेवल</translation>
+<translation id="1012876632442809908">USB-C डिवाइस (सामने वाला पोर्ट)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">नेटवर्क डिफ़ॉल्ट</translation>
 <translation id="1026655690966755180">पोर्ट जोड़ें</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">स्थानीय डेटा वापस पाने की सुविधा</translation>
 <translation id="1247372569136754018">माइक्रोफ़ोन (आंतरिक)</translation>
 <translation id="1251366534849411931">शुरुआत में दिखने वाले ज़रूरी कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">मोबाइल डेटा नेटवर्क के लिए स्कैन किया जा रहा है...</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
 <translation id="1261380933454402672">साधारण</translation>
 <translation id="1263733306853729545">उम्मीदवारों की सूची को पेज पर लाने के लिए, <ph name="MINUS" /> और <ph name="EQUAL" /> बटन दबाएं</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">बोली के विवरण</translation>
 <translation id="1291057703584594733">पहले से असाइन किए गए किसी जेस्चर को चुनने पर, उसे उसकी मूल कार्रवाई से हटा दिया जाएगा.</translation>
 <translation id="1291421198328146277">बटन रीसेट करें</translation>
+<translation id="1293264513303784526">USB-C डिवाइस (बायां पोर्ट)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", और "<ph name="CONFLICTING_GESTURE_THREE" />" के साथ ओवरलैप हो सकता है. अगर मुमकिन हो, तो कोई दूसरा जेस्चर चुनें.</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1313405956111467313">स्‍वचालित प्रॉक्सी कॉन्फ़िगरेशन</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">लिड बंद होने पर साइन आउट करें</translation>
 <translation id="185970820835152459">आप अपने साइन-इन किए गए Google खाते मैनेज कर सकते हैं. आपके Google खाते, Chromium ब्राउज़र, Play Store, Gmail वगैरह के लिए इस्तेमाल किए जाते हैं. अगर आप किसी अन्य व्यक्ति के लिए कोई खाता जोड़ना चाहते हैं, तो अपने <ph name="DEVICE_TYPE" /> में एक नया व्यक्ति जोड़ें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">कूलर</translation>
+<translation id="1864454756846565995">USB-C डिवाइस (पिछला पोर्ट)</translation>
 <translation id="1866589962721094893">इस Chromebook पर, Android ऐप्लिकेशन को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें. यूएसबी डिवाइस को प्लग-इन किए जाने पर, हर बार अनुमति मांगी जाएगी. Android का हर ऐप्लिकेशन कुछ और भी अनुमतियां मांगेगा.</translation>
 <translation id="1877377290348678128">लेबल (ज़रूरी नहीं)</translation>
 <translation id="1877860345998737529">स्विच की कार्रवाई तय करना</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="1938351510777341717">बाहरी निर्देश</translation>
 <translation id="1940546824932169984">कनेक्ट किए गए डिवाइस</translation>
+<translation id="1941410638996203291">शुरुआत का समय <ph name="TIME" /></translation>
 <translation id="1941553344801134989">वर्शन: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">अपडेट मिला</translation>
 <translation id="1948528728718281125">सिस्टम सर्विस के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास कैमरा इस्तेमाल करने की अनुमति है उनके पास कैमरा का ऐक्सेस है</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">पेजों के अनुवाद के लिए इस्तेमाल की गई भाषा</translation>
 <translation id="2319459402137712349">कीबोर्ड खोलने के लिए कोई टेक्स्ट फ़ील्ड चुनें. आपके पास स्क्रीन पर सबसे नीचे कीबोर्ड आइकॉन को चुनने का विकल्प भी मौजूद होता है.</translation>
 <translation id="2319993584768066746">साइन-इन स्क्रीन पर दी गई फ़ोटो</translation>
+<translation id="2322622365472107569">खत्म होने का समय <ph name="TIME" /></translation>
 <translation id="2323018538045954000">सेव किए गए वाई-फ़ाई नेटवर्क</translation>
 <translation id="2325444234681128157">पासवर्ड याद रखें</translation>
 <translation id="2326188115274135041">अपने-आप अनलॉक होने की सुविधा चालू करने के लिए, पिन की पुष्टि करें</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">थोड़ी देर के लिए दोनों आंखें बंद करें</translation>
 <translation id="258095186877893873">लंबा</translation>
 <translation id="2581786034175502848">इसे फिर से चालू करने के लिए, Shift को पांच बार दबाएं</translation>
+<translation id="2581992808349413349">डीएनएस (डोमेन नेम सिस्टम) में किसी साइट का आईपी पता खोजने के लिए, सुरक्षित कनेक्शन का इस्तेमाल करें. यह <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> पर मौजूद, मैनेज की जा रही सेवा देने वाली कंपनी का इस्तेमाल करता है</translation>
 <translation id="2584109212074498965">Kerberos टिकट नहीं मिल सका. फिर से कोशिश करें या अपने संगठन के डिवाइस एडमिन से संपर्क करें. (गड़बड़ी कोड <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome में वेबसाइट के लिए माइक्रोफ़ोन की अनुमतियों को मैनेज करें</translation>
 <translation id="2609980095400624569">डिवाइस को फ़ोन से कनेक्ट नहीं किया जा सका</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">ज़्यादा जानकारी</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" और "<ph name="CONFLICTING_GESTURE_TWO" />" के साथ ओवरलैप हो सकता है. अगर मुमकिन हो, तो कोई दूसरा जेस्चर चुनें.</translation>
 <translation id="2809346626032021864">पढ़ना</translation>
+<translation id="2811205483104563968">खाते</translation>
 <translation id="2813094189969465044">माता-पिता के नियंत्रण में</translation>
 <translation id="2817435998497102771">अपना वॉलपेपर और स्टाइल सेट करें</translation>
 <translation id="2818476747334107629">प्रिंटर विवरण</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">छोटा करें / पूरा खोलें</translation>
 <translation id="2833144527504272627">टेक्स्ट कर्सर की मदद से नेविगेट करें</translation>
 <translation id="2835177225987815960">स्कैन करने वाला आपका मौजूदा सेट अप रीसेट हो जाएगा. इसमें, असाइन किए गए स्विच और अपने-आप तेज़ी से स्कैन होने की सेटिंग शामिल हैं.</translation>
+<translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट जॉब देखें और प्रबंधित करें</translation>
 <translation id="2849035674501872372">ऊपर देखें</translation>
 <translation id="2860710618359053450">जबड़े को दाईं ओर ले जाएं</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369067987974711168">इस पोर्ट की और कार्रवाइयां दिखाएं</translation>
 <translation id="3370260763947406229">शब्दों में सुधार (ऑटो करेक्ट)</translation>
+<translation id="3371140690572404006">USB-C डिवाइस (दायां सामने वाला पोर्ट)</translation>
 <translation id="3371351218553893534">लाइन बहुत लंबी है: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam को दी गई अनुमतियां, Steam के सभी गेम और ऐप्लिकेशन पर भी लागू होंगी.</translation>
 <translation id="338323348408199233">बिना वीपीएन वाले ट्रैफ़िक को ब्लॉक करें</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों के लिए, यह देखना मुश्किल बनाएं कि आपने किन साइटों पर विज़िट किया है. <ph name="PRODUCT_NAME" />, डीएनएस (डोमेन नेम सिस्टम) में किसी साइट का आईपी पता खोजने के लिए, सुरक्षित कनेक्शन का इस्तेमाल करता है.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> को बेहतर बनाने के लिए, Google को अपने हार्डवेयर के डेटा का इस्तेमाल करने दें. अगर आपकी ओर से अनुमति नहीं दी जाती है, तो भी यह डेटा सही अपडेट तय करने के लिए Google के पास भेजा जाता है. हालांकि, इस डेटा को न तो स्टोर किया जाता है और न ही किसी और काम के लिए इस्तेमाल किया जाता है.</translation>
 <translation id="3445465968953598059">चेहरे से कंट्रोल करने की सुविधा</translation>
+<translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3448492834076427715">खाता अपडेट करें</translation>
 <translation id="345078987193237421">इसे चालू करने पर, सिस्टम सर्विस के साथ-साथ उन ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस मिलेगा जिनके पास कैमरा इस्तेमाल करने की अनुमति है</translation>
 <translation id="3453082738208775226">क्या आपको ऑफ़लाइन स्टोरेज खाली करना है?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">'हाज़िर जवाब' की परिभाषा</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें.</translation>
 <translation id="3994530503403062649">अपने टैबलेट पर मौजूद बटन पर क्लिक करें</translation>
+<translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="3997429360543082038">ChromiumOS के बारे में जानकारी</translation>
 <translation id="4001540981461989979">माउस के कर्सर को इधर-उधर ले जाते समय, उसे हाइलाइट की सेटिंग पर जाएं</translation>
 <translation id="4005817994523282006">समय क्षेत्र की पहचान विधि</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">अपने स्‍थान का उपयोग करके अपने आप समय क्षेत्र सेट करें</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5331568967879689647">ChromeOS सिस्टम ऐप्लिकेशन</translation>
+<translation id="5331975486040154427">USB-C डिवाइस (बायां पिछला पोर्ट)</translation>
 <translation id="5334113802138581043">माइक्रोफ़ोन का ऐक्सेस</translation>
 <translation id="5336689872433667741">कर्सर और टचपैड</translation>
 <translation id="5337926771328966926">मौजूदा डिवाइस का नाम <ph name="DEVICE_NAME" /> है</translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">इयरकॉन में लॉग इन करना चालू करें</translation>
 <translation id="5441133529460183413">Chrome ब्राउज़र से वेब ऐप्लिकेशन को इंस्टॉल किया गया</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5450469615146335984">हर कार्रवाई के लिए एक शॉर्टकट चुनें</translation>
 <translation id="5452446625764825792">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ऑफ़लाइन उपलब्ध है)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">स्क्रीन पर दिए अलग-अलग आइटम पर जाने के लिए, “आगे बढ़ें” और “पीछे जाएं” स्विच का इस्तेमाल करें</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या या गलत क्षेत्र</translation>
 <translation id="6453921811609336127">अगले इनपुट के तरीके पर जाने के लिए, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दबाएं</translation>
+<translation id="6461170143930046705">नेटवर्क खोज रहा है...</translation>
 <translation id="6463488491707167747">इस शब्दकोश को मिटाएं</translation>
 <translation id="6463596731306859179">क्या आपको अनचाहे पॉप-अप या दूसरे तरह के अनचाहे व्यवहार दिख रहे हैं? कभी-कभी, इंस्टॉल किए गए ऐप्लिकेशन और एक्सटेंशन आपकी जानकारी के बिना, ChromeOS की आपकी सेटिंग में बदलाव कर सकते हैं.</translation>
 <translation id="6465841119675156448">बिना इंटरनेट के</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> को माइक्रोफ़ोन ऐक्सेस करने की अनुमति दें</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
 <translation id="648927581764831596">कोई भी उपलब्ध नहीं</translation>
+<translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
 <translation id="6497784818439587832">अपनी स्क्रीन पर मौजूद आइटम को छोटा या बड़ा करने के लिए, डिसप्ले का साइज़ बदलें</translation>
 <translation id="6497789971060331894">माउस से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="650185290742160385">थ्रेशोल्ड घटाएं</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">हॉटस्पॉट के अपने-आप बंद होने की सेटिंग चालू करें</translation>
 <translation id="7092504544229909737">Android ऐप्लिकेशन पर, इस खाते का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="7093220653036489319">हाज़िर जवाब</translation>
+<translation id="7098389117866926363">USB-C डिवाइस (पीछे बायां पोर्ट)</translation>
 <translation id="7099337801055912064">बड़ा पीपीडी लोड नहीं किया जा सकता. आकार 250 केबी से ज़्यादा नहीं होना चाहिए.</translation>
 <translation id="7107609441453408294">सभी स्पीकर से एक ही ऑडियो चलाएं</translation>
 <translation id="7116931001458704701">कर्सर को ढूंढने के लिए माउस को हिलाएं</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">कर्सर एरिया का साइज़</translation>
 <translation id="7325209047678309347">कागज़ फंस गया है</translation>
 <translation id="7331646370422660166">alt + डाउन ऐरो</translation>
+<translation id="7345706641791090287">अपने पासवर्ड की पुष्टि करें</translation>
 <translation id="7348093485538360975">ऑन-स्‍क्रीन कीबोर्ड</translation>
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7360333718677093875">इमोजी चुनने की सुविधा देने वाला बटन</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">शीर्ष-पंक्ति वाली कुंजियों का व्यवहार स्विच करने के लिए खोज की दबाए रखें</translation>
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
+<translation id="8554899698005018844">कोई भाषा नहीं</translation>
 <translation id="8555444629041783356">जगह की जानकारी अपने-आप बंद होने का शेड्यूल</translation>
 <translation id="8563043098557365232">सिर्फ़ सिस्टम की सेवाएं इसे ऐक्सेस कर सकती हैं</translation>
 <translation id="8571687764447439720">Kerberos टिकट जोड़ें</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">सेल्युलर नेटवर्क चालू करें</translation>
 <translation id="8902667442496790482">चुनें और सुनें सेटिंग खोलें</translation>
 <translation id="8903733144777177139">माइक्रोफ़ोन का ऐक्सेस ब्लॉक किया गया है</translation>
+<translation id="8910222113987937043">आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग में किए गए बदलाव अब आपके Google खाते से सिंक नहीं किए जाएंगे. हालांकि, आपका मौजूदा डेटा आपके Google खाते में संग्रहित रहेगा और <ph name="BEGIN_LINK" />Google डैशबोर्ड<ph name="END_LINK" /> पर प्रबंधित किया जा सकेगा.</translation>
 <translation id="8912810933860534797">अपने आप स्कैन करने की सुविधा चालू करें</translation>
 <translation id="8922624386829239660">जब माउस स्क्रीन के किनारों को छुए तो स्क्रीन को हिलाएं</translation>
 <translation id="8929738682246584251">ज़ूम करने की सुविधा चालू/बंद है</translation>
 <translation id="8930622219860340959">वायरलेस</translation>
 <translation id="8931713990831679796">ये प्रिंटर कनेक्ट हैं और इनका इस्तेमाल किया जा सकता है. आसानी से ऐक्सेस करने के लिए अपनी प्रोफ़ाइल में सेव करें.</translation>
 <translation id="8932654652795262306">इंस्टैंट टेदरिंग की जानकारी</translation>
+<translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8940888110818450052">साइन इन करने के विकल्प</translation>
 <translation id="8944099748578356325">बैटरी का उपयोग ज़्यादा तेज़ी से करेंं (इस समय <ph name="BATTERY_PERCENTAGE" />% है)</translation>
 <translation id="8945274638472141382">आइकॉन का साइज़</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">फ़िलहाल, रोमिंग में है</translation>
 <translation id="93393615658292258">सिर्फ़ पासवर्ड</translation>
 <translation id="942296794412775122">माइक्रोफ़ोन चालू/बंद है</translation>
+<translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="950307215746360464">सेट अप गाइड</translation>
 <translation id="952471655966876828">चालू होने पर या इस्तेमाल किए जाने पर डिवाइस अपने-आप कनेक्ट हो जाएगा</translation>
 <translation id="956013912698841780">कॉन्टेंट के बारे में खास जानकारी पाने, आत्मविश्वास के साथ लिखने, इमेज जनरेट करने, परिभाषाएं पाने, और अन्य काम करने के लिए, राइट क्लिक करें. फ़िलहाल, यह सभी लोगों के लिए उपलब्ध नहीं है.</translation>

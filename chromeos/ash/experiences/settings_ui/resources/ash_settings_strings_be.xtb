@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Шыфраванне карыстальніцкіх даных</translation>
 <translation id="1011003645819296594">Захаваныя прылады</translation>
 <translation id="1011355516189274711">Гучнасць сінтэзу маўлення</translation>
+<translation id="1012876632442809908">Прылада USB-C (пярэдні порт)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Стандартна для сеткі</translation>
 <translation id="1026655690966755180">Дадаць порт</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Аднаўленне лакальных даных</translation>
 <translation id="1247372569136754018">Мікрафон (унутраны)</translation>
 <translation id="1251366534849411931">Чакалася пачатковая фігурная дужка: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Ідзе пошук сетак мабільнай перадачы даных...</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
 <translation id="1261380933454402672">Умераная</translation>
 <translation id="1263733306853729545">Выкарыстоўваць клавішы <ph name="MINUS" /> і <ph name="EQUAL" /> для пераходу паміж старонкамі спіса кандыдатаў</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Параметры маўлення</translation>
 <translation id="1291057703584594733">Калі выбраць ужо прызначаны жэст, ён будзе выдалены з зыходнага дзеяння.</translation>
 <translation id="1291421198328146277">Скінуць клавішы</translation>
+<translation id="1293264513303784526">Прылада USB-C (левы порт)</translation>
 <translation id="1293360286536751243">Жэст "<ph name="MAIN_GESTURE" />" можа канфліктаваць з жэстамі "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" і "<ph name="CONFLICTING_GESTURE_THREE" />". Калі магчыма, выберыце іншы жэст.</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1313405956111467313">Аўтаматычная канфігурацыя проксі-сервера</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Выходзіць з сістэмы, калі вечка закрываецца</translation>
 <translation id="185970820835152459">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chromium, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Халадней</translation>
+<translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
 <translation id="1866589962721094893">Дайце праграмам Android дазвол на кіраванне USB-прыладамі на гэтай прыладзе Chromebook. Запыт дазволу будзе з’яўляцца пры кожным падключэнні USB-прылады. Асобныя праграмы Android будуць запытваць дадатковыя дазволы.</translation>
 <translation id="1877377290348678128">Метка (неабавязкова)</translation>
 <translation id="1877860345998737529">Прызначэнне дзеянняў пераключальнікам</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Абнаўленні</translation>
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
+<translation id="1941410638996203291">Час пачатку: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Знойдзена абнаўленне</translation>
 <translation id="1948528728718281125">Атрымліваць доступ да камеры могуць праграмы і вэб-сайты, якія маюць на гэта дазвол, а таксама сістэмныя сэрвісы</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
 <translation id="2319459402137712349">Каб адкрыць клавіятуру, націсніце на тэкставае поле. Можна таксама націснуць на значок клавіятуры ўнізе экрана.</translation>
 <translation id="2319993584768066746">Фота на экране ўваходу</translation>
+<translation id="2322622365472107569">Час заканчэння: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Захаваныя сеткі Wi-Fi</translation>
 <translation id="2325444234681128157">Запомніць пароль</translation>
 <translation id="2326188115274135041">Каб уключыць функцыю аўтаматычнага зняцця блакіроўкі, увядзіце PIN-код</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Ненадоўга закрыйце вочы</translation>
 <translation id="258095186877893873">Доўгая</translation>
 <translation id="2581786034175502848">Каб уключыць зноў, націсніце Shift пяць разоў</translation>
+<translation id="2581992808349413349">Выкарыстоўвайце абароненае падключэнне, каб знайсці IP-адрас сайта ў сістэме даменных імёнаў (DNS). Для гэтага ўжываецца прызначаны адміністратарам пастаўшчык паслуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2584109212074498965">Не ўдалося атрымаць білет Kerberos. Паўтарыце спробу або звярніцеся да адміністратара прылад сваёй арганізацыі. (Код памылкі: <ph name="ERROR_CODE" />.)</translation>
 <translation id="2584974473573720127">Кіраваць дазволамі вэб-сайтаў на доступ да мікрафона ў Chrome</translation>
 <translation id="2609980095400624569">Не ўдалося ўстанавіць падключэнне</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Падрабязныя звесткі</translation>
 <translation id="2808985063107661499">Жэст "<ph name="MAIN_GESTURE" />" можа канфліктаваць з жэстамі "<ph name="CONFLICTING_GESTURE_ONE" />" і "<ph name="CONFLICTING_GESTURE_TWO" />". Калі магчыма, выберыце іншы жэст.</translation>
 <translation id="2809346626032021864">Чытанне</translation>
+<translation id="2811205483104563968">Уліковыя запісы</translation>
 <translation id="2813094189969465044">Бацькоўскі кантроль</translation>
 <translation id="2817435998497102771">Задайце ўласныя шпалеры і стыль</translation>
 <translation id="2818476747334107629">Падрабязныя звесткі пра прынтар</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Сціснуць або разгарнуць</translation>
 <translation id="2833144527504272627">Навігацыя з дапамогай тэкставага курсора</translation>
 <translation id="2835177225987815960">Бягучыя налады сканіравання, у тым ліку ўсе прызначаныя пераключальнікі і хуткасць аўтаматычнага сканіравання, будуць скінуты.</translation>
+<translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
 <translation id="2844809857160214557">Прагляд заданняў друку і кіраванне імі</translation>
 <translation id="2849035674501872372">Знайсці</translation>
 <translation id="2860710618359053450">Змясціце сківіцу ўправа</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369067987974711168">Паказаць іншыя дзеянні для гэтага порта</translation>
 <translation id="3370260763947406229">Аўтавыпраўленне</translation>
+<translation id="3371140690572404006">Прылада USB-C (пярэдні порт справа)</translation>
 <translation id="3371351218553893534">Радок занадта доўгі: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Дазволы, дадзеныя платформе Steam, прымяняюцца да ўсіх праграм і гульняў, усталяваных праз яе.</translation>
 <translation id="338323348408199233">Блакіраваць трафік, калі няма падключэння VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Зрабіце так, каб тыя, у каго ёсць доступ да вашага інтэрнэт-трафіка, не маглі ўбачыць, якія сайты вы наведваеце. <ph name="PRODUCT_NAME" /> выкарыстоўвае абароненае падключэнне для пошуку IP-адрасоў сайтаў у сістэме даменных імёнаў (DNS).</translation>
 <translation id="3442674350323953953">Дазволіць Google выкарыстоўваць даныя аб апаратным забеспячэнні для паляпшэння <ph name="DEVICE_OS" />. Калі вы не паставіце гэту птушку, Google усё роўна будзе атрымліваць гэтыя даныя, каб своечасова выяўляць неабходнасць усталявання патрэбных абнаўленняў, але не будзе захоўваць іх або выкарыстоўваць у іншых мэтах.</translation>
 <translation id="3445465968953598059">Кіраванне мімічнымі жэстамі</translation>
+<translation id="3445925074670675829">Прылада USB-C</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
 <translation id="345078987193237421">Доступ да камеры атрымаюць праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру, а таксама сістэмныя службы</translation>
 <translation id="3453082738208775226">Ачысціць пазасеткавае сховішча?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Пошук азначэнняў з дапамогай Хуткіх адказаў</translation>
 <translation id="3994075804072562819">Дайце праграме "<ph name="SPECIFIC_NAME" />" дазвол на кіраванне USB-прыладамі.</translation>
 <translation id="3994530503403062649">Знайдзіце на планшэце кнопкі</translation>
+<translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
 <translation id="3997429360543082038">Пра Chromium OS</translation>
 <translation id="4001540981461989979">Вылучаць курсор мышы, калі ён рухаецца</translation>
 <translation id="4005817994523282006">Спосаб выяўлення часавага пояса</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">Задаваць часавы пояс аўтаматычна – з дапамогай даных пра месцазнаходжанне</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5331568967879689647">Праграма сістэмы Chrome OS</translation>
+<translation id="5331975486040154427">Прылада USB-C (задні порт злева)</translation>
 <translation id="5334113802138581043">Доступ да мікрафона</translation>
 <translation id="5336689872433667741">Курсор і сэнсарная панэль</translation>
 <translation id="5337926771328966926">Бягучая назва прылады – <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Уключыць вядзенне журнала гукавых сігналаў</translation>
 <translation id="5441133529460183413">Вэб-праграма ўсталявана з браўзера Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Несапраўдны пароль</translation>
 <translation id="5450469615146335984">Выберыце спалучэнне клавіш для кожнага дзеяння</translation>
 <translation id="5452446625764825792">Цяпер вы можаце праглядаць нядаўнія медыяфайлы, фота і праграмы з тэлефона</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (мова даступная па-за сеткай)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">Выкарыстоўваць пераключальнікі, прызначаныя для дзеянняў "Далей" і "Назад", каб пераходзіць ад аднаго элемента на старонцы да другога і назад</translation>
 <translation id="6452961788130242735">Праблема з сеткай або няправільная вобласць</translation>
 <translation id="6453921811609336127">Каб перайсці да наступнага спосабу ўводу, націсніце <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Прабел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Ідзе пошук сетак...</translation>
 <translation id="6463488491707167747">Выдаліць гэты слоўнік</translation>
 <translation id="6463596731306859179">З’яўляюцца непажаданыя ўсплывальныя вокны, або прылада працуе нязвыкла? Часам праграмы і пашырэнні, якія вы ўсталёўваеце, могуць змяняць налады ChromeOS без вашага ведама.</translation>
 <translation id="6465841119675156448">Без інтэрнэту</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">Дазволіць функцыі "<ph name="SPECIFIC_NAME" />" доступ да мікрафона</translation>
 <translation id="6482559668224714696">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="648927581764831596">Даступных няма</translation>
+<translation id="6490471652906364588">Прылада USB-C (правы порт)</translation>
 <translation id="6497784818439587832">Змяняйце маштаб дысплэя, каб паменшыць або павялічыць памеры аб’ектаў на экране</translation>
 <translation id="6497789971060331894">Адваротная прагортка мышшу</translation>
 <translation id="650185290742160385">Паменшыць парог</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">Аўтаматычна выключаць хот-спот</translation>
 <translation id="7092504544229909737">Нельга выкарыстоўваць з праграмамі Android</translation>
 <translation id="7093220653036489319">Хуткія адказы</translation>
+<translation id="7098389117866926363">Прылада USB-C (задні порт злева)</translation>
 <translation id="7099337801055912064">Не ўдалося загрузіць вялікі файл PPD. Максімальны памер – 250 КБ.</translation>
 <translation id="7107609441453408294">Прайграваць адзін аўдыяканал праз усе дынамікі</translation>
 <translation id="7116931001458704701">Паварушыць мышшу, каб знайсці курсор</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">Памер вобласці нязначнага перамяшчэння курсора</translation>
 <translation id="7325209047678309347">Папера захрасла</translation>
 <translation id="7331646370422660166">Alt + стрэлка ўніз</translation>
+<translation id="7345706641791090287">Пацвердзіце пароль</translation>
 <translation id="7348093485538360975">Экранная клавіятура</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7360333718677093875">акно выбару эмодзі</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">Утрымлівайце клавішу пошуку, каб змяніць значэнні клавіш верхняга рада</translation>
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8553342806078037065">Іншыя карыстальнікі</translation>
+<translation id="8554899698005018844">Мова не выбрана</translation>
 <translation id="8555444629041783356">Аўтаматычнае абнаўленне часу ўзыходу і захаду сонца</translation>
 <translation id="8563043098557365232">Дазволена толькі для сістэмных службаў</translation>
 <translation id="8571687764447439720">Дадаць білет Kerberos</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">Уключыць сотавую сетку</translation>
 <translation id="8902667442496790482">Адкрыць налады функцыі "Чытаць уголас"</translation>
 <translation id="8903733144777177139">Доступ да мікрафона заблакіраваны</translation>
+<translation id="8910222113987937043">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Уключыць аўтаматычнае сканіраванне</translation>
 <translation id="8922624386829239660">Перамяшчаць экран, калі ўказальнік мышы даходзіць да мяжы экрана</translation>
 <translation id="8929738682246584251">Уключыць ці выключыць лупу</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>
 <translation id="8931713990831679796">Гэтыя прынтары падключаны і гатовыя да выкарыстання. Для больш простага доступу захавайце іх у профілі.</translation>
 <translation id="8932654652795262306">Звесткі пра Імгненны рэжым мадэма</translation>
+<translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
 <translation id="8940888110818450052">Спосабы ўваходу</translation>
 <translation id="8944099748578356325">Актыўней спажывае зарад акумулятара (зараз – <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Памер значкоў</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">Цяпер у роўмінгу</translation>
 <translation id="93393615658292258">Толькі пароль</translation>
 <translation id="942296794412775122">Уключыць ці выключыць мікрафон</translation>
+<translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="950307215746360464">Дапаможнік па наладжванні</translation>
 <translation id="952471655966876828">Прылада падключыцца аўтаматычна, калі яе ўключаць або будуць выкарыстоўваць</translation>
 <translation id="956013912698841780">Націснуўшы правую кнопку мышы, вы зможаце падсумаваць змесціва, атрымаць азначэнні, напісаць тэкст больш упэўнена, стварыць відарысы і іншае змесціва. Функцыя пакуль што даступная не ўсім карыстальнікам.</translation>

@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Vil du stoppe downloaden?</translation>
 <translation id="4796496140132859135">Fanegruppe. Skjult.</translation>
 <translation id="4800912004582762296">Klikker</translation>
+<translation id="4800930308997591052">Skift til <ph name="EMAIL" /> for nemt at dele faner mellem dine enheder og få adgang til dine adgangskoder, bogmærker m.m. fra din Google-konto.</translation>
 <translation id="4802185666270672526">Skjul Anmod om computerwebsite</translation>
 <translation id="4803185665210547709">Administreret af din organisation.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7618220760967055820">Vælg, hvilken knap der skal vises på værktøjslinjen</translation>
 <translation id="7620522820075868385">Annuller</translation>
 <translation id="762078666799342162">Du kan se dine tidligere downloads i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Fortsæt, hvor du slap på din computer</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="7640669552036055091">Faner fra Android</translation>

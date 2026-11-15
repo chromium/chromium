@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Kryptering av användardata</translation>
 <translation id="1011003645819296594">Sparade enheter</translation>
 <translation id="1011355516189274711">Volym för text till tal</translation>
+<translation id="1012876632442809908">USB-C-enhet (främre port)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Standardinställning för nätverk</translation>
 <translation id="1026655690966755180">Lägg till en port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Återställning av lokal data</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
 <translation id="1251366534849411931">Oväntad vänster klammerparentes: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Söker efter mobildatanätverk …</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
 <translation id="1261380933454402672">Måttlig</translation>
 <translation id="1263733306853729545">Använd tangenterna <ph name="MINUS" /> och <ph name="EQUAL" /> om du vill söka i en kandidatlista</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Talegenskaper</translation>
 <translation id="1291057703584594733">Om du väljer en rörelse som redan har tilldelats tas den bort från den ursprungliga åtgärden.</translation>
 <translation id="1291421198328146277">Återställ tangenter</translation>
+<translation id="1293264513303784526">USB-C-enhet (vänster port)</translation>
 <translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> och <ph name="CONFLICTING_GESTURE_THREE" />. Välj en annan rörelse om det går.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1313405956111467313">Automatisk proxykonfiguration</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Logga ut när locket stängs</translation>
 <translation id="185970820835152459">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chromium, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kallare</translation>
+<translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
 <translation id="1866589962721094893">Ge Android-appar kontroll över USB-enheter på denna Chromebook. Du blir ombedd att ge behörighet varje gång du kopplar in en USB-enhet. Enskilda Android-appar kan begära ytterligare behörighet.</translation>
 <translation id="1877377290348678128">Etikett (valfritt)</translation>
 <translation id="1877860345998737529">Åtgärdstilldelning för brytare</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Uppdateringar</translation>
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
+<translation id="1941410638996203291">Starttid <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">En uppdatering hittades</translation>
 <translation id="1948528728718281125">Kameraåtkomst tillåts för appar och webbplatser med kamerabehörighet samt för systemtjänster</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Språk som sidor ska översättas till</translation>
 <translation id="2319459402137712349">Öppna tangentbordet genom att välja ett textfält. Du kan även välja tangentbordsikonen längst ned på skärmen.</translation>
 <translation id="2319993584768066746">Foton på inloggningsskärmen</translation>
+<translation id="2322622365472107569">Sluttid <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Sparade wifi-nätverk</translation>
 <translation id="2325444234681128157">Kom ihåg lösenordet</translation>
 <translation id="2326188115274135041">Bekräfta pinkoden om du vill aktivera automatisk upplåsning</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Blunda ett ögonblick</translation>
 <translation id="258095186877893873">Lång</translation>
 <translation id="2581786034175502848">Tryck på Skift fem gånger för att återaktivera den</translation>
+<translation id="2581992808349413349">Använd en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS). Detta använder en hanterad tjänsteleverantör på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Det gick inte att hämta Kerberos-biljetten. Försök igen eller kontakta organisationens enhetsadministratör. (Felkod: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Hantera webbplatsbehörigheter för mikrofonen i Chrome</translation>
 <translation id="2609980095400624569">Det gick inte att upprätta anslutningen</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Ytterligare information</translation>
 <translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE_ONE" /> och <ph name="CONFLICTING_GESTURE_TWO" />. Välj en annan rörelse om det går.</translation>
 <translation id="2809346626032021864">Läsning</translation>
+<translation id="2811205483104563968">Konton</translation>
 <translation id="2813094189969465044">Föräldrakontroller</translation>
 <translation id="2817435998497102771">Ställ in bakgrund och stil</translation>
 <translation id="2818476747334107629">Skrivarinformation</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Förminska/expandera</translation>
 <translation id="2833144527504272627">Navigera med markören</translation>
 <translation id="2835177225987815960">Din nuvarande konfiguration för genomsökning återställs, inklusive brytartilldelningar och hastighetsinställning för automatisk genomsökning.</translation>
+<translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
 <translation id="2844809857160214557">Visa och hantera utskriftsjobb</translation>
 <translation id="2849035674501872372">Slå upp</translation>
 <translation id="2860710618359053450">Flytta käken åt höger</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369067987974711168">Visa fler åtgärder för den här porten</translation>
 <translation id="3370260763947406229">Autokorrigering</translation>
+<translation id="3371140690572404006">USB-C-enhet (främre porten på högra sidan)</translation>
 <translation id="3371351218553893534">Raden är för lång: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">De behörigheter som beviljats Steam gäller för alla spel och appar från Steam.</translation>
 <translation id="338323348408199233">Blockera trafik utan VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. <ph name="PRODUCT_NAME" /> använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="3442674350323953953">Låt Google använda din hårdvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
 <translation id="3445465968953598059">Ansiktsstyrning</translation>
+<translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3448492834076427715">Uppdatera kontot</translation>
 <translation id="345078987193237421">Detta ger kameraåtkomst för appar, webbplatser med kamerabehörighet och systemtjänster</translation>
 <translation id="3453082738208775226">Vill du rensa i lagringsutrymmet offline?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definition i Snabbinfo</translation>
 <translation id="3994075804072562819">Ge <ph name="SPECIFIC_NAME" /> kontroll över USB-enheter.</translation>
 <translation id="3994530503403062649">Hitta knappar på surfplattan</translation>
+<translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
 <translation id="3997429360543082038">Om Chromium OS</translation>
 <translation id="4001540981461989979">Framhäv muspekaren när den rör sig</translation>
 <translation id="4005817994523282006">Metod för tidszonsidentifiering</translation>
@@ -1327,6 +1339,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5324780743567488672">Ange tidszon automatiskt genom att använda din plats</translation>
 <translation id="5327248766486351172">Namn</translation>
 <translation id="5331568967879689647">Systemapp i ChromeOS</translation>
+<translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="5334113802138581043">Mikrofonåtkomst</translation>
 <translation id="5336689872433667741">Markör och styrplatta</translation>
 <translation id="5337926771328966926">Enhetens nuvarande namn är <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5435274640623994081">Aktivera loggning av ljudikoner</translation>
 <translation id="5441133529460183413">Webbappen installerades från webbläsaren Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Ogiltigt lösenord</translation>
 <translation id="5450469615146335984">Välj ett kortkommando för varje åtgärd</translation>
 <translation id="5452446625764825792">Nu kan du se de senaste bilderna, mediefilerna och apparna från telefonen</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerar offline)</translation>
@@ -1645,6 +1659,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6444147596556711162">Använd Nästa och Föregående för att flytta mellan objekt på sidan</translation>
 <translation id="6452961788130242735">Nätverksproblem eller felaktig sfär</translation>
 <translation id="6453921811609336127">Om du vill byta till nästa inmatningsmetod trycker du på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Skift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />blanksteg<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Söker efter nätverk …</translation>
 <translation id="6463488491707167747">Radera den här ordboken</translation>
 <translation id="6463596731306859179">Får du oönskade popup-fönster eller annat oväntat beteende? Ibland kan appar och tillägg som du installerar ändra ChromeOS-inställningarna utan att du vet om det.</translation>
 <translation id="6465841119675156448">Utan internet</translation>
@@ -1661,6 +1676,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="648204537326351595">Ge <ph name="SPECIFIC_NAME" /> åtkomst till mikrofonen</translation>
 <translation id="6482559668224714696">Helskärmsförstoring</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
+<translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6497784818439587832">Ändra skärmstorlek för att göra objekt på skärmen större eller mindre</translation>
 <translation id="6497789971060331894">Omvänd scrollning på musen</translation>
 <translation id="650185290742160385">Sänk gränsen</translation>
@@ -1825,6 +1841,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7090714929377281710">Inaktivera surfzon automatiskt</translation>
 <translation id="7092504544229909737">Kan inte användas med Android-appar</translation>
 <translation id="7093220653036489319">Snabbinfo</translation>
+<translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
 <translation id="7099337801055912064">PPD-filen var för stor att läsa in. Storleksgränsen är 250 kB.</translation>
 <translation id="7107609441453408294">Spela upp samma ljud i alla högtalare</translation>
 <translation id="7116931001458704701">Skaka för att hitta markören</translation>
@@ -1886,6 +1903,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7323315405936922211">Markörområdets storlek</translation>
 <translation id="7325209047678309347">Papper har fastnat</translation>
 <translation id="7331646370422660166">alt + nedåtpil</translation>
+<translation id="7345706641791090287">Bekräfta lösenordet</translation>
 <translation id="7348093485538360975">Skärmtangentbord</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7360333718677093875">emoji -väljaren</translation>
@@ -2262,6 +2280,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="85486688517848470">Håll ned söktangenten om du vill ändra funktionen för tangenterna på översta raden</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>
 <translation id="8553342806078037065">Hantera andra personer</translation>
+<translation id="8554899698005018844">Inget språk</translation>
 <translation id="8555444629041783356">Automatiskt solnedgångsschema</translation>
 <translation id="8563043098557365232">Tillåts endast för systemtjänster</translation>
 <translation id="8571687764447439720">Lägg till Kerberos-biljett</translation>
@@ -2368,12 +2387,14 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="8900413463156971200">Aktivera mobilnätverk</translation>
 <translation id="8902667442496790482">Öppna inställningarna för Textuppläsning</translation>
 <translation id="8903733144777177139">Mikrofonåtkomst har blockerats</translation>
+<translation id="8910222113987937043">När bokmärken, historik, lösenord och andra inställningar ändras kommer dessa ändringar inte längre att synkroniseras med Google-kontot. Uppgifter som redan har sparats i Google-kontot finns däremot kvar och kan hanteras via <ph name="BEGIN_LINK" />Google Översikt<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Aktivera automatisk genomsökning</translation>
 <translation id="8922624386829239660">Flytta skärmen när muspekaren når skärmens kanter</translation>
 <translation id="8929738682246584251">Skärmförstoring på/av</translation>
 <translation id="8930622219860340959">Trådlöst</translation>
 <translation id="8931713990831679796">Dessa skrivare är anslutna och klara att användas. Spara dem i din profil för enklare åtkomst.</translation>
 <translation id="8932654652795262306">Information om Direktinternetdelning</translation>
+<translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
 <translation id="8940888110818450052">Inloggningsalternativ</translation>
 <translation id="8944099748578356325">Batteriet förbrukas snabbare (för närvarande <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Ikonstorlek</translation>
@@ -2470,6 +2491,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="930893132043726269">Roaming används för närvarande</translation>
 <translation id="93393615658292258">Endast lösenord</translation>
 <translation id="942296794412775122">Mikrofon på/av</translation>
+<translation id="945522503751344254">Skicka feedback</translation>
 <translation id="950307215746360464">Konfigureringsguide</translation>
 <translation id="952471655966876828">Enheten ansluts automatiskt när den är aktiverad eller används</translation>
 <translation id="956013912698841780">Högerklicka för att sammanfatta innehåll, få definitioner, skriva med mer självsäkerhet, skapa bilder med mera. Har för närvarande begränsad tillgänglighet.</translation>

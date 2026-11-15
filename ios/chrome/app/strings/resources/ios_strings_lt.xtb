@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Sustabdyti atsisiuntimą?</translation>
 <translation id="4796496140132859135">Skirtukų grupė. Sutraukta.</translation>
 <translation id="4800912004582762296">Spustelėjimas</translation>
+<translation id="4800930308997591052">Perjunkite į <ph name="EMAIL" />, kad galėtumėte sklandžiai bendrinti skirtukus tarp įrenginių ir gauti slaptažodžius, žymes ir kt. iš „Google“ paskyros.</translation>
 <translation id="4802185666270672526">Slėpti parinktį „Pateikti užklausą dėl svetainės kompiuteriams“</translation>
 <translation id="4803185665210547709">Valdo jūsų organizacija.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7618220760967055820">Pasirinkite, koks mygtukas bus rodomas įrankių juostoje</translation>
 <translation id="7620522820075868385">Atšaukti</translation>
 <translation id="762078666799342162">Ankstesnius atsisiuntimus galite peržiūrėti naudodami <ph name="BEGIN_LINK" />Failų<ph name="END_LINK" /> programą</translation>
+<translation id="7636034359405891151">Tęskite ten, kur baigėte, kompiuteryje</translation>
 <translation id="7638584964844754484">Neteisinga slaptafrazė</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Pažeisti slaptažodžiai}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="7640669552036055091">Skirtukai iš „Android“</translation>

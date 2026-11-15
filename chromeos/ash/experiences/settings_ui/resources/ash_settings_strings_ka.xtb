@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">მომხმარებლის მონაცემთა დაშიფვრა</translation>
 <translation id="1011003645819296594">შენახული მოწყობილობები</translation>
 <translation id="1011355516189274711">ტექსტის გახმოვანების ხმა</translation>
+<translation id="1012876632442809908">USB-C მოწყობილობა (წინა პორტი)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ქსელის ნაგულისხმევი</translation>
 <translation id="1026655690966755180">პორტის დამატება</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">ადგილობრივი მონაცემების აღდგენა</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
 <translation id="1251366534849411931">მოსალოდნელი იყო გამხსნელი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">მიმდინარეობს მობილური ინტერნეტის ქსელების სკანირება...</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
 <translation id="1261380933454402672">მოკრძალებული</translation>
 <translation id="1263733306853729545"><ph name="MINUS" /> და <ph name="EQUAL" /> კლავიშების გამოყენება კანდიდატების სიის გვერდზე საჩვენებლად</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">მეტყველების პარამეტრები</translation>
 <translation id="1291057703584594733">უკვე მინიჭებული ჟესტის არჩევით ის ამოიშლება ორიგინალი მოქმედებიდან.</translation>
 <translation id="1291421198328146277">კლავიშების გადაყენება</translation>
+<translation id="1293264513303784526">USB-C მოწყობილობა (მარცხენა პორტი)</translation>
 <translation id="1293360286536751243">ჟესტმა „<ph name="MAIN_GESTURE" />“ შეიძლება გადაფაროს ჟესტები — „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ და „<ph name="CONFLICTING_GESTURE_THREE" />“. თუ შესაძლებელია, აირჩიეთ სხვა ჟესტი.</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1313405956111467313">პროქსის ავტომატური კონფიგურაცია</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">სისტემიდან გამოსვლა თავსახურის დახურვისას</translation>
 <translation id="185970820835152459">შეგიძლიათ მართოთ თქვენი სისტემაში შესული Google ანგარიშები. თქვენი Google ანგარიშები გამოიყენება Chromium ბრაუზერისთვის, Play Store-ისთვის, Gmail-ისთვის და სხვა პროდუქტებისთვის. თუ სხვისი, მაგალითად, ოჯახის წევრის, ანგარიშის დამატება გსურთ, სანაცვლოდ დაამატეთ ახალი პიროვნება თქვენს <ph name="DEVICE_TYPE" />-ს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">უფრო ცივი</translation>
+<translation id="1864454756846565995">USB-C მოწყობილობა (უკანა პორტი)</translation>
 <translation id="1866589962721094893">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება ნებართვა მოთხოვნილი იქნება USB მოწყობილობის ყოველი მიერთებისას. ცალკეული Android აპები დამატებით ნებართვებს მოითხოვს.</translation>
 <translation id="1877377290348678128">ლეიბლი (არასავალდებულო)</translation>
 <translation id="1877860345998737529">გადამრთველებისთვის ქმედებების მინიჭება</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">განახლება</translation>
 <translation id="1938351510777341717">გარე ბრძანება</translation>
 <translation id="1940546824932169984">დაკავშირებული მოწყობილობები</translation>
+<translation id="1941410638996203291">დასაწყისი: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ვერსია: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">ნაპოვნია განახლება</translation>
 <translation id="1948528728718281125">კამერაზე წვდომა დაშვებულია აპებისთვის, ვებსაიტებისთვის კამერის გამოყენების ნებართვით, ასევე, სისტემის სერვისებისთვის</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">გვერდების თარგმნისას გამოყენებული ენა</translation>
 <translation id="2319459402137712349">აირჩიეთ ტექსტური ველი, კლავიატურა რომ გახსნათ. ასევე, შეგიძლიათ კლავიატურის ხატულას არჩევა ეკრანის ქვედა ნაწილში.</translation>
 <translation id="2319993584768066746">შესვლის ეკრანის ფოტოები</translation>
+<translation id="2322622365472107569">დასასრული: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">შენახული Wi-Fi ქსელები</translation>
 <translation id="2325444234681128157">პაროლის დამახსოვრება</translation>
 <translation id="2326188115274135041">ავტომატური განბლოკვის ჩასართავად დაადასტურეთ PIN-კოდი</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">სრულად დახუჭეთ თვალები</translation>
 <translation id="258095186877893873">ხანგრძლივი</translation>
 <translation id="2581786034175502848">დააჭირეთ Shift კლავიშს 5-ჯერ ხელახლა ჩასართავად</translation>
+<translation id="2581992808349413349">დაცული კავშირის გამოყენება საიტის IP-მისამართის მოსაძებნად DNS-ში (დომენური სახელის სისტემაში). აღნიშნული იყენებს სერვისის მართულ პროვაიდერს <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-ზე</translation>
 <translation id="2584109212074498965">Kerberos ბილეთის მიღება ვერ მოხერხდა. ცადეთ ხელახლა, ან დაუკავშირდით თქვენი ორგანიზაციის მოწყობილობის ადმინისტრატორს. (შეცდომის კოდი: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">ვებსაიტზე მიკროფონის წვდომის ნებართვების მართვა Chrome-ში</translation>
 <translation id="2609980095400624569">კავშირი ვერ დამყარდა</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">დამატებითი დეტალები</translation>
 <translation id="2808985063107661499">ჟესტმა „<ph name="MAIN_GESTURE" />“ შეიძლება გადაფაროს ჟესტები — „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“. თუ შესაძლებელია, აირჩიეთ სხვა ჟესტი.</translation>
 <translation id="2809346626032021864">წაკითხვა</translation>
+<translation id="2811205483104563968">ანგარიშები</translation>
 <translation id="2813094189969465044">მშობლის მიერ კონტროლი</translation>
 <translation id="2817435998497102771">დააყენეთ თქვენი ფონი და სტილი</translation>
 <translation id="2818476747334107629">პრინტერის დეტალები</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">შევიწროება / გაშლა</translation>
 <translation id="2833144527504272627">ნავიგაცია ტექსტის კურსორით</translation>
 <translation id="2835177225987815960">სკანირებასთან დაკავშირებით ამჟამად განსაზღვრული პარამეტრები გადაყენდება, მათ შორის, გადამრთველები და ავტომატური სკანირების სიჩქარესთან დაკავშირებით დაფიქსირებული არჩევანი.</translation>
+<translation id="2844169650293029770">USB-C მოწყობილობა (მარცხენა წინა პორტი)</translation>
 <translation id="2844809857160214557">ბეჭდვის დავალებების ნახვა და მართვა</translation>
 <translation id="2849035674501872372">ზევით აიხედეთ</translation>
 <translation id="2860710618359053450">ყბა მოაქციეთ მარჯვნივ</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369067987974711168">ამ პორტთან დაკავშირებული სხვა მოქმედებების ჩვენება</translation>
 <translation id="3370260763947406229">ავტომატური შესწორება</translation>
+<translation id="3371140690572404006">USB-C მოწყობილობა (მარჯვენა წინა პორტი)</translation>
 <translation id="3371351218553893534">ხაზი ძალიან გრძელია: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam-ისთვის დაშვებული ნებართვები ვრცელდება ყველა Steam თამაშსა და აპზე.</translation>
 <translation id="338323348408199233">VPN-ის გარეშე ტრაფიკის დაბლოკვა</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">გაურთულეთ თქვენ მიერ მონახულებული საიტების შესახებ ინფორმაციის ნახვა მათ, ვისაც წვდომა აქვს თქვენს ინტერნეტ-ტრაფიკზე. <ph name="PRODUCT_NAME" /> იყენებს უსაფრთხო კავშირს საიტის IP მისამართის საპოვნელად DNS-ში (დომენური სახელების სისტემა).</translation>
 <translation id="3442674350323953953">მიეცით საშუალება Google-ს, გამოიყენოს თქვენი აპარატურის მონაცემები, <ph name="DEVICE_OS" />-ის გაუმჯობესების ხელშეწყობის მიზნით. უარყოფის შემთხვევაში, აღნიშნული მონაცემები მაინც გაეგზავნება Google-ს სათანადო განახლებების დასადგენად, თუმცა სხვა მიზნით არც შეინახება და არც გამოყენებული იქნება.</translation>
 <translation id="3445465968953598059">სახით მართვა</translation>
+<translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3448492834076427715">ანგარიშის განახლება</translation>
 <translation id="345078987193237421">ამ მოქმედებით დაუშვებთ კამერაზე აპების, კამერის ნებართვის მქონე ვებსაიტებისა და სისტემის სერვისების წვდომას</translation>
 <translation id="3453082738208775226">გსურთ, გასუფთავდეს ხაზგარეშე საცავი?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">სწრაფი პასუხები — განმარტება</translation>
 <translation id="3994075804072562819">მიეცით <ph name="SPECIFIC_NAME" />-ს USB მოწყობილობების მართვის უფლება.</translation>
 <translation id="3994530503403062649">განსაზღვრეთ თქვენი ტაბლეტის ღილაკები</translation>
+<translation id="3995138139523574647">USB-C მოწყობილობა (მარჯვენა უკანა პორტი)</translation>
 <translation id="3997429360543082038">ChromiumOS-ის შესახებ</translation>
 <translation id="4001540981461989979">მაუსის კურსორის გამოყოფა გადაადგილებისას</translation>
 <translation id="4005817994523282006">სასაათო სარტყლის ამოცნობის მეთოდი</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">თქვენი მდებარეობის გამოყენებით, დროის სარტყელის ავტომატური დაყენება</translation>
 <translation id="5327248766486351172">სახელი</translation>
 <translation id="5331568967879689647">Chrome OS სისტემის აპი</translation>
+<translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
 <translation id="5334113802138581043">მიკროფონზე წვდომა</translation>
 <translation id="5336689872433667741">კურსორი და სენსორული პანელი</translation>
 <translation id="5337926771328966926">მოწყობილობის ამჟამინდელი სახელია <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">ხმოვანი ეფექტების ჟურნალირების ჩართვა</translation>
 <translation id="5441133529460183413">Chrome ბრაუზერიდან დაინსტალირებული ვებ-აპი</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">პაროლი არასწორია</translation>
 <translation id="5450469615146335984">აირჩიეთ მალსახმობი თითოეული მოქმედებისთვის</translation>
 <translation id="5452446625764825792">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები და აპები</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (მუშაობს ხაზგარეშე)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">გადაადგილდით ეკრანზე არსებულ ერთეულებს შორის გადამრთველებით „შემდეგი“ და „წინა“</translation>
 <translation id="6452961788130242735">ქსელის შეცდომა ან არასწორი არე</translation>
 <translation id="6453921811609336127">შეყვანის მომდევნო მეთოდზე გადასართავად დააჭირეთ კლავიშთა კომბინაციას <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />შორისი<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">მიმდინარეობს ქსელების ძიება…</translation>
 <translation id="6463488491707167747">ამ ლექსიკონის წაშლა</translation>
 <translation id="6463596731306859179">არასასურველი ამომხტარი ფანჯრები გხვდებათ, ან სხვა მოულოდნელი ქცევა შენიშნეთ? თქვენ მიერ დაინსტალირებულ აპებსა და გაფართოებებს ზოგჯერ შეუძლია ChromeOS-ის პარამეტრების შეცვლა თქვენი ინფორმირების გარეშე.</translation>
 <translation id="6465841119675156448">ინტერნეტის გარეშე</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">მიეცით <ph name="SPECIFIC_NAME" />-ს თქვენს მიკროფონზე წვდომის უფლება</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
 <translation id="648927581764831596">არ არის ხელმისაწვდომი</translation>
+<translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
 <translation id="6497784818439587832">შეცვალეთ ეკრანის ზომა, თქვენს ეკრანზე არსებული ერთეულები რომ დააპატარაოთ ან გაადიდოთ</translation>
 <translation id="6497789971060331894">მაუსით უკუგადაადგილება</translation>
 <translation id="650185290742160385">ზღურბლის დაწევა</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">უსადენო ქსელის ავტომატურად გამორთვა</translation>
 <translation id="7092504544229909737">ვერ გამოიყენება Android აპებთან ერთად</translation>
 <translation id="7093220653036489319">სწრაფი პასუხები</translation>
+<translation id="7098389117866926363">USB-C მოწყობილობა (უკან მდებარე მარცხენა პორტი)</translation>
 <translation id="7099337801055912064">დიდი ზომის PPD-ის ჩატვირთვა ვერ მოხერხდება. მაქსიმალური ზომაა 250 კბაიტი.</translation>
 <translation id="7107609441453408294">ყველა დინამიკში ერთი და იგივე აუდიოს დაკვრა</translation>
 <translation id="7116931001458704701">შეანჯღრიეთ კურსორის მდებარეობის დასადგენად</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">კურსორის არის ზომა</translation>
 <translation id="7325209047678309347">ქაღალდი გაჭედილია</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
+<translation id="7345706641791090287">დაადასტურეთ თქვენი პაროლი</translation>
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="7352651011704765696">რაღაც არასწორად წარიმართა</translation>
 <translation id="7360333718677093875">emoji-ების ამომრჩევი</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">ზედა მწკრივის ღილაკების რეჟიმის გადასართავად ხანგრძლივად დააჭირეთ ძიების კლავიშს</translation>
 <translation id="8551588720239073785">თარიღისა და დროის პარამეტრები</translation>
 <translation id="8553342806078037065">სხვა ადამიანების მართვა</translation>
+<translation id="8554899698005018844">ენის გარეშე</translation>
 <translation id="8555444629041783356">მზის ჩასვლის ავტომატური განრიგი</translation>
 <translation id="8563043098557365232">დაშვებულია მხოლოდ სისტემის სერვისებისთვის</translation>
 <translation id="8571687764447439720">Kerberos ბილეთის დამატება</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">ფიჭური ქსელის ჩართვა</translation>
 <translation id="8902667442496790482">წარმოსათქმელად მონიშვნის პარამეტრების გახსნა</translation>
 <translation id="8903733144777177139">მიკროფონზე წვდომა დაბლოკილია</translation>
+<translation id="8910222113987937043">თქვენი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების ცვლილებების სინქრონიზაცია თქვენს Google ანგარიშთან აღარ მოხდება. თუმცა არსებული მონაცემები კვლავ შეინახება თქვენს Google ანგარიშში და მათ მართვას <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-იდან შეძლებთ.</translation>
 <translation id="8912810933860534797">ავტომატური სკანირების ჩართვა</translation>
 <translation id="8922624386829239660">ეკრანის გადაადგილება, როცა მაუსი ეკრანის კიდეებს ეხება</translation>
 <translation id="8929738682246584251">ლუპის ჩართვა/გამორთვა</translation>
 <translation id="8930622219860340959">უსადენო</translation>
 <translation id="8931713990831679796">ეს პრინტერები დაკავშირებულია და გამოსაყენებლად მზად არის. მარტივი წვდომისთვის შეინახეთ თქვენს პროფილში.</translation>
 <translation id="8932654652795262306">მყისიერი ტეტერინგის დეტალები</translation>
+<translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8940888110818450052">სისტემაში შესვლის ვარიანტები</translation>
 <translation id="8944099748578356325">ბატარეის უფრო სწრაფად მოხმარება (ამჟამინდელი დონე: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ხატულის ზომა</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">ამჟამად გამოიყენება როუმინგი</translation>
 <translation id="93393615658292258">მხოლოდ პაროლი</translation>
 <translation id="942296794412775122">მიკროფონის ჩართვა/გამორთვა</translation>
+<translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="950307215746360464">დაყენების სახელმძღვანელო</translation>
 <translation id="952471655966876828">მოწყობილობა ავტომატურად დაკავშირდება, როდესაც ჩაირთვება ან გამოიყენება</translation>
 <translation id="956013912698841780">მარჯვენა დაწკაპუნებით შეაჯამეთ კონტენტი, მიიღეთ განმარტებები, წერეთ თავდაჯერებულად, შექმენით სურათები და ა.შ. ფუნქციის ხელმისაწვდომობა ამჟამად შეზღუდულია.</translation>

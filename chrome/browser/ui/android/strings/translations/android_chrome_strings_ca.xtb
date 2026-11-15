@@ -129,6 +129,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1460751212339734034">Estalvia temps, escriu menys</translation>
 <translation id="146522654774760805">Contrasenyes i emplenament automàtic</translation>
 <translation id="1466383950273130737">Tria l'idioma de Chrome</translation>
+<translation id="1473344277210704336">Gemini i els teus elements essencials a la nova barra d'eines inferior</translation>
 <translation id="1477626028522505441">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa de problemes amb el servidor.</translation>
 <translation id="147982357559798527">S'ha canviat</translation>
 <translation id="1480287803138246127">És possible que part del teu historial no es mostri aquí. Obre l'historial complet de Chrome per veure'n tot el contingut.</translation>
@@ -907,6 +908,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4537987892902330164">Has mantingut la sessió iniciada com a <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4558311620361989323">Dreceres per a pàgines web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Subscripció a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Inicia la sessió al compte gestionat</translation>
 <translation id="4577115723294378384">Ordena de la A a la Z</translation>
 <translation id="4578289292431526768">Som-hi</translation>
@@ -914,6 +916,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4585751637295612750">Obre una pestanya nova per afegir-ho a la pregunta</translation>
 <translation id="4585793705637313973">Edita la pàgina</translation>
 <translation id="4587589328781138893">Llocs web</translation>
+<translation id="4587590257937792551">Chrome té una barra d'eines inferior nova, dissenyada per a la teva comoditat. Pots tornar a canviar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
 <translation id="4595237294768457124">Obre una pàgina Pestanya nova</translation>
 <translation id="4595276580892809760">Adjunta imatges de la galeria</translation>
@@ -1451,6 +1454,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6633067410344541938">Desbloqueja el mode d'incògnit</translation>
 <translation id="6636623428211296678">Explora més opcions de configuració a continuació o acaba ara</translation>
 <translation id="6637100877383020115">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_UMA_LINK" />Gestiona<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Els teus elements essencials, directament a la barra d'eines inferior. Pots tornar a canviar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Adjunta pestanyes</translation>
 <translation id="6647441008198474441">Els URL que visites s'envien a Google per preveure quins llocs web és possible que visitis a continuació</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
@@ -1649,6 +1653,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestanya de compartició fixada seleccionada</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7314734791127433392">No es poden comprovar les contrasenyes</translation>
+<translation id="7324177883197548771">Chrome té un nou disseny, creat per a la teva comoditat. Pots tornar a canviar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
 <translation id="7333041109965360609">Has cancel·lat la subscripció a les notificacions</translation>
 <translation id="7335766481146072567">Prem Continua</translation>
@@ -1750,6 +1755,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7697383401610880082">Ansa de posicionament</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Full inferior de l'activitat recent obert a alçada completa</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Subscripció a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7714077993070342304">Obre el menú de Chrome</translation>
@@ -2179,7 +2185,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="939598580284253335">Introduïu la frase de contrasenya</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, pestanya d'incògnit fixada d'imatge sobre imatge</translation>
-<translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="948276827484905248">Crea un codi QR</translation>
 <translation id="95817756606698420">Chrome pot utilitzar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> per fer cerques a la Xina. Per canviar-ho, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="959544960061022767">La teva organització requereix que iniciïs la sessió per utilitzar Chrome</translation>

@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Enkripsi data pengguna</translation>
 <translation id="1011003645819296594">Perangkat yang disimpan</translation>
 <translation id="1011355516189274711">Volume text-to-speech</translation>
+<translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Default jaringan</translation>
 <translation id="1026655690966755180">Tambahkan Port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Pemulihan data lokal</translation>
 <translation id="1247372569136754018">Mikrofon (internal)</translation>
 <translation id="1251366534849411931">Sepertinya ada kurung kurawal terbuka: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Memindai jaringan data seluler ...</translation>
 <translation id="1254593899333212300">Koneksi internet langsung</translation>
 <translation id="1261380933454402672">Sedang</translation>
 <translation id="1263733306853729545">Gunakan tombol <ph name="MINUS" /> dan <ph name="EQUAL" /> untuk memanggil daftar kandidat</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Properti Ucapan</translation>
 <translation id="1291057703584594733">Memilih gestur yang sudah ditetapkan akan menghapus gestur tersebut dari tindakan awalnya.</translation>
 <translation id="1291421198328146277">Reset tombol</translation>
+<translation id="1293264513303784526">Perangkat USB-C (port sebelah kiri)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mungkin tumpang tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", dan "<ph name="CONFLICTING_GESTURE_THREE" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1313405956111467313">Konfigurasi proxy otomatis</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Logout saat penutup ditutup</translation>
 <translation id="185970820835152459">Anda dapat mengelola Akun Google yang Anda gunakan untuk login. Akun Google Anda digunakan untuk browser Chromium, Play Store, Gmail, dan lainnya. Jika Anda ingin menambahkan akun untuk orang lain, seperti anggota keluarga, tambahkan pengguna baru ke <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Dingin</translation>
+<translation id="1864454756846565995">Perangkat USB-C (port belakang)</translation>
 <translation id="1866589962721094893">Memberikan kontrol aplikasi Android atas perangkat USB di Chromebook ini. Anda akan dimintai izin setiap kali mencolokkan perangkat USB. Setiap aplikasi Android akan meminta izin tambahan.</translation>
 <translation id="1877377290348678128">Label (opsional)</translation>
 <translation id="1877860345998737529">Penetapan tindakan tombol</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Update</translation>
 <translation id="1938351510777341717">External Command</translation>
 <translation id="1940546824932169984">Perangkat terhubung</translation>
+<translation id="1941410638996203291">Waktu mulai <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versi: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Pembaruan ditemukan</translation>
 <translation id="1948528728718281125">Akses kamera diizinkan untuk aplikasi dan situs yang memiliki izin kamera, serta layanan sistem</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Bahasa yang digunakan saat menerjemahkan halaman</translation>
 <translation id="2319459402137712349">Pilih kolom teks untuk membuka keyboard. Anda juga dapat memilih ikon Keyboard di bagian bawah layar.</translation>
 <translation id="2319993584768066746">Foto layar login</translation>
+<translation id="2322622365472107569">Waktu berakhir <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Jaringan Wi-Fi tersimpan</translation>
 <translation id="2325444234681128157">Ingat sandi</translation>
 <translation id="2326188115274135041">Konfirmasi PIN untuk mengaktifkan buka kunci otomatis</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Tutup kedua mata sebentar</translation>
 <translation id="258095186877893873">Lama</translation>
 <translation id="2581786034175502848">Tekan shift 5 kali untuk mengaktifkannya kembali</translation>
+<translation id="2581992808349413349">Menggunakan koneksi aman untuk mencari alamat IP situs di DNS (Domain Name System). Opsi ini menggunakan penyedia layanan terkelola di <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Tidak dapat mengambil tiket Kerberos. Coba lagi atau hubungi admin perangkat organisasi Anda. (Kode error <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Kelola izin mikrofon situs di Chrome</translation>
 <translation id="2609980095400624569">Tidak dapat terhubung</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Detail tambahan</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mungkin tumpang tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />" dan "<ph name="CONFLICTING_GESTURE_TWO" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
 <translation id="2809346626032021864">Membaca</translation>
+<translation id="2811205483104563968">Akun</translation>
 <translation id="2813094189969465044">Kontrol orang tua</translation>
 <translation id="2817435998497102771">Setel wallpaper &amp; gaya Anda</translation>
 <translation id="2818476747334107629">Detail printer</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Ciutkan/Luaskan</translation>
 <translation id="2833144527504272627">Navigasi dengan kursor teks</translation>
 <translation id="2835177225987815960">Penyiapan pemindaian saat ini akan direset, termasuk semua preferensi tombol akses yang ditetapkan dan kecepatan pemindaian otomatis.</translation>
+<translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
 <translation id="2844809857160214557">Lihat dan kelola tugas pencetakan</translation>
 <translation id="2849035674501872372">Cari</translation>
 <translation id="2860710618359053450">Menggerakkan rahang ke kanan</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369067987974711168">Tampilkan tindakan lain untuk port ini</translation>
 <translation id="3370260763947406229">Koreksi otomatis</translation>
+<translation id="3371140690572404006">Perangkat USB-C (port depan sebelah kanan)</translation>
 <translation id="3371351218553893534">Baris terlalu panjang: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Izin yang diizinkan untuk Steam berlaku untuk semua game dan aplikasi Steam.</translation>
 <translation id="338323348408199233">Blokir traffic tanpa VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Persulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. <ph name="PRODUCT_NAME" /> menggunakan koneksi aman untuk mencari alamat IP situs di Domain Name System (DNS).</translation>
 <translation id="3442674350323953953">Izinkan Google menggunakan data hardware Anda untuk membantu meningkatkan <ph name="DEVICE_OS" />. Jika Anda menolak, data ini tetap dikirimkan ke Google untuk menentukan update yang tepat, tetapi tidak disimpan ataupun digunakan.</translation>
 <translation id="3445465968953598059">Kontrol wajah</translation>
+<translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3448492834076427715">Perbarui akun</translation>
 <translation id="345078987193237421">Tindakan ini mengizinkan akses kamera untuk aplikasi dan situs yang memiliki izin kamera, serta layanan sistem</translation>
 <translation id="3453082738208775226">Kosongkan penyimpanan offline?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definisi Jawaban Instan</translation>
 <translation id="3994075804072562819">Memberi <ph name="SPECIFIC_NAME" /> kontrol atas perangkat USB.</translation>
 <translation id="3994530503403062649">Temukan tombol di tablet Anda</translation>
+<translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="3997429360543082038">Tentang ChromiumOS</translation>
 <translation id="4001540981461989979">Tandai kursor mouse saat bergerak</translation>
 <translation id="4005817994523282006">Metode deteksi zona waktu</translation>
@@ -1327,6 +1339,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5324780743567488672">Setel zona waktu secara otomatis menggunakan lokasi Anda</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5331568967879689647">Aplikasi Sistem ChromeOS</translation>
+<translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="5334113802138581043">Akses mikrofon</translation>
 <translation id="5336689872433667741">Kursor dan touchpad</translation>
 <translation id="5337926771328966926">Nama perangkat saat ini adalah <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5435274640623994081">Aktifkan pencatatan earcon</translation>
 <translation id="5441133529460183413">Aplikasi Web diinstal dari browser Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Sandi tidak valid</translation>
 <translation id="5450469615146335984">Pilih pintasan untuk setiap tindakan</translation>
 <translation id="5452446625764825792">Anda kini dapat melihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (berfungsi secara offline)</translation>
@@ -1645,6 +1659,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6444147596556711162">Gunakan “Berikutnya” dan “Sebelumnya” untuk berpindah-pindah item di layar</translation>
 <translation id="6452961788130242735">Masalah jaringan atau area yang buruk</translation>
 <translation id="6453921811609336127">Untuk beralih ke metode input berikutnya, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spasi<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Mencari jaringan...</translation>
 <translation id="6463488491707167747">Hapus kamus ini</translation>
 <translation id="6463596731306859179">Mendapatkan pop-up yang tidak diinginkan atau perilaku tidak terduga lainnya? Terkadang, aplikasi dan ekstensi yang Anda instal dapat mengubah setelan ChromeOS Anda tanpa Anda sadari.</translation>
 <translation id="6465841119675156448">Tanpa internet</translation>
@@ -1661,6 +1676,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="648204537326351595">Izinkan <ph name="SPECIFIC_NAME" /> mengakses mikrofon Anda</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="648927581764831596">Tidak ada yang tersedia</translation>
+<translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="650185290742160385">Turunkan nilai minimum</translation>
@@ -1825,6 +1841,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7090714929377281710">Otomatis nonaktifkan hotspot</translation>
 <translation id="7092504544229909737">Tidak dapat digunakan dengan aplikasi Android</translation>
 <translation id="7093220653036489319">Jawaban instan</translation>
+<translation id="7098389117866926363">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="7099337801055912064">Tidak dapat memuat PPD yang besar. Ukuran maksimumnya adalah 250 kB.</translation>
 <translation id="7107609441453408294">Putar audio yang sama melalui semua speaker</translation>
 <translation id="7116931001458704701">Goyangkan untuk menemukan kursor</translation>
@@ -1886,6 +1903,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7323315405936922211">Ukuran area kursor</translation>
 <translation id="7325209047678309347">Kertas macet</translation>
 <translation id="7331646370422660166">alt + panah bawah</translation>
+<translation id="7345706641791090287">Konfirmasi sandi Anda</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
 <translation id="7360333718677093875">pemilih emoji</translation>
@@ -2261,6 +2279,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="85486688517848470">Tahan tombol Penelusuran untuk mengalihkan perilaku tombol baris atas</translation>
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
 <translation id="8553342806078037065">Kelola orang lain</translation>
+<translation id="8554899698005018844">Tidak ada bahasa</translation>
 <translation id="8555444629041783356">Jadwal matahari terbenam otomatis</translation>
 <translation id="8563043098557365232">Hanya diizinkan untuk layanan sistem</translation>
 <translation id="8571687764447439720">Tambahkan tiket Kerberos</translation>
@@ -2367,12 +2386,14 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="8900413463156971200">Aktifkan jaringan Seluler</translation>
 <translation id="8902667442496790482">Buka setelan klik untuk diucapkan</translation>
 <translation id="8903733144777177139">Akses mikrofon diblokir</translation>
+<translation id="8910222113987937043">Perubahan terhadap bookmark, histori, sandi, dan setelan lain sudah tidak disinkronkan ke Akun Google Anda. Namun, data yang sudah ada akan tetap disimpan di Akun Google dan dapat dikelola di <ph name="BEGIN_LINK" />Google Dasbor<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Aktifkan pindai otomatis</translation>
 <translation id="8922624386829239660">Pindahkan layar saat mouse menyentuh tepi layar</translation>
 <translation id="8929738682246584251">Pembesar aktif/nonaktif</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
 <translation id="8931713990831679796">Printer ini terhubung dan siap digunakan. Simpan ke profil Anda untuk memudahkan akses.</translation>
 <translation id="8932654652795262306">Detail Tethering Instan</translation>
+<translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="8940888110818450052">Opsi login</translation>
 <translation id="8944099748578356325">Menghabiskan baterai lebih cepat (saat ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Ukuran ikon</translation>
@@ -2469,6 +2490,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="930893132043726269">Sedang roaming</translation>
 <translation id="93393615658292258">Sandi saja</translation>
 <translation id="942296794412775122">Mikrofon aktif/nonaktif</translation>
+<translation id="945522503751344254">Kirim masukan</translation>
 <translation id="950307215746360464">Panduan penyiapan</translation>
 <translation id="952471655966876828">Perangkat akan otomatis terhubung saat diaktifkan dan sedang digunakan</translation>
 <translation id="956013912698841780">Klik kanan untuk meringkas konten, menemukan definisi, menulis dengan lebih percaya diri, membuat gambar, dan lainnya. Saat ini ketersediaannya terbatas.</translation>

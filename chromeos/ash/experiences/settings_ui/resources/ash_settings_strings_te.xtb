@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">యూజర్ డేటా ఎన్‌క్రిప్షన్</translation>
 <translation id="1011003645819296594">సేవ్ చేసిన డివైజ్‌లు</translation>
 <translation id="1011355516189274711">టెక్ట్స్-టు-స్పీచ్ వాల్యూమ్</translation>
+<translation id="1012876632442809908">USB-C పరికరం (ముందువైపు పోర్ట్)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ఆటోమేటిక్ నెట్‌వర్క్</translation>
 <translation id="1026655690966755180">పోర్ట్‌ను జోడించండి</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">స్థానిక డేటా రికవరీ</translation>
 <translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">మొబైల్ డేటా నెట్‌వర్క్‌ల కోసం స్కాన్ చేస్తోంది...</translation>
 <translation id="1254593899333212300">ప్రత్యక్ష ఇంటర్నెట్ కనెక్షన్</translation>
 <translation id="1261380933454402672">మధ్యస్థం</translation>
 <translation id="1263733306853729545">అభ్యర్థి లిస్ట్‌ను పేజీ చేయడానికి <ph name="MINUS" />, <ph name="EQUAL" /> కీలను ఉపయోగించండి</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
 <translation id="1291057703584594733">ఇప్పటికే కేటాయించిన సంజ్ఞను ఎంచుకోవడం వలన దాని ఒరిజినల్ చర్య నుండి అది తొలగిపోతుంది.</translation>
 <translation id="1291421198328146277">కీలను రీసెట్ చేయండి</translation>
+<translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />"తోను, "<ph name="CONFLICTING_GESTURE_TWO" />"తోను, "<ph name="CONFLICTING_GESTURE_THREE" />తోను, "ఓవర్‌ల్యాప్ కావచ్చు. వీలైతే, వేరే సంజ్ఞను ఎంచుకోవడానికి ట్రై చేయండి.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1313405956111467313">ఆటోమేటిక్‌ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">మూత మూసి ఉన్నప్పుడు సైన్ అవుట్ చేయండి</translation>
 <translation id="185970820835152459">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మీరు మేనేజ్ చేయవచ్చు. Chromium బ్రౌజర్, Play Store, Gmail, ఇంకా మరిన్నింటి కోసం మీ Google ఖాతాలు ఉపయోగించబడతాయి. ఫ్యామిలీ మెంబర్ వంటి వారి కోసం మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా కొత్త వ్యక్తిని మీ <ph name="DEVICE_TYPE" />కు జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">చల్లని</translation>
+<translation id="1864454756846565995">USB-C పరికరం (వెనుకవైపు పోర్ట్)</translation>
 <translation id="1866589962721094893">ఈ Chromebookలోని USB డివైజ్‌లపై Android యాప్‌లకు కంట్రోల్ ఇవ్వండి. మీరు USB డివైజ్‌ను ప్లగ్-ఇన్ చేసిన ప్రతిసారి అనుమతి కోసం రిక్వెస్ట్ పంపబడుతుంది. ఒక్కో Android యాప్ అదనపు అనుమతుల కోసం అడుగుతుంది.</translation>
 <translation id="1877377290348678128">లేబుల్ (ఆప్షనల్)</translation>
 <translation id="1877860345998737529">స్విచ్ చర్య కేటాయింపు</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">అప్‌డేట్‌లు</translation>
 <translation id="1938351510777341717">బాహ్య ఆదేశం</translation>
 <translation id="1940546824932169984">కనెక్ట్ చేయబడిన డివైజ్‌లు</translation>
+<translation id="1941410638996203291">ప్రారంభ సమయం <ph name="TIME" /></translation>
 <translation id="1941553344801134989">వెర్షన్: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">అప్‌డేట్ కనుగొనబడింది</translation>
 <translation id="1948528728718281125">కెమెరా అనుమతి, అలాగే సిస్టమ్ సర్వీస్‌లు గల యాప్‌లు, వెబ్‌సైట్‌లకు కెమెరా యాక్సెస్‌ను అనుమతించండి</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">పేజీలను అనువదిస్తున్నప్పుడు ఉపయోగించే భాష</translation>
 <translation id="2319459402137712349">టెక్స్ట్ ఫీల్డ్‌ను ఎంచుకొని కీబోర్డ్‌ను తెరవండి. మీ స్క్రీన్ దిగువున ఉన్న కీబోర్డ్ చిహ్నాన్ని కూడా మీరు ఎంచుకోవచ్చు.</translation>
 <translation id="2319993584768066746">సైన్ ఇన్ స్క్రీన్ ఫోటోలు</translation>
+<translation id="2322622365472107569">ముగింపు సమయం <ph name="TIME" /></translation>
 <translation id="2323018538045954000">సేవ్ చేయబడిన Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="2325444234681128157">పాస్‌వర్డ్‌ను గుర్తుంచుకో</translation>
 <translation id="2326188115274135041">'ఆటోమేటిక్‌గా అన్‌లాక్ చేయడం'ను ఆన్ చేసేందుకు పిన్‌ను నిర్ధారించండి</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">రెండు కళ్లు మూయండి</translation>
 <translation id="258095186877893873">ఎక్కువ</translation>
 <translation id="2581786034175502848">దీన్ని మళ్లీ ఎనేబుల్ చేయడానికి Shiftను 5 సార్లు నొక్కండి</translation>
+<translation id="2581992808349413349">DNS (డొమైన్ నేమ్ సిస్టమ్)లో సైట్ IP అడ్రస్‌ను చూసేందుకు సురక్షిత కనెక్షన్‌ను ఉపయోగించండి. ఇది <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> లింక్‌లో మేనేజ్ చేసే సర్వీస్ ప్రొవైడర్‌ను ఉపయోగిస్తుంది</translation>
 <translation id="2584109212074498965">Kerberos టిక్కెట్‌ను పొందడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ సంస్థ పరికర నిర్వాహకులను సంప్రదించండి. (ఎర్రర్ కోడ్ <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chromeలో వెబ్‌సైట్ మైక్రోఫోన్ అనుమతులను మేనేజ్ చేయండి</translation>
 <translation id="2609980095400624569">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">అదనపు వివరాలు</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />"తోను, "<ph name="CONFLICTING_GESTURE_TWO" />"తోను, ఓవర్‌ల్యాప్ కావచ్చు. వీలైతే, వేరే సంజ్ఞను ఎంచుకోవడానికి ట్రై చేయండి.</translation>
 <translation id="2809346626032021864">చదవడం</translation>
+<translation id="2811205483104563968">ఖాతాలు</translation>
 <translation id="2813094189969465044">తల్లిదండ్రుల నియంత్రణలు</translation>
 <translation id="2817435998497102771">మీ వాల్‌పేపర్ &amp; స్టయిల్‌ను సెటప్ చేయండి</translation>
 <translation id="2818476747334107629">ప్రింటర్ వివరాలు</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">కుదించు / విస్త‌రించు</translation>
 <translation id="2833144527504272627">టెక్స్ట్ కర్సర్‌తో నావిగేట్ చేయండి</translation>
 <translation id="2835177225987815960">కేటాయించిన స్విచ్‌లు ఏవైనా ఉంటే అవి, ఆటో-స్కాన్ స్పీడ్ ప్రాధాన్యతలతో సహా మీ ప్రస్తుత స్కానింగ్ సెటప్ రీసెట్ చేయబడుతుంది.</translation>
+<translation id="2844169650293029770">USB-C పరికరం (ఎడమవైపు ముందు పోర్ట్)</translation>
 <translation id="2844809857160214557">ప్రింట్ టాస్క్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2849035674501872372">వెతకండి</translation>
 <translation id="2860710618359053450">దవడను కుడివైపుకి కదల్చడం</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369067987974711168">ఈ పోర్ట్ కోసం మరిన్ని చర్యలను చూపించు</translation>
 <translation id="3370260763947406229">ఆటోమేటిక్ కరెక్షన్</translation>
+<translation id="3371140690572404006">USB-C పరికరం (కుడివైపు ముందు పోర్ట్)</translation>
 <translation id="3371351218553893534">లైన్ మరీ పొడవుగా ఉంది: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam కోసం అనుమతించబడిన అనుమతులు అన్ని Steam గేమ్‌లు, యాప్‌లకు వర్తిస్తాయి.</translation>
 <translation id="338323348408199233">VPN లేకుండా ట్రాఫిక్‌ను బ్లాక్ చేయండి</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">మీ ఇంటర్నెట్ ట్రాఫిక్‌కు యాక్సెస్ ఉన్న వ్యక్తులు మీరు బ్రౌజ్ చేసే సైట్‌లను చూడటం కష్టతరం చేయండి. DNS (డొమైన్ నేమ్ సిస్టమ్)లో సైట్ IP అడ్రస్‌ను చూసేందుకు <ph name="PRODUCT_NAME" /> సురక్షితమైన కనెక్షన్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" />ను మెరుగుపరచడంలో సహాయపడేందుకు మీ హార్డ్‌వేర్ డేటాను ఉపయోగించడానికి Googleకు అనుమతినివ్వండి. మీరు తిరస్కరిస్తే, సరైన అప్‌డేట్‌లను గుర్తించడానికి ఈ డేటా ఇప్పటికీ Googleకు పంపబడుతుంది, కానీ ఇది స్టోర్ చేయబడదు లేదా ఉపయోగించబడదు.</translation>
 <translation id="3445465968953598059">ఫేషియల్ కంట్రోల్</translation>
+<translation id="3445925074670675829">USB-C పరికరం</translation>
 <translation id="3448492834076427715">ఖాతాను అప్‌డేట్ చేయి</translation>
 <translation id="345078987193237421">ఇది యాప్‌లు, కెమెరా అనుమతి ఉన్న వెబ్‌సైట్‌లు, అలాగే సిస్టమ్ సర్వీస్‌ల కోసం కెమెరా యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="3453082738208775226">ఆఫ్‌లైన్ స్టోరేజ్‌ను క్లీన్అప్ చేయాలా?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">త్వరిత సమాధానాల నిర్వచనం</translation>
 <translation id="3994075804072562819">USB డివైజ్‌లపై <ph name="SPECIFIC_NAME" /> కంట్రోల్‌ను అందించండి.</translation>
 <translation id="3994530503403062649">మీ టాబ్లెట్‌లో బటన్‌లను గుర్తించండి</translation>
+<translation id="3995138139523574647">USB-C పరికరం (కుడివైపు వెనుక పోర్ట్)</translation>
 <translation id="3997429360543082038">ChromiumOS గురించి</translation>
 <translation id="4001540981461989979">కదులుతున్నప్పుడు మౌస్ కర్సర్‌ను హైలైట్ చేయండి</translation>
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">మీ లొకేష‌న్‌ను ఉపయోగించి టైమ్ జోన్‌ను ఆటోమేటిక్‌గా సెట్ చేయండి</translation>
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5331568967879689647">ChromeOS సిస్టమ్ యాప్</translation>
+<translation id="5331975486040154427">USB-C పరికరం (ఎడమవైపు వెనుక పోర్ట్)</translation>
 <translation id="5334113802138581043">మైక్రోఫోన్ యాక్సెస్</translation>
 <translation id="5336689872433667741">కర్సర్, టచ్‌ప్యాడ్</translation>
 <translation id="5337926771328966926">ప్రస్తుత పరికరం యొక్క పేరు <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">ఇయర్‌కాన్ లాగింగ్‌ను ప్రారంభించండి</translation>
 <translation id="5441133529460183413">Chrome బ్రౌజర్ నుండి వెబ్ యాప్ ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="5450469615146335984">ఒక్కో చర్యకు ఒక షార్ట్‌కట్‌ను ఎంచుకోండి</translation>
 <translation id="5452446625764825792">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, ఇంకా యాప్‌లను చూడవచ్చు</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ఆఫ్‌లైన్‌లో పని చేస్తుంది)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">స్క్రీన్‌పై ఉన్న ఐటెమ్‌ల మధ్య తరలించడానికి "తర్వాత" లేదా "మునుపటి"ను ఉపయోగించండి</translation>
 <translation id="6452961788130242735">నెట్‌వర్క్ సమస్య ఉంది లేదా నెట్‌వర్క్ పరిధిలో లేదు</translation>
 <translation id="6453921811609336127">తర్వాతి ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
+<translation id="6461170143930046705">నెట్‌వర్క్‌ల కోసం వెతుకుతోంది...</translation>
 <translation id="6463488491707167747">ఈ డిక్షనరీని తొలగించండి</translation>
 <translation id="6463596731306859179">అవసరంలేని పాప్-అప్‌లు లేదా ఇతర ఊహించని ప్రవర్తనను పొందుతున్నారా? కొన్నిసార్లు, మీరు ఇన్‌స్టాల్ చేసే యాప్‌లు, ఎక్స్‌టెన్షన్‌లు మీకు తెలియకుండానే మీ ChromeOS సెట్టింగ్‌లను మార్చవచ్చు.</translation>
 <translation id="6465841119675156448">ఇంటర్నెట్ లేకుండా</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="SPECIFIC_NAME" />‌ను అనుమతించండి</translation>
 <translation id="6482559668224714696">ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్</translation>
 <translation id="648927581764831596">ఏవీ అందుబాటులో లేవు</translation>
+<translation id="6490471652906364588">USB-C పరికరం (కుడి పోర్ట్)</translation>
 <translation id="6497784818439587832">మీ స్క్రీన్‌పై ఉన్న ఐటెమ్‌లను పెద్దగా లేదా చిన్నగా చూపడానికి డిస్‌ప్లే సైజ్‌ను మార్చండి</translation>
 <translation id="6497789971060331894">మౌస్ రివర్స్ స్క్రోలింగ్</translation>
 <translation id="650185290742160385">పరిమితిని తగ్గించండి</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">హాట్‌స్పాట్‌ను ఆటోమేటిక్‌గా ఆఫ్ చేయండి</translation>
 <translation id="7092504544229909737">Android యాప్‌లతో ఉపయోగించడం సాధ్యం కాదు</translation>
 <translation id="7093220653036489319">క్విక్ ఆన్సర్స్</translation>
+<translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
 <translation id="7099337801055912064">పెద్ద PPDని లోడ్ చేయడం సాధ్యం కాదు. గరిష్ట సైజ్‌ 250 kB.</translation>
 <translation id="7107609441453408294">అన్ని స్పీకర్‌లలో ఒకే ఆడియోను ప్లే చేస్తుంది</translation>
 <translation id="7116931001458704701">కర్సర్‌ను గుర్తించడానికి షేక్ చేయండి</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">కర్సర్ ఏరియా సైజ్</translation>
 <translation id="7325209047678309347">పేపర్ జామ్ అయింది</translation>
 <translation id="7331646370422660166">alt + కింది వైపు బాణం గుర్తు</translation>
+<translation id="7345706641791090287">మీ పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7348093485538360975">ఆన్-స్క్రీన్ కీబోర్డ్</translation>
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7360333718677093875">ఎమోజీ సెలెక్టర్</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">ఎగువ-అడ్డు వరుసలోని కీల ప్రవర్తనను మార్చడానికి శోధన కీని నొక్కి ఉంచండి</translation>
 <translation id="8551588720239073785">తేదీ, సమయం సెట్టింగ్‌లు</translation>
 <translation id="8553342806078037065">ఇతర వ్యక్తులను మేనేజ్ చేయండి</translation>
+<translation id="8554899698005018844">భాష లేదు</translation>
 <translation id="8555444629041783356">ఆటోమేటిక్ సర్వీస్‌ల నిలిపివేత షెడ్యూల్</translation>
 <translation id="8563043098557365232">సిస్టమ్ సర్వీస్‌లకు మాత్రమే యాక్సెస్ అనుమతించబడింది</translation>
 <translation id="8571687764447439720">Kerberos టిక్కెట్‌ను జోడించండి</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">సెల్యులార్‌ను ఎనేబుల్ చేయడం</translation>
 <translation id="8902667442496790482">వినడానికి-ఎంచుకోండి ఎంపికలను తెరువు</translation>
 <translation id="8903733144777177139">మైక్రోఫోన్ యాక్సెస్ బ్లాక్ చేయబడింది</translation>
+<translation id="8910222113987937043">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల‌లో మార్పులు మీ Google ఖాతాకు ఇకపై సింక్ చేయ‌బడవు. అయినప్పటికీ, ఇప్పటికే ఉన్న మీ డేటా Google ఖాతాలో స్టోరేజ్‌ చేయబడుతుంది. <ph name="BEGIN_LINK" />Google డాష్‌బోర్డ్<ph name="END_LINK" />లో నిర్వహించబడుతుంది.</translation>
 <translation id="8912810933860534797">ఆటోమేటిక్ స్కాన్‌ను ప్రారంభించండి</translation>
 <translation id="8922624386829239660">స్క్రీన్ అంచులను మౌస్ తాకినప్పుడు స్క్రీన్‌ను జరుపుతుంది</translation>
 <translation id="8929738682246584251">మాగ్నిఫైయర్ ఆన్/ఆఫ్</translation>
 <translation id="8930622219860340959">వైర్‌లెస్</translation>
 <translation id="8931713990831679796">ఈ ప్రింటర్‌లు కనెక్ట్ చేయబడ్డాయి, ఉపయోగించడానికి సిద్ధంగా ఉన్నాయి. సులభంగా యాక్సెస్ చేయడం కోసం మీ ప్రొఫైల్‌కు సేవ్ చేయండి.</translation>
 <translation id="8932654652795262306">తక్షణ టెధరింగ్ వివరాలు</translation>
+<translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8940888110818450052">సైన్ ఇన్ ఆప్షన్‌లు</translation>
 <translation id="8944099748578356325">బ్యాటరీని మరింత వేగంగా ఉపయోగిస్తుంది (ప్రస్తుతం <ph name="BATTERY_PERCENTAGE" />% ఉంది)</translation>
 <translation id="8945274638472141382">చిహ్నం సైజ్‌</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">ప్రస్తుతం రోమింగ్‌లో ఉంది</translation>
 <translation id="93393615658292258">పాస్‌వర్డ్ మాత్రమే</translation>
 <translation id="942296794412775122">మైక్రోఫోన్ ఆన్/ఆఫ్</translation>
+<translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="950307215746360464">గైడ్‌ను సెటప్ చేయండి</translation>
 <translation id="952471655966876828">పరికరం ఆన్ చేయబడినప్పుడు, ఉపయోగించబడుతున్నప్పుడు అది ఆటోమేటిక్‌గా కనెక్ట్ అవుతుంది</translation>
 <translation id="956013912698841780">రైట్-క్లిక్ చేసి కంటెంట్ సారాంశాన్ని పొందండి, నిర్వచనాలు పొందండి, మరింత విశ్వాసంతో రాయండి, ఇమేజ్‌లు, మరిన్నింటిని క్రియేట్ చేయండి. ప్రస్తుతం పరిమిత స్థాయిలో అందుబాటులో ఉంది.</translation>

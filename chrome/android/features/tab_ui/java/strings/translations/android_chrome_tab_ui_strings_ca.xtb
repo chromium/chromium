@@ -249,6 +249,6 @@
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="9187834032751045001">Avís sobre la supressió automàtica de pestanyes a mitja alçada.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
-<translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Vols tancar 1 element inactiu?}other{Vols tancar <ph name="TAB_COUNT_MANY" /> elements inactius?}}</translation>
 </translationbundle>

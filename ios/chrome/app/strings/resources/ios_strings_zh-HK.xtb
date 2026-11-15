@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組，收埋咗。</translation>
 <translation id="4800912004582762296">正在點擊</translation>
+<translation id="4800930308997591052">切換至 <ph name="EMAIL" />，在裝置之間流暢地分享分頁，並從 Google 帳戶取得密碼、書籤和其他資料。</translation>
 <translation id="4802185666270672526">隱藏「切換至桌面版網站」</translation>
 <translation id="4803185665210547709">由您的機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2146,6 +2147,7 @@
 <translation id="7618220760967055820">選擇工具列要顯示的按鈕</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="762078666799342162">你可以在「<ph name="BEGIN_LINK" />檔案<ph name="END_LINK" />」中查看之前的下載項目</translation>
+<translation id="7636034359405891151">繼續之前在電腦上的瀏覽進度</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="7640669552036055091">Android 裝置上的分頁</translation>

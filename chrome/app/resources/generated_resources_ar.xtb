@@ -17,7 +17,6 @@
 <translation id="100881991356161927">اسم الموقع الإلكتروني</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ صفحة واحدة غير مستجيبة}zero{ صفحات غير مستجيبة}two{صفحتان غير مستجيبتين}few{ صفحات غير مستجيبة}many{ صفحة غير مستجيبة}other{ من الصفحات غير مستجيبة}}</translation>
 <translation id="1011431628606634753">‏يجب تغيير رقم التعريف الشخصي المخصّص لاسترداد الحساب في خدمة "مدير كلمات المرور في Google"</translation>
-<translation id="1012876632442809908">‏جهاز USB-C (المنفذ الأمامي)</translation>
 <translation id="1015318665228971643">تعديل اسم المجلد</translation>
 <translation id="1016566241875885511">معلومات إضافية (اختياري)</translation>
 <translation id="1016876401615857435">لاستخدام مفاتيح المرور على هذا الجهاز، يُجب إثبات هويتك</translation>
@@ -277,7 +276,6 @@
 <translation id="1245331638296910488">‏سيتم نقل الملفات إلى OneDrive عند فتحها في Microsoft 365</translation>
 <translation id="1246420197935327230">اختيار منطقة</translation>
 <translation id="125097549534200450">محو</translation>
-<translation id="1251578593170406502">جارٍ البحث عن شبكات بيانات الجوّال...</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{‏تم حفظ إشارة مرجعية واحدة وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}zero{‏تم حفظ {BOOKMARK_COUNT} إشارة مرجعية وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}two{‏تم حفظ إشارتَين مرجعيتَين ({BOOKMARK_COUNT}) وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}few{‏تم حفظ {BOOKMARK_COUNT} إشارات مرجعية وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}many{‏تم حفظ {BOOKMARK_COUNT} إشارة مرجعية وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}other{‏تم حفظ {BOOKMARK_COUNT} إشارة مرجعية وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google. وسيؤدي ذلك إلى حذف أي عناصر مكرّرة.}}</translation>
 <translation id="125220115284141797">تلقائي</translation>
 <translation id="1252597096488926946">إزالة تثبيت أزرار الانتقال</translation>
@@ -297,7 +295,7 @@
 <translation id="1267649802567297774">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" والنمط "<ph name="STYLE" />" والحالة "<ph name="MOOD" />".</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1272508081857842302">فتح <ph name="BEGIN_LINK" />الروابط المتوافقة<ph name="END_LINK" /></translation>
-<translation id="1274721046703404848">‏يمكنك إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
+<translation id="1274721046703404848">‏إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
 <translation id="1274997165432133392">ملفات تعريف الارتباط والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
 <translation id="1277738741297162935">‏يمكنك الاطّلاع عليها في "مدير كلمات المرور في Google"</translation>
@@ -313,7 +311,6 @@
 <translation id="1285484354230578868">‏تخزين البيانات في حساب Google Drive</translation>
 <translation id="1286901453440314450">الشهادات غير الموثوق بها</translation>
 <translation id="1288235441231062220">تمّ بلوغ عدد الأحرف المسموح به: <ph name="MAX_CHARS" /></translation>
-<translation id="1293264513303784526">‏جهاز USB-C (المنفذ الأيسر)</translation>
 <translation id="1293556467332435079">الملفات</translation>
 <translation id="12951065153783848">تدير المؤسسة حسابك</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
@@ -746,6 +743,7 @@
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="175196451752279553">إ&amp;عادة فتح علامة التبويب المغلقة</translation>
 <translation id="1753557900380512635">تصميمات داخلية</translation>
+<translation id="1753621899753387273">‏اسأل Gemini عن هذه الصفحة و"<ph name="SELECTION" />"</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1755601632425835748">حجم النص</translation>
 <translation id="1756963401828337401">يُرجى اختيار شاشة لأخذ لقطة لها</translation>
@@ -858,7 +856,6 @@
 <translation id="1863182668524159459">لم يتم العثور على منافذ تسلسلية</translation>
 <translation id="1863374797460198869">المحادثة مخفية</translation>
 <translation id="1864111464094315414">تسجيل الدخول</translation>
-<translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
 <translation id="186594096341696655">خفض المعدَّل</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت وكتابتها في المواقع المحددة.</translation>
 <translation id="1869433484041798909">زر وضع إشارة مرجعية</translation>
@@ -945,7 +942,6 @@
 <translation id="1936931585862840749">استخدِم رقمًا للإشارة إلى عدد النُسخ المطلوب طباعتها (من 1 إلى <ph name="MAX_COPIES" />).</translation>
 <translation id="1940221956626514677">تخصيص شريط الأدوات</translation>
 <translation id="194081218158106711">جارٍ التحقق من تغيير كلمة المرور...</translation>
-<translation id="1941410638996203291">وقت البدء: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">الإصدار: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏ضبطَ المشرف إعدادات حسابك لربطه بخدمة Microsoft OneDrive تلقائيًا، ولكن حدث خطأ.</translation>
 <translation id="194174710521904357">لقد سمحت مؤقتًا لهذا الموقع الإلكتروني باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية، ما يعني أنك ستحظى بمستوى حماية أقل خلال التصفّح، ولكن من المرجّح أكثر أن تعمل ميزات الموقع الإلكتروني على النحو المتوقّع.</translation>
@@ -1301,7 +1297,6 @@
 <translation id="2316709634732130529">استخدام كلمة المرور المقترحة</translation>
 <translation id="2318143611928805047">حجم الورق</translation>
 <translation id="2322193970951063277">الرؤوس والتذييلات</translation>
-<translation id="2322622365472107569">وقت الانتهاء: <ph name="TIME" /></translation>
 <translation id="2323685460575935191">إخفاء أزرار الانتقال</translation>
 <translation id="2325004050205455346">السجلّ الأخير</translation>
 <translation id="2326583548923775947">‏هذا ليس حساب على Google، ولن تكون البيانات التي تحفظها في Chrome متاحة على الأجهزة الأخرى.</translation>
@@ -1554,7 +1549,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{سيتم حفظ بيانات هذا الجهاز لمدة سنة واحدة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}zero{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}two{سيتم حفظ بيانات هذا الجهاز لمدة سنتَين ({YEARS}) ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}few{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنوات ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}many{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}other{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}}</translation>
 <translation id="2577981599306533385">‏سيفقد حساب "<ph name="MEMBER_FULL_NAME" />" ‏(<ph name="EMAIL" />) على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، ولن يعود بإمكانه التفاعل معك على خدمات Google.</translation>
 <translation id="2580889980133367162">السماح دائمًا لـ <ph name="HOST" /> بتنزيل عدة ملفات</translation>
-<translation id="2581992808349413349">‏استخدِم اتصالاً آمنًا للبحث عن عنوان IP لموقع إلكتروني في نظام أسماء النطاقات (DNS). ويعتمد ذلك على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2583877283803564049">التثبيت في شريط الأدوات</translation>
 <translation id="2583905535229480958">أي قارئ بطاقات ذكية</translation>
 <translation id="2586672484245266891">‏يُرجى إدخال عنوان URL أقصر.</translation>
@@ -1801,7 +1795,6 @@
 <translation id="2806372837663997957">رفض الجهاز الذي تحاول تنفيذ المشاركة معه طلبك.</translation>
 <translation id="2806891468525657116">الاختصار موجود من قَبل</translation>
 <translation id="2807517655263062534">هنا تظهر الملفات التي تم تنزيلها</translation>
-<translation id="2811205483104563968">الحسابات</translation>
 <translation id="2814489978934728345">وقف تحميل هذه الصفحة</translation>
 <translation id="281678554528702272">ملاحظة: قد يتم إلغاء إعدادات الوصول إلى الموقع الإلكتروني هذه من خلال سياسات المؤسسة أو واجهات برمجة التطبيقات الفعّالة.</translation>
 <translation id="2817861546829549432">إن تفعيل "عدم التعقب" يعني تضمين الطلب مع زيارة التصفح. ويعتمد أي إجراء على استجابة الموقع الإلكتروني للطلب من عدمه، بالإضافة إلى كيفية تفسير الطلب. فعلى سبيل المثال، قد تتمثل استجابة بعض المواقع الإلكترونية لهذا الطلب بعرض إعلانات غير موجودة في المواقع الإلكترونية الأخرى التي زرتها. وستستمر بعض المواقع الإلكترونية في جمع معلومات التصفح واستخدامها، على سبيل المثال لتحسين الأمان، وتقديم المحتوى والخدمات والإعلانات والمقترحات على المواقع الإلكترونية، وإنشاء تقارير الإحصاءات.</translation>
@@ -1831,7 +1824,6 @@
 <translation id="2842013086666334835">تسجيل الدخول إلى شبكة "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843698124892775282">تم إخلاء <ph name="MEMORY_SAVINGS" /> من مساحة التخزين</translation>
 <translation id="2844154481025280030">تم ضبط السياسة.</translation>
-<translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
 <translation id="284491292807422921">إزالة الموقع الإلكتروني؟</translation>
 <translation id="2845276301195220700">‏مزيد من الإجراءات في "تقويم Google"</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
@@ -2368,7 +2360,6 @@
 <translation id="3365651640097487828">لمشاركة علامات التبويب والتعاون مع الآخرين، يجب تأكيد هويتك ومزامنة السجلّ وعلامات التبويب</translation>
 <translation id="3368662179834713970">منزل</translation>
 <translation id="3369624026883419694">إثبات هوية المضيف...</translation>
-<translation id="3371140690572404006">‏جهاز USB-C (المنفذ الأمامي الأيمن)</translation>
 <translation id="3372602033006349389">على أجهزة أخرى</translation>
 <translation id="337286756654493126">قراءة المجلدات التي تفتحها في التطبيق</translation>
 <translation id="3373059063088819384">الفتح في وضع القراءة</translation>
@@ -2455,7 +2446,6 @@
 <translation id="3445140416168872040">إزالة الإذن الممنوح إلى <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="344537926140058498">حظرت مؤسستك هذا الملف لأنه يتضمّن محتوى حسّاس أو خطير. يُرجى طلب إصلاحه من المالك.</translation>
-<translation id="3445925074670675829">‏جهاز USB-C</translation>
 <translation id="344630545793878684">قراءة بياناتك على عدد من المواقع الإلكترونية</translation>
 <translation id="3447797901512053632">جارٍ بث <ph name="TAB_NAME" /> على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">تعديل الحساب</translation>
@@ -3050,7 +3040,6 @@
 <translation id="3994522032746736727">تسجيل الدخول بحساب <ph name="EMAIL" /></translation>
 <translation id="3994708120330953242">استُخدمت بعض كلمات المرور الخاصة بك في عملية اختراق للبيانات. لحماية حساباتك، عليك تغيير كلمات المرور هذه الآن.</translation>
 <translation id="3994878504415702912">&amp;تكبير/تصغير</translation>
-<translation id="3995138139523574647">‏جهاز USB-C (المنفذ الخلفي الأيمن)</translation>
 <translation id="3995963973192100066">تشغيل الصورة المتحركة</translation>
 <translation id="399788104667917863">تثبيت في شريط الأدوات</translation>
 <translation id="3998431043924115701">طرح الأسئلة أثناء التصفّح</translation>
@@ -3629,7 +3618,7 @@
 <translation id="4624054169152573743">مظهر ملوَّن</translation>
 <translation id="4625350031596795804">نمط التركيز على نطاق كبير</translation>
 <translation id="4625905218692741757">اللون التلقائي الرمادي</translation>
-<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بالانتقال إلى استخدام مفاتيح المرور في حساباتها الحالية</translation>
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
 <translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
 <translation id="4629803160911640220">موثوق بها</translation>
@@ -4328,7 +4317,6 @@
 <translation id="5327912693242073631">لن تعمل الميزات التي تحتاج إلى الإشعارات.</translation>
 <translation id="5328551442597731838">الاطّلاع على علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>
-<translation id="5331975486040154427">‏جهاز USB-C (المنفذ الخلفي الأيسر)</translation>
 <translation id="5334142896108694079">ذاكرة التخزين المؤقت للنص البرمجي</translation>
 <translation id="5335370353987155592">‏ننصحك باستخدام Gemini بعناية مع مراعاة <ph name="BEGIN_LINK1" />عوامل الأمان<ph name="LINK_END1" />، مع العِلم بأنّه تقع على عاتقك مسؤولية أي إجراء يتّخذه Gemini أثناء تنفيذ مَهمّة، بما في ذلك الأخطاء و<ph name="BEGIN_LINK2" />النتائج غير المتوقَّعة<ph name="LINK_END2" />، مثل عمليات الشراء.</translation>
 <translation id="5336688142483283574">سيتم أيضًا إزالة هذه الصفحة من السجلّ ونشاط <ph name="SEARCH_ENGINE" />.</translation>
@@ -4436,7 +4424,6 @@
 <translation id="5444452275167152925">‏الشهادات المستورَدة من ChromeOS</translation>
 <translation id="5446836766119801744">‎⌥L</translation>
 <translation id="5447289297870286353">استلهام الأفكار</translation>
-<translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
 <translation id="5449588825071916739">وضع إشارة على جميع علامات التبويب</translation>
 <translation id="5449716055534515760">إغلاق &amp;النافذة</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> لاستكشاف الأجهزة التي تتضمّن بلوتوث</translation>
@@ -5397,7 +5384,6 @@
 <translation id="6459488832681039634">استخدام التحديد للبحث</translation>
 <translation id="6459799433792303855">تم نقل نافذة نشطة إلى شاشة عرض أخرى.</translation>
 <translation id="6460601847208524483">البحث عن التالي</translation>
-<translation id="6461170143930046705">جارٍ البحث عن شبكات...</translation>
 <translation id="6463668944631062248">يُرجى قبول طلب البث على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6463795194797719782">ت&amp;عديل</translation>
 <translation id="6464825623202322042">هذا الجهاز</translation>
@@ -5420,7 +5406,6 @@
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{هل المطلوب الاحتفاظ بمجموعة علامات التبويب؟}zero{هل المطلوب الاحتفاظ بمجموعات علامات التبويب؟}two{هل المطلوب الاحتفاظ بمجموعتَي علامات التبويب؟}few{هل المطلوب الاحتفاظ بمجموعات علامات التبويب؟}many{هل المطلوب الاحتفاظ بمجموعات علامات التبويب؟}other{هل المطلوب الاحتفاظ بمجموعات علامات التبويب؟}}</translation>
 <translation id="6486301003991593638">‏لإدارة مفاتيح المرور، يجب استخدام إصدار أحدث من نظام التشغيل Windows.</translation>
 <translation id="6488266788670893993">لا يستطيع "<ph name="BRAND" />" التأكد من أنّ كلمات مرورك لم تتعرض لعمليات اختراق للبيانات. يُرجى التأكد من الاتصال بالإنترنت.</translation>
-<translation id="6490471652906364588">‏جهاز USB-C (المنفذ الأيمن)</translation>
 <translation id="6491890991754498129">فتح &amp;باستخدام...</translation>
 <translation id="649396225532207613">يمكن أن يضرّ هذا الملف حساباتك الشخصية وحساباتك على شبكات التواصل الاجتماعي.</translation>
 <translation id="6493991254603208962">سطوع منخفض</translation>
@@ -6057,7 +6042,6 @@
 <translation id="7094768688212290897">الهرم الأكبر في الجيزة</translation>
 <translation id="7094834615934458012">هل المطلوب السماح لهذا الموقع الإلكتروني بتعديل الملفات؟</translation>
 <translation id="7096904522553867921">يمكنك إعادة علامات التبويب إلى الأعلى من خلال النقر بزر الماوس الأيمن على أي علامة تبويب واختيار "عرض علامات التبويب أفقيًا"</translation>
-<translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7098447629416471489">ستظهر هنا محركات البحث المحفوظة الأخرى</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{إزالة التطبيق}zero{إزالة التطبيقات}two{إزالة التطبيقَين}few{إزالة التطبيقات}many{إزالة التطبيقات}other{إزالة التطبيقات}}</translation>
 <translation id="7099027177878709408">إ&amp;غلاق</translation>
@@ -6308,7 +6292,6 @@
 <translation id="7341834142292923918">تريد الإضافة الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="7343372807593926528">يُرجى وصف المشكلة قبل إرسال التعليقات.</translation>
 <translation id="7344585835349671209">‏إدارة شهادات HTTPS أو شهادات طبقة المقابس الآمنة على جهازك</translation>
-<translation id="7345706641791090287">تأكيد كلمة المرور</translation>
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7347751611463936647">‏لاستخدام هذه الإضافة، اكتب "<ph name="EXTENSION_KEYWORD" />"، ثم TAB، ثم الأمر أو البحث.</translation>
 <translation id="7347943691222276892">يُرجى النقر للانتقال من صفحة <ph name="SUBPAGE_TITLE" />.</translation>
@@ -7511,7 +7494,6 @@
 <translation id="8551647092888540776">لا يمكن فتح "<ph name="FILE_NAMES" />" بلا اتصال بالإنترنت</translation>
 <translation id="8552102814346875916">الحفظ ضمن قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="8552947739661397736">‏تولّي المهمة، ينفِّذ Gemini المهمة حاليًا</translation>
-<translation id="8554899698005018844">بدون لغة</translation>
 <translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> - تم عرض المحتوى الموسّع</translation>
 <translation id="8557022314818157177">يُرجى الاستمرار في لمس مفتاح الأمان إلى أن يتم حِفظ بصمة الإصبع.</translation>
 <translation id="8557100046150195444">استخدِم بصمة الإصبع للمتابعة</translation>
@@ -7871,7 +7853,6 @@
 <translation id="8905253417215700291">أنشأ "<ph name="GOOGLE_PASSWORD_MANAGER" />" كلمة مرور قوية لهذا الموقع الإلكتروني</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909833622202089127">تتبّع الموقع الإلكتروني موقعك الجغرافي.</translation>
-<translation id="8910222113987937043">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google ويمكن إدارتها في <ph name="BEGIN_LINK" />لوحة تحكّم Google<ph name="END_LINK" />.</translation>
 <translation id="8911478306361447917">اختصارات الميزات والإضافات</translation>
 <translation id="8912362522468806198">‏حساب Google‏</translation>
 <translation id="8913485523736543337">أداة التحديث</translation>
@@ -7898,7 +7879,6 @@
 <translation id="8933709832356869375">ستتم إزالة تطبيق واحد مثبَّت</translation>
 <translation id="8933960630081805351">إ&amp;ظهار في الباحث</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{‏تصل الإضافة <ph name="EXTENSION1" /> إلى أجهزة USB.}=2{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" />}zero{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}few{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافات أخرى}many{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}other{الإضافات التي لديها إمكانية الوصول إلى الأجهزة: <ph name="EXTENSION1" /> و<ph name="EXTENSION2" /> و{3} إضافة أخرى}}</translation>
-<translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{تم استخدامها منذ <ph name="TIME_COUNT" /> يوم}=1{تم استخدامها منذ يوم واحد (<ph name="TIME_COUNT" />)}=2{تم استخدامها منذ أسبوعَين (<ph name="TIME_COUNT" />).}few{تم استخدامها منذ <ph name="TIME_COUNT" /> أسابيع}many{تم استخدامها منذ <ph name="TIME_COUNT" /> أسبوعًا}other{تم استخدامها منذ <ph name="TIME_COUNT" /> أسبوع}}</translation>
 <translation id="8940081510938872932">يجري الكمبيوتر الكثير من المهام في الوقت الحالي. أعد المحاولة لاحقًا.</translation>
 <translation id="8941173171815156065">إلغاء الإذن "<ph name="PERMISSION" />"</translation>

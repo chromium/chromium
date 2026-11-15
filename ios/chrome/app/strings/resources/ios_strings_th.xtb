@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">หยุดดาวน์โหลดใช่ไหม</translation>
 <translation id="4796496140132859135">กลุ่มแท็บ ยุบอยู่</translation>
 <translation id="4800912004582762296">กำลังคลิก</translation>
+<translation id="4800930308997591052">เปลี่ยนไปใช้ <ph name="EMAIL" /> เพื่อแชร์แท็บระหว่างอุปกรณ์ได้อย่างราบรื่น และรับรหัสผ่าน บุ๊กมาร์ก และอื่นๆ จากบัญชี Google</translation>
 <translation id="4802185666270672526">ซ่อน "ขอเว็บไซต์เวอร์ชันเดสก์ท็อป"</translation>
 <translation id="4803185665210547709">จัดการโดยองค์กร
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@
 <translation id="7618220760967055820">เลือกปุ่มที่จะแสดงในแถบเครื่องมือ</translation>
 <translation id="7620522820075868385">ยกเลิก</translation>
 <translation id="762078666799342162">คุณดูไฟล์ที่ดาวน์โหลดก่อนหน้านี้ได้ใน<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">ใช้งานต่อจากที่ค้างไว้ในคอมพิวเตอร์</translation>
 <translation id="7638584964844754484">พาสเฟรสไม่ถูกต้อง</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="7640669552036055091">แท็บจาก Android</translation>

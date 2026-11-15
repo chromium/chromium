@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Criptarea datelor utilizatorului</translation>
 <translation id="1011003645819296594">Dispozitive salvate</translation>
 <translation id="1011355516189274711">Volumul de redare vocală a textului</translation>
+<translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Rețea prestabilită</translation>
 <translation id="1026655690966755180">Adaugă un port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Recuperarea datelor locale</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
 <translation id="1251366534849411931">Se așteaptă o acoladă de deschidere: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Se caută rețele de date mobile...</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
 <translation id="1261380933454402672">Moderată</translation>
 <translation id="1263733306853729545">Folosește tastele <ph name="MINUS" /> și <ph name="EQUAL" /> pentru a pagina o listă de sugestii</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Proprietăți pentru vorbire</translation>
 <translation id="1291057703584594733">Dacă selectezi un gest deja atribuit, acesta va fi eliminat din acțiunea inițială.</translation>
 <translation id="1291421198328146277">Resetează tastele</translation>
+<translation id="1293264513303784526">Dispozitiv USB-C (portul din stânga)</translation>
 <translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> se poate suprapune cu <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> și <ph name="CONFLICTING_GESTURE_THREE" />. Dacă este posibil, alege alt gest.</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1313405956111467313">Configurare automată pentru proxy</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Când capacul este închis: deconectare</translation>
 <translation id="185970820835152459">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chromium, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Mai rece</translation>
+<translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1866589962721094893">Oferă aplicațiilor pentru Android control asupra dispozitivelor USB de pe acest Chromebook. Permisiunea va fi solicitată de fiecare dată când conectezi un dispozitiv USB. Aplicațiile pentru Android individuale vor solicita permisiuni suplimentare.</translation>
 <translation id="1877377290348678128">Etichetă (opțional)</translation>
 <translation id="1877860345998737529">Atribuirea acțiunii de comutare</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Actualizări</translation>
 <translation id="1938351510777341717">Comandă externă</translation>
 <translation id="1940546824932169984">Dispozitive conectate</translation>
+<translation id="1941410638996203291">Ora de începere: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versiune: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">A fost găsită o actualizare</translation>
 <translation id="1948528728718281125">Accesul la camera foto este permis pentru aplicații, site-uri care au permisiunea pentru camera foto și servicii de sistem</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Limbi folosite la traducerea paginilor</translation>
 <translation id="2319459402137712349">Selectează un câmp de text pentru a deschide tastatura. Poți să selectezi și pictograma tastatură din partea de jos a ecranului.</translation>
 <translation id="2319993584768066746">Fotografii de pe ecranul de conectare</translation>
+<translation id="2322622365472107569">Ora de încheiere: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rețele Wi-Fi salvate</translation>
 <translation id="2325444234681128157">Reține parola</translation>
 <translation id="2326188115274135041">Confirmă codul PIN pentru a activa deblocarea automată</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Închide ambii ochi pentru scurt timp</translation>
 <translation id="258095186877893873">Lungă</translation>
 <translation id="2581786034175502848">Apasă pe Shift de cinci ori pentru a-l reactiva</translation>
+<translation id="2581992808349413349">Folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Acest lucru folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Nu s-a putut afișa tichetul Kerberos. Încearcă din nou sau contactează administratorul dispozitivului organizației. (Cod de eroare <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Gestionează permisiunile pentru microfon ale site-urilor în Chrome</translation>
 <translation id="2609980095400624569">Nu s-a stabilit conexiunea</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Detalii suplimentare</translation>
 <translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> se poate suprapune cu <ph name="CONFLICTING_GESTURE_ONE" /> și <ph name="CONFLICTING_GESTURE_TWO" />. Dacă este posibil, alege alt gest.</translation>
 <translation id="2809346626032021864">Lectură</translation>
+<translation id="2811205483104563968">Conturi</translation>
 <translation id="2813094189969465044">Control parental</translation>
 <translation id="2817435998497102771">Setează imaginea de fundal și stilul</translation>
 <translation id="2818476747334107629">Detaliile imprimantei</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Restrânge/Extinde</translation>
 <translation id="2833144527504272627">Navighează folosind cursorul pentru text</translation>
 <translation id="2835177225987815960">Configurația actuală de scanare va fi resetată, inclusiv comutatoarele atribuite și setările pentru viteza de scanare automată.</translation>
+<translation id="2844169650293029770">Dispozitiv USB-C (portul din stânga față)</translation>
 <translation id="2844809857160214557">Afișează și gestionează sarcinile de printare</translation>
 <translation id="2849035674501872372">Ridică privirea</translation>
 <translation id="2860710618359053450">Mișcă maxilarul spre dreapta</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369067987974711168">Afișează mai multe acțiuni pentru port</translation>
 <translation id="3370260763947406229">Corectare automată</translation>
+<translation id="3371140690572404006">Dispozitiv USB-C (portul din dreapta față)</translation>
 <translation id="3371351218553893534">Rândul este prea lung: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Permisiunile oferite pentru Steam se aplică pentru toate jocurile și aplicațiile Steam.</translation>
 <translation id="338323348408199233">Blochează traficul fără VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. <ph name="PRODUCT_NAME" /> folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
 <translation id="3442674350323953953">Permite ca Google să folosească datele despre hardware-ul tău pentru a îmbunătăți <ph name="DEVICE_OS" />. Chiar dacă refuzi, datele vor fi trimise la Google pentru a alege actualizările potrivite, dar nu vor fi stocate sau folosite în alte scopuri.</translation>
 <translation id="3445465968953598059">Control cu ajutorul expresiilor faciale</translation>
+<translation id="3445925074670675829">Dispozitiv USB-C</translation>
 <translation id="3448492834076427715">Actualizează contul</translation>
 <translation id="345078987193237421">Astfel, se permite accesul la cameră pentru aplicații, site-uri care au permisiunea adecvată pentru camera foto și servicii de sistem</translation>
 <translation id="3453082738208775226">Eliberezi spațiul de stocare offline?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definiție cu Răspunsuri rapide</translation>
 <translation id="3994075804072562819">Oferă aplicației <ph name="SPECIFIC_NAME" /> control asupra dispozitivelor USB.</translation>
 <translation id="3994530503403062649">Apasă butoanele tabletei</translation>
+<translation id="3995138139523574647">Dispozitiv USB-C (portul din dreapta spate)</translation>
 <translation id="3997429360543082038">Despre sistemul de operare Chromium</translation>
 <translation id="4001540981461989979">Evidențiază cursorul mouse-ului la mișcare</translation>
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
@@ -1327,6 +1339,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5324780743567488672">Setează automat fusul orar folosind locația</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5331568967879689647">Aplicație pentru sistemul de operare Chrome</translation>
+<translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
 <translation id="5334113802138581043">Acces la microfon</translation>
 <translation id="5336689872433667741">Cursor și touchpad</translation>
 <translation id="5337926771328966926">Numele actual al dispozitivului este <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5435274640623994081">Activează înregistrarea audiogramei</translation>
 <translation id="5441133529460183413">Aplicația web a fost instalată din browserul Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Parolă nevalidă</translation>
 <translation id="5450469615146335984">Selectează o comandă rapidă pentru fiecare acțiune</translation>
 <translation id="5452446625764825792">Poți vedea fotografiile, conținutul media și aplicațiile recente ale telefonului</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funcționează offline)</translation>
@@ -1645,6 +1659,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6444147596556711162">Folosește Înainte și Înapoi pentru a trece de la un element de pe ecran la altul</translation>
 <translation id="6452961788130242735">Problemă de rețea sau domeniu greșit</translation>
 <translation id="6453921811609336127">Pentru a trece la următoarea metodă de introducere a textului, apasă pe <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tasta de spațiu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Se caută rețele...</translation>
 <translation id="6463488491707167747">Șterge acest dicționar</translation>
 <translation id="6463596731306859179">Ai întâlnit ferestre pop-up nedorite sau un alt comportament neașteptat? Uneori, aplicațiile și extensiile pe care le instalezi pot modifica setările din ChromeOS fără să știi.</translation>
 <translation id="6465841119675156448">Fără internet</translation>
@@ -1661,6 +1676,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="648204537326351595">Permite ca <ph name="SPECIFIC_NAME" /> să acceseze microfonul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
 <translation id="648927581764831596">Indisponibil</translation>
+<translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="6497784818439587832">Modifică dimensiunea de afișare pentru a micșora sau a mări elementele de pe ecran</translation>
 <translation id="6497789971060331894">Derularea inversă cu mouse-ul</translation>
 <translation id="650185290742160385">Redu pragul</translation>
@@ -1825,6 +1841,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7090714929377281710">Dezactivează automat hotspotul</translation>
 <translation id="7092504544229909737">Nu se poate folosi cu aplicații pentru Android</translation>
 <translation id="7093220653036489319">Răspunsuri rapide</translation>
+<translation id="7098389117866926363">Dispozitiv USB-C (portul din stânga în spate)</translation>
 <translation id="7099337801055912064">Nu se poate încărca fișierul PPD mare. Dimensiunea maximă este 250 KB.</translation>
 <translation id="7107609441453408294">Redă același conținut audio în toate difuzoarele</translation>
 <translation id="7116931001458704701">Mișcă de mai multe ori cursorul mouse-ului pentru a-l găsi</translation>
@@ -1886,6 +1903,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7323315405936922211">Mărimea zonei cursorului</translation>
 <translation id="7325209047678309347">Hârtia s-a blocat</translation>
 <translation id="7331646370422660166">alt + săgeată în jos</translation>
+<translation id="7345706641791090287">Confirmă parola</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7360333718677093875">selector de emoji</translation>
@@ -2262,6 +2280,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="85486688517848470">Apasă lung pe tasta de căutare pentru a schimba comportamentul tastelor de pe rândul de sus</translation>
 <translation id="8551588720239073785">Setări de dată și oră</translation>
 <translation id="8553342806078037065">Gestionează alte persoane</translation>
+<translation id="8554899698005018844">Nicio limbă</translation>
 <translation id="8555444629041783356">Program automat de retragere</translation>
 <translation id="8563043098557365232">Permis numai pentru serviciile de sistem</translation>
 <translation id="8571687764447439720">Adaugă un tichet Kerberos</translation>
@@ -2368,12 +2387,14 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="8900413463156971200">Activează rețeaua mobilă</translation>
 <translation id="8902667442496790482">Deschide setările „Selectează și ascultă”</translation>
 <translation id="8903733144777177139">Accesul la microfon este blocat</translation>
+<translation id="8910222113987937043">Modificările marcajelor, istoricului, parolelor sau ale altor setări nu vor mai fi sincronizate cu Contul Google. Totuși, datele existente vor rămâne stocate în Contul Google și pot fi gestionate din <ph name="BEGIN_LINK" />Tabloul de bord Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Activează scanarea automată</translation>
 <translation id="8922624386829239660">Mută ecranul când mouse-ul atinge marginile ecranului</translation>
 <translation id="8929738682246584251">Lupă activată / dezactivată</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931713990831679796">Aceste imprimante sunt conectate și pot fi folosite. Salvează-le în profil pentru a le accesa mai ușor.</translation>
 <translation id="8932654652795262306">Detalii despre Tetheringul instantaneu</translation>
+<translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
 <translation id="8940888110818450052">Opțiuni de conectare</translation>
 <translation id="8944099748578356325">va consuma bateria mai rapid (în prezent, <ph name="BATTERY_PERCENTAGE" />%);</translation>
 <translation id="8945274638472141382">Dimensiunea pictogramei</translation>
@@ -2470,6 +2491,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="930893132043726269">Se folosește roamingul</translation>
 <translation id="93393615658292258">Numai parola</translation>
 <translation id="942296794412775122">Microfon activat / dezactivat</translation>
+<translation id="945522503751344254">Trimite feedback</translation>
 <translation id="950307215746360464">Ghid de configurare</translation>
 <translation id="952471655966876828">Dispozitivul se va conecta automat când este deschis și este folosit</translation>
 <translation id="956013912698841780">Dă clic dreapta ca să rezumi conținut, să primești definiții, să scrii cu mai multă încredere, să creezi imagini și multe altele. Momentan, opțiunea are disponibilitate limitată.</translation>

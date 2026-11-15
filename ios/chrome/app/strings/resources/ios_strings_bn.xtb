@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2975761176769946178">URL দিতে হবে</translation>
 <translation id="297667759942911166">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" />-এ ফিরে যান</translation>
 <translation id="298696743524648170">Chrome-এ Gemini ব্যবহার করতে, আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2987670534697681860">এই ডিভাইসে যাতে আপনার সব পাসওয়ার্ড অ্যাক্সেস পারেন সেই জন্য নিজের পরিচয় যাচাই করুন।</translation>
 <translation id="2989523299700148168">সাম্প্রতিক দেখা হয়েছে</translation>
@@ -1291,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> আপনার সংস্থা এটি ম্যানেজ করে।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ট্যাব গ্রুপের রঙ <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Password Manager-এ এই সাইটের কোনও পাসওয়ার্ড নেই। সাইন-ইন করতে <ph name="ACTOR_NAME" />-এ ফিরে যান অথবা Google Password Manager-এ পাসওয়ার্ড যোগ করুন।</translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5009127379503001909">ব্রাউজ করতে থাকুন</translation>

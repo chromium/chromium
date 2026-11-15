@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Përdor enkriptimin e të dhënave</translation>
 <translation id="1011003645819296594">Pajisjet e ruajtura</translation>
 <translation id="1011355516189274711">Volumi për "tekstin në ligjërim"</translation>
+<translation id="1012876632442809908">Pajisja USB-C (porta përpara)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Parazgjedhja e rrjetit</translation>
 <translation id="1026655690966755180">Shto një portë</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Rikuperimi i të dhënave lokale</translation>
 <translation id="1247372569136754018">Mikrofoni (i brendshëm)</translation>
 <translation id="1251366534849411931">Kllapë gjarpërushe hapëse e pritshme: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Po skanon për rrjete të dhënash celulare...</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="1263733306853729545">Përdor tastet <ph name="MINUS" /> dhe <ph name="EQUAL" /> për të shfaqur në faqe një listë të kandidatëve</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Karakteristikat e ligjërimit</translation>
 <translation id="1291057703584594733">Nëse zgjedh një gjest të caktuar tashmë, ai do të hiqet nga veprimi i tij origjinal.</translation>
 <translation id="1291421198328146277">Rivendos tastet</translation>
+<translation id="1293264513303784526">Pajisja USB-C (porta majtas)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mund të ketë mbivendosje me "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" dhe "<ph name="CONFLICTING_GESTURE_THREE" />". Nëse është e mundur, provo të zgjedhësh një gjest tjetër.</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1313405956111467313">Konfigurimi automatik i përfaqësuesit</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Dil nga llogaria kur mbyllet kapaku</translation>
 <translation id="185970820835152459">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chromium, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Më freskët</translation>
+<translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
 <translation id="1866589962721094893">Jepu aplikacioneve për Android kontrollin mbi pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>
 <translation id="1877377290348678128">Etiketa (opsionale)</translation>
 <translation id="1877860345998737529">Caktimi i veprimit të ndërrimit</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Përditësimet</translation>
 <translation id="1938351510777341717">Komandë e jashtme</translation>
 <translation id="1940546824932169984">Pajisjet e lidhura</translation>
+<translation id="1941410638996203291">Koha e nisjes: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versioni: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">U gjet një përditësim</translation>
 <translation id="1948528728718281125">Qasja te kamera lejohet për aplikacionet, uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Gjuha e përdorur kur përkthehen faqen</translation>
 <translation id="2319459402137712349">Zgjidh një fushë teksti për të hapur tastierën. Mund të zgjedhësh po ashtu ikonën e tastierës në fund të ekranit.</translation>
 <translation id="2319993584768066746">Fotografitë e ekranit të identifikimit</translation>
+<translation id="2322622365472107569">Koha e përfundimit: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rrjetet Wi-Fi të ruajtura</translation>
 <translation id="2325444234681128157">Kujto fjalëkalimin</translation>
 <translation id="2326188115274135041">Konfirmo kodin PIN për të aktivizuar shkyçjen automatike</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Mbyll shkurtimisht të dy sytë</translation>
 <translation id="258095186877893873">E gjatë</translation>
 <translation id="2581786034175502848">Shtyp Shift 5 herë për ta riaktivizuar atë</translation>
+<translation id="2581992808349413349">Përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Kjo përdor një ofrues të menaxhuar të shërbimit në <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Nuk mund të merrej bileta e Kerberos. Provo përsëri ose kontakto me administratorin e pajisjes së organizatës. (Kodi i gabimit <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Menaxho lejet e mikrofonit për uebsajtet në Chrome</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Detaje të tjera</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mund të ketë mbivendosje me "<ph name="CONFLICTING_GESTURE_ONE" />" dhe "<ph name="CONFLICTING_GESTURE_TWO" />". Nëse është e mundur, provo të zgjedhësh një gjest tjetër.</translation>
 <translation id="2809346626032021864">Po lexon</translation>
+<translation id="2811205483104563968">Llogaritë</translation>
 <translation id="2813094189969465044">Kontrollet prindërore</translation>
 <translation id="2817435998497102771">Cakto imazhin e sfondit dhe stilin</translation>
 <translation id="2818476747334107629">Detajet e printerit</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Ngushto/zgjero</translation>
 <translation id="2833144527504272627">Navigo me kursorin e tekstit</translation>
 <translation id="2835177225987815960">Konfigurimi yt aktual i skanimit do të rivendoset, duke përfshirë çdo çelës të caktuar dhe preferencë të shpejtësisë së skanimit automatik.</translation>
+<translation id="2844169650293029770">Pajisja USB-C (porta e përparme, majtas)</translation>
 <translation id="2844809857160214557">Shiko dhe menaxho printimet</translation>
 <translation id="2849035674501872372">Shiko</translation>
 <translation id="2860710618359053450">Zhvendose nofullën në të djathtë</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369067987974711168">Shfaq më shumë veprime për këtë portë</translation>
 <translation id="3370260763947406229">Korrigjimi automatik</translation>
+<translation id="3371140690572404006">Pajisja USB-C (porta e përparme, djathtas)</translation>
 <translation id="3371351218553893534">Rreshti është shumë i gjatë: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Lejet e dhëna për Steam zbatohen për të gjitha lojërat dhe aplikacionet e Steam.</translation>
 <translation id="338323348408199233">Blloko trafikun pa rrjetin VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. <ph name="PRODUCT_NAME" /> përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="3442674350323953953">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren.</translation>
 <translation id="3445465968953598059">Kontrolli me fytyrë</translation>
+<translation id="3445925074670675829">Pajisja USB-C</translation>
 <translation id="3448492834076427715">Përditëso llogarinë</translation>
 <translation id="345078987193237421">Kjo lejon qasjen te kamera për aplikacionet, uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit</translation>
 <translation id="3453082738208775226">Të pastrohet hapësira ruajtëse offline?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Përkufizimi për përgjigjet e shpejta</translation>
 <translation id="3994075804072562819">Jepi <ph name="SPECIFIC_NAME" /> kontrollin mbi pajisjet USB.</translation>
 <translation id="3994530503403062649">Lokalizo butonat në tabletin tënd</translation>
+<translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
 <translation id="3997429360543082038">Rreth ChromiumOS</translation>
 <translation id="4001540981461989979">Thekso kursorin e miut gjatë lëvizjes</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
@@ -1327,6 +1339,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5331568967879689647">Aplikacioni i sistemit ChromeOS</translation>
+<translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
 <translation id="5334113802138581043">Qasja te mikrofoni</translation>
 <translation id="5336689872433667741">Kursori dhe blloku me prekje</translation>
 <translation id="5337926771328966926">Emri i pajisjes aktuale është <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5435274640623994081">Aktivizo regjistrimin e tingujve të shkurtër</translation>
 <translation id="5441133529460183413">Aplikacioni i uebit u instalua nga shfletuesi i Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Fjalëkalim i pavlefshëm</translation>
 <translation id="5450469615146335984">Zgjidh një shkurtore për çdo veprim</translation>
 <translation id="5452446625764825792">Tani mund të shikosh aplikacionet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funksionon offline)</translation>
@@ -1645,6 +1659,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6444147596556711162">Përdor “Para” dhe “Pas” për të lëvizur mes artikujve në ekran</translation>
 <translation id="6452961788130242735">Problem rrjeti ose zonë e keqe verifikimi</translation>
 <translation id="6453921811609336127">Për të kaluar te metoda tjetër e hyrjes, shtyp <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Hapësirë<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Po kërkon për rrjete...</translation>
 <translation id="6463488491707167747">Fshi këtë fjalor</translation>
 <translation id="6463596731306859179">Po merr dritare kërcyese të padëshiruara ose sjellje të tjera të papritura? Ndonjëherë, aplikacionet dhe shtesat që instalon mund të ndryshojnë cilësimet e ChromeOS pa të të informuar.</translation>
 <translation id="6465841119675156448">Pa internet</translation>
@@ -1661,6 +1676,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="648204537326351595">Lejo që <ph name="SPECIFIC_NAME" /> të ketë qasje te mikrofoni yt</translation>
 <translation id="6482559668224714696">Zmadhuesi në ekran të plotë</translation>
 <translation id="648927581764831596">Nuk ofrohet asnjë</translation>
+<translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
 <translation id="6497784818439587832">Ndrysho madhësinë e ekranit për t'i bërë më të vegjël ose më të mëdhenj artikujt në ekran</translation>
 <translation id="6497789971060331894">Lëvizja e kundërt e miut</translation>
 <translation id="650185290742160385">Zvogëlo pragun</translation>
@@ -1825,6 +1841,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7090714929377281710">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="7092504544229909737">Nuk mund të përdoret me aplikacionet për Android</translation>
 <translation id="7093220653036489319">Përgjigjet e shpejta</translation>
+<translation id="7098389117866926363">Pajisja USB-C (porta majtas, prapa)</translation>
 <translation id="7099337801055912064">PPD-ja nuk mund të ngarkohet. Madhësia maksimale është 250 kB.</translation>
 <translation id="7107609441453408294">Luaj të njëjtën audio në të gjithë altoparlantët</translation>
 <translation id="7116931001458704701">Tunde për të gjetur kursorin</translation>
@@ -1886,6 +1903,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7323315405936922211">Madhësia e zonës së kursorit</translation>
 <translation id="7325209047678309347">Letra është bllokuar</translation>
 <translation id="7331646370422660166">alt + shigjeta poshtë</translation>
+<translation id="7345706641791090287">Konfirmo fjalëkalimin</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7360333718677093875">zgjedhësi për emoji</translation>
@@ -2262,6 +2280,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="85486688517848470">Mbaj të shtypur tastin "Kërko" për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
+<translation id="8554899698005018844">Nuk ka gjuhë</translation>
 <translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>
 <translation id="8563043098557365232">Lejohet vetëm për shërbimet e sistemit</translation>
 <translation id="8571687764447439720">Shto biletë Kerberos</translation>
@@ -2368,12 +2387,14 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="8900413463156971200">Aktivizo "Rrjetin celular"</translation>
 <translation id="8902667442496790482">Hap cilësimet e "Zgjidh që të thuhet"</translation>
 <translation id="8903733144777177139">Qasja te mikrofoni është bllokuar</translation>
+<translation id="8910222113987937043">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google dhe mund të menaxhohen në <ph name="BEGIN_LINK" />Panelin analitik të Google.<ph name="END_LINK" /></translation>
 <translation id="8912810933860534797">Aktivizo skanimin automatik</translation>
 <translation id="8922624386829239660">Lëvize ekranin kur miu prek këndet e ekranit</translation>
 <translation id="8929738682246584251">Zmadhuesi aktiv/joaktiv</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931713990831679796">Këta printerë janë të lidhur dhe gati për përdorim. Ruaji te profili yt për qasje me lehtësi.</translation>
 <translation id="8932654652795262306">Detajet për "Ndarjen e internetit në çast"</translation>
+<translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8940888110818450052">Opsionet e identifikimit</translation>
 <translation id="8944099748578356325">Përdorë baterinë më shpejt (aktualisht <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Madhësia e ikonës</translation>
@@ -2470,6 +2491,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="930893132043726269">Aktualisht në roaming</translation>
 <translation id="93393615658292258">Vetëm fjalëkalimi</translation>
 <translation id="942296794412775122">Mikrofoni aktiv/joaktiv</translation>
+<translation id="945522503751344254">Dërgo komente</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>
 <translation id="952471655966876828">Pajisja lidhet automatikisht kur ndizet dhe përdoret</translation>
 <translation id="956013912698841780">Kliko me butonin djathtas për të përmbledhur përmbajtje, për të marrë përkufizime, për të shkruar me më shumë vetëbesim, për të krijuar imazhe etj. Aktualisht ka disponueshmëri të kufizuar.</translation>

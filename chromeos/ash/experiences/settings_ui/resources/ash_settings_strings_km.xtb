@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">ការ​អ៊ីនគ្រីបទិន្នន័យរបស់អ្នកប្រើប្រាស់</translation>
 <translation id="1011003645819296594">ឧបករណ៍​ដែល​បាន​រក្សាទុក</translation>
 <translation id="1011355516189274711">កម្រិតសំឡេង​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="1012876632442809908">ឧបករណ៍ USB-C (រន្ធខាងមុខ)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">លំនាំដើម​បណ្ដាញ</translation>
 <translation id="1026655690966755180">បញ្ចូលច្រក</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">ការស្ដារ​ទិន្នន័យ​មូលដ្ឋាន​ឡើង​វិញ</translation>
 <translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
 <translation id="1251366534849411931">ត្រូវមានឃ្នាបបើក៖ <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">កំពុងស្កេន​រកមើល​បណ្ដាញ​ទិន្នន័យ​ទូរសព្ទចល័ត...</translation>
 <translation id="1254593899333212300">ការភ្ជាប់អ៊ីនធឺណិតផ្ទាល់</translation>
 <translation id="1261380933454402672">ល្មម</translation>
 <translation id="1263733306853729545">ប្រើ​គ្រាប់ចុច <ph name="MINUS" /> និង <ph name="EQUAL" /> ដើម្បី​មើលបញ្ជី​ពាក្យ</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">លក្ខណៈ​សម្បត្តិ​ការនិយាយ</translation>
 <translation id="1291057703584594733">ការជ្រើសរើស​ចលនា​ដែលបាន​កំណត់​រួចហើយ​នឹងដកវា​ចេញពី​សកម្មភាព​ដើម​របស់វា។</translation>
 <translation id="1291421198328146277">កំណត់​គ្រាប់ចុច​ឡើងវិញ</translation>
+<translation id="1293264513303784526">ឧបករណ៍ USB-C (រន្ធខាងឆ្វេង)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" អាច​ជាន់គ្នា​ជាមួយ "<ph name="CONFLICTING_GESTURE_ONE" />" "<ph name="CONFLICTING_GESTURE_TWO" />" និង "<ph name="CONFLICTING_GESTURE_THREE" />"។ ប្រសិនបើ​អាច សូម​សាកល្បង​ជ្រើសរើស​ចលនា​ផ្សេង។</translation>
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1313405956111467313">ការតំឡើងប្រូកស៊ីដោយស្វ័យប្រវត្តិ</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">ចេញពីគណនី​នៅពេលគម្របបិទ</translation>
 <translation id="185970820835152459">អ្នកអាចគ្រប់គ្រង​គណនី Google ដែលអ្នកចូល។ គណនី Google របស់អ្នក​ត្រូវបានប្រើ​សម្រាប់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chromium, Play Store, Gmail និងអ្វីៗជាច្រើនទៀត។ ប្រសិនបើអ្នក​ចង់បញ្ចូល​គណនីសម្រាប់​អ្នកផ្សេងទៀត​ដូចជា សមាជិកគ្រួសារជាដើម សូមបញ្ចូលមនុស្សថ្មី​ទៅក្នុង <ph name="DEVICE_TYPE" /> របស់អ្នក​ជំនួសវិញ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">កាន់តែខៀវ​</translation>
+<translation id="1864454756846565995">ឧបករណ៍ USB-C (រន្ធខាងក្រោយ)</translation>
 <translation id="1866589962721094893">ឱ្យ​កម្មវិធី Android គ្រប់គ្រង​ឧបករណ៍ USB នៅលើ Chromebook នេះ។ នឹងស្នើសុំការអនុញ្ញាតរាល់ពេលដែលអ្នកដោតឧបករណ៍ USB។ កម្មវិធី Android នីមួយៗនឹងស្នើសុំការអនុញ្ញាតបន្ថែម។</translation>
 <translation id="1877377290348678128">ស្លាក (មិនតម្រូវ)</translation>
 <translation id="1877860345998737529">ការចាត់ចែងសកម្មភាព​ប៊ូតុង​ចុច</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="1938351510777341717">ការបញ្ជា​ខាងក្រៅ</translation>
 <translation id="1940546824932169984">ឧបករណ៍​ដែល​បានភ្ជាប់</translation>
+<translation id="1941410638996203291">ពេល​ចាប់ផ្ដើមម៉ោង <ph name="TIME" /></translation>
 <translation id="1941553344801134989">កំណែ៖ <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">ការធ្វើបច្ចុប្បន្នភាពត្រូវបានរកឃើញ</translation>
 <translation id="1948528728718281125">សិទ្ធិចូលប្រើប្រាស់កាមេរ៉ាត្រូវបានអនុញ្ញាតសម្រាប់កម្មវិធី គេហទំព័រដែលមានការអនុញ្ញាតឱ្យប្រើកាមេរ៉ា និងសេវាកម្មប្រព័ន្ធ</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">ភាសាដែលត្រូវប្រើ នៅពេលបកប្រែទំព័រ</translation>
 <translation id="2319459402137712349">ជ្រើសរើស​កន្លែង​បញ្ចូល​អក្សរ ដើម្បីបើក​ក្ដារចុច។ អ្នកក៏អាច​ជ្រើសរើស​រូប​ក្ដារចុច​នៅផ្នែក​ខាងក្រោម​នៃ​អេក្រង់របស់អ្នក​បាន​ផងដែរ។</translation>
 <translation id="2319993584768066746">រូបថត​នៅលើ​អេក្រង់ចូលគណនី</translation>
+<translation id="2322622365472107569">ពេល​បញ្ចប់ម៉ោង <ph name="TIME" /></translation>
 <translation id="2323018538045954000">បណ្ដាញ Wi-Fi ដែលបាន​រក្សាទុក</translation>
 <translation id="2325444234681128157">ចងចាំ​ពាក្យ​សម្ងាត់</translation>
 <translation id="2326188115274135041">បញ្ជាក់កូដ PIN ដើម្បីបើកការដោះសោដោយស្វ័យប្រវត្តិ</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">បិទភ្នែក​ទាំងពីរ​មួយភ្លែត</translation>
 <translation id="258095186877893873">វែង</translation>
 <translation id="2581786034175502848">ចុច shift 5 ដង ដើម្បី​បើកវា​ឡើងវិញ</translation>
+<translation id="2581992808349413349">ប្រើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព ដើម្បី​រកមើល​អាសយដ្ឋាន IP របស់​គេហទំព័រ​នៅក្នុង DNS (ប្រព័ន្ធ​ឈ្មោះ​ដែន)។ វាប្រើ​ក្រុមហ៊ុនផ្ដល់សេវា​ដែល​ស្ថិតក្រោមការគ្រប់គ្រង​នៅ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">មិនអាច​យក​សំបុត្រ Kerberos បានទេ។ សូមព្យាយាម​ម្ដងទៀត ឬទាក់ទង​អ្នកគ្រប់គ្រង​ឧបករណ៍​របស់​ស្ថាប័ន​អ្នក។ (លេខកូដ​មានបញ្ហា <ph name="ERROR_CODE" />)។</translation>
 <translation id="2584974473573720127">គ្រប់គ្រងការ​អនុញ្ញាតឱ្យគេហទំព័រប្រើមីក្រូហ្វូននៅក្នុង Chrome</translation>
 <translation id="2609980095400624569">មិនអាចបង្កើត​ការតភ្ជាប់បានទេ</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">ព័ត៌មាន​លម្អិត​បន្ថែម</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" អាច​ជាន់គ្នា​ជាមួយ "<ph name="CONFLICTING_GESTURE_ONE" />" និង "<ph name="CONFLICTING_GESTURE_TWO" />"។ ប្រសិនបើ​អាច សូម​សាកល្បង​ជ្រើសរើស​ចលនា​ផ្សេង។</translation>
 <translation id="2809346626032021864">ការអាន</translation>
+<translation id="2811205483104563968">គណនី</translation>
 <translation id="2813094189969465044">ការគ្រប់គ្រងដោយមាតាបិតា</translation>
 <translation id="2817435998497102771">កំណត់​ផ្ទាំងរូបភាព និង​រចនាប័ទ្ម​របស់អ្នក</translation>
 <translation id="2818476747334107629">ព័ត៌មានលម្អិតម៉ាស៊ីនបោះពុម្ព</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">បង្រួម / ពង្រីក</translation>
 <translation id="2833144527504272627">រុករក​ដោយប្រើ​ទស្សន៍ទ្រនិច​អក្សរ</translation>
 <translation id="2835177225987815960">ការរៀបចំ​ការស្កេនបច្ចុប្បន្ន​របស់អ្នកនឹងត្រូវ​បានកំណត់ឡើងវិញ រួមទាំងឧបករណ៍ចុច​ដែលបានកំណត់ និងចំណូលចិត្តនៃ​ល្បឿនស្កេនដោយស្វ័យប្រវត្តិ។</translation>
+<translation id="2844169650293029770">ឧបករណ៍ USB-C (រន្ធមុខផ្នែកខាងឆ្វេង)</translation>
 <translation id="2844809857160214557">មើល និង​គ្រប់គ្រង​ការងារ​បោះពុម្ព</translation>
 <translation id="2849035674501872372">រកមើល</translation>
 <translation id="2860710618359053450">ទាញថ្គាម​ទៅខាងស្ដាំ</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369067987974711168">បង្ហាញ​សកម្មភាពច្រើនទៀត​សម្រាប់​ច្រកនេះ</translation>
 <translation id="3370260763947406229">ការកែស្វ័យប្រវត្តិ</translation>
+<translation id="3371140690572404006">ឧបករណ៍ USB-C (រន្ធមុខផ្នែកខាងស្តាំ)</translation>
 <translation id="3371351218553893534">បន្ទាត់​វែងពេក៖ <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">ការអនុញ្ញាត​ដែលបានផ្ដល់ឱ្យ Steam អនុវត្តចំពោះហ្គេម និងកម្មវិធី Steam ទាំងអស់។</translation>
 <translation id="338323348408199233">ទប់ស្កាត់​ចរាចរណ៍​ដោយគ្មាន VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">ធ្វើឱ្យ​មនុស្ស​ដែលមាន​សិទ្ធិចូលមើល​ចរាចរណ៍អ៊ីនធឺណិត​របស់អ្នក​កាន់តែ​ពិបាកមើលឃើញ​គេហទំព័រ​ដែលអ្នក​ចូលមើល។ <ph name="PRODUCT_NAME" /> ប្រើការ​តភ្ជាប់ដែលមានសុវត្ថិភាព ដើម្បី​រកមើល​អាសយដ្ឋាន IP របស់​គេហទំព័រ​នៅក្នុង DNS (ប្រព័ន្ធ​ឈ្មោះ​ដូមែន)។</translation>
 <translation id="3442674350323953953">អនុញ្ញាតឱ្យ Google ប្រើទិន្នន័យ​ហាតវែរ​របស់អ្នក ដើម្បីជួយ​កែលម្អ <ph name="DEVICE_OS" />។ ប្រសិនបើអ្នក​បដិសេធ ទិន្នន័យនេះ​នៅតែ​ត្រូវបាន​ផ្ញើទៅ Google ដើម្បីកំណត់​កំណែថ្មីៗ​ដែលត្រឹមត្រូវដដែល ប៉ុន្តែមិនត្រូវបាន​រក្សាទុក ឬប្រើផ្សេងពីនេះទេ។</translation>
 <translation id="3445465968953598059">ការគ្រប់គ្រង​ដោយមុខ</translation>
+<translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
 <translation id="3448492834076427715">ធ្វើបច្ចុប្បន្នភាព​គណនី</translation>
 <translation id="345078987193237421">ការធ្វើបែបនេះផ្តល់សិទ្ធិចូលប្រើកាមេរ៉ាសម្រាប់កម្មវិធី គេហទំព័រដែលមានការអនុញ្ញាតឱ្យប្រើកាមេរ៉ា និងសេវាកម្មប្រព័ន្ធ</translation>
 <translation id="3453082738208775226">សម្អាតទំហំ​ផ្ទុកក្រៅអ៊ីនធឺណិតឬ?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">និយមន័យចម្លើយរហ័ស</translation>
 <translation id="3994075804072562819">ឱ្យ <ph name="SPECIFIC_NAME" /> គ្រប់គ្រង​ឧបករណ៍ USB។</translation>
 <translation id="3994530503403062649">កំណត់​ទីតាំង​ប៊ូតុង​នៅលើ​ថេប្លេត​របស់អ្នក</translation>
+<translation id="3995138139523574647">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងស្តាំ)</translation>
 <translation id="3997429360543082038">អំពី ChromiumOS</translation>
 <translation id="4001540981461989979">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ​នៅពេល​រំកិល</translation>
 <translation id="4005817994523282006">វិធី​រក​មើល​តំបន់​ម៉ោង</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">កំណត់តំបន់ពេលវេលាដោយស្វ័យប្រវត្តិដោយប្រើទីតាំងរបស់អ្នក</translation>
 <translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5331568967879689647">កម្មវិធី​ប្រព័ន្ធ ChromeOS</translation>
+<translation id="5331975486040154427">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងឆ្វេង)</translation>
 <translation id="5334113802138581043">ការចូលប្រើ​មីក្រូហ្វូន</translation>
 <translation id="5336689872433667741">ទស្សន៍ទ្រនិច​ និង​ផ្ទាំងប៉ះ</translation>
 <translation id="5337926771328966926">ឈ្មោះឧបករណ៍​បច្ចុប្បន្នគឺ <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">បើក​ការធ្វើ​កំណត់ហេតុ​សំឡេងសម្គាល់</translation>
 <translation id="5441133529460183413">កម្មវិធីលើអ៊ីនធឺណិតដែលបានដំឡើងពីកម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">ពាក្យ​សម្ងាត់​មិន​ត្រឹមត្រូវ</translation>
 <translation id="5450469615146335984">ជ្រើសរើស​ផ្លូវកាត់​សម្រាប់​សកម្មភាព​នីមួយៗ</translation>
 <translation id="5452446625764825792">ឥឡូវនេះ អ្នក​អាច​មើល​រូបថត មេឌៀ និង​កម្មវិធី​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក​បាន​ហើយ</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ដំណើរការ​ដោយគ្មាន​អ៊ីនធឺណិត)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">ប្រើ “បន្ទាប់” និង “មុន” ដើម្បីផ្លាស់ទី​រវាងធាតុ​នៅលើ​អេក្រង់</translation>
 <translation id="6452961788130242735">បញ្ហាបណ្ដាញ ឬដែនមិនល្អ</translation>
 <translation id="6453921811609336127">ដើម្បីប្ដូរទៅវិធីបញ្ចូលបន្ទាប់ សូមចុច <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">កំពុងស្វែងរកបណ្ដាញ...</translation>
 <translation id="6463488491707167747">លុប​វចនានុក្រម​នេះ</translation>
 <translation id="6463596731306859179">ទទួលបានផ្ទាំងលោតឡើងដែលមិនចង់បាន ឬសកម្មភាពដែលមិនបានរំពឹងទុកផ្សេងទៀតឬ? ជួនកាល កម្មវិធី និងកម្មវិធីបន្ថែមដែលអ្នកដំឡើងអាចផ្លាស់ប្ដូរការកំណត់ ChromeOS របស់អ្នកដោយមិនឱ្យអ្នកដឹង។</translation>
 <translation id="6465841119675156448">ដោយគ្មាន​អ៊ីនធឺណិត</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">អនុញ្ញាតឱ្យ <ph name="SPECIFIC_NAME" /> ចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="6482559668224714696">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
 <translation id="648927581764831596">មិនមានអ្វីនៅទីនេះទេ</translation>
+<translation id="6490471652906364588">ឧបករណ៍ USB-C (រន្ធខាងស្តាំ)</translation>
 <translation id="6497784818439587832">ប្ដូរ​ទំហំ​បង្ហាញ ដើម្បីធ្វើឱ្យ​ធាតុ​នៅលើ​អេក្រង់​របស់អ្នក​តូចជាង ឬ​ធំជាងមុន</translation>
 <translation id="6497789971060331894">ការរំកិល​កណ្ដុរ​បញ្រ្ចាស</translation>
 <translation id="650185290742160385">បន្ថយកម្រិតកំណត់</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">បិទ​ហតស្ប៉ត​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="7092504544229909737">មិនអាចប្រើជាមួយកម្មវិធី Android បានទេ</translation>
 <translation id="7093220653036489319">ចម្លើយរហ័ស</translation>
+<translation id="7098389117866926363">ឧបករណ៍ USB-C (រន្ធឆ្វេងផ្នែកខាងក្រោយ)</translation>
 <translation id="7099337801055912064">មិន​អាចផ្ទុក PPD ទំហំធំ​បានទេ។ ទំហំ​អតិបរមា​គឺ 250 គីឡូបៃ។</translation>
 <translation id="7107609441453408294">ចាក់សំឡេង​តែ​មួយ​តាម​ឧបករណ៍បំពងសំឡេង​ទាំងអស់</translation>
 <translation id="7116931001458704701">អង្រួន​ដើម្បី​កំណត់​ទីតាំង​ទស្សន៍ទ្រនិច</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">ទំហំ​តំបន់​ទស្សន៍ទ្រនិច</translation>
 <translation id="7325209047678309347">ជាប់ក្រដាស</translation>
 <translation id="7331646370422660166">alt + ព្រួញចុះក្រោម</translation>
+<translation id="7345706641791090287">បញ្ជាក់ពាក្យសម្ងាត់របស់អ្នក</translation>
 <translation id="7348093485538360975">ក្តារចុចលើអេក្រង់</translation>
 <translation id="7352651011704765696">មានបញ្ហាអ្វីមួយកើតឡើង</translation>
 <translation id="7360333718677093875">ផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">ចុច​ប៊ូតុង​ស្វែងរក​ឲ្យជាប់ ដើម្បី​ប្តូរលក្ខណៈ​គ្រាប់ចុច​នៅជួរ​ខាងលើ</translation>
 <translation id="8551588720239073785">ការកំណត់​កាលបរិច្ឆេទ និងម៉ោង</translation>
 <translation id="8553342806078037065">គ្រប់គ្រងមនុស្សផ្សេងទៀត</translation>
+<translation id="8554899698005018844">គ្មាន​ភាសាទេ</translation>
 <translation id="8555444629041783356">កាលវិភាគ​ថ្ងៃលិច​ស្វ័យប្រវត្តិ</translation>
 <translation id="8563043098557365232">អនុញ្ញាតសម្រាប់តែសេវាកម្មប្រព័ន្ធប៉ុណ្ណោះ</translation>
 <translation id="8571687764447439720">បញ្ចូល​សំបុត្រ Kerberos</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">បើក​បណ្ដាញ​ចល័ត</translation>
 <translation id="8902667442496790482">បើក​ការកំណត់​ជ្រើសរើសដើម្បីអាន</translation>
 <translation id="8903733144777177139">សិទ្ធិចូលប្រើ​មីក្រូហ្វូន​ត្រូវបាន​ទប់ស្កាត់</translation>
+<translation id="8910222113987937043">ការផ្លាស់ប្តូរនៅលើចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតរបស់អ្នក នឹងមិនអាចធ្វើសមកាលកម្មទៅគណនី Google របស់អ្នកបានទៀតទេ។ ទោះបីជាយ៉ាងណាក៏ដោយ ទិន្នន័យដែលមានស្រាប់របស់អ្នកនៅតែផ្ទុកក្នុងគណនី Google ដដែល ហើយអ្នកអាចគ្រប់គ្រងវានៅលើ <ph name="BEGIN_LINK" />Google ផ្ទាំងគ្រប់គ្រង<ph name="END_LINK" />។</translation>
 <translation id="8912810933860534797">បើក​ការស្កេនស្វ័យប្រវត្តិ</translation>
 <translation id="8922624386829239660">រំកិលអេក្រង់ នៅពេលកណ្ដុរប៉ះគែមអេក្រង់</translation>
 <translation id="8929738682246584251">បើក/បិទ​កែវពង្រីក</translation>
 <translation id="8930622219860340959">ឥត​ខ្សែ</translation>
 <translation id="8931713990831679796">ម៉ាស៊ីន​បោះពុម្ព​ទាំងនេះ​ត្រូវបាន​ភ្ជាប់ និង​អាចប្រើប្រាស់​បានហើយ។ រក្សាទុក​ទៅ​កម្រងព័ត៌មាន​របស់អ្នក ដើម្បីកាន់តែងាយស្រួល​ចូលប្រើប្រាស់។</translation>
 <translation id="8932654652795262306">ព័ត៌មានលម្អិតអំពី​ការភ្ជាប់ភ្លាមៗ</translation>
+<translation id="8938800817013097409">ឧបករណ៍ USB-C (រន្ធស្តាំផ្នែកខាងក្រោយ)</translation>
 <translation id="8940888110818450052">ជម្រើស​ចូលគណនី</translation>
 <translation id="8944099748578356325">ប្រើថ្មអស់លឿន​ជាងមុន (បច្ចុប្បន្ន <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ទំហំ​រូបតំណាង</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">កំពុងរ៉ូ​មីង</translation>
 <translation id="93393615658292258">ពាក្យសម្ងាត់តែប៉ុណ្ណោះ</translation>
 <translation id="942296794412775122">បើក/បិទ​មីក្រូហ្វូន</translation>
+<translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="950307215746360464">ការណែនាំអំពី​ការរៀបចំ</translation>
 <translation id="952471655966876828">ឧបករណ៍​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ នៅពេលបើក ឬកំពុង​ត្រូវបានប្រើប្រាស់</translation>
 <translation id="956013912698841780">ចុចម៉ៅស៍ខាងស្ដាំ ដើម្បី​សង្ខេប​ខ្លឹមសារ ទទួលបាន​និយមន័យ សរសេរ​ដោយមាន​ទំនុកចិត្ត​កាន់តែខ្លាំង បង្កើត​រូបភាព និង​ធ្វើអ្វីៗជា​ច្រើនទៀត។ បច្ចុប្បន្ននេះ លទ្ធភាព​ដែលអាច​ប្រើបាន​មានកំណត់។</translation>

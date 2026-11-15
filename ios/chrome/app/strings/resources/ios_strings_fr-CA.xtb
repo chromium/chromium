@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Arrêter le téléchargement?</translation>
 <translation id="4796496140132859135">Groupe d'onglets. Réduit.</translation>
 <translation id="4800912004582762296">Clic en cours…</translation>
+<translation id="4800930308997591052">Passez à <ph name="EMAIL" /> pour partager facilement des onglets entre vos appareils et récupérer vos mots de passe, vos favoris et plus encore à partir de votre compte Google.</translation>
 <translation id="4802185666270672526">Masquer Voir le site pour ordinateurs</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7618220760967055820">Choisir le bouton à afficher dans la barre d'outils</translation>
 <translation id="7620522820075868385">Annuler</translation>
 <translation id="762078666799342162">Vous pouvez consulter vos téléchargements précédents dans <ph name="BEGIN_LINK" />Fichiers<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Reprenez là où vous vous étiez arrêté sur votre ordinateur</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7640669552036055091">Onglets d'Android</translation>

@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">ডেটা এনক্রিপশন ব্যবহারকারী</translation>
 <translation id="1011003645819296594">সেভ করা ডিভাইস</translation>
 <translation id="1011355516189274711">টেক্সট-টু-স্পিচ ভলিউম</translation>
+<translation id="1012876632442809908">USB-C ডিভাইস (সামনের পোর্ট)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">নেটওয়ার্ক ডিফল্ট</translation>
 <translation id="1026655690966755180">পোর্ট যোগ করুন</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">স্থানীয় ডেটা ফিরিয়ে আনা</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1251366534849411931">প্রত্যাশিত শুরুর সেকেন্ড ব্র্যাকেট: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">মোবাইল ডেটা নেটওয়ার্কের জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
 <translation id="1261380933454402672">মাঝারি রকমের</translation>
 <translation id="1263733306853729545">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="MINUS" /> এবং <ph name="EQUAL" /> কী ব্যবহার করুন</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">ভাষ্য প্রপার্টি</translation>
 <translation id="1291057703584594733">আগে থেকে অ্যাসাইন করা কোনও জেসচার বেছে নিলে, সেটিকে নিজের আসল অ্যাকশন থেকে সরিয়ে দেবে।</translation>
 <translation id="1291421198328146277">'কী' রিসেট করুন</translation>
+<translation id="1293264513303784526">USB-C ডিভাইস (বাঁ পোর্ট)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" এবং "<ph name="CONFLICTING_GESTURE_THREE" />"-এর সাথে ওভারল্যাপ হতে পারে। সম্ভব হলে, আলাদা জেসচার বেছে নেওয়ার চেষ্টা করুন।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1313405956111467313">স্বয়ংক্রিয় প্রক্সি কনফিগারেশন</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">লিড বন্ধ থাকা আবস্থায় সাইন-আউট করুন</translation>
 <translation id="185970820835152459">আপনার সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। Chromium ব্রাউজার, Play Store, Gmail সহ আরও অনেক কিছুর জন্য আপনার Google অ্যাকাউন্ট ব্যবহার করা হয়। পরিবারের সদস্যের মতো অন্য কারও অ্যাকাউন্ট যোগ করতে চাইলে, তার পরিবর্তে আপনার <ph name="DEVICE_TYPE" />-এ নতুন ব্যক্তিকে যোগ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">কুলার</translation>
+<translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1866589962721094893">এই Chromebook-এ Android অ্যাপগুলিকে USB ডিভাইস কন্ট্রোল করতে দিন। আপনি প্রতিবার USB ডিভাইস প্লাগ-ইন করার সময় অনুমতির জন্য অনুরোধ করা হবে। আলাদা Android অ্যাপের ক্ষেত্রে অতিরিক্ত অনুমতি নিতে হবে।</translation>
 <translation id="1877377290348678128">লেবেল (ঐচ্ছিক)</translation>
 <translation id="1877860345998737529">অ্যাকশনে সুইচ অ্যাসাইন করা</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">আপডেট</translation>
 <translation id="1938351510777341717">এক্সটার্নাল কমান্ড</translation>
 <translation id="1940546824932169984">সংযুক্ত ডিভাইস</translation>
+<translation id="1941410638996203291">শুরু করার সময় <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ভার্সন: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">আপডেট পাওয়া গেছে</translation>
 <translation id="1948528728718281125">সিস্টেম পরিষেবার সাথে যেসব অ্যাপ ও ওয়েবসাইটের কাছে ক্যামেরা ব্যবহারের অনুমতি আছে, সেগুলির কাছে ক্যামেরার অ্যাক্সেস আছে</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">পৃষ্ঠা অনুবাদ করার সময় ব্যবহার করা ভাষা</translation>
 <translation id="2319459402137712349">কীবোর্ড খুলতে একটি টেক্সট ফিল্ড বেছে নিন। এছাড়াও, স্ক্রিনের নিচে থাকা কীবোর্ড আইকন বেছে নিতে পারেন।</translation>
 <translation id="2319993584768066746">সাইন-ইন স্ক্রিনে ফটো</translation>
+<translation id="2322622365472107569">শেষ হওয়ার সময় <ph name="TIME" /></translation>
 <translation id="2323018538045954000">সেভ করা ওয়াই-ফাই নেটওয়ার্ক</translation>
 <translation id="2325444234681128157">পাসওয়ার্ড মনে রাখুন</translation>
 <translation id="2326188115274135041">অটোমেটিক আনলক চালু করতে পিন কনফার্ম করুন</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">কিছুক্ষণের জন্য চোখ দুটি বন্ধ করুন</translation>
 <translation id="258095186877893873">দীর্ঘ সময়</translation>
 <translation id="2581786034175502848">এটি আবার চালু করতে shift বোতাম ৫ বার প্রেস করুন</translation>
+<translation id="2581992808349413349">ডিএনএস (ডোমেন নেম সিস্টেম) থেকে কোনও সাইটের IP অ্যাড্রেস খুঁজতে সুরক্ষিত কানেকশন ব্যবহার করুন। এটি <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-এ ম্যানেজ করা হয়েছে এমন পরিষেবা প্রদানকারীকে ব্যবহার করে</translation>
 <translation id="2584109212074498965">Kerberos টিকিট পাওয়া যায়নি। আবার চেষ্টা করুন অথবা আপনার সংস্থার ডিভাইস অ্যাডমিনের সাথে যোগাযোগ করুন। (সমস্যার কোড <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chrome-এ ওয়েবসাইটের মাইক্রোফোন ব্যবহার করার অনুমতি ম্যানেজ করুন</translation>
 <translation id="2609980095400624569">কানেক্ট করা যায়নি</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">অতিরিক্ত বিবরণ</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" ও "<ph name="CONFLICTING_GESTURE_TWO" />"-এর সাথে ওভারল্যাপ হতে পারে। সম্ভব হলে, আলাদা জেসচার বেছে নেওয়ার চেষ্টা করুন।</translation>
 <translation id="2809346626032021864">পড়াশোনা</translation>
+<translation id="2811205483104563968">অ্যাকাউন্ট</translation>
 <translation id="2813094189969465044">অভিভাবকীয় নিয়ন্ত্রণ</translation>
 <translation id="2817435998497102771">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
 <translation id="2818476747334107629">প্রিন্টারের বিশদ বিবরণ</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">সঙ্কুচিত / প্রসারিত করুন</translation>
 <translation id="2833144527504272627">টেক্সট কার্সরের মাধ্যমে নেভিগেট করুন</translation>
 <translation id="2835177225987815960">যেকোনও অ্যাসাইন করা পরিবর্তন এবং অটো-স্ক্যান স্পিড পছন্দ সহ আপনার বর্তমান স্ক্যান সেট-আপ আবার সেট করা হবে।</translation>
+<translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
 <translation id="2844809857160214557">প্রিন্ট করার কাজগুলি দেখুন ও ম্যানেজ করুন</translation>
 <translation id="2849035674501872372">খুঁজে দেখা</translation>
 <translation id="2860710618359053450">চোয়াল ডানদিকে নিয়ে যান</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369067987974711168">এই পোর্টের জন্য আরও অ্যাকশন দেখুন</translation>
 <translation id="3370260763947406229">অটো-সংশোধন</translation>
+<translation id="3371140690572404006">USB-C ডিভাইস (ডান দিকের সামনের পোর্ট)</translation>
 <translation id="3371351218553893534">লাইনটি অত্যন্ত দীর্ঘ: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam-এর জন্য অনুমোদিত অনুমতিগুলি সমস্ত Steam গেম এবং অ্যাপগুলিতে প্রযোজ্য৷</translation>
 <translation id="338323348408199233">ভিপিএন ছাড়া ট্রাফিক ব্লক করুন</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">আপনি যে ইন্টারনেট ট্রাফিক ব্যবহার করছেন, সেটির অ্যাক্সেস থাকা লোকজনেরা যাতে আপনি কোন কোন সাইট দেখেন তা দেখতে না পারেন তার ব্যবস্থা করুন। <ph name="PRODUCT_NAME" /> সুরক্ষিত কানেকশন ব্যবহার করে ডিএনএস (ডোমেন নেম সিস্টেম)-এ কোনও সাইটের IP অ্যাড্রেস দেখে।</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> আরও উন্নত করে তুলতে, Google-কে আপনার হার্ডওয়্যার সংক্রান্ত ডেটা ব্যবহার করার অনুমতি দিন। আপনি বাতিল করলেও, সঠিক আপডেট নির্ধারণ করতে, এই ডেটা Google-এর কাছে পাঠানো হয়, তবে তা সেভ অথবা অন্যভাবে ব্যবহার করা হয় না।</translation>
 <translation id="3445465968953598059">মুখ ব্যবহার করে কন্ট্রোল</translation>
+<translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3448492834076427715">অ্যাকাউন্ট আপডেট করুন</translation>
 <translation id="345078987193237421">এটি সিস্টেম পরিষেবা সহ সেই সব অ্যাপ ও ওয়েবসাইটকে লোকেশন ক্যামেরা করার অনুমতি দেয়, যাদের কাছে ক্যামেরা অ্যাক্সেস করার অনুমতি আছে</translation>
 <translation id="3453082738208775226">অফলাইন স্টোরেজ মুছবেন?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">কুইক আন্সারের সংজ্ঞা</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-কে USB ডিভাইস কন্ট্রোল করতে দিন।</translation>
 <translation id="3994530503403062649">আপনার ট্যাবলেটে থাকা বোতামে ক্লিক করুন</translation>
+<translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="3997429360543082038">ChromiumOS সম্পর্কে</translation>
 <translation id="4001540981461989979">নড়াচড়া করার সময় মাউসের কার্সর হাইলাইট করুন</translation>
 <translation id="4005817994523282006">টাইম জোন শনাক্তকরণ পদ্ধতি</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">আপনার লোকেশন ব্যবহার করে স্বয়ংক্রিয়ভাবে সময় অঞ্চল সেট করুন</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5331568967879689647">ChromeOS সিস্টেম অ্যাপ</translation>
+<translation id="5331975486040154427">USB-C ডিভাইস (বাঁ দিকের পিছনের পোর্ট)</translation>
 <translation id="5334113802138581043">মাইক্রোফোনে অ্যাক্সেস</translation>
 <translation id="5336689872433667741">কার্সর এবং টাচপ্যাড</translation>
 <translation id="5337926771328966926"><ph name="DEVICE_NAME" /> হল বর্তমান ডিভাইস</translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">ইয়ারকন লগ-ইন চালু করুন</translation>
 <translation id="5441133529460183413">Chrome ব্রাউজার থেকে ওয়েব অ্যাপ ইনস্টল করা হয়েছে</translation>
 <translation id="5445400788035474247">১০x</translation>
+<translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
 <translation id="5450469615146335984">প্রতিটি অ্যাকশনের শর্টকাট বেছে নিন</translation>
 <translation id="5452446625764825792">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং অ্যাপ দেখতে পারেন</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (অফলাইনে কাজ করে)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">স্ক্রিনে এক আইটেম থেকে অন্য আইটেমে যেতে ও "পরবর্তী" ও "পূর্ববর্তী" বিকল্প ব্যবহার করুন</translation>
 <translation id="6452961788130242735">নেটওয়ার্কের সমস্যা বা ভুল রিলম</translation>
 <translation id="6453921811609336127">পরের ইনপুট পদ্ধতিতে পাল্টাতে <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> টিপুন</translation>
+<translation id="6461170143930046705">নেটওয়ার্ক সার্চ করা হচ্ছে…</translation>
 <translation id="6463488491707167747">এই ডিকশনারি মুছে দিন</translation>
 <translation id="6463596731306859179">আপনি কি অবাঞ্ছিত পপ-আপ এবং অন্যদের অপ্রত্যাশিত ব্যবহার লক্ষ্য করছেন? কখনও কখনও আপনার ইনস্টল করা অ্যাপ এবং এক্সটেনশন, আপনার অজান্তেই ChromeOS সেটিংস পরিবর্তন করে দিতে পারে।</translation>
 <translation id="6465841119675156448">ইন্টারনেট কানেকশন ছাড়াই</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">আপনার মাইক্রোফোন অ্যাক্সেসের জন্য <ph name="SPECIFIC_NAME" />-কে অনুমতি দিন</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="648927581764831596">কিছুই উপলব্ধ নয়</translation>
+<translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="6497784818439587832">স্ক্রিনে কোনও আইটেম বড় বা ছোট করে দেখার জন্য ডিসপ্লে সাইজ পরিবর্তন করা</translation>
 <translation id="6497789971060331894">মাউস উল্টো দিকে স্ক্রল করা</translation>
 <translation id="650185290742160385">থ্রেশহোল্ড কমান</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="7092504544229909737">Android অ্যাপে এটি ব্যবহার করা যাবে না</translation>
 <translation id="7093220653036489319">দ্রুত উত্তর</translation>
+<translation id="7098389117866926363">USB-C ডিভাইস (পিছনের বাঁ পোর্ট)</translation>
 <translation id="7099337801055912064">বড় পিপিডি লোড করা যাবে না। সর্বাধিক সাইজ ২৫০ কেবি।</translation>
 <translation id="7107609441453408294">সব স্পিকারে একই অডিও প্লে করুন</translation>
 <translation id="7116931001458704701">কার্সর লোকেট করতে ঝাঁকান</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">কার্সর এরিয়া সাইজ</translation>
 <translation id="7325209047678309347">প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
+<translation id="7345706641791090287">আপনার পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7360333718677093875">ইমোজি পিকার</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">সবথেকে উপরের-সারির বোতামগুলির আচরণ পরিবর্তন করতে সার্চ বোতাম ধরে থাকুন</translation>
 <translation id="8551588720239073785">তারিখ ও সময়ের সেটিংস</translation>
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
+<translation id="8554899698005018844">কোনও ভাষা নেই</translation>
 <translation id="8555444629041783356">অটোমেটিক সানসেট শিডিউল</translation>
 <translation id="8563043098557365232">শুধুমাত্র সিস্টেম পরিষেবাগুলি এটি অ্যাক্সেস করতে পারে</translation>
 <translation id="8571687764447439720">Kerberos টিকিট যোগ করুন</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">মোবাইল নেটওয়ার্ক চালু করুন</translation>
 <translation id="8902667442496790482">'বাছুন ও শুনুন'-এর সেটিংস খুলুন</translation>
 <translation id="8903733144777177139">মাইক্রোফোন অ্যাক্সেস ব্লক করা হয়েছে</translation>
+<translation id="8910222113987937043">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসের পরিবর্তনগুলি এখন আর আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা হবে না। তবে, আপনার বর্তমান ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে ম্যানেজ করা যাবে।</translation>
 <translation id="8912810933860534797">অটো-স্ক্যান চালু করুন</translation>
 <translation id="8922624386829239660">মাউস স্ক্রিনের ধারে পৌঁছে গেলে স্ক্রিন সরান</translation>
 <translation id="8929738682246584251">ম্যাগনিফায়ার চালু/বন্ধ করা আছে</translation>
 <translation id="8930622219860340959">ওয়্যারলেস</translation>
 <translation id="8931713990831679796">এইসব প্রিন্টার কানেক্ট করা আছে এবং ব্যবহার করার জন্য রেডি। সহজে অ্যাক্সেস করার জন্য আপনার প্রোফাইলে সেভ করুন।</translation>
 <translation id="8932654652795262306">ইনস্ট্যান্ট টিথারিংয়ের বিবরণ</translation>
+<translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8940888110818450052">সাইন-ইন করার বিকল্প</translation>
 <translation id="8944099748578356325">ব্যাটারি আরও দ্রুত শেষ হবে (বর্তমানে <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">আইকনের সাইজ</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">বর্তমানে রোমিংয়ে আছে</translation>
 <translation id="93393615658292258">শুধুমাত্র পাসওয়ার্ড</translation>
 <translation id="942296794412775122">মাইক্রোফোন চালু/বন্ধ করা আছে</translation>
+<translation id="945522503751344254">মতামত জানান</translation>
 <translation id="950307215746360464">সেটআপ করার নির্দেশিকা</translation>
 <translation id="952471655966876828">ডিভাইসটি চালু হলে এবং ব্যবহার করা হলে অটোমেটিক ডিসকানেক্ট হয়ে যাবে</translation>
 <translation id="956013912698841780">কন্টেন্টের সারসংক্ষেপ করতে, সংজ্ঞা পেতে, আরও বেশি আত্মবিশ্বাসের সাথে লিখতে এবং আরও অনেক কিছু করতে ডানদিকের বোতামে ক্লিক করুন। বর্তমানে সীমিতভাবে উপলভ্য আছে।</translation>

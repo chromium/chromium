@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Колдонуучунун маалыматтарын шифрлөө</translation>
 <translation id="1011003645819296594">Сакталган түзмөктөр</translation>
 <translation id="1011355516189274711">Кеп синтезаторунун үн деңгээли</translation>
+<translation id="1012876632442809908">USB-C түзмөгү (маңдайкы оюкча)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Демейки тармак</translation>
 <translation id="1026655690966755180">Оюкча кошуу</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Түзмөктөгү маалыматты калыбына келтирүү</translation>
 <translation id="1247372569136754018">Микрофон (ички)</translation>
 <translation id="1251366534849411931">Ачуучу ийри кашаа жетишпейт: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Мобилдик тармактар изделүүдө...</translation>
 <translation id="1254593899333212300">Интернетке түз туташуу</translation>
 <translation id="1261380933454402672">Жөнөкөй</translation>
 <translation id="1263733306853729545">Талапкерлер тизмесин барактоо үчүн <ph name="MINUS" /> жана <ph name="EQUAL" /> баскычтарын колдонуңуз</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Кептин параметрлери</translation>
 <translation id="1291057703584594733">Буга чейин дайындалган жаңсоону тандоо аны баштапкы аракетинен өчүрөт.</translation>
 <translation id="1291421198328146277">Баскычтарды баштапкы абалга келтирүү</translation>
+<translation id="1293264513303784526">USB-C түзмөгү (сол жактагы оюкча)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" жаңсоосу "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" жана "<ph name="CONFLICTING_GESTURE_THREE" />" жаңсоолоруна дал келип калышы ыктымал. Эгер мүмкүн болсо, башка жаңсоону тандаңыз.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1313405956111467313">Автоматтык прокси конфигурациясы</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Капкагы жабык болгондо чыгуу</translation>
 <translation id="185970820835152459">Кирип турган Google аккаунттарыңызды башкара аласыз. Google аккаунттарыңыз Chromium серепчисинде, Play Store'до, Gmail'де жана башка жерлерде колдонулат. Эгер кимдир бирөөнүн, мисалы, үй-бүлөлүк топтун мүчөсүнүн аккаунтун кошкуңуз келсе, жаңы адамды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп коюңуз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Салкыныраак</translation>
+<translation id="1864454756846565995">USB-C түзмөгү (арткы оюкча)</translation>
 <translation id="1866589962721094893">Android колдонмолоруна бул Chromebook'та USB түзмөктөрүн көзөмөлдөө мүмкүнчүлүгүн бериңиз. USB түзмөгүн туташтырган сайын уруксат суралат. Жеке Android колдонмолору кошумча уруксаттарды сурайт.</translation>
 <translation id="1877377290348678128">Энбелги (милдеттүү эмес)</translation>
 <translation id="1877860345998737529">Аракеттерди которуштурууну дайындоо</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Жаңыртуулар</translation>
 <translation id="1938351510777341717">Тышкы буйрук</translation>
 <translation id="1940546824932169984">Байланышкан түзмөктөр</translation>
+<translation id="1941410638996203291">Баштоо убакыты: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версиясы: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Жаңыртуу табылды</translation>
 <translation id="1948528728718281125">Камерага уруксаты бар вебсайттар, колдонмолор, ошондой эле системдик кызматтар камерага мүмкүнчүлүк алышат</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Барактарды которууда колдонулган тилдер</translation>
 <translation id="2319459402137712349">Баскычтопту ачуу үчүн каалаган текст талаасын тандаңыз. Ошондой эле экрандын ылдый жагындагы Баскычтоп сүрөтчөсүн бассаңыз болот.</translation>
 <translation id="2319993584768066746">Кирүү экранындагы сүрөттөр</translation>
+<translation id="2322622365472107569">Бүтүү убакыты: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Сакталган Wi-Fi тармактары</translation>
 <translation id="2325444234681128157">Сырсөздү эстеп калуу</translation>
 <translation id="2326188115274135041">Кулпуну автоматтык түрдө ачуу үчүн PIN кодду ырастаңыз</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Эки көзүңүздү тең бир азга жумуңуз</translation>
 <translation id="258095186877893873">Узак</translation>
 <translation id="2581786034175502848">Аны кайра иштетүү үчүн Shift баскычын 5 жолу басыңыз</translation>
+<translation id="2581992808349413349">DNS (Домендердин аталыштарынын тутуму) ичинде сайттын IP дарегин издөө үчүн коопсуз туташууну колдонуңуз. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> сайтындагы көзөмөлдөнгөн кызмат көрсөтүүчү колдонулат</translation>
 <translation id="2584109212074498965">Kerberos билети алынган жок. Кайталап көрүңүз же уюмуңуздун түзмөгүнүн администраторуна кайрылыңыз. (Ката коду: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome'до вебсайттын микрофонду колдонуу уруксаттарын тескеңиз</translation>
 <translation id="2609980095400624569">Туташпай койду</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Кошумча маалымат</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" жаңсоосу "<ph name="CONFLICTING_GESTURE_ONE" />" жана "<ph name="CONFLICTING_GESTURE_TWO" />" жаңсоолоруна дал келип калышы ыктымал. Эгер мүмкүн болсо, башка жаңсоону тандаңыз.</translation>
 <translation id="2809346626032021864">Окуу</translation>
+<translation id="2811205483104563968">Аккаунттар</translation>
 <translation id="2813094189969465044">Ата-эненин көзөмөлү</translation>
 <translation id="2817435998497102771">Тушкагаз жана стилди тууралаңыз</translation>
 <translation id="2818476747334107629">Принтердин чоо-жайы</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Жыйыштыруу / Жайып көрсөтүү</translation>
 <translation id="2833144527504272627">Текст курсору менен өтүү</translation>
 <translation id="2835177225987815960">Учурдагы скандоо параметриңиз, ошондой эле бардык дайындалган которгучтар жана авто скандоо ылдамдыгынын параметрлери баштапкы абалга келет.</translation>
+<translation id="2844169650293029770">USB-C түзмөгү (сол жактагы маңдайкы оюкча)</translation>
 <translation id="2844809857160214557">Басып чыгаруу тапшырмаларын көрүп жана башкарасыз</translation>
 <translation id="2849035674501872372">Издөө</translation>
 <translation id="2860710618359053450">Жаакты оңго жылдыруу</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369067987974711168">Бул оюкчага тиешелүү башка аракеттерди көрүү</translation>
 <translation id="3370260763947406229">Автоматтык түрдө оңдоо</translation>
+<translation id="3371140690572404006">USB-C түзмөгү (оң жактагы маңдайкы оюкча)</translation>
 <translation id="3371351218553893534">Сап өтө узун: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam'ге берилген уруксаттар бардык Steam оюндарына жана колдонмолоруна карата колдонулат.</translation>
 <translation id="338323348408199233">VPN'сиз трафик бөгөттөлсүн</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Интернет трафигиңизге кирүү мүмкүнчүлүгү бар адамдар кайсы сайттарга баш бакканыңызды көрбөй тургандай кылыңыз. DNS'тен (Домендердин аталыштарынын тутуму) сайттын IP дарегин издөө үчүн <ph name="PRODUCT_NAME" /> коопсуз байланышты колдонот.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> системасын жакшыртууга жардам берүү үчүн Google'га аппараттык камсыздоо маалыматыңызды колдонууга уруксат бериңиз. Баш тартсаңыз, керектүү жаңыртууларды аныктоо үчүн мындай маалымат Google'га жөнөтүлө берет, бирок сакталып же башка максатта колдонулбайт.</translation>
 <translation id="3445465968953598059">Мимика менен башкаруу</translation>
+<translation id="3445925074670675829">USB-C түзмөгү</translation>
 <translation id="3448492834076427715">Аккаунтту жаңыртуу</translation>
 <translation id="345078987193237421">Камерага уруксаты бар вебсайттар, колдонмолор, ошондой эле системдик кызматтар камерага мүмкүнчүлүк алышат</translation>
 <translation id="3453082738208775226">Офлайн сактагыч тазалансынбы?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Ыкчам жооптордун аныктамасы</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> колдонмосуна USB түзмөктөрүн көзөмөлдөө мүмкүнчүлүгүн бериңиз.</translation>
 <translation id="3994530503403062649">Планшетиңиздеги баскычтарды табыңыз</translation>
+<translation id="3995138139523574647">USB-C түзмөгү (оң жактагы арткы оюкча)</translation>
 <translation id="3997429360543082038">ChromiumOS жөнүндө</translation>
 <translation id="4001540981461989979">Курсор жылдырылганда бөлүп көрсөтүү</translation>
 <translation id="4005817994523282006">Убакыт алкагын аныктоо ыкмасы</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">Жайгашкан жериңиз аркылуу убакыт алкагын автоматтык түрдө коюу</translation>
 <translation id="5327248766486351172">Аты:</translation>
 <translation id="5331568967879689647">ChromeOS тутум колдонмосу</translation>
+<translation id="5331975486040154427">USB-C түзмөгү (сол жактагы арткы оюкча)</translation>
 <translation id="5334113802138581043">Микрофонду колдонуу</translation>
 <translation id="5336689872433667741">Курсор жана сенсордук такта</translation>
 <translation id="5337926771328966926">Түзмөктүн учурдагы аталышы: <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Добуштардын журналын иштетүү</translation>
 <translation id="5441133529460183413">Chrome cерепчисинен орнотулган веб колдонмо</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Сырсөз жараксыз</translation>
 <translation id="5450469615146335984">Ар бир аракет үчүн ыкчам баскыч тандаңыз</translation>
 <translation id="5452446625764825792">Телефонуңуздагы соңку сүрөттөрдү, медианы жана колдонмолорду көрө аласыз</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (оффлайн режиминде иштейт)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">Экрандагы элементтерге өтүү үчүн “Кийинки” жана “Мурунку” баскычтарын басыңыз</translation>
 <translation id="6452961788130242735">Тармакта маселе бар же чөйрө начар</translation>
 <translation id="6453921811609336127">Кийинки киргизүү ыкмасына которулуу үчүн <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Боштук<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> баскычтарын басыңыз</translation>
+<translation id="6461170143930046705">Тармактар изделүүдө…</translation>
 <translation id="6463488491707167747">Бул сөздүктү өчүрүү</translation>
 <translation id="6463596731306859179">Керексиз калкыма терезелер ачылып же башка күтүлбөгөн аракеттер болуп жатабы? Айрым учурларда сиз орноткон колдонмолор жана кеңейтүүлөр сизге билдирбей, ChromeOS'тун параметрлерин өзгөртүшү мүмкүн.</translation>
 <translation id="6465841119675156448">Интернетсиз</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> кызматына микрофонду колдонууга уруксат берүү</translation>
 <translation id="6482559668224714696">Толук экран режиминдеги лупа</translation>
 <translation id="648927581764831596">Эч бири жеткиликтүү эмес</translation>
+<translation id="6490471652906364588">USB-C түзмөгү (оң жактагы оюкча)</translation>
 <translation id="6497784818439587832">Дисплейдин өлчөмүн өзгөртүп, экрандагы элементтерди кичирейтип же чоңойтуу</translation>
 <translation id="6497789971060331894">Чычкан менен артка сыдыруу</translation>
 <translation id="650185290742160385">Босого маанисин төмөндөтүү</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">Байланыш түйүнүн автоматтык түрдө өчүрүү</translation>
 <translation id="7092504544229909737">Android колдонмолору менен пайдаланууга болбойт</translation>
 <translation id="7093220653036489319">Ыкчам жооптор</translation>
+<translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
 <translation id="7099337801055912064">Көлөмдүү PPD жүктөлбөйт. Көлөмү 250 Кб ашпашы керек.</translation>
 <translation id="7107609441453408294">Бир эле аудиону бардык динамиктерде ойнотуу</translation>
 <translation id="7116931001458704701">Курсорду табуу үчүн силкиңиз</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">Курсордун аймагынын өлчөмү</translation>
 <translation id="7325209047678309347">Кагаз чайналып калды</translation>
 <translation id="7331646370422660166">alt + ылдый жебе</translation>
+<translation id="7345706641791090287">Сырсөзүңүздү ырастаңыз</translation>
 <translation id="7348093485538360975">Экрандагы баскычтоп</translation>
 <translation id="7352651011704765696">Бир жерден ката кетти</translation>
 <translation id="7360333718677093875">быйтыкча тандагыч</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">Жогорку катардагы баскычтардын аракеттерин которуштуруу үчүн, Издөө баскычын басып туруңуз</translation>
 <translation id="8551588720239073785">Күн менен убакыт параметрлери</translation>
 <translation id="8553342806078037065">Башка адамдарды башкаруу</translation>
+<translation id="8554899698005018844">Тил коюлган эмес</translation>
 <translation id="8555444629041783356">Күндүн батышынын графиги</translation>
 <translation id="8563043098557365232">Системдик кызматтарга гана уруксат</translation>
 <translation id="8571687764447439720">Kerberos билетин кошуу</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">Мобилдик тармакты күйгүзүү</translation>
 <translation id="8902667442496790482">"Басып туруп угуу" кызматынын параметрлерин ачуу</translation>
 <translation id="8903733144777177139">Микрофонду колдонуу мүмкүнчүлүгү бөгөттөлгөн</translation>
+<translation id="8910222113987937043">Кыстармаларыңызга, таржымалыңызга, сырсөздөрүңүзгө жана башка параметрлерге киргизилген өзгөрүүлөр Google Аккаунтуңуз менен шайкештирилбейт. Ал эми учурдагы дайын-даректериңиз Google Аккаунтуңузде сакталып кала берет жана аларды <ph name="BEGIN_LINK" />Google Жеке кеңсесинен<ph name="END_LINK" /> башкарса болот.</translation>
 <translation id="8912810933860534797">Авто-скандоону иштетүү</translation>
 <translation id="8922624386829239660">Чычкан экрандын четине тийгенде экран жылсын</translation>
 <translation id="8929738682246584251">Лупаны күйгүзүү/өчүрүү</translation>
 <translation id="8930622219860340959">Зымсыз</translation>
 <translation id="8931713990831679796">Бул принтерлер туташтырылып, колдонууга даяр. Оңой колдонуу үчүн аларды профилиңизге сактаңыз.</translation>
 <translation id="8932654652795262306">Ыкчам байланыш түйүнүнүн чоо-жайы</translation>
+<translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8940888110818450052">Аккаунтка кирүү параметрлери</translation>
 <translation id="8944099748578356325">Батареяны тезирээк сарптайт (учурда <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Сүрөтчө өлчөмү</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">Учурда роумингде</translation>
 <translation id="93393615658292258">Сырсөз гана</translation>
 <translation id="942296794412775122">Микрофонду күйгүзүү/өчүрүү</translation>
+<translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="950307215746360464">Жөндөө жетеги</translation>
 <translation id="952471655966876828">Күйүп жана колдонулуп жатканда түзмөк автоматтык түрдө туташат</translation>
 <translation id="956013912698841780">Контент тууралуу кыскача маалыматты, аныктамаларды алуу, ишенимдүү жазуу, сүрөттөрдү түзүү жана башка аракеттерди аткаруу үчүн чычкандын оң баскычын чыкылдатыңыз. Учурда жеткиликтүүлүгү чектелген.</translation>

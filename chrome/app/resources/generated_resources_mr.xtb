@@ -17,7 +17,6 @@
 <translation id="100881991356161927">साइटचे नाव</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{प्रतिसाद देत नसलेले पेज}other{प्रतिसाद देत नसलेली पेज}}</translation>
 <translation id="1011431628606634753">Google Password Manager साठीचा तुमचा रिकव्‍हरी पिन बदला</translation>
-<translation id="1012876632442809908">USB-C डिव्‍हाइस (पुढील बाजूचे पोर्ट)</translation>
 <translation id="1015318665228971643">फोल्डर नाव एडिट करा</translation>
 <translation id="1016566241875885511">अतिरिक्त माहिती (पर्यायी)</translation>
 <translation id="1016876401615857435">या डिव्हाइसवर तुमच्या पासकी वापरण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -277,7 +276,6 @@
 <translation id="1245331638296910488">फाइल Microsoft 365 मध्ये उघडताना OneDrive वर हलवल्या जातील</translation>
 <translation id="1246420197935327230">क्षेत्र निवडा</translation>
 <translation id="125097549534200450">साफ करा</translation>
-<translation id="1251578593170406502">मोबाइल डेटा नेटवर्क स्कॅन करत आहे...</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{१ बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये ते सेव्ह करा. हे कोणतेही डुप्लिकेट असल्यास त्यांचेही क्लीन अप करेल.}other{{BOOKMARK_COUNT} बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये ते सेव्ह करा. हे कोणतेही डुप्लिकेट असल्यास त्यांचेही क्लीन अप करेल.}}</translation>
 <translation id="125220115284141797">डीफॉल्ट</translation>
 <translation id="1252597096488926946">स्क्रोल बटणे अनपिन करा</translation>
@@ -313,7 +311,6 @@
 <translation id="1285484354230578868">आपल्या Google ड्राइव्ह खात्यामध्ये डेटा संचयित करा</translation>
 <translation id="1286901453440314450">विश्वसनीय नसलेली प्रमाणपत्रे</translation>
 <translation id="1288235441231062220"><ph name="MAX_CHARS" /> वर्णमर्यादा गाठली</translation>
-<translation id="1293264513303784526">USB-C डिव्‍हाइस (डावे पोर्ट)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="12951065153783848">तुमची संस्था तुमचे खाते व्यवस्थापित करते</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
@@ -868,7 +865,6 @@
 <translation id="1863182668524159459">सिरीअल पोर्ट सापडली नाहीत</translation>
 <translation id="1863374797460198869">चॅट लपवले आहे</translation>
 <translation id="1864111464094315414">लॉगिन</translation>
-<translation id="1864454756846565995">USB-C डिव्‍हाइस (मागील बाजूचे पोर्ट)</translation>
 <translation id="186594096341696655">दर कमी करा</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" इमेज, व्हिडिओ आणि चेक केलेल्या स्थानांमधील ध्वनी फाइल वाचू आणि लिहू शकते.</translation>
 <translation id="1869433484041798909">बुकमार्क बटण</translation>
@@ -955,7 +951,6 @@
 <translation id="1936931585862840749">किती प्रती प्रिंट करायच्या ते दर्शवण्यासाठी संख्या वापरा (१ ते <ph name="MAX_COPIES" />).</translation>
 <translation id="1940221956626514677">टूलबार कस्टमाइझ करा</translation>
 <translation id="194081218158106711">बदललेला पासवर्ड कन्फर्म करत आहे...</translation>
-<translation id="1941410638996203291">सुरू होण्याची वेळ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">आवृत्ती: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमचे खाते Microsoft OneDrive शी आपोआप कनेक्ट होण्यासाठी कॉन्फिगर केले, पण काहीतरी चुकले.</translation>
 <translation id="194174710521904357">तुम्ही या साइटला तृतीय पक्ष कुकी वापरण्याची तात्पुरती अनुमती दिली आहे, याचा अर्थ असा आहे, की ब्राउझ करताना कमी संरक्षण पण साइटची वैशिष्‍ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
@@ -1314,7 +1309,6 @@
 <translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="2318143611928805047">कागदाचा आकार</translation>
 <translation id="2322193970951063277">शीर्षक आणि अधोलेख</translation>
-<translation id="2322622365472107569">संपण्याची वेळ <ph name="TIME" /></translation>
 <translation id="2323685460575935191">स्क्रोल बटणे लपवा</translation>
 <translation id="2325004050205455346">अलीकडील इतिहास</translation>
 <translation id="2326583548923775947">हे Google खाते नाही. तुम्ही Chrome मध्ये सेव्ह केलेले आयटम इतर डिव्हाइसवर उपलब्ध नसतील.</translation>
@@ -1567,7 +1561,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{हे डिव्हाइस एका वर्षासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {YEARS} वर्षांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) हे त्वरित “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील आणि त्यांना यापुढे तुमच्याशी संपूर्ण Google सेवांवर संवाद साधता येणार नाही.</translation>
 <translation id="2580889980133367162">एकापेक्षा जास्त फाइल डाउनलोड करण्यास <ph name="HOST" /> ला नेहमी अनुमती द्या</translation>
-<translation id="2581992808349413349">DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी सुरक्षित कनेक्शन वापरा. हे <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> येथे व्यवस्थापित केलेला सेवा पुरवठादार वापरते</translation>
 <translation id="2583877283803564049">टूलबारवर पिन करा</translation>
 <translation id="2583905535229480958">कोणताही स्मार्ट कार्ड रीडर</translation>
 <translation id="2586672484245266891">कृपया एक लहान URL टाका</translation>
@@ -1814,7 +1807,6 @@
 <translation id="2806372837663997957">तुम्ही ज्या डिव्हाइससह शेअर करण्याचा प्रयत्न करत आहात त्याने स्वीकारले नाही</translation>
 <translation id="2806891468525657116">शॉर्टकट आधीच अस्तित्वात आहे</translation>
 <translation id="2807517655263062534">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
-<translation id="2811205483104563968">खाती</translation>
 <translation id="2814489978934728345">हे पेज लोड करणे थांबवा</translation>
 <translation id="281678554528702272">टीप: ही साइट अ‍ॅक्सेस सेटिंग्ज एंटरप्राइझ धोरणे किंवा शक्तिशाली APIs द्वारे ओव्हरराइड केली जाऊ शकतात.</translation>
 <translation id="2817861546829549432">'Do Not Track' सक्षम करणे याचा अर्थ आपल्‍या ब्राउझिंग रहदारीसह एक विनंती समाविष्‍ट केली जाईल हा आहे. वेबसाइट विनंतीस प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो कोणताही प्रभाव यावर अवलंबून असतो. उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती आपल्‍याला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ सुरक्षितता सुधारणे, आशय प्रदान करणे, त्‍यांच्‍या वेबसाइटवर जाहिराती आणि शिफारशी आणि अहवाल आकडेवारी व्‍युत्‍पन्न करणे.</translation>
@@ -1844,7 +1836,6 @@
 <translation id="2842013086666334835">"<ph name="NETWORK_ID" />" मध्ये साइन इन करा</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> मोकळी केली</translation>
 <translation id="2844154481025280030">धोरण कॉन्फिगर केले आहे.</translation>
-<translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="284491292807422921">साइट काढून टाकायची आहे का?</translation>
 <translation id="2845276301195220700">Google Calendar साठी आणखी कृती</translation>
 <translation id="2845382757467349449">नेहमी बुकमार्क बार दर्शवा</translation>
@@ -2381,7 +2372,6 @@
 <translation id="3365651640097487828">टॅब शेअर करण्यासाठी आणि इतरांसोबत सहयोग करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा व टॅब सिंक करा</translation>
 <translation id="3368662179834713970">घर</translation>
 <translation id="3369624026883419694">होस्टचे निराकरण करीत आहे...</translation>
-<translation id="3371140690572404006">USB-C डिव्‍हाइस (उजव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="3372602033006349389">इतर डिव्हाइसवर</translation>
 <translation id="337286756654493126">ॲप्समध्ये तुम्ही उघडता ती फोल्डर वाचा</translation>
 <translation id="3373059063088819384">वाचन मोड मध्ये उघडा</translation>
@@ -2468,7 +2458,6 @@
 <translation id="3445140416168872040"><ph name="URL" /> साठी परवानगी काढून टाका</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
 <translation id="344537926140058498">या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय असल्याने, तुमच्या संस्थेने ती ब्लॉक केली. तिच्या मालकाला ती दुरुस्त करण्यास सांगा.</translation>
-<translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
 <translation id="344630545793878684">अनेक वेबसाइटवर तुमचा डेटा वाचा</translation>
 <translation id="3447797901512053632"><ph name="DEVICE_NAME" /> वर <ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
@@ -3065,7 +3054,6 @@
 <translation id="3994522032746736727"><ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="3994708120330953242">तुमचे काही पासवर्ड डेटा भंगामध्ये आढळले. तुमची खाती सुरक्षित करण्यासाठी, तुम्ही आता हे पासवर्ड बदलले पाहिजेत.</translation>
 <translation id="3994878504415702912">&amp;झूम करा</translation>
-<translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="3995963973192100066">ॲनिमेशन प्ले करा</translation>
 <translation id="399788104667917863">टूलबारवर पिन करा</translation>
 <translation id="3998431043924115701">तुम्ही ब्राउझ करत असताना प्रश्न विचारा</translation>
@@ -3617,6 +3605,7 @@
 <translation id="4600978165652322776">नेटवर्क एरर आली. तुमचे इंटरनेट कनेक्शन आणि नेटवर्क सेटिंग्ज तपासा.</translation>
 <translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4601426376352205922">न वाचलेली म्हणून मार्क करा</translation>
+<translation id="4601626093626178957">खालील पर्याय निवडा</translation>
 <translation id="460190672235687855">पासवर्ड दाखवा</translation>
 <translation id="4602466770786743961">नेहमी <ph name="HOST" /> ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्‍यास परवानगी द्या</translation>
 <translation id="4602776638371779614">हा टॅब सक्रियपणे ब्लूटूथ डिव्‍हाइससाठी स्कॅन करत आहे</translation>
@@ -4341,7 +4330,6 @@
 <translation id="5327912693242073631">सूचनांची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="5328551442597731838">इतर डिव्हाइसवरील टॅब पहा</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>
-<translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="5334142896108694079">स्क्रिप्ट कॅशे </translation>
 <translation id="5335370353987155592">Gemini काळजीपूर्वक आणि <ph name="BEGIN_LINK1" />सुरक्षितपणे<ph name="LINK_END1" /> वापरा. टास्कदरम्यान Gemini ने केलेल्या कृतींसाठी तुम्ही जबाबदार आहात, ज्यामध्ये चुका आणि खरेदीसारखे <ph name="BEGIN_LINK2" />अनपेक्षित परिणाम<ph name="LINK_END2" /> यांचा समावेश आहे.</translation>
 <translation id="5336688142483283574">हे पेज तुमच्या इतिहास आणि <ph name="SEARCH_ENGINE" /> ॲक्टिव्हिटी मधून देखील काढून टाकले जाईल.</translation>
@@ -4449,7 +4437,6 @@
 <translation id="5444452275167152925">ChromeOS मधून इंपोर्ट केलेला</translation>
 <translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">विचारविनिमय करणे</translation>
-<translation id="5449551289610225147">चुकीचा पासवर्ड</translation>
 <translation id="5449588825071916739">सर्व टॅब बुकमार्क करा</translation>
 <translation id="5449716055534515760">विं&amp;डो बंद करा</translation>
 <translation id="5449932659532574495">ब्लूटूथ डिव्हाइस एक्सप्लोर करण्यासाठी <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -5412,7 +5399,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6459488832681039634">शोधण्यासाठी निवड वापरा</translation>
 <translation id="6459799433792303855">ॲक्टिव्ह विंडो दुसऱ्या डिस्प्लेवर हलवली आहे.</translation>
 <translation id="6460601847208524483">पुढील शोधा</translation>
-<translation id="6461170143930046705">नेटवर्क शोधत आहे...</translation>
 <translation id="6463668944631062248">तुमच्या <ph name="DEVICE_NAME" /> वर कास्‍ट करण्याची विनंती स्वीकारा</translation>
 <translation id="6463795194797719782">&amp;संपादन</translation>
 <translation id="6464825623202322042">हे डिव्हाइस</translation>
@@ -5420,6 +5406,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6466936665940546351">पासवर्ड जोडण्यासाठी आणि तुमचे Google खाते वापरून ते सर्व डिव्हाइसवर मिळवण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> स्कॅन करा</translation>
 <translation id="6467304607960172345">फुलस्क्रीन व्हिडिओ ऑप्टिमाइझ करा</translation>
+<translation id="6467327465309816244">Gemini काळजीपूर्वक आणि <ph name="BEGIN_LINK1" />सुरक्षितपणे<ph name="LINK_END1" /> वापरा. ते चुका करू शकते आणि खरेदीसारखे <ph name="BEGIN_LINK2" />अनपेक्षित परिणाम<ph name="LINK_END2" /> देऊ शकते.</translation>
 <translation id="6468485451923838994">फॉंट</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> फाइल</translation>
 <translation id="6469702164109431067">पासवर्ड आणि पासकी</translation>
@@ -5435,7 +5422,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{टॅब गट कायम ठेवायचा आहे का?}other{टॅब गट कायम ठेवायचे आहेत का?}}</translation>
 <translation id="6486301003991593638">पासकी व्यवस्थापित करण्यासाठी, Windows ची नवीनतम आवृत्ती वापरा</translation>
 <translation id="6488266788670893993">डेटा भंग होण्याची शक्यता असल्यामुळे, <ph name="BRAND" /> तुमचे पासवर्ड तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
-<translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
 <translation id="6491890991754498129">यामध्ये उघडा...</translation>
 <translation id="649396225532207613">ही फाइल तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
 <translation id="6493991254603208962">चकाकी कमी करा</translation>
@@ -5775,6 +5761,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6815376457351236663">तरीही उघडा</translation>
 <translation id="6815787852028615386">ही फाइल फसवी आहे आणि तुमच्या डिव्हाइसमध्ये अनपेक्षित बदल करू शकते</translation>
 <translation id="6816443526270499804">उपलब्ध eSIM प्रोफाइल शोधत आहे</translation>
+<translation id="6816637904848970547">सूची नेव्हिगेट करण्यासाठी अप आणि डाउन अ‍ॅरो की वापरा.</translation>
 <translation id="6818198425579322765">भाषांतर करण्यासाठी पेजची भाषा</translation>
 <translation id="6820107710950761542">अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा किंवा <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /> तपासा</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> ला अनपिन करा</translation>
@@ -6064,7 +6051,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7094768688212290897">गिझामधील ग्रेट पिरॅमिड</translation>
 <translation id="7094834615934458012">या साइटला फाइल संपादित करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7096904522553867921">तुम्ही कोणत्याही टॅबवर राइट-क्लिक करून आणि “टॅब आडव्या पद्धतीने दाखवा” निवडून तुमचे टॅब परत सर्वात वरती हलवू शकता</translation>
-<translation id="7098389117866926363">USB-C डिव्‍हाइस (मागील बाजूचे डावे पोर्ट)</translation>
 <translation id="7098447629416471489">इतर सेव्ह शोध इंजीन येथे दिसून येतील</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="7099027177878709408">आणि बंद करा</translation>
@@ -6314,7 +6300,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7341834142292923918">या साइटचा ॲक्सेस हवा आहे</translation>
 <translation id="7343372807593926528">कृपया फीडबॅक पाठवण्यापूर्वी समस्येचे वर्णन करा.</translation>
 <translation id="7344585835349671209">तुमच्या डिव्हाइसवर HTTPS/SSL सर्टिफिकेट व्यवस्थापित करा</translation>
-<translation id="7345706641791090287">तुमचा पासवर्ड कन्फर्म करा</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="7347751611463936647">हे एक्स्टेंशन वापरण्यासाठी, "<ph name="EXTENSION_KEYWORD" />", नंतर TAB, नंतर तुमची आज्ञा किंवा शोध टाइप करा.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> वरून बाहेर नेव्हिगेट करण्यासाठी क्लिक करा.</translation>
@@ -7516,7 +7501,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8551647092888540776">ऑफलाइन असताना <ph name="FILE_NAMES" /> उघडू शकत नाही</translation>
 <translation id="8552102814346875916">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये सेव्ह करा</translation>
 <translation id="8552947739661397736">टास्क ताब्यात घ्या, Gemini सध्या नियंत्रणामध्ये आहे</translation>
-<translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - विस्तारित आशय दाखवला आहे</translation>
 <translation id="8557022314818157177">तुमचे फिंगरप्रिंट कॅप्चर होईपर्यंत तुमच्या सिक्युरिटी कीला स्पर्श करत राहा</translation>
 <translation id="8557100046150195444">पुढे सुरू ठेवण्यासाठी टच आयडी</translation>
@@ -7876,7 +7860,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> यांनी या वेबसाइटसाठी क्लिष्ट पासवर्ड तयार केला आहे</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>
 <translation id="8909833622202089127">साइट तुमचे स्थान ट्रॅक करत आहे</translation>
-<translation id="8910222113987937043">आपल्या बुकमार्क, इतिहास आणि अन्य सेटिंग्जसाठी बदल यापुढे आपल्या Google खात्यासह संकालित केले जाणार नाहीत. तथापि, तुमचा विद्यमान डेटा आपल्या Google खात्यामध्ये संग्रहित केलेला असेल आणि <ph name="BEGIN_LINK" />Google डॅशबोर्ड<ph name="END_LINK" /> वर व्यवस्थापित केला जाऊ शकतो.</translation>
 <translation id="8911478306361447917">तुमची वैशिष्ट्य आणि एक्स्टेंशन शॉर्टकट</translation>
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8913485523736543337">अपडेटर</translation>
@@ -7903,7 +7886,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8933709832356869375">इंस्टॉल केलेले १ अ‍ॅप काढून टाकले जाईल</translation>
 <translation id="8933960630081805351">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> हे USB डिव्हाइस अ‍ॅक्सेस करत आहे}=2{एक्स्टेंशन डिव्हाइस अ‍ॅक्सेस करत आहेत: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{एक्स्टेंशन डिव्हाइस अ‍ॅक्सेस करत आहेत: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + आणखी {3}}}</translation>
-<translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> दिवसापूर्वी वापरले}=1{<ph name="TIME_COUNT" /> दिवसापूर्वी वापरले}=2{<ph name="TIME_COUNT" /> आठवड्यांपूर्वी वापरले}other{<ph name="TIME_COUNT" /> आठवड्यांपूर्वी वापरले}}</translation>
 <translation id="8940081510938872932">तुमचे कॉंप्युटर यावेळी असंख्य गोष्‍टी करत आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>

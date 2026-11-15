@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Mã hoá dữ liệu người dùng</translation>
 <translation id="1011003645819296594">Thiết bị đã lưu</translation>
 <translation id="1011355516189274711">Âm lượng giọng nói của tính năng chuyển văn bản sang lời nói</translation>
+<translation id="1012876632442809908">Thiết bị USB-C (cổng phía trước)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Mặc định theo mạng</translation>
 <translation id="1026655690966755180">Thêm cổng</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Khôi phục dữ liệu cục bộ</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
 <translation id="1251366534849411931">Thiếu dấu ngoặc nhọn mở: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Đang quét tìm mạng dữ liệu di động...</translation>
 <translation id="1254593899333212300">Kết nối Internet trực tiếp</translation>
 <translation id="1261380933454402672">Thông thường</translation>
 <translation id="1263733306853729545">Dùng phím <ph name="MINUS" /> và <ph name="EQUAL" /> để chuyển đến danh sách các tùy chọn</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Thuộc tính giọng nói</translation>
 <translation id="1291057703584594733">Khi bạn chọn một cử chỉ đã được chỉ định, cử chỉ đó sẽ bị xoá khỏi thao tác ban đầu.</translation>
 <translation id="1291421198328146277">Đặt lại phím</translation>
+<translation id="1293264513303784526">Thiết bị USB-C (cổng bên trái)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" có thể trùng lặp với "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" và "<ph name="CONFLICTING_GESTURE_THREE" />". Hãy thử chọn một cử chỉ khác nếu được.</translation>
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1313405956111467313">Cấu hình proxy tự động</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Đăng xuất khi đóng nắp</translation>
 <translation id="185970820835152459">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn được sử dụng cho trình duyệt Chromium, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Mát hơn</translation>
+<translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1866589962721094893">Cấp cho ứng dụng Android quyền kiểm soát thiết bị USB trên Chromebook này. Hệ thống sẽ yêu cầu cấp quyền mỗi lần bạn cắm thiết bị USB. Từng ứng dụng Android sẽ yêu cầu cấp thêm quyền.</translation>
 <translation id="1877377290348678128">Nhãn (không bắt buộc)</translation>
 <translation id="1877860345998737529">Gán công tắc cho hành động</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="1938351510777341717">Lệnh bên ngoài</translation>
 <translation id="1940546824932169984">Thiết bị đã kết nối</translation>
+<translation id="1941410638996203291">Thời gian bắt đầu <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Phiên bản: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Đã tìm thấy bản cập nhật</translation>
 <translation id="1948528728718281125">Các ứng dụng và trang web có quyền truy cập camera cũng như các dịch vụ của hệ thống có thể sử dụng camera</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Ngôn ngữ được dùng khi dịch trang</translation>
 <translation id="2319459402137712349">Chọn một trường văn bản để mở bàn phím. Bạn cũng có thể chọn biểu tượng Bàn phím ở cuối màn hình.</translation>
 <translation id="2319993584768066746">Ảnh trên màn hình đăng nhập</translation>
+<translation id="2322622365472107569">Thời gian kết thúc <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Các mạng Wi-Fi đã lưu</translation>
 <translation id="2325444234681128157">Ghi nhớ mật khẩu</translation>
 <translation id="2326188115274135041">Xác nhận mã PIN để bật tính năng tự động mở khóa</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Nhắm cả hai mắt một lát</translation>
 <translation id="258095186877893873">Lâu</translation>
 <translation id="2581786034175502848">Nhấn phím Shift 5 lần để bật lại</translation>
+<translation id="2581992808349413349">Dùng kết nối bảo mật để tra cứu địa chỉ IP của một trang web trong DNS (Hệ thống tên miền). Tuỳ chọn này sử dụng nhà cung cấp dịch vụ được quản lý tại <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Không tìm thấy vé Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Quản lý quyền truy cập vào micrô của các trang web trong Chrome</translation>
 <translation id="2609980095400624569">Không thể thiết lập đường kết nối</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Thông tin chi tiết bổ sung</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" có thể trùng lặp với "<ph name="CONFLICTING_GESTURE_ONE" />" và "<ph name="CONFLICTING_GESTURE_TWO" />". Hãy thử chọn một cử chỉ khác nếu được.</translation>
 <translation id="2809346626032021864">Đọc</translation>
+<translation id="2811205483104563968">Tài khoản</translation>
 <translation id="2813094189969465044">Chế độ kiểm soát của cha mẹ</translation>
 <translation id="2817435998497102771">Đặt hình nền và phong cách</translation>
 <translation id="2818476747334107629">Chi tiết về máy in</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Thu gọn / mở rộng</translation>
 <translation id="2833144527504272627">Điều hướng bằng con trỏ văn bản</translation>
 <translation id="2835177225987815960">Chế độ quét hiện tại của bạn sẽ được đặt lại, bao gồm cả mọi công tắc đã chỉ định và ưu tiên về tốc độ quét.</translation>
+<translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
 <translation id="2849035674501872372">Tra cứu</translation>
 <translation id="2860710618359053450">Di chuyển hàm sang phải</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369067987974711168">Hiện thêm thao tác đối với cổng này</translation>
 <translation id="3370260763947406229">Tự động sửa lỗi</translation>
+<translation id="3371140690572404006">Thiết bị USB-C (cổng phía trước, bên phải)</translation>
 <translation id="3371351218553893534">Dòng quá dài: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Quyền cấp cho Steam áp dụng cho tất cả trò chơi và ứng dụng trên Steam.</translation>
 <translation id="338323348408199233">Chặn lưu lượng truy cập không qua VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Giữ kín danh sách các trang web bạn truy cập sao cho những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được hơn. <ph name="PRODUCT_NAME" /> dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền).</translation>
 <translation id="3442674350323953953">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối, dữ liệu này vẫn sẽ được gửi tới Google để xác định các bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hoặc sử dụng cho mục đích khác.</translation>
 <translation id="3445465968953598059">Điều khiển bằng khuôn mặt</translation>
+<translation id="3445925074670675829">Thiết bị USB-C</translation>
 <translation id="3448492834076427715">Cập nhật tài khoản</translation>
 <translation id="345078987193237421">Nếu bạn bật thì các ứng dụng, trang web có quyền truy cập camera và các dịch vụ hệ thống sẽ có thể sử dụng camera</translation>
 <translation id="3453082738208775226">Dọn dẹp bộ nhớ ngoại tuyến?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Tính năng tra định nghĩa của Thông tin nhanh</translation>
 <translation id="3994075804072562819">Cấp cho <ph name="SPECIFIC_NAME" /> quyền kiểm soát thiết bị USB.</translation>
 <translation id="3994530503403062649">Tìm các nút trên máy tính bảng của bạn</translation>
+<translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
 <translation id="3997429360543082038">Giới thiệu về ChromiumOS</translation>
 <translation id="4001540981461989979">Làm nổi bật con trỏ chuột khi di chuyển</translation>
 <translation id="4005817994523282006">Phương pháp phát hiện múi giờ</translation>
@@ -1327,6 +1339,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5324780743567488672">Tự động đặt múi giờ bằng cách sử dụng vị trí của bạn</translation>
 <translation id="5327248766486351172">Tên</translation>
 <translation id="5331568967879689647">Ứng dụng hệ thống trên ChromeOS</translation>
+<translation id="5331975486040154427">Thiết bị USB-C (cổng phía sau, bên trái)</translation>
 <translation id="5334113802138581043">Quyền truy cập micrô</translation>
 <translation id="5336689872433667741">Con trỏ và bàn di chuột</translation>
 <translation id="5337926771328966926">Thiết bị hiện có tên là <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5435274640623994081">Bật ghi nhật ký âm báo</translation>
 <translation id="5441133529460183413">Ứng dụng web được cài đặt qua trình duyệt Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Mật khẩu không hợp lệ</translation>
 <translation id="5450469615146335984">Chọn một phím tắt cho mỗi thao tác</translation>
 <translation id="5452446625764825792">Giờ đây, bạn có thể xem ứng dụng, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (hoạt động khi không có mạng)</translation>
@@ -1645,6 +1659,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6444147596556711162">Sử dụng nút “Tiếp theo” và “Trước đó” để di chuyển giữa các mục trên màn hình</translation>
 <translation id="6452961788130242735">Vấn đề về mạng hoặc vùng không hợp lệ</translation>
 <translation id="6453921811609336127">Để chuyển sang phương thức nhập tiếp theo, hãy nhấn tổ hợp phím <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Phím cách<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Đang tìm mạng...</translation>
 <translation id="6463488491707167747">Xoá từ điển này</translation>
 <translation id="6463596731306859179">Bạn thấy cửa sổ bật lên không mong muốn hoặc hành vi ngoài dự kiến khác? Đôi khi, các ứng dụng và tiện ích mà bạn cài đặt có thể âm thầm thay đổi chế độ cài đặt của ChromeOS.</translation>
 <translation id="6465841119675156448">Không dùng Internet</translation>
@@ -1661,6 +1676,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="648204537326351595">Cho phép <ph name="SPECIFIC_NAME" /> truy cập vào micrô của bạn</translation>
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
 <translation id="648927581764831596">Không có</translation>
+<translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="6497784818439587832">Thay đổi kích thước hiển thị để thu nhỏ hoặc phóng to các mục trên màn hình</translation>
 <translation id="6497789971060331894">Đảo ngược hướng cuộn chuột</translation>
 <translation id="650185290742160385">Giảm ngưỡng</translation>
@@ -1827,6 +1843,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7090714929377281710">Tự động tắt điểm phát sóng</translation>
 <translation id="7092504544229909737">Không dùng được với ứng dụng Android</translation>
 <translation id="7093220653036489319">Thông tin nhanh</translation>
+<translation id="7098389117866926363">Thiết bị USB-C (cổng bên trái ở phía sau)</translation>
 <translation id="7099337801055912064">Không thể tải PPD có kích cỡ lớn. Kích cỡ tối đa là 250 kB.</translation>
 <translation id="7107609441453408294">Phát cùng một âm thanh qua tất cả các loa</translation>
 <translation id="7116931001458704701">Lắc để tìm con trỏ</translation>
@@ -1888,6 +1905,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7323315405936922211">Kích thước vùng con trỏ</translation>
 <translation id="7325209047678309347">Kẹt giấy</translation>
 <translation id="7331646370422660166">alt + mũi tên xuống</translation>
+<translation id="7345706641791090287">Xác nhận mật khẩu của bạn</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7360333718677093875">bộ chọn biểu tượng cảm xúc</translation>
@@ -2264,6 +2282,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="85486688517848470">Giữ phím Tìm kiếm để chuyển đổi chức năng của các phím hàng trên cùng</translation>
 <translation id="8551588720239073785">Cài đặt ngày và giờ</translation>
 <translation id="8553342806078037065">Quản lý những người khác</translation>
+<translation id="8554899698005018844">Không có ngôn ngữ nào</translation>
 <translation id="8555444629041783356">Tự động cập nhật lịch biểu hoàng hôn</translation>
 <translation id="8563043098557365232">Chỉ các dịch vụ hệ thống mới có thể sử dụng</translation>
 <translation id="8571687764447439720">Thêm vé Kerberos</translation>
@@ -2370,12 +2389,14 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="8900413463156971200">Bật mạng di động</translation>
 <translation id="8902667442496790482">Mở mục cài đặt tính năng chọn để nói</translation>
 <translation id="8903733144777177139">Không cho phép truy cập vào micrô</translation>
+<translation id="8910222113987937043">Các thay đổi đối với dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ không được đồng bộ hóa với Tài khoản Google của bạn nữa. Tuy nhiên, dữ liệu hiện có của bạn sẽ vẫn được lưu trữ trong Tài khoản Google và có thể được quản lý trên <ph name="BEGIN_LINK" />Trang tổng quan Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Bật tính năng tự động quét</translation>
 <translation id="8922624386829239660">Di chuyển màn hình khi chuột chạm vào các cạnh màn hình</translation>
 <translation id="8929738682246584251">Bật/tắt kính lúp</translation>
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8931713990831679796">Các máy in này đã kết nối và sẵn sàng hoạt động. Hãy lưu máy in vào hồ sơ của bạn để truy cập dễ dàng hơn.</translation>
 <translation id="8932654652795262306">Thông tin chi tiết về tính năng Chia sẻ Internet tức thì</translation>
+<translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>
 <translation id="8940888110818450052">Lựa chọn đăng nhập</translation>
 <translation id="8944099748578356325">Sử dụng pin nhanh hơn (hiện tại là <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Kích thước biểu tượng</translation>
@@ -2472,6 +2493,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="930893132043726269">Đang chuyển vùng</translation>
 <translation id="93393615658292258">Chỉ mật khẩu</translation>
 <translation id="942296794412775122">Bật/tắt micrô</translation>
+<translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="950307215746360464">Hướng dẫn thiết lập</translation>
 <translation id="952471655966876828">Thiết bị sẽ tự động kết nối khi bật hoặc đang sử dụng</translation>
 <translation id="956013912698841780">Nhấp chuột phải để tóm tắt nội dung, tra định nghĩa, viết lách tự tin hơn, tạo hình ảnh và làm nhiều việc khác. Tính năng này hiện được cung cấp có giới hạn.</translation>

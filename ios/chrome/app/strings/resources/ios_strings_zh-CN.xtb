@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
 <translation id="2022431790688770637">管理 Gemini 建议</translation>
+<translation id="2023265063803387188">在无痕模式下无法使用 Gemini</translation>
 <translation id="2031515492007104071">进阶</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">停止下载？</translation>
 <translation id="4796496140132859135">标签页分组，已收起。</translation>
 <translation id="4800912004582762296">正在点击</translation>
+<translation id="4800930308997591052">切换到 <ph name="EMAIL" />，即可在设备之间无缝共享标签页，并从您的 Google 账号获取密码、书签等内容。</translation>
 <translation id="4802185666270672526">隐藏“请求切换到桌面版网站”</translation>
 <translation id="4803185665210547709">由贵单位管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -2147,6 +2149,7 @@
 <translation id="7618220760967055820">选择要显示在工具栏中的按钮</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="762078666799342162">您可以在<ph name="BEGIN_LINK" />文件<ph name="END_LINK" />中查看之前的下载内容</translation>
+<translation id="7636034359405891151">继续您上次在电脑上的浏览进度</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{有密码遭泄露}=1{有 {COUNT} 个密码遭泄露}other{有 {COUNT} 个密码遭泄露}}</translation>
 <translation id="7640669552036055091">Android 设备中的标签页</translation>

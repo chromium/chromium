@@ -129,6 +129,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1460751212339734034">Aforra tempo, escribe menos</translation>
 <translation id="146522654774760805">Contrasinais e autocompletado</translation>
 <translation id="1466383950273130737">Escolle o idioma de Chrome</translation>
+<translation id="1473344277210704336">Gemini e as túas funcións esenciais na nova barra de ferramentas inferior</translation>
 <translation id="1477626028522505441">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a problemas co servidor.</translation>
 <translation id="147982357559798527">Cambiada</translation>
 <translation id="1480287803138246127">É posible que parte do teu historial non se mostre aquí. Para velo todo, abre o historial completo de Chrome.</translation>
@@ -907,6 +908,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4537987892902330164">Xa tiñas a sesión iniciada como <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana}other{<ph name="TAB_COUNT_MANY" /> pestanas, <ph name="TAB_COUNT_INCOGNITO" /> no modo de incógnito}}</translation>
 <translation id="4558311620361989323">Atallos da páxina web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Subscrición a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Inicia sesión nunha conta xestionada</translation>
 <translation id="4577115723294378384">Ordenar do A ao Z</translation>
 <translation id="4578289292431526768">Vamos aló</translation>
@@ -914,6 +916,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4585751637295612750">Abre unha pestana nova para engadila á túa pregunta</translation>
 <translation id="4585793705637313973">Editar páxina</translation>
 <translation id="4587589328781138893">Sitios</translation>
+<translation id="4587590257937792551">Chrome ten unha nova barra de ferramentas na parte inferior, deseñada para maior comodidade. Podes volver á vista anterior cando queiras en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
 <translation id="4595237294768457124">Abre unha páxina Nova pestana</translation>
 <translation id="4595276580892809760">Anexar imaxes da galería</translation>
@@ -1451,6 +1454,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6633067410344541938">Desbloquear modo de incógnito</translation>
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
 <translation id="6637100877383020115">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">O que máis usas xa está dispoñible na barra de ferramentas inferior. Podes volver á vista anterior cando queiras en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Anexar pestanas</translation>
 <translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}other{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}}</translation>
@@ -1649,6 +1653,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestana de uso compartido fixada e seleccionada</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7314734791127433392">Non se puideron comprobar os contrasinais</translation>
+<translation id="7324177883197548771">Chrome ten un novo deseño, creado para a túa comodidade. Podes volver á vista anterior cando queiras en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
 <translation id="7333041109965360609">Cancelaches a subscrición ás notificacións</translation>
 <translation id="7335766481146072567">Preme Continuar</translation>
@@ -1750,6 +1755,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Panel inferior de actividade recente aberto a altura completa</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Subscrición a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7708994397325774423">Obtén todos os teus contrasinais</translation>
 <translation id="7714077993070342304">Abrir o Menú de Chrome</translation>

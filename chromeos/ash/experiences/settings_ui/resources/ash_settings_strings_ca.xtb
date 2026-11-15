@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Encriptació de les dades d'usuari</translation>
 <translation id="1011003645819296594">Dispositius desats</translation>
 <translation id="1011355516189274711">Volum de text a parla</translation>
+<translation id="1012876632442809908">Dispositiu USB-C (port frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Predeterminat de la xarxa</translation>
 <translation id="1026655690966755180">Afegeix un port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Recuperació de dades locals</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">S'estan cercant xarxes de dades mòbils...</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="1263733306853729545">Utilitza les tecles <ph name="MINUS" /> i <ph name="EQUAL" /> per mostrar una llista de candidats</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Propietats de la veu</translation>
 <translation id="1291057703584594733">Si selecciones un gest ja assignat, se suprimirà de l'acció original.</translation>
 <translation id="1291421198328146277">Restableix les tecles</translation>
+<translation id="1293264513303784526">Dispositiu USB-C (port esquerre)</translation>
 <translation id="1293360286536751243">Pot ser que "<ph name="MAIN_GESTURE" />" se superposi a "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" i "<ph name="CONFLICTING_GESTURE_THREE" />". Si és possible, prova de triar un altre gest.</translation>
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1313405956111467313">Configuració automàtica del servidor intermediari</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Tanca la sessió quan es tanqui la tapa</translation>
 <translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Més fred</translation>
+<translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1866589962721094893">Dona a les aplicacions d'Android el control sobre els dispositius USB en aquest Chromebook. El permís se sol·licitarà cada cop que endollis un dispositiu USB. Cada aplicació d'Android demanarà permisos addicionals.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877860345998737529">Assignació d'accions a interruptors</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Actualitzacions</translation>
 <translation id="1938351510777341717">Ordre externa</translation>
 <translation id="1940546824932169984">Dispositius connectats</translation>
+<translation id="1941410638996203291">Hora d'inici: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versió: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">S'ha trobat una actualització.</translation>
 <translation id="1948528728718281125">L'accés a la càmera està permès per a les aplicacions, els llocs web amb permís per accedir a la càmera i els serveis del sistema</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Idioma utilitzat per traduir pàgines</translation>
 <translation id="2319459402137712349">Selecciona un camp de text per obrir el teclat. També pots seleccionar la icona de teclat que hi ha a la part inferior de la pantalla.</translation>
 <translation id="2319993584768066746">Fotos a la pantalla d'inici de sessió</translation>
+<translation id="2322622365472107569">Hora de finalització: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Xarxes Wi-Fi desades</translation>
 <translation id="2325444234681128157">Recorda la contrasenya</translation>
 <translation id="2326188115274135041">Confirma el PIN per activar el desbloqueig automàtic</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Tanca breument els ulls</translation>
 <translation id="258095186877893873">Llarg</translation>
 <translation id="2581786034175502848">Prem Maj 5 vegades per tornar a activar-lo</translation>
+<translation id="2581992808349413349">Utilitza una connexió segura per cercar l'adreça IP d'un lloc web al DNS (sistema de noms de domini). S'utilitza un proveïdor de serveis gestionat a <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2584109212074498965">No s'ha pogut obtenir el tiquet de Kerberos. Torna-ho a provar o contacta amb l'administrador del dispositiu de la teva organització. (Codi d'error: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Gestiona els permisos d'accés al micròfon per a llocs web a Chrome</translation>
 <translation id="2609980095400624569">No s'ha pogut establir la connexió</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Detalls addicionals</translation>
 <translation id="2808985063107661499">Pot ser que "<ph name="MAIN_GESTURE" />" se superposi a "<ph name="CONFLICTING_GESTURE_ONE" />" i "<ph name="CONFLICTING_GESTURE_TWO" />". Si és possible, prova de triar un altre gest.</translation>
 <translation id="2809346626032021864">Lectura</translation>
+<translation id="2811205483104563968">Comptes</translation>
 <translation id="2813094189969465044">Controls parentals</translation>
 <translation id="2817435998497102771">Estableix el teu estil i fons de pantalla</translation>
 <translation id="2818476747334107629">Detalls de la impressora</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Redueix o amplia</translation>
 <translation id="2833144527504272627">Navega amb un cursor de text</translation>
 <translation id="2835177225987815960">Es restablirà la teva configuració actual de cerca, la qual inclou tots els interruptors assignats i les preferències de velocitat per a la cerca automàtica.</translation>
+<translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
 <translation id="2844809857160214557">Consulta i gestiona les tasques d'impressió</translation>
 <translation id="2849035674501872372">Cerca</translation>
 <translation id="2860710618359053450">Moure la mandíbula cap a la dreta</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369067987974711168">Mostra més accions per a aquest port</translation>
 <translation id="3370260763947406229">Correcció automàtica</translation>
+<translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
 <translation id="3371351218553893534">La línia és massa llarga: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Els permisos autoritzats per a Steam s'apliquen a tots els jocs i les aplicacions de Steam.</translation>
 <translation id="338323348408199233">Bloqueja el trànsit sense VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. <ph name="PRODUCT_NAME" /> utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
 <translation id="3442674350323953953">Permet que Google utilitzi les dades del maquinari per ajudar a millorar <ph name="DEVICE_OS" />. Si rebutges aquesta opció, les dades encara s'enviaran a Google per veure si cal fer alguna actualització rellevant, però no s'emmagatzemaran ni s'utilitzaran de cap altra manera.</translation>
 <translation id="3445465968953598059">Control facial</translation>
+<translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
 <translation id="345078987193237421">Permet l'accés a la càmera per a les aplicacions, per als llocs web que tenen permís per accedir a la càmera i per als serveis del sistema</translation>
 <translation id="3453082738208775226">Vols netejar l'emmagatzematge sense connexió?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definició de Respostes ràpides</translation>
 <translation id="3994075804072562819">Dona a <ph name="SPECIFIC_NAME" /> el control sobre els dispositius USB.</translation>
 <translation id="3994530503403062649">Localitza botons a la tauleta</translation>
+<translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="3997429360543082038">Sobre Chromium OS</translation>
 <translation id="4001540981461989979">Marca el cursor del ratolí quan es mogui</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
@@ -1327,6 +1339,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5324780743567488672">Estableix la zona horària automàticament en funció de la meva ubicació</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5331568967879689647">Aplicació del sistema Chrome OS</translation>
+<translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="5334113802138581043">Accés al micròfon</translation>
 <translation id="5336689872433667741">Cursor i ratolí tàctil</translation>
 <translation id="5337926771328966926">El nom actual del dispositiu és <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5435274640623994081">Activa el registre d'icones sonores</translation>
 <translation id="5441133529460183413">L'aplicació web s'ha instal·lat des del navegador Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Contrasenya no vàlida</translation>
 <translation id="5450469615146335984">Selecciona una drecera per a cada acció</translation>
 <translation id="5452446625764825792">Ara pots consultar les aplicacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sense connexió)</translation>
@@ -1645,6 +1659,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6444147596556711162">Fes servir Següent i Anterior per moure't pels elements de la pantalla</translation>
 <translation id="6452961788130242735">S'ha produït un problema de xarxa o el domini no és correcte</translation>
 <translation id="6453921811609336127">Per canviar al mètode d'introducció de text següent, prem <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maj<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espai<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">S'estan cercant xarxes...</translation>
 <translation id="6463488491707167747">Suprimeix aquest diccionari</translation>
 <translation id="6463596731306859179">Veus finestres emergents no desitjades o cap altre comportament inesperat? De vegades, les aplicacions i les extensions que instal·les poden canviar la configuració de ChromeOS sense que te n'assabentis.</translation>
 <translation id="6465841119675156448">Sense Internet</translation>
@@ -1661,6 +1676,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="648204537326351595">Permet que <ph name="SPECIFIC_NAME" /> accedeixi al micròfon</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="648927581764831596">No n'hi ha cap de disponible</translation>
+<translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
 <translation id="6497784818439587832">Canvia la mida de visualització per ampliar o reduir els elements de la pantalla</translation>
 <translation id="6497789971060331894">Desplaçament invers del ratolí</translation>
 <translation id="650185290742160385">Abaixa el llindar</translation>
@@ -1825,6 +1841,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7090714929377281710">Desactiva automàticament el punt d'accés Wi‐Fi</translation>
 <translation id="7092504544229909737">No es pot utilitzar amb aplicacions d'Android</translation>
 <translation id="7093220653036489319">Respostes ràpides</translation>
+<translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="7099337801055912064">No es poden carregar fitxers PPD grans. La mida màxima és de 250 kB.</translation>
 <translation id="7107609441453408294">Reprodueix el mateix àudio en tots els altaveus</translation>
 <translation id="7116931001458704701">Mou ràpidament el cursor per localitzar-lo</translation>
@@ -1886,6 +1903,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7323315405936922211">Mida de l'àrea del cursor</translation>
 <translation id="7325209047678309347">El paper s'ha encallat</translation>
 <translation id="7331646370422660166">Alt+fletxa avall</translation>
+<translation id="7345706641791090287">Confirma la contrasenya</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7360333718677093875">selector d'emojis</translation>
@@ -2262,6 +2280,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="85486688517848470">Mantén premuda la tecla de cerca per canviar el comportament de les tecles de la fila superior</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>
+<translation id="8554899698005018844">Cap idioma</translation>
 <translation id="8555444629041783356">Programació automàtica per a la posta de sol</translation>
 <translation id="8563043098557365232">Només es permet per als serveis del sistema</translation>
 <translation id="8571687764447439720">Afegeix un tiquet de Kerberos</translation>
@@ -2368,12 +2387,14 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="8900413463156971200">Activa les funcions per a mòbils</translation>
 <translation id="8902667442496790482">Obre la configuració d'Escolta la selecció</translation>
 <translation id="8903733144777177139">L'accés al micròfon està bloquejat</translation>
+<translation id="8910222113987937043">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades i es podran gestionar al <ph name="BEGIN_LINK" />Tauler de control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Activa la cerca automàtica</translation>
 <translation id="8922624386829239660">Mou la pantalla quan el ratolí toqui les vores de la pantalla</translation>
 <translation id="8929738682246584251">Lupa activada/desactivada</translation>
 <translation id="8930622219860340959">Sense fil</translation>
 <translation id="8931713990831679796">Aquestes impressores estan connectades i ja es poden utilitzar. Desa-les al teu perfil per accedir-hi més fàcilment.</translation>
 <translation id="8932654652795262306">Detalls de la compartició de xarxa instantània</translation>
+<translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8940888110818450052">Opcions d'inici de sessió</translation>
 <translation id="8944099748578356325">Consumirà la bateria més ràpidament (actualment està al <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Mida de la icona</translation>
@@ -2384,7 +2405,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="89720367119469899">Escape</translation>
 <translation id="8973648401056792381">L'administrador del dispositiu ha instal·lat l'aplicació web.</translation>
 <translation id="8978939272793553320">S'ha desconnectat <ph name="DEVICE_NAME" /></translation>
-<translation id="8980345560318123814">Informes de suggeriments</translation>
+<translation id="8980345560318123814">Informes de comentaris</translation>
 <translation id="8981825781894055334">S'està quedant sense paper</translation>
 <translation id="8984694057134206124">Tothom podrà veure el teu dispositiu durant <ph name="MINUTES" /> minuts. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Llindar de detecció</translation>
@@ -2470,6 +2491,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="930893132043726269">Actualment hi ha itinerància</translation>
 <translation id="93393615658292258">Només la contrasenya</translation>
 <translation id="942296794412775122">Micròfon activat/desactivat</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="950307215746360464">Guia de configuració</translation>
 <translation id="952471655966876828">El dispositiu es desconnectarà automàticament quan s'encengui o s'estigui fent servir</translation>
 <translation id="956013912698841780">Fes clic amb el botó dret per resumir contingut, obtenir definicions, escriure amb més confiança, crear imatges i més. En aquests moments té una disponibilitat limitada.</translation>

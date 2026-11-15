@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Misa ukudawuniloda?</translation>
 <translation id="4796496140132859135">Iqembu lethebhu. Kugoqiwe.</translation>
 <translation id="4800912004582762296">Ukuchofoza</translation>
+<translation id="4800930308997591052">Shintshela kokuthi <ph name="EMAIL" /> ukuze wabelane ngamathebhu kalula phakathi kwamadivayisi akho futhi uthole amaphasiwedi akho, amabhukhimakhi, nokuningi kuGoogle Account yakho.</translation>
 <translation id="4802185666270672526">Fihla Okuthi Cela Isayithi Yedeskithophu</translation>
 <translation id="4803185665210547709">Kuphethwe inhlangano yakho.
 <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="7618220760967055820">Khetha ukuthi iyiphi inkinobho ozoyibonisa kubha yamathuluzi</translation>
 <translation id="7620522820075868385">Khansela</translation>
 <translation id="762078666799342162">Ungabuka okudawunilodiwe kwakho kwangaphambilini kokuthi <ph name="BEGIN_LINK" />Amafayela<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Qhubeka lapho ugcine khona ekhompyutheni yakho</translation>
 <translation id="7638584964844754484">Umushwana wokungena ongalungile</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Amaphasiwedi onakalisiwe}=1{Iphasiwedi eyonakalisiwe e-{COUNT}}one{Amaphasiwedi onakalisiwe angu-{COUNT}}other{Amaphasiwedi onakalisiwe angu-{COUNT}}}</translation>
 <translation id="7640669552036055091">Amathebhu asuka ku-Android</translation>

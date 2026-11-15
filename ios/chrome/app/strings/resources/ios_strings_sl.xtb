@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Želite ustaviti prenos?</translation>
 <translation id="4796496140132859135">Skupina zavihkov. Strnjeno.</translation>
 <translation id="4800912004582762296">Klikanje</translation>
+<translation id="4800930308997591052">Preklopite na račun <ph name="EMAIL" />, če želite nemoteno deliti zavihke med napravami ter dostopati do gesel, zaznamkov in drugega iz računa Google.</translation>
 <translation id="4802185666270672526">Skrij Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="4803185665210547709">Upravlja vaša organizacija.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="7618220760967055820">Izberite gumb, ki bo prikazan v orodni vrstici</translation>
 <translation id="7620522820075868385">Prekliči</translation>
 <translation id="762078666799342162">Starejše prenose si lahko ogledate v <ph name="BEGIN_LINK" />Datotekah<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Nadaljujte, kjer ste končali v računalniku</translation>
 <translation id="7638584964844754484">Napačno geslo</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ogrožena gesla}=1{{COUNT} ogroženo geslo}one{{COUNT} ogroženo geslo}two{{COUNT} ogroženi gesli}few{{COUNT} ogrožena gesla}other{{COUNT} ogroženih gesel}}</translation>
 <translation id="7640669552036055091">Zavihki iz Androida</translation>

@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">使用者資料加密</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">「文字轉語音」音量</translation>
+<translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">網絡預設值</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
 <translation id="1251366534849411931">缺少預期的開頭大括弧：<ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">正在掃瞄流動數據網絡…</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
 <translation id="1261380933454402672">普通模式</translation>
 <translation id="1263733306853729545">使用「<ph name="MINUS" />」和「<ph name="EQUAL" />」鍵顯示候選字詞名單</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">語音屬性</translation>
 <translation id="1291057703584594733">如果選取已指派的表情，該表情就會從原本的操作移除。</translation>
 <translation id="1291421198328146277">重設按鍵</translation>
+<translation id="1293264513303784526">USB-C 裝置 (左側連接埠)</translation>
 <translation id="1293360286536751243">「<ph name="MAIN_GESTURE" />」可能會與「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」和「<ph name="CONFLICTING_GESTURE_THREE" />」重疊。可以的話，請改選其他表情。</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">蓋上螢幕時登出帳戶</translation>
 <translation id="185970820835152459">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">冷色調</translation>
+<translation id="1864454756846565995">USB-C 裝置 (後方連接埠)</translation>
 <translation id="1866589962721094893">授權 Android 應用程式控制此 Chromebook 上的 USB 裝置。每當你插入 USB 裝置，系統都會要求權限。個別 Android 應用程式會要求額外權限。</translation>
 <translation id="1877377290348678128">標籤 (選填)</translation>
 <translation id="1877860345998737529">開關動作指派</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="1938351510777341717">外置 Command 鍵</translation>
 <translation id="1940546824932169984">已連接的裝置</translation>
+<translation id="1941410638996203291">開始時間：<ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1948528728718281125">已向應用程式、具有相機權限的網站及系統服務授予相機存取權</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">翻譯網頁所使用的語言</translation>
 <translation id="2319459402137712349">選取文字欄位即弄開啟鍵盤。您亦可選取畫面底部的「鍵盤」圖示。</translation>
 <translation id="2319993584768066746">登入畫面相片</translation>
+<translation id="2322622365472107569">結束時間：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">已儲存的 Wi-Fi 網絡</translation>
 <translation id="2325444234681128157">記住密碼</translation>
 <translation id="2326188115274135041">確認 PIN 以開啟自動解鎖</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">暫時閉上雙眼</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581786034175502848">按 Shift 鍵 5 次即可重新啟用</translation>
+<translation id="2581992808349413349">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與您機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="2584974473573720127">在 Chrome 中管理網站麥克風權限</translation>
 <translation id="2609980095400624569">無法建立連線</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">其他詳細資料</translation>
 <translation id="2808985063107661499">「<ph name="MAIN_GESTURE" />」可能會與「<ph name="CONFLICTING_GESTURE_ONE" />」和「<ph name="CONFLICTING_GESTURE_TWO" />」重疊。可以的話，請改選其他表情。</translation>
 <translation id="2809346626032021864">閱讀</translation>
+<translation id="2811205483104563968">帳戶</translation>
 <translation id="2813094189969465044">家長監控設定</translation>
 <translation id="2817435998497102771">設定桌布和樣式</translation>
 <translation id="2818476747334107629">打印機詳情</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">縮小/展開</translation>
 <translation id="2833144527504272627">使用文字游標瀏覽</translation>
 <translation id="2835177225987815960">系統將會重設目前的掃瞄設定，包括任何已指派的按鈕裝置和自動掃瞄速度偏好設定。</translation>
+<translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2844809857160214557">查看及管理列印工作</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="2860710618359053450">下巴向右郁</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示呢個連接埠嘅更多操作</translation>
 <translation id="3370260763947406229">自動更正</translation>
+<translation id="3371140690572404006">USB-C 裝置 (右側前方連接埠)</translation>
 <translation id="3371351218553893534">這一行過長：<ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam 擁有的權限適用於所有 Steam 遊戲和應用程式。</translation>
 <translation id="338323348408199233">封鎖沒有使用 VPN 連線的流量</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="3442674350323953953">允許 Google 使用硬件資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，此資料仍會傳送至 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
 <translation id="3445465968953598059">人臉操控</translation>
+<translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3448492834076427715">更新帳戶</translation>
 <translation id="345078987193237421">此操作會允許應用程式、具有相機權限的網站和系統服務存取相機</translation>
 <translation id="3453082738208775226">要清理離線儲存空間嗎？</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">快速解答的定義</translation>
 <translation id="3994075804072562819">授權「<ph name="SPECIFIC_NAME" />」控制 USB 裝置。</translation>
 <translation id="3994530503403062649">找出平板電腦按鈕位置</translation>
+<translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="3997429360543082038">關於 Chromium 作業系統</translation>
 <translation id="4001540981461989979">移動時突顯滑鼠游標</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5331568967879689647">Chrome OS 系統應用程式</translation>
+<translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5334113802138581043">麥克風存取權</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
 <translation id="5337926771328966926">目前嘅裝置名稱係 <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">啟用 Earcon 記錄</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網絡應用程式</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5449551289610225147">密碼無效</translation>
 <translation id="5450469615146335984">選取各個操作的快速鍵</translation>
 <translation id="5452446625764825792">您現可查看手機最近的相片、媒體和應用程式</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">使用代表「下一個」和「上一個」的按鍵，在畫面上的項目之間移動</translation>
 <translation id="6452961788130242735">網絡發生問題或領域錯誤</translation>
 <translation id="6453921811609336127">如要切換至下一個輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
+<translation id="6461170143930046705">正在搜尋網絡...</translation>
 <translation id="6463488491707167747">刪除此字典</translation>
 <translation id="6463596731306859179">看到不必要的彈出式視窗或其他非預期的行為嗎？你安裝的應用程式和擴充程式有時可能會擅自變更 ChromeOS 設定。</translation>
 <translation id="6465841119675156448">不使用互聯網</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">允許 <ph name="SPECIFIC_NAME" /> 使用麥克風</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="648927581764831596">沒有可用的相機或麥克風</translation>
+<translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="650185290742160385">降低門檻</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">自動關閉熱點</translation>
 <translation id="7092504544229909737">無法配合 Android 應用程式使用</translation>
 <translation id="7093220653036489319">快速解答</translation>
+<translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。檔案上限為 250KB。</translation>
 <translation id="7107609441453408294">透過所有喇叭播放相同的音效</translation>
 <translation id="7116931001458704701">搖動以尋找游標</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">游標區域大小</translation>
 <translation id="7325209047678309347">打印機卡紙</translation>
 <translation id="7331646370422660166">Alt 鍵 + 向下箭咀鍵</translation>
+<translation id="7345706641791090287">確認密碼</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7360333718677093875">Emoji 選取器</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">按住搜尋鍵即可切換最上排按鍵的執行動作</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
+<translation id="8554899698005018844">未選取語言</translation>
 <translation id="8555444629041783356">自動更新日落時間表</translation>
 <translation id="8563043098557365232">只允許用於系統服務</translation>
 <translation id="8571687764447439720">新增 Kerberos 票證</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">啟用流動網絡</translation>
 <translation id="8902667442496790482">開啟「揀選朗讀內容」設定</translation>
 <translation id="8903733144777177139">禁止存取麥克風</translation>
+<translation id="8910222113987937043">您的書籤、記錄、密碼和其他設定的變更將不會繼續同步至您的 Google 帳戶。不過，Google 帳戶內仍會儲存您現有的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
 <translation id="8922624386829239660">在滑鼠觸觸畫面邊緣時移動畫面</translation>
 <translation id="8929738682246584251">開啟/關閉放大鏡</translation>
 <translation id="8930622219860340959">無線網絡</translation>
 <translation id="8931713990831679796">這些打印機已連線並可使用，您可儲存至設定檔中，方便日後快速存取。</translation>
 <translation id="8932654652795262306">「即時網絡共享」詳情</translation>
+<translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>
 <translation id="8940888110818450052">登入選項</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">圖示大小</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">目前正在使用漫遊</translation>
 <translation id="93393615658292258">只限密碼</translation>
 <translation id="942296794412775122">開啟/關閉麥克風</translation>
+<translation id="945522503751344254">提供意見反映</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>
 <translation id="956013912698841780">按一下右鍵即可總結內容、取得定義、更自信地寫作、製圖等。此功能目前僅供部分使用者使用。</translation>

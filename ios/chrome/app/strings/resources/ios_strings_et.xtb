@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Kas peatada allalaadimine?</translation>
 <translation id="4796496140132859135">Vahelehegrupp. Ahendatud.</translation>
 <translation id="4800912004582762296">Klõpsan</translation>
+<translation id="4800930308997591052">Lülituge kontole <ph name="EMAIL" />, et jagada mugavalt vahelehti oma seadmete vahel ning hankida oma Google’i kontolt paroole, järjehoidjaid ja muud.</translation>
 <translation id="4802185666270672526">Peida valik Taotle arvutisaiti</translation>
 <translation id="4803185665210547709">Haldab teie organisatsioon.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7618220760967055820">Valige, milline nupp tööriistaribal kuvada</translation>
 <translation id="7620522820075868385">Tühista</translation>
 <translation id="762078666799342162">Varasemaid allalaadimisi saate vaadata rakenduses <ph name="BEGIN_LINK" />Failid<ph name="END_LINK" />.</translation>
+<translation id="7636034359405891151">Jätkake arvutis sealt, kus pooleli jäite</translation>
 <translation id="7638584964844754484">Vale parool</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ohustatud paroolid}=1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>
 <translation id="7640669552036055091">Androidi vahelehed</translation>

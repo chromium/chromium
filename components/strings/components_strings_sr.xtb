@@ -1308,6 +1308,7 @@
 <translation id="3196374699162453920">Кôд резервације</translation>
 <translation id="3196902089458890316">Желите увек да делите релевантне картице да бисте добијали боље одговоре?</translation>
 <translation id="3197136577151645743">Може да тражи да зна када активно користите уређај</translation>
+<translation id="3201749168732432347">Понуде и картице лојалности</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="3203025201812691413">URL не може да буде празан</translation>
 <translation id="320323717674993345">Откажи плаћање</translation>
@@ -2312,6 +2313,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="4855395119669662878">Администратор ће почети да отпрема фајлове у <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Нека уређај буде повезан док се отпремање фајла не заврши. Током отпремања моћи ћете да читате само локалне фајлове.</translation>
+<translation id="4856655096879441213">Сачувајте информације у услузи <ph name="GOOGLE_WALLET_TITLE" /> и брже обављајте ствари попут попуњавања образаца у Google производима. Можете да управљате тиме <ph name="HOW_INFO_IS_USED_LINK" /> у подешавањима приватних докумената за <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Кôд се верификује...</translation>
 <translation id="4860260582253463350">Ако желиш да наставиш на YouTube, морамо да се уверимо да си то стварно ти. Добићеш подешавања која је родитељ или старатељ подесио у Family Link-у.</translation>
 <translation id="4861514638281352187">Безбедно додајте број обештећења</translation>
@@ -4895,7 +4897,6 @@
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9193018794001479794">Разради</translation>
 <translation id="9194783551575429711">Питајте <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Када организација ограничи чување на Google налогу, не можете да делите групе картица нити да им се придружите</translation>
 <translation id="9198613052465150219">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
 <translation id="9204089334327209740">Када се отпремање заврши, можете да измените фајлове у услузи <ph name="CLOUD_PROVIDER" />. Локално складиште, укључујући све фајлове у отпаду, аутоматски ће бити уклоњено.</translation>

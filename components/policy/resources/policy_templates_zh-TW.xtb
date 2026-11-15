@@ -11510,6 +11510,10 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 如果設定這項政策，就能控制系統是否針對已加入許可清單的網址回報網站遙測資料。
 如果未設定，系統就不會回報任何網站遙測資料。
 如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。這項政策只允許 HTTP 和 HTTPS 網址配置。</translation>
+<translation id="8392016343898518010">由於「建議內容」功能已移除，這項政策自 M159 起已淘汰且不再具有任何效力。在 M159 之前，這項功能會提供瀏覽新內容的建議項目，包括應用程式、網頁等。
+如果將這項政策設為 True，系統會建議可瀏覽的新內容。
+如果將這項政策設為 False，系統就不會建議可瀏覽的新內容。
+如果不設定這項政策，系統不會向受管理的使用者建議可瀏覽的新內容，但會為其他使用者啟用這項設定。</translation>
 <translation id="8392478748777481636">這項政策已淘汰，因此系統不再支援，請改用「<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />」政策。</translation>
 <translation id="8393850527597048037">僅限平台</translation>
 <translation id="8395350646076131800">使用者螢幕保護程式鎖定畫面閒置逾時。</translation>

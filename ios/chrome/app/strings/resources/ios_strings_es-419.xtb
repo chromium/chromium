@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">¿Quieres detener la descarga?</translation>
 <translation id="4796496140132859135">Grupo de pestañas. Contraído.</translation>
 <translation id="4800912004582762296">Haciendo clic</translation>
+<translation id="4800930308997591052">Cambia a <ph name="EMAIL" /> para compartir pestañas sin problemas entre tus dispositivos y obtener tus contraseñas, favoritos y mucho más de tu Cuenta de Google.</translation>
 <translation id="4802185666270672526">Ocultar la opción Solicitar sitio para computadoras</translation>
 <translation id="4803185665210547709">Administrado por tu organización.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7618220760967055820">Elige qué botón mostrar en la barra de herramientas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Puedes ver tus descargas anteriores en <ph name="BEGIN_LINK" />Archivos<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Retoma la sesión desde donde la dejaste en tu computadora</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="7640669552036055091">Pestañas de Android</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975761176769946178">É necessário um URL</translation>
 <translation id="297667759942911166">Colabore em grupos de separadores</translation>
+<translation id="2986080119218811913">Voltar ao <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Para usar o Gemini no Chrome, inicie sessão no Chrome com a sua Conta Google</translation>
 <translation id="2987670534697681860">Valide a sua identidade para aceder a todas as suas palavras-passe neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -1291,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de separadores: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">O Gestor de Palavras-passe da Google não tem uma palavra-passe para este site. Volte ao <ph name="ACTOR_NAME" /> para iniciar sessão ou adicione uma palavra-passe ao Gestor de Palavras-passe da Google.</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5007392906805964215">Rever</translation>
 <translation id="5009127379503001909">Continuar a explorar</translation>

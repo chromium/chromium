@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Queres deter a descarga?</translation>
 <translation id="4796496140132859135">Grupo de pestanas. Contraído.</translation>
 <translation id="4800912004582762296">Facendo clic</translation>
+<translation id="4800930308997591052">Cambia a <ph name="EMAIL" /> para compartir pestanas entre os teus dispositivos sen complicacións e acceder aos teus contrasinais, marcadores e moito máis desde a túa Conta de Google.</translation>
 <translation id="4802185666270672526">Ocultar Solicitar sitio para ordenadores</translation>
 <translation id="4803185665210547709">Xestionado pola túa organización.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7618220760967055820">Escolle que botón se mostra na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Podes ver as descargas anteriores en <ph name="BEGIN_LINK" />Ficheiros<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Continúa onde o deixaches no ordenador</translation>
 <translation id="7638584964844754484">Contrasinal incorrecto</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Contrasinais vulnerados}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="7640669552036055091">Pestanas de Android</translation>

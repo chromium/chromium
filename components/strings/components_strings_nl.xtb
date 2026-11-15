@@ -2306,6 +2306,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="4854853140771946034">Snel een nieuwe notitie in Google Keep maken</translation>
 <translation id="4855395119669662878">Je beheerder begint om <ph name="DATE_TIME" /> met het uploaden van je bestanden naar <ph name="CLOUD_PROVIDER" />. Houd je apparaat verbonden totdat de bestandsupload is afgerond. Tijdens het uploaden kun je alleen lokale bestanden lezen.</translation>
+<translation id="4856655096879441213">Sla je informatie op in <ph name="GOOGLE_WALLET_TITLE" /> om dingen sneller gedaan te krijgen, zoals formulieren invullen in Google-producten. Je kunt <ph name="HOW_INFO_IS_USED_LINK" /> beheren in de instellingen voor je privékaarten voor <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Code verifiëren...</translation>
 <translation id="4860260582253463350">Als je wilt doorgaan naar YouTube, moeten we zeker weten dat jij het bent. Je krijgt de instellingen die je ouder of voogd heeft ingesteld in Family Link.</translation>
 <translation id="4861514638281352187">Redress number beveiligd toevoegen</translation>
@@ -4887,7 +4888,6 @@ Aanvullende informatie:
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9193018794001479794">Uitbreiden</translation>
 <translation id="9194783551575429711">Vragen aan <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Als je organisatie opslaan in je Google-account beperkt, kun je geen tabbladgroepen delen of eraan deelnemen</translation>
 <translation id="9198613052465150219">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
 <translation id="9204089334327209740">Nadat de upload is afgerond, kun je je bestanden aanpassen in <ph name="CLOUD_PROVIDER" />. Lokale opslag, inclusief bestanden in de prullenbak, wordt automatisch verwijderd.</translation>

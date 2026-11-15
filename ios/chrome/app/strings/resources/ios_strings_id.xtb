@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Hentikan download?</translation>
 <translation id="4796496140132859135">Grup tab. Diciutkan.</translation>
 <translation id="4800912004582762296">Mengklik</translation>
+<translation id="4800930308997591052">Ganti ke <ph name="EMAIL" /> agar Anda dapat berbagi tab dengan mudah antarperangkat serta mengakses sandi, bookmark, dan info lainnya dari Akun Google Anda.</translation>
 <translation id="4802185666270672526">Sembunyikan Minta Situs Desktop</translation>
 <translation id="4803185665210547709">Dikelola oleh organisasi Anda.
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7618220760967055820">Pilih tombol yang akan ditampilkan di toolbar</translation>
 <translation id="7620522820075868385">Batal</translation>
 <translation id="762078666799342162">Anda dapat melihat hasil download sebelumnya di <ph name="BEGIN_LINK" />File<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Lanjutkan aktivitas terakhir yang Anda kerjakan di komputer</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Sandi telah dibobol}=1{{COUNT} sandi telah dibobol}other{{COUNT} sandi telah dibobol}}</translation>
 <translation id="7640669552036055091">Tab dari Android</translation>

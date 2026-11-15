@@ -17,7 +17,6 @@
 <translation id="100881991356161927">Sivuston nimi</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Sivu ei vastaa.}other{Sivut eivät vastaa.}}</translation>
 <translation id="1011431628606634753">Google Salasanojen palautuksen PIN-koodin vaihtaminen</translation>
-<translation id="1012876632442809908">C-tyypin USB-laite (etuportti)</translation>
 <translation id="1015318665228971643">Muokkaa kansion nimeä</translation>
 <translation id="1016566241875885511">Lisätietoja (valinnainen)</translation>
 <translation id="1016876401615857435">Todenna henkilöllisyytesi, jotta voit käyttää avainkoodeja tällä laitteella</translation>
@@ -277,7 +276,6 @@
 <translation id="1245331638296910488">Tiedostot siirretään OneDriveen, kun ne avataan Microsoft 365:ssä</translation>
 <translation id="1246420197935327230">Valitse alue</translation>
 <translation id="125097549534200450">poista</translation>
-<translation id="1251578593170406502">Haetaan mobiilidataverkkoja…</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 kirjanmerkki ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi. Tämä poistaa myös kaikki kopiot.}other{{BOOKMARK_COUNT} kirjanmerkkiä ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi. Tämä poistaa myös kaikki kopiot.}}</translation>
 <translation id="125220115284141797">Oletus</translation>
 <translation id="1252597096488926946">Irrota vierityspainikkeet</translation>
@@ -313,7 +311,6 @@
 <translation id="1285484354230578868">Tallenna tiedot Google Drive -tiliin</translation>
 <translation id="1286901453440314450">Varmenteet joihin ei luoteta</translation>
 <translation id="1288235441231062220">Sallitut <ph name="MAX_CHARS" /> merkkiä käytetty</translation>
-<translation id="1293264513303784526">C-tyypin USB-laite (vasemman sivun portti)</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="12951065153783848">Organisaatiosi ylläpitää tiliäsi</translation>
 <translation id="129553762522093515">Hiljattain suljetut välilehdet</translation>
@@ -753,6 +750,7 @@
 <translation id="17513872634828108">Avoimet välilehdet</translation>
 <translation id="175196451752279553">A&amp;vaa suljettu välilehti uudelleen</translation>
 <translation id="1753557900380512635">Sisätilat</translation>
+<translation id="1753621899753387273">Kysy Geminiltä tästä sivusta ja tästä: "<ph name="SELECTION" />"</translation>
 <translation id="1753905327828125965">Käydyimmät</translation>
 <translation id="1755601632425835748">Tekstin koko</translation>
 <translation id="1756963401828337401">Valitse näyttö kuvakaappaukselle</translation>
@@ -866,7 +864,6 @@
 <translation id="1863182668524159459">Sarjaportteja ei löytynyt</translation>
 <translation id="1863374797460198869">Keskustelu piilotettu</translation>
 <translation id="1864111464094315414">Kirjaudu</translation>
-<translation id="1864454756846565995">C-tyypin USB-laite (takaportti)</translation>
 <translation id="186594096341696655">Laske näyteenottotaajuutta</translation>
 <translation id="186612162884103683"><ph name="EXTENSION" /> voi lukea ja kirjoittaa kuva-, video- ja äänitiedostoja valituissa sijainneissa.</translation>
 <translation id="1869433484041798909">Kirjanmerkkipainike</translation>
@@ -953,7 +950,6 @@
 <translation id="1936931585862840749">Valitse tulostettavien kappaleiden määrä lisäämällä numero (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1940221956626514677">Muokkaa työkalupalkkia</translation>
 <translation id="194081218158106711">Vahvistetaan vaihdettua salasanaa…</translation>
-<translation id="1941410638996203291">Aloitusaika: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versio: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Järjestelmänvalvoja on määrittänyt tilisi yhdistämään Microsoft OneDriveen automaattisesti, mutta jotain meni pieleen.</translation>
 <translation id="194174710521904357">Olet väliaikaisesti sallinut tämän sivuston käyttää kolmannen osapuolen evästeitä. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
@@ -1312,7 +1308,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2316709634732130529">Käytä salasanaehdotusta</translation>
 <translation id="2318143611928805047">Paperin koko</translation>
 <translation id="2322193970951063277">Ylä- ja alatunnisteet</translation>
-<translation id="2322622365472107569">Päättymisaika <ph name="TIME" /></translation>
 <translation id="2323685460575935191">Piilota vierityspainikkeet</translation>
 <translation id="2325004050205455346">Viimeaikainen historia</translation>
 <translation id="2326583548923775947">Tämä ei ole Google-tili. Chromeen tallennetut kohteet eivät ole saatavilla muilla laitteilla.</translation>
@@ -1565,7 +1560,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2575713839157415345">{YEARS,plural, =1{Laite tallennetaan vuodeksi, ja seuraavalla kerralla voit luoda yhteyden ilman koodia. Järjestelmänvalvoja asettaa sen.}other{Laite tallennetaan {YEARS} vuodeksi, ja seuraavalla kerralla voit luoda yhteyden ilman koodia. Järjestelmänvalvoja asettaa sen.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) menettää heti pääsyn välilehtiryhmään (<ph name="GROUP_NAME" />) eikä voi enää olla yhteydessä sinuun Googlen palveluissa.</translation>
 <translation id="2580889980133367162">Anna aina isännän <ph name="HOST" /> ladata useita tiedostoja</translation>
-<translation id="2581992808349413349">Käytä suojattua yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System) Tämä käyttää hallinnoitua palveluntarjoajaa osoitteessa <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2583877283803564049">Kiinnitä yläpalkkiin</translation>
 <translation id="2583905535229480958">Mikä tahansa älykortinlukija</translation>
 <translation id="2586672484245266891">Anna lyhyempi URL-osoite.</translation>
@@ -1812,7 +1806,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2806372837663997957">Laite, jolle yrität jakaa, ei hyväksynyt</translation>
 <translation id="2806891468525657116">Pikakuvake on jo olemassa</translation>
 <translation id="2807517655263062534">Lataamasi tiedostot näytetään tässä.</translation>
-<translation id="2811205483104563968">Tilit</translation>
 <translation id="2814489978934728345">Pysäytä tämän sivun lataus</translation>
 <translation id="281678554528702272">Huom. Yrityskäytännöt tai tehokkaat APIt voivat ohittaa nämä sivuston pääsyoikeusasetukset.</translation>
 <translation id="2817861546829549432">Do Not Track -toiminnon käyttöönotto tarkoittaa sitä, että selausliikenteeseesi sisällytetään pyyntö. Sen vaikutus riippuu siitä, vastaako verkkosivu pyyntöön ja miten pyyntöä tulkitaan. Jotkin verkkosivut voivat vastata tähän pyyntöön esimerkiksi niin, että ne näyttävät sinulle mainoksia, jotka eivät perustu muihin verkkosivuihin, joilla olet vieraillut. Monet verkkosivustot keräävät ja käyttävät silti edelleen selaustietojasi esimerkiksi parantaakseen turvallisuutta, tarjotakseen verkkosivustossaan sisältöä, palveluita, mainoksia ja suosituksia sekä luodakseen raportointitilastoja.</translation>
@@ -1842,7 +1835,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2842013086666334835">Kirjaudu sisään: <ph name="NETWORK_ID" /></translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> vapautettu</translation>
 <translation id="2844154481025280030">Käytäntö määritetty.</translation>
-<translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
 <translation id="284491292807422921">Poistetaanko sivusto?</translation>
 <translation id="2845276301195220700">Lisää Google Kalenteriin liittyviä toimintoja</translation>
 <translation id="2845382757467349449">Näytä kirjanmerkkipalkki aina</translation>
@@ -2379,7 +2371,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3365651640097487828">Vahvista henkilöllisyytesi ja synkronoi historia ja välilehdet, jotta voit jakaa välilehtiä ja tehdä yhteistyötä muiden kanssa</translation>
 <translation id="3368662179834713970">Talo</translation>
 <translation id="3369624026883419694">Jäsennetään palvelinta...</translation>
-<translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
 <translation id="3372602033006349389">Muilla laitteilla</translation>
 <translation id="337286756654493126">Lue sovelluksessa avaamiasi kansioita</translation>
 <translation id="3373059063088819384">Avaa lukutilassa</translation>
@@ -2466,7 +2457,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3445140416168872040">Poista lupa: <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Organisaatiosi on estänyt tiedoston, koska siinä on arkaluontoista tai vaarallista sisältöä. Pyydä sen omistajaa korjaamaan asia.</translation>
-<translation id="3445925074670675829">C-tyypin USB-laite</translation>
 <translation id="344630545793878684">Lukea tietojasi useissa sivustoissa</translation>
 <translation id="3447797901512053632">Välilehti <ph name="TAB_NAME" /> peilataan kohteeseen <ph name="DEVICE_NAME" />.</translation>
 <translation id="3448492834076427715">Päivitä tili</translation>
@@ -3060,7 +3050,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3994522032746736727">Kirjaudu sisään tilillä <ph name="EMAIL" /></translation>
 <translation id="3994708120330953242">Salasanojasi on paljastunut tietosuojaloukkauksen yhteydessä. Suojaa tilejäsi vaihtamalla salasanat nyt.</translation>
 <translation id="3994878504415702912">&amp;Koko</translation>
-<translation id="3995138139523574647">C-tyypin USB-laite (oikean sivun taaimmainen portti)</translation>
 <translation id="3995963973192100066">Toista animaatio</translation>
 <translation id="399788104667917863">Kiinnitä yläpalkkiin</translation>
 <translation id="3998431043924115701">Esitä kysymyksiä selatessasi</translation>
@@ -3614,6 +3603,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4600978165652322776">Tapahtui verkkovirhe. Tarkista internetyhteys ja verkkoasetukset.</translation>
 <translation id="4601095002996233687">Yksityiskohtaiset tarkistukset epäilyttäville latauksille.</translation>
 <translation id="4601426376352205922">Merkitse lukemattomaksi</translation>
+<translation id="4601626093626178957">Valitse alla olevista vaihtoehdoista</translation>
 <translation id="460190672235687855">Katso salasanat</translation>
 <translation id="4602466770786743961">Anna sivuston <ph name="HOST" /> aina käyttää kameraasi ja mikrofoniasi</translation>
 <translation id="4602776638371779614">Tämä välilehti hakee aktiivisesti Bluetooth-laitteita</translation>
@@ -4338,7 +4328,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5327912693242073631">Ilmoituksia edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="5328551442597731838">Näytä muiden laitteiden välilehdet</translation>
 <translation id="5329858601952122676">&amp;Poista</translation>
-<translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
 <translation id="5334142896108694079">Ohjelmavälimuisti</translation>
 <translation id="5335370353987155592">Käytä Geminiä harkiten ja <ph name="BEGIN_LINK1" />turvallisesti<ph name="LINK_END1" />. Olet vastuussa siitä, mitä Gemini tekee tehtävän aikana, mukaan lukien virheet ja <ph name="BEGIN_LINK2" />odottamattomat tulokset<ph name="LINK_END2" />, esimerkiksi ostokset.</translation>
 <translation id="5336688142483283574">Tämä sivu poistetaan myös historiastasi ja hakukoneen (<ph name="SEARCH_ENGINE" />) toimintatiedoista.</translation>
@@ -4446,7 +4435,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5444452275167152925">Tuotu ChromeOS:stä</translation>
 <translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Ideointi</translation>
-<translation id="5449551289610225147">Virheellinen salasana</translation>
 <translation id="5449588825071916739">Lisää kaikki välilehdet kirjanmerkkeihin</translation>
 <translation id="5449716055534515760">&amp;Sulje ikkuna</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" />, niin voit löytää Bluetooth-laitteita</translation>
@@ -5407,7 +5395,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6459488832681039634">Hae valinnan avulla</translation>
 <translation id="6459799433792303855">Aktiivinen ikkuna siirrettiin toiselle näytölle.</translation>
 <translation id="6460601847208524483">Hae seuraava</translation>
-<translation id="6461170143930046705">Etsitään verkkoja…</translation>
 <translation id="6463668944631062248">Hyväksy striimauspyyntö laitteella <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">M&amp;uokkaa</translation>
 <translation id="6464825623202322042">Tässä laitteessa</translation>
@@ -5415,6 +5402,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6466936665940546351">Vahvista henkilöllisyytesi, niin voit lisätä salasanoja ja käyttää niitä kaikilla laitteilla Google-tililläsi</translation>
 <translation id="6467230443178397264">Skannaa <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimoi koko näytön videot</translation>
+<translation id="6467327465309816244">Käytä Geminiä harkiten ja <ph name="BEGIN_LINK1" />turvallisesti<ph name="LINK_END1" />. Se voi tehdä virheitä ja tuottaa <ph name="BEGIN_LINK2" />odottamattomia tuloksia<ph name="LINK_END2" />, esimerkiksi tehdä ostoksia.</translation>
 <translation id="6468485451923838994">Fontit</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> tiedostoa</translation>
 <translation id="6469702164109431067">Salasanat ja avainkoodit</translation>
@@ -5430,7 +5418,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{Säilytetäänkö välilehtiryhmä?}other{Säilytetäänkö välilehtiryhmät?}}</translation>
 <translation id="6486301003991593638">Jos haluat hallinnoida avainkoodeja, käytä uudempaa Windows-versiota</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> ei voi tarkistaa salasanojasi tietosuojaloukkausten varalta. Tarkista internetyhteytesi.</translation>
-<translation id="6490471652906364588">C-tyypin USB-laite (oikean sivun portti)</translation>
 <translation id="6491890991754498129">Avaa &amp;täällä…</translation>
 <translation id="649396225532207613">Tämä tiedosto voi vahingoittaa some‑ ja henkilökohtaisia tilejäsi</translation>
 <translation id="6493991254603208962">Vähennä kirkkautta.</translation>
@@ -5770,6 +5757,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6815376457351236663">Avaa silti</translation>
 <translation id="6815787852028615386">Tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
 <translation id="6816443526270499804">Etsitään käytettävissä olevia eSIM-profiileja</translation>
+<translation id="6816637904848970547">Voit siirtyä listassa ylä- ja alanuolilla.</translation>
 <translation id="6818198425579322765">Käännettävän sivun kieli</translation>
 <translation id="6820107710950761542">Pyydä lisätietoa järjestelmänvalvojalta tai tutustu <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6821439254917412979">Irrota <ph name="EXTENSION_NAME" /></translation>
@@ -6059,7 +6047,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7094768688212290897">Gizan pyramidi</translation>
 <translation id="7094834615934458012">Saako tämä sivusto muokata tiedostoja?</translation>
 <translation id="7096904522553867921">Voit siirtää välilehdet takaisin yläreunaan klikkaamalla mitä tahansa välilehteä kakkospainikkeella ja valitsemalla "Näytä välilehdet vaakasuunnassa"</translation>
-<translation id="7098389117866926363">C-tyypin USB-laite (vasemmanpuoleinen takaportti)</translation>
 <translation id="7098447629416471489">Tässä näytetään muut tallennetut hakukoneesi.</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Poista sovellus}other{Poista sovellukset}}</translation>
 <translation id="7099027177878709408">&amp;Sulje</translation>
@@ -6309,7 +6296,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7341834142292923918">Haluaa toimia tällä sivustolla</translation>
 <translation id="7343372807593926528">Kuvaile ongelmaa ennen palautteen lähettämistä.</translation>
 <translation id="7344585835349671209">Hallinnoi HTTPS/SSL-varmenteita laitteellasi</translation>
-<translation id="7345706641791090287">Vahvista salasanasi</translation>
 <translation id="7346909386216857016">Selvä</translation>
 <translation id="7347751611463936647">Voit käyttää tätä laajennusta kirjoittamalla <ph name="EXTENSION_KEYWORD" />, sitten TAB ja sitten komentosi tai hakusi</translation>
 <translation id="7347943691222276892">Poistu sivulta <ph name="SUBPAGE_TITLE" /> klikkaamalla tätä.</translation>
@@ -7511,7 +7497,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> ei avaudu offline-tilassa</translation>
 <translation id="8552102814346875916">Tallenna "Pidä nämä sivustot aina aktiivisina" ‐listaan</translation>
 <translation id="8552947739661397736">Ota tehtävä haltuun, Gemini ohjaa tällä hetkellä</translation>
-<translation id="8554899698005018844">Ei kieltä</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – laajennettu sisältö näkyvissä</translation>
 <translation id="8557022314818157177">Jatka suojausavaimen koskettamista, kunnes sormenjälki tallennetaan</translation>
 <translation id="8557100046150195444">Jatka käyttämällä Touch ID:tä</translation>
@@ -7871,7 +7856,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> loi vahvan salasanan tälle verkkosivustolle</translation>
 <translation id="890616557918890486">Vaihda lähdettä</translation>
 <translation id="8909833622202089127">Sivusto seuraa sijaintiasi</translation>
-<translation id="8910222113987937043">Kirjanmerkkeihin, historiaan, salasanoihin ja muihin asetuksiin tehtyjä muutoksia ei enää synkronoida Google-tilillesi. Nykyiset tietosi pysyvät kuitenkin Google-tilillä ja niitä voidaan hallinnoida <ph name="BEGIN_LINK" />Google Hallintapaneelissa<ph name="END_LINK" />.</translation>
 <translation id="8911478306361447917">Ominaisuuksien ja laajennusten pikakuvakkeet</translation>
 <translation id="8912362522468806198">Google-tilisi avulla</translation>
 <translation id="8913485523736543337">Päivitystyökalu</translation>
@@ -7898,7 +7882,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8933709832356869375">1 asennettu sovellus poistetaan</translation>
 <translation id="8933960630081805351">Näytä Finderi&amp;ssä</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> on saanut pääsyn USB-laitteille}=2{Laajennukset, joilla on pääsy laitteille: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Laajennukset, joilla on pääsy laitteille: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ja {3} muu}}</translation>
-<translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{Käytetty <ph name="TIME_COUNT" /> päivää sitten}=1{Käytetty <ph name="TIME_COUNT" /> päivä sitten}=2{Käytetty <ph name="TIME_COUNT" /> viikkoa sitten}other{Käytetty <ph name="TIME_COUNT" /> viikkoa sitten}}</translation>
 <translation id="8940081510938872932">Tietokoneen resurssit eivät riitä toimintoon tällä hetkellä. Yritä myöhemmin uudelleen.</translation>
 <translation id="8941173171815156065">Kumoa käyttölupa <ph name="PERMISSION" /></translation>

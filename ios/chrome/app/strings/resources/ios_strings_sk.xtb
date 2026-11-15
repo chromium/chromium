@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Chcete zastaviť sťahovanie?</translation>
 <translation id="4796496140132859135">Skupina kariet. Zbalená.</translation>
 <translation id="4800912004582762296">Kliká</translation>
+<translation id="4800930308997591052">Prepnite na účet <ph name="EMAIL" />, aby ste mohli plynule zdieľať karty medzi svojimi zariadeniami a získavať heslá, záložky a ďalší obsah zo svojho účtu Google.</translation>
 <translation id="4802185666270672526">Skryť položku Vyžiadať web pre počítače</translation>
 <translation id="4803185665210547709">Spravované vašou organizáciou.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="7618220760967055820">Vyberte, ktoré tlačidlo sa má zobrazovať na paneli s nástrojmi</translation>
 <translation id="7620522820075868385">Zrušiť</translation>
 <translation id="762078666799342162">Súbory stiahnuté v minulosti si môžete pozrieť v <ph name="BEGIN_LINK" />Súboroch<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Pokračujte v počítači tam, kde ste prestali</translation>
 <translation id="7638584964844754484">Nesprávna prístupová fráza</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="7640669552036055091">Karty z Androidu</translation>

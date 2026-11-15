@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">ဒေါင်းလုဒ်လုပ်ခြင်းကို ရပ်မလား။</translation>
 <translation id="4796496140132859135">တဘ်အုပ်စု။ ချုံ့ထားသည်။</translation>
 <translation id="4800912004582762296">နှိပ်နေသည်</translation>
+<translation id="4800930308997591052">သင့်စက်များအကြား တဘ်များကို အလွယ်တကူမျှဝေရန်နှင့် သင်၏ Google Account မှ စကားဝှက်၊ လိပ်စာ စသည်တို့ကို ရယူရန် <ph name="EMAIL" /> သို့ ပြောင်းပါ။</translation>
 <translation id="4802185666270672526">‘ဒက်စ်တော့ဝဘ်ဆိုက် တောင်းဆိုရန်’ ကိုဖျောက်ရန်</translation>
 <translation id="4803185665210547709">သင်၏ ‘အဖွဲ့အစည်း’ ကစီမံခန့်ခွဲထားသည်။
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -2147,6 +2148,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7618220760967055820">ကိရိယာဘားတွင်ပြမည့် ခလုတ်ကို ရွေးပါ</translation>
 <translation id="7620522820075868385">မလုပ်တော့</translation>
 <translation id="762078666799342162">ယခင်ဒေါင်းလုဒ်များကို <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> တွင် ကြည့်နိုင်သည်</translation>
+<translation id="7636034359405891151">သင့်ကွန်ပျူတာတွင် ထားခဲ့သည့်နေရာမှ ပြန်စပါ</translation>
 <translation id="7638584964844754484">စကားဝှက် မမှန်</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ကျိုးပေါက်ထားသည့် စကားဝှက်များ}=1{ကျိုးပေါက်ထားသည့် စကားဝှက် {COUNT} ခု}other{ကျိုးပေါက်ထားသည့် စကားဝှက် {COUNT} ခု}}</translation>
 <translation id="7640669552036055091">Android မှ တဘ်များ</translation>

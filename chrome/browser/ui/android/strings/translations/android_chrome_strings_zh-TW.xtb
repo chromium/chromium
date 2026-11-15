@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">不必重複輸入網址，節省寶貴時間</translation>
 <translation id="146522654774760805">密碼和自動填入</translation>
 <translation id="1466383950273130737">選擇 Chrome 的顯示語言</translation>
+<translation id="1473344277210704336">Gemini 和常用功能現已整合至全新底部工具列</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="147982357559798527">已變更</translation>
 <translation id="1480287803138246127">這裡可能並未顯示所有歷史記錄，請開啟完整的 Chrome 歷史記錄，才能查看所有記錄。</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">目前登入的帳戶已經是「<ph name="NAME_OR_EMAIL" />」。</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕分頁}}</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />，<ph name="EMAIL" />，<ph name="SUBSCRIPTION_NAME" />會員。</translation>
 <translation id="4572422548854449519">登入受管理的帳戶</translation>
 <translation id="4577115723294378384">按 A 到 Z 排序</translation>
 <translation id="4578289292431526768">開始設定</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">開啟新分頁，將其新增至問題</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4587589328781138893">網站</translation>
+<translation id="4587590257937792551">Chrome 推出全新底部工具列，專為提升便利性而設計。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />切換回原來的樣式。</translation>
 <translation id="4594952190837476234">這個離線版網頁是於 <ph name="CREATION_TIME" />建立，可能會和線上版本有所不同。</translation>
 <translation id="4595237294768457124">開啟新分頁</translation>
 <translation id="4595276580892809760">附上相片庫中的圖片</translation>
@@ -1451,6 +1454,7 @@
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
 <translation id="6637100877383020115">為協助改良應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_UMA_LINK" />管理設定<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">常用功能就在底部工具列上。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />切換回原來的樣式。</translation>
 <translation id="6642299196749785472">附上分頁</translation>
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -1649,6 +1653,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，選取的固定分頁，正在分享內容</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
+<translation id="7324177883197548771">Chrome 推出全新外觀，專為提升便利性而設計。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />切換回原來的樣式。</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
 <translation id="7335766481146072567">按下「繼續」。</translation>
@@ -1750,6 +1755,7 @@
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
 <translation id="7702420606070050505">近期活動底部功能表已完整開啟</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />，<ph name="SUBSCRIPTION_NAME" />會員。</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7708994397325774423">取得所有密碼</translation>
 <translation id="7714077993070342304">開啟 Chrome 選單</translation>

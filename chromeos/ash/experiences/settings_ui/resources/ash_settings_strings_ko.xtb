@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">사용자 데이터 암호화</translation>
 <translation id="1011003645819296594">저장된 기기</translation>
 <translation id="1011355516189274711">텍스트 음성 변환 볼륨</translation>
+<translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">네트워크 기본값</translation>
 <translation id="1026655690966755180">포트 추가</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">로컬 데이터 복구</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">모바일 데이터 네트워크를 스캔하는 중...</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
 <translation id="1261380933454402672">약한 규칙</translation>
 <translation id="1263733306853729545"><ph name="MINUS" /> 및 <ph name="EQUAL" /> 키를 사용하여 후보 목록을 페이지에 표시</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">음성 속성</translation>
 <translation id="1291057703584594733">이미 할당된 동작을 선택하면 원래 작업에서 동작이 삭제됩니다.</translation>
 <translation id="1291421198328146277">키 재설정</translation>
+<translation id="1293264513303784526">USB-C 기기(왼쪽 포트)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" 동작이 "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", "<ph name="CONFLICTING_GESTURE_THREE" />" 동작과 겹칠 수 있습니다. 가능하다면 다른 동작을 선택해 보세요.</translation>
 <translation id="1293556467332435079">파일</translation>
 <translation id="1313405956111467313">자동 프록시 설정</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">덮개가 닫히면 로그아웃</translation>
 <translation id="185970820835152459">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chromium 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">시원함</translation>
+<translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
 <translation id="1866589962721094893">Android 앱이 이 Chromebook의 USB 기기를 제어하도록 허용합니다. USB 기기를 삽입할 때마다 권한 요청이 표시됩니다. 추가 권한은 각 Android 앱에서 개별적으로 요청합니다.</translation>
 <translation id="1877377290348678128">라벨(선택사항)</translation>
 <translation id="1877860345998737529">스위치 작업 할당</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">업데이트</translation>
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
+<translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
 <translation id="1948528728718281125">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다</translation>
@@ -406,6 +411,7 @@
 <translation id="2314774579020744484">페이지 번역 시 사용하는 언어</translation>
 <translation id="2319459402137712349">키보드를 열려면 텍스트 입력란을 선택합니다. 화면 하단에서 키보드 아이콘을 선택할 수도 있습니다.</translation>
 <translation id="2319993584768066746">로그인 화면 사진</translation>
+<translation id="2322622365472107569">종료 시간: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">저장된 Wi-Fi 네트워크</translation>
 <translation id="2325444234681128157">비밀번호 저장</translation>
 <translation id="2326188115274135041">자동 잠금 해제를 사용 설정하려면 PIN을 확인하세요.</translation>
@@ -489,6 +495,7 @@
 <translation id="2577127557293415225">잠깐 양쪽 눈 감기</translation>
 <translation id="258095186877893873">길게</translation>
 <translation id="2581786034175502848">다시 사용 설정하려면 Shift 키를 5번 누릅니다.</translation>
+<translation id="2581992808349413349">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. 이는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="2584109212074498965">Kerberos 티켓을 가져올 수 없습니다. 다시 시도해 보거나 조직의 기기 관리자에게 문의하세요. (오류 코드 <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Chrome에서 웹사이트 마이크 권한 관리하기</translation>
 <translation id="2609980095400624569">연결을 설정할 수 없음</translation>
@@ -563,6 +570,7 @@
 <translation id="2805770823691782631">추가 세부정보</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" 동작이 "<ph name="CONFLICTING_GESTURE_ONE" />" 및 "<ph name="CONFLICTING_GESTURE_TWO" />" 동작과 겹칠 수 있습니다. 가능하다면 다른 동작을 선택해 보세요.</translation>
 <translation id="2809346626032021864">읽기</translation>
+<translation id="2811205483104563968">계정</translation>
 <translation id="2813094189969465044">자녀 보호 기능</translation>
 <translation id="2817435998497102771">배경화면 및 스타일 설정</translation>
 <translation id="2818476747334107629">프린터 세부정보</translation>
@@ -570,6 +578,7 @@
 <translation id="2822634587701817431">축소 / 확대</translation>
 <translation id="2833144527504272627">텍스트 커서로 탐색</translation>
 <translation id="2835177225987815960">할당된 스위치 및 자동 스캔 속도 환경설정을 포함하여 현재의 스캔 설정이 재설정됩니다.</translation>
+<translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
 <translation id="2849035674501872372">찾기</translation>
 <translation id="2860710618359053450">턱을 오른쪽으로 움직이기</translation>
@@ -708,6 +717,7 @@
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369067987974711168">이 포트에 관한 작업 더보기</translation>
 <translation id="3370260763947406229">자동 수정</translation>
+<translation id="3371140690572404006">USB-C 기기(우측 전면 포트)</translation>
 <translation id="3371351218553893534">너무 긴 입력 내용: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam에 부여된 권한은 모든 Steam 게임 및 앱에 적용됩니다.</translation>
 <translation id="338323348408199233">VPN 없는 트래픽 차단</translation>
@@ -733,6 +743,7 @@
 <translation id="3441824746233675597">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. <ph name="PRODUCT_NAME" />에서는 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> 개선을 위해 Google에서 하드웨어 데이터를 사용하도록 허용합니다. 거부하더라도 데이터가 Google에 전송되어 적절한 업데이트를 결정하는 데 사용되지만, 저장되거나 다른 용도로 사용되지는 않습니다.</translation>
 <translation id="3445465968953598059">얼굴 제어</translation>
+<translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
 <translation id="345078987193237421">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 대한 카메라 액세스가 허용됩니다.</translation>
 <translation id="3453082738208775226">오프라인 스토리지를 정리하시겠습니까?</translation>
@@ -915,6 +926,7 @@
 <translation id="3984862166739904574">빠른 답변 정의</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />에 USB 기기 제어 권한을 부여합니다.</translation>
 <translation id="3994530503403062649">태블릿에서 버튼 찾기</translation>
+<translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
 <translation id="3997429360543082038">ChromiumOS 정보</translation>
 <translation id="4001540981461989979">이동 시 마우스 커서 강조표시</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
@@ -1328,6 +1340,7 @@
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5331568967879689647">ChromeOS 시스템 앱</translation>
+<translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="5334113802138581043">마이크 액세스</translation>
 <translation id="5336689872433667741">커서 및 터치패드</translation>
 <translation id="5337926771328966926">현재 기기 이름: <ph name="DEVICE_NAME" /></translation>
@@ -1351,6 +1364,7 @@
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
 <translation id="5441133529460183413">Chrome 브라우저에서 설치된 웹 앱</translation>
 <translation id="5445400788035474247">10배</translation>
+<translation id="5449551289610225147">비밀번호가 잘못되었습니다.</translation>
 <translation id="5450469615146335984">작업별로 단축키 선택</translation>
 <translation id="5452446625764825792">이제 휴대전화의 최근 사진, 미디어, 앱을 확인할 수 있습니다.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />(오프라인에서 사용 가능)</translation>
@@ -1646,6 +1660,7 @@
 <translation id="6444147596556711162">'다음' 또는 '이전'을 사용하여 화면에서 항목 간에 이동합니다.</translation>
 <translation id="6452961788130242735">네트워크 문제 또는 잘못된 영역</translation>
 <translation id="6453921811609336127">다음 입력 방법으로 전환하려면 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" />를 누르세요.</translation>
+<translation id="6461170143930046705">네트워크 검색 중...</translation>
 <translation id="6463488491707167747">이 사전 삭제</translation>
 <translation id="6463596731306859179">원치 않는 팝업이 표시되거나 예기치 않은 기타 동작이 발생하나요? 때때로, 설치하는 앱과 확장 프로그램으로 인해 나도 모르는 사이에 ChromeOS 설정이 변경될 수 있습니다.</translation>
 <translation id="6465841119675156448">인터넷 사용 안함</translation>
@@ -1662,6 +1677,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" />에서 마이크에 액세스하도록 허용</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
 <translation id="648927581764831596">사용할 수 없음</translation>
+<translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
 <translation id="650185290742160385">기준 낮추기</translation>
@@ -1826,6 +1842,7 @@
 <translation id="7090714929377281710">핫스팟 자동 사용 중지</translation>
 <translation id="7092504544229909737">Android 앱에서 사용할 수 없음</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
+<translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7099337801055912064">큰 PPD를 로드할 수 없습니다. 최대 크기는 250KB입니다.</translation>
 <translation id="7107609441453408294">모든 스피커에서 동일한 오디오 재생</translation>
 <translation id="7116931001458704701">흔들어서 커서 찾기</translation>
@@ -1887,6 +1904,7 @@
 <translation id="7323315405936922211">커서 영역 크기</translation>
 <translation id="7325209047678309347">용지 걸림</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
+<translation id="7345706641791090287">비밀번호 확인</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7360333718677093875">이모티콘 선택 도구</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">맨 위 키의 동작을 전환하려면 검색 키를 길게 누름</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
+<translation id="8554899698005018844">언어가 없음</translation>
 <translation id="8555444629041783356">자동 지원 종료 일정</translation>
 <translation id="8563043098557365232">시스템 서비스에만 허용됨</translation>
 <translation id="8571687764447439720">Kerberos 티켓 추가</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">셀룰러 사용</translation>
 <translation id="8902667442496790482">텍스트 읽어주기 설정 열기</translation>
 <translation id="8903733144777177139">마이크 액세스가 차단됨</translation>
+<translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="8912810933860534797">자동 스캔 사용</translation>
 <translation id="8922624386829239660">마우스로 화면 가장자리를 터치할 경우 화면 움직이기</translation>
 <translation id="8929738682246584251">돋보기 켜기/끄기</translation>
 <translation id="8930622219860340959">무선</translation>
 <translation id="8931713990831679796">프린터가 연결되었으며 사용할 수 있습니다. 프린터에 더 간편하게 액세스할 수 있도록 프로필에 저장하세요.</translation>
 <translation id="8932654652795262306">인스턴트 테더링 세부정보</translation>
+<translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8940888110818450052">로그인 옵션</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">아이콘 크기</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">현재 로밍 중</translation>
 <translation id="93393615658292258">비밀번호만</translation>
 <translation id="942296794412775122">마이크 켜기/끄기</translation>
+<translation id="945522503751344254">의견 보내기</translation>
 <translation id="950307215746360464">설정 가이드</translation>
 <translation id="952471655966876828">기기가 켜져 있고 사용 중일 때 자동으로 연결됩니다.</translation>
 <translation id="956013912698841780">마우스 오른쪽 버튼으로 클릭하여 콘텐츠를 요약하고, 정의를 확인하고, 더욱 자신 있게 글을 쓰고, 이미지를 만드는 등 다양한 작업을 해 보세요. 현재는 제한적으로만 이용할 수 있습니다.</translation>

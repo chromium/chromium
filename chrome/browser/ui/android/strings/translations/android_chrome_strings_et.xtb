@@ -129,6 +129,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1460751212339734034">Säästke aega, tippige vähem</translation>
 <translation id="146522654774760805">Paroolid ja automaattäide</translation>
 <translation id="1466383950273130737">Valige Chrome'i keel</translation>
+<translation id="1473344277210704336">Gemini ja teie olulised asjad uuel alumisel tööriistaribal</translation>
 <translation id="1477626028522505441">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus serveriprobleemide tõttu.</translation>
 <translation id="147982357559798527">Muudetud</translation>
 <translation id="1480287803138246127">Osa teie ajaloost ei pruugita siin kuvada. Chrome'i kogu ajaloo vaatamiseks avage Chrome'i täielik ajalugu.</translation>
@@ -907,6 +908,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4537987892902330164">Jäite sisselogituks kasutajana <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Veebilehe otseteed</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Tellimuse <ph name="SUBSCRIPTION_NAME" /> liikmesus.</translation>
 <translation id="4572422548854449519">Logige hallatud kontole sisse</translation>
 <translation id="4577115723294378384">Sordi A-st Y-ni järgi</translation>
 <translation id="4578289292431526768">Alustage</translation>
@@ -914,6 +916,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4585751637295612750">Avage uus vaheleht, et see oma küsimusele lisada.</translation>
 <translation id="4585793705637313973">Lehe muutmine</translation>
 <translation id="4587589328781138893">Saidid</translation>
+<translation id="4587590257937792551">Chrome’il on uus alumine tööriistariba, mis on loodud mugavust silmas pidades. <ph name="BEGIN_LINK" />Seadete<ph name="END_LINK" /> kaudu saate igal ajal tagasi vahetada.</translation>
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
 <translation id="4595237294768457124">Avage uus vaheleht.</translation>
 <translation id="4595276580892809760">Galerii piltide manustamine</translation>
@@ -1451,6 +1454,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6633067410344541938">Ava inkognito seanss</translation>
 <translation id="6636623428211296678">Avastage allpool rohkem seadeid või lõpetage kohe</translation>
 <translation id="6637100877383020115">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_UMA_LINK" />Haldamine<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Teie olulised asjad otse alumisel tööriistaribal. <ph name="BEGIN_LINK" />Seadete<ph name="END_LINK" /> kaudu saate igal ajal tagasi vahetada.</translation>
 <translation id="6642299196749785472">Vahelehtede manustamine</translation>
 <translation id="6647441008198474441">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1649,6 +1653,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valitud kinnitatud jagav vaheleht</translation>
 <translation id="7311244614769792472">Tulemusi ei leitud</translation>
 <translation id="7314734791127433392">Paroole ei saa kontrollida</translation>
+<translation id="7324177883197548771">Chrome’il on uus välimus, mis on loodud mugavust silmas pidades. <ph name="BEGIN_LINK" />Seadete<ph name="END_LINK" /> kaudu saate igal ajal tagasi vahetada.</translation>
 <translation id="7324354302972299151">„Do Not Track” taotluse saatmine</translation>
 <translation id="7333041109965360609">Märguannete tellimus on tühistatud</translation>
 <translation id="7335766481146072567">Vajutage nuppu Jätka</translation>
@@ -1750,6 +1755,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7697383401610880082">Lohistamispide</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Hiljutiste toimingute alumine leht avati täispikkuses</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Tellimuse <ph name="SUBSCRIPTION_NAME" /> liikmesus.</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7708994397325774423">Hankige juurdepääs kõigile oma paroolidele</translation>
 <translation id="7714077993070342304">Chrome'i menüü avamine</translation>

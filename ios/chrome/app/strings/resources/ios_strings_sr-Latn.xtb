@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2975761176769946178">URL je obavezan</translation>
 <translation id="297667759942911166">Sarađujte u grupama kartica</translation>
+<translation id="2986080119218811913">Nazad na <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Da biste koristili Gemini u Chrome-u, prijavite se u Chrome pomoću Google naloga</translation>
 <translation id="2987670534697681860">Potvrdite identitet da biste pristupili svim lozinkama na ovom uređaju.</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
@@ -1214,6 +1215,7 @@
 <translation id="479628432297359449">Želite da zaustavite preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Skupljeno.</translation>
 <translation id="4800912004582762296">Kliktanje</translation>
+<translation id="4800930308997591052">Pređite na nalog <ph name="EMAIL" /> da biste lako delili kartice između uređaja i pristupali lozinkama, obeleživačima i drugom sadržaju sa Google naloga.</translation>
 <translation id="4802185666270672526">Sakrij opciju Zahtevaj verziju sajta za računar</translation>
 <translation id="4803185665210547709">Ovim upravlja organizacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1290,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ovim upravlja organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google menadžer lozinki nema lozinku za ovaj sajt. Vratite se na <ph name="ACTOR_NAME" /> da biste se prijavili ili dodajte lozinku u Google menadžer lozinki.</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5009127379503001909">Nastavi da pregledaš</translation>
@@ -2148,6 +2151,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="7618220760967055820">Izaberite dugme koje će se prikazivati na traci s alatkama</translation>
 <translation id="7620522820075868385">Otkaži</translation>
 <translation id="762078666799342162">Ranija preuzimanja možete da pregledate u <ph name="BEGIN_LINK" />Fajlovima<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Nastavite tamo gde ste stali na računaru</translation>
 <translation id="7638584964844754484">Neispravna pristupna fraza</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="7640669552036055091">Kartice sa Android-a</translation>

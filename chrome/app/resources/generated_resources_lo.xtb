@@ -17,7 +17,6 @@
 <translation id="100881991356161927">ຊື່ເວັບໄຊ</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ໜ້າ​ບໍ່​ຕອບ​ຮັບ}other{ໜ້າ​ບໍ່​ຕອບ​ຮັບ}}</translation>
 <translation id="1011431628606634753">ປ່ຽນ PIN ການກູ້ຄືນຂອງທ່ານສຳລັບຕົວຈັດການລະຫັດຜ່ານ Google</translation>
-<translation id="1012876632442809908">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ)</translation>
 <translation id="1015318665228971643">ແກ້ໄຂຊື່ໂຟນເດີ</translation>
 <translation id="1016566241875885511">ຂໍ້ມູນເພີ່ມເຕີມ (ເລືອກໄດ້)</translation>
 <translation id="1016876401615857435">ເພື່ອໃຊ້ກະແຈຜ່ານຂອງທ່ານໃນອຸປະກອນນີ້, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
@@ -277,7 +276,6 @@
 <translation id="1245331638296910488">ໄຟລ໌ຈະຍ້າຍໄປໃສ່ OneDrive ເມື່ອເປີດໃນ Microsoft 365</translation>
 <translation id="1246420197935327230">ເລືອກພື້ນທີ່</translation>
 <translation id="125097549534200450">ລຶບລ້າງ</translation>
-<translation id="1251578593170406502">ກຳລັງສະແກນຫາເຄືອຂ່າຍອິນເຕີເນັດມືຖື...</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{ບຸກມາກ 1 ລາຍການ ແລະ ລາຍການອື່ນໆຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ສິ່ງນີ້ຍັງຈະອະນາໄມຂໍ້ມູນຕ່າງໆທີ່ຊ້ຳກັນນຳ.}other{{BOOKMARK_COUNT} ບຸກມາກ ແລະ ລາຍການອື່ນໆຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ສິ່ງນີ້ຍັງຈະອະນາໄມຂໍ້ມູນຕ່າງໆທີ່ຊ້ຳກັນນຳ.}}</translation>
 <translation id="125220115284141797">ຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="1252597096488926946">ຖອນໝຸດປຸ່ມເລື່ອນ</translation>
@@ -313,7 +311,6 @@
 <translation id="1285484354230578868">ເກັບຮັກສາຂໍ້ມູນຢູ່ໃນບັນຊີ Google Drive ຂອງທ່ານບໍ</translation>
 <translation id="1286901453440314450">ໃບຮັບຮອງທີ່ບໍ່ໜ້າເຊື່ອຖື</translation>
 <translation id="1288235441231062220">ຮອດຂີດຈຳກັດ <ph name="MAX_CHARS" /> ຕົວອັກສອນແລ້ວ</translation>
-<translation id="1293264513303784526">ອຸ​ປະ​ກອນ USB-C (​ຊ່ອງ​ຊ້າຍ)</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="12951065153783848">ອົງກອນຂອງທ່ານຈັດການບັນຊີຂອງທ່ານ</translation>
 <translation id="129553762522093515">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
@@ -754,6 +751,7 @@
 <translation id="17513872634828108">ແຖບ​ເປີດ</translation>
 <translation id="175196451752279553">ເປີດແຖບທີ່ປິດແລ້ວຄືນໃໝ່</translation>
 <translation id="1753557900380512635">ການຕົກແຕ່ງພາຍໃນ</translation>
+<translation id="1753621899753387273">ຖາມ Gemini ກ່ຽວກັບໜ້ານີ້ ແລະ “<ph name="SELECTION" />”</translation>
 <translation id="1753905327828125965">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
 <translation id="1755601632425835748">ຂະໜາດຂໍ້ຄວາມ</translation>
 <translation id="1756963401828337401">ເລືອກໜ້າຈໍທີ່ຈະຖ່າຍຮູບ</translation>
@@ -866,7 +864,6 @@
 <translation id="1863182668524159459">ບໍ່ພົບຜອດອະນຸກຳ</translation>
 <translation id="1863374797460198869">ການສົນທະນາຖືກເຊື່ອງໄວ້</translation>
 <translation id="1864111464094315414">ເຂົ້າ​ສູ່​ລະ​ບົບ</translation>
-<translation id="1864454756846565995">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານຫຼັງ)</translation>
 <translation id="186594096341696655">ຫຼຸດລະດັບລົງ</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" ສາມາດອ່ານ ແລະຂຽນໄຟລ໌ຮູບ, ວິດີໂອ, ແລະສຽງຢູ່ໃນຢູ່ໃນທີ່ຕັ້ງທີ່ໝາຍຕິກແລ້ວໄດ້.</translation>
 <translation id="1869433484041798909">ປຸ່ມບຸກມາກ</translation>
@@ -953,7 +950,6 @@
 <translation id="1936931585862840749">ໃຊ້ຕົວເລກເພື່ອຊີ້ບອກວ່າຈະພິມອອກຈັກສະບັບ (1 ຫາ <ph name="MAX_COPIES" />).</translation>
 <translation id="1940221956626514677">ປັບແຕ່ງແຖບເຄື່ອງມື</translation>
 <translation id="194081218158106711">ກຳລັງຢືນຢັນລະຫັດຜ່ານທີ່ປ່ຽນ...</translation>
-<translation id="1941410638996203291">ເວລາເລີ່ມຕົ້ນ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ເວີຊັນ: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າບັນຊີຂອງທ່ານໃຫ້ເຊື່ອມຕໍ່ກັບ Microsoft OneDrive ໂດຍອັດຕະໂນມັດ, ແຕ່ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="194174710521904357">ທ່ານໄດ້ອະນຸຍາດເວັບໄຊນີ້ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເປັນການຊົ່ວຄາວແລ້ວ, ເຊິ່ງໝາຍຄວາມວ່າຈະມີການປົກປ້ອງການທ່ອງເວັບທີ່ໜ້ອຍລົງແຕ່ຄຸນສົມບັດເວັບໄຊຕ່າງໆໜ້າຈະເຮັດວຽກໄດ້ຕາມທີ່ຄາດໄວ້.</translation>
@@ -1312,7 +1308,6 @@
 <translation id="2316709634732130529">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="2318143611928805047">ຂະ​ຫນາດ​ເຈ້ຍ</translation>
 <translation id="2322193970951063277">ຫົວຂອງໜ້າ ແລະທ້າຍຂອງໜ້າ</translation>
-<translation id="2322622365472107569">ເວລາສິ້ນສຸດ <ph name="TIME" /></translation>
 <translation id="2323685460575935191">ເຊື່ອງປຸ່ມເລື່ອນ</translation>
 <translation id="2325004050205455346">ປະຫວັດຫຼ້າສຸດ</translation>
 <translation id="2326583548923775947">ນີ້ບໍ່ແມ່ນບັນຊີ Google. ລາຍການທີ່ທ່ານບັນທຶກໄປໃສ່ Chrome ຈະບໍ່ສາມາດໃຊ້ໄດ້ຢູ່ອຸປະກອນອື່ນ.</translation>
@@ -1565,7 +1560,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ອຸປະກອນນີ້ຈະຖືກບັນທຶກໄວ້ 1 ປີ ແລະ ທ່ານສາມາດເຊື່ອມຕໍ່ໄດ້ໂດຍບໍ່ຕ້ອງໃຊ້ລະຫັດໃນເທື່ອຕໍ່ໄປ. ນີ້ແມ່ນຖືກຕັ້ງຄ່າໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}other{ອຸປະກອນນີ້ຈະຖືກບັນທຶກໄວ້ {YEARS} ປີ ແລະ ທ່ານສາມາດເຊື່ອມຕໍ່ໄດ້ໂດຍບໍ່ຕ້ອງໃຊ້ລະຫັດໃນເທື່ອຕໍ່ໄປ. ນີ້ແມ່ນຖືກຕັ້ງຄ່າໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="GROUP_NAME" />" ທັນທີ ແລະ ຈະບໍ່ສາມາດໂຕ້ຕອບກັບທ່ານໃນທົ່ວບໍລິການ Google ໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="2580889980133367162">ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ດາວໂຫລດຫຼາຍ​ໄຟລ໌ທຸກຄັ້ງ</translation>
-<translation id="2581992808349413349">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພເພື່ອຊອກຫາທີ່ຢູ່ IP ຂອງເວັບໄຊໃນ DNS (ລະບົບຊື່ໂດເມນ). ການດຳເນີນການນີ້ຈະໃຊ້ຜູ້ໃຫ້ບໍລິການທີ່ມີການຈັດການຢູ່ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2583877283803564049">ປັກໝຸດໄວ້ຢູ່ແຖບເຄື່ອງມື</translation>
 <translation id="2583905535229480958">ຕົວອ່ານບັດອັດສະລິຍະຕ່າງໆ</translation>
 <translation id="2586672484245266891">ກະລຸນາປ້ອນ URL ທີ່ສັ້ນລົງ</translation>
@@ -1812,7 +1806,6 @@
 <translation id="2806372837663997957">ອຸປະກອນທີ່ທ່ານກຳລັງພະຍາຍາມແບ່ງປັນກັບບໍ່ຕອບຮັບ</translation>
 <translation id="2806891468525657116">ມີທາງລັດນັ້ນຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2807517655263062534">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດປາກົດຢູ່ບ່ອນນີ້</translation>
-<translation id="2811205483104563968">ບັນຊີ</translation>
 <translation id="2814489978934728345">ຢຸດ​ໂຫຼດ​ຫນ້າ​ນີ້</translation>
 <translation id="281678554528702272">ໝາຍເຫດ: ນະໂຍບາຍອົງກອນ ຫຼື API ທີ່ມີປະສິດທິພາບອາດລຶບລ້າງການຕັ້ງຄ່າການເຂົ້າເຖິງເວັບໄຊເຫຼົ່ານີ້.</translation>
 <translation id="2817861546829549432">ການເປີດໃຊ້ງານ "ຢ່າ​ຕິດ​ຕາມ 'ຫມາຍ​ຄວາມ​ວ່າ​​ ການຮ້ອງຂໍ​ຈະຖືກເອົາລວມເຂົ້າພ້ອມກັບ ການເຄື່ອນໄຫວການທ່ອງ​ເນັດຂອງທ່ານ​. ຜົນ​ກະ​ທົບ​ໃດໜຶ່ງ​ທີ່​ຂຶ້ນ​ກັບ​ວ່າ​ເວັບ​ໄຊ​ທ​໌​ຕອບ​ຮັບການ​ຮ້ອງ​ຂໍບໍ່​, ແລະການ​ຮ້ອງ​ຂໍ​​ຖືກ​ຕີຄວາມໝາຍແນວໃດ​. ຕົວ​ຢ່າງ​, ບາງເວັບ​ໄຊ​ທ໌ອາດ​ຈະ​ຕອບຮັບ​ຕໍ່​ການ​ຮ້ອງ​ຂໍ​ນີ້​ໂດຍການ​ສະ​ແດງ​ໃຫ້​ທ່ານ​ເຫັນ​ການ​ໂຄສະນາ​ທີ່​ບໍ່​ໄດ້​ອີງ​ໃສ່​ເວັບ​ໄຊ​ທ​໌​ອື່ນໆ​ທີ່​ທ່ານ​ເຄີຍເຂົ້າໄປເບິ່ງ​. ຫຼາຍເວັບ​ໄຊ​ທ໌,ຍັງ​ຈະ​ເກັບ​ກໍາ ​ແລະ​ນໍາ​ໃຊ້​ຂໍ້​ມູນການທ່ອງ​ເນັດ​ຂອງ​ທ່ານ - ​ຕົວ​ຢ່າງ ເພື່ອ​ປັບ​ປຸງ​ຄວາມ​ປອດ​ໄພ​, ເພື່ອ​ໃຫ້ການ​ໂຄ​ສະ​ນາເນື້ອໃນ​, ແລະຂໍ້ແນະນໍາຢູ່ໃນ​ເວັບ​ໄຊ​ທ​໌​ຂອງ​ມັນ​, ແລະ​ເພື່ອ​ສ້າງ​ສະ​ຖິ​ຕິ​ລາຍ​ງານ​.</translation>
@@ -1842,7 +1835,6 @@
 <translation id="2842013086666334835">ເຂົ້າສູ່ລະບົບ "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843698124892775282">ເພີ່ມພື້ນທີ່ຫວ່າງ <ph name="MEMORY_SAVINGS" /> ແລ້ວ</translation>
 <translation id="2844154481025280030">ຕັ້ງຄ່ານະໂຍບາຍແລ້ວ.</translation>
-<translation id="2844169650293029770">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ-ຊ້າຍ)</translation>
 <translation id="284491292807422921">ລຶບເວັບໄຊອອກບໍ?</translation>
 <translation id="2845276301195220700">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ Google ປະຕິທິນ</translation>
 <translation id="2845382757467349449">ສະແດງແຖບບຸກມາກສ໌ທຸກຄັ້ງ</translation>
@@ -2379,7 +2371,6 @@
 <translation id="3365651640097487828">ເພື່ອແບ່ງປັນແຖບ ແລະ ຮ່ວມມືກັບຜູ້ອື່ນ, ໃຫ້ຢັ້ງຢືນວ່າມັນເປັນທ່ານ ແລ້ວຊິ້ງປະ​ຫວັດ​ ແລະ ແຖບຂອງທ່ານ</translation>
 <translation id="3368662179834713970">ເຮືອນ</translation>
 <translation id="3369624026883419694">ກໍາລັງແກ້ໄຂ​ແມ່​ຂ່າຍ...</translation>
-<translation id="3371140690572404006">ອຸປະກອນ USB-C (ຊ່ອງທາງໜ້າເບື້ອງຂວາ)</translation>
 <translation id="3372602033006349389">ຢູ່ອຸປະກອນອື່ນ</translation>
 <translation id="337286756654493126">ອ່ານ​​ໂຟລ​ເດີ​ທີ່​ທ່ານ​ເປີດ​ໃນ​ແອ​ັບພະລິ​ເຄຊັນ</translation>
 <translation id="3373059063088819384">ເປີດໃນໂໝດການອ່ານ</translation>
@@ -2466,7 +2457,6 @@
 <translation id="3445140416168872040">ລຶບການອະນຸຍາດອອກສຳລັບ <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="344537926140058498">ອົງການຂອງທ່ານບລັອກໄຟລ໌ນີ້ໄວ້ເນື່ອງຈາກມັນມີເນື້ອຫາທີ່ລະອຽດອ່ອນ ຫຼື ເປັນອັນຕະລາຍ. ກະລຸນາຂໍໃຫ້ເຈົ້າຂອງມັນແກ້ໄຂ.</translation>
-<translation id="3445925074670675829">ອຸ​ປະ​ກອນ USB-C</translation>
 <translation id="344630545793878684">ອ່ານ​ຂໍ້​ມູນ​ຂອງ​ທ່ານ​ຢູ່​ເທິງຫຼາຍ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="3447797901512053632">ກຳລັງສົ່ງສັນຍານ <ph name="TAB_NAME" /> ຫາ <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">ອັບເດດບັນຊີ</translation>
@@ -3063,7 +3053,6 @@
 <translation id="3994522032746736727">ເຂົ້າສູ່ລະບົບໃນຖານະ <ph name="EMAIL" /></translation>
 <translation id="3994708120330953242">ພົບລະຫັດຜ່ານຂອງທ່ານຈຳນວນໜຶ່ງໃນການລະເມີດຂໍ້ມູນ. ເພື່ອຮັກສາບັນຊີຂອງທ່ານໃຫ້ປອດໄພ, ທ່ານຄວນປ່ຽນລະຫັດຜ່ານເຫຼົ່ານີ້ດຽວນີ້.</translation>
 <translation id="3994878504415702912">ຊູມ</translation>
-<translation id="3995138139523574647">ອຸປະກອນ USB-C (ຊ່ອງທາງຫຼັງເບື້ອງຂວາ)</translation>
 <translation id="3995963973192100066">ຫຼິ້ນອະນິເມຊັນ</translation>
 <translation id="399788104667917863">ປັກໝຸດໄວ້ຢູ່ແຖບເຄື່ອງມື</translation>
 <translation id="3998431043924115701">ຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານເລືອກເບິ່ງ</translation>
@@ -4342,7 +4331,6 @@
 <translation id="5327912693242073631">ຄຸນສົມບັດທີ່ຕ້ອງການການແຈ້ງເຕືອນຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="5328551442597731838">ເບິ່ງແຖບຈາກອຸປະກອນອື່ນໆ</translation>
 <translation id="5329858601952122676">ລຶບ</translation>
-<translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
 <translation id="5334142896108694079">ແຄຊ໌ຕົວໜັງສື</translation>
 <translation id="5335370353987155592">ໃຊ້ Gemini ຢ່າງລະມັດລະວັງ ແລະ <ph name="BEGIN_LINK1" />ປອດໄພ<ph name="LINK_END1" />. ທ່ານຕ້ອງເປັນຜູ້ຮັບຜິດຊອບຕໍ່ການດຳເນີນການຂອງ Gemini ໃນລະຫວ່າງທີ່ເຮັດໜ້າວຽກ, ເຊິ່ງຮວມທັງຂໍ້ຜິດພາດ ແລະ <ph name="BEGIN_LINK2" />ຜົນໄດ້ຮັບທີ່ບໍ່ຄາດຄິດ<ph name="LINK_END2" /> ເຊັ່ນ: ການຊື້ຕ່າງໆ.</translation>
 <translation id="5336688142483283574">ໜ້ານີ້ຈະຖືກລຶບອອກຈາກປະຫວັດ ແລະ ການເຄື່ອນໄຫວໃນ <ph name="SEARCH_ENGINE" /> ຂອງທ່ານເຊັ່ນກັນ.</translation>
@@ -4450,7 +4438,6 @@
 <translation id="5444452275167152925">ນຳເຂົ້າຈາກ ChromeOS</translation>
 <translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">ລະດົມແນວຄິດ</translation>
-<translation id="5449551289610225147">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5449588825071916739">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ</translation>
 <translation id="5449716055534515760">ປິດໜ້າຕ່າງ</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> ເພື່ອສຳຫຼວດອຸປະກອນ Bluetooth</translation>
@@ -5411,7 +5398,6 @@
 <translation id="6459488832681039634">ໃຊ້ການເລືອກເພື່ອຊອກຫາ</translation>
 <translation id="6459799433792303855">ຍ້າຍໜ້າຈໍທີ່ເປີດຢູ່ໄປຫາຈໍສະແດງຜົນອື່ນແລ້ວ.</translation>
 <translation id="6460601847208524483">ຊອກ​ຫາ​ຕໍ່​ໄປ</translation>
-<translation id="6461170143930046705">ກຳລັງຊອກຫາເຄືອຂ່າຍ...</translation>
 <translation id="6463668944631062248">ຕອບຮັບຄຳຮ້ອງຂໍການສົ່ງສັນຍານຢູ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
 <translation id="6463795194797719782">ແກ້ໄຂ</translation>
 <translation id="6464825623202322042">ອຸ​ປະ​ກອນ​ນີ້</translation>
@@ -5435,7 +5421,6 @@
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{ເກັບກຸ່ມແຖບໄວ້ບໍ?}other{ເກັບກຸ່ມແຖບໄວ້ບໍ?}}</translation>
 <translation id="6486301003991593638">ເພື່ອຈັດການກະແຈຜ່ານ, ໃຫ້ໃຊ້ Windows ເວີຊັນໃໝ່ກວ່າ</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານວ່າມີການຮົ່ວໄຫຼຂອງຂໍມູນຫຼືບໍ່ໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
-<translation id="6490471652906364588">ອຸ​ປະ​ກອນ USB-C (ຊ່ອງ​ຂວາ)</translation>
 <translation id="6491890991754498129">ເປີດ &amp;ດ້ວຍ...</translation>
 <translation id="649396225532207613">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍກັບບັນຊີສ່ວນຕົວ ແລະ ບັນຊີເຄືອຂ່າຍສັງຄົມຂອງທ່ານ</translation>
 <translation id="6493991254603208962">ຄວາມສະຫວ່າງ​ລົງ</translation>
@@ -6064,7 +6049,6 @@
 <translation id="7094768688212290897">ມະຫາປີລະມິດແຫ່ງກິຊາ</translation>
 <translation id="7094834615934458012">ອະນຸຍາດໃຫ້ເວັບໄຊນີ້ແກ້ໄຂໄຟລ໌ບໍ?</translation>
 <translation id="7096904522553867921">ທ່ານສາມາດຍ້າຍແຖບຂອງທ່ານກັບຄືນໄປໄວ້ເທິງສຸດໄດ້ໂດຍຄລິກຂວາໃສ່ແຖບໃດກໍໄດ້ແລ້ວເລືອກ “ສະແດງແຖບໃນແນວນອນ”</translation>
-<translation id="7098389117866926363">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານດ້ານ​ຊ້າຍ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>
 <translation id="7098447629416471489">ໂປຣແກຣມຊອກຫາທີ່ບັນທຶກໄວ້ອື່ນຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ລຶບແອັບອອກ}other{ລຶບແອັບອອກ}}</translation>
 <translation id="7099027177878709408">&amp;ປິດ</translation>
@@ -6314,7 +6298,6 @@
 <translation id="7341834142292923918">ຕ້ອງການເຂົ້າເຖິງເວັບໄຊນີ້</translation>
 <translation id="7343372807593926528">ກະລຸນາອະທິບາຍບັນຫາກ່ອນທີ່ຈະສົ່ງຄຳຕິຊົມ.</translation>
 <translation id="7344585835349671209">ຈັດການໃບຮັບຮອງ HTTPS/SSL ຢູ່ອຸປະກອນຂອງທ່ານ</translation>
-<translation id="7345706641791090287">ຢືນ​ຢັນ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ</translation>
 <translation id="7346909386216857016">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="7347751611463936647">ເພື່ອໃຊ້ສ່ວນຂະຫຍາຍນີ້, ພິມ "<ph name="EXTENSION_KEYWORD" />", ຈາກນັ້ນແຖບ, ຈາກນັ້ນຄໍາສັ່ງ ຫຼືການຄົ້ນຫາຂອງທ່ານ.</translation>
 <translation id="7347943691222276892">ຄລິກເພື່ອອອກຈາກໜ້າ <ph name="SUBPAGE_TITLE" />.</translation>
@@ -7516,7 +7499,6 @@
 <translation id="8551647092888540776">ບໍ່ສາມາດເປີດ <ph name="FILE_NAMES" /> ໄດ້ເມື່ອອອບລາຍ</translation>
 <translation id="8552102814346875916">ບັນທຶກໃສ່ລາຍຊື່ "ເປີດໃຊ້ເວັບໄຊເຫຼົ່ານີ້ໄວ້ຕະຫຼອດ"</translation>
 <translation id="8552947739661397736">ຄວບຄຸມໜ້າວຽກ, ປັດຈຸບັນ Gemini ກຳລັງຄວບຄຸມຢູ່</translation>
-<translation id="8554899698005018844">ບໍ່ມີພາສາ</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - ສະແດງເນື້ອຫາທີ່ຂະຫຍາຍແລ້ວ</translation>
 <translation id="8557022314818157177">ສືບຕໍ່ແຕະກະແຈຄວາມປອດໄພຈົນກວ່າວ່າໄດ້ບັນທຶກລາຍນິ້ວມືຂອງທ່ານໄວ້ແລ້ວ</translation>
 <translation id="8557100046150195444">Touch ID ເພື່ອສືບຕໍ່</translation>
@@ -7876,7 +7858,6 @@
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> ໄດ້ສ້າງລະຫັດຜ່ານຍາກສຳລັບເວັບໄຊນີ້</translation>
 <translation id="890616557918890486">ປ່ຽນແຫຼ່ງ</translation>
 <translation id="8909833622202089127">ເວັບໄຊກຳລັງຕິດຕາມສະຖານທີ່ຂອງທ່ານ</translation>
-<translation id="8910222113987937043">ການປ່ຽນແປງຕໍ່ກັບບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະບໍ່ຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ. ແນວໃດກໍຕາມ, ຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8911478306361447917">ທາງລັດຄຸນສົມບັດ ແລະ ສ່ວນຂະຫຍາຍຂອງທ່ານ</translation>
 <translation id="8912362522468806198">ບັນຊີ Google</translation>
 <translation id="8913485523736543337">ຕົວອັບເດດ</translation>
@@ -7903,7 +7884,6 @@
 <translation id="8933709832356869375">ແອັບທີ່ຕິດຕັ້ງ 1 ລາຍການຈະຖືກລຶບອອກ</translation>
 <translation id="8933960630081805351">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ກຳລັງເຂົ້າເຖິງອຸປະກອນ USB}=2{ສ່ວນຂະຫຍາຍທີ່ເຂົ້າເຖິງອຸປະກອນ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{ສ່ວນຂະຫຍາຍທີ່ເຂົ້າເຖິງອຸປະກອນ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ແລະ ອີກ {3} ລາຍການ}}</translation>
-<translation id="8938800817013097409">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານ​ຂວາ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{ໃຊ້ແລ້ວໃນ <ph name="TIME_COUNT" /> ມື້ທີ່ຜ່ານມາ}=1{ໃຊ້ແລ້ວໃນ <ph name="TIME_COUNT" /> ມື້ທີ່ຜ່ານມາ}=2{ໃຊ້ແລ້ວໃນ <ph name="TIME_COUNT" /> ອາທິດທີ່ຜ່ານມາ}other{ໃຊ້ແລ້ວໃນ <ph name="TIME_COUNT" /> ອາທິດທີ່ຜ່ານມາ}}</translation>
 <translation id="8940081510938872932">ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ​ກໍາລັງເຮັດຫຼາຍສິ່ງຫຼາຍຢ່າງເກີນໄປດຽວນີ້. ລອງໃໝ່ອີກພາຍຫຼັງ.</translation>
 <translation id="8941173171815156065">ຖອນ​ໃບ​ອະ​ນຸ​ຍາດ​ '<ph name="PERMISSION" />' ຄືນ</translation>

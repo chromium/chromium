@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Шифрирање на корисничките податоци</translation>
 <translation id="1011003645819296594">Зачувани уреди</translation>
 <translation id="1011355516189274711">Јачина на звук за „Од текст во говор“</translation>
+<translation id="1012876632442809908">USB-Ц уред (предна порта)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Стандардна мрежа</translation>
 <translation id="1026655690966755180">Додајте порта</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Враќање на локалните податоци</translation>
 <translation id="1247372569136754018">Микрофон (внатрешен)</translation>
 <translation id="1251366534849411931">Се очекува лева голема заграда: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Се скенираат мрежи за мобилен интернет…</translation>
 <translation id="1254593899333212300">Директна интернет-врска</translation>
 <translation id="1261380933454402672">Умерено</translation>
 <translation id="1263733306853729545">Користи ги копчињата <ph name="MINUS" /> и <ph name="EQUAL" /> за прелистување список со кандидати</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Својства на говорот</translation>
 <translation id="1291057703584594733">Избирањето веќе доделено дејство ќе го отстрани од неговото првично дејство.</translation>
 <translation id="1291421198328146277">Копчиња за ресетирање</translation>
+<translation id="1293264513303784526">USB-Ц уред (лева порта)</translation>
 <translation id="1293360286536751243">„<ph name="MAIN_GESTURE" />“ може да се преклопува со „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ и „<ph name="CONFLICTING_GESTURE_THREE" />“. Ако е можно, изберете друго движење.</translation>
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1313405956111467313">Автоматска конфигурација на прокси</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Одјави се кога капакот е затворен</translation>
 <translation id="185970820835152459">Може да управувате со најавените сметки на Google. Вашите сметки на Google се користат за прелистувачот Chromium, Play Store, Gmail и друго. Ако сакате да додадете сметка за некој друг, како член на семејството, додајте ново лице во вашиот уред <ph name="DEVICE_TYPE" /> наместо тоа. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Поладни</translation>
+<translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1866589962721094893">Дозволете им на апликациите за Android да ги контролираат USB-уредите на овој Chromebook. Дозвола ќе се бара секојпат кога ќе приклучите USB-уред. Поединечните апликации за Android ќе бараат дополнителни дозволи.</translation>
 <translation id="1877377290348678128">Етикета (незадолжително)</translation>
 <translation id="1877860345998737529">Доделување дејство на прекинувач</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="1938351510777341717">Надворешна наредба</translation>
 <translation id="1940546824932169984">Поврзани уреди</translation>
+<translation id="1941410638996203291">Време на започнување: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Најдено е ажурирање</translation>
 <translation id="1948528728718281125">Пристапот до камерата е дозволен за апликациите, веб-сајтовите со дозволата за камера и системските услуги</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Јазик што се користи за превод на страниците</translation>
 <translation id="2319459402137712349">Изберете поле за текст за да се отвори тастатурата. Можете и да ја изберете иконата за тастатура најдолу на екранот.</translation>
 <translation id="2319993584768066746">Фотографии на екранот за најавување</translation>
+<translation id="2322622365472107569">Време на завршување: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Зачувани Wi-Fi мрежи</translation>
 <translation id="2325444234681128157">Запомни ја лозинката</translation>
 <translation id="2326188115274135041">Потврдете го PIN-кодот за да вклучите автоматско отклучување</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Кратко затворете ги двете очи</translation>
 <translation id="258095186877893873">Долго</translation>
 <translation id="2581786034175502848">Притиснете Shift 5 пати за да ја овозможите повторно</translation>
+<translation id="2581992808349413349">Користете безбедна врска за пребарување на IP-адресата на сајт во DNS (Систем за имиња на домени). Ова користи управуван давател на услуги на <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Не може да се преземе билетот на Kerberos. Обидете се повторно или контактирајте со администраторот на уредот во вашата организација. (Код за грешка <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Управувајте со дозволите за микрофон за веб-сајтовите во Chrome</translation>
 <translation id="2609980095400624569">Не можеше да се воспостави врска</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Дополнителни детали</translation>
 <translation id="2808985063107661499">„<ph name="MAIN_GESTURE" />“ може да се преклопува со „<ph name="CONFLICTING_GESTURE_ONE" />“ и „<ph name="CONFLICTING_GESTURE_TWO" />“. Ако е можно, изберете друго движење.</translation>
 <translation id="2809346626032021864">Читање</translation>
+<translation id="2811205483104563968">Сметки</translation>
 <translation id="2813094189969465044">Родителски контроли</translation>
 <translation id="2817435998497102771">Поставете ваш тапет и стил</translation>
 <translation id="2818476747334107629">Информации за печатачот</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Смали/прошири</translation>
 <translation id="2833144527504272627">Движете се со курсор за текст</translation>
 <translation id="2835177225987815960">Вашето тековно поставување за скенирање ќе се ресетира, вклучително и сите доделени прекинувачи и поставките за брзината на автоматското скенирање.</translation>
+<translation id="2844169650293029770">USB-Ц уред (предна порта од лева страна)</translation>
 <translation id="2844809857160214557">Прегледувајте ги и управувајте со налозите за печатење</translation>
 <translation id="2849035674501872372">Побарајте</translation>
 <translation id="2860710618359053450">Помрднете ја вилицата надесно</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369067987974711168">Прикажи повеќе дејства за портава</translation>
 <translation id="3370260763947406229">Автоматска корекција</translation>
+<translation id="3371140690572404006">USB-Ц уред (предна порта од десна страна)</translation>
 <translation id="3371351218553893534">Линијата е премногу долга: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Дозволите доделени за Steam се применуваат за сите игри и апликации на Steam.</translation>
 <translation id="338323348408199233">Блокирај го сообраќајот без VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Отежнете им на луѓето со пристап до вашиот сообраќај на интернет да гледаат кои сајтови ги отворате. <ph name="PRODUCT_NAME" /> користи безбедна врска за да ја бара IP-адресата на даден сајт во DNS (Систем за имиња на домени).</translation>
 <translation id="3442674350323953953">Дозволете Google да ги користи хардверските податоци за да помогнете да се подобри <ph name="DEVICE_OS" />. Ако одбиете, податоциве сепак ќе се испраќаат во Google за да се одредат соодветните ажурирања, но не се чуваат, ниту се користат на друг начин.</translation>
 <translation id="3445465968953598059">Контрола на лицето</translation>
+<translation id="3445925074670675829">USB-Ц уред</translation>
 <translation id="3448492834076427715">Ажурирајте ја сметката</translation>
 <translation id="345078987193237421">Ова овозможува пристап до камерата за апликациите, веб-сајтовите со дозволата за камера и системските услуги</translation>
 <translation id="3453082738208775226">Да се подзачисти офлајн просторот?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Дефиниција на „Брзи одговори“</translation>
 <translation id="3994075804072562819">Дозволете <ph name="SPECIFIC_NAME" /> да ги контролира USB-уредите.</translation>
 <translation id="3994530503403062649">Лоцирајте ги копчињата на таблетот</translation>
+<translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="3997429360543082038">За Chromium OS</translation>
 <translation id="4001540981461989979">Нагласувај го курсорот на глувчето при движење</translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">Автоматско поставување на временската зона преку вашата локација</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5331568967879689647">Системска апликација Chrome OS</translation>
+<translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="5334113802138581043">Пристап до микрофонот</translation>
 <translation id="5336689872433667741">Курсор и подлога за допир</translation>
 <translation id="5337926771328966926">Името на тековниот уред е <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Овозможи евидентирање звук</translation>
 <translation id="5441133529460183413">Веб-апликација се инсталираше преку прелистувачот Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Погрешна лозинка</translation>
 <translation id="5450469615146335984">Изберете кратенка за секое дејство</translation>
 <translation id="5452446625764825792">Сега можете да ги прегледувате неодамнешните фотографии, аудиовизуелни содржини и апликации од телефонот</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (работи офлајн)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">Користете „Следно“ и „Претходно“ за да се движите помеѓу ставките на екранот</translation>
 <translation id="6452961788130242735">Проблем со мрежата или лош домен</translation>
 <translation id="6453921811609336127">За да се префрлите на следниот метод за внесување, притиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Празно место<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Се пребаруваат мрежи…</translation>
 <translation id="6463488491707167747">Избриши го речников</translation>
 <translation id="6463596731306859179">Добивате несакани скокачки прозорци или се соочувате со неочекувано однесување? Понекогаш, апликациите и екстензиите што ги инсталирате може да ги променат вашите поставки за ChromeOS без да знаете.</translation>
 <translation id="6465841119675156448">Без интернет</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">Дозволете <ph name="SPECIFIC_NAME" /> да пристапува до микрофонот</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
 <translation id="648927581764831596">Ништо не е достапно</translation>
+<translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="6497784818439587832">Променете ја големината на екранот за да се намалат или зголемат ставките на екранот</translation>
 <translation id="6497789971060331894">Обратно лизгање на глувчето</translation>
 <translation id="650185290742160385">Намали го прагот</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">Автоматски исклучувај ја точката на пристап</translation>
 <translation id="7092504544229909737">Не може да се користи со апликации за Android</translation>
 <translation id="7093220653036489319">Брзи одговори</translation>
+<translation id="7098389117866926363">USB-Ц уред (лева порта на задната страна)</translation>
 <translation id="7099337801055912064">Не може да се вчита голема PPD-датотека. Максималната големина е 250 KB.</translation>
 <translation id="7107609441453408294">Пуштајте го истото аудио на сите звучници</translation>
 <translation id="7116931001458704701">Протресете за да го лоцирате курсорот</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">Големина на површина на курсор</translation>
 <translation id="7325209047678309347">Хартијата е заглавена</translation>
 <translation id="7331646370422660166">alt + стрелка надолу</translation>
+<translation id="7345706641791090287">Потврдете ја лозинката</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7360333718677093875">избирач на емоџија</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">Држете го копчето „Пребарување“ за да го промените однесувањето на копчињата во најгорниот ред</translation>
 <translation id="8551588720239073785">Поставки за датум и време</translation>
 <translation id="8553342806078037065">Управувај со другите луѓе</translation>
+<translation id="8554899698005018844">Нема јазик</translation>
 <translation id="8555444629041783356">Автоматски распоред на зајдисонце</translation>
 <translation id="8563043098557365232">Дозволено само за системските услуги</translation>
 <translation id="8571687764447439720">Додајте билет на Kerberos</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">Овозможување мобилна мрежа</translation>
 <translation id="8902667442496790482">Отвори ги поставките за „Изберете за говор“</translation>
 <translation id="8903733144777177139">Пристапот до микрофонот е блокиран</translation>
+<translation id="8910222113987937043">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Овозможете автоматско скенирање</translation>
 <translation id="8922624386829239660">Движи го екранот кога глувчето ги допира рабовите на екранот</translation>
 <translation id="8929738682246584251">Лупата е вклучена/исклучена</translation>
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8931713990831679796">Печатачиве се поврзани и подготвени за користење. Зачувајте на вашиот профил за полесен пристап.</translation>
 <translation id="8932654652795262306">Детали за инстант врзување</translation>
+<translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8940888110818450052">Опции за најавување</translation>
 <translation id="8944099748578356325">Ја троши батеријата побрзо (во моментов <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Големина на иконата</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">Во моментов се користи роаминг</translation>
 <translation id="93393615658292258">Само лозинка</translation>
 <translation id="942296794412775122">Микрофонот е вклучен/исклучен</translation>
+<translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="950307215746360464">Водич за поставување</translation>
 <translation id="952471655966876828">Уредот автоматски ќе се поврзе кога е вклучен или кога се користи</translation>
 <translation id="956013912698841780">Кликнете со десното копче за да резимирате содржини, да добивате дефиниции, да пишувате самоуверено, да создавате слики и друго. Во моментов има ограничена достапност.</translation>

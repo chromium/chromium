@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Pag-encrypt ng data ng user</translation>
 <translation id="1011003645819296594">Mga na-save na device</translation>
 <translation id="1011355516189274711">Volume ng text-to-speech</translation>
+<translation id="1012876632442809908">USB-C device (port sa harap)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Default ng network</translation>
 <translation id="1026655690966755180">Magdagdag ng Port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Pag-recover ng lokal na data</translation>
 <translation id="1247372569136754018">Mikropono (internal)</translation>
 <translation id="1251366534849411931">Inaasahang opening curly brace: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Nagsa-scan para sa mga mobile data network...</translation>
 <translation id="1254593899333212300">Direktang koneksyon ng Internet</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="1263733306853729545">Gamitin ang <ph name="MINUS" /> at <ph name="EQUAL" /> na mga key para ilagay sa page ang isang listahan ng kandidato</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Mga Property ng Pagsasalita</translation>
 <translation id="1291057703584594733">Kapag pumili ng naitakda nang galaw, maaalis ito sa orihinal nitong aksyon.</translation>
 <translation id="1291421198328146277">I-reset ang mga key</translation>
+<translation id="1293264513303784526">USB-C device (port sa kaliwa)</translation>
 <translation id="1293360286536751243">Posibleng mag-overlap ang "<ph name="MAIN_GESTURE" />" sa "<ph name="CONFLICTING_GESTURE_ONE" />," "<ph name="CONFLICTING_GESTURE_TWO" />," at "<ph name="CONFLICTING_GESTURE_THREE" />." Kung posible, subukang pumili ng ibang galaw.</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1313405956111467313">Awtomatikong proxy configuration</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Mag-sign out kapag isinara ang takip</translation>
 <translation id="185970820835152459">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chromium browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Cooler</translation>
+<translation id="1864454756846565995">USB-C device (port sa rear)</translation>
 <translation id="1866589962721094893">Bigyan ang mga Android app ng kontrol sa mga USB device sa Chromebook na ito. Magre-request ng pahintulot sa tuwing magsasaksak ka ng USB device. Hihiling ang mga indibidwal na Android app ng mga karagdagang pahintulot.</translation>
 <translation id="1877377290348678128">Label (opsyonal)</translation>
 <translation id="1877860345998737529">Pagtatakda ng switch sa pagkilos</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Mga Update</translation>
 <translation id="1938351510777341717">External na Command</translation>
 <translation id="1940546824932169984">Mga nakakonektang device</translation>
+<translation id="1941410638996203291">Oras ng pagsisimula <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Bersyon: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">May nahanap na update</translation>
 <translation id="1948528728718281125">Pinapayagan ang access sa camera para sa mga app, website na may pahintulot sa camera, at serbisyo ng system</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Ginagamit na wika kapag nagsasalin ng mga page</translation>
 <translation id="2319459402137712349">Pumili ng field ng text para buksan ang keyboard. Puwede mo ring piliin ang icon ng Keyboard sa ibaba ng iyong screen.</translation>
 <translation id="2319993584768066746">Mga larawan sa screen sa pag-sign in</translation>
+<translation id="2322622365472107569">Oras ng pagtatapos <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Mga naka-save na Wi-Fi network</translation>
 <translation id="2325444234681128157">Tandaan ang password</translation>
 <translation id="2326188115274135041">Kumpirmahin ang PIN para i-on ang awtomatikong pag-unlock</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Panandaliang ipikit ang dalawang mata</translation>
 <translation id="258095186877893873">Matagal</translation>
 <translation id="2581786034175502848">Pindutin ang shift nang 5 beses para i-enable ulit ito</translation>
+<translation id="2581992808349413349">Gumamit ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System). Gumagamit ito ng pinapamahalaang service provider sa <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Hindi makuha ang ticket ng Kerberos. Subukan ulit, o makipag-ugnayan sa admin ng device ng iyong organisasyon. (Code ng error <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Pamahalaan ang mga pahintulot sa mikropono ng website sa Chrome</translation>
 <translation id="2609980095400624569">Hindi makakonekta</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Mga karagdagang detalye</translation>
 <translation id="2808985063107661499">Posibleng mag-overlap ang "<ph name="MAIN_GESTURE" />" sa "<ph name="CONFLICTING_GESTURE_ONE" />" at "<ph name="CONFLICTING_GESTURE_TWO" />." Kung posible, subukang pumili ng ibang galaw.</translation>
 <translation id="2809346626032021864">Pagbabasa</translation>
+<translation id="2811205483104563968">Mga Account</translation>
 <translation id="2813094189969465044">Mga kontrol ng magulang</translation>
 <translation id="2817435998497102771">Itakda ang iyong wallpaper at style</translation>
 <translation id="2818476747334107629">Mga detalye ng printer</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Paliitin / Palawakin</translation>
 <translation id="2833144527504272627">Mag-navigate gamit ang cursor ng text</translation>
 <translation id="2835177225987815960">Mare-reset ang iyong kasalukuyang setup ng pag-scan, kasama ang anumang nakatalagang switch at kagustuhan sa bilis ng awtomatikong pag-scan.</translation>
+<translation id="2844169650293029770">USB-C device (port sa kaliwang bahagi sa harap)</translation>
 <translation id="2844809857160214557">Tingnan at pamahalaan ang mga pag-print</translation>
 <translation id="2849035674501872372">Maghanap</translation>
 <translation id="2860710618359053450">Ipaling pakanan ang panga</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369067987974711168">Magpakita pa ng mga pagkilos para sa port na ito</translation>
 <translation id="3370260763947406229">Awtomatikong pagwawasto</translation>
+<translation id="3371140690572404006">USB-C device (port sa kanang bahagi sa harap)</translation>
 <translation id="3371351218553893534">Masyadong mahaba ang linya: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Nalalapat ang mga pahintulot na pinayagan para sa Steam sa lahat ng laro at app ng Steam.</translation>
 <translation id="338323348408199233">I-block ang trapiko nang walang VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang <ph name="PRODUCT_NAME" /> ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Hayaan ang Google na gamitin ang data ng iyong hardware para makatulong na mapahusay ang <ph name="DEVICE_OS" />. Kung tatanggi ka, ipapadala pa rin ang data na ito sa Google para makatukoy ng mga angkop na update, pero hindi ito iso-store o gagamitin sa ibang paraan.</translation>
 <translation id="3445465968953598059">Pagkontrol gamit ang mukha</translation>
+<translation id="3445925074670675829">USB-C device</translation>
 <translation id="3448492834076427715">I-update ang account</translation>
 <translation id="345078987193237421">Pinapayagan nito ang access sa camera para sa mga app, website na may pahintulot sa camera, at serbisyo ng system</translation>
 <translation id="3453082738208775226">Linisin ang offline na storage?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Kahulugan ng Instant na Impormasyon</translation>
 <translation id="3994075804072562819">Bigyan ang <ph name="SPECIFIC_NAME" /> ng kontrol sa mga USB device.</translation>
 <translation id="3994530503403062649">Magtakda ng mga button sa iyong tablet</translation>
+<translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
 <translation id="3997429360543082038">Tungkol sa ChromiumOS</translation>
 <translation id="4001540981461989979">I-highlight ang cursor ng mouse kapag gumagalaw</translation>
 <translation id="4005817994523282006">Paraan ng pagtukoy ng time zone</translation>
@@ -1327,6 +1339,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5324780743567488672">Awtomatikong itakda ang time zone gamit ang iyong lokasyon</translation>
 <translation id="5327248766486351172">Pangalan</translation>
 <translation id="5331568967879689647">App ng System ng ChromeOS</translation>
+<translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
 <translation id="5334113802138581043">Access sa mikropono</translation>
 <translation id="5336689872433667741">Cursor at touchpad</translation>
 <translation id="5337926771328966926">Ang <ph name="DEVICE_NAME" /> ang kasalukuyang device</translation>
@@ -1350,6 +1363,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5435274640623994081">I-enable ang pag-log ng earcon</translation>
 <translation id="5441133529460183413">Na-install ang Web App mula sa Chrome browser</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Di-wastong password</translation>
 <translation id="5450469615146335984">Pumili ng shortcut para sa bawat pagkilos</translation>
 <translation id="5452446625764825792">Puwede mo nang tingnan ang mga pinakabagong larawan, media, at app ng iyong telepono</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (gumagana offline)</translation>
@@ -1645,6 +1659,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6444147596556711162">Gamitin ang “Susunod“ at “Nakaraan“ para magpalipat-lipat sa mga item sa screen</translation>
 <translation id="6452961788130242735">May problema sa network o sira ang realm</translation>
 <translation id="6453921811609336127">Para lumipat sa susunod na pamamaraan ng pag-input, pindutin ang <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Naghahanap ng mga network...</translation>
 <translation id="6463488491707167747">I-delete ang diksyunaryong ito</translation>
 <translation id="6463596731306859179">Nakakatanggap ng mga hindi gustong pop-up, o iba pang hindi inaasahang gawi? Kung minsan, puwedeng mabago ng mga app at extension na ini-install mo ang mga setting ng iyong ChromeOS nang hindi mo alam.</translation>
 <translation id="6465841119675156448">Nang walang internet</translation>
@@ -1661,6 +1676,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="648204537326351595">Payagan ang <ph name="SPECIFIC_NAME" /> na i-access ang mikropono mo</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="648927581764831596">Walang available</translation>
+<translation id="6490471652906364588">USB-C device (port sa kanan)</translation>
 <translation id="6497784818439587832">Baguhin ang laki ng display para paliitin o palakihin ang mga item sa iyong screen</translation>
 <translation id="6497789971060331894">Reverse na pag-scroll gamit ang mouse</translation>
 <translation id="650185290742160385">Babaan ang threshold</translation>
@@ -1825,6 +1841,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7090714929377281710">Awtomatikong i-off ang hotspot</translation>
 <translation id="7092504544229909737">Hindi magagamit sa mga Android app</translation>
 <translation id="7093220653036489319">Instant na impormasyon</translation>
+<translation id="7098389117866926363">USB-C device (kaliwang port sa likod)</translation>
 <translation id="7099337801055912064">Hindi makapag-load ng malaking PPD. 250kB ang maximum na laki.</translation>
 <translation id="7107609441453408294">I-play ang iisang audio sa lahat ng speaker</translation>
 <translation id="7116931001458704701">I-shake para hanapin ang cursor</translation>
@@ -1886,6 +1903,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7323315405936922211">Laki ng lugar ng cursor</translation>
 <translation id="7325209047678309347">Nag-jam ang papel</translation>
 <translation id="7331646370422660166">alt + pababang arrow</translation>
+<translation id="7345706641791090287">Kumpirmahin ang iyong password</translation>
 <translation id="7348093485538360975">Nasa screen na keyboard</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7360333718677093875">picker ng emoji</translation>
@@ -2263,6 +2281,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="85486688517848470">Pindutin nang matagal ang Key sa paghahanap upang palitan ang gawi ng mga key sa itaas na row</translation>
 <translation id="8551588720239073785">Mga setting ng petsa at oras</translation>
 <translation id="8553342806078037065">Pamahalaan ang iba pang tao</translation>
+<translation id="8554899698005018844">Walang wika</translation>
 <translation id="8555444629041783356">Awtomatikong iskedyul ng paglubog ng araw</translation>
 <translation id="8563043098557365232">Pinapayagan lang sa mga serbisyo ng system</translation>
 <translation id="8571687764447439720">Magdagdag ng ticket ng Kerberos</translation>
@@ -2369,12 +2388,14 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="8900413463156971200">I-enable ang Cellular</translation>
 <translation id="8902667442496790482">Buksan ang mga setting ng Select to Speak</translation>
 <translation id="8903733144777177139">Naka-block ang access sa mikropono</translation>
+<translation id="8910222113987937043">Hindi na isi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store sa Google Account mo ang iyong kasalukuyang data at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">I-enable ang awtomatikong pag-scan</translation>
 <translation id="8922624386829239660">Igalaw ang screen kapag napunta ang mouse sa mga gilid ng screen</translation>
 <translation id="8929738682246584251">I-on/i-off ang magnifier</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931713990831679796">Nakakonekta at handa nang magamit ang mga printer na ito. I-save sa iyong profile para sa mas madaling pag-access.</translation>
 <translation id="8932654652795262306">Mga detalye ng Instant na Pag-tether</translation>
+<translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8940888110818450052">Mga opsyon sa pag-sign in</translation>
 <translation id="8944099748578356325">Mas mabilis na mauubos ang baterya (kasalukuyang <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Laki ng icon</translation>
@@ -2471,6 +2492,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="930893132043726269">Kasalukuyang nagro-roam</translation>
 <translation id="93393615658292258">Password lang</translation>
 <translation id="942296794412775122">I-on/i-off ang mikropono</translation>
+<translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="950307215746360464">Gabay sa pag-set up</translation>
 <translation id="952471655966876828">Awtomatikong makokonekta ang device kapag na-on at ginagamit ito</translation>
 <translation id="956013912698841780">Mag-right click para magbuod ng content, makakuha ng mga kahulugan, magsulat nang mas may kumpiyansa, gumawa ng mga imahe, at higit pa. Kasalukuyang may limitadong availability.</translation>

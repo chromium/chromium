@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">User data encryption</translation>
 <translation id="1011003645819296594">Saved devices</translation>
 <translation id="1011355516189274711">Text-to-speech volume</translation>
+<translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Network default</translation>
 <translation id="1026655690966755180">Add port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Local data recovery</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Scanning for mobile data networks…</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="1263733306853729545">Use <ph name="MINUS" /> and <ph name="EQUAL" /> keys to page a candidate list</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Speech properties</translation>
 <translation id="1291057703584594733">Selecting an already assigned gesture will remove it from its original action.</translation>
 <translation id="1291421198328146277">Reset keys</translation>
+<translation id="1293264513303784526">USB-C device (left port)</translation>
 <translation id="1293360286536751243">'<ph name="MAIN_GESTURE" />' may overlap with '<ph name="CONFLICTING_GESTURE_ONE" />', '<ph name="CONFLICTING_GESTURE_TWO" />' and '<ph name="CONFLICTING_GESTURE_THREE" />'. If possible, try picking a different gesture.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1313405956111467313">Automatic proxy configuration</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Sign out when lid is closed</translation>
 <translation id="185970820835152459">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Cooler</translation>
+<translation id="1864454756846565995">USB-C device (rear port)</translation>
 <translation id="1866589962721094893">Give Android apps control over USB devices on this Chromebook. Permission will be requested each time that you plug in a USB device. Individual Android apps will ask for additional permissions.</translation>
 <translation id="1877377290348678128">Label (optional)</translation>
 <translation id="1877860345998737529">Switch action assignment</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Updates</translation>
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940546824932169984">Connected devices</translation>
+<translation id="1941410638996203291">Start time <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Update found</translation>
 <translation id="1948528728718281125">Camera access is allowed for apps, websites with the camera permission and system services</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Language used when translating pages</translation>
 <translation id="2319459402137712349">Select a text field to open the keyboard. You can also select the keyboard icon at the bottom of your screen.</translation>
 <translation id="2319993584768066746">Sign-in screen photos</translation>
+<translation id="2322622365472107569">End time <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
 <translation id="2325444234681128157">Remember password</translation>
 <translation id="2326188115274135041">Confirm PIN to turn on automatic unlock</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Briefly close both eyes</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581786034175502848">Press shift 5 times to re-enable it</translation>
+<translation id="2581992808349413349">Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Couldn't get Kerberos ticket. Try again, or contact your organisation's device admin. (Error code <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Manage website microphone permissions in Chrome</translation>
 <translation id="2609980095400624569">Could not establish connection</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Additional details</translation>
 <translation id="2808985063107661499">'<ph name="MAIN_GESTURE" />' may overlap with '<ph name="CONFLICTING_GESTURE_ONE" />' and '<ph name="CONFLICTING_GESTURE_TWO" />'. If possible, try picking a different gesture.</translation>
 <translation id="2809346626032021864">Reading</translation>
+<translation id="2811205483104563968">Accounts</translation>
 <translation id="2813094189969465044">Parental controls</translation>
 <translation id="2817435998497102771">Set your wallpaper and style</translation>
 <translation id="2818476747334107629">Printer details</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Shrink/Expand</translation>
 <translation id="2833144527504272627">Navigate with text cursor</translation>
 <translation id="2835177225987815960">Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.</translation>
+<translation id="2844169650293029770">USB-C device (left side front port)</translation>
 <translation id="2844809857160214557">View and manage print jobs</translation>
 <translation id="2849035674501872372">Look up</translation>
 <translation id="2860710618359053450">Shift jaw right</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369067987974711168">Show more actions for this port</translation>
 <translation id="3370260763947406229">Auto-correction</translation>
+<translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3371351218553893534">Line is too long: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Permissions allowed for Steam apply to all Steam games and apps.</translation>
 <translation id="338323348408199233">Block traffic without VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Make it harder for people with access to your Internet traffic to see which sites you visit. <ph name="PRODUCT_NAME" /> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise.</translation>
 <translation id="3445465968953598059">Facial control</translation>
+<translation id="3445925074670675829">USB-C device</translation>
 <translation id="3448492834076427715">Update account</translation>
 <translation id="345078987193237421">This allows camera access for apps, websites with the camera permission and system services</translation>
 <translation id="3453082738208775226">Clean up offline storage?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Quick Answers definition</translation>
 <translation id="3994075804072562819">Give <ph name="SPECIFIC_NAME" /> control over USB devices.</translation>
 <translation id="3994530503403062649">Locate buttons on your tablet</translation>
+<translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="3997429360543082038">About Chromium OS</translation>
 <translation id="4001540981461989979">Highlight mouse cursor when moving</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
@@ -1327,6 +1339,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5331568967879689647">Chrome OS system app</translation>
+<translation id="5331975486040154427">USB-C device (left side back port)</translation>
 <translation id="5334113802138581043">Microphone access</translation>
 <translation id="5336689872433667741">Cursor and touchpad</translation>
 <translation id="5337926771328966926">Current device name is <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5435274640623994081">Enable earcon logging</translation>
 <translation id="5441133529460183413">Web app installed from Chrome browser</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Invalid password</translation>
 <translation id="5450469615146335984">Select a shortcut for each action</translation>
 <translation id="5452446625764825792">You can now view your phone's recent photos, media and apps</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (works offline)</translation>
@@ -1645,6 +1659,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6444147596556711162">Use 'Next' and 'Previous' to move between items on the screen</translation>
 <translation id="6452961788130242735">Network problem or bad realm</translation>
 <translation id="6453921811609336127">To switch to the next input method, press <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Searching for networks...</translation>
 <translation id="6463488491707167747">Delete this dictionary</translation>
 <translation id="6463596731306859179">Getting unwanted pop-ups, or other unexpected behaviour? Sometimes, apps and extensions that you install can change your ChromeOS settings without you knowing.</translation>
 <translation id="6465841119675156448">Without Internet</translation>
@@ -1661,6 +1676,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="648204537326351595">Allow <ph name="SPECIFIC_NAME" /> to access your microphone</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="648927581764831596">None available</translation>
+<translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="650185290742160385">Decrease threshold</translation>
@@ -1825,6 +1841,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7090714929377281710">Automatically turn off hotspot</translation>
 <translation id="7092504544229909737">Can't be used with Android apps</translation>
 <translation id="7093220653036489319">Quick Answers</translation>
+<translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7099337801055912064">Can’t load large PPD. Maximum size is 250 KB.</translation>
 <translation id="7107609441453408294">Play the same audio through all speakers</translation>
 <translation id="7116931001458704701">Shake to locate cursor</translation>
@@ -1886,6 +1903,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7323315405936922211">Cursor area size</translation>
 <translation id="7325209047678309347">Paper is jammed</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
+<translation id="7345706641791090287">Confirm your password</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7360333718677093875">emoji picker</translation>
@@ -2262,6 +2280,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="85486688517848470">Hold the Search key to switch the behaviour of the top-row keys</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
 <translation id="8553342806078037065">Manage other people</translation>
+<translation id="8554899698005018844">No language</translation>
 <translation id="8555444629041783356">Automatic sunset schedule</translation>
 <translation id="8563043098557365232">Only allowed for system services</translation>
 <translation id="8571687764447439720">Add Kerberos ticket</translation>
@@ -2368,12 +2387,14 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="8900413463156971200">Enable mobile</translation>
 <translation id="8902667442496790482">Open Select to Speak settings</translation>
 <translation id="8903733144777177139">Microphone access is blocked</translation>
+<translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Enable auto-scan</translation>
 <translation id="8922624386829239660">Move screen when mouse touches edges of screen</translation>
 <translation id="8929738682246584251">Magnifier on/off</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931713990831679796">These printers are connected and ready to use. Save to your profile for easier access.</translation>
 <translation id="8932654652795262306">Instant Tethering details</translation>
+<translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8940888110818450052">Sign-in options</translation>
 <translation id="8944099748578356325">Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Icon size</translation>
@@ -2470,6 +2491,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="930893132043726269">Currently roaming</translation>
 <translation id="93393615658292258">Password only</translation>
 <translation id="942296794412775122">Microphone on/off</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="950307215746360464">Setup guide</translation>
 <translation id="952471655966876828">Device will connect automatically when it's turned on and is being used</translation>
 <translation id="956013912698841780">Right-click to summarise content, get definitions, write with more confidence, create images and more. Currently has limited availability.</translation>

@@ -129,6 +129,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1460751212339734034">시간은 아끼고, 입력은 줄이고</translation>
 <translation id="146522654774760805">비밀번호 및 자동 완성</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
+<translation id="1473344277210704336">새로운 하단 툴바에서 Gemini와 필수 항목을 확인하세요</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="147982357559798527">변경됨</translation>
 <translation id="1480287803138246127">일부 방문 기록이 여기에 표시되지 않을 수 있습니다. 모든 Chrome 방문 기록을 보려면 전체 Chrome 방문 기록을 여세요.</translation>
@@ -907,6 +908,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> 계정으로 로그인된 상태를 유지했습니다</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> 멤버십 보유.</translation>
 <translation id="4572422548854449519">관리 계정에 로그인</translation>
 <translation id="4577115723294378384">오름차순으로 정렬</translation>
 <translation id="4578289292431526768">시작</translation>
@@ -914,6 +916,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4585751637295612750">새 탭을 열어 질문에 추가하세요.</translation>
 <translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4587589328781138893">사이트</translation>
+<translation id="4587590257937792551">Chrome에 편의성을 위해 만들어진 새로운 하단 툴바가 추가되었습니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4595237294768457124">새 탭 페이지를 엽니다.</translation>
 <translation id="4595276580892809760">갤러리에서 이미지 첨부</translation>
@@ -1451,6 +1454,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
 <translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리하기<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">하단 툴바에서 바로 필수 항목을 확인하세요. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
 <translation id="6642299196749785472">탭 연결</translation>
 <translation id="6647441008198474441">다음에 방문할 사이트를 예측하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
@@ -1649,6 +1653,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, 선택되고 고정되고 공유 중인 탭</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7314734791127433392">비밀번호를 확인할 수 없음</translation>
+<translation id="7324177883197548771">Chrome에 편의성을 위해 만들어진 새로운 디자인이 적용되었습니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7333041109965360609">알림을 수신 거부했습니다</translation>
 <translation id="7335766481146072567">계속을 누릅니다.</translation>
@@ -1750,6 +1755,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7697383401610880082">드래그 핸들</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
 <translation id="7702420606070050505">최근 활동 하단 시트가 전체 높이로 열림</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> 멤버십 보유.</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7708994397325774423">모든 비밀번호 가져오기</translation>
 <translation id="7714077993070342304">Chrome 메뉴 열기</translation>

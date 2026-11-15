@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">ダウンロードを中止しますか？</translation>
 <translation id="4796496140132859135">タブグループ。閉じています。</translation>
 <translation id="4800912004582762296">クリックしています</translation>
+<translation id="4800930308997591052"><ph name="EMAIL" /> に切り替えると、デバイス間でタブをシームレスに共有し、Google アカウントに保存されたパスワードやブックマークなどをすぐに使えます。</translation>
 <translation id="4802185666270672526">[PC 版サイトを見る] を非表示</translation>
 <translation id="4803185665210547709">組織によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7618220760967055820">ツールバーに表示するボタンを選択してください</translation>
 <translation id="7620522820075868385">キャンセル</translation>
 <translation id="762078666799342162">以前にダウンロードしたファイルは、<ph name="BEGIN_LINK" />ファイル<ph name="END_LINK" />で確認できます</translation>
+<translation id="7636034359405891151">パソコンでの作業の続きを再開</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{不正使用されたパスワード}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="7640669552036055091">Android で開いたタブ</translation>

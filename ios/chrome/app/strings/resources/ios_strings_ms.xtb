@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2975761176769946178">URL diperlukan</translation>
 <translation id="297667759942911166">Bekerjasama dalam kumpulan tab</translation>
+<translation id="2986080119218811913">Kembali kepada <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Untuk menggunakan Gemini dalam Chrome, log masuk ke Chrome dengan Google Account anda</translation>
 <translation id="2987670534697681860">Sahkan identiti anda untuk mengakses semua kata laluan anda pada peranti ini.</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
@@ -1291,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Password Manager tidak mengandungi kata laluan untuk laman ini. Kembali kepada <ph name="ACTOR_NAME" /> untuk log masuk atau tambahkan kata laluan pada Google Password Manager.</translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5007392906805964215">Semak</translation>
 <translation id="5009127379503001909">Teruskan semak imbas</translation>

@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Stöðva niðurhal?</translation>
 <translation id="4796496140132859135">Flipahópur. Minnkaður.</translation>
 <translation id="4800912004582762296">Smellir á</translation>
+<translation id="4800930308997591052">Skiptu yfir í <ph name="EMAIL" /> til að deila flipum á milli tækjanna þinna og fá aðgang að aðgangsorðunum þínum, bókamerkjum og fleiru á Google-reikningnum þínum.</translation>
 <translation id="4802185666270672526">Fela „Biðja um tölvuvefsvæði“</translation>
 <translation id="4803185665210547709">Stjórnað af fyrirtækinu þínu.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7618220760967055820">Veldu hvaða hnapp á að hafa á tækjastikunni</translation>
 <translation id="7620522820075868385">Hætta við</translation>
 <translation id="762078666799342162">Þú getur skoðað eldri niðurhöl í <ph name="BEGIN_LINK" />Skrár<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Haltu áfram þar sem frá var horfið í tölvunni</translation>
 <translation id="7638584964844754484">Rangt aðgangsorð</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="7640669552036055091">Flipar úr Android</translation>

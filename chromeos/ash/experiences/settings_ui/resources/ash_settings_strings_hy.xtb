@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Օգտատիրոջ տվյալների գաղտնագրում</translation>
 <translation id="1011003645819296594">Պահված սարքեր</translation>
 <translation id="1011355516189274711">Տեքստի հնչեցման ձայնի ուժգնությունը</translation>
+<translation id="1012876632442809908">USB-C սարք (առջևի միացք)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Կանխադրված ցանց</translation>
 <translation id="1026655690966755180">Ավելացնել միացք</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Սարքի տվյալների վերականգնում</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
 <translation id="1251366534849411931">Պակասում է բացող ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Բջջային ինտերնետի ցանցերի որոնում…</translation>
 <translation id="1254593899333212300">Համացանցի անմիջական կապակցում</translation>
 <translation id="1261380933454402672">Չափավոր</translation>
 <translation id="1263733306853729545">«<ph name="MINUS" />» և «<ph name="EQUAL" />» ստեղները թույլ են տալիս թերթել տարբերակների ցանկը</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Ձայնի կարգավորումներ</translation>
 <translation id="1291057703584594733">Եթե ընտրեք արդեն նշանակված ժեստ, այն կհեռացվի սկզբնական գործողությունից։</translation>
 <translation id="1291421198328146277">Վերակայել ստեղների կարգավորումները</translation>
+<translation id="1293264513303784526">USB-C սարք (ձախ միացք)</translation>
 <translation id="1293360286536751243">«<ph name="MAIN_GESTURE" />» ժեստը կարող է հակասել «<ph name="CONFLICTING_GESTURE_ONE" />», «<ph name="CONFLICTING_GESTURE_TWO" />» և «<ph name="CONFLICTING_GESTURE_THREE" />» ժեստերին։ Հնարավորության դեպքում ընտրեք մեկ այլ ժեստ։</translation>
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1313405956111467313">Պրոքսի-սերվերի ինքնակազմաձևում</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Դուրս գալ հաշվից, երբ սարքի կափարիչը փակ է</translation>
 <translation id="185970820835152459">Դուք կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ Դրանք օգտագործվում են Chromium դիտարկիչում, Play Խանութում, Gmail-ում և այլ ծառայություններում։ Եթե ուզում եք ընտանեկան խմբի անդամի կամ մեկ ուրիշի համար հաշիվ ավելացնել, <ph name="DEVICE_TYPE" /> սարքում ավելացրեք նոր օգտատեր։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Սառը</translation>
+<translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
 <translation id="1866589962721094893">Android հավելվածներին թույլ տվեք կառավարել USB սարքերն այս Chromebook-ում։ Թույլտվության հարցումը կարվի ամեն անգամ, երբ դուք USB սարք միացնեք։ Առանձին Android հավելվածներ կհայցեն լրացուցիչ թույլտվություններ։</translation>
 <translation id="1877377290348678128">Պիտակ (կամընտիր)</translation>
 <translation id="1877860345998737529">Գործողությունների նշանակման փոխանջատիչ</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="1938351510777341717">Արտաքին Command ստեղն</translation>
 <translation id="1940546824932169984">Կապակցված սարքեր</translation>
+<translation id="1941410638996203291">Սկզբի ժամը` <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Տարբերակ՝ <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Գտնվել է թարմացում</translation>
 <translation id="1948528728718281125">Տեսախցիկը հասանելի է հավելվածներին, «Տեսախցիկ» թույլտվությունն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Լեզուն, որն օգտագործվում է էջերը թարգմանելու համար</translation>
 <translation id="2319459402137712349">Ընտրեք տեքստային դաշտ՝ ստեղնաշարը բացելու համար։ Կարող եք նաև ընտրել ստեղնաշարի պատկերակը Էկրանի ներքևում։</translation>
 <translation id="2319993584768066746">Մուտքի էկրանի լուսանկարները</translation>
+<translation id="2322622365472107569">Ավարտի ժամը՝ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Պահված Wi-Fi ցանցեր</translation>
 <translation id="2325444234681128157">Հիշել գաղտնաբառը</translation>
 <translation id="2326188115274135041">Ավտոմատ ապակողպումը միացնելու համար հաստատեք PIN կոդը</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Կարճ փակեք երկու աչքերը</translation>
 <translation id="258095186877893873">Երկար</translation>
 <translation id="2581786034175502848">Այն նորից միացնելու համար 5 անգամ սեղմեք Shift ստեղնը</translation>
+<translation id="2581992808349413349">DNS-ում (տիրույթի անունների համակարգում) կայքի IP հասցեն ստուգելու համար օգտագործեք անվտանգ միացում։ Անհրաժեշտ է նշել ծառայություններ մատուցողին հետևյալ ձևանմուշում՝ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />։</translation>
 <translation id="2584109212074498965">Չհաջողվեց բեռնել Kerberos տոմսը: Փորձեք նորից կամ կապվեք կազմակերպության սարքի ադմինիստրատորի հետ (սխալի կոդը՝ <ph name="ERROR_CODE" />):</translation>
 <translation id="2584974473573720127">Կառավարել կայքերի համար խոսափողի թույլտվությունները Chrome-ում</translation>
 <translation id="2609980095400624569">Չհաջողվեց կապ հաստատել հեռախոսի հետ</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Լրացուցիչ տեղեկություններ</translation>
 <translation id="2808985063107661499">«<ph name="MAIN_GESTURE" />» ժեստը կարող է հակասել «<ph name="CONFLICTING_GESTURE_ONE" />» և «<ph name="CONFLICTING_GESTURE_TWO" />» ժեստերին։ Հնարավորության դեպքում ընտրեք մեկ այլ ժեստ։</translation>
 <translation id="2809346626032021864">Գրքեր</translation>
+<translation id="2811205483104563968">Հաշիվներ</translation>
 <translation id="2813094189969465044">Ծնողական վերահսկողություն</translation>
 <translation id="2817435998497102771">Ընտրեք պաստառ և ոճ</translation>
 <translation id="2818476747334107629">Տպիչի տվյալներ</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Սեղմել/ընդարձակել</translation>
 <translation id="2833144527504272627">Նավիգացիա տեքստային նշորդի օգնությամբ</translation>
 <translation id="2835177225987815960">Սկանավորման ձեր ընթացիկ կարգավորումները (այդ թվում՝ նշանակված փոխանջատիչները և ավտոմատ սկանավորման արագության պարամետրերը) կզրոյացվեն։</translation>
+<translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="2844809857160214557">Դիտեք և կառավարեք տպելու առաջադրանքները</translation>
 <translation id="2849035674501872372">Փնտրել</translation>
 <translation id="2860710618359053450">Ծնոտն աջ տարեք</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369067987974711168">Ցույց տալ ավելի շատ գործողություններ այս միացքի համար</translation>
 <translation id="3370260763947406229">Ավտոմատ շտկում</translation>
+<translation id="3371140690572404006">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="3371351218553893534">Տողը չափազանց երկար է՝ <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Թույլտվությունները, որոնք տրամադրվել են Steam հարթակին, գործում են դրա միջոցով տեղադրված բոլոր խաղերի և հավելվածների համար։</translation>
 <translation id="338323348408199233">Արգելափակել առանց VPN-ի թրաֆիկը</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Արեք այնպես, որ ձեր ինտերնետ թրաֆիկի հասանելիություն ունեցող մարդիկ չկարողանան տեսնել, թե ինչ կայքեր եք այցելել։ <ph name="PRODUCT_NAME" />-ն օգտագործում է ապահով միացում՝ DNS-ում (տիրույթի անունների համակարգ) կայքերի IP հասցեները որոնելու համար։</translation>
 <translation id="3442674350323953953">Թույլ տվեք Google-ին օգտագործել ձեր սարքակազմի տվյալները՝ <ph name="DEVICE_OS" />-ը բարելավելու նպատակով։ Եթե մերժեք, այս տվյալները միևնույն է կուղարկվեն Google-ին, որպեսզի այն կարողանա տրամադրել համապատասխան թարմացումներ, սակայն չեն պահվի կամ այլ կերպ չեն օգտագործվի։</translation>
 <translation id="3445465968953598059">Դեմքով կառավարում</translation>
+<translation id="3445925074670675829">USB-C սարք</translation>
 <translation id="3448492834076427715">Թարմացնել հաշիվը</translation>
 <translation id="345078987193237421">Տեսախցիկը հասանելի կլինի հավելվածներին, տեսախցիկի թույլտվություն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
 <translation id="3453082738208775226">Մաքրե՞լ օֆլայն հիշողությունը</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Արագ պատասխաններ․ սահմանումներ</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-ին թույլ տվեք կառավարել USB սարքերը։</translation>
 <translation id="3994530503403062649">Գտեք պլանշետի կոճակները</translation>
+<translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="3997429360543082038">ChromiumOS-ի մասին</translation>
 <translation id="4001540981461989979">Ընդգծել մկնիկի նշորդը, երբ այն շարժվում է</translation>
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">Սահմանել ժամային գոտին ավտոմատ՝ ձեր տեղադրության հիման վրա</translation>
 <translation id="5327248766486351172">Անուն</translation>
 <translation id="5331568967879689647">ChromeOS-ի համակարգային հավելված</translation>
+<translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="5334113802138581043">Խոսափողի հասանելիություն</translation>
 <translation id="5336689872433667741">Նշորդ և հպահարթակ</translation>
 <translation id="5337926771328966926">Սարքի ընթացիկ անունն է <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Միացնել ձայնային ազդանշանների գրանցումը</translation>
 <translation id="5441133529460183413">Վեբ հավելվածը տեղադրվել է Chrome դիտարկիչից</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5450469615146335984">Յուրաքանչյուր գործողության համար ընտրեք դյուրանցում</translation>
 <translation id="5452446625764825792">Այժմ դուք կարող եք դիտել ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերն ու հավելվածները</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (աշխատում է անցանց ռեժիմում)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">Օգտագործեք «Առաջ» և «Հետ» հրահանգները՝ էջի մեկ տարրից մյուսին անցնելու համար։</translation>
 <translation id="6452961788130242735">Ցանցի կամ տիրույթի հետ կապված խնդիր կա</translation>
 <translation id="6453921811609336127">Ներածման հաջորդ եղանակին անցնելու համար սեղմեք <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />բացատ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Ցանցերի որոնում...</translation>
 <translation id="6463488491707167747">Ջնջե՞լ այս բառարանը</translation>
 <translation id="6463596731306859179">Անսպասելիորեն ելնող պատուհաննե՞ր են հայտնվում, կամ ձեր սարքն անսովո՞ր է աշխատում։ Ձեր տեղադրած որոշ հավելվածներ և ընդլայնումներ կարող են առանց ձեր իմացության փոխել ChromeOS-ի կարգավորումները։</translation>
 <translation id="6465841119675156448">Առանց ինտերնետի</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">Թույլատրել <ph name="SPECIFIC_NAME" />-ին օգտագործել ձեր խոսափողը</translation>
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
 <translation id="648927581764831596">Ոչ մեկը մատչելի չէ</translation>
+<translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
 <translation id="6497784818439587832">Փոխեք էկրանի չափը՝ տարրերը ավելի մեծ կամ ավելի փոքր դարձնելու համար</translation>
 <translation id="6497789971060331894">Մկնիկով հետադարձ ոլորում</translation>
 <translation id="650185290742160385">Պակասեցնել շեմը</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">Ավտոմատ անջատել թեժ կետը</translation>
 <translation id="7092504544229909737">Հնարավոր չէ օգտագործել Android հավելվածների հետ</translation>
 <translation id="7093220653036489319">Արագ պատասխաններ</translation>
+<translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7099337801055912064">Չհաջողվեց բեռնել PPD ֆայլը: Այն չպետք է գերազանցի 250 ԿԲ-ը:</translation>
 <translation id="7107609441453408294">Նվագարկել նույն աուդիոն բոլոր բարձրախոսներով</translation>
 <translation id="7116931001458704701">Թափահարեք՝ նշորդը տեղորոշելու համար</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">Նշորդի տարածքի չափ</translation>
 <translation id="7325209047678309347">Թուղթը խցանվել է</translation>
 <translation id="7331646370422660166">alt + ներքև սլաք</translation>
+<translation id="7345706641791090287">Հաստատեք ձեր գաղտնաբառը</translation>
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7360333718677093875">էմոջիների ընտրիչ</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">Վերևի շարքի ստեղները փոխարկելու համար սեղմած պահեք որոնման ստեղնը</translation>
 <translation id="8551588720239073785">Ամսաթվի և ժամի կարգավորումներ</translation>
 <translation id="8553342806078037065">Կառավարել այլ օգտատերերի</translation>
+<translation id="8554899698005018844">Լեզու նշված չէ</translation>
 <translation id="8555444629041783356">Մայրամուտի ժամանակացույցի ավտոմատ թարմացում</translation>
 <translation id="8563043098557365232">Թույլատրված է միայն համակարգային ծառայությունների համար</translation>
 <translation id="8571687764447439720">Ավելացնել Kerberos տոմս</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">Միացնել բջջային ցանցը</translation>
 <translation id="8902667442496790482">Բացել «Ընտրեք և լսեք» գործառույթի կարգավորումները</translation>
 <translation id="8903733144777177139">Խոսափողի օգտագործման թույլտվությունն արգելափակված է</translation>
+<translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>
 <translation id="8922624386829239660">Տեղափոխել էկրանը, երբ մկնիկը դիպչի էկրանի եզրերին</translation>
 <translation id="8929738682246584251">Միացնել/անջատել խոշորացույցը</translation>
 <translation id="8930622219860340959">Անլար</translation>
 <translation id="8931713990831679796">Այս տպիչները միացված են և պատրաստ են օգտագործման։ Պահեք ձեր պրոֆիլում՝ ավելի հեշտ գտնելու և օգտագործելու համար։</translation>
 <translation id="8932654652795262306">Մուտքի ակնթարթային կետի մանրամասներ</translation>
+<translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8940888110818450052">Մուտքի տարբերակներ</translation>
 <translation id="8944099748578356325">Մարտկոցի լիցքավորումն ավելի արագ կսպառվի (այժմ լիցքավորված է <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Պատկերակների չափը</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">Այս պահին ռոումինգում է</translation>
 <translation id="93393615658292258">Միայն գաղտնաբառ</translation>
 <translation id="942296794412775122">Միացնել/անջատել խոսափողը</translation>
+<translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="950307215746360464">Կարգավորման ուղեցույց</translation>
 <translation id="952471655966876828">Սարքի հետ կապն ավտոմատ կերպով կվերականգնվի, երբ միացնեք կամ օգտագործեք այն</translation>
 <translation id="956013912698841780">Սեղմեք մկնիկի աջ կոճակը՝ ավելի վստահ գրելու, բովանդակությունն ամփոփելու, սահմանումներ ստանալու, պատկերներ ստեղծելու և այլ գործողությունների համար։ Ներկայումս գործառույթն ունի սահմանափակ հասանելիություն։</translation>

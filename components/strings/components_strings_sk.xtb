@@ -3,7 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1008557486741366299">Teraz nie</translation>
 <translation id="100957008357583611">Chcete použiť svoju polohu?</translation>
-<translation id="1010148478459329879">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad <ph name="BEGIN_LINK_GAA" />históriu Gemini<ph name="END_LINK_GAA" />.</translation>
+<translation id="1010148478459329879">Vo svojom účte Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> môžete mať ďalšie formy histórie prehliadania, napríklad <ph name="BEGIN_LINK_GAA" />históriu Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="1010200102790553230">Načítať stránku neskôr</translation>
 <translation id="1010225406377140704">Požiadajte odosielateľa o nový odkaz</translation>
 <translation id="1011206368273183593">Pripravujú sa súbory</translation>
@@ -2308,6 +2308,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="4854853140771946034">Rýchlo vytvoriť novú poznámku v službe Google Keep</translation>
 <translation id="4855395119669662878">Správca začne <ph name="DATE_TIME" /> nahrávať vaše súbory do služby <ph name="CLOUD_PROVIDER" />. Ponechajte zariadenie pripojené, kým sa nahrávanie súborov nedokončí. Počas nahrávania budete môcť čítať iba miestne súbory.</translation>
+<translation id="4856655096879441213">Uložte si údaje v službe <ph name="GOOGLE_WALLET_TITLE" />, aby ste ich mohli používať rýchlejšie, napríklad pri vypĺňaní formulárov v službách Googlu. V nastaveniach osobných preukazov pre účet <ph name="ACCOUNT" /> môžete ovládať, <ph name="HOW_INFO_IS_USED_LINK" />.</translation>
 <translation id="485902285759009870">Overuje sa kód...</translation>
 <translation id="4860260582253463350">Ak chcete pokračovať na YouTube, musíme sa uistiť, že ste to vy. Získate nastavenia, ktoré nastavil váš rodič alebo zákonný zástupca v aplikácii Family Link.</translation>
 <translation id="4861514638281352187">Bezpečne si pridajte číslo Redress Control Number</translation>
@@ -4890,7 +4891,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9193018794001479794">Rozviesť</translation>
 <translation id="9194783551575429711">Opýtajte sa modelu <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Keď vaša organizácia obmedzuje ukladanie do vášho účtu Google, nemôžete zdieľať skupiny kariet ani sa k žiadnym z nich pripájať</translation>
 <translation id="9198613052465150219">Vo svojom účte Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tlač je blokovaná</translation>
 <translation id="9204089334327209740">Po dokončení nahrávania môžete svoje súbory upraviť v službe <ph name="CLOUD_PROVIDER" />. Obsah miestneho úložiska vrátane všetkých súborov v koši bude automaticky odstránený.</translation>
@@ -4965,7 +4965,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
     &lt;li&gt;skúste softvér <ph name="SOFTWARE_NAME" /> odinštalovať alebo vypnúť,&lt;/li&gt;
     &lt;li&gt;skúste sa pripojiť k inej sieti Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="992501626255096403">Vo svojom účte Google môžete mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, napríklad návštevy automatickej navigácie v <ph name="BEGIN_LINK_GAA" />histórii Gemini<ph name="END_LINK_GAA" />.</translation>
+<translation id="992501626255096403">Vo svojom účte Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> môžete mať ďalšie formy histórie prehliadania, napríklad návštevy automatickej navigácie v <ph name="BEGIN_LINK_GAA" />histórii Gemini<ph name="END_LINK_GAA" />.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Pridanie čísla IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

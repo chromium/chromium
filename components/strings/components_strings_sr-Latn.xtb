@@ -1308,6 +1308,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3196374699162453920">Kôd rezervacije</translation>
 <translation id="3196902089458890316">Želite uvek da delite relevantne kartice da biste dobijali bolje odgovore?</translation>
 <translation id="3197136577151645743">Može da traži da zna kada aktivno koristite uređaj</translation>
+<translation id="3201749168732432347">Ponude i kartice lojalnosti</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="3203025201812691413">URL ne može da bude prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
@@ -2312,6 +2313,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4854853140771946034">Brzo napravite novu belešku u Google Keep-u</translation>
 <translation id="4855395119669662878">Administrator će početi da otprema fajlove u <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Neka uređaj bude povezan dok se otpremanje fajla ne završi. Tokom otpremanja moći ćete da čitate samo lokalne fajlove.</translation>
+<translation id="4856655096879441213">Sačuvajte informacije u usluzi <ph name="GOOGLE_WALLET_TITLE" /> i brže obavljajte stvari poput popunjavanja obrazaca u Google proizvodima. Možete da upravljate time <ph name="HOW_INFO_IS_USED_LINK" /> u podešavanjima privatnih dokumenata za <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Kôd se verifikuje...</translation>
 <translation id="4860260582253463350">Ako želiš da nastaviš na YouTube, moramo da se uverimo da si to stvarno ti. Dobićeš podešavanja koja je roditelj ili staratelj podesio u Family Link-u.</translation>
 <translation id="4861514638281352187">Bezbedno dodajte broj obeštećenja</translation>
@@ -4895,7 +4897,6 @@ Dodatni detalji:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9193018794001479794">Razradi</translation>
 <translation id="9194783551575429711">Pitajte <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Kada organizacija ograniči čuvanje na Google nalogu, ne možete da delite grupe kartica niti da im se pridružite</translation>
 <translation id="9198613052465150219">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
 <translation id="9204089334327209740">Kada se otpremanje završi, možete da izmenite fajlove u usluzi <ph name="CLOUD_PROVIDER" />. Lokalno skladište, uključujući sve fajlove u otpadu, automatski će biti uklonjeno.</translation>

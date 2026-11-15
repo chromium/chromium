@@ -129,6 +129,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1460751212339734034">कम टाइप गरी समय बचत गर्नुहोस्</translation>
 <translation id="146522654774760805">पासवर्ड र अटोफिल</translation>
 <translation id="1466383950273130737">Chrome मा प्रयोग गरिने भाषा छान्नुहोस्</translation>
+<translation id="1473344277210704336">नयाँ पुछारको टुलबारमा Gemini र तपाईंका अत्यावश्यक सुविधाहरू</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
 <translation id="147982357559798527">परिवर्तन गरिएको</translation>
 <translation id="1480287803138246127">तपाईंका केही ब्राउजिङ हिस्ट्री यहाँ नदेखिन सक्छन्। Chrome को सबै ब्राउजिङ हिस्ट्री हेर्न Chrome को पूरै ब्राउजिङ हिस्ट्री खोल्नुहोस्।</translation>
@@ -906,6 +907,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4537987892902330164">तपाईं पहिले नै <ph name="NAME_OR_EMAIL" /> का रूपमा साइन इन अवस्थामा हुनुहुन्छ।</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="4558311620361989323">वेबपृष्ठका सर्टकटहरू</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="SUBSCRIPTION_NAME" /> को सदस्यता।</translation>
 <translation id="4572422548854449519">व्यवस्थापन गरिएको खातामा साइन इन गर्नुहोस्</translation>
 <translation id="4577115723294378384">A देखि Z को क्रममा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4578289292431526768">सुरु गरौँ</translation>
@@ -913,6 +915,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4585751637295612750">आफ्नो प्रश्नमा हाल्नका निम्ति नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
+<translation id="4587590257937792551">Chrome मा सहजताका लागि बनाइएको नयाँ पुछारको टुलबार उपलब्ध छ। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई फेरि पुरानै मोड प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="4595237294768457124">नयाँ ट्याब पेज खोल्नुहोस्</translation>
 <translation id="4595276580892809760">ग्यालेरीबाट फोटोहरू एट्याच गर्नुहोस्</translation>
@@ -1450,6 +1453,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6633067410344541938">इन्कोग्निटो अनलक गर्नुहोस्</translation>
 <translation id="6636623428211296678">तल दिइएका अन्य सेटिङ मिलाउनुहोस् वा समीक्षा गर्ने कार्य अहिले नै पूरा गर्नुहोस्</translation>
 <translation id="6637100877383020115">Chrome ले यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि Google लाई यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">तपाईंका अत्यावश्यक कुराहरू पुछारको टुलबारमै उपलब्ध छन्। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई फेरि पुरानै मोड प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6642299196749785472">ट्याबहरू एट्याच गर्नुहोस्</translation>
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
@@ -1648,6 +1652,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको सेयरिङ ट्याब</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7314734791127433392">पासवर्डहरू जाँच्न सकिएन</translation>
+<translation id="7324177883197548771">Chrome को नयाँ स्वरूप तयार भएको छ। यो स्वरूप सहजताका लागि बनाइएको हो। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई फेरि पुरानै मोड प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="7324354302972299151">“Do Not Track” अनुरोध पठाउनुहोस्</translation>
 <translation id="7333041109965360609">सूचना प्राप्त गर्ने सुविधाको सदस्यता रद्द गरिएको छ</translation>
 <translation id="7335766481146072567">"जारी राख्नुहोस्" मा थिच्नुहोस्</translation>
@@ -1749,6 +1754,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7697383401610880082">ड्र्याग ह्यान्डल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मा इमेल सिर्जना गर्नुहोस्</translation>
 <translation id="7702420606070050505">हालसालैको क्रियाकलापसम्बन्धी जानकारी दिने पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />। <ph name="SUBSCRIPTION_NAME" /> को सदस्यता।</translation>
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
 <translation id="7708994397325774423">आफ्ना सबै पासवर्डहरू प्राप्त गर्नुहोस्</translation>
 <translation id="7714077993070342304">Chrome मेनु खोल्नुहोस्</translation>

@@ -17,7 +17,6 @@
 <translation id="100881991356161927">ชื่อเว็บไซต์</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{หน้าไม่ตอบสนอง}other{หน้าไม่ตอบสนอง}}</translation>
 <translation id="1011431628606634753">เปลี่ยน PIN การกู้คืนสำหรับเครื่องมือจัดการรหัสผ่านบน Google</translation>
-<translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
 <translation id="1015318665228971643">แก้ไขชื่อโฟลเดอร์</translation>
 <translation id="1016566241875885511">ข้อมูลเพิ่มเติม (ไม่บังคับ)</translation>
 <translation id="1016876401615857435">โปรดยืนยันว่าเป็นคุณเพื่อใช้พาสคีย์ในอุปกรณ์นี้</translation>
@@ -277,7 +276,6 @@
 <translation id="1245331638296910488">ไฟล์จะย้ายไปที่ OneDrive เมื่อเปิดใน Microsoft 365</translation>
 <translation id="1246420197935327230">เลือกพื้นที่</translation>
 <translation id="125097549534200450">ล้าง</translation>
-<translation id="1251578593170406502">กำลังสแกนหาเครือข่ายอินเทอร์เน็ตมือถือ...</translation>
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}other{ระบบบันทึกบุ๊กมาร์ก {BOOKMARK_COUNT} รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}}</translation>
 <translation id="125220115284141797">ค่าเริ่มต้น</translation>
 <translation id="1252597096488926946">เลิกปักหมุดปุ่มเลื่อน</translation>
@@ -286,6 +284,7 @@
 <translation id="1256143630373008432">การทดสอบตัวเองไม่สำเร็จ</translation>
 <translation id="1257336506558170607">ส่งออกใบรับรองที่เลือก</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
+<translation id="1259453023447377372">กลุ่มแท็บที่บันทึกไว้</translation>
 <translation id="1260451001046713751">อนุญาตป๊อปอัปและการเปลี่ยนเส้นทางจาก <ph name="HOST" /> เสมอ</translation>
 <translation id="1262395978737369974">ได้รับอนุญาตให้ใช้การเพิ่มประสิทธิภาพ JavaScript เสมอ</translation>
 <translation id="1262564987698748643">เว็บไซต์ต่างๆ ขอลบล้างอินพุตจากแป้นพิมพ์ได้</translation>
@@ -312,7 +311,6 @@
 <translation id="1285484354230578868">จัดเก็บข้อมูลในบัญชี Google ไดรฟ์</translation>
 <translation id="1286901453440314450">ใบรับรองที่ไม่น่าเชื่อถือ</translation>
 <translation id="1288235441231062220">ถึงขีดจำกัดจำนวนอักขระที่ <ph name="MAX_CHARS" /> ตัวแล้ว</translation>
-<translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="12951065153783848">องค์กรของคุณเป็นผู้จัดการบัญชีของคุณ</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
@@ -744,6 +742,7 @@
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
 <translation id="175196451752279553">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
 <translation id="1753557900380512635">การตกแต่งภายใน</translation>
+<translation id="1753621899753387273">ขอความช่วยเหลือจาก Gemini เกี่ยวกับหน้านี้และ "<ph name="SELECTION" />"</translation>
 <translation id="1753905327828125965">เข้าชมบ่อยสุด</translation>
 <translation id="1755601632425835748">ขนาดข้อความ</translation>
 <translation id="1756963401828337401">เลือกหน้าจอที่จะจับภาพ</translation>
@@ -856,7 +855,6 @@
 <translation id="1863182668524159459">ไม่พบพอร์ตอนุกรม</translation>
 <translation id="1863374797460198869">แชทถูกซ่อน</translation>
 <translation id="1864111464094315414">ลงชื่อเข้าใช้</translation>
-<translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
 <translation id="186594096341696655">ลดอัตรา</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" สามารถอ่านและเขียนรูปภาพ วิดีโอ และไฟล์เสียงในตำแหน่งที่เลือก</translation>
 <translation id="1869433484041798909">ปุ่มบุ๊กมาร์ก</translation>
@@ -943,7 +941,6 @@
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
 <translation id="1940221956626514677">ปรับแต่งแถบเครื่องมือ</translation>
 <translation id="194081218158106711">กำลังยืนยันรหัสผ่านที่เปลี่ยน...</translation>
-<translation id="1941410638996203291">เวลาเริ่มต้น <ph name="TIME" /></translation>
 <translation id="1941553344801134989">เวอร์ชัน: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">ผู้ดูแลระบบได้กำหนดค่าบัญชีของคุณให้เชื่อมต่อกับ Microsoft OneDrive โดยอัตโนมัติ แต่เกิดข้อผิดพลาดขึ้น</translation>
 <translation id="194174710521904357">คุณได้อนุญาตให้เว็บไซต์นี้ใช้คุกกี้ของบุคคลที่สามเป็นการชั่วคราว ซึ่งหมายความว่าจะมีการป้องกันขณะท่องเว็บน้อยลง แต่ฟีเจอร์ของเว็บไซต์จะทำงานตามที่คาดไว้ได้มากขึ้น</translation>
@@ -1299,7 +1296,6 @@
 <translation id="2316709634732130529">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="2318143611928805047">ขนาดกระดาษ</translation>
 <translation id="2322193970951063277">ส่วนหัวและส่วนท้ายกระดาษ</translation>
-<translation id="2322622365472107569">เวลาสิ้นสุด <ph name="TIME" /></translation>
 <translation id="2323685460575935191">ซ่อนปุ่มเลื่อน</translation>
 <translation id="2325004050205455346">ประวัติล่าสุด</translation>
 <translation id="2326583548923775947">อีเมลนี้ไม่ใช่บัญชี Google รายการที่คุณบันทึกไว้ใน Chrome จะไม่พร้อมใช้งานบนอุปกรณ์เครื่องอื่นๆ</translation>
@@ -1552,7 +1548,6 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา 1 ปีและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}other{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา {YEARS} ปีและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) จะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และจะไม่สามารถโต้ตอบกับคุณในบริการของ Google ได้อีกต่อไป</translation>
 <translation id="2580889980133367162">อนุญาตให้ <ph name="HOST" /> ดาวน์โหลดไฟล์หลายไฟล์เสมอ</translation>
-<translation id="2581992808349413349">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน) การดำเนินการนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2583877283803564049">ปักหมุดไว้บนแถบเครื่องมือ</translation>
 <translation id="2583905535229480958">เครื่องอ่านสมาร์ทการ์ดเครื่องใดก็ได้</translation>
 <translation id="2586672484245266891">โปรดป้อน URL ที่สั้นกว่านี้</translation>
@@ -1576,6 +1571,7 @@
 <translation id="2610780100389066815">การรับรองรายการที่เชื่อถือของ Microsoft</translation>
 <translation id="261114180663074524">ลงชื่อเข้าใช้บัญชี Microsoft แล้วลองอีกครั้ง</translation>
 <translation id="2611885296070244383">ไมค์ (ภายใน)</translation>
+<translation id="2612346259364350954">ใช้เนื้อหาของหน้าเพื่ออธิบายข้อความที่ไฮไลต์</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="261305050785128654">แจ้งให้เว็บไซต์ทราบถึงภาษาที่คุณพูด แล้วเว็บไซต์จะแสดงเนื้อหาในภาษาเหล่านั้น หากเป็นไปได้</translation>
 <translation id="2613210758071148851">ไม่อนุญาตให้มีส่วนขยายใดๆ ใน <ph name="RESTRICTED_SITE" /></translation>
@@ -1798,7 +1794,6 @@
 <translation id="2806372837663997957">อุปกรณ์ที่คุณพยายามเชื่อมต่อไม่ยอมรับการแชร์ไฟล์</translation>
 <translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
-<translation id="2811205483104563968">บัญชี</translation>
 <translation id="2814489978934728345">หยุดโหลดหน้านี้</translation>
 <translation id="281678554528702272">หมายเหตุ: นโยบายองค์กรหรือ API ที่มีประสิทธิภาพอาจลบล้างการตั้งค่าการเข้าถึงเว็บไซต์เหล่านี้</translation>
 <translation id="2817861546829549432">การเปิดใช้ "ไม่ติดตาม" หมายความว่าจะมีการรวมคำขอไว้กับการเข้าชมเว็บของคุณ ผลกระทบทั้งหมดขึ้นอยู่กับว่าเว็บไซต์ตอบสนองต่อคำขอหรือไม่ และวิธีในการตีความคำขอ ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณ ตัวอย่างเช่น เพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา บริการ โฆษณา หรือคำแนะนำเกี่ยวกับเว็บไซต์ของตน และเพื่อสร้างสถิติการรายงาน</translation>
@@ -1828,13 +1823,13 @@
 <translation id="2842013086666334835">ลงชื่อเข้าใช้ "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843698124892775282">เพิ่มพื้นที่ว่าง <ph name="MEMORY_SAVINGS" /> แล้ว</translation>
 <translation id="2844154481025280030">กำหนดค่านโยบายแล้ว</translation>
-<translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="284491292807422921">นำเว็บไซต์ออกใช่ไหม</translation>
 <translation id="2845276301195220700">การดำเนินการเพิ่มเติมสำหรับ Google ปฏิทิน</translation>
 <translation id="2845382757467349449">แสดงแถบบุ๊กมาร์กเสมอ</translation>
 <translation id="284581348330507117">สร้างรหัสผ่านที่ไม่ซ้ำกัน</translation>
 <translation id="284884486564166077">ค้นหารูปภาพต่างๆ ด้วย Lens</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">ตัวเลือกเพิ่มเติมสำหรับ <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">ปิดอยู่</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
 <translation id="285237063405807022">(กำลังโหลด)</translation>
@@ -1893,6 +1888,7 @@
 <translation id="2907798539022650680">การเชื่อมต่อกับ "<ph name="NAME" />" ล้มเหลว: <ph name="DETAILS" />
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">เพิ่มแกลเลอรีสื่อตามไดเรกทอรี</translation>
+<translation id="2909334296570021569">เปิดกลุ่มแท็บ</translation>
 <translation id="2909487040556589351">ดาวน์โหลด Chrome บนมือถือ</translation>
 <translation id="2910678330803525229">ตอนนี้คุณเริ่มเรียกดูข้อมูลต่างๆ ได้แล้ว</translation>
 <translation id="2912247081180973411">ปิดหน้าต่าง</translation>
@@ -2033,6 +2029,7 @@
 <translation id="304169924727249890">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">ลงชื่อเข้าใช้เพื่อดูบุ๊กมาร์ก</translation>
 <translation id="3043581297103810752">จาก <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">ตัวเลือกสำหรับ <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">ปรับปรุงด้วย AI</translation>
 <translation id="3045447014237878114">เว็บไซต์นี้มีการดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="304644035656848980">ตัวอย่างไมโครโฟน</translation>
@@ -2360,7 +2357,6 @@
 <translation id="3365651640097487828">หากต้องการแชร์แท็บและทำงานร่วมกับผู้อื่น คุณจะต้องยืนยันตัวตน รวมถึงซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="3368662179834713970">บ้าน</translation>
 <translation id="3369624026883419694">กำลังแปลงโฮสต์...</translation>
-<translation id="3371140690572404006">อุปกรณ์ USB-C (พอร์ตด้านหน้าขวา)</translation>
 <translation id="3372602033006349389">บนอุปกรณ์อื่นๆ</translation>
 <translation id="337286756654493126">อ่านโฟลเดอร์ที่คุณเปิดในแอปพลิเคชัน</translation>
 <translation id="3373059063088819384">เปิดในโหมดการอ่าน</translation>
@@ -2447,7 +2443,6 @@
 <translation id="3445140416168872040">นำสิทธิ์ออกสำหรับ <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="344537926140058498">องค์กรบล็อกไฟล์นี้เนื่องจากมีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย โปรดขอให้เจ้าของไฟล์แก้ไข</translation>
-<translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="344630545793878684">อ่านข้อมูลบนเว็บไซต์จำนวนมาก</translation>
 <translation id="3447797901512053632">กำลังแคสต์ <ph name="TAB_NAME" /> ไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">อัปเดตบัญชี</translation>
@@ -2773,6 +2768,7 @@
 <translation id="3745306754941902605">ห้องครัว</translation>
 <translation id="3748424433435232460">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="3748466028423001972">สลับกับมุมมองด้านล่าง</translation>
+<translation id="3750406842345107892">ระบบจะส่งเนื้อหาและ URL ของหน้าที่คุณอยู่ รวมถึงข้อความที่ไฮไลต์ไปยัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="3752115502500640407">แชร์สำเนารหัสผ่านของ <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">เปิดแผงด้านข้าง</translation>
 <translation id="3753585830134123417">ปรับขนาดหน้าต่างไปทางด้านซ้ายแล้ว</translation>
@@ -3043,7 +3039,6 @@
 <translation id="3994522032746736727">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /></translation>
 <translation id="3994708120330953242">พบรหัสผ่านบางรายการของคุณในการละเมิดข้อมูล คุณควรเปลี่ยนรหัสผ่านเหล่านี้ทันทีเพื่อรักษาบัญชีให้ปลอดภัย</translation>
 <translation id="3994878504415702912">ซู&amp;ม</translation>
-<translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="3995963973192100066">เล่นภาพเคลื่อนไหว</translation>
 <translation id="399788104667917863">ปักหมุดไว้บนแถบเครื่องมือ</translation>
 <translation id="3998431043924115701">ถามคำถามขณะท่องเว็บ</translation>
@@ -3549,6 +3544,7 @@
 <translation id="4550926046134589611">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /></translation>
 <translation id="4551379727767354516">ธีม AI ล่าสุดของคุณ</translation>
 <translation id="4551763574344810652">กด <ph name="MODIFIER_KEY_DESCRIPTION" /> เพื่อเลิกทำ</translation>
+<translation id="4552721860956824254">ปิดเสียงแล้ว</translation>
 <translation id="4553807334824079753">จำเป็นต้องใช้แอปเวอร์ชันใหม่</translation>
 <translation id="4555769855065597957">เงา</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> ได้แชร์รหัสผ่านกับคุณสำหรับ <ph name="WEBSITE_NAME" /> คุณสามารถใช้รหัสผ่านดังกล่าวในแบบฟอร์มลงชื่อเข้าใช้ได้</translation>
@@ -4318,7 +4314,6 @@
 <translation id="5327912693242073631">ฟีเจอร์ที่ต้องใช้การแจ้งเตือนจะไม่ทำงาน</translation>
 <translation id="5328551442597731838">ดูแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="5329858601952122676">&amp;ลบ</translation>
-<translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="5334142896108694079">แคชของสคริปต์</translation>
 <translation id="5335370353987155592">โปรดใช้ Gemini อย่างรอบคอบและ<ph name="BEGIN_LINK1" />ปลอดภัย<ph name="LINK_END1" /> คุณเป็นผู้รับผิดชอบต่อการดำเนินการของ Gemini ระหว่างการทำงาน รวมถึงข้อผิดพลาดและ<ph name="BEGIN_LINK2" />ผลลัพธ์ที่ไม่คาดคิด<ph name="LINK_END2" /> เช่น การซื้อต่างๆ</translation>
 <translation id="5336688142483283574">ระบบจะนำหน้านี้ออกจากประวัติการเข้าชมและกิจกรรมใน <ph name="SEARCH_ENGINE" /> ด้วย</translation>
@@ -4356,6 +4351,7 @@
 <translation id="5379140238605961210">บล็อกการเข้าถึงไมโครโฟนต่อไป</translation>
 <translation id="5382591305415226340">จัดการลิงก์ที่รองรับ</translation>
 <translation id="5384401776498845256">คนที่จะแชร์กับคุณได้</translation>
+<translation id="5386856927586721327">ถามเกี่ยวกับหน้าจอของคุณด้วย <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">แก้ไข<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">มีการเปลี่ยนแปลงนโยบายองค์กร เพิ่มปุ่มการทดสอบในแถบเครื่องมือแล้ว คลิกปุ่มดังกล่าวเพื่อเปิดกล่องโต้ตอบสำหรับเปิดใช้การทดสอบ</translation>
 <translation id="5388719243178419614">อัปโหลดไม่ได้ ประมวลผลไฟล์ภาพไม่สำเร็จ</translation>
@@ -4425,7 +4421,6 @@
 <translation id="5444452275167152925">นำเข้าจาก ChromeOS</translation>
 <translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">ระดมความคิด</translation>
-<translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5449588825071916739">บุ๊กมาร์กแท็บทั้งหมด</translation>
 <translation id="5449716055534515760">ปิดหน้าต่&amp;าง</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" />เพื่อสำรวจอุปกรณ์บลูทูธ</translation>
@@ -4737,6 +4732,7 @@
 <translation id="5796485699458186843">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="5796656350463724">การจัดรูปแบบแท็บ</translation>
 <translation id="5796956053441619942">ไม่รองรับ URL จากอุปกรณ์ระยะไกล</translation>
+<translation id="5797148980414822942">ค้นหาฟีเจอร์และการดำเนินการของ Chrome</translation>
 <translation id="5798079537501238810">เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงินได้</translation>
 <translation id="5798086737841799234">ป้อนรหัสยืนยัน</translation>
 <translation id="5798574502832537664">ดูคำจำกัดความหรือดูข้อมูลเพิ่มเติมเกี่ยวกับหัวข้อโดยเลือกข้อความในหน้า</translation>
@@ -5382,7 +5378,6 @@
 <translation id="6459488832681039634">ใช้สิ่งที่เลือกเพื่อค้นหา</translation>
 <translation id="6459799433792303855">หน้าต่างที่ใช้งานย้ายไปอยู่หน้าจออื่น</translation>
 <translation id="6460601847208524483">ค้นหาถัดไป</translation>
-<translation id="6461170143930046705">กำลังค้นหาเครือข่าย...</translation>
 <translation id="6463668944631062248">ยอมรับคำขอแคสต์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">แ&amp;ก้ไข</translation>
 <translation id="6464825623202322042">อุปกรณ์นี้</translation>
@@ -5405,7 +5400,6 @@
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{เก็บกลุ่มแท็บไว้ใช่ไหม}other{เก็บกลุ่มแท็บไว้ใช่ไหม}}</translation>
 <translation id="6486301003991593638">หากต้องการจัดการพาสคีย์ ให้ใช้ Windows เวอร์ชันใหม่กว่า</translation>
 <translation id="6488266788670893993"><ph name="BRAND" />ตรวจสอบรหัสผ่านจากการละเมิดข้อมูลไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
-<translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
 <translation id="6491890991754498129">เปิดด้&amp;วย...</translation>
 <translation id="649396225532207613">ไฟล์นี้อาจเป็นอันตรายต่อบัญชีส่วนบุคคลและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
 <translation id="6493991254603208962">ลดความสว่าง</translation>
@@ -6034,7 +6028,6 @@
 <translation id="7094768688212290897">มหาพีระมิดแห่งกิซา</translation>
 <translation id="7094834615934458012">อนุญาตให้เว็บไซต์นี้แก้ไขไฟล์ใช่ไหม</translation>
 <translation id="7096904522553867921">คุณสามารถย้ายแท็บกลับไปไว้ด้านบนได้โดยคลิกขวาที่แท็บใดก็ได้แล้วเลือก "แสดงแท็บในแนวนอน"</translation>
-<translation id="7098389117866926363">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="7098447629416471489">เครื่องมือค้นหาอื่นๆ ที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="7099027177878709408">&amp;ปิด</translation>
@@ -6284,7 +6277,6 @@
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
 <translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
 <translation id="7344585835349671209">จัดการใบรับรอง HTTPS/SSL ในอุปกรณ์</translation>
-<translation id="7345706641791090287">ยืนยันรหัสผ่าน</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7347751611463936647">ในการใช้ส่วนขยายนี้ ให้พิมพ์ "<ph name="EXTENSION_KEYWORD" />" แล้วกด TAB ตามด้วยคำสั่งหรือการค้นหาของคุณ</translation>
 <translation id="7347943691222276892">คลิกเพื่อออกจากหน้า<ph name="SUBPAGE_TITLE" /></translation>
@@ -6350,6 +6342,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> จะเปิดใช้งานเมื่อเริ่มต้นระบบและทำงานต่อไปในแบบเบื้องหลัง แม้คุณจะปิดหน้าต่าง <ph name="PRODUCT_NAME" /> อื่นๆ จนหมดแล้ว</translation>
 <translation id="7399045143794278225">ปรับแต่งการซิงค์</translation>
 <translation id="7399616692258236448">ระบบจะบล็อกคำขอตำแหน่งจากทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
+<translation id="7399746352569282594">ปิดมุมมองแยก: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
 <translation id="7400059772197434086">ถูกบล็อกไม่ให้ใช้ข้อมูลของคุณใน</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -6889,6 +6882,7 @@
 <translation id="7953236668995583915">โหลดหน้านี้ซ้ำเพื่อใช้การตั้งค่าที่อัปเดตในเว็บไซต์นี้</translation>
 <translation id="7953955868932471628">จัดการทางลัด</translation>
 <translation id="7955105108888461311">ถามด้วยตนเอง</translation>
+<translation id="7955672267519272700">ปิด <ph name="TAB_TITLE" /></translation>
 <translation id="7956918070009672177">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="7957074856830851026">ดูข้อมูลอุปกรณ์ เช่น หมายเลขซีเรียลหรือรหัสเนื้อหา</translation>
 <translation id="7958157896921135832">เพิ่มขนาดอักษร</translation>
@@ -7484,7 +7478,6 @@
 <translation id="8551647092888540776">เปิด <ph name="FILE_NAMES" /> ไม่ได้เมื่อออฟไลน์</translation>
 <translation id="8552102814346875916">บันทึกไปยังรายการ "ให้เว็บไซต์เหล่านี้ทำงานอยู่เสมอ"</translation>
 <translation id="8552947739661397736">เข้าควบคุมงาน Gemini กำลังควบคุมอยู่</translation>
-<translation id="8554899698005018844">ไม่มีภาษา</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - แสดงเนื้อหาที่ขยายแล้ว</translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
 <translation id="8557100046150195444">Touch ID สำหรับดำเนินการต่อ</translation>
@@ -7844,7 +7837,6 @@
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> สร้างรหัสผ่านที่รัดกุมสำหรับเว็บไซต์นี้</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>
 <translation id="8909833622202089127">เว็บไซต์กำลังติดตามตำแหน่งของคุณ</translation>
-<translation id="8910222113987937043">การเปลี่ยนแปลงในบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป แต่ข้อมูลที่มีอยู่จะยังจัดเก็บไว้ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
 <translation id="8911478306361447917">ทางลัดสำหรับฟีเจอร์และส่วนขยาย</translation>
 <translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8913485523736543337">โปรแกรมอัปเดต</translation>
@@ -7871,7 +7863,6 @@
 <translation id="8933709832356869375">ระบบจะนำแอปที่ติดตั้งออก 1 รายการ</translation>
 <translation id="8933960630081805351">&amp;แสดงใน Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> กำลังเข้าถึงอุปกรณ์ USB}=2{ส่วนขยายที่เข้าถึงอุปกรณ์: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{ส่วนขยายที่เข้าถึงอุปกรณ์: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> และอีก {3} รายการ}}</translation>
-<translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{มีการใช้เมื่อ <ph name="TIME_COUNT" /> วันที่ผ่านมา}=1{มีการใช้เมื่อ <ph name="TIME_COUNT" /> วันที่ผ่านมา}=2{มีการใช้เมื่อ <ph name="TIME_COUNT" /> สัปดาห์ที่ผ่านมา}other{มีการใช้เมื่อ <ph name="TIME_COUNT" /> สัปดาห์ที่ผ่านมา}}</translation>
 <translation id="8940081510938872932">คอมพิวเตอร์ของคุณทำงานหลายอย่างเกินไปในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8941173171815156065">เพิกถอนสิทธิ์ "<ph name="PERMISSION" />"</translation>

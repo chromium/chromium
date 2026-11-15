@@ -2312,6 +2312,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4850886885716139402">Se</translation>
 <translation id="4854853140771946034">Opret hurtigt en ny note i Google Keep</translation>
 <translation id="4855395119669662878">Din administrator starter uploaden af dine filer til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Sørg for, at din enhed er forbundet, indtil din filupload er fuldført. Under uploaden kan du kun læse lokale filer.</translation>
+<translation id="4856655096879441213">Gem dine oplysninger i <ph name="GOOGLE_WALLET_TITLE" />, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan administrere, <ph name="HOW_INFO_IS_USED_LINK" />, i dine indstillinger for personlige kort for <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Verificerer koden...</translation>
 <translation id="4860260582253463350">Vi skal verificere din identitet, før du kan fortsætte til YouTube. De indstillinger, som din forælder eller værge har konfigureret i Family Link, vil gælde.</translation>
 <translation id="4861514638281352187">Tilføj et redress-nummer på sikker vis</translation>
@@ -4896,7 +4897,6 @@ Yderligere oplysninger:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9193018794001479794">Uddyb</translation>
 <translation id="9194783551575429711">Spørg <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Når din organisation begrænser muligheden for at gemme på din Google-konto, kan du ikke dele eller deltage i fanegrupper</translation>
 <translation id="9198613052465150219">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Udskrivning er blokeret</translation>
 <translation id="9204089334327209740">Du kan redigere dine filer i <ph name="CLOUD_PROVIDER" />, når uploaden er fuldført. Lokal lagerplads, herunder filer i papirkurven, fjernes automatisk.</translation>

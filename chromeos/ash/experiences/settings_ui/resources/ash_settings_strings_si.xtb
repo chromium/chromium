@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">පරිශීලක දත්ත කේතනය</translation>
 <translation id="1011003645819296594">සුරැකි උපාංග</translation>
 <translation id="1011355516189274711">කථනයට පාඨය හඬ පරිමාව</translation>
+<translation id="1012876632442809908">USB-C උපාංගය (ඉදිරිපස තොට)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ජාල පෙරනිමි</translation>
 <translation id="1026655690966755180">තොට එක් කරන්න</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">දේශීය දත්ත ප්‍රතිසාධනය</translation>
 <translation id="1247372569136754018">මයික්‍රෆෝනය (අභ්‍යන්තර)</translation>
 <translation id="1251366534849411931">අපේක්‍ෂිත විවෘත රැළි කඹය: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">ජංගම දත්ත ජාල සඳහා ස්කෑන් කරමින්...</translation>
 <translation id="1254593899333212300">සෘජු අන්තර්ජාල සබැඳුම</translation>
 <translation id="1261380933454402672">මධ්‍යස්ථ</translation>
 <translation id="1263733306853729545">අයදුම්කරු ලැයිස්තුවක් පිටුගත කිරීමට <ph name="MINUS" /> සහ <ph name="EQUAL" /> යතුරු භාවිත කරන්න</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">කථන ගුණාංග</translation>
 <translation id="1291057703584594733">දැනටමත් පවරා ඇති ඉංගිතය තේරීම එහි මුල් ක්‍රියාවෙන් එය ඉවත් කරනු ඇත.</translation>
 <translation id="1291421198328146277">යතුරු යළි සකසන්න</translation>
+<translation id="1293264513303784526">USB-C උපාංගය (වම් තොට)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", සහ "<ph name="CONFLICTING_GESTURE_THREE" />" සමග අතිච්ඡාදනය විය හැක. හැකි නම්, වෙනස් ඉංගිතයක් තෝරා ගැනීමට උත්සාහ කරන්න.</translation>
 <translation id="1293556467332435079">ගොනු</translation>
 <translation id="1313405956111467313">ස්වයංක්‍රීය ප්‍රොක්සි වින්‍යාසකරණය</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">පියන වසා ඇති විට වරන්න</translation>
 <translation id="185970820835152459">ඔබට ඔබගේ පුරන ලද Google ගිණුම් කළමනාකරණය කළ හැකිය. ඔබගේ Google ගිණුම් Chromium බ්‍රව්සරය, Play Store, Gmail සහ තවත් දේ සඳහා භාවිත කෙරේ. ඔබට පවුලේ සාමාජිකයකු වැනි, වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඒ වෙනුවට ඔබගේ <ph name="DEVICE_TYPE" /> වෙත නව පුද්ගලයකු එක් කරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">ශ්‍රීතකය</translation>
+<translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1866589962721094893">මෙම Chromebook එකේ USB උපාංග පාලනය කිරීමට Android යෙදුම්වලට ඉඩ දෙන්න. ඔබ USB උපාංගයක් පේනුගත කරන සෑම අවස්ථාවකම අවසරය ඉල්ලනු ඇත. තනි Android යෙදුම් අතිරේක අවසර ඉල්ලනු ඇත.</translation>
 <translation id="1877377290348678128">ලේබලය (විකල්ප)</translation>
 <translation id="1877860345998737529">ක්‍රියා පැවරීම මාරු කරන්න</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">යාවත්කාලීන</translation>
 <translation id="1938351510777341717">බාහිර විධානය</translation>
 <translation id="1940546824932169984">සම්බන්ධ කළ උපාංග</translation>
+<translation id="1941410638996203291">ආරම්භක වේලාව <ph name="TIME" /></translation>
 <translation id="1941553344801134989">අනුවාදය: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">යාවත්කාලීන හමු විණි</translation>
 <translation id="1948528728718281125">යෙදුම්, කැමරා අවසරය ඇති වෙබ් අඩවි, සහ පද්ධති සේවා සඳහා කැමරා ප්‍රවේශය ඉඩ දෙනු ලැබේ</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">පිටු පරිවර්තනය කිරීමේදී භාවිත කරන භාෂාව</translation>
 <translation id="2319459402137712349">යතුරු පුවරුව විවෘත කිරීමට පෙළ ක්ෂේත්‍රයක් තෝරන්න. ඔබට ඔබේ තිරයෙහි පහළින් ඇති යතුරු පුවරු නිරූපකය ද තෝරා ගත හැක.</translation>
 <translation id="2319993584768066746">පුරන තිරයේ ඡායාරූප</translation>
+<translation id="2322622365472107569">අවසන් වන වේලාව <ph name="TIME" /></translation>
 <translation id="2323018538045954000">සුරැකි Wi-Fi ජාල</translation>
 <translation id="2325444234681128157">මුරපදය මතක තබා ගන්න</translation>
 <translation id="2326188115274135041">ස්වයංක්‍රිය අගුලු හැරීම ක්‍රියාත්මක කිරීමට PIN තහවුරු කරන්න</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">සෙමින් ඇස් දෙක පියාගන්න</translation>
 <translation id="258095186877893873">දිග</translation>
 <translation id="2581786034175502848">එය නැවත සබල කිරීමට shift 5 වරක් ඔබන්න</translation>
+<translation id="2581992808349413349">DNS (වසම් නාම පද්ධතිය) තුළ අඩවියක IP ලිපිනය සෙවීමට සුරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරන්න. මෙය <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> හි දී කළමනාකරණ සේවා සපයන්නෙකු භාවිතා කරයි</translation>
 <translation id="2584109212074498965">Kerberos ප්‍රවේශපත්‍රය ලබා ගත නොහැකි විය. නැවත උත්සාහ කරන්න, නැති නම් ඔබේ සංවිධානයේ උපාංග පරිපාලකයා සම්බන්ධ කර ගන්න. (දෝෂ කේතය <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome තුළ වෙබ් අඩවි මයික්‍රොෆෝන අවසර කළමනා කරන්න</translation>
 <translation id="2609980095400624569">සබැඳුම පිහිටුවිය නොහැකි විය</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">අතිරේක විස්තර</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />" සහ "<ph name="CONFLICTING_GESTURE_TWO" />" සමග අතිච්ඡාදනය විය හැක. හැකි නම්, වෙනස් ඉංගිතයක් තෝරා ගැනීමට උත්සාහ කරන්න.</translation>
 <translation id="2809346626032021864">කියවමින්</translation>
+<translation id="2811205483104563968">ගිණුම්</translation>
 <translation id="2813094189969465044">මාපිය පාලන</translation>
 <translation id="2817435998497102771">ඔබගේ වෝල්පේපරය සහ ශෛලිය සකසන්න</translation>
 <translation id="2818476747334107629">මුද්‍රණ යන්ත්‍ර විස්තර</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">හකුළන්න / දිග හරින්න</translation>
 <translation id="2833144527504272627">පෙළ කර්සරය සමග සංචාලනය කරන්න</translation>
 <translation id="2835177225987815960">ඔබගේ වත්මන් ස්කෑන් කිරීමේ පිහිටුම, පවරා ඇති ඕනෑම ස්විචයක් සහ ස්වයංක්‍රීය ස්කෑන් කිරීම් වේග මනාප ඇතුළුව යළි සකසනු ඇත.</translation>
+<translation id="2844169650293029770">USB-C උපාංගය (වම් පස ඉදිරි තොට)</translation>
 <translation id="2844809857160214557">මුද්‍රණ වැඩ බලන්න සහ කළමනා කරන්න</translation>
 <translation id="2849035674501872372">සොයන්න</translation>
 <translation id="2860710618359053450">හනුව දකුණට චලනය කරන්න</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369067987974711168">මෙම තොට සඳහා තවත් ක්‍රියා පෙන්වන්න</translation>
 <translation id="3370260763947406229">ස්වයං-නිවැරදි කිරීම</translation>
+<translation id="3371140690572404006">USB-C උපාංගය (දකුණුපස ඉදිරි තොට)</translation>
 <translation id="3371351218553893534">පේළිය දිග වැඩියි: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam සඳහා ඉඩ දී ඇති අවසර සියලු Steam ක්‍රීඩා සහ යෙදුම් සඳහා අදාළ වේ.</translation>
 <translation id="338323348408199233">VPN රහිත තදබදය අවහිර කරන්න</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">ඔබේ අන්තර්ජාල ගමනාගමනයට ප්‍රවේශය ඇති පුද්ගලයින්ට ඔබ පිවිසෙන්නේ කුමන වෙබ් අඩවි වලට දැයි බැලීම අසීරු කරන්න. Chrome DNS (වසම් නම් ක්‍රමය) තුළ වෙබ් අඩවියක IP ලිපිනය සෙවීමට <ph name="PRODUCT_NAME" /> ආරක්ෂිත සම්බන්ධතාවයක් භාවිත කරයි.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> වැඩිදියුණු කිරීමට උදවු කිරීමට ඔබගේ දෘඪාංග දත්ත භාවිත කිරීමට Google හට ඉඩ දෙන්න. ඔබ ප්‍රතික්ෂේප කළහොත්, නිසි යාවත්කාලීන නිර්ණය කිරීමට මෙම දත්ත තවමත් Google වෙත යවනු ඇත, නමුත් ගබඩා කිරීම හෝ වෙනත් ආකාරයකින් භාවිත කිරීම නොකෙරේ.</translation>
 <translation id="3445465968953598059">මුහුණ පාලනය</translation>
+<translation id="3445925074670675829">USB-C උපාංගය</translation>
 <translation id="3448492834076427715">ගිණුම යාවත්කාලීන කරන්න</translation>
 <translation id="345078987193237421">මෙය යෙදුම්, කැමරා අවසරය ඇති වෙබ් අඩවි, සහ පද්ධති සේවා සඳහා කැමරා ප්‍රවේශයට ඉඩ සලසයි</translation>
 <translation id="3453082738208775226">නොබැඳි ආචයනය පිරිසිදු කරන්න ද?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">ඉක්මන් පිළිතුරු නිර්වචනය</translation>
 <translation id="3994075804072562819">USB උපාංග මත පාලනය <ph name="SPECIFIC_NAME" /> ලබා දෙන්න.</translation>
 <translation id="3994530503403062649">ඔබේ ටැබ්ලටයේ බොත්තම් සොයා ගන්න</translation>
+<translation id="3995138139523574647">USB-C උපාංගය (දකුණුපස පසු තොට)</translation>
 <translation id="3997429360543082038">ChromiumOS ගැන</translation>
 <translation id="4001540981461989979">චලනය වන විට මූසික කර්සරය උද්දීපනය කරන්න</translation>
 <translation id="4005817994523282006">වේලා කලාපය හඳුනාගැනීමේ ක්‍රමය</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">ඔබගේ ස්ථානය භාවිතා කර කාල කලාපය ස්වයංක්‍රියව සකසන්න</translation>
 <translation id="5327248766486351172">නම</translation>
 <translation id="5331568967879689647">ChromeOS පද්ධති යෙදුම</translation>
+<translation id="5331975486040154427">USB-C උපාංගය (වම්පස පසු තොට)</translation>
 <translation id="5334113802138581043">මයික්‍රොෆෝන ප්‍රවේශය</translation>
 <translation id="5336689872433667741">කර්සරය සහ ස්පර්ශ පුවරුව</translation>
 <translation id="5337926771328966926">වත්මන් උපාංග නම වන්නේ <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Earcon ඇතුළු වීම සබල කරන්න</translation>
 <translation id="5441133529460183413">Chrome බ්‍රවුසරයෙන් වෙබ් යෙදුම ස්ථාපනය කර ඇත</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">වලංගු නොවන මුරපදය</translation>
 <translation id="5450469615146335984">එක් එක් ක්‍රියාව සඳහා කෙටිමඟක් තෝරන්න</translation>
 <translation id="5452446625764825792">ඔබට දැන් ඔබගේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය සහ යෙදුම් බැලිය හැකිය</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (නොබැඳිව ක්‍රියාකරයි)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">තිරයෙහි ඇති අයිතම අතර යාමට "ඊළඟ" සහ "පෙර" භාවිත කරන්න</translation>
 <translation id="6452961788130242735">ජාල ගැටලුව හෝ නරක ක්‍ෂේත්‍රය</translation>
 <translation id="6453921811609336127">ඊළඟ ආදාන ක්‍රමයට මාරු වීමට <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ඔබන්න</translation>
+<translation id="6461170143930046705">ජාල සොයනු ලැබේ...</translation>
 <translation id="6463488491707167747">මෙම ශබ්දකෝෂය මකන්න</translation>
 <translation id="6463596731306859179">අනවශ්‍ය උත්පතන, හෝ වෙනත් අනපේක්ෂිත හැසිරීම් ලැබෙනවා ද? සමහර විට, ඔබ ස්ථාපන කරන යෙදුම් සහ දිගු ඔබට නොදැනුවත්වම ඔබේ ChromeOS සැකසීම් වෙනස් කළ හැක.</translation>
 <translation id="6465841119675156448">අන්තර්ජාලය නොමැතිව</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> හට ඔබේ මයික්‍රෆෝනයට ප්‍රවේශ වීමට ඉඩ දෙන්න</translation>
 <translation id="6482559668224714696">පූර්ණ තිර විශාලකය</translation>
 <translation id="648927581764831596">කිසිත් ලද නොහැක</translation>
+<translation id="6490471652906364588">USB-C උපාංගය (දකුණු තොට)</translation>
 <translation id="6497784818439587832">ඔබේ තිරයෙහි ඇති අයිතම කුඩා හෝ විශාල කිරීමට සංදර්ශක ප්‍රමාණය වෙනස් කරන්න</translation>
 <translation id="6497789971060331894">මූසික ආපස්සට අනුචලනය</translation>
 <translation id="650185290742160385">සීමාව අඩු කරන්න</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">හොට්ස්පොට් ස්වයංක්‍රීයව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="7092504544229909737">Android යෙදුම් සමග භාවිතා කළ නොහැක</translation>
 <translation id="7093220653036489319">ඉක්මන් පිළිතුරු</translation>
+<translation id="7098389117866926363">USB-C උපාංගය (පිටුපස වම් තොට)</translation>
 <translation id="7099337801055912064">විශාල PPD පූරණය කළ නොහැක. උපරිම ප්‍රමාණය 250 kB වේ.</translation>
 <translation id="7107609441453408294">සියලු ස්පීකර හරහා එකම ශබ්දය වාදනය කරන්න</translation>
 <translation id="7116931001458704701">කර්සරය සොයා ගැනීමට සොලවන්න</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">කර්සර ප්‍රදේශයේ ප්‍රමාණය</translation>
 <translation id="7325209047678309347">කඩදාසිය සිර විය</translation>
 <translation id="7331646370422660166">alt + පහළට ඊතලය</translation>
+<translation id="7345706641791090287">ඔබගේ මුරපදය තහවුරු කරන්න</translation>
 <translation id="7348093485538360975">තිරය-මත යතුරු පුවරුව</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7360333718677093875">ඉමොජි තෝරකය</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">ඉහළ පේළියේ යතුරු හැසිරීම මාරු කිරීමට සෙවීම් යතුර අල්ලාගෙන සිටින්න</translation>
 <translation id="8551588720239073785">දිනය සහ වේලාව සැකසීම්</translation>
 <translation id="8553342806078037065">අනෙක් පුද්ගලයින් කළමනාකරණය කරන්න</translation>
+<translation id="8554899698005018844">භාෂාවක් නැත</translation>
 <translation id="8555444629041783356">ස්වයංක්‍රීය හිරු බැස යෑමේ කාලසටහන</translation>
 <translation id="8563043098557365232">පද්ධති සේවා සඳහා පමණක් අවසර ඇත</translation>
 <translation id="8571687764447439720">Kerberos ප්‍රවේශපත්‍රය එක් කරන්න</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">සෙලියුලර් සබල කරන්න</translation>
 <translation id="8902667442496790482">කීමට-තේරීමේ සැකසීම් විවෘත කරන්න</translation>
 <translation id="8903733144777177139">මයික්‍රෆෝන ප්‍රවේශය අවහිර කර ඇත</translation>
+<translation id="8910222113987937043">ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම්වලට සිදු කරන වෙනස් කිරීම් ඔබගේ Google ගිණුම වෙත තව දුරටත් සමමුහුර්ත වන්නේ නැත. කෙසේ වෙතත්, ඔබගේ පවතින දත්ත ඔබගේ Google ගිණුමේ ගබඩා කර තිබෙනු ඇති අතර <ph name="BEGIN_LINK" />Google උපකරණ පුවරුව<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="8912810933860534797">ස්වයංක්‍රීය ස්කෑන් සබල කරන්න</translation>
 <translation id="8922624386829239660">මූසිකය තිරයේ දාර ස්පර්ශ කරන විට තිරය ගෙන යන්න</translation>
 <translation id="8929738682246584251">විශාලකය ක්‍රියාත්මක/ක්‍රියාවිරහිත</translation>
 <translation id="8930622219860340959">නොරැහැන්</translation>
 <translation id="8931713990831679796">මෙම මුද්‍රක සම්බන්ධ කර භාවිතයට සූදානම් වේ. පහසු ප්‍රවේශය සඳහා ඔබේ පැතිකඩ වෙත සුරකින්න.</translation>
 <translation id="8932654652795262306">ක්‍ෂණික ටෙදරින් විස්තර</translation>
+<translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>
 <translation id="8940888110818450052">පුරනය වීමේ විකල්ප</translation>
 <translation id="8944099748578356325">වඩා ඉක්මනින් බැටරිය භාවිත කරන්න (දැනට <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">නිරූපක තරම</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">දැනට රෝමිං වේ</translation>
 <translation id="93393615658292258">මුරපදය පමණි</translation>
 <translation id="942296794412775122">මයික්‍රෆෝනය ක්‍රියාත්මක/ක්‍රියාවිරහිත</translation>
+<translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="950307215746360464">පිහිටුවීම් මාර්ගෝපදේශය</translation>
 <translation id="952471655966876828">උපාංගය ක්‍රියාත්මක විට සහ භාවිත කරන විට එය ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත</translation>
 <translation id="956013912698841780">අන්තර්ගතය සාරාංශ කිරීමට, අර්ථ දැක්වීම් ලබා ගැනීමට, වැඩි විශ්වාසයකින් ලිවීමට, රූප නිර්මාණය කිරීමට සහ තවත් බොහෝ දේ සඳහා දකුණු-ක්ලික් කරන්න. දැනට සීමිතව ලබා ගත හැක.</translation>

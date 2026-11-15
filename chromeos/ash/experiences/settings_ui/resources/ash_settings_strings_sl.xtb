@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Šifriranje podatkov uporabnika</translation>
 <translation id="1011003645819296594">Shranjene naprave</translation>
 <translation id="1011355516189274711">Glasnost pretvorbe besedila v govor</translation>
+<translation id="1012876632442809908">Naprava USB-C (sprednja vrata)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Omrežno privzeto</translation>
 <translation id="1026655690966755180">Dodajanje vrat</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Obnovitev lokalnih podatkov</translation>
 <translation id="1247372569136754018">Mikrofon (vgrajeni)</translation>
 <translation id="1251366534849411931">Pričakovan zaviti oklepaj: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Iskanje mobilnih podatkovnih omrežij …</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
 <translation id="1261380933454402672">Zmerno</translation>
 <translation id="1263733306853729545">Premikanje po seznamu kandidatov s tipkama »<ph name="MINUS" />« in »<ph name="EQUAL" />«</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Lastnosti govora</translation>
 <translation id="1291057703584594733">Če izberete že dodeljeno potezo, bo odstranjena iz prvotnega dejanja.</translation>
 <translation id="1291421198328146277">Ponastavi tipke</translation>
+<translation id="1293264513303784526">Naprava USB-C (leva vrata)</translation>
 <translation id="1293360286536751243">»<ph name="MAIN_GESTURE" />« se morda prekriva s potezami »<ph name="CONFLICTING_GESTURE_ONE" />«, »<ph name="CONFLICTING_GESTURE_TWO" />« in »<ph name="CONFLICTING_GESTURE_THREE" />«. Če je mogoče, poskusite izbrati drugo potezo.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1313405956111467313">Samodejna konfiguracija strežnika proxy</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Odjava, ko je pokrov zaprt</translation>
 <translation id="185970820835152459">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chromium, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Hladneje</translation>
+<translation id="1864454756846565995">Naprava USB-C (vrata zadaj)</translation>
 <translation id="1866589962721094893">Aplikacijam za Android omogočite nadzor nad napravami USB v tem Chromebooku. Dovoljenje bo zahtevano vsakič, ko priključite napravo USB. Posamezne aplikacije za Android bodo zahtevale dodatna dovoljenja.</translation>
 <translation id="1877377290348678128">Oznaka (neobvezno)</translation>
 <translation id="1877860345998737529">Dodelitev dejanj stikalom</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Posodobitve</translation>
 <translation id="1938351510777341717">Zunanji ukaz</translation>
 <translation id="1940546824932169984">Povezane naprave</translation>
+<translation id="1941410638996203291">Začetni čas: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Različica: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Najdena je bila posodobitev</translation>
 <translation id="1948528728718281125">Dostop do fotoaparata je dovoljen aplikacijam, spletnim mestom, ki imajo dovoljenje za kamero, in sistemskim storitvam</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Jezik, ki se uporablja za prevajanje strani</translation>
 <translation id="2319459402137712349">Izberite besedilno polje, če želite odpreti tipkovnico. Izberete lahko tudi ikono tipkovnice na dnu zaslona.</translation>
 <translation id="2319993584768066746">Fotografije na zaslonu za prijavo</translation>
+<translation id="2322622365472107569">Končni čas: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Shranjena omrežja Wi-Fi</translation>
 <translation id="2325444234681128157">Zapomni si geslo</translation>
 <translation id="2326188115274135041">Potrdite kodo PIN za vklop samodejnega odklepanja</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Na kratko zaprite obe očesi</translation>
 <translation id="258095186877893873">Dolga</translation>
 <translation id="2581786034175502848">Petkrat pritisnite tipko shift, če jo želite znova omogočiti</translation>
+<translation id="2581992808349413349">Uporaba varne povezave za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen). Uporablja upravljanega ponudnika storitev na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2584109212074498965">Kartončka za Kerberos ni bilo mogoče pridobiti. Poskusite znova ali se obrnite na skrbnika naprave organizacije. (Koda napake <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Upravljanje dovoljenj za mikrofon za spletna mesta v Chromu</translation>
 <translation id="2609980095400624569">Ni bilo mogoče vzpostaviti povezave</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Dodatne podrobnosti</translation>
 <translation id="2808985063107661499">»<ph name="MAIN_GESTURE" />« se morda prekriva s potezama »<ph name="CONFLICTING_GESTURE_ONE" />« in »<ph name="CONFLICTING_GESTURE_TWO" />«. Če je mogoče, poskusite izbrati drugo potezo.</translation>
 <translation id="2809346626032021864">Branje</translation>
+<translation id="2811205483104563968">Računi</translation>
 <translation id="2813094189969465044">Starševski nadzor</translation>
 <translation id="2817435998497102771">Nastavitev zaslonskega ozadja in sloga</translation>
 <translation id="2818476747334107629">Podrobnosti tiskalnika</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Skrči/razširi</translation>
 <translation id="2833144527504272627">Premikanje s kazalcem besedila</translation>
 <translation id="2835177225987815960">Trenutna nastavitev optičnega branja bo ponastavljena, vključno z vsemi dodeljenimi stikali in nastavitvami hitrosti samodejnega iskanja.</translation>
+<translation id="2844169650293029770">Naprava USB-C (vrata levo spredaj)</translation>
 <translation id="2844809857160214557">Ogled in upravljanje tiskalnih opravil</translation>
 <translation id="2849035674501872372">Iskanje</translation>
 <translation id="2860710618359053450">Premik čeljusti desno</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369067987974711168">Pokaži več dejanj za ta vrata</translation>
 <translation id="3370260763947406229">Samodejno popravljanje</translation>
+<translation id="3371140690572404006">Naprava USB-C (vrata desno spredaj)</translation>
 <translation id="3371351218553893534">Vrstica je predolga: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Dovoljenja, odobrena za storitev Steam, se uporabljajo za vse igre in aplikacije v storitvi Steam.</translation>
 <translation id="338323348408199233">Blokiraj promet brez omrežja VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. <ph name="PRODUCT_NAME" /> uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>
 <translation id="3442674350323953953">Dovolite Googlu, da uporablja podatke o strojni opremi za izboljšanje operacijskega sistema <ph name="DEVICE_OS" />. Če odklonite, bodo ti podatki vseeno poslani Googlu zaradi določanja ustreznih posodobitev, vendar se ne bodo shranjevali ali kako drugače uporabljali.</translation>
 <translation id="3445465968953598059">Upravljanje obraza</translation>
+<translation id="3445925074670675829">Naprava USB-C</translation>
 <translation id="3448492834076427715">Posodobi račun</translation>
 <translation id="345078987193237421">To omogoča dostop do kamere za aplikacije, spletna mesta z dovoljenjem za kamero in sistemske storitve</translation>
 <translation id="3453082738208775226">Želite izbrisati podatke v shrambi brez povezave?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definicija hitrih odgovorov</translation>
 <translation id="3994075804072562819">Aplikaciji <ph name="SPECIFIC_NAME" /> omogočite nadzor nad napravami USB.</translation>
 <translation id="3994530503403062649">Iskanje gumbov na tabličnem računalniku</translation>
+<translation id="3995138139523574647">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="3997429360543082038">O sistemu Chromium OS</translation>
 <translation id="4001540981461989979">Označitev miškinega kazalca med premikanjem</translation>
 <translation id="4005817994523282006">Način zaznavanja časovnega pasu</translation>
@@ -1327,6 +1339,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5324780743567488672">Samodejna nastavitev časovnega pasu na podlagi vaše lokacije</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5331568967879689647">Aplikacija za sistem Chrome OS</translation>
+<translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="5334113802138581043">Dostop do mikrofona</translation>
 <translation id="5336689872433667741">Kazalec in sledilna ploščica</translation>
 <translation id="5337926771328966926">Trenutno ime naprave je <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5435274640623994081">Omogočanje beleženja zvočnih ikon</translation>
 <translation id="5441133529460183413">Spletna aplikacija je bila nameščena v brskalniku Chrome.</translation>
 <translation id="5445400788035474247">10 x</translation>
+<translation id="5449551289610225147">Neveljavno geslo</translation>
 <translation id="5450469615146335984">Izbira bližnjice za posamezno dejanje</translation>
 <translation id="5452446625764825792">Zdaj si lahko ogledate nedavne fotografije, predstavnost in aplikacije telefona</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (deluje brez povezave)</translation>
@@ -1645,6 +1659,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="6444147596556711162">Uporabite stikali »Naprej« in »Nazaj«, če se želite premikati po elementih na zaslonu.</translation>
 <translation id="6452961788130242735">Težava z omrežjem ali neustrezno območje</translation>
 <translation id="6453921811609336127">Če želite preklopiti na naslednji način vnosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />preslednico<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
+<translation id="6461170143930046705">Iskanje omrežij ...</translation>
 <translation id="6463488491707167747">Izbriši ta slovar</translation>
 <translation id="6463596731306859179">Ali se prikazujejo neželena pojavna okna ali drugo nepričakovano vedenje? V nekaterih primerih lahko nameščene aplikacije in razširitve brez vaše vednosti spreminjajo nastavitve sistema ChromeOS.</translation>
 <translation id="6465841119675156448">Brez interneta</translation>
@@ -1661,6 +1676,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="648204537326351595">Dovoli, da <ph name="SPECIFIC_NAME" /> uporablja mikrofon</translation>
 <translation id="6482559668224714696">Celozaslonska lupa</translation>
 <translation id="648927581764831596">Ni na voljo</translation>
+<translation id="6490471652906364588">Naprava USB-C (desna vrata)</translation>
 <translation id="6497784818439587832">Spremenite velikost zaslona, če želite pomanjšati ali povečati elemente na zaslonu.</translation>
 <translation id="6497789971060331894">Obratno pomikanje z miško</translation>
 <translation id="650185290742160385">Zmanjšaj prag</translation>
@@ -1825,6 +1841,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="7090714929377281710">Samodejni vklopi dostopno točko</translation>
 <translation id="7092504544229909737">Ni mogoče uporabljati z aplikacijami za Android</translation>
 <translation id="7093220653036489319">Hitri odgovori</translation>
+<translation id="7098389117866926363">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="7099337801055912064">Velikih datotek PPD ni mogoče naložiti. Največja dovoljena velikost je 250 KB.</translation>
 <translation id="7107609441453408294">Predvajanje istega zvoka prek vseh zvočnikov</translation>
 <translation id="7116931001458704701">Hitro premakni za iskanje kazalca</translation>
@@ -1886,6 +1903,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="7323315405936922211">Velikost območja kazalca</translation>
 <translation id="7325209047678309347">Papir se je zagozdil</translation>
 <translation id="7331646370422660166">alt + puščica dol</translation>
+<translation id="7345706641791090287">Potrdite geslo</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7360333718677093875">izbirnik emodžijev</translation>
@@ -2262,6 +2280,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="85486688517848470">Če želite spremeniti delovanje tipk v zgornji vrstici, pridržite tipko za iskanje</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
 <translation id="8553342806078037065">Upravljanje drugih oseb</translation>
+<translation id="8554899698005018844">Brez jezika</translation>
 <translation id="8555444629041783356">Samodejni razpored sončnega zahoda</translation>
 <translation id="8563043098557365232">Dovoljeno samo za sistemske storitve</translation>
 <translation id="8571687764447439720">Dodajanje kartončka za Kerberos</translation>
@@ -2368,12 +2387,14 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="8900413463156971200">Omogočanje mobilnega omrežja</translation>
 <translation id="8902667442496790482">Odpri nastavitve storitve Izberite in poslušajte</translation>
 <translation id="8903733144777177139">Dostop do mikrofona je blokiran</translation>
+<translation id="8910222113987937043">Spremembe zaznamkov, zgodovine, gesel in drugih nastavitev se ne bodo več sinhronizirale z Google Računom. Vaši obstoječi podatki bodo kljub temu še naprej shranjeni v Google Računu in jih bo mogoče upravljati na <ph name="BEGIN_LINK" />Google Nadzorni plošči<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Omogočanje samodejnega iskanja</translation>
 <translation id="8922624386829239660">Premikaj zaslon, ko se miška dotakne robov zaslona</translation>
 <translation id="8929738682246584251">Vklop/izklop lupe</translation>
 <translation id="8930622219860340959">Brezžično</translation>
 <translation id="8931713990831679796">Ti tiskalniki so povezani in pripravljeni za uporabo. Za lažji dostop shranite v svoj profil.</translation>
 <translation id="8932654652795262306">Podrobnosti takojšnje povezave računalnika z internetom prek mobilnega telefona</translation>
+<translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8940888110818450052">Možnosti prijave</translation>
 <translation id="8944099748578356325">Hitrejša poraba energije akumulatorja (trenutno <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Velikost ikone</translation>
@@ -2470,6 +2491,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="930893132043726269">Trenutno v gostovanju</translation>
 <translation id="93393615658292258">Samo geslo</translation>
 <translation id="942296794412775122">Vklop/izklop mikrofona</translation>
+<translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>
 <translation id="952471655966876828">Naprava samodejno vzpostavi povezavo, ko je vklopljena in je v uporabi.</translation>
 <translation id="956013912698841780">Kliknite z desnim gumbom, če želite povzeti vsebino, prejeti definicije, pisati samozavestneje, ustvariti slike in drugo. Razpoložljivost je trenutno omejena.</translation>

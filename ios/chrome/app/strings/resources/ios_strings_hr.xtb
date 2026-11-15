@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Želite li zaustaviti preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Sažeto.</translation>
 <translation id="4800912004582762296">Klik</translation>
+<translation id="4800930308997591052">Prijeđite na račun <ph name="EMAIL" /> da biste jednostavno dijelili kartice između svojih uređaja i pristupali zaporkama, oznakama i drugim podacima sa svojeg Google računa.</translation>
 <translation id="4802185666270672526">Sakrij stavku Zatraži web-lokaciju za stolno računalo</translation>
 <translation id="4803185665210547709">Pod upravljanjem vaše organizacije.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="7618220760967055820">Odaberite koji će se gumb prikazivati na alatnoj traci</translation>
 <translation id="7620522820075868385">Odustani</translation>
 <translation id="762078666799342162">Ranija preuzimanja možete pregledati u aplikaciji <ph name="BEGIN_LINK" />Datoteke<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Nastavite tamo gdje ste stali na računalu</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene zaporke}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="7640669552036055091">Kartice s Androida</translation>

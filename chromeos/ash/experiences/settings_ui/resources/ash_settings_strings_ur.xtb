@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">صارف کے ڈیٹا کی مرموز کاری</translation>
 <translation id="1011003645819296594">محفوظ کردہ آلات</translation>
 <translation id="1011355516189274711">ٹیکسٹ ٹو اسپیچ کا والیوم</translation>
+<translation id="1012876632442809908">‏USB-C آلہ (سانے کا پورٹ)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">نیٹ ورک ڈیفالٹ</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">مقامی ڈیٹا کی بازیابی</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">موبائل ڈیٹا نیٹ ورکس کو اسکین کیا جا رہا ہے...</translation>
 <translation id="1254593899333212300">براہ راست انٹرنیٹ کنکشن</translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="1263733306853729545">امیدواروں کی فہرست کا صفحہ بنانے کیلئے، <ph name="MINUS" /> اور <ph name="EQUAL" /> کلیدوں کا استعمال کریں</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">اسپیچ کی خصوصیات</translation>
 <translation id="1291057703584594733">پہلے سے تفویض کردہ اشارے کا انتخاب اسے اس کی اصل کاروائی سے ہٹا دے گا۔</translation>
 <translation id="1291421198328146277">کلیدوں کو ری سیٹ کریں</translation>
+<translation id="1293264513303784526">‏USB-C آلہ (بایاں پورٹ)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />"، "<ph name="CONFLICTING_GESTURE_TWO" />" اور "<ph name="CONFLICTING_GESTURE_THREE" />" کے ساتھ اوورلیپ ہو سکتا ہے۔ ممکن ہونے پر، ایک مختلف اشارہ منتخب کرنے کی کوشش کریں۔</translation>
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1313405956111467313">خود کار پراکسی کنفیگریشن</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">لِڈ بند ہونے پر سائن آؤٹ کریں</translation>
 <translation id="185970820835152459">‏آپ اپنے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ آپ کے Google اکاؤنٹس Chromium براؤزر، Play اسٹور، Gmail اور مزید کے لیے استعمال ہوتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں جیسے آپ کی فیملی کا کوئی ممبر تو اس کی بجائے اپنے <ph name="DEVICE_TYPE" /> میں ایک نیا شخص شامل کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">کولر</translation>
+<translation id="1864454756846565995">‏USB-C آلہ (پیچھے کا پورٹ)</translation>
 <translation id="1866589962721094893">‏اس Chromebook پر Android ایپس کو USB آلات پر کنٹرول دیں۔ ہر بار جب آپ USB آلہ کو پلگ ان کریں گے تو اجازت کی درخواست کی جائے گی۔ انفرادی Android ایپس اضافی اجازتیں طلب کریں گی۔</translation>
 <translation id="1877377290348678128">لیبل (اختیاری)</translation>
 <translation id="1877860345998737529">سوئچ کی کارروائی کی تفویض</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">اپ ڈيٹس</translation>
 <translation id="1938351510777341717">بیرونی کمانڈ</translation>
 <translation id="1940546824932169984">منسلک آلات</translation>
+<translation id="1941410638996203291">وقت آغاز <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ورژن: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">اپ ڈیٹ ملا</translation>
 <translation id="1948528728718281125">ایپس، کیمرے کی اجازت والی ویب سائٹس اور سسٹم سروسز کے لیے کیمرے تک رسائی کی اجازت ہے</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">صفحات کا ترجمہ کرتے وقت استعمال کی جانے والی زبان</translation>
 <translation id="2319459402137712349">کی بورڈ کھولنے کے لیے کسی بھی ٹیکسٹ فیلڈ کو منتخب کریں۔ آپ اپنی اسکرین کے نیچے کی بورڈ آئیکن کو بھی منتخب کر سکتے ہیں۔</translation>
 <translation id="2319993584768066746">سائن ان اسکرین کی تصاویر</translation>
+<translation id="2322622365472107569">وقت اختتام <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏محفوظ کردہ Wi-Fi نیٹ ورکس</translation>
 <translation id="2325444234681128157">پاس ورڈ یاد رکھیں</translation>
 <translation id="2326188115274135041">‏خودکار غیر مقفل کریں کو آن کرنے کے لیے PIN کی تصدیق کریں</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">کچھ دیر کیلئے دونوں آنکھیں بند کریں</translation>
 <translation id="258095186877893873">طویل</translation>
 <translation id="2581786034175502848">‏دوبارہ فعال کرنے کے لیے 5 بار shift دبائیں</translation>
+<translation id="2581992808349413349">‏DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے</translation>
 <translation id="2584109212074498965">‏Kerberos کی ٹکٹ حاصل نہیں کی جا سکی۔ دوبارہ کوشش کریں یا اپنی تنظیم کے آلہ کے منتظم سے رابطہ کریں۔ (خرابی کا کوڈ <ph name="ERROR_CODE" />)۔</translation>
 <translation id="2584974473573720127">‏‫Chrome میں ویب سائٹ کے مائیکروفون کی اجازتوں کا نظم کریں</translation>
 <translation id="2609980095400624569">کنکشن قائم نہیں کیا جا سکا</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">اضافی تفصیلات</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />" اور "<ph name="CONFLICTING_GESTURE_TWO" />" کے ساتھ اوورلیپ ہوسکتا ہے۔ ممکن ہونے پر، ایک مختلف اشارہ منتخب کرنے کی کوشش کریں۔</translation>
 <translation id="2809346626032021864">پڑھنا</translation>
+<translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2813094189969465044">پیرنٹل کنٹرولز</translation>
 <translation id="2817435998497102771">اپنا وال پیپر اور اسٹائل سیٹ کریں</translation>
 <translation id="2818476747334107629">پرنٹر کی تفصیلات</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">سکیڑیں / پھیلائیں</translation>
 <translation id="2833144527504272627">ٹیکسٹ کرسر کی مدد سے نیویگیٹ کریں</translation>
 <translation id="2835177225987815960">تفویض کردہ سوئچز اور خودکار اسکین رفتار کی ترجیحات کے سمیت آپ کا موجودہ اسکیننگ سیٹ اپ ری سیٹ کر دیا جائے گا۔</translation>
+<translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
 <translation id="2844809857160214557">پرنٹ جابز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2849035674501872372">اوپر دیکھیں</translation>
 <translation id="2860710618359053450">جبڑا دائیں جانب لے جائیں</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369067987974711168">اس پورٹ کے ليے مزید کارروائیاں دکھائیں</translation>
 <translation id="3370260763947406229">خودکار اصلاح</translation>
+<translation id="3371140690572404006">‏USB-C آلہ (دائیں طرف کا اگلا پورٹ)</translation>
 <translation id="3371351218553893534">لائن کافی بڑی ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">‏Steam کے لیے دی گئی اجازتوں کا اطلاق تمام Steam گیمز اور ایپس پر ہوتا ہے۔</translation>
 <translation id="338323348408199233">‏VPN کے بغیر ٹریفک مسدود کریں</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">‏آپ کے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کے لیے یہ دیکھنا مشکل بنائیں کہ آپ کون سی سائٹس ملاحظہ کرتے ہیں۔ <ph name="PRODUCT_NAME" /> ‏DNS (ڈومین ناموں کے نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے ایک محفوظ کنکشن کا استعمال کرتا ہے۔</translation>
 <translation id="3442674350323953953">‏<ph name="DEVICE_OS" /> کو بہتر بنانے میں مدد کے لیے Google کو اپنا ہارڈویئر ڈیٹا استعمال کرنے دیں۔ اگر آپ مسترد کرتے ہیں تو یہ ڈیٹا اب بھی Google کو بھیجا جاتا ہے تاکہ مناسب اپ ڈیٹس کا تعین کیا جا سکے، لیکن اسے اسٹور یا استعمال نہیں کیا جاتا۔</translation>
 <translation id="3445465968953598059">چہرے کا کنٹرول</translation>
+<translation id="3445925074670675829">‏USB-C آلہ</translation>
 <translation id="3448492834076427715">اکاؤنٹ اپ ڈیٹ کریں</translation>
 <translation id="345078987193237421">یہ ایپس، کیمرا کی اجازت والی ویب سائٹس اور سسٹم سروسز کے لیے کیمرا تک رسائی کی اجازت دیتا ہے</translation>
 <translation id="3453082738208775226">آف لائن اسٹوریج صاف کریں؟</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">فوری جوابات کی تعریف</translation>
 <translation id="3994075804072562819">‏‫<ph name="SPECIFIC_NAME" /> کو USB آلات پر کنٹرول دیں۔</translation>
 <translation id="3994530503403062649">اپنے ٹیبلیٹ پر بٹنز تلاش کریں</translation>
+<translation id="3995138139523574647">‏USB-C آلہ (دائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
 <translation id="4001540981461989979">حرکت کرتے وقت ماؤس کرسر کو نمایاں کریں</translation>
 <translation id="4005817994523282006">ٹائم زون کا پتہ لگانے کا طریقہ</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">اپنے مقام کا استعمال کرکے منطقۂ وقت خود بخود سیٹ کریں</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5331568967879689647">‏ChromeOS سسٹم ایپ</translation>
+<translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="5334113802138581043">مائیکروفون تک رسائی</translation>
 <translation id="5336689872433667741">کرسر اور ٹچ پیڈ</translation>
 <translation id="5337926771328966926">موجودہ آلے کا نام <ph name="DEVICE_NAME" /> ہے</translation>
@@ -1349,6 +1362,7 @@
 <translation id="5435274640623994081">ایئرکون لاگنگ کو فعال کریں</translation>
 <translation id="5441133529460183413">‏Chrome براؤزر سے ویب ایپ انسٹال کی گئی</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">غلط پاس ورڈ</translation>
 <translation id="5450469615146335984">ہر ایکشن کے لیے ایک شارٹ کٹ منتخب کریں</translation>
 <translation id="5452446625764825792">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آف لائن کام کرتی ہے)</translation>
@@ -1644,6 +1658,7 @@
 <translation id="6444147596556711162">اسکرین پر موجود آئٹمز کے درمیان منتقل کرنے کے لیے "اگلا" اور "پچھلا" استعمال کریں</translation>
 <translation id="6452961788130242735">نیٹ ورک کا مسئلہ یا خراب دائرہ کار</translation>
 <translation id="6453921811609336127">‏اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> دبائیں۔</translation>
+<translation id="6461170143930046705">نیٹ ورکس تلاش کیے جا رہے ہیں...</translation>
 <translation id="6463488491707167747">یہ لغت حذف کریں</translation>
 <translation id="6463596731306859179">‏ناپسندیدہ پاپ اپس یا دیگر غیر متوقع برتاؤ سامنا ہو رہا ہے؟ بعض اوقات، آپ کے انسٹال کردہ ایپس اور ایکسٹینشنز آپ کے علم میں لائے بغیر آپ کی ChromeOS ترتیبات کو تبدیل کر سکتی ہیں۔</translation>
 <translation id="6465841119675156448">انٹرنیٹ کے بغیر</translation>
@@ -1660,6 +1675,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> کو اپنے مائیکروفون تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="6482559668224714696">پوری اسکرین مکبّر</translation>
 <translation id="648927581764831596">کوئی دستیاب نہیں ہے</translation>
+<translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
 <translation id="6497784818439587832">اپنی اسکرین پر موجود آئٹمز کو چھوٹا یا بڑا کرنے کے لیے ڈسپلے کا سائز تبدیل کریں</translation>
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="650185290742160385">حد کم کریں</translation>
@@ -1824,6 +1840,7 @@
 <translation id="7090714929377281710">ہاٹ اسپاٹ کو خودکار طور پر آف کریں</translation>
 <translation id="7092504544229909737">‏‫Android ایپس کے ساتھ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7093220653036489319">فوری جوابات</translation>
+<translation id="7098389117866926363">‏USB-C آلہ (پیچھے موجود بایاں پورٹ)</translation>
 <translation id="7099337801055912064">‏بڑے PPD کو لوڈ نہیں کر سکتا۔ زیادہ سے زیادہ سائز ‎250 kB‎ ہے۔</translation>
 <translation id="7107609441453408294">سبھی اسپیکرز سے ایک ہی آڈیو چلائیں</translation>
 <translation id="7116931001458704701">کرسر کا پتا لگانے کے لیے ہلائیں</translation>
@@ -1885,6 +1902,7 @@
 <translation id="7323315405936922211">کرسر ایریا کا سائز</translation>
 <translation id="7325209047678309347">کاغذ جام ہو گیا ہے</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
+<translation id="7345706641791090287">اپنے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7360333718677093875">ایموجی چنندہ</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">سر فہرست قطار کی کلیدوں کے برتاؤ کو سوئچ کرنے کیلئے تلاش کی کلید کو دبائے رہیں</translation>
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
+<translation id="8554899698005018844">کوئی زبان نہیں</translation>
 <translation id="8555444629041783356">غروب آفتاب کا خودکار شیڈول</translation>
 <translation id="8563043098557365232">صرف سسٹم سروسز کے لیے اجازت ہے</translation>
 <translation id="8571687764447439720">‏Kerberos ٹکٹ شامل کریں</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">سیلولر کو فعال کریں</translation>
 <translation id="8902667442496790482">'سننے کیلئے منتخب کریں' کی ترتیبات کھولیں</translation>
 <translation id="8903733144777177139">مائیکروفون تک رسائی مسدود ہے</translation>
+<translation id="8910222113987937043">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی تبدیلیوں کی مزید آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔ البتہ آپ کا موجودہ ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا اور اس کا <ph name="BEGIN_LINK" />Google ڈیش بورڈ<ph name="END_LINK" /> پر نظم کیا جا سکتا ہے۔</translation>
 <translation id="8912810933860534797">خودکار اسکین فعال کریں</translation>
 <translation id="8922624386829239660">ماؤس کے اسکرین کے کناروں کو ٹچ کرنے پر اسکرین کو حرکت دیں</translation>
 <translation id="8929738682246584251">میگنیفائر آن یا آف کریں</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
 <translation id="8931713990831679796">یہ پرنٹرز منسلک ہیں اور استعمال کے لیے تیار ہیں۔ آسان رسائی کے لیے اپنی پروفائل میں محفوظ کریں۔</translation>
 <translation id="8932654652795262306">فوری ٹیدرنگ کی تفصیلات</translation>
+<translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
 <translation id="8940888110818450052">سائن ان کے اختیارات</translation>
 <translation id="8944099748578356325">مزید تیزی سے بیٹری کا استعمال کریں (فی الحال %<ph name="BATTERY_PERCENTAGE" />)</translation>
 <translation id="8945274638472141382">آئیکن کا سائز</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">فی الحال رومنگ میں ہے</translation>
 <translation id="93393615658292258">صرف پاس ورڈ</translation>
 <translation id="942296794412775122">مائیکروفون آن یا آف کریں</translation>
+<translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="950307215746360464">سیٹ اپ کی گائیڈ</translation>
 <translation id="952471655966876828">آلہ کے آن ہونے اور استعمال ہونے پر یہ خودکار طور پر منسلک ہو جائے گا</translation>
 <translation id="956013912698841780">مواد کا خلاصہ کرنے، تعریفیں حاصل کرنے، زیادہ اعتماد کے ساتھ لکھنے، تصاویر بنانے اور مزید کے لیے دایاں کلک کریں۔ فی الحال محدود دستیابی ہے۔</translation>

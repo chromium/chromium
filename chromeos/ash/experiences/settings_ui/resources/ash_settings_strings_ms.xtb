@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Penyulitan data pengguna</translation>
 <translation id="1011003645819296594">Peranti disimpan</translation>
 <translation id="1011355516189274711">Kelantangan teks ke pertuturan</translation>
+<translation id="1012876632442809908">Peranti USB-C (port depan)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Lalai rangkaian</translation>
 <translation id="1026655690966755180">Tambahkan Port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Pemulihan data setempat</translation>
 <translation id="1247372569136754018">Mikrofon (dalaman)</translation>
 <translation id="1251366534849411931">Tiada tanda kurung keriting pembuka: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Mengimbas untuk mengesan rangkaian data mudah alih...</translation>
 <translation id="1254593899333212300">Sambungan Internet Langsung</translation>
 <translation id="1261380933454402672">Sederhana</translation>
 <translation id="1263733306853729545">Gunakan kekunci <ph name="MINUS" /> dan <ph name="EQUAL" /> untuk menjadikan senarai calon halaman</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Sifat Pertuturan</translation>
 <translation id="1291057703584594733">Pemilihan gerak isyarat yang telah ditugaskan akan mengalih keluar gerak isyarat tersebut daripada tindakan asal.</translation>
 <translation id="1291421198328146277">Kekunci tetapan semula</translation>
+<translation id="1293264513303784526">Peranti USB-C (port kiri)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mungkin bertindan dengan "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" dan "<ph name="CONFLICTING_GESTURE_THREE" />". Jika boleh, cuba pilih gerak isyarat yang berbeza.</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1313405956111467313">Konfigurasi proksi automatik</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Log keluar apabila penutup ditutup</translation>
 <translation id="185970820835152459">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chromium, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Dingin</translation>
+<translation id="1864454756846565995">Peranti USB-C (port belakang)</translation>
 <translation id="1866589962721094893">Beri Apl Android kawalan terhadap peranti USB pada Chromebook ini. Kebenaran akan diminta setiap kali anda memalamkan peranti USB. Setiap Apl Android akan meminta kebenaran tambahan.</translation>
 <translation id="1877377290348678128">Label (pilihan)</translation>
 <translation id="1877860345998737529">Penugasan tindakan suis</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Kemaskinian</translation>
 <translation id="1938351510777341717">Perintah Luaran</translation>
 <translation id="1940546824932169984">Peranti yang disambungkan</translation>
+<translation id="1941410638996203291">Masa mula <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versi: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Kemas kini ditemui</translation>
 <translation id="1948528728718281125">Akses kamera dibenarkan untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Bahasa yang digunakan apabila menterjemahkan halaman</translation>
 <translation id="2319459402137712349">Pilih medan teks untuk membuka papan kekunci. Anda juga boleh memilih ikon Papan Kekunci di bahagian bawah skrin anda.</translation>
 <translation id="2319993584768066746">Foto skrin log masuk</translation>
+<translation id="2322622365472107569">Masa tamat <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rangkaian Wi-Fi yang disimpan</translation>
 <translation id="2325444234681128157">Ingat kata laluan</translation>
 <translation id="2326188115274135041">Sahkan PIN untuk menghidupkan buka kunci automatik</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Tutup kedua-dua belah mata sebentar</translation>
 <translation id="258095186877893873">Lama</translation>
 <translation id="2581786034175502848">Tekan Shift 5 kali untuk mendayakan semula ciri tersebut</translation>
+<translation id="2581992808349413349">Gunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain). Langkah ini menggunakan penyedia perkhidmatan terurus pada <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Gagal mendapatkan tiket Kerberos. Cuba lagi atau hubungi pentadbir peranti organisasi anda. (Kod ralat <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Urus kebenaran mikrofon laman web dalam Chrome</translation>
 <translation id="2609980095400624569">Tidak dapat mewujudkan sambungan</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Butiran tambahan</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mungkin bertindan dengan "<ph name="CONFLICTING_GESTURE_ONE" />" dan "<ph name="CONFLICTING_GESTURE_TWO" />". Jika boleh, cuba pilih gerak isyarat yang berbeza.</translation>
 <translation id="2809346626032021864">Membaca</translation>
+<translation id="2811205483104563968">Akaun</translation>
 <translation id="2813094189969465044">Kawalan ibu bapa</translation>
 <translation id="2817435998497102771">Tetapkan hiasan latar &amp; gaya anda</translation>
 <translation id="2818476747334107629">Butiran pencetak</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Kecilkan / Kembangkan</translation>
 <translation id="2833144527504272627">Navigasi dengan kursor teks</translation>
 <translation id="2835177225987815960">Persediaan pengimbasan semasa anda akan ditetapkan semula, termasuk sebarang suis yang ditetapkan dan keutamaan kelajuan autoimbas.</translation>
+<translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
 <translation id="2844809857160214557">Lihat dan urus tugas cetak</translation>
 <translation id="2849035674501872372">Cari</translation>
 <translation id="2860710618359053450">Alihkan rahang ke kanan</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369067987974711168">Tunjukkan pelbagai lagi tindakan untuk port ini</translation>
 <translation id="3370260763947406229">Autopembetulan</translation>
+<translation id="3371140690572404006">Peranti USB-C (port depan sebelah kanan)</translation>
 <translation id="3371351218553893534">Baris terlalu panjang: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Kebenaran yang dibenarkan untuk Steam digunakan pada semua permainan dan apl Steam.</translation>
 <translation id="338323348408199233">Sekat trafik tanpa VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. <ph name="PRODUCT_NAME" /> menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain).</translation>
 <translation id="3442674350323953953">Benarkan Google menggunakan data perkakasan anda untuk meningkatkan <ph name="DEVICE_OS" />. Jika anda menolak, data ini masih dihantar kepada Google untuk menentukan kemaskinian yang betul, tetapi data tidak disimpan atau digunakan.</translation>
 <translation id="3445465968953598059">Kawalan wajah</translation>
+<translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3448492834076427715">Kemas kini akaun</translation>
 <translation id="345078987193237421">Tindakan ini membenarkan akses kamera untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
 <translation id="3453082738208775226">Kosongkan storan luar talian?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Jawapan Segera takrif</translation>
 <translation id="3994075804072562819">Berikan <ph name="SPECIFIC_NAME" /> kawalan terhadap peranti USB.</translation>
 <translation id="3994530503403062649">Cari butang pada tablet anda</translation>
+<translation id="3995138139523574647">Peranti USB-C (port belakang sebelah kanan)</translation>
 <translation id="3997429360543082038">Perihal Chromium OS</translation>
 <translation id="4001540981461989979">Serlahkan kursor tetikus semasa bergerak</translation>
 <translation id="4005817994523282006">Kaedah pengesanan zon waktu</translation>
@@ -1327,6 +1339,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5324780743567488672">Tetapkan zon waktu secara automatik menggunakan lokasi anda</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5331568967879689647">Apl Sistem Chrome OS</translation>
+<translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
 <translation id="5334113802138581043">Akses mikrofon</translation>
 <translation id="5336689872433667741">Kursor dan pad sentuh</translation>
 <translation id="5337926771328966926">Nama semasa peranti ialah <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5435274640623994081">Dayakan pengelogan ikon audio</translation>
 <translation id="5441133529460183413">Apl Web dipasang daripada penyemak imbas Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Kata laluan tidak sah</translation>
 <translation id="5450469615146335984">Pilih pintasan untuk setiap tindakan</translation>
 <translation id="5452446625764825792">Kini anda dapat melihat foto, media dan apl terbaharu telefon anda</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (berfungsi di luar talian)</translation>
@@ -1645,6 +1659,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6444147596556711162">Gunakan “Seterusnya” dan “Sebelumnya” untuk beralih antara item pada skrin</translation>
 <translation id="6452961788130242735">Masalah rangkaian atau realma teruk</translation>
 <translation id="6453921811609336127">Untuk bertukar kepada kaedah masukan yang seterusnya, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Ruang<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Mencari rangkaian...</translation>
 <translation id="6463488491707167747">Padamkan kamus ini</translation>
 <translation id="6463596731306859179">Anda mendapat tetingkap timbul atau gelagat lain yang tidak dikehendaki? Kadangkala apl dan sambungan yang dipasang boleh menukar tetapan ChromeOS anda tanpa pengetahuan anda.</translation>
 <translation id="6465841119675156448">Tanpa Internet</translation>
@@ -1661,6 +1676,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="648204537326351595">Benarkan <ph name="SPECIFIC_NAME" /> mengakses mikrofon anda</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
 <translation id="648927581764831596">Tiada yang tersedia</translation>
+<translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
 <translation id="6497784818439587832">Tukar saiz paparan untuk menjadikan item pada skrin anda lebih kecil atau lebih besar</translation>
 <translation id="6497789971060331894">Penatalan akas tetikus</translation>
 <translation id="650185290742160385">Kurangkan ambang</translation>
@@ -1825,6 +1841,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7090714929377281710">Matikan tempat liputan secara automatik</translation>
 <translation id="7092504544229909737">Tidak dapat digunakan dengan apl Android</translation>
 <translation id="7093220653036489319">Jawapan segera</translation>
+<translation id="7098389117866926363">Peranti USB-C (port kiri di belakang)</translation>
 <translation id="7099337801055912064">Tidak dapat memuatkan PPD bersaiz besar. Saiz maksimum ialah 250 KB.</translation>
 <translation id="7107609441453408294">Mainkan audio yang sama melalui semua pembesar suara</translation>
 <translation id="7116931001458704701">Goncang untuk mengesan kursor</translation>
@@ -1886,6 +1903,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7323315405936922211">Saiz kawasan kursor</translation>
 <translation id="7325209047678309347">Kertas tersekat</translation>
 <translation id="7331646370422660166">alt + anak panah ke bawah</translation>
+<translation id="7345706641791090287">Sahkan kata laluan anda</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7360333718677093875">pemilih emoji</translation>
@@ -2262,6 +2280,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="85486688517848470">Tahan kekunci Cari untuk menukar gelagat kekunci di baris atas</translation>
 <translation id="8551588720239073785">Tetapan tarikh dan masa</translation>
 <translation id="8553342806078037065">Urus orang lain</translation>
+<translation id="8554899698005018844">Tiada bahasa</translation>
 <translation id="8555444629041783356">Jadual penamatan automatik</translation>
 <translation id="8563043098557365232">Hanya dibenarkan untuk perkhidmatan sistem</translation>
 <translation id="8571687764447439720">Tambahkan tiket Kerberos</translation>
@@ -2368,12 +2387,14 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="8900413463156971200">Dayakan Selular</translation>
 <translation id="8902667442496790482">Buka tetapan pilih untuk bercakap</translation>
 <translation id="8903733144777177139">Akses mikrofon telah disekat</translation>
+<translation id="8910222113987937043">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Namun begitu, data anda yang sedia ada akan terus disimpan dalam Google Account anda dan boleh diurus di <ph name="BEGIN_LINK" />Papan Pemuka Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Dayakan autoimbas</translation>
 <translation id="8922624386829239660">Gerakkan skrin apabila tetikus menyentuh tepi skrin</translation>
 <translation id="8929738682246584251">Hidupkan/matikan penggadang</translation>
 <translation id="8930622219860340959">Wayarles</translation>
 <translation id="8931713990831679796">Pencetak ini disambungkan dan sedia untuk digunakan. Simpan pada profil anda untuk memudahkan akses.</translation>
 <translation id="8932654652795262306">Butiran Penambatan Segera</translation>
+<translation id="8938800817013097409">Peranti USB-C (port kanan di belakang)</translation>
 <translation id="8940888110818450052">Pilihan log masuk</translation>
 <translation id="8944099748578356325">Gunakan bateri dengan lebih cepat (pada masa ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Saiz ikon</translation>
@@ -2470,6 +2491,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="930893132043726269">Dalam perayauan pada masa ini</translation>
 <translation id="93393615658292258">Kata laluan sahaja</translation>
 <translation id="942296794412775122">Hidupkan/matikan mikrofon</translation>
+<translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="950307215746360464">Panduan persediaan</translation>
 <translation id="952471655966876828">Peranti akan menyambung secara automatik apabila dihidupkan atau digunakan</translation>
 <translation id="956013912698841780">Klik kanan untuk meringkaskan kandungan, mendapatkan definisi, menulis dengan lebih yakin, membuat imej dan pelbagai lagi. Ketersediaan ciri ini terhad pada masa ini.</translation>

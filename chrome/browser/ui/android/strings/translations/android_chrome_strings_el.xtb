@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Εξοικονομήστε χρόνο, πληκτρολογήστε λιγότερο</translation>
 <translation id="146522654774760805">Κωδικοί πρόσβασης και αυτόματη συμπλήρωση</translation>
 <translation id="1466383950273130737">Επιλέξτε τη γλώσσα του Chrome</translation>
+<translation id="1473344277210704336">Το Gemini και τα απαραίτητα στοιχεία σας στη νέα κάτω γραμμή εργαλείων</translation>
 <translation id="1477626028522505441">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στον διακομιστή.</translation>
 <translation id="147982357559798527">Τροποποιήθηκε</translation>
 <translation id="1480287803138246127">Ένα μέρος του ιστορικού μπορεί να μην εμφανίζεται εδώ. Για να δείτε όλο το ιστορικό σας στο Chrome, ανοίξτε το πλήρες Ιστορικό Chrome.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">Παραμείνατε συνδεδεμένοι ως <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
 <translation id="4558311620361989323">Συντομεύσεις ιστοσελίδας</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Συνδρομή <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Συνδεθείτε στον διαχειριζόμενο λογαριασμό</translation>
 <translation id="4577115723294378384">Ταξινόμηση από Α έως Ω</translation>
 <translation id="4578289292431526768">Ας ξεκινήσουμε</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">Ανοίξτε μια νέα καρτέλα για να την προσθέσετε στην ερώτησή σας</translation>
 <translation id="4585793705637313973">Επεξεργασία σελίδας</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
+<translation id="4587590257937792551">Το Chrome διαθέτει μια νέα γραμμή εργαλείων στο κάτω μέρος, η οποία έχει σχεδιαστεί για ευκολία στη χρήση. Μπορείτε να επιστρέψετε στην προηγούμενη γραμμή εργαλείων ανά πάσα στιγμή από τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
 <translation id="4595237294768457124">Ανοίξτε μια σελίδα Νέα καρτέλα</translation>
 <translation id="4595276580892809760">Επισύναψη εικόνων από το gallery</translation>
@@ -1451,6 +1454,7 @@
 <translation id="6633067410344541938">Ξεκλείδωμα Ανώνυμης περιήγησης</translation>
 <translation id="6636623428211296678">Εξερευνήστε περισσότερες ρυθμίσεις παρακάτω ή ολοκληρώστε τώρα τη διαδικασία</translation>
 <translation id="6637100877383020115">Το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google στο πλαίσιο βελτίωσης της εφαρμογής. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Τα απαραίτητα στοιχεία σας, ακριβώς στην κάτω γραμμή εργαλείων. Μπορείτε να επιστρέψετε στην προηγούμενη γραμμή εργαλείων ανά πάσα στιγμή από τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Επισύναψη καρτελών</translation>
 <translation id="6647441008198474441">Τα URL που επισκέπτεστε αποστέλλονται στο Google για την πρόβλεψη των ιστοτόπων που ενδέχεται να επισκεφτείτε στη συνέχεια.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
@@ -1649,6 +1653,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα που κοινοποιεί περιεχόμενο</translation>
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
 <translation id="7314734791127433392">Δεν είναι δυνατός ο έλεγχος των κωδικών πρόσβασης</translation>
+<translation id="7324177883197548771">Το Chrome διαθέτει νέα εμφάνιση, η οποία έχει σχεδιαστεί για ευκολία στη χρήση. Μπορείτε να επιστρέψετε στην προηγούμενη γραμμή εργαλείων ανά πάσα στιγμή από τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Αποστολή αιτήματος Do Not Track</translation>
 <translation id="7333041109965360609">Έγινε απεγγραφή από τις ειδοποιήσεις</translation>
 <translation id="7335766481146072567">Πατήστε Συνέχεια</translation>
@@ -1750,6 +1755,7 @@
 <translation id="7697383401610880082">Λαβή μεταφοράς</translation>
 <translation id="7698359219371678927">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Το φύλλο κάτω μέρους πρόσφατης δραστηριότητας άνοιξε σε πλήρες ύψος</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Συνδρομή <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7708994397325774423">Λάβετε όλους τους κωδικούς πρόσβασής σας</translation>
 <translation id="7714077993070342304">Άνοιγμα Μενού του Chrome</translation>

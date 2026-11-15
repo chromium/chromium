@@ -2312,6 +2312,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854853140771946034">Crea una nota nova a Google Keep ràpidament</translation>
 <translation id="4855395119669662878">L'administrador començarà a penjar els fitxers a <ph name="CLOUD_PROVIDER" /> el dia <ph name="DATE_TIME" />. Mantén el dispositiu connectat fins que la pujada de fitxers s'hagi completat. Durant la pujada, només podràs llegir els fitxers locals.</translation>
+<translation id="4856655096879441213">Desa la informació a <ph name="GOOGLE_WALLET_TITLE" /> i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots controlar <ph name="HOW_INFO_IS_USED_LINK" /> a la configuració dels passis privats per a <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">S'està verificant el codi...</translation>
 <translation id="4860260582253463350">Per continuar cap a YouTube, hem de comprovar que ets tu. Obtindràs la configuració que el teu pare, mare o tutor hagi establert a Family Link.</translation>
 <translation id="4861514638281352187">Afegeix el número de rectificació de manera segura</translation>
@@ -4239,7 +4240,7 @@ Detalls addicionals:
 <translation id="8037117624646282037">Qui ha utilitzat el dispositiu recentment</translation>
 <translation id="803771048473350947">Fitxer</translation>
 <translation id="8038182528865038593">Vermell 2</translation>
-<translation id="8041089156583427627">Envia suggeriments</translation>
+<translation id="8041089156583427627">Envia comentaris</translation>
 <translation id="8043255123207491407">Consulta els termes i condicions del venedor</translation>
 <translation id="8044986521421349135">La teva pestanya més recent</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
@@ -4894,7 +4895,6 @@ Detalls addicionals:
 <translation id="9192361865877479444">Metall (mat)</translation>
 <translation id="9193018794001479794">Elabora</translation>
 <translation id="9194783551575429711">Demana a <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Si la teva organització limita el que pots desar al teu Compte de Google, no podràs compartir grups de pestanyes ni unir-t'hi</translation>
 <translation id="9198613052465150219">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
 <translation id="9204089334327209740">Un cop s'hagi completat la pujada, podràs modificar els fitxers a <ph name="CLOUD_PROVIDER" />. L'emmagatzematge local, inclosos els fitxers de la paperera, se suprimirà automàticament.</translation>

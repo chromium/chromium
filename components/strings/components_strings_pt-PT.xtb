@@ -1308,6 +1308,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3196374699162453920">Código de reserva</translation>
 <translation id="3196902089458890316">Partilhar sempre os separadores relevantes para receber melhores respostas?</translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
+<translation id="3201749168732432347">Ofertas e cartões de fidelidade</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as informações que sincroniza nas Definições do Chrome.</translation>
 <translation id="3203025201812691413">O URL não pode estar vazio</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
@@ -4896,7 +4897,6 @@ Detalhes adicionais:
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9193018794001479794">Elaborar</translation>
 <translation id="9194783551575429711">Pergunte ao <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Quando a sua organização limita a gravação na sua Conta Google, não pode partilhar nem aderir a grupos de separadores</translation>
 <translation id="9198613052465150219">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">A impressão está bloqueada.</translation>
 <translation id="9204089334327209740">Quando o carregamento estiver concluído, pode modificar os seus ficheiros no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os ficheiros no Lixo, vai ser removido automaticamente.</translation>

@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Да се сопре преземањето?</translation>
 <translation id="4796496140132859135">Група картички. Собрана.</translation>
 <translation id="4800912004582762296">Кликнува</translation>
+<translation id="4800930308997591052">Префрлете се на <ph name="EMAIL" /> за да споделувате непречено картички меѓу вашите уреди и да ги добиете лозинките, обележувачите и друго од вашата сметка на Google.</translation>
 <translation id="4802185666270672526">Скриј „Побарај сајт за компјутер“</translation>
 <translation id="4803185665210547709">Управувано од вашата организација.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7618220760967055820">Изберете кое копче да се прикажува на алатникот</translation>
 <translation id="7620522820075868385">Откажи</translation>
 <translation id="762078666799342162">Може да ги прегледате претходните преземања во <ph name="BEGIN_LINK" />Датотеки<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Продолжете од каде што сте застанале на компјутерот</translation>
 <translation id="7638584964844754484">Погрешна лозинка-фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="7640669552036055091">Картички од Android</translation>

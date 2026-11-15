@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">用户数据加密</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
+<translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">网络默认设置</translation>
 <translation id="1026655690966755180">添加端口</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">本地数据恢复</translation>
 <translation id="1247372569136754018">麦克风（内部）</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1261380933454402672">审慎</translation>
 <translation id="1263733306853729545">用 <ph name="MINUS" /> 键和 <ph name="EQUAL" /> 键在候选字词列表中翻页</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">语音属性</translation>
 <translation id="1291057703584594733">选择已指定的动作会将其从原始操作中移除。</translation>
 <translation id="1291421198328146277">重置键</translation>
+<translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
 <translation id="1293360286536751243">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”“<ph name="CONFLICTING_GESTURE_TWO" />”和“<ph name="CONFLICTING_GESTURE_THREE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1313405956111467313">自动配置代理</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">在盖被合上之后退出</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">冷色调</translation>
+<translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
 <translation id="1866589962721094893">允许 Android 应用在此 Chromebook 上控制 USB 设备。您每次插入 USB 设备时，系统都会请求权限。个别 Android 应用会请求额外权限。</translation>
 <translation id="1877377290348678128">标签（可选）</translation>
 <translation id="1877860345998737529">指定开关操作</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="1938351510777341717">外部命令</translation>
 <translation id="1940546824932169984">已连接的设备</translation>
+<translation id="1941410638996203291">开始时间：<ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">发现更新</translation>
 <translation id="1948528728718281125">允许系统服务以及具有摄像头使用权限的应用和网站使用摄像头</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
 <translation id="2319459402137712349">选择文本字段即可打开键盘。您也可以选择屏幕底部的“键盘”图标。</translation>
 <translation id="2319993584768066746">在登录屏幕上显示照片</translation>
+<translation id="2322622365472107569">结束时间：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
 <translation id="2325444234681128157">记住密码</translation>
 <translation id="2326188115274135041">请确认 PIN 码以开启自动解锁功能</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">短暂闭上双眼</translation>
 <translation id="258095186877893873">长</translation>
 <translation id="2581786034175502848">按 shift 键 5 次即可重新启用</translation>
+<translation id="2581992808349413349">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的代管式服务提供商</translation>
 <translation id="2584109212074498965">无法获取 Kerberos 票据。请重试或与贵单位的设备管理员联系。（错误代码：<ph name="ERROR_CODE" />）。</translation>
 <translation id="2584974473573720127">在 Chrome 中管理网站的麦克风权限</translation>
 <translation id="2609980095400624569">无法建立连接</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">更多详情</translation>
 <translation id="2808985063107661499">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”和“<ph name="CONFLICTING_GESTURE_TWO" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="2809346626032021864">读取</translation>
+<translation id="2811205483104563968">账号</translation>
 <translation id="2813094189969465044">家长控制</translation>
 <translation id="2817435998497102771">设置您的壁纸与风格</translation>
 <translation id="2818476747334107629">打印机详细信息</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">缩小/放大</translation>
 <translation id="2833144527504272627">使用文本光标导航</translation>
 <translation id="2835177225987815960">您当前的扫描设置将被重置，包括已分配的所有开关以及自动扫描速度偏好设置。</translation>
+<translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2849035674501872372">查找</translation>
 <translation id="2860710618359053450">将下巴向右移动</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369067987974711168">显示可对此端口执行的更多操作</translation>
 <translation id="3370260763947406229">自动更正</translation>
+<translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3371351218553893534">此行内容过长：<ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">允许 Steam 使用的权限会应用于所有 Steam 游戏和应用。</translation>
 <translation id="338323348408199233">屏蔽未使用 VPN 的流量</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">让对您的互联网流量有访问权限的用户更难看到您访问的网站。<ph name="PRODUCT_NAME" /> 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="3442674350323953953">允许 Google 使用您的硬件数据协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。</translation>
 <translation id="3445465968953598059">面部控制</translation>
+<translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3448492834076427715">更新账号</translation>
 <translation id="345078987193237421">这将允许具有相机权限的应用和网站以及系统服务使用相机</translation>
 <translation id="3453082738208775226">清理离线存储空间？</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">快速解答定义</translation>
 <translation id="3994075804072562819">授权<ph name="SPECIFIC_NAME" />控制 USB 设备。</translation>
 <translation id="3994530503403062649">寻找平板电脑按钮</translation>
+<translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
 <translation id="4001540981461989979">在鼠标光标移动时突出显示它</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">使用您的位置信息自动设置时区</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5331568967879689647">Chrome 操作系统系统应用</translation>
+<translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="5334113802138581043">麦克风使用权限</translation>
 <translation id="5336689872433667741">光标和触控板</translation>
 <translation id="5337926771328966926">当前设备名称是“<ph name="DEVICE_NAME" />”</translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">启用耳标记录功能</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5449551289610225147">密码无效</translation>
 <translation id="5450469615146335984">为每项操作选择一种快捷键</translation>
 <translation id="5452446625764825792">您现在可以查看手机中的近期照片、媒体和应用</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">使用“下一项”和“上一项”即可在屏幕上的各项内容之间切换</translation>
 <translation id="6452961788130242735">网络问题或领域有误</translation>
 <translation id="6453921811609336127">若要切换到下一种输入法，请按 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />空格键<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">正在搜索网络…</translation>
 <translation id="6463488491707167747">删除此字典</translation>
 <translation id="6463596731306859179">遇到不希望显示的弹出式窗口或其他意外行为？您安装的应用和扩展程序有时可能会在您不知情的情况下擅自更改 ChromeOS 设置。</translation>
 <translation id="6465841119675156448">不使用互联网</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">允许 <ph name="SPECIFIC_NAME" /> 使用您的麦克风</translation>
 <translation id="6482559668224714696">全屏放大镜</translation>
 <translation id="648927581764831596">没有可用设备</translation>
+<translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
 <translation id="650185290742160385">降低阈值</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">自动关闭热点</translation>
 <translation id="7092504544229909737">无法用于 Android 应用</translation>
 <translation id="7093220653036489319">快速解答</translation>
+<translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
 <translation id="7099337801055912064">无法加载过大的 PPD。大小上限为 250 KB。</translation>
 <translation id="7107609441453408294">在所有音响设备上播放相同的音频</translation>
 <translation id="7116931001458704701">晃动即可找到光标</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">光标区域大小</translation>
 <translation id="7325209047678309347">纸张卡住了</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
+<translation id="7345706641791090287">确认您的密码</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7360333718677093875">表情符号选择器</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">按住搜索键可切换顶行键的行为</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
+<translation id="8554899698005018844">无语言</translation>
 <translation id="8555444629041783356">自动更新日落时间表</translation>
 <translation id="8563043098557365232">只能用于系统服务</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">启用移动网络</translation>
 <translation id="8902667442496790482">打开“随选朗读”设置</translation>
 <translation id="8903733144777177139">已禁止使用麦克风</translation>
+<translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但是，您的现有数据依然会存储在您的 Google 账号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
 <translation id="8922624386829239660">鼠标指针触及屏幕边缘时移动屏幕</translation>
 <translation id="8929738682246584251">放大镜开/关</translation>
 <translation id="8930622219860340959">无线</translation>
 <translation id="8931713990831679796">这些打印机已连接妥当，可以使用了。不妨将它们保存到您的个人资料中，以便更轻松地访问。</translation>
 <translation id="8932654652795262306">“即时网络共享”的网络详细信息</translation>
+<translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8940888110818450052">登录选项</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
 <translation id="8945274638472141382">图标大小</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">目前正在使用漫游服务</translation>
 <translation id="93393615658292258">密码</translation>
 <translation id="942296794412775122">麦克风开/关</translation>
+<translation id="945522503751344254">发送反馈</translation>
 <translation id="950307215746360464">设置指南</translation>
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>
 <translation id="956013912698841780">右键点击即可总结内容、获得释义、更自信地写作、创建图片以及执行更多操作。目前仅面向部分用户提供。</translation>

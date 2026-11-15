@@ -129,6 +129,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1460751212339734034">Risparmia tempo e digita meno</translation>
 <translation id="146522654774760805">Password e compilazione automatica</translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
+<translation id="1473344277210704336">Gemini e tutto quello che ti serve sulla nuova barra degli strumenti in basso</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="147982357559798527">Modificata</translation>
 <translation id="1480287803138246127">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser.</translation>
@@ -907,6 +908,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4537987892902330164">Hai mantenuto l'accesso come <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. Abbonamento a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">Accedi all'account gestito</translation>
 <translation id="4577115723294378384">Ordina dalla A alla Z</translation>
 <translation id="4578289292431526768">Inizia</translation>
@@ -914,6 +916,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4585751637295612750">Apri una nuova scheda per aggiungerla alla tua domanda</translation>
 <translation id="4585793705637313973">Modifica pagina</translation>
 <translation id="4587589328781138893">Siti</translation>
+<translation id="4587590257937792551">Chrome ha una nuova barra degli strumenti in basso, più pratica da usare. Puoi ripristinare la versione precedente in qualsiasi momento nella pagina delle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
 <translation id="4595237294768457124">Apri una pagina Nuova scheda</translation>
 <translation id="4595276580892809760">Allega immagini dalla galleria</translation>
@@ -1451,6 +1454,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6633067410344541938">Sblocca la modalità Incognito</translation>
 <translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Gli elementi essenziali, direttamente sulla barra degli strumenti in basso. Puoi ripristinare la versione precedente in qualsiasi momento nella pagina delle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Allega schede</translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1649,6 +1653,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, scheda condivisa fissata selezionata</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
+<translation id="7324177883197548771">Chrome ha un nuovo look, pensato per la tua comodità. Puoi ripristinare la versione precedente in qualsiasi momento nella pagina delle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
 <translation id="7333041109965360609">Hai annullato l'iscrizione alle notifiche</translation>
 <translation id="7335766481146072567">Premi Continua</translation>
@@ -1750,6 +1755,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Riquadro inferiore Attività recente aperto a schermo intero</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. Abbonamento a <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7708994397325774423">Recupera tutte le tue password</translation>
 <translation id="7714077993070342304">Apri il menu Chrome</translation>

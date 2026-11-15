@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">การเข้ารหัสข้อมูลผู้ใช้</translation>
 <translation id="1011003645819296594">อุปกรณ์ที่บันทึกไว้</translation>
 <translation id="1011355516189274711">ระดับเสียงของการอ่านออกเสียงข้อความ</translation>
+<translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ค่าเริ่มต้นของเครือข่าย</translation>
 <translation id="1026655690966755180">เพิ่มพอร์ต</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">การกู้คืนข้อมูลในเครื่อง</translation>
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
 <translation id="1251366534849411931">เครื่องหมายวงเล็บปีกกาเปิดที่ต้องมี: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">กำลังสแกนหาเครือข่ายอินเทอร์เน็ตมือถือ...</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
 <translation id="1261380933454402672">ปานกลาง</translation>
 <translation id="1263733306853729545">ใช้คีย์ <ph name="MINUS" /> และ <ph name="EQUAL" /> เพื่อสร้างหน้ารายการตัวเลือก</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">คุณสมบัติของเสียงพูด</translation>
 <translation id="1291057703584594733">การเลือกท่าทางที่กำหนดไว้แล้วจะเป็นการนำท่าทางนั้นออกจากการดำเนินการเดิม</translation>
 <translation id="1291421198328146277">รีเซ็ตแป้น</translation>
+<translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" อาจทับซ้อนกับ "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" และ "<ph name="CONFLICTING_GESTURE_THREE" />" หากเป็นไปได้ ให้ลองเลือกท่าทางสัมผัสอื่น</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1313405956111467313">กำหนดค่าพร็อกซีอัตโนมัติ</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">ออกจากระบบเมื่อปิดฝา</translation>
 <translation id="185970820835152459">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chromium, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">เย็น</translation>
+<translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
 <translation id="1866589962721094893">ให้แอป Android ควบคุมอุปกรณ์ USB ใน Chromebook เครื่องนี้ จะมีการขอสิทธิ์ทุกครั้งที่คุณเสียบอุปกรณ์ USB แอป Android แต่ละรายการจะขอสิทธิ์เพิ่มเติม</translation>
 <translation id="1877377290348678128">ป้ายกำกับ (ไม่บังคับ)</translation>
 <translation id="1877860345998737529">การกำหนดการดำเนินการด้วยสวิตช์</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">อัปเดต</translation>
 <translation id="1938351510777341717">แป้น Command ภายนอก</translation>
 <translation id="1940546824932169984">อุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="1941410638996203291">เวลาเริ่มต้น <ph name="TIME" /></translation>
 <translation id="1941553344801134989">เวอร์ชัน: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">พบการอัปเดต</translation>
 <translation id="1948528728718281125">อนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">ภาษาที่ใช้เมื่อแปลหน้า</translation>
 <translation id="2319459402137712349">เลือกช่องข้อความเพื่อเปิดแป้นพิมพ์ หรือจะเลือกไอคอนแป้นพิมพ์ที่ด้านล่างของหน้าจอก็ได้</translation>
 <translation id="2319993584768066746">รูปภาพหน้าจอลงชื่อเข้าใช้</translation>
+<translation id="2322622365472107569">เวลาสิ้นสุด <ph name="TIME" /></translation>
 <translation id="2323018538045954000">เครือข่าย Wi-Fi ที่บันทึกไว้</translation>
 <translation id="2325444234681128157">จำรหัสผ่าน</translation>
 <translation id="2326188115274135041">ยืนยัน PIN เพื่อเปิดการปลดล็อกอัตโนมัติ</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">หลับตาทั้ง 2 ข้างไว้สักครู่</translation>
 <translation id="258095186877893873">ยาว</translation>
 <translation id="2581786034175502848">กด Shift 5 ครั้งเพื่อเปิดใช้อีกครั้ง</translation>
+<translation id="2581992808349413349">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน) การดำเนินการนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">ดึงข้อมูลตั๋ว Kerberos ไม่สำเร็จ ลองอีกครั้ง หรือติดต่อผู้ดูแลระบบอุปกรณ์ขององค์กร (รหัสข้อผิดพลาด <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">จัดการสิทธิ์เข้าถึงไมโครโฟนของเว็บไซต์ใน Chrome</translation>
 <translation id="2609980095400624569">เริ่มการเชื่อมต่อไม่ได้</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">รายละเอียดเพิ่มเติม</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" อาจทับซ้อนกับ "<ph name="CONFLICTING_GESTURE_ONE" />" และ "<ph name="CONFLICTING_GESTURE_TWO" />" หากเป็นไปได้ ให้ลองเลือกท่าทางสัมผัสอื่น</translation>
 <translation id="2809346626032021864">การอ่าน</translation>
+<translation id="2811205483104563968">บัญชี</translation>
 <translation id="2813094189969465044">การควบคุมโดยผู้ปกครอง</translation>
 <translation id="2817435998497102771">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
 <translation id="2818476747334107629">รายละเอียดเครื่องพิมพ์</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">หด/ขยาย</translation>
 <translation id="2833144527504272627">ไปยังส่วนต่างๆ ด้วยเคอร์เซอร์ข้อความ</translation>
 <translation id="2835177225987815960">ระบบจะรีเซ็ตการตั้งค่าการสแกนในปัจจุบัน ซึ่งรวมถึงสวิตช์ที่กำหนดไว้และค่ากำหนดความเร็วในการสแกนอัตโนมัติ</translation>
+<translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="2844809857160214557">ดูและจัดการงานพิมพ์</translation>
 <translation id="2849035674501872372">ค้นหา</translation>
 <translation id="2860710618359053450">ยักกรามด้านขวา</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369067987974711168">แสดงการทำงานเพิ่มเติมสำหรับพอร์ตนี้</translation>
 <translation id="3370260763947406229">การแก้ไขอัตโนมัติ</translation>
+<translation id="3371140690572404006">อุปกรณ์ USB-C (พอร์ตด้านหน้าขวา)</translation>
 <translation id="3371351218553893534">ข้อความในบรรทัดยาวเกินไป: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">สิทธิ์ที่อนุญาตสำหรับ Steam จะใช้กับเกมและแอปทั้งหมดของ Steam</translation>
 <translation id="338323348408199233">บล็อกการเข้าถึงโดยไม่ใช้ VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">ทำให้ผู้ที่มีสิทธิ์เข้าถึงการเข้าใช้อินเทอร์เน็ตของคุณดูว่าคุณเข้าชมเว็บไซต์ไหนบ้างได้ยากขึ้น <ph name="PRODUCT_NAME" /> ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน)</translation>
 <translation id="3442674350323953953">ให้ Google ใช้ข้อมูลฮาร์ดแวร์เพื่อช่วยปรับปรุง <ph name="DEVICE_OS" /> หากคุณปฏิเสธ ข้อมูลนี้จะยังส่งไปยัง Google เพื่อพิจารณาอัปเดตที่เหมาะสม แต่จะไม่เก็บข้อมูลไว้หรือใช้ในลักษณะอื่น</translation>
 <translation id="3445465968953598059">การควบคุมด้วยใบหน้า</translation>
+<translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3448492834076427715">อัปเดตบัญชี</translation>
 <translation id="345078987193237421">การดำเนินการนี้จะอนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
 <translation id="3453082738208775226">ล้างพื้นที่เก็บข้อมูลออฟไลน์ใช่ไหม</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">คำจำกัดความของคำตอบด่วน</translation>
 <translation id="3994075804072562819">ให้ <ph name="SPECIFIC_NAME" /> ควบคุมอุปกรณ์ USB</translation>
 <translation id="3994530503403062649">ค้นหาปุ่มบนแท็บเล็ต</translation>
+<translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="3997429360543082038">เกี่ยวกับ Chromium OS</translation>
 <translation id="4001540981461989979">ไฮไลต์เคอร์เซอร์เมาส์เมื่อเคลื่อนไหว</translation>
 <translation id="4005817994523282006">วิธีการตรวจหาเขตเวลา</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">ตั้งค่าเขตเวลาโดยอัตโนมัติโดยใช้ตำแหน่งของคุณ</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5331568967879689647">แอประบบ Chrome OS</translation>
+<translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="5334113802138581043">สิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="5336689872433667741">เคอร์เซอร์และทัชแพด</translation>
 <translation id="5337926771328966926">อุปกรณ์ปัจจุบันชื่อ <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">เปิดใช้การบันทึกเอียร์คอน</translation>
 <translation id="5441133529460183413">ติดตั้งเว็บแอปจากเบราว์เซอร์ Chrome แล้ว</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5450469615146335984">เลือกแป้นพิมพ์ลัดสำหรับการดำเนินการแต่ละรายการ</translation>
 <translation id="5452446625764825792">ตอนนี้คุณดูรูปภาพ สื่อ และแอปล่าสุดในโทรศัพท์ได้แล้ว</translation>
 <translation id="5452976525201205853">ภาษา<ph name="LANGUAGE" /> (ใช้งานได้ขณะออฟไลน์)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">ใช้ "ถัดไป" และ "ก่อนหน้า" เพื่อเลื่อนไปยังรายการต่างๆ ในหน้าจอ</translation>
 <translation id="6452961788130242735">พบปัญหาเกี่ยวกับเครือข่ายหรือขอบเขตไม่ดี</translation>
 <translation id="6453921811609336127">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">กำลังค้นหาเครือข่าย...</translation>
 <translation id="6463488491707167747">ลบพจนานุกรมนี้</translation>
 <translation id="6463596731306859179">หากคุณได้รับป๊อปอัปที่ไม่ต้องการหรือลักษณะการทำงานที่ไม่คาดคิดอื่นๆ ในบางครั้ง แอปและส่วนขยายที่คุณติดตั้งอาจเปลี่ยนแปลงการตั้งค่า ChromeOS โดยที่คุณไม่ทราบ</translation>
 <translation id="6465841119675156448">ไม่ใช้อินเทอร์เน็ต</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">อนุญาตให้ <ph name="SPECIFIC_NAME" /> เข้าถึงไมโครโฟน</translation>
 <translation id="6482559668224714696">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="648927581764831596">ไม่มีให้ใช้งาน</translation>
+<translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
 <translation id="6497784818439587832">เปลี่ยนขนาดการแสดงผลเพื่อทำให้รายการในหน้าจอมีขนาดเล็กลงหรือใหญ่ขึ้น</translation>
 <translation id="6497789971060331894">การเลื่อนเมาส์แบบย้อนกลับ</translation>
 <translation id="650185290742160385">ลดเกณฑ์</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">ปิดฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="7092504544229909737">ใช้กับแอป Android ไม่ได้</translation>
 <translation id="7093220653036489319">คำตอบด่วน</translation>
+<translation id="7098389117866926363">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="7099337801055912064">โหลด PPD ขนาดใหญ่ไม่ได้ ขนาดต้องไม่เกิน 250 KB</translation>
 <translation id="7107609441453408294">เล่นเสียงเหมือนกันผ่านลำโพงทุกตัว</translation>
 <translation id="7116931001458704701">เขย่าเพื่อค้นหาเคอร์เซอร์</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">ขนาดพื้นที่เคอร์เซอร์</translation>
 <translation id="7325209047678309347">กระดาษติด</translation>
 <translation id="7331646370422660166">Alt + ลูกศรลง</translation>
+<translation id="7345706641791090287">ยืนยันรหัสผ่าน</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7360333718677093875">ตัวเลือกอีโมจิ</translation>
@@ -2261,6 +2279,7 @@
 <translation id="85486688517848470">กดแป้น "ค้นหา" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
 <translation id="8551588720239073785">การตั้งค่าวันที่และเวลา</translation>
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>
+<translation id="8554899698005018844">ไม่มีภาษา</translation>
 <translation id="8555444629041783356">กำหนดเวลาหยุดให้บริการอัตโนมัติ</translation>
 <translation id="8563043098557365232">อนุญาตเฉพาะบริการของระบบ</translation>
 <translation id="8571687764447439720">เพิ่มตั๋ว Kerberos</translation>
@@ -2367,12 +2386,14 @@
 <translation id="8900413463156971200">เปิดใช้เครือข่ายมือถือ</translation>
 <translation id="8902667442496790482">เปิดการตั้งค่าการเลือกเพื่อให้อ่าน</translation>
 <translation id="8903733144777177139">การเข้าถึงไมโครโฟนถูกบล็อก</translation>
+<translation id="8910222113987937043">การเปลี่ยนแปลงในบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป แต่ข้อมูลที่มีอยู่จะยังจัดเก็บไว้ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
 <translation id="8912810933860534797">เปิดใช้การสแกนอัตโนมัติ</translation>
 <translation id="8922624386829239660">เลื่อนหน้าจอเมื่อเมาส์แตะขอบหน้าจอ</translation>
 <translation id="8929738682246584251">เปิด/ปิดแว่นขยาย</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>
 <translation id="8931713990831679796">เครื่องพิมพ์เหล่านี้เชื่อมต่อและพร้อมใช้งานแล้ว โปรดบันทึกลงในโปรไฟล์เพื่อให้เข้าถึงได้ง่ายขึ้น</translation>
 <translation id="8932654652795262306">รายละเอียดการเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
+<translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8940888110818450052">ตัวเลือกการลงชื่อเข้าใช้</translation>
 <translation id="8944099748578356325">ใช้แบตเตอรี่หมดเร็วขึ้น (ขณะนี้อยู่ที่ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ขนาดไอคอน</translation>
@@ -2469,6 +2490,7 @@
 <translation id="930893132043726269">กำลังโรมมิ่ง</translation>
 <translation id="93393615658292258">เฉพาะรหัสผ่านเท่านั้น</translation>
 <translation id="942296794412775122">เปิด/ปิดไมโครโฟน</translation>
+<translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="950307215746360464">คำแนะนำในการตั้งค่า</translation>
 <translation id="952471655966876828">อุปกรณ์จะเชื่อมต่อโดยอัตโนมัติเมื่อเปิดและใช้งานอุปกรณ์</translation>
 <translation id="956013912698841780">คลิกขวาเพื่อสรุปเนื้อหา รับคำจำกัดความ เขียนได้อย่างมั่นใจมากขึ้น สร้างรูปภาพ และอื่นๆ ปัจจุบันมีให้บริการแบบจำกัด</translation>

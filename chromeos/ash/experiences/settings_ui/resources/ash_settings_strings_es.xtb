@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Cifrado de datos de usuario</translation>
 <translation id="1011003645819296594">Dispositivos guardados</translation>
 <translation id="1011355516189274711">Volumen de conversión de texto a voz</translation>
+<translation id="1012876632442809908">Dispositivo USB-C (puerto frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Valor predeterminado de red</translation>
 <translation id="1026655690966755180">Añadir puerto</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Recuperación de datos locales</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
 <translation id="1251366534849411931">Falta una llave de apertura: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Buscando redes de datos móviles…</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="1263733306853729545">Utilizar las teclas <ph name="MINUS" /> y <ph name="EQUAL" /> para mostrar la lista de caracteres disponibles</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Propiedades de voz</translation>
 <translation id="1291057703584594733">Si seleccionas un gesto ya asignado, se eliminará de su acción original.</translation>
 <translation id="1291421198328146277">Restablecer teclas</translation>
+<translation id="1293264513303784526">Dispositivo USB-C (puerto izquierdo)</translation>
 <translation id="1293360286536751243">Puede que "<ph name="MAIN_GESTURE" />" se solape con "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" y "<ph name="CONFLICTING_GESTURE_THREE" />". Si es posible, prueba a elegir otro gesto.</translation>
 <translation id="1293556467332435079">Archivos</translation>
 <translation id="1313405956111467313">Configuración de proxy automática</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Cerrar sesión cuando la tapa esté cerrada</translation>
 <translation id="185970820835152459">Puedes gestionar las cuentas de Google con las que hayas iniciado sesión. Tus cuentas de Google se usan para el navegador Chromium, Play Store, Gmail y más. Si quieres añadir la cuenta de otra persona (por ejemplo, un miembro de tu familia), añade una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Más frío</translation>
+<translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1866589962721094893">Permite a las aplicaciones Android controlar dispositivos USB en este Chromebook. Se solicitará permiso cada vez que conectes un dispositivo USB. Cada aplicación Android solicitará permisos adicionales.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="1938351510777341717">Tecla Comando externa</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
+<translation id="1941410638996203291">Hora de inicio: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versión: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Actualización encontrada</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara a aplicaciones, sitios web con el permiso de cámara y servicios del sistema</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Idioma utilizado al traducir páginas</translation>
 <translation id="2319459402137712349">Selecciona un campo de texto para abrir el teclado. También puedes seleccionar el icono del teclado en la parte inferior de la pantalla.</translation>
 <translation id="2319993584768066746">Fotos de la pantalla de inicio de sesión</translation>
+<translation id="2322622365472107569">Hora de finalización: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi‑Fi guardadas</translation>
 <translation id="2325444234681128157">Recordar contraseña</translation>
 <translation id="2326188115274135041">Confirma el PIN para activar el desbloqueo automático</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Cierra brevemente los dos ojos</translation>
 <translation id="258095186877893873">Largo</translation>
 <translation id="2581786034175502848">Pulsa Mayús 5 veces para volver a habilitarlo</translation>
+<translation id="2581992808349413349">Usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Esta opción usa un proveedor de servicios gestionados en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2584109212074498965">No se ha podido obtener el ticket de Kerberos. Vuelve a intentarlo o ponte en contacto con el administrador de dispositivos de tu organización. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2584974473573720127">Gestionar los permisos de micrófono de los sitios web en Chrome</translation>
 <translation id="2609980095400624569">No se ha podido establecer conexión</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Información adicional</translation>
 <translation id="2808985063107661499">Puede que "<ph name="MAIN_GESTURE" />" se solape con "<ph name="CONFLICTING_GESTURE_ONE" />" y "<ph name="CONFLICTING_GESTURE_TWO" />". Si es posible, prueba a elegir otro gesto.</translation>
 <translation id="2809346626032021864">Lectura</translation>
+<translation id="2811205483104563968">Cuentas</translation>
 <translation id="2813094189969465044">Controles parentales</translation>
 <translation id="2817435998497102771">Configura tu fondo de pantalla y estilo</translation>
 <translation id="2818476747334107629">Detalles de la impresora</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Reducir / Ampliar</translation>
 <translation id="2833144527504272627">Desplazarse con el cursor de texto</translation>
 <translation id="2835177225987815960">Se borrará la configuración de búsqueda actual, incluyendo todos los interruptores asignados y las preferencias de velocidad de la búsqueda automática.</translation>
+<translation id="2844169650293029770">Dispositivo USB tipo C (puerto frontal izquierdo)</translation>
 <translation id="2844809857160214557">Visualiza y gestiona trabajos de impresión</translation>
 <translation id="2849035674501872372">Buscar</translation>
 <translation id="2860710618359053450">Mover la mandíbula hacia la derecha</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369067987974711168">Mostrar más acciones para este puerto</translation>
 <translation id="3370260763947406229">Autocorrección</translation>
+<translation id="3371140690572404006">Dispositivo USB tipo C (puerto frontal derecho)</translation>
 <translation id="3371351218553893534">Línea demasiado larga: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Los permisos concedidos a Steam se aplicarán a todos los juegos y aplicaciones de Steam.</translation>
 <translation id="338323348408199233">Bloquear tráfico sin VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="3442674350323953953">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Si rechazas esta opción, los datos se enviarán a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenarán ni se usarán de otro modo.</translation>
 <translation id="3445465968953598059">Control facial</translation>
+<translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
 <translation id="345078987193237421">Esto permite que las aplicaciones, los sitios web con el permiso de cámara y los servicios del sistema puedan acceder a la cámara</translation>
 <translation id="3453082738208775226">¿Liberar espacio de almacenamiento sin conexión?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definiciones de Respuestas rápidas</translation>
 <translation id="3994075804072562819">Permite a <ph name="SPECIFIC_NAME" /> controlar los dispositivos USB.</translation>
 <translation id="3994530503403062649">Localizar botones en tu tablet</translation>
+<translation id="3995138139523574647">Dispositivo USB tipo C (puerto trasero derecho)</translation>
 <translation id="3997429360543082038">Información de ChromiumOS</translation>
 <translation id="4001540981461989979">Resaltar el cursor del ratón al moverlo</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
@@ -1327,6 +1339,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5324780743567488672">Establecer la zona horaria de forma automática según tu ubicación</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5331568967879689647">Aplicación del sistema de ChromeOS</translation>
+<translation id="5331975486040154427">Dispositivo USB tipo C (puerto trasero izquierdo)</translation>
 <translation id="5334113802138581043">Acceso al micrófono</translation>
 <translation id="5336689872433667741">Cursor y panel táctil</translation>
 <translation id="5337926771328966926">El nombre actual del dispositivo es <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5435274640623994081">Habilitar registro de audiconos</translation>
 <translation id="5441133529460183413">Aplicación web instalada desde el navegador Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">La contraseña no es válida</translation>
 <translation id="5450469615146335984">Selecciona una combinación de teclas para cada acción</translation>
 <translation id="5452446625764825792">Ahora puedes consultar las fotos, el contenido multimedia y las aplicaciones recientes de tu teléfono</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sin conexión)</translation>
@@ -1645,6 +1659,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="6444147596556711162">Usa "Siguiente" y "Anterior" para pasar de un elemento a otro en la pantalla</translation>
 <translation id="6452961788130242735">Problema de red o dominio erróneo</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de introducción de texto, pulsa <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayús<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espacio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Buscando redes...</translation>
 <translation id="6463488491707167747">Eliminar este diccionario</translation>
 <translation id="6463596731306859179">¿Te aparecen ventanas emergentes no deseadas u otro comportamiento inesperado? A veces, las aplicaciones y extensiones que instales pueden modificar la configuración de ChromeOS sin que lo sepas.</translation>
 <translation id="6465841119675156448">Sin Internet</translation>
@@ -1661,6 +1676,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="648204537326351595">Permite que <ph name="SPECIFIC_NAME" /> acceda a tu micrófono</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="648927581764831596">Ningún medio disponible</translation>
+<translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para ampliar o reducir el tamaño de los elementos que aparecen</translation>
 <translation id="6497789971060331894">Desplazamiento inverso del ratón</translation>
 <translation id="650185290742160385">Reducir umbral</translation>
@@ -1825,6 +1841,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="7090714929377281710">Desactivar punto de acceso automáticamente</translation>
 <translation id="7092504544229909737">No se puede usar con aplicaciones Android</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
+<translation id="7098389117866926363">Dispositivo USB tipo C (puerto izquierdo situado en la parte trasera)</translation>
 <translation id="7099337801055912064">No se pueden cargar archivos PPD grandes. El tamaño máximo es 250 kB.</translation>
 <translation id="7107609441453408294">Reproduce el mismo audio en todos los altavoces</translation>
 <translation id="7116931001458704701">Agitar para localizar el cursor</translation>
@@ -1886,6 +1903,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>
 <translation id="7325209047678309347">El papel está atascado</translation>
 <translation id="7331646370422660166">Alt + flecha hacia abajo</translation>
+<translation id="7345706641791090287">Confirma tu contraseña</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7360333718677093875">selector de emojis</translation>
@@ -2262,6 +2280,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="85486688517848470">Mantén pulsada la tecla de búsqueda para cambiar el comportamiento de las teclas de la fila superior</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Gestionar otros usuarios</translation>
+<translation id="8554899698005018844">Sin idioma</translation>
 <translation id="8555444629041783356">Programación automática de atardecer</translation>
 <translation id="8563043098557365232">Solo se permite para los servicios del sistema</translation>
 <translation id="8571687764447439720">Añadir ticket de Kerberos</translation>
@@ -2368,12 +2387,14 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="8900413463156971200">Habilitar red móvil</translation>
 <translation id="8902667442496790482">Abrir los ajustes de Enunciar selección</translation>
 <translation id="8903733144777177139">El acceso al micrófono está bloqueado</translation>
+<translation id="8910222113987937043">Los cambios que realices en tus marcadores, tu historial, tus contraseñas y otros ajustes no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales permanecerán almacenados en esa cuenta y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>
 <translation id="8922624386829239660">Mover la pantalla cuando el ratón toque los bordes de esta</translation>
 <translation id="8929738682246584251">Activar o desactivar lupa</translation>
 <translation id="8930622219860340959">Conexión inalámbrica</translation>
 <translation id="8931713990831679796">Estas impresoras están conectadas y listas para usarse. Guárdalas en tu perfil para acceder a ellas más fácilmente.</translation>
 <translation id="8932654652795262306">Detalles de la conexión compartida instantánea</translation>
+<translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
 <translation id="8940888110818450052">Opciones de inicio de sesión</translation>
 <translation id="8944099748578356325">Consumirá batería de forma más rápida (carga actual: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Tamaño del icono</translation>
@@ -2470,6 +2491,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="930893132043726269">Actualmente en roaming</translation>
 <translation id="93393615658292258">Solo contraseña</translation>
 <translation id="942296794412775122">Activar o desactivar micrófono</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="950307215746360464">Guía de configuración</translation>
 <translation id="952471655966876828">El dispositivo se conectará automáticamente cuando se encienda y se esté usando</translation>
 <translation id="956013912698841780">Haz clic con el botón derecho para resumir contenido, consultar definiciones, escribir con más confianza, crear imágenes y más. Actualmente tiene disponibilidad limitada.</translation>

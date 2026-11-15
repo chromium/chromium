@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">صرفه‌جویی در زمان، تایپ کمتر</translation>
 <translation id="146522654774760805">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="1466383950273130737">‏انتخاب زبان Chrome</translation>
+<translation id="1473344277210704336">‏‫Gemini و موارد ضروری شما در نوارابزار پایین جدید</translation>
 <translation id="1477626028522505441">به‌دلیل مشکلاتی در سرور، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="147982357559798527">تغییر کرده است</translation>
 <translation id="1480287803138246127">‏ممکن است بخشی از سابقه شما اینجا نمایش داده نشود. برای دیدن کل سابقه Chrome، آن را به‌صورت کامل باز کنید.</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">ازقبل با <ph name="NAME_OR_EMAIL" /> به سیستم وارد شده‌اید.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> زبانه}one{<ph name="TAB_COUNT_MANY" /> زبانه، <ph name="TAB_COUNT_INCOGNITO" /> زبانه ناشناس}other{<ph name="TAB_COUNT_MANY" /> زبانه، <ph name="TAB_COUNT_INCOGNITO" /> زبانه ناشناس}}</translation>
 <translation id="4558311620361989323">میان‌برهای صفحه وب</translation>
+<translation id="4558547432122102499">‫<ph name="USER_NAME" />،‏ <ph name="EMAIL" />. عضویت <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">وارد سیستم حساب مدیریت‌شده شوید</translation>
 <translation id="4577115723294378384">ترتیب براساس الف تا ی</translation>
 <translation id="4578289292431526768">بیایید شروع کنیم</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">زبانه جدیدی باز کنید تا به سؤالتان اضافه شود</translation>
 <translation id="4585793705637313973">ویرایش صفحه</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
+<translation id="4587590257937792551">‏‫Chrome نوارابزار پایینی جدیدی دارد که برای راحتی ساخته شده است. هر زمان که بخواهید می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> به حالت قبل برگردید.</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="4595237294768457124">صفحه «زبانه جدید» را باز کنید</translation>
 <translation id="4595276580892809760">پیوست کردن تصاویر از گالری</translation>
@@ -1451,6 +1454,7 @@
 <translation id="6633067410344541938">باز کردن قفل «حالت ناشناس»</translation>
 <translation id="6636623428211296678">در بخش زیر تنظیمات بیشتری را کاوش کنید یا همین‌حالا کارتان را به‌پایان برسانید</translation>
 <translation id="6637100877383020115">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">موارد ضروری شما، درست در نوارابزار پایین. هر زمان که بخواهید می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> به حالت قبل برگردید.</translation>
 <translation id="6642299196749785472">پیوست کردن زبانه‌ها</translation>
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}one{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}}</translation>
@@ -1649,6 +1653,7 @@
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />، زبانه هم‌رسانی سنجاق‌شده انتخابی</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7314734791127433392">بررسی گذرواژه‌ها امکان‌پذیر نیست</translation>
+<translation id="7324177883197548771">‏‫Chrome ظاهر جدیدی دارد که برای راحتی ساخته شده است. هر زمان که بخواهید می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> به حالت قبل برگردید.</translation>
 <translation id="7324354302972299151">ارسال درخواست «ردیابی نشدن»</translation>
 <translation id="7333041109965360609">اشتراک اعلان‌ها لغو شد</translation>
 <translation id="7335766481146072567">دکمه «ادامه» را فشار دهید</translation>
@@ -1750,6 +1755,7 @@
 <translation id="7697383401610880082">دستگیره کشاندن</translation>
 <translation id="7698359219371678927">ایجاد ایمیل در <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">برگ زیرین فعالیت اخیر به‌صورت کامل باز شده است</translation>
+<translation id="7706590516064393665">‫<ph name="USER_NAME_OR_EMAIL" />. عضویت <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">استفاده از داده تلفن همراه</translation>
 <translation id="7708994397325774423">دریافت همه گذرواژه‌ها</translation>
 <translation id="7714077993070342304">‏باز کردن منوِ Chrome</translation>

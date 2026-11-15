@@ -2308,6 +2308,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="4854853140771946034">Google Keep'də cəld yeni qeyd yaradın</translation>
 <translation id="4855395119669662878">Administrator faylları <ph name="DATE_TIME" /> tarixində <ph name="CLOUD_PROVIDER" /> buluduna yükləməyə başlayacaq. Faylın yüklənməsi tamamlanana qədər cihazı qoşulu saxlayın. Yüklənmə zamanı yalnız yerli faylları oxuya biləcəksiniz.</translation>
+<translation id="4856655096879441213">Məlumatlarınızı <ph name="GOOGLE_WALLET_TITLE" /> tətbiqində yadda saxlayın və Google məhsullarında formaları doldurmaq kimi işləri daha tez yerinə yetirin. <ph name="ACCOUNT" /> üçün şəxsi keçid ayarlarında <ph name="HOW_INFO_IS_USED_LINK" /> məlumatlarına nəzarət edə bilərsiniz.</translation>
 <translation id="485902285759009870">Kod doğrulanır...</translation>
 <translation id="4860260582253463350">YouTube-a keçmək üçün kimliyinizi təsdiq etməliyik. Valideyn və ya qəyyumunuzun Family Link-də təyin etdiyi ayarları əldə edəcəksiniz.</translation>
 <translation id="4861514638281352187">Kompensasiya nömrəsini təhlükəsiz şəkildə əlavə edin</translation>
@@ -4890,7 +4891,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9193018794001479794">Ətraflı izah edin</translation>
 <translation id="9194783551575429711">Soruşun: <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Təşkilatınız Google Hesabınızda yadda saxlaya biləcəklərinizi məhdudlaşdırdıqda tab qruplarını paylaşa və ya onlara qoşula bilməzsiniz</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> saytında Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
 <translation id="9204089334327209740">Yüklənmə tamamlandıqdan sonra faylları <ph name="CLOUD_PROVIDER" /> buludunda dəyişə bilərsiniz. Zibil qutusundakı fayllar daxil olmaqla yerli yaddaş avtomatik olaraq silinəcək.</translation>

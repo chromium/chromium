@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Naudotojo duomenų šifruotė</translation>
 <translation id="1011003645819296594">Išsaugoti įrenginiai</translation>
 <translation id="1011355516189274711">Teksto į kalbą garsumas</translation>
+<translation id="1012876632442809908">USB-C įrenginys (prievadas priekyje)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Numatytieji tinklo nustatymai</translation>
 <translation id="1026655690966755180">Pridėti prievadą</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Vietinių duomenų atkūrimas</translation>
 <translation id="1247372569136754018">Mikrofonas (vidinis)</translation>
 <translation id="1251366534849411931">Pradžioje turi būti nurodytas riestinis skliaustas: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Ieškoma mobiliojo ryšio duomenų tinklų...</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
 <translation id="1261380933454402672">Vidutinis</translation>
 <translation id="1263733306853729545">Naudokite klavišus „<ph name="MINUS" />“ ir „<ph name="EQUAL" />“, jei norite peržiūrėti kandidatų sąrašą</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Kalbos ypatybės</translation>
 <translation id="1291057703584594733">Pasirinkus jau priskirtą gestą, jis bus atsietas nuo pradinio veiksmo.</translation>
 <translation id="1291421198328146277">Iš naujo nustatyti klavišus</translation>
+<translation id="1293264513303784526">USB-C įrenginys (prievadas kairėje)</translation>
 <translation id="1293360286536751243">„<ph name="MAIN_GESTURE" />“ gali sutapti su „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ ir „<ph name="CONFLICTING_GESTURE_THREE" />“. Jei įmanoma, pabandykite pasirinkti kitą gestą.</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1313405956111467313">Automatinė tarpinio serverio konfigūracija</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Atsijungti, kai dangtis uždarytas</translation>
 <translation id="185970820835152459">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chromium“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Šaltesnio atspalvio</translation>
+<translation id="1864454756846565995">USB-C įrenginys (prievadas gale)</translation>
 <translation id="1866589962721094893">Suteikite „Android“ programoms USB įrenginių valdymo teisę šiame „Chromebook“. Leidimo užklausa bus pateikta kaskart prijungus USB įrenginį. Atskiros „Android“ programos prašys papildomų leidimų.</translation>
 <translation id="1877377290348678128">Etiketė (pasirenkama)</translation>
 <translation id="1877860345998737529">Jungiklio veiksmo priskyrimas</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Atnaujinimas</translation>
 <translation id="1938351510777341717">Išorinė komanda</translation>
 <translation id="1940546824932169984">Prijungti įrenginiai</translation>
+<translation id="1941410638996203291">Pradžios laikas <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versija: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Naujinys rastas</translation>
 <translation id="1948528728718281125">Prieiga prie fotoaparato leidžiama programoms, svetainėms, turinčioms fotoaparato leidimą, ir sistemos paslaugoms</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Verčiant puslapius vartojama kalba</translation>
 <translation id="2319459402137712349">Pasirinkite teksto lauką, kad atidarytumėte klaviatūrą. Taip pat galite pasirinkti klaviatūros piktogramą ekrano apačioje.</translation>
 <translation id="2319993584768066746">Nuotraukos prisijungimo ekrane</translation>
+<translation id="2322622365472107569">Pabaigos laikas <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Išsaugoti „Wi-Fi“ tinklai</translation>
 <translation id="2325444234681128157">Atsiminti slaptažodį</translation>
 <translation id="2326188115274135041">Patvirtinkite PIN kodą, kad įjungtumėte automatinio atrakinimo funkciją</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Trumpam užmerkti abi akis</translation>
 <translation id="258095186877893873">Ilga</translation>
 <translation id="2581786034175502848">Paspauskite „Shift“ penkis kartus, kad iš naujo įgalintumėte</translation>
+<translation id="2581992808349413349">Naudokite saugų ryšį ir ieškokite svetainės IP adreso DNS (domenų pavadinimų sistemoje). Tam naudojamas valdomas paslaugos teikėjas adresu <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Nepavyko gauti „Kerberos“ bilieto. Bandykite dar kartą arba susisiekite su organizacijos įrenginio administratoriumi. (Klaidos kodas <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Svetainės mikrofono leidimų tvarkymas naršyklėje „Chrome“</translation>
 <translation id="2609980095400624569">Nepavyko užmegzti ryšio</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Papildoma informacija</translation>
 <translation id="2808985063107661499">„<ph name="MAIN_GESTURE" />“ gali sutapti su „<ph name="CONFLICTING_GESTURE_ONE" />“ ir „<ph name="CONFLICTING_GESTURE_TWO" />“. Jei įmanoma, pabandykite pasirinkti kitą gestą.</translation>
 <translation id="2809346626032021864">Skaitymas</translation>
+<translation id="2811205483104563968">Paskyros</translation>
 <translation id="2813094189969465044">Tėvų kontrolė</translation>
 <translation id="2817435998497102771">Nustatyti ekrano foną ir stilių</translation>
 <translation id="2818476747334107629">Išsami spausdintuvo informacija</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Sutraukti / išskleisti</translation>
 <translation id="2833144527504272627">Naršykite naudodami teksto žymeklį</translation>
 <translation id="2835177225987815960">Dabartinė nuskaitymo sąranka bus nustatyta iš naujo, įskaitant visus priskirtus jungiklius ir automatinio nuskaitymo spartos nuostatas.</translation>
+<translation id="2844169650293029770">USB-C įrenginys (prievadas kairėje, priekinėje dalyje)</translation>
 <translation id="2844809857160214557">Peržiūrėti ir tvarkyti spausdinimo užduotis</translation>
 <translation id="2849035674501872372">Pakelkite galvą</translation>
 <translation id="2860710618359053450">Pasukti žandikaulį į dešinę</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369067987974711168">Rodyti daugiau šio prievado veiksmų</translation>
 <translation id="3370260763947406229">Automatinis taisymas</translation>
+<translation id="3371140690572404006">USB-C įrenginys (prievadas dešinėje, priekinėje dalyje)</translation>
 <translation id="3371351218553893534">Eilutė per ilga: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">„Steam“ suteikti leidimai taikomi visiems „Steam“ žaidimams ir programoms.</translation>
 <translation id="338323348408199233">Blokuoti srautą, jei neprijungtas VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Neleiskite srautą internete galintiems pasiekti žmonėms matyti svetainių, kuriose lankotės. „<ph name="PRODUCT_NAME" />“ naudoja saugų ryšį ieškodama svetainės IP adreso DNS (domenų pavadinimų sistemoje).</translation>
 <translation id="3442674350323953953">Leiskite sistemai „Google“ naudoti jūsų aparatinės įrangos duomenis, kad galėtų pagerinti „<ph name="DEVICE_OS" />“. Jei atsisakysite, duomenys vis tiek bus siunčiami sistemai „Google“ siekiant nustatyti, kurie naujiniai tinkami, tačiau jie nebus saugomi ar naudojami kitais būdais.</translation>
 <translation id="3445465968953598059">Valdymas veidu</translation>
+<translation id="3445925074670675829">USB-C įrenginys</translation>
 <translation id="3448492834076427715">Atnaujinti paskyrą</translation>
 <translation id="345078987193237421">Tai leidžia naudoti prieigą prie vaizdo kameros programoms, svetainėms, turinčioms vaizdo kameros leidimą, ir sistemos paslaugoms</translation>
 <translation id="3453082738208775226">Išvalyti saugyklą neprisijungus?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Sparčiųjų atsakymų apibrėžimas</translation>
 <translation id="3994075804072562819">Suteikite „<ph name="SPECIFIC_NAME" />“ USB įrenginių valdymo teisę.</translation>
 <translation id="3994530503403062649">Planšetinio kompiuterio klavišai</translation>
+<translation id="3995138139523574647">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="3997429360543082038">Apie „Chromium“ OS</translation>
 <translation id="4001540981461989979">Paryškinti pelės žymeklį, kai juda</translation>
 <translation id="4005817994523282006">Laiko juostos aptikimo metodas</translation>
@@ -1327,6 +1339,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5324780743567488672">Automatiškai nustatyti laiko juostą pagal jūsų vietovę</translation>
 <translation id="5327248766486351172">Pavadinimas</translation>
 <translation id="5331568967879689647">„Chrome“ OS sistemos programa</translation>
+<translation id="5331975486040154427">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
 <translation id="5334113802138581043">Prieiga prie mikrofono</translation>
 <translation id="5336689872433667741">Žymeklis ir jutiklinė dalis</translation>
 <translation id="5337926771328966926">Dabartinis įrenginio pavadinimas yra „<ph name="DEVICE_NAME" />“</translation>
@@ -1350,6 +1363,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5435274640623994081">Įgalinti garsinio ženklelio įrašymą į žurnalą</translation>
 <translation id="5441133529460183413">Iš „Chrome“ naršyklės įdiegta žiniatinklio programa</translation>
 <translation id="5445400788035474247">10 k.</translation>
+<translation id="5449551289610225147">Netinkamas slaptažodis</translation>
 <translation id="5450469615146335984">Pasirinkite kiekvieno veiksmo spartųjį klavišą</translation>
 <translation id="5452446625764825792">Dabar galite peržiūrėti naujausias telefono nuotraukas, mediją ir programas</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (veikia neprisijungus)</translation>
@@ -1645,6 +1659,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6444147596556711162">Pereikite nuo vieno ekrano elemento prie kito naudodami jungiklius „Kitas“ ir „Ankstesnis“</translation>
 <translation id="6452961788130242735">Tinklo problema arba netinkama sritis</translation>
 <translation id="6453921811609336127">Jei norite perjungti į kitą įvesties metodą, paspauskite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Ieškoma tinklų…</translation>
 <translation id="6463488491707167747">Ištrinti šį žodyną</translation>
 <translation id="6463596731306859179">Gaunate nepageidaujamų iššokančiųjų langų ar kitos netikėtos veiklos? Kartais įdiegtos programos ir plėtiniai gali pakeisti „ChromeOS“ nustatymus jums nežinant.</translation>
 <translation id="6465841119675156448">Be interneto</translation>
@@ -1661,6 +1676,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="648204537326351595">Leiskite „<ph name="SPECIFIC_NAME" />“ pasiekti mikrofoną</translation>
 <translation id="6482559668224714696">Viso ekrano didintuvas</translation>
 <translation id="648927581764831596">Nėra</translation>
+<translation id="6490471652906364588">USB-C įrenginys (prievadas dešinėje)</translation>
 <translation id="6497784818439587832">Pakeiskite ekrano dydį, kad sumažintumėte ar padidintumėte ekrane rodomus elementus</translation>
 <translation id="6497789971060331894">Atvirkštinis slinkimas pele</translation>
 <translation id="650185290742160385">Sumažinti slenkstį</translation>
@@ -1825,6 +1841,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7090714929377281710">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
 <translation id="7092504544229909737">Negalima naudoti su „Android“ programomis</translation>
 <translation id="7093220653036489319">Spartieji atsakymai</translation>
+<translation id="7098389117866926363">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
 <translation id="7099337801055912064">Nepavyko įkelti didelio PPD. Didžiausias galimas dydis yra 250 KB.</translation>
 <translation id="7107609441453408294">Paleisti tą patį garso įrašą visuose garsiakalbiuose</translation>
 <translation id="7116931001458704701">Rasti žymeklį pakračius</translation>
@@ -1886,6 +1903,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7323315405936922211">Žymeklio srities dydis</translation>
 <translation id="7325209047678309347">Popierius užstrigo</translation>
 <translation id="7331646370422660166">„Alt“ + rodyklė žemyn</translation>
+<translation id="7345706641791090287">Patvirtinkite slaptažodį</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7360333718677093875">jaustukų rinkiklis</translation>
@@ -2262,6 +2280,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="85486688517848470">Laikykite paspaustą paieškos klavišą, kad perjungtumėte viršutinės eilutės klavišų veikimą</translation>
 <translation id="8551588720239073785">Datos ir laiko nustatymai</translation>
 <translation id="8553342806078037065">Tvarkyti kitus žmones</translation>
+<translation id="8554899698005018844">Kalbos nėra</translation>
 <translation id="8555444629041783356">Automatinis saulėlydžio tvarkaraštis</translation>
 <translation id="8563043098557365232">Leidžiama tik sistemos paslaugoms</translation>
 <translation id="8571687764447439720">„Kerberos“ bilieto pridėjimas</translation>
@@ -2368,12 +2387,14 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="8900413463156971200">Įgalinti mobilųjį ryšį</translation>
 <translation id="8902667442496790482">Atidaryti funkcijos „Teksto ištarimas“ nustatymus</translation>
 <translation id="8903733144777177139">Prieiga prie mikrofono užblokuota</translation>
+<translation id="8910222113987937043">Žymių, istorijos, slaptažodžių ir kitų nustatymų pakeitimai nebebus sinchronizuojami su „Google“ paskyra. Tačiau esami duomenys toliau bus saugomi „Google“ paskyroje ir juos bus galima tvarkyti <ph name="BEGIN_LINK" />„Google“ informacijos suvestinėje<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Įgalinti automatinį nuskaitymą</translation>
 <translation id="8922624386829239660">Perkelti ekraną pelei pasiekus ekrano kraštus</translation>
 <translation id="8929738682246584251">Didintuvo įjungimas ir (arba) išjungimas</translation>
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8931713990831679796">Šie spausdintuvai prijungti ir paruošti naudoti. Išsaugokite profilyje, kad galėtumėte lengviau pasiekti.</translation>
 <translation id="8932654652795262306">Išsami momentinio įrenginio kaip modemo naudojimo informacija</translation>
+<translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8940888110818450052">Prisijungimo parinktys</translation>
 <translation id="8944099748578356325">Greičiau naudos akumuliatoriaus energiją (šiuo metu <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Piktogramos dydis</translation>
@@ -2470,6 +2491,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="930893132043726269">Šiuo metu tarptinklinis ryšys veikia</translation>
 <translation id="93393615658292258">Tik slaptažodis</translation>
 <translation id="942296794412775122">Mikrofono įjungimas ir (arba) išjungimas</translation>
+<translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="950307215746360464">Sąrankos vadovas</translation>
 <translation id="952471655966876828">Įrenginys bus automatiškai prijungtas, kai bus įjungtas ar naudojamas</translation>
 <translation id="956013912698841780">Spustelėkite dešiniuoju klavišu, kad galėtumėte apibendrinti turinį, gauti apibrėžčių, užtikrintai rašyti, kurti vaizdus ir kt. Šiuo metu pasiekiamumas ribotas.</translation>

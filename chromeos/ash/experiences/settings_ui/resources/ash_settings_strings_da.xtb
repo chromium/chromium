@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Kryptering af brugerdata</translation>
 <translation id="1011003645819296594">Gemte enheder</translation>
 <translation id="1011355516189274711">Lydstyrke ved oplæsning</translation>
+<translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Netværksstandard</translation>
 <translation id="1026655690966755180">Tilføj port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Gendannelse af lokale data</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
 <translation id="1251366534849411931">Forventet krøllet startparentes: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Søger efter mobildatanetværk...</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="1263733306853729545">Brug tasterne <ph name="MINUS" /> og <ph name="EQUAL" /> til at bladre igennem en kandidatliste</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Taleegenskaber</translation>
 <translation id="1291057703584594733">Hvis du vælger en allerede tildelt bevægelse, fjernes den fra dens oprindelige handling.</translation>
 <translation id="1291421198328146277">Nulstil nøgler</translation>
+<translation id="1293264513303784526">USB-C-enhed (venstre port)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" overlapper muligvis med "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" og "<ph name="CONFLICTING_GESTURE_THREE" />". Hvis det er muligt, kan du prøve at vælge en anden bevægelse.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1313405956111467313">Automatisk proxykonfiguration</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Log ud, når låget er lukket</translation>
 <translation id="185970820835152459">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chromium-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kølig</translation>
+<translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
 <translation id="1866589962721094893">Giv Android-apps kontrol over USB-enheder på denne Chromebook. Der anmodes om tilladelsen, hver gang du tilslutter en USB-enhed. Individuelle Android-apps anmoder om yderligere tilladelser.</translation>
 <translation id="1877377290348678128">Etiket (valgfrit)</translation>
 <translation id="1877860345998737529">Tildeling af handlinger for kontakter</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940546824932169984">Forbundne enheder</translation>
+<translation id="1941410638996203291">Starttidspunkt: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">En opdatering er fundet</translation>
 <translation id="1948528728718281125">Apps, websites, der har kameratilladelsen, og systemtjenester har adgang til kameraet</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Anvendt sprog ved oversættelse af sider</translation>
 <translation id="2319459402137712349">Vælg et tekstfelt for at åbne tastaturet. Du kan også vælge tastaturikonet nederst på skærmen.</translation>
 <translation id="2319993584768066746">Billeder på loginskærm</translation>
+<translation id="2322622365472107569">Sluttidspunkt: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gemte Wi-Fi-netværk</translation>
 <translation id="2325444234681128157">Husk adgangskoden</translation>
 <translation id="2326188115274135041">Bekræft pinkoden for at aktivere automatisk oplåsning</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Luk kortvarigt begge øjne</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581786034175502848">Tryk på Shift 5 gange for at genaktivere den</translation>
+<translation id="2581992808349413349">Brug en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System). Dette anvender en administreret tjenesteudbyder på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Din Kerberos-billet kunne ikke hentes. Prøv igen, eller kontakt din organisations enhedsadministrator. (fejlkode <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Administrer mikrofontilladelser for websites i Chrome</translation>
 <translation id="2609980095400624569">Der kunne ikke oprettes forbindelse</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Yderligere oplysninger</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" overlapper muligvis med "<ph name="CONFLICTING_GESTURE_ONE" />" og "<ph name="CONFLICTING_GESTURE_TWO" />". Hvis det er muligt, kan du prøve at vælge en anden bevægelse.</translation>
 <translation id="2809346626032021864">Læsning</translation>
+<translation id="2811205483104563968">Konti</translation>
 <translation id="2813094189969465044">Børnesikring</translation>
 <translation id="2817435998497102771">Konfigurer baggrund og stil</translation>
 <translation id="2818476747334107629">Printeroplysninger</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Formindsk/udvid</translation>
 <translation id="2833144527504272627">Naviger med tekstmarkør</translation>
 <translation id="2835177225987815960">Din aktuelle konfiguration af scanning nulstilles, herunder præferencerne for tildelte kontakter og hastigheden ved automatisk scanning.</translation>
+<translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
 <translation id="2844809857160214557">Se og administrer udskriftsjobs</translation>
 <translation id="2849035674501872372">Find</translation>
 <translation id="2860710618359053450">Drej kæben til venstre</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Forbundet</translation>
 <translation id="3369067987974711168">Se flere handlinger for denne port</translation>
 <translation id="3370260763947406229">Autokorrektur</translation>
+<translation id="3371140690572404006">USB-C-enhed (porten foran i højre side)</translation>
 <translation id="3371351218553893534">Linjen er for lang: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Tilladelser, der er angivet for Steam, gælder i alle Steam-spil og -apps.</translation>
 <translation id="338323348408199233">Bloker trafik uden VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Gør det sværere for personer med adgang til din internettrafik at se, hvilke websites du besøger. <ph name="PRODUCT_NAME" /> anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="3442674350323953953">Giv Google tilladelse til at bruge dine hardwaredata til at hjælpe med at forbedre <ph name="DEVICE_OS" />. Hvis du afviser, bliver disse data stadig sendt til Google med henblik på at levere de rigtige opdateringer, men de bliver ikke gemt eller brugt udover det.</translation>
 <translation id="3445465968953598059">Styring med ansigtet</translation>
+<translation id="3445925074670675829">USB-C-enhed</translation>
 <translation id="3448492834076427715">Opdater konto</translation>
 <translation id="345078987193237421">Dette giver apps, websites med kameratilladelse og systemtjenester adgang til kameraet</translation>
 <translation id="3453082738208775226">Vil du frigøre offlinelagerplads?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definition i Hurtig info</translation>
 <translation id="3994075804072562819">Giv <ph name="SPECIFIC_NAME" /> kontrol over USB-enheder.</translation>
 <translation id="3994530503403062649">Identificer knapperne på din tablet</translation>
+<translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="3997429360543082038">Om Chromium OS</translation>
 <translation id="4001540981461989979">Fremhæv musemarkøren ved bevægelse</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
@@ -1327,6 +1339,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5324780743567488672">Indstil tidszonen automatisk ved hjælp af din lokation</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
+<translation id="5331975486040154427">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="5334113802138581043">Mikrofonadgang</translation>
 <translation id="5336689872433667741">Markør og touchplade</translation>
 <translation id="5337926771328966926">Navnet på den aktuelle enhed er <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5435274640623994081">Aktivér logning af lydikoner</translation>
 <translation id="5441133529460183413">Webapp installeret via Chrome-browseren</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Ugyldig adgangskode</translation>
 <translation id="5450469615146335984">Vælg en genvej til hver handling</translation>
 <translation id="5452446625764825792">Du kan nu se din telefons seneste billeder, medier og apps</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer offline)</translation>
@@ -1645,6 +1659,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6444147596556711162">Brug "Næste" og "Forrige" til at gå frem og tilbage mellem elementer på skærmen</translation>
 <translation id="6452961788130242735">Netværksproblem eller ugyldigt domæne</translation>
 <translation id="6453921811609336127">Du kan skifte til næste indtastningsmetode ved at trykke på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellemrum<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Søger efter netværk...</translation>
 <translation id="6463488491707167747">Slet denne ordbog</translation>
 <translation id="6463596731306859179">Oplever du uønskede pop op-vinduer eller anden uventet adfærd? I nogle tilfælde kan de apps og udvidelser, du installerer, ændre dine ChromeOS-indstillinger, uden du ved det.</translation>
 <translation id="6465841119675156448">Uden internet</translation>
@@ -1661,6 +1676,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="648204537326351595">Giv <ph name="SPECIFIC_NAME" /> adgang til din mikrofon</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
 <translation id="648927581764831596">Ingen tilgængelig</translation>
+<translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="650185290742160385">Sænk grænsen</translation>
@@ -1825,6 +1841,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7090714929377281710">Deaktiver hotspot automatisk</translation>
 <translation id="7092504544229909737">Kan ikke bruges sammen med Android-apps</translation>
 <translation id="7093220653036489319">Hurtig info</translation>
+<translation id="7098389117866926363">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="7099337801055912064">Den store PPD-fil kan ikke indlæses. Filen må ikke fylde mere end 250 kB.</translation>
 <translation id="7107609441453408294">Afspil den samme lyd via alle højttalere</translation>
 <translation id="7116931001458704701">Ryst for at finde markøren</translation>
@@ -1886,6 +1903,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7323315405936922211">Størrelse på markørområde</translation>
 <translation id="7325209047678309347">Papiret sidder fast</translation>
 <translation id="7331646370422660166">Alt + pil ned</translation>
+<translation id="7345706641791090287">Bekræft din adgangskode</translation>
 <translation id="7348093485538360975">Skærmtastatur</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7360333718677093875">emojivælger</translation>
@@ -2262,6 +2280,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="85486688517848470">Hold tasten Søg nede for at skifte funktion for den øverste række taster</translation>
 <translation id="8551588720239073785">Indstillinger for dato og tid</translation>
 <translation id="8553342806078037065">Administrer andre personer</translation>
+<translation id="8554899698005018844">Intet sprog</translation>
 <translation id="8555444629041783356">Automatisk tidsplan for solnedgang</translation>
 <translation id="8563043098557365232">Kun tilladt for systemtjenester</translation>
 <translation id="8571687764447439720">Tilføj Kerberos-billet</translation>
@@ -2368,12 +2387,14 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="8900413463156971200">Aktivér mobilnetværk</translation>
 <translation id="8902667442496790482">Åbn indstillinger for Tekstoplæsning</translation>
 <translation id="8903733144777177139">Adgang til mikrofonen er blokeret</translation>
+<translation id="8910222113987937043">Ændringer af bogmærker, historik, adgangskoder og andre indstillinger synkroniseres ikke længere med din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Aktivér automatisk scanning</translation>
 <translation id="8922624386829239660">Flyt skærmen, når markøren rammer kanten af skærmen</translation>
 <translation id="8929738682246584251">Lup til/fra</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8931713990831679796">Disse printere er forbundet og klar til brug. Gem dem på din profil for at få nemmere adgang til dem.</translation>
 <translation id="8932654652795262306">Info om Automatisk netdeling</translation>
+<translation id="8938800817013097409">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="8940888110818450052">Valgmuligheder for login</translation>
 <translation id="8944099748578356325">Batteriet bruges hurtigere (i øjeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Ikonstørrelse</translation>
@@ -2470,6 +2491,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="930893132043726269">Roamer</translation>
 <translation id="93393615658292258">Kun adgangskode</translation>
 <translation id="942296794412775122">Mikrofon til/fra</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="950307215746360464">Konfigurationsvejledning</translation>
 <translation id="952471655966876828">Forbindelsen til enheden oprettes automatisk, når enheden tændes eller er i brug</translation>
 <translation id="956013912698841780">Højreklik for at opsummere indhold, få definitioner, skrive med mere selvsikkerhed, oprette billeder og meget mere. Tilgængeligheden er begrænset i øjeblikket.</translation>

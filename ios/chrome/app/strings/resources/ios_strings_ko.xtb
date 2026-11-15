@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">다운로드를 중지하시겠습니까?</translation>
 <translation id="4796496140132859135">탭 그룹. 접혀 있습니다.</translation>
 <translation id="4800912004582762296">클릭 중</translation>
+<translation id="4800930308997591052"><ph name="EMAIL" /> 계정으로 전환하여 기기 간에 탭을 원활하게 공유하고 Google 계정에서 비밀번호, 북마크 등을 가져오세요</translation>
 <translation id="4802185666270672526">데스크톱 사이트 요청 숨기기</translation>
 <translation id="4803185665210547709">조직에서 관리합니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7618220760967055820">툴바에 표시할 버튼을 선택하세요</translation>
 <translation id="7620522820075868385">취소</translation>
 <translation id="762078666799342162"><ph name="BEGIN_LINK" />파일<ph name="END_LINK" />에서 이전 다운로드 항목을 볼 수 있습니다</translation>
+<translation id="7636034359405891151">컴퓨터에서 중단한 부분부터 이어서 진행하세요</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{유출된 비밀번호}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="7640669552036055091">Android의 탭</translation>

@@ -1308,6 +1308,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3196374699162453920">Kod tempahan</translation>
 <translation id="3196902089458890316">Sentiasa kongsi tab yang berkaitan untuk mendapatkan respons yang lebih baik?</translation>
 <translation id="3197136577151645743">Boleh meminta untuk mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
+<translation id="3201749168732432347">Tawaran dan kad kesetiaan</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="3203025201812691413">URL tidak boleh kosong</translation>
 <translation id="320323717674993345">Batal Pembayaran</translation>
@@ -2313,6 +2314,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4854853140771946034">Buat nota baharu dalam Google Keep dengan pantas</translation>
 <translation id="4855395119669662878">Pentadbir anda akan mula memuat naik fail anda kepada <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Pastikan peranti anda disambungkan sehingga fail anda selesai dimuat naik. Semasa proses muat naik, anda akan dapat membaca fail setempat sahaja.</translation>
+<translation id="4856655096879441213">Simpan maklumat anda dalam <ph name="GOOGLE_WALLET_TITLE" /> dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh mengawal <ph name="HOW_INFO_IS_USED_LINK" /> dalam tetapan pas peribadi anda untuk <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Mengesahkan kod...</translation>
 <translation id="4860260582253463350">Untuk meneruskan akses kepada YouTube, kami perlu mengesahkan identiti anda. Anda akan menggunakan tetapan yang telah disediakan oleh ibu/bapa atau penjaga anda dalam Family Link.</translation>
 <translation id="4861514638281352187">Tambahkan nombor tebus rugi dengan selamat</translation>
@@ -4897,7 +4899,6 @@ Butiran tambahan:
 <translation id="9192361865877479444">Logam (Kusam)</translation>
 <translation id="9193018794001479794">Huraikan</translation>
 <translation id="9194783551575429711">Tanya <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Apabila organisasi anda mengehadkan penyimpanan kepada Google Account anda, anda tidak boleh berkongsi atau menyertai kumpulan tab</translation>
 <translation id="9198613052465150219">Google Account anda mungkin mempunyai bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Pencetakan disekat</translation>
 <translation id="9204089334327209740">Setelah muat naik selesai, anda boleh mengubah suai fail anda dalam <ph name="CLOUD_PROVIDER" />. Storan setempat, termasuk sebarang fail dalam Sampah, akan dialih keluar secara automatik.</translation>

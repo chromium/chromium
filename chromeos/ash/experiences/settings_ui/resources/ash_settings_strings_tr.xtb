@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Kullanıcı verilerini şifreleme</translation>
 <translation id="1011003645819296594">Kayıtlı cihazlar</translation>
 <translation id="1011355516189274711">Metin okuma ses düzeyi</translation>
+<translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Ağ varsayılanı</translation>
 <translation id="1026655690966755180">Bağlantı Noktası Ekle</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Yerel verileri kurtar</translation>
 <translation id="1247372569136754018">Mikrofon (dahili)</translation>
 <translation id="1251366534849411931">Küme açma parantezi olması bekleniyor: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Mobil veri ağları taranıyor...</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
 <translation id="1261380933454402672">Ölçülü</translation>
 <translation id="1263733306853729545">Öneri listesi sayfası için <ph name="MINUS" /> ve <ph name="EQUAL" /> tuşlarını kullan</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Konuşma Özellikleri</translation>
 <translation id="1291057703584594733">Daha önce atanmış bir hareket seçildiğinde başlangıçtaki işleminden kaldırılır.</translation>
 <translation id="1291421198328146277">Tuşları sıfırla</translation>
+<translation id="1293264513303784526">USB-C cihaz (sol bağlantı noktası)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" ve "<ph name="CONFLICTING_GESTURE_THREE" />" ile çakışıyor olabilir. Mümkünse farklı bir hareket seçin.</translation>
 <translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1313405956111467313">Otomatik proxy yapılandırması</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Kapak kapatıldığında oturumu kapat</translation>
 <translation id="185970820835152459">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chromium tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Daha Soğuk</translation>
+<translation id="1864454756846565995">USB-C cihaz (arka bağlantı noktası)</translation>
 <translation id="1866589962721094893">Android uygulamalarına, bu Chromebook'taki USB cihazlarını kontrol etme imkanı sunar. Her USB cihaz taktığınızda izin istenir. Ayrı Android uygulamaları da ek izinler isteyecektir.</translation>
 <translation id="1877377290348678128">Etiket (isteğe bağlı)</translation>
 <translation id="1877860345998737529">Anahtar işlem görevi</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Güncellemeler</translation>
 <translation id="1938351510777341717">Harici Komut</translation>
 <translation id="1940546824932169984">Bağlı cihazlar</translation>
+<translation id="1941410638996203291">Başlangıç zamanı: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Sürüm: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Güncelleme bulundu</translation>
 <translation id="1948528728718281125">Uygulamalar, kamera izni olan web siteleri ve sisteme ait hizmetlerin kameraya erişmesine izin veriliyor</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Sayfalar çevrilirken kullanılan dil</translation>
 <translation id="2319459402137712349">Klavyeyi açmak için bir metin alanı seçin. Ekranınızın alt kısmındaki klavye simgesini de seçebilirsiniz.</translation>
 <translation id="2319993584768066746">Oturum açma ekranı fotoğrafları</translation>
+<translation id="2322622365472107569">Bitiş zamanı: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Kaydedilen kablosuz ağlar</translation>
 <translation id="2325444234681128157">Şifreyi hatırla</translation>
 <translation id="2326188115274135041">Otomatik kilit açmayı etkinleştirmek için PIN'i onaylayın</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Gözlerinizi kısa bir süre kapatın</translation>
 <translation id="258095186877893873">Uzun</translation>
 <translation id="2581786034175502848">Yeniden etkinleştirmek için Üst Karakter tuşuna 5 kez basın</translation>
+<translation id="2581992808349413349">Bir sitenin IP adresini DNS'de (Alan Adı Sistemi) aramak için güvenli bağlantı kullanın. Bu özellik, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> adresinde yönetilen bir servis sağlayıcı kullanır</translation>
 <translation id="2584109212074498965">Kerberos bileti alınamadı. Tekrar deneyin veya kuruluşunuzun cihaz yöneticisi ile iletişim kurun. (Hata kodu <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome'da web sitesi mikrofon izinlerini yönetin</translation>
 <translation id="2609980095400624569">Bağlantı kurulamadı</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Ek ayrıntılar</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" ve "<ph name="CONFLICTING_GESTURE_TWO" />" ile çakışıyor olabilir. Mümkünse farklı bir hareket seçin.</translation>
 <translation id="2809346626032021864">Okuma</translation>
+<translation id="2811205483104563968">Hesaplar</translation>
 <translation id="2813094189969465044">Ebeveyn denetimleri</translation>
 <translation id="2817435998497102771">Duvar kağıdı ve stilinizi ayarlayın</translation>
 <translation id="2818476747334107629">Yazıcı ayrıntıları</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Daralt / Genişlet</translation>
 <translation id="2833144527504272627">Metin imleciyle gezinin</translation>
 <translation id="2835177225987815960">Atanmış anahtarlar ve otomatik tarama hızı tercihleriniz dahil olmak üzere mevcut tarama kurulumunuz sıfırlanır.</translation>
+<translation id="2844169650293029770">USB-C cihaz (sol ön bağlantı noktası)</translation>
 <translation id="2844809857160214557">Yazdırma işlerini görüntüleyin ve yönetin</translation>
 <translation id="2849035674501872372">Araştır</translation>
 <translation id="2860710618359053450">Çenenizi sağa kaydırın</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369067987974711168">Bu bağlantı noktası için daha fazla işlem göster</translation>
 <translation id="3370260763947406229">Otomatik düzelt</translation>
+<translation id="3371140690572404006">USB-C cihaz (sağ ön bağlantı noktası)</translation>
 <translation id="3371351218553893534">Satır çok uzun: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam'e verilen izinler tüm Steam oyunları ve uygulamaları için geçerlidir.</translation>
 <translation id="338323348408199233">VPN dışı trafiği engelle</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. <ph name="PRODUCT_NAME" />, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> işletim sistemini iyileştirmemize yardımcı olmak için Google'ın donanım verilerinizi kullanmasına izin verin. Reddetmeniz durumunda bu veriler uygun güncellemeleri belirlemek için Google'a gönderilmeye devam eder ancak başka şekilde depolanmaz veya kullanılmaz.</translation>
 <translation id="3445465968953598059">Yüz kontrolü</translation>
+<translation id="3445925074670675829">USB-C cihaz</translation>
 <translation id="3448492834076427715">Hesabı güncelle</translation>
 <translation id="345078987193237421">Bu işlem, kamera izni olan uygulamalar ve web sitelerinin yanı sıra sisteme ait hizmetlerin kameraya erişmesine izin verir</translation>
 <translation id="3453082738208775226">Çevrimdışı depolama alanı temizlensin mi?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Bil bakalım tanımı</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> uygulamasına USB cihazlarını kontrol etme sunun.</translation>
 <translation id="3994530503403062649">Tabletinizdeki düğmeleri bulun</translation>
+<translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
 <translation id="3997429360543082038">ChromiumOS hakkında</translation>
 <translation id="4001540981461989979">Hareket ederken fare imlecini vurgula</translation>
 <translation id="4005817994523282006">Saat dilimi algılama yöntemi</translation>
@@ -1327,6 +1339,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5324780743567488672">Konumumu kullanarak saat dilimini otomatik olarak ayarla</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5331568967879689647">ChromeOS Sistem Uygulaması</translation>
+<translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
 <translation id="5334113802138581043">Mikrofon erişimi</translation>
 <translation id="5336689872433667741">İmleç ve dokunmatik alan</translation>
 <translation id="5337926771328966926">Geçerli cihazının adı: <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5435274640623994081">Ses sinyali günlük kaydını etkinleştir</translation>
 <translation id="5441133529460183413">Chrome tarayıcıdan yüklenen web uygulaması</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Geçersiz şifre</translation>
 <translation id="5450469615146335984">Her işlem için bir kısayol seçin</translation>
 <translation id="5452446625764825792">Artık telefonunuzdaki son fotoğrafları, medya içeriklerini ve uygulamaları görüntüleyebilirsiniz</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (çevrimdışı çalışır)</translation>
@@ -1645,6 +1659,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="6444147596556711162">Ekrandaki öğeler arasında gezinmek için "Sonraki" ve "Önceki" seçeneklerini kullanın</translation>
 <translation id="6452961788130242735">Ağ sorunu veya kötü alan</translation>
 <translation id="6453921811609336127">Sonraki giriş yöntemine geçmek için <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Üst Karakter<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Boşluk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> tuşuna basın</translation>
+<translation id="6461170143930046705">Ağ aranıyor...</translation>
 <translation id="6463488491707167747">Bu sözlüğü silin</translation>
 <translation id="6463596731306859179">İstenmeyen pop-up'lar veya beklenmedik başka davranışlar mı görüyorsunuz? Yüklediğiniz uygulamalar ve uzantılar bazen haberiniz olmadan ChromeOS ayarlarınızı değiştirebilir.</translation>
 <translation id="6465841119675156448">İnternet olmadan</translation>
@@ -1661,6 +1676,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> öğesinin mikrofonunuza erişmesine izin verin</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
 <translation id="648927581764831596">Hiçbiri mevcut değil</translation>
+<translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="6497784818439587832">Ekranınızdaki öğeleri küçültmek veya büyütmek için ekran boyutunu değiştirin</translation>
 <translation id="6497789971060331894">Fare ters kaydırma</translation>
 <translation id="650185290742160385">Eşiği düşür</translation>
@@ -1825,6 +1841,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="7090714929377281710">Hotspot'u otomatik olarak kapat</translation>
 <translation id="7092504544229909737">Android uygulamalarıyla kullanılamaz</translation>
 <translation id="7093220653036489319">Hızlı yanıtlar</translation>
+<translation id="7098389117866926363">USB-C cihaz (arkadaki sol bağlantı noktası)</translation>
 <translation id="7099337801055912064">Büyük PPD yüklenemiyor. Maksimum boyut 250 kB'tır.</translation>
 <translation id="7107609441453408294">Tüm hoparlörlerde aynı sesi çal</translation>
 <translation id="7116931001458704701">İmleci bulmak için sallayın</translation>
@@ -1886,6 +1903,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="7323315405936922211">İmleç alanı boyutu</translation>
 <translation id="7325209047678309347">Kağıt sıkıştı</translation>
 <translation id="7331646370422660166">alt + aşağı ok</translation>
+<translation id="7345706641791090287">Şifrenizi onaylayın</translation>
 <translation id="7348093485538360975">Dokunmatik klavye</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7360333718677093875">emoji seçici</translation>
@@ -2261,6 +2279,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="85486688517848470">Üst satırdaki tuşların davranışını değiştirmek için Arama tuşunu basılı tutun</translation>
 <translation id="8551588720239073785">Tarih ve zaman ayarları</translation>
 <translation id="8553342806078037065">Diğer kişileri yönet</translation>
+<translation id="8554899698005018844">Dil yok</translation>
 <translation id="8555444629041783356">Güneşin batış saatine dayalı otomatik program</translation>
 <translation id="8563043098557365232">Yalnızca sisteme ait hizmetlere izin verilir</translation>
 <translation id="8571687764447439720">Kerberos bileti ekle</translation>
@@ -2367,12 +2386,14 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="8900413463156971200">Hücresel bağlantıyı etkinleştir</translation>
 <translation id="8902667442496790482">Seç ve Dinle ayarlarını aç</translation>
 <translation id="8903733144777177139">Mikrofon erişimi engellendi</translation>
+<translation id="8910222113987937043">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızla ilgili değişiklikler artık Google Hesabınızla senkronize edilmez. Ancak mevcut verileriniz Google Hesabınızda kalmaya devam eder ve <ph name="BEGIN_LINK" />Google Hesap Özeti<ph name="END_LINK" />'nde yönetilebilir.</translation>
 <translation id="8912810933860534797">Otomatik taramayı etkinleştir</translation>
 <translation id="8922624386829239660">Fare ekranın kenarlarına dokunduğunda ekranı taşı</translation>
 <translation id="8929738682246584251">Büyüteç açık/kapalı</translation>
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>
 <translation id="8931713990831679796">Bu yazıcılar bağlı ve kullanıma hazır. Daha kolay erişim için yazıcıları profilinize kaydedin.</translation>
 <translation id="8932654652795262306">Hızlı Tethering ayrıntıları</translation>
+<translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
 <translation id="8940888110818450052">Oturum açma seçenekleri</translation>
 <translation id="8944099748578356325">Pili daha çabuk tüketir (şu anda %<ph name="BATTERY_PERCENTAGE" />)</translation>
 <translation id="8945274638472141382">Simge boyutu</translation>
@@ -2469,6 +2490,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="930893132043726269">Şu anda dolaşımda</translation>
 <translation id="93393615658292258">Yalnızca şifre</translation>
 <translation id="942296794412775122">Mikrofon açık/kapalı</translation>
+<translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="950307215746360464">Kurulum kılavuzu</translation>
 <translation id="952471655966876828">Cihaz açık olduğunda ve kullanıldığında otomatik olarak bağlanır</translation>
 <translation id="956013912698841780">İçerikleri özetlemek, tanımları öğrenmek, kendinize güvenerek yazmak, resim oluşturmak ve daha fazlasını yapmak için sağ tıklayın. Bu özellik şu anda sınırlı sayıda kullanıcıya sunulmaktadır.</translation>

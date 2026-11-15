@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">بارگیری متوقف شود؟</translation>
 <translation id="4796496140132859135">گروه زبانه. جمع‌شده.</translation>
 <translation id="4800912004582762296">درحال کلیک کردن</translation>
+<translation id="4800930308997591052">‏به <ph name="EMAIL" /> بروید تا زبانه‌ها را به‌طور یکپارچه بین دستگاه‌هایتان هم‌رسانی کنید و گذرواژه‌ها، نشانک‌ها، و سایر موارد را از «حساب Google» خود دریافت کنید.</translation>
 <translation id="4802185666270672526">پنهان کردن «درخواست سایت ویژه رایانه»</translation>
 <translation id="4803185665210547709">توسط سازمانتان مدیریت می‌شود.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7618220760967055820">انتخاب کنید چه دکمه‌ای در نوارابزار نشان داده شود</translation>
 <translation id="7620522820075868385">لغو</translation>
 <translation id="762078666799342162">‏می‌توانید بارگیری‌های قبلی‌تان را در <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> مشاهده کنید</translation>
+<translation id="7636034359405891151">از همان‌جا که در رایانه رها کردید ادامه دهید</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{گذرواژه‌های لورفته}=1{‫{COUNT} گذرواژه لورفته}one{‫{COUNT} گذرواژه لورفته}other{‫{COUNT} گذرواژه لورفته}}</translation>
 <translation id="7640669552036055091">‏زبانه‌ها از Android</translation>

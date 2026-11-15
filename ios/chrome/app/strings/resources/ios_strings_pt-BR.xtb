@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Parar o download?</translation>
 <translation id="4796496140132859135">Grupo de guias. Fechado.</translation>
 <translation id="4800912004582762296">Clicando</translation>
+<translation id="4800930308997591052">Mude para <ph name="EMAIL" /> se quiser compartilhar guias entre seus dispositivos e acessar senhas, favoritos e muito mais da sua Conta do Google.</translation>
 <translation id="4802185666270672526">Ocultar "Pedir site para computador"</translation>
 <translation id="4803185665210547709">Gerenciado pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7618220760967055820">Escolha qual botão mostrar na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Acesse seus downloads anteriores em <ph name="BEGIN_LINK" />Arquivos<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Continue de onde você parou no computador</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="7640669552036055091">Guias do Android</translation>

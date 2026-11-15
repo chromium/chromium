@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2975761176769946178">URL је обавезан</translation>
 <translation id="297667759942911166">Сарађујте у групама картица</translation>
+<translation id="2986080119218811913">Назад на <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Да бисте користили Gemini у Chrome-у, пријавите се у Chrome помоћу Google налога</translation>
 <translation id="2987670534697681860">Потврдите идентитет да бисте приступили свим лозинкама на овом уређају.</translation>
 <translation id="2989523299700148168">Недавно посећено</translation>
@@ -1214,6 +1215,7 @@
 <translation id="479628432297359449">Желите да зауставите преузимање?</translation>
 <translation id="4796496140132859135">Група картица. Скупљено.</translation>
 <translation id="4800912004582762296">Кликтање</translation>
+<translation id="4800930308997591052">Пређите на налог <ph name="EMAIL" /> да бисте лако делили картице између уређаја и приступали лозинкама, обележивачима и другом садржају са Google налога.</translation>
 <translation id="4802185666270672526">Сакриј опцију Захтевај верзију сајта за рачунар</translation>
 <translation id="4803185665210547709">Овим управља организација.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -1290,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, овим управља организација.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Боја групе картица <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google менаџер лозинки нема лозинку за овај сајт. Вратите се на <ph name="ACTOR_NAME" /> да бисте се пријавили или додајте лозинку у Google менаџер лозинки.</translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5007392906805964215">Прегледај</translation>
 <translation id="5009127379503001909">Настави да прегледаш</translation>
@@ -2148,6 +2151,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7618220760967055820">Изаберите дугме које ће се приказивати на траци с алаткама</translation>
 <translation id="7620522820075868385">Откажи</translation>
 <translation id="762078666799342162">Ранија преузимања можете да прегледате у <ph name="BEGIN_LINK" />Фајловима<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Наставите тамо где сте стали на рачунару</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Угрожене лозинке}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7640669552036055091">Картице са Android-а</translation>

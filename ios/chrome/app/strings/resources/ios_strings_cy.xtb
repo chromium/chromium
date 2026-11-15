@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Wedi methu â mewngofnodi. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="2975761176769946178">Mae angen URL</translation>
 <translation id="297667759942911166">Cydweithio mewn grwpiau tab</translation>
+<translation id="2986080119218811913">Nôl i <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">I ddefnyddio Gemini yn Chrome, mewngofnodwch i Chrome gyda'ch Cyfrif Google</translation>
 <translation id="2987670534697681860">Cadarnhewch mai chi sydd yno i gael mynediad at eich holl gyfrineiriau ar y ddyfais hon</translation>
 <translation id="2989523299700148168">Ymwelwyd yn ddiweddar</translation>
@@ -1291,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, rheolir gan eich sefydliad.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lliw grŵp tabiau <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Nid oes gan Reolwr Cyfrineiriau Google gyfrinair ar gyfer y wefan hon. Ewch yn ôl i <ph name="ACTOR_NAME" /> i fewngofnodi, neu ychwanegwch gyfrinair at Reolwr Cyfrineiriau Google.</translation>
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
 <translation id="5007392906805964215">Adolygu</translation>
 <translation id="5009127379503001909">Parhau i bori</translation>
@@ -1484,6 +1486,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5612225021788368236">Cau hyrwyddiad porwr diofyn</translation>
 <translation id="561269594905823128">Tapiwch <ph name="BEGIN_BOLD" />Dewis eich ffeil<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Trefnu yn ôl diweddaraf</translation>
+<translation id="561349411957324076">Cwblhawyd</translation>
 <translation id="5614553682702429503">Cadw'r cyfrinair?</translation>
 <translation id="5617769621178348890">Agor yn yr Ap Files</translation>
 <translation id="5619871095170816857">Mae'r cerdyn hwn yn dangos eich tab agored a ddefnyddiwyd ddiwethaf ar draws eich holl ddyfeisiau wedi cysoni o fewn y 24 awr ddiwethaf.</translation>

@@ -2312,6 +2312,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
 <translation id="4855395119669662878">Stjórnandinn þinn mun hefja upphleðslu skráa á <ph name="CLOUD_PROVIDER" /> kl. <ph name="DATE_TIME" />. Haltu tækinu þínu tengdu þar til upphleðslu skráa er lokið. Þú munt aðeins geta lesið staðbundnar skrár á meðan á upphleðslunni stendur.</translation>
+<translation id="4856655096879441213">Vistaðu upplýsingarnar þínar í <ph name="GOOGLE_WALLET_TITLE" /> til að koma hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Þú getur stjórnað <ph name="HOW_INFO_IS_USED_LINK" /> í stillingum einkapassa fyrir <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Staðfestir kóða...</translation>
 <translation id="4860260582253463350">Við þurfum að ganga úr skugga um að þetta sért þú áður en þú getur opnað YouTube. Stillingarnar sem foreldri þitt eða forsjáraðili stillti í Family Link verða notaðar.</translation>
 <translation id="4861514638281352187">Bættu leiðréttingarnúmeri við á öruggan hátt</translation>
@@ -4894,7 +4895,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9192361865877479444">Málmur (matt)</translation>
 <translation id="9193018794001479794">Bæta meiru við</translation>
 <translation id="9194783551575429711">Spyrja <ph name="AI_ENGINE_NAME" /></translation>
-<translation id="9195969368671142407">Þegar fyrirtækið þitt takmarkar vistanir við Google-reikninginn þinn getur þú ekki deilt eða tengst flipahópum</translation>
 <translation id="9198613052465150219">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Lokað er fyrir prentun</translation>
 <translation id="9204089334327209740">Þegar upphleðslunni er lokið geturðu breytt skránum í <ph name="CLOUD_PROVIDER" />. Staðbundna geymslurýminu verður sjálfkrafa eytt, þ.m.t. öllum skrám í ruslinu.</translation>

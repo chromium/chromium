@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Šifriranje korisničkih podataka</translation>
 <translation id="1011003645819296594">Spremljeni uređaji</translation>
 <translation id="1011355516189274711">Glasnoća govora za pretvaranje teksta u govor</translation>
+<translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Zadana postavka mreže</translation>
 <translation id="1026655690966755180">Dodavanje priključka</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1247372569136754018">Mikrofon (ugrađeni)</translation>
 <translation id="1251366534849411931">Očekivano otvaranje vitičaste zagrade: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Traženje podatkovnih mreža...</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
 <translation id="1261380933454402672">Skromno</translation>
 <translation id="1263733306853729545">Koristite tipke <ph name="MINUS" /> i <ph name="EQUAL" /> za numeriranje popisa kandidata</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Svojstva govora</translation>
 <translation id="1291057703584594733">Ako odaberete već dodijeljeni pokret, uklonit će se iz izvorne radnje.</translation>
 <translation id="1291421198328146277">Poništi tipke</translation>
+<translation id="1293264513303784526">USB-C uređaj (lijevi priključak)</translation>
 <translation id="1293360286536751243">Pokret <ph name="MAIN_GESTURE" /> može se preklapati s pokretima <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> i <ph name="CONFLICTING_GESTURE_THREE" />. Ako je moguće, pokušajte odabrati drugi pokret.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1313405956111467313">Automatska konfiguracija proxyja</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Odjavi se kada se zatvori poklopac</translation>
 <translation id="185970820835152459">Možete upravljati Google računima na koje ste prijavljeni. Vaši Google računi koriste se za preglednik Chromium, Trgovinu Play, Gmail i brojne druge usluge. Ako želite dodati račun za nekog drugog, na primjer člana obitelji, dodajte novu osobu na uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Hladnije</translation>
+<translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
 <translation id="1866589962721094893">Dopustite Android aplikacijama da upravljaju USB uređajima na ovom Chromebooku. Dopuštenje će se tražiti svaki put kad priključite USB uređaj. Pojedinačne Android aplikacije tražit će dodatna dopuštenja.</translation>
 <translation id="1877377290348678128">Oznaka (izborno)</translation>
 <translation id="1877860345998737529">Dodjela prekidača radnjama</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="1938351510777341717">Vanjska naredba</translation>
 <translation id="1940546824932169984">Povezani uređaji</translation>
+<translation id="1941410638996203291">Vrijeme početka <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verzija: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Pronađeno je ažuriranje</translation>
 <translation id="1948528728718281125">Pristup kameri dopušten je za aplikacije, web-lokacije s dopuštenjem za kameru i usluge sustava</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Jezik korišten pri prevođenju stranica</translation>
 <translation id="2319459402137712349">Odaberite tekstno polje da biste otvorili tipkovnicu. Možete odabrati i ikonu Tipkovnice pri dnu zaslona.</translation>
 <translation id="2319993584768066746">Fotografije na zaslonu za prijavu</translation>
+<translation id="2322622365472107569">Vrijeme završetka <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Spremljene Wi-Fi mreže</translation>
 <translation id="2325444234681128157">Zapamti zaporku</translation>
 <translation id="2326188115274135041">Potvrdite PIN da biste uključili automatsko otključavanje</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Nakratko zatvorite oba oka</translation>
 <translation id="258095186877893873">Dugo</translation>
 <translation id="2581786034175502848">Pritisnite tipku Shift pet puta da biste je ponovo omogućili</translation>
+<translation id="2581992808349413349">Upotrijebite sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System). Ova aplikacija upotrebljava upravljanog davatelja usluga na web-lokaciji <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Dohvaćanje Kerberosovog tiketa nije uspjelo. Pokušajte ponovo ili se obratite administratoru uređaja u svojoj organizaciji. (Kôd pogreške <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Upravljanje dopuštenjem web-lokaciji za upotrebu mikrofona u Chromeu</translation>
 <translation id="2609980095400624569">Nije bilo moguće uspostaviti vezu</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Dodatne pojedinosti</translation>
 <translation id="2808985063107661499">Pokret <ph name="MAIN_GESTURE" /> može se preklapati s pokretima <ph name="CONFLICTING_GESTURE_ONE" /> i <ph name="CONFLICTING_GESTURE_TWO" />. Ako je moguće, pokušajte odabrati drugi pokret.</translation>
 <translation id="2809346626032021864">Čitanje</translation>
+<translation id="2811205483104563968">Računi</translation>
 <translation id="2813094189969465044">Roditeljski nadzor</translation>
 <translation id="2817435998497102771">Postavite pozadinu i stil</translation>
 <translation id="2818476747334107629">Pojedinosti o pisaču</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Smanji/proširi</translation>
 <translation id="2833144527504272627">Krećite se pomoću pokazivača teksta</translation>
 <translation id="2835177225987815960">Vaše će se trenutačne postavke skeniranja poništiti, uključujući sve dodijeljene prekidače i preferencije za brzinu automatskog skeniranja.</translation>
+<translation id="2844169650293029770">USB-C uređaj (prednji lijevi priključak)</translation>
 <translation id="2844809857160214557">Pregled zadataka ispisa i upravljanje njima</translation>
 <translation id="2849035674501872372">Potražiti</translation>
 <translation id="2860710618359053450">Pomicanje čeljusti udesno</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3369067987974711168">Prikaži više radnji za ovaj priključak</translation>
 <translation id="3370260763947406229">Automatsko ispravljanje</translation>
+<translation id="3371140690572404006">USB-C uređaj (prednji desni priključak)</translation>
 <translation id="3371351218553893534">Redak je predug: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Dopuštenja odobrena za Steam primjenjuju se na sve igre i aplikacije Steama.</translation>
 <translation id="338323348408199233">Blokiraj promet bez VPN-a</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Otežajte korisnicima s pristupom vašem internetskom prometu da vide koje web-lokacije posjećujete. <ph name="PRODUCT_NAME" /> upotrebljava sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System).</translation>
 <translation id="3442674350323953953">Omogućite Googleu da koristi podatke o hardveru kako bi poboljšao <ph name="DEVICE_OS" />. Ako odbijete, ti se podaci svejedno šalju Googleu kako bi se utvrdila odgovarajuća ažuriranja, no ti se podaci ni u kojem drugom slučaju ne pohranjuju niti koriste.</translation>
 <translation id="3445465968953598059">Upravljanje pomoću lica</translation>
+<translation id="3445925074670675829">USB-C uređaj</translation>
 <translation id="3448492834076427715">Ažuriraj račun</translation>
 <translation id="345078987193237421">Time se omogućuje pristup kameri aplikacijama, web-lokacijama s dopuštenjem za kameru i uslugama sustava</translation>
 <translation id="3453082738208775226">Želite li očistiti offline pohranu?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Definicija za brze odgovore</translation>
 <translation id="3994075804072562819">Omogućite aplikaciji <ph name="SPECIFIC_NAME" /> kontrolu nad USB uređajima.</translation>
 <translation id="3994530503403062649">Pronađite gumbe na tabletu</translation>
+<translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="3997429360543082038">O Chromium OS-u</translation>
 <translation id="4001540981461989979">Isticanje pokazivača miša prilikom kretanja</translation>
 <translation id="4005817994523282006">Način otkrivanja vremenske zone</translation>
@@ -1327,6 +1339,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5324780743567488672">Automatski postavi vremensku zonu pomoću vlastite lokacije</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5331568967879689647">Aplikacija sustava Chrome OS</translation>
+<translation id="5331975486040154427">USB-C uređaj (stražnji lijevi priključak)</translation>
 <translation id="5334113802138581043">Pristup mikrofonu</translation>
 <translation id="5336689872433667741">Pokazivač i dodirna podloga</translation>
 <translation id="5337926771328966926">Trenutačni je naziv uređaja <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5435274640623994081">Omogući zapisnik zvučnih ikona</translation>
 <translation id="5441133529460183413">Web-aplikacija instalirana iz preglednika Chrome</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Nevažeća zaporka</translation>
 <translation id="5450469615146335984">Odaberite prečac za svaku radnju</translation>
 <translation id="5452446625764825792">Sada možete pregledati nedavne fotografije, medije i aplikacije telefona</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funkcionira izvanmrežno)</translation>
@@ -1645,6 +1659,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6444147596556711162">Pomoću radnji Sljedeće i Prethodno prelazite s jedne na drugu stavku na zaslonu</translation>
 <translation id="6452961788130242735">Problem s mrežom ili pogrešna domena</translation>
 <translation id="6453921811609336127">Da biste prešli na sljedeći način unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />razmaknica<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Traženje mreža...</translation>
 <translation id="6463488491707167747">Izbrišite ovaj rječnik</translation>
 <translation id="6463596731306859179">Primate li neželjene skočne prozore ili primjećujete li neočekivano ponašanje? Ponekad aplikacije i proširenja koja instalirate mogu promijeniti postavke ChromeOS-a bez vašeg znanja.</translation>
 <translation id="6465841119675156448">Bez interneta</translation>
@@ -1661,6 +1676,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="648204537326351595">Dopustite da <ph name="SPECIFIC_NAME" /> pristupi vašem mikrofonu</translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
 <translation id="648927581764831596">Ništa nije dostupno</translation>
+<translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
 <translation id="6497784818439587832">Promijenite veličinu prikaza kako bi stavke na zaslonu bile manje ili veće</translation>
 <translation id="6497789971060331894">Obrnuto pomicanje pomoću miša</translation>
 <translation id="650185290742160385">Smanji prag</translation>
@@ -1825,6 +1841,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7090714929377281710">Automatski isključi žarišnu točku</translation>
 <translation id="7092504544229909737">Ne može se koristiti s Android aplikacijama</translation>
 <translation id="7093220653036489319">Brzi odgovori</translation>
+<translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa stražnje strane)</translation>
 <translation id="7099337801055912064">Nije moguće učitati veliki PPD. Maksimalna veličina iznosi 250 KB.</translation>
 <translation id="7107609441453408294">Reprodukcija istog zvuka na svim zvučnicima</translation>
 <translation id="7116931001458704701">Protresite za lociranje pokazivača</translation>
@@ -1886,6 +1903,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7323315405936922211">Veličina područja pokazivača</translation>
 <translation id="7325209047678309347">Papir se zaglavio</translation>
 <translation id="7331646370422660166">Alt + strelica prema dolje</translation>
+<translation id="7345706641791090287">Potvrdite zaporku</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7360333718677093875">alat za odabir emojija</translation>
@@ -2262,6 +2280,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="85486688517848470">Držite tipku Pretraživanje da biste izmjenjivali ponašanje tipki u najvišem retku</translation>
 <translation id="8551588720239073785">Postavke datuma i vremena</translation>
 <translation id="8553342806078037065">Upravljajte drugim osobama</translation>
+<translation id="8554899698005018844">Nema jezika</translation>
 <translation id="8555444629041783356">Automatski raspored zalazaka sunca</translation>
 <translation id="8563043098557365232">Dopušteno samo za usluge sustava</translation>
 <translation id="8571687764447439720">Dodavanje Kerberosovog tiketa</translation>
@@ -2368,12 +2387,14 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="8900413463156971200">Omogućivanje mobilne mreže</translation>
 <translation id="8902667442496790482">Otvorite postavke Odabira za govor</translation>
 <translation id="8903733144777177139">Blokiran je pristup mikrofonu</translation>
+<translation id="8910222113987937043">Promjene vaših oznaka, povijesti, zaporki i drugih postavki više se neće sinkronizirati s vašim Google računom. No vaši podaci ostat će pohranjeni na vašem Google računu i možete upravljati njima na <ph name="BEGIN_LINK" />Google nadzornoj ploči<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Omogući automatsko traženje</translation>
 <translation id="8922624386829239660">Pomiči zaslon kad miš dodiruje rubove zaslona</translation>
 <translation id="8929738682246584251">Uključivanje/isključivanje povećala</translation>
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8931713990831679796">Ti su pisači povezani i spremni za upotrebu. Spremite ih na svoj profil radi lakšeg pristupa.</translation>
 <translation id="8932654652795262306">Pojedinosti o Automatskom modemskom povezivanju</translation>
+<translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>
 <translation id="8940888110818450052">Opcije prijave</translation>
 <translation id="8944099748578356325">brže trošiti bateriju (trenutačno <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Veličina ikona</translation>
@@ -2470,6 +2491,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="930893132043726269">Trenutačno u roamingu</translation>
 <translation id="93393615658292258">Samo zaporka</translation>
 <translation id="942296794412775122">Uključivanje/isključivanje mikrofona</translation>
+<translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="950307215746360464">Vodič za postavljanje</translation>
 <translation id="952471655966876828">Uređaj će se povezati automatski kad se uključi i upotrebljava</translation>
 <translation id="956013912698841780">Kliknite desnom tipkom da biste saželi sadržaj, saznali definicije, dobili samopouzdanije, izradili slike i drugo. Dostupnost je trenutačno ograničena.</translation>

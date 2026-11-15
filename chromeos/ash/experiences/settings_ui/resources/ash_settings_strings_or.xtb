@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">ୟୁଜର ଡାଟା ଏନକ୍ରିପସନ</translation>
 <translation id="1011003645819296594">ସେଭ କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1011355516189274711">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍ ଭଲ୍ୟୁମ୍</translation>
+<translation id="1012876632442809908">USB-C ଡିଭାଇସ୍ (ସାମ୍‌ନା ପୋର୍ଟ)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ନେଟ୍‌ୱାର୍କ ଡିଫଲ୍ଟ</translation>
 <translation id="1026655690966755180">ପୋର୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">ସ୍ଥାନୀୟ ଡାଟା ରିକଭରି</translation>
 <translation id="1247372569136754018">ମାଇକ୍ରୋଫୋନ୍ (ଇଣ୍ଟର୍ନଲ୍)</translation>
 <translation id="1251366534849411931">ପ୍ରତ୍ୟାଶିତ ଖୋଲାଥିବା କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">ମୋବାଇଲ ଡାଟା ନେଟୱାର୍କ ପାଇଁ ସ୍କାନ୍ କରାଯାଉଛି...</translation>
 <translation id="1254593899333212300">ସିଧାସଳଖ ଇଣ୍ଟର୍ନେ‍ଟ୍ ସଂଯୋଗ</translation>
 <translation id="1261380933454402672">ସାମାନ୍ୟ</translation>
 <translation id="1263733306853729545">ପ୍ରାର୍ଥୀଙ୍କ ତାଲିକାକୁ ପୃଷ୍ଠାରେ ନେବା ପାଇଁ <ph name="MINUS" /> ଓ <ph name="EQUAL" /> କୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">ସ୍ପୀଚ୍‌ର ଗୁଣାବଳୀ</translation>
 <translation id="1291057703584594733">ପୂର୍ବରୁ ଆସାଇନ କରାଯାଇଥିବା ଏକ ଜେଶ୍ଚର ଚୟନ କରିବା ଫଳରେ ଏହାକୁ ଏହାର ମୂଳ କାର୍ଯ୍ୟରୁ କାଢ଼ି ଦେବ।</translation>
 <translation id="1291421198328146277">କୀ'ଗୁଡ଼ିକୁ ରିସେଟ କରନ୍ତୁ</translation>
+<translation id="1293264513303784526">USB-C ଡିଭାଇସ୍ (ବାମ ପୋର୍ଟ)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" ଏବଂ "<ph name="CONFLICTING_GESTURE_THREE" />" ସହ ଓଭରଲାପ କରିପାରେ। ଯଦି ସମ୍ଭବ ହୁଏ, ତେବେ ଏକ ଭିନ୍ନ ଜେଶ୍ଚର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1313405956111467313">ସ୍ୱଚାଳିତ ପ୍ରୋକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍‌</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">ଲିଡ୍ ବନ୍ଦ ହେବା ପରେ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="185970820835152459">ଆପଣ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chromium ବ୍ରାଉଜର୍, Play Store, Gmail ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବ୍ୟବହାର କରାଯାଇଛି। ଯଦି ଆପଣ ଜଣେ ପରିବାର ସଦସ୍ୟଙ୍କ ପରି ଅନ୍ୟ କୌଣସି ବ୍ୟକ୍ତିଙ୍କ ପାଇଁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଏହା ପରିବର୍ତ୍ତେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଜଣେ ନୂଆ ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">ଶୀତଳ</translation>
+<translation id="1864454756846565995">USB-C ଡିଭାଇସ୍ (ପଛ ପୋର୍ଟ)</translation>
 <translation id="1866589962721094893">ଏହି Chromebookରେ Android ଆପ୍ସକୁ USB ଡିଭାଇସଗୁଡ଼ିକର ନିୟନ୍ତ୍ରଣ ଦିଅନ୍ତୁ। ଆପଣ ଏକ USB ଡିଭାଇସ ପ୍ଲଗ ଇନ କଲେ ପ୍ରତ୍ୟେକ ଥର ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରାଯିବ। ସ୍ୱତନ୍ତ୍ର Android ଆପ୍ସ ଅତିରିକ୍ତ ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରିବ।</translation>
 <translation id="1877377290348678128">ଲେବଲ୍ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="1877860345998737529">କାର୍ଯ୍ୟ ହସ୍ତାନ୍ତରଣକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
 <translation id="1938351510777341717">ଏକ୍ସଟର୍ନଲ୍ କମାଣ୍ଡ</translation>
 <translation id="1940546824932169984">ସଂଯୋଗ ହୋଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="1941410638996203291">ଆରମ୍ଭ ସମୟ <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ସଂସ୍କରଣ: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">ଅପ୍‌ଡେଟ୍‍ ମିଳିଲା</translation>
 <translation id="1948528728718281125">କେମେରାର ଅନୁମତି ଥିବା ଆପ୍ସ, ୱେବସାଇଟ ଏବଂ ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକ ପାଇଁ କେମେରାକୁ ଆକ୍ସେସ କରିବାର ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବା ସମୟରେ ବ୍ୟବହାର କରାଯାଉଥିବା ଭାଷା</translation>
 <translation id="2319459402137712349">କୀବୋର୍ଡ ଖୋଲିବାକୁ ଏକ ଟେକ୍ସଟ ଫିଲ୍ଡ ଚୟନ କରନ୍ତୁ। ଆପଣ ମଧ୍ୟ ଆପଣଙ୍କ ସ୍କ୍ରିନର ନିମ୍ନରେ ଥିବା କୀବୋର୍ଡ ଆଇକନକୁ ଚୟନ କରିପାରିବେ।</translation>
 <translation id="2319993584768066746">ସାଇନ୍-ଇନ୍ ସ୍କ୍ରିନ୍ ଫଟୋଗୁଡ଼ିକ</translation>
+<translation id="2322622365472107569">ସମାପ୍ତି ସମୟ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ସେଭ୍ କରାଯାଇଥିବା ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
 <translation id="2325444234681128157">ପାସ୍‌ୱାର୍ଡ ମନେ ରଖନ୍ତୁ</translation>
 <translation id="2326188115274135041">ସ୍ୱଚାଳିତ ଭାବେ ଅନଲକ୍ ଚାଲୁ କରିବାକୁ PIN ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">ଉଭୟ ଆଖିକୁ କିଛି ସମୟ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="258095186877893873">ଲମ୍ଵା</translation>
 <translation id="2581786034175502848">ଏହାକୁ ପୁଣି-ସକ୍ଷମ କରିବା ପାଇଁ ସିଫ୍ଟକୁ 5 ଥର ଦବାନ୍ତୁ</translation>
+<translation id="2581992808349413349">DNS (ଡୋମେନ ନେମ ସିଷ୍ଟମ)ରେ ଏକ ସାଇଟର IP ଠିକଣା ଖୋଜିବାକୁ ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରନ୍ତୁ। <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />ରେ ଏହା ଏକ ପରିଚାଳିତ ସେବା ପ୍ରଦାନକାରୀ ବ୍ୟବହାର କରେ</translation>
 <translation id="2584109212074498965">Kerberos ଟିକେଟ୍ ମିଳିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସଂସ୍ଥାର ଡିଭାଇସ୍ ଆଡ୍‍ମିନ୍‍ଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ। (ତ୍ରୁଟି କୋଡ୍ <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chromeରେ ୱେବସାଇଟ ମାଇକ୍ରୋଫୋନ ଅନୁମତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2609980095400624569">ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିଲା ନାହିଁ</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">ଅତିରିକ୍ତ ବିବରଣୀ</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />" ଏବଂ "<ph name="CONFLICTING_GESTURE_TWO" />" ସହ ଓଭରଲାପ କରିପାରେ। ଯଦି ସମ୍ଭବ ହୁଏ, ତେବେ ଏକ ଭିନ୍ନ ଜେଶ୍ଚର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2809346626032021864">ପଢ଼ିବା</translation>
+<translation id="2811205483104563968">ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="2813094189969465044">ମାତାପିତାଙ୍କ ଦ୍ଵାରା ନିୟନ୍ତ୍ରଣଗୁଡିକ</translation>
 <translation id="2817435998497102771">ଆପଣଙ୍କ ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲ ସେଟ କରନ୍ତୁ</translation>
 <translation id="2818476747334107629">ପ୍ରିଣ୍ଟର୍‌ର ବିବରଣୀ</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">କମ୍ / ପ୍ରସାରିତ କରନ୍ତୁ</translation>
 <translation id="2833144527504272627">ଟେକ୍ସଟ କର୍ସର ସହ ନାଭିଗେଟ କରନ୍ତୁ</translation>
 <translation id="2835177225987815960">ଆସାଇନ କରାଯାଇଥିବା ଯେ କୌଣସି ସ୍ୱିଚ ଏବଂ ଅଟୋ-ସ୍କାନର ସ୍ପିଡ ସମ୍ବନ୍ଧିତ ପସନ୍ଦଗୁଡ଼ିକ ସମେତ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସ୍କାନିଂ ସେଟଅପ ରିସେଟ ହୋଇଯିବ।</translation>
+<translation id="2844169650293029770">USB-C ଡିଭାଇସ୍ (ବାମପଟ ସାମ୍ନା ପୋର୍ଟ)</translation>
 <translation id="2844809857160214557">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2849035674501872372">ଉପରକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="2860710618359053450">ତଳ ପାଟି ହାଡ଼କୁ ଡାହାଣପଟକୁ କରନ୍ତୁ</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369067987974711168">ଏହି ପୋର୍ଟ ପାଇଁ ଅଧିକ କାର୍ଯ୍ୟ ଦେଖାନ୍ତୁ</translation>
 <translation id="3370260763947406229">ସ୍ଵତଃ-ସଂଶୋଧନ</translation>
+<translation id="3371140690572404006">USB-C ଡିଭାଇସ୍‌ (ସମ୍ମୁଖ ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="3371351218553893534">ଲାଇନ ବହୁତ ଲମ୍ବା ଅଟେ: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam ପାଇଁ ଦିଆଯାଇଥିବା ଅନୁମତିଗୁଡ଼ିକ, Steamର ସମସ୍ତ ଗେମ ଏବଂ ଆପରେ ଲାଗୁ ହୋଇଥାଏ।</translation>
 <translation id="338323348408199233">VPN ନଥିବା ଟ୍ରାଫିକକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ ଟ୍ରାଫିକକୁ ଆକ୍ସେସ ଥିବା ଲୋକମାନଙ୍କ ପାଇଁ ଆପଣ କେଉଁ ସାଇଟକୁ ଭିଜିଟ କରୁଛନ୍ତି ତାହା ଦେଖିବା କଷ୍ଟକର କରନ୍ତୁ। DNS (ଡୋମେନ ନେମ ସିଷ୍ଟମ)ରେ ଏକ ସାଇଟର IP ଠିକଣା ଖୋଜିବାକୁ <ph name="PRODUCT_NAME" /> ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରେ।</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" />କୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ଆପଣଙ୍କ ହାର୍ଡୱେର ଡାଟା ବ୍ୟବହାର କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ଯଦି ଆପଣ ଅଗ୍ରାହ୍ୟ କରନ୍ତି, ତେବେ ଉପଯୁକ୍ତ ଅପଡେଟଗୁଡ଼ିକୁ ସ୍ଥିର କରିବା ପାଇଁ Googleକୁ ଏହି ଡାଟା ଏବେ ବି ପଠାଯାଏ, କିନ୍ତୁ ଏହାକୁ ଷ୍ଟୋର କିମ୍ବା ଅନ୍ୟ କୌଣସି ଉଦ୍ଦେଶ୍ୟରେ ବ୍ୟବହାର କରାଯାଏ ନାହିଁ।</translation>
 <translation id="3445465968953598059">ଫେସିଆଲ ନିୟନ୍ତ୍ରଣ</translation>
+<translation id="3445925074670675829">USB-C ଡିଭାଇସ୍</translation>
 <translation id="3448492834076427715">ଆକାଉଣ୍ଟ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="345078987193237421">ଏହା କେମେରା ଅନୁମତି ଥିବା ଆପ୍ସ, ୱେବସାଇଟ ଏବଂ ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="3453082738208775226">ଅଫଲାଇନ ଷ୍ଟୋରେଜକୁ ଖାଲି କରିବେ?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">କ୍ୱିକ୍ ଉତ୍ତରଗୁଡ଼ିକର ସଂଜ୍ଞା</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />କୁ USB ଡିଭାଇସଗୁଡ଼ିକର ନିୟନ୍ତ୍ରଣ ଦିଅନ୍ତୁ।</translation>
 <translation id="3994530503403062649">ଆପଣଙ୍କ ଟାବଲେଟରେ ବଟନଗୁଡ଼ିକୁ ଖୋଜନ୍ତୁ</translation>
+<translation id="3995138139523574647">USB-C ଡିଭାଇସ୍‌ (ଡାହାଣପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="3997429360543082038">ChromiumOS ବିଷୟରେ</translation>
 <translation id="4001540981461989979">ମୁଭ କରିବା ସମୟରେ ମାଉସ କର୍ସରକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="4005817994523282006">ସମୟ କ୍ଷେତ୍ର ଚିହ୍ନଟକରଣ ପଦ୍ଧତି</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରି ସ୍ୱଚାଳିତ ଭାବେ ସମୟ କ୍ଷେତ୍ର ସେଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="5327248766486351172">ନାମ</translation>
 <translation id="5331568967879689647">ChromeOS ସିଷ୍ଟମ ଆପ</translation>
+<translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="5334113802138581043">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସ</translation>
 <translation id="5336689872433667741">କର୍ସର ଏବଂ ଟଚପ୍ୟାଡ</translation>
 <translation id="5337926771328966926">ବର୍ତ୍ତମାନର ଡିଭାଇସର ନାମ <ph name="DEVICE_NAME" /> ଅଟେ</translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">ଇୟରକନ୍‌ ଲଗ୍ଇନ୍‌କୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5441133529460183413">Chrome ବ୍ରାଉଜରରୁ ୱେବ ଆପ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">ଅବୈଧ ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="5450469615146335984">ପ୍ରତ୍ୟେକ କାର୍ଯ୍ୟ ପାଇଁ ଏକ ସର୍ଟକଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5452446625764825792">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ଆପ୍ସକୁ ଦେଖିପାରିବେ</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ଅଫଲାଇନରେ କାମ କରେ)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକ ମଧ୍ୟରେ ମୁଭ କରିବାକୁ "ପରବର୍ତ୍ତୀ" ଏବଂ "ପୂର୍ବବର୍ତ୍ତୀ" ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6452961788130242735">ନେଟ୍‍ୱାର୍କ ସମସ୍ୟା ବା ଖରାପ କ୍ଷେତ୍ର</translation>
 <translation id="6453921811609336127">ପରବର୍ତ୍ତୀ ଇନପୁଟ୍ ପଦ୍ଧତିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ଦବାନ୍ତୁ</translation>
+<translation id="6461170143930046705">ନେଟୱାର୍କ ସର୍ଚ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="6463488491707167747">ଏହି ଶବ୍ଦକୋଷକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6463596731306859179">ଅବାଞ୍ଛିତ ପପ-ଅପ କିମ୍ବା ଅନ୍ୟ ଅପ୍ରତ୍ୟାଶିତ ଆଚରଣ ଦେଖିବାକୁ ପାଉଛନ୍ତି? ବେଳେବେଳେ, ଆପଣ ଇନଷ୍ଟଲ କରୁଥିବା ଆପ୍ସ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅଜାଣତରେ ଆପଣଙ୍କର ChromeOS ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ।</translation>
 <translation id="6465841119675156448">ଇଣ୍ଟର୍ନେଟ୍ ବିନା</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="SPECIFIC_NAME" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="6482559668224714696">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="648927581764831596">କେହି ମଧ୍ୟ ଉପଲବ୍ଧ ନାହାନ୍ତି</translation>
+<translation id="6490471652906364588">USB-C ଡିଭାଇସ୍‍ (ଡାହାଣ ପୋର୍ଟ)</translation>
 <translation id="6497784818439587832">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଛୋଟ କିମ୍ବା ବଡ଼ କରିବା ପାଇଁ ଡିସପ୍ଲେ ଆକାର ବଦଳାନ୍ତୁ</translation>
 <translation id="6497789971060331894">ମାଉସ୍ ରିଭର୍ସ ସ୍କ୍ରୋଲିଂ</translation>
 <translation id="650185290742160385">ଥ୍ରେସହୋଲ୍ଡ କମ କରନ୍ତୁ</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">ହଟସ୍ପଟକୁ ସ୍ୱଚାଳିତ ଭାବେ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7092504544229909737">Android ଆପ୍ସ ସହ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7093220653036489319">କ୍ୱିକ୍ ଉତ୍ତରଗୁଡ଼ିକ</translation>
+<translation id="7098389117866926363">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ )</translation>
 <translation id="7099337801055912064">ବିଶାଳ PPDକୁ ଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ସର୍ବାଧିକ ଆକାର 250 kB ଅଟେ।</translation>
 <translation id="7107609441453408294">ସମସ୍ତ ସ୍ପିକରରେ ସମାନ ଅଡିଓ ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="7116931001458704701">କର୍ସରକୁ ଲୋକେଟ କରିବା ପାଇଁ ହଲାନ୍ତୁ</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">କର୍ସର ଏରିଆ ଆକାର</translation>
 <translation id="7325209047678309347">କାଗଜ ଅଟକି ଯାଇଛି</translation>
 <translation id="7331646370422660166">alt + ଡାଉନ ତୀର</translation>
+<translation id="7345706641791090287">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7348093485538360975">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="7352651011704765696">କିଛି ଭୁଲ୍ ହୋଇଛି</translation>
 <translation id="7360333718677093875">ଇମୋଜି ପିକର</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">ଶୀର୍ଷ-ଧାଡ଼ିରେ ଥିବା କୀ'ଗୁଡ଼ିକର ବିହେବିୟରକୁ ସ୍ୱିଚ କରିବାକୁ Search କୀ'କୁ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="8551588720239073785">ତାରିଖ ଏବଂ ସମୟ ସେଟିଂସ୍</translation>
 <translation id="8553342806078037065">ଅନ୍ୟ ଲୋକମାନଙ୍କୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="8554899698005018844">କୌଣସି ଭାଷା ନାହିଁ</translation>
 <translation id="8555444629041783356">ସ୍ୱତଃ ସୂର୍ଯ୍ୟାସ୍ତ ସିଡୁଲ</translation>
 <translation id="8563043098557365232">ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକ ପାଇଁ କେବଳ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="8571687764447439720">Kerberos ଟିକେଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">ସେଲ୍ୟୁଲାର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8902667442496790482">'କହିବାକୁ-ଚୟନ କରନ୍ତୁ' ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="8903733144777177139">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
+<translation id="8910222113987937043">ଆପଣଙ୍କର ବୁକମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‍ୱର୍ଡ ଓ ଅନ୍ୟ ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆଉ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସିଙ୍କ ହେବ ନାହିଁ। ତେବେ, ଆପଣଙ୍କର ବିଦ୍ୟମାନ ଥିବା ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଷ୍ଟୋର୍ ହୋଇ ରହିବ ଏବଂ <ph name="BEGIN_LINK" />Google ଡ୍ୟାସ୍‍‍ବୋର୍ଡ<ph name="END_LINK" />ରେ ପରିଚାଳିତ ହୋଇପାରିବ।</translation>
 <translation id="8912810933860534797">ସ୍ୱତଃ-ସ୍କାନ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8922624386829239660">ମାଉସ୍ ସ୍କ୍ରିନର ଧାରଗୁଡ଼ିକୁ ସ୍ପର୍ଶ କରିବା ସମୟରେ ସ୍କ୍ରିନକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="8929738682246584251">ମେଗ୍ନିଫାୟର ଚାଲୁ/ବନ୍ଦ ଅଛି</translation>
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
 <translation id="8931713990831679796">ଏହି ପ୍ରିଣ୍ଟରଗୁଡ଼ିକ କନେକ୍ଟ ଅଛି ଏବଂ ବ୍ୟବହାର ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି। ସହଜ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲରେ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="8932654652795262306">ଇନଷ୍ଟାଣ୍ଟ ଟିଥରିଂ ବିବରଣୀ</translation>
+<translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="8940888110818450052">ସାଇନ ଇନ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="8944099748578356325">ଆପଣଙ୍କ ବ୍ୟାଟେରୀକୁ ଖୁବ ଶୀଘ୍ର ବ୍ୟବହାର କରିଥାଏ। (ବର୍ତ୍ତମାନ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ଆଇକନର ଆକାର</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">ବର୍ତ୍ତମାନ ରୋମିଂରେ ଅଛନ୍ତି</translation>
 <translation id="93393615658292258">କେବଳ ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="942296794412775122">ମାଇକ୍ରୋଫୋନ ଚାଲୁ/ବନ୍ଦ ଅଛି</translation>
+<translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950307215746360464">ସେଟଅପ ଗାଇଡ</translation>
 <translation id="952471655966876828">ଡିଭାଇସଟି ଚାଲୁ ଥିଲେ କିମ୍ବା ବ୍ୟବହାର କରାଯାଉଥିଲେ ଏହା ସ୍ୱଚାଳିତ ଭାବେ ସଂଯୋଗ ହୋଇଯିବ</translation>
 <translation id="956013912698841780">ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରିବା, ପରିଭାଷା ପାଇବା, ଅଧିକ ଆତ୍ମବିଶ୍ୱାସର ସହିତ ଲେଖିବା, ଇମେଜ ତିଆରି କରିବା ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାକୁ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ। ବର୍ତ୍ତମାନ ସୀମିତ ଉପଲବ୍ଧତା ଅଛି।</translation>

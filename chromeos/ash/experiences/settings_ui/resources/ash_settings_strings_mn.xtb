@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Хэрэглэгчийн өгөгдлийн шифрлэлт</translation>
 <translation id="1011003645819296594">Хадгалсан төхөөрөмжүүд</translation>
 <translation id="1011355516189274711">Бичвэрийг-ярианд-хувиргах дууны түвшин</translation>
+<translation id="1012876632442809908">USB-C төхөөрөмж (урд талын порт)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Сүлжээний өгөгдмөл</translation>
 <translation id="1026655690966755180">Порт нэмэх</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Орон нутгийн өгөгдлийг сэргээх</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
 <translation id="1251366534849411931">Хээтэй хаалтыг нээхээр хүлээж байсан <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Мобайл дата сүлжээг скан хийж байна...</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
 <translation id="1261380933454402672">Бага</translation>
 <translation id="1263733306853729545">Боломжит хувилбарын жагсаалтыг гүйлгэж үзэхийн тулд <ph name="MINUS" /> болон <ph name="EQUAL" /> товчнуудыг ашиглах</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Ярианы төлөв байдал</translation>
 <translation id="1291057703584594733">Аль хэдийн оноосон зангаа сонгох нь тус зангааг эх үйлдлээс нь хасна.</translation>
 <translation id="1291421198328146277">Товчнуудыг шинэчлэх</translation>
+<translation id="1293264513303784526">USB-C төхөөрөмж (зүүн талын порт)</translation>
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" нь "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", "<ph name="CONFLICTING_GESTURE_THREE" />" гуравтай давхцаж магадгүй. Хэрэв боломжтой бол өөр зангаа сонгож үзнэ үү.</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1313405956111467313">Автомат прокси тохиргоо</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Бүрхүүл хаалттай үед гарах</translation>
 <translation id="185970820835152459">Та нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжтой. Таны Google Бүртгэлүүдийг Chromium хөтөч, Play Store, Gmail болон бусад дээр ашигладаг. Хэрэв та гэр бүлийн гишүүн зэрэг өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл оронд нь өөрийн <ph name="DEVICE_TYPE" />-д шинэ хүн нэмнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Хүйтэн</translation>
+<translation id="1864454756846565995">USB-C төхөөрөмж (ард талын порт)</translation>
 <translation id="1866589962721094893">Android аппад энэ Chromebook дээрх USB төхөөрөмжийн хяналтыг өгнө үү. Таныг USB төхөөрөмж залгах бүрд зөвшөөрөл авахыг хүснэ. Тусдаа Android апп нэмэлт зөвшөөрөл авахыг хүснэ.</translation>
 <translation id="1877377290348678128">Шошго (заавал биш)</translation>
 <translation id="1877860345998737529">Үйлдлийн тохируулгыг шилжүүлэх</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Шинэчлэл</translation>
 <translation id="1938351510777341717">Гадаад тушаал</translation>
 <translation id="1940546824932169984">Холбогдсон төхөөрөмж</translation>
+<translation id="1941410638996203291">Эхлэх цаг <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Хувилбар: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">Шинэчлэлт хийх тухай мэдээлэл олдлоо</translation>
 <translation id="1948528728718281125">Камерын зөвшөөрөл, системийн үйлчилгээнүүдтэй апп болон вебсайтуудад камерт хандахыг зөвшөөрсөн</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
 <translation id="2319459402137712349">Гарыг нээхийн тулд текстийн талбарыг сонгоно уу. Та мөн дэлгэцийнхээ доор байх Гарын дүрс тэмдгийг сонгох боломжтой.</translation>
 <translation id="2319993584768066746">Нэвтрэх дэлгэцийн зургууд</translation>
+<translation id="2322622365472107569">Дуусах цаг <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Хадгалсан Wi-Fi сүлжээнүүд</translation>
 <translation id="2325444234681128157">Нууц үг санах</translation>
 <translation id="2326188115274135041">Түгжээг автоматаар тайлах үйлдлийг идэвхжүүлэхийн тулд ПИН-г баталгаажуулна уу</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Хоёр нүдээ түр анина уу</translation>
 <translation id="258095186877893873">Урт</translation>
 <translation id="2581786034175502848">Үүнийг дахин идэвхжүүлэхийн тулд shift дээр 5 удаа дарна уу</translation>
+<translation id="2581992808349413349">DNS-д (Домэйн нэрийн систем) сайтын IP хаягийг хайхын тулд аюулгүй холболтыг ашиглана уу. Энэ нь <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> дээр удирддаг үйлчилгээ үзүүлэгчийг ашиглана</translation>
 <translation id="2584109212074498965">Kerberos тасалбарыг авч чадсангүй. Дахин оролдоно уу эсвэл байгууллагынхаа төхөөрөмжийн админтай холбогдоно уу. (Алдааны код <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Chrome-д вебсайтын микрофоны зөвшөөрлүүдийг удирдана уу</translation>
 <translation id="2609980095400624569">Холболт тогтоож чадсангүй</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Нэмэлт дэлгэрэнгүй мэдээлэл</translation>
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" нь "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" хоёртой давхцаж магадгүй. Хэрэв боломжтой бол өөр зангаа сонгож үзнэ үү.</translation>
 <translation id="2809346626032021864">Уншиж байна</translation>
+<translation id="2811205483104563968">Бүртгэлүүд</translation>
 <translation id="2813094189969465044">Эцэг эхийн хяналт</translation>
 <translation id="2817435998497102771">Өөрийн дэлгэцийн зураг ба загварыг тохируулах</translation>
 <translation id="2818476747334107629">Принтерийн мэдээлэл</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Агшаах / Сунгах</translation>
 <translation id="2833144527504272627">Текстийн курсороор шилжих</translation>
 <translation id="2835177225987815960">Таны оноосон аливаа сэлгүүр болон автоматаар скан хийх хурдны тохиргоог оруулаад одоогийн скан хийх тохируулгыг шинэчилнэ.</translation>
+<translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
 <translation id="2844809857160214557">Хэвлэх ажлуудыг харах болон удирдах</translation>
 <translation id="2849035674501872372">Хайх</translation>
 <translation id="2860710618359053450">Эрүүгээ баруун тийш хөдөлгөх</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369067987974711168">Энэ портын бусад үйлдлийг харуулах</translation>
 <translation id="3370260763947406229">Автомат залруулга</translation>
+<translation id="3371140690572404006">USB-C төхөөрөмж (урд талын портын баруун тал)</translation>
 <translation id="3371351218553893534">Мөр хэт урт байна: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam-д олгосон зөвшөөрлүүд нь Steam-н бүх тоглоом болон аппад хэрэгжинэ.</translation>
 <translation id="338323348408199233">Ачааллыг VPN-гүйгээр блоклох</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Таны интернэтийн ачаалалд хандах эрхтэй хүмүүст таны зочилдог сайтуудыг харахад илүү хүндрэлтэй болгоно. <ph name="PRODUCT_NAME" /> DNS-с (Домэйн нэрийн систем) сайтын IP хаягийг хайхад аюулгүй холболт ашигладаг.</translation>
 <translation id="3442674350323953953">Google-д таны техник хангамжийн өгөгдлийг <ph name="DEVICE_OS" />-г сайжруулахад ашиглахыг зөвшөөрнө үү. Хэрэв та татгалзвал энэ өгөгдлийг Google рүү зохих шинэчлэлтүүдийг тодорхойлохын тулд илгээсэн хэвээр байх хэдий ч хадгалахгүй эсвэл өөрөөр ашиглахгүй.</translation>
 <translation id="3445465968953598059">Нүүрний хяналт</translation>
+<translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3448492834076427715">Бүртгэл шинэчлэх</translation>
 <translation id="345078987193237421">Энэ нь камерын зөвшөөрөлтэй апп, вебсайт болон системийн үйлчилгээнүүдэд камерт хандахыг зөвшөөрнө</translation>
 <translation id="3453082738208775226">Офлайн хадгалах санг цэвэрлэх үү?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Шуурхай хариултын тодорхойлолт</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-д USB төхөөрөмжийн хяналтыг өгнө үү.</translation>
 <translation id="3994530503403062649">Таблетынхаа товчнуудыг олоорой</translation>
+<translation id="3995138139523574647">USB-C төхөөрөмж (ард талын портын баруун тал)</translation>
 <translation id="3997429360543082038">ChromiumOS-н тухай</translation>
 <translation id="4001540981461989979">Хулганын курсорыг хөдөлж байх үед тодруулах</translation>
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">Таны байршлын мэдээллийг ашиглан цагийн бүсийг автоматаар тохируулах</translation>
 <translation id="5327248766486351172">Нэр</translation>
 <translation id="5331568967879689647">ChromeOS системийн апп</translation>
+<translation id="5331975486040154427">USB-C төхөөрөмж (ард талын портны зүүн тал)</translation>
 <translation id="5334113802138581043">Микрофоны хандалт</translation>
 <translation id="5336689872433667741">Курсор болон мэдрэгч самбар</translation>
 <translation id="5337926771328966926">Одоогийн төхөөрөмжийн нэр <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@
 <translation id="5435274640623994081">Earcon нэвтрэлтийг идэвхжүүлэх</translation>
 <translation id="5441133529460183413">Chrome хөтчөөс суулгасан веб апп</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Буруу нууц үг</translation>
 <translation id="5450469615146335984">Үйлдэл бүрд товчлол сонгох</translation>
 <translation id="5452446625764825792">Та одоо утасныхаа саяны зургууд, медиа болон аппуудыг харах боломжтой</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (офлайн үед ажиллана)</translation>
@@ -1645,6 +1659,7 @@
 <translation id="6444147596556711162">Дэлгэц дээрх зүйлс хооронд шилжихийн тулд “Дараах” болон “Өмнөх”-ийг ашиглана уу</translation>
 <translation id="6452961788130242735">Сүлжээний асуудал эсвэл муу домэйн</translation>
 <translation id="6453921811609336127">Сүүлд ашигласан оруулах арга руу сэлгэхийн тулд <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Зай авах товч<ph name="END_SPACE" /><ph name="END_SHORTCUT" />-ийг дарна уу</translation>
+<translation id="6461170143930046705">Сүлжээ хайж байна...</translation>
 <translation id="6463488491707167747">Энэ толь бичгийг устгах</translation>
 <translation id="6463596731306859179">Хүсээгүй попап эсвэл бусад тооцоолоогүй үйлдэл авч байна уу? Зарим тохиолдолд таны суулгасан апп болон өргөтгөлүүд танд мэдэгдэлгүйгээр ChromeOS-н тань тохиргоог өөрчлөх боломжтой.</translation>
 <translation id="6465841119675156448">Интернэтгүйгээр</translation>
@@ -1661,6 +1676,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" />-д таны микрофонд хандахыг зөвшөөрөх</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
 <translation id="648927581764831596">Байхгүй</translation>
+<translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
 <translation id="6497784818439587832">Дэлгэц дээрх зүйлсээ жижигрүүлэх эсвэл томруулахын тулд дэлгэцийн хэмжээг өөрчлөөрэй</translation>
 <translation id="6497789971060331894">Хулганыг урвуу гүйлгэх</translation>
 <translation id="650185290742160385">Босгыг багасгах</translation>
@@ -1825,6 +1841,7 @@
 <translation id="7090714929377281710">Сүлжээний цэгийг автоматаар унтраах</translation>
 <translation id="7092504544229909737">Android аппуудтай ашиглах боломжгүй</translation>
 <translation id="7093220653036489319">Шуурхай хариулт</translation>
+<translation id="7098389117866926363">USB-C төхөөрөмж (ард талын зүүн порт)</translation>
 <translation id="7099337801055912064">Том PPD-г ачааллах боломжгүй байна. Хамгийн дээд хэмжээ нь 250 kB болно.</translation>
 <translation id="7107609441453408294">Бүх чанга яригчаар ижил аудио тоглуулах</translation>
 <translation id="7116931001458704701">Курсорын байршлыг тогтоохын тулд сэгсрэх</translation>
@@ -1886,6 +1903,7 @@
 <translation id="7323315405936922211">Курсорын хэсгийн хэмжээ</translation>
 <translation id="7325209047678309347">Цаас гацсан</translation>
 <translation id="7331646370422660166">alt + доош сум</translation>
+<translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7360333718677093875">эможи сонгогч</translation>
@@ -2262,6 +2280,7 @@
 <translation id="85486688517848470">Дээд мөрний түлхүүрийн функцийг сэлгэхийн тулд Хайлтын түлхүүрийг дарна уу</translation>
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>
 <translation id="8553342806078037065">Бусад хүмүүсийг удирдах</translation>
+<translation id="8554899698005018844">Хэл байхгүй</translation>
 <translation id="8555444629041783356">Нар жаргах автомат хуваарь</translation>
 <translation id="8563043098557365232">Зөвхөн системийн үйлчилгээнүүдэд зөвшөөрсөн</translation>
 <translation id="8571687764447439720">Kerberos тасалбарыг нэмэх</translation>
@@ -2368,12 +2387,14 @@
 <translation id="8900413463156971200">Үүрэн холбоог идэвхжүүлэх</translation>
 <translation id="8902667442496790482">Ярихаар-сонгох тохиргоог нээх</translation>
 <translation id="8903733144777177139">Микрофоны хандалтыг блоклосон</translation>
+<translation id="8910222113987937043">Таны хавчуурга, түүх, нууц үг болон бусад тохиргоонд хийсэн өөрчлөлтийг цаашид Google бүртгэлд синк хийхгүй. Таны одоогийн өгөгдлийг Google бүртгэлд хадгалсан хэвээр байх бөгөөд <ph name="BEGIN_LINK" />Google Хяналтын самбарт<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="8912810933860534797">Автомат сканыг идэвхжүүлэх</translation>
 <translation id="8922624386829239660">Хулгана дэлгэцийн ирмэгт хүрэх үед дэлгэцийг хөдөлгөх</translation>
 <translation id="8929738682246584251">Томруулагчийг асаах/унтраах</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8931713990831679796">Эдгээр хэвлэгч холбогдсон бөгөөд ашиглахад бэлэн байна. Илүү хялбар хандахын тулд профайлдаа хадгална уу.</translation>
 <translation id="8932654652795262306">Шуурхай модем болгох онцлогийн дэлгэрэнгүй</translation>
+<translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>
 <translation id="8940888110818450052">Нэвтрэх сонголт</translation>
 <translation id="8944099748578356325">Батерейг илүү хурдан ашиглах (одоогоор <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Дүрс тэмдгийн хэмжээ</translation>
@@ -2470,6 +2491,7 @@
 <translation id="930893132043726269">Одоогоор роуминг хийж байна</translation>
 <translation id="93393615658292258">Зөвхөн нууц үг</translation>
 <translation id="942296794412775122">Микрофоныг асаах/унтраах</translation>
+<translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="950307215746360464">Тохируулгын хөтөч</translation>
 <translation id="952471655966876828">Төхөөрөмж асаалттай эсвэл ашиглагдах үедээ автоматаар холбогдоно</translation>
 <translation id="956013912698841780">Контентыг хураангуйлах, тодорхойлолт авах, илүү итгэлтэйгээр бичих, зураг үүсгэх болон илүү ихийг хийхийн тулд баруун талыг товшино уу. Одоогоор боломжтой байдал нь хязгаарлагдмал байна.</translation>

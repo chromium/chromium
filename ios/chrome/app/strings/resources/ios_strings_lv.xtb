@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Vai apturēt lejupielādi?</translation>
 <translation id="4796496140132859135">Ciļņu grupa. Sakļauta.</translation>
 <translation id="4800912004582762296">Klikšķināšana</translation>
+<translation id="4800930308997591052">Pārslēdzieties uz kontu <ph name="EMAIL" />, lai ērti kopīgotu cilnes starp savām ierīcēm un iegūtu paroles, grāmatzīmes un citus datus no sava Google konta.</translation>
 <translation id="4802185666270672526">Paslēpt vienumu “Pieprasīt vietni datoriem”</translation>
 <translation id="4803185665210547709">Pārvalda jūsu organizācija.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -2148,6 +2149,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7618220760967055820">Izvēlieties, kuru pogu rādīt rīkjoslā</translation>
 <translation id="7620522820075868385">Atcelt</translation>
 <translation id="762078666799342162">Iepriekšējās lejupielādes varat skatīt lietotnē <ph name="BEGIN_LINK" />Faili<ph name="END_LINK" />.</translation>
+<translation id="7636034359405891151">Turpiniet iesākto savā datorā</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Uzlauztas paroles}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztu paroļu}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
 <translation id="7640669552036055091">Cilnes no Android ierīces</translation>

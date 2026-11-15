@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Ungependa kuacha kupakua?</translation>
 <translation id="4796496140132859135">Kikundi cha vichupo. Kimekunjwa.</translation>
 <translation id="4800912004582762296">Inabofya</translation>
+<translation id="4800930308997591052">Badilisha utumie <ph name="EMAIL" /> ili utume vichupo kwa urahisi kati ya vifaa vyako na upate manenosiri, alamisho zako na zaidi kutoka kwenye Akaunti yako ya Google.</translation>
 <translation id="4802185666270672526">Ficha Chaguo la Omba Tovuti ya Kompyuta ya Mezani</translation>
 <translation id="4803185665210547709">Inadhibitiwa na shirika lako.
 <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7618220760967055820">Chagua kitufe cha kuonyesha kwenye upau wa vidhibiti</translation>
 <translation id="7620522820075868385">Acha</translation>
 <translation id="762078666799342162">Unaweza kuangalia faili ulizopakua hapo awali katika <ph name="BEGIN_LINK" />Faili<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Endelea ulipoachia kwenye kompyuta yako</translation>
 <translation id="7638584964844754484">Kaulisiri si sahihi</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Manenosiri yaliyoathiriwa}=1{Nenosiri {COUNT} limeathiriwa}other{Manenosiri {COUNT} yameathiriwa}}</translation>
 <translation id="7640669552036055091">Vichupo kwenye Android</translation>

@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">ユーザーデータの暗号化</translation>
 <translation id="1011003645819296594">保存済みのデバイス</translation>
 <translation id="1011355516189274711">テキスト読み上げの音量</translation>
+<translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">ネットワークのデフォルト</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">ローカルデータの復元</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">モバイルデータ ネットワークをスキャンしています...</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
 <translation id="1261380933454402672">弱め</translation>
 <translation id="1263733306853729545"><ph name="MINUS" /> キーと <ph name="EQUAL" /> キーで候補リストのページを切り替える</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">読み上げのプロパティ</translation>
 <translation id="1291057703584594733">割り当て済みのジェスチャーを選択すると、そのジェスチャーが元のアクションから削除されます</translation>
 <translation id="1291421198328146277">キーをリセット</translation>
+<translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1293360286536751243">「<ph name="MAIN_GESTURE" />」は「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」、「<ph name="CONFLICTING_GESTURE_THREE" />」と重複している可能性があります。可能な場合は別のジェスチャーを選択してください。</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1313405956111467313">自動プロキシ設定</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="185970820835152459">ログインする Google アカウントを管理できます。Google アカウントは、Chromium ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">寒色</translation>
+<translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
 <translation id="1866589962721094893">この Chromebook で Android アプリに USB デバイスの制御を許可します。USB デバイスを接続するたびに権限がリクエストされます。一部の Android アプリでは、他の権限もリクエストされる場合があります。</translation>
 <translation id="1877377290348678128">ラベル（省略可）</translation>
 <translation id="1877860345998737529">スイッチの操作割り当て</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="1938351510777341717">外部コマンド</translation>
 <translation id="1940546824932169984">接続済みのデバイス</translation>
+<translation id="1941410638996203291">開始時間: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">バージョン: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">アップデートが見つかりました</translation>
 <translation id="1948528728718281125">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対してカメラへのアクセスが許可されています</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
 <translation id="2319459402137712349">テキスト フィールドを選択してキーボードを開きます。画面の下部にあるキーボード アイコンを選択することもできます。</translation>
 <translation id="2319993584768066746">ログイン画面の写真</translation>
+<translation id="2322622365472107569">終了時間: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存済みの Wi-Fi ネットワーク</translation>
 <translation id="2325444234681128157">パスワードを保存する</translation>
 <translation id="2326188115274135041">PIN を入力して自動ロック解除を有効にする</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">両目を一瞬閉じる</translation>
 <translation id="258095186877893873">長い</translation>
 <translation id="2581786034175502848">再度有効にするには、Shift キーを 5 回押します</translation>
+<translation id="2581992808349413349">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します</translation>
 <translation id="2584109212074498965">Kerberos チケットを取得できませんでした。もう一度お試しいただくか、組織のデバイス管理者にお問い合わせください。（エラーコード <ph name="ERROR_CODE" />）。</translation>
 <translation id="2584974473573720127">Chrome でウェブサイトのマイクへのアクセス権を管理する</translation>
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">詳細</translation>
 <translation id="2808985063107661499">「<ph name="MAIN_GESTURE" />」は「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」と重複している可能性があります。可能な場合は別のジェスチャーを選択してください。</translation>
 <translation id="2809346626032021864">読書</translation>
+<translation id="2811205483104563968">アカウント</translation>
 <translation id="2813094189969465044">保護者による使用制限</translation>
 <translation id="2817435998497102771">壁紙とスタイルを設定</translation>
 <translation id="2818476747334107629">プリンタの詳細</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">拡大または縮小</translation>
 <translation id="2833144527504272627">テキスト カーソルで移動する</translation>
 <translation id="2835177225987815960">現在のスキャン設定（割り当てたスイッチや自動スキャンの速度設定など）はリセットされます。</translation>
+<translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
 <translation id="2849035674501872372">調べる</translation>
 <translation id="2860710618359053450">あごを右に動かす</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369067987974711168">このポートのその他の操作を表示</translation>
 <translation id="3370260763947406229">自動修正</translation>
+<translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
 <translation id="3371351218553893534">行が長すぎます: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Steam に対して許可した権限は、すべての Steam ゲームとアプリに適用されます。</translation>
 <translation id="338323348408199233">VPN 以外のトラフィックをブロック</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。<ph name="PRODUCT_NAME" /> では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="3442674350323953953">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。</translation>
 <translation id="3445465968953598059">フェイス コントロール</translation>
+<translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
 <translation id="345078987193237421">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、カメラへのアクセスを許可します</translation>
 <translation id="3453082738208775226">オフライン ストレージをクリーンアップしますか？</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">クイック アンサーの定義</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> に USB デバイスの制御を許可します。</translation>
 <translation id="3994530503403062649">タブレットのボタン設定</translation>
+<translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
 <translation id="3997429360543082038">Chromium OS について</translation>
 <translation id="4001540981461989979">移動中のマウスカーソルをハイライト表示する</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
@@ -1327,6 +1339,7 @@
 <translation id="5324780743567488672">ユーザーの現在地情報を使用して自動的にタイムゾーンを設定する</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5331568967879689647">ChromeOS のシステムアプリ</translation>
+<translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
 <translation id="5334113802138581043">マイクへのアクセス</translation>
 <translation id="5336689872433667741">カーソルとタッチパッド</translation>
 <translation id="5337926771328966926">現在のデバイス名は <ph name="DEVICE_NAME" /> です</translation>
@@ -1349,6 +1362,7 @@
 <translation id="5435274640623994081">イアコンのログを有効にする</translation>
 <translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5449551289610225147">パスワードが無効です</translation>
 <translation id="5450469615146335984">操作ごとにショートカットを選択</translation>
 <translation id="5452446625764825792">スマートフォンの最近の写真、メディア、アプリを表示できるようになりました</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（オフラインで利用可能）</translation>
@@ -1644,6 +1658,7 @@
 <translation id="6444147596556711162">「次へ」と「前へ」を画面上でアイテム間の移動に使用します</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
+<translation id="6461170143930046705">ネットワークの検索中...</translation>
 <translation id="6463488491707167747">この辞書を削除</translation>
 <translation id="6463596731306859179">望ましくないポップアップなど、予期しない動作が発生する場合、インストールしたアプリや拡張機能によって、気付かないうちに ChromeOS の設定が変更されることがあります。</translation>
 <translation id="6465841119675156448">インターネットを使用しない</translation>
@@ -1660,6 +1675,7 @@
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> にマイクへのアクセスを許可する</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="648927581764831596">使用できるものはありません</translation>
+<translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
 <translation id="650185290742160385">しきい値を引き下げ</translation>
@@ -1824,6 +1840,7 @@
 <translation id="7090714929377281710">アクセス ポイントを自動的にオフにする</translation>
 <translation id="7092504544229909737">Android アプリでは使用できません</translation>
 <translation id="7093220653036489319">クイック アンサー</translation>
+<translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7099337801055912064">サイズの大きい PPD は読み込めません。最大サイズは 250 KB です。</translation>
 <translation id="7107609441453408294">すべてのスピーカーで同じオーディオを再生する</translation>
 <translation id="7116931001458704701">マウスを振ってカーソルを探す</translation>
@@ -1885,6 +1902,7 @@
 <translation id="7323315405936922211">カーソル領域のサイズ</translation>
 <translation id="7325209047678309347">紙詰まりです</translation>
 <translation id="7331646370422660166">Alt+下矢印</translation>
+<translation id="7345706641791090287">パスワードを再入力</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7360333718677093875">絵文字選択ツール</translation>
@@ -2260,6 +2278,7 @@
 <translation id="85486688517848470">キーボードの最上段にあるキーの動作を切り替えるには、検索キーを押したままにします</translation>
 <translation id="8551588720239073785">日時の設定</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
+<translation id="8554899698005018844">言語設定なし</translation>
 <translation id="8555444629041783356">日の入り時刻の自動設定</translation>
 <translation id="8563043098557365232">システム サービスでのみ許可</translation>
 <translation id="8571687764447439720">Kerberos チケットの追加</translation>
@@ -2366,12 +2385,14 @@
 <translation id="8900413463156971200">モバイルデータ通信を有効にする</translation>
 <translation id="8902667442496790482">「選択して読み上げ」の設定を開く</translation>
 <translation id="8903733144777177139">マイクへのアクセスがブロックされています</translation>
+<translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>
 <translation id="8922624386829239660">マウスが画面の端に触れたときに画面を移動する</translation>
 <translation id="8929738682246584251">拡大鏡のオン / オフ</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8931713990831679796">これらのプリンタは接続されていて、使用できる状態です。プロフィールに保存すると、簡単にアクセスできるようになります。</translation>
 <translation id="8932654652795262306">インスタント テザリングの詳細</translation>
+<translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8940888110818450052">ログイン オプション</translation>
 <translation id="8944099748578356325">バッテリー消費が速くなります（現在 <ph name="BATTERY_PERCENTAGE" />%）</translation>
 <translation id="8945274638472141382">アイコンのサイズ</translation>
@@ -2468,6 +2489,7 @@
 <translation id="930893132043726269">現在ローミングあり</translation>
 <translation id="93393615658292258">パスワードのみ</translation>
 <translation id="942296794412775122">マイクのオン / オフ</translation>
+<translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="950307215746360464">セットアップ ガイド</translation>
 <translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>
 <translation id="956013912698841780">右クリックでコンテンツの要約、定義の取得、より確実な文章の作成、画像の作成などを行うことができます。現在、限定的にご利用いただけます。</translation>

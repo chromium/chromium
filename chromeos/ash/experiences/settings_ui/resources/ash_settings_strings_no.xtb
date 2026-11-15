@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Kryptering av brukerdata</translation>
 <translation id="1011003645819296594">Lagrede enheter</translation>
 <translation id="1011355516189274711">Volum for tekst til tale</translation>
+<translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Nettverksstandard</translation>
 <translation id="1026655690966755180">Legg til port</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Gjenoppretting av lokale data</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1251366534849411931">Forventet venstrestilt krøllparentes: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Skanner etter mobildatanettverk …</translation>
 <translation id="1254593899333212300">Direkte internettilkobling</translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="1263733306853729545">Bruk tastene <ph name="MINUS" /> og <ph name="EQUAL" /> for å paginere en kandidatliste</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Taleegenskaper</translation>
 <translation id="1291057703584594733">Hvis du velger en bevegelse som allerede er tilordnet, fjernes den fra den opprinnelige handlingen.</translation>
 <translation id="1291421198328146277">Tilbakestill taster</translation>
+<translation id="1293264513303784526">USB-C-enhet (porten på venstre side)</translation>
 <translation id="1293360286536751243">«<ph name="MAIN_GESTURE" />» overlapper muligens «<ph name="CONFLICTING_GESTURE_ONE" />», «<ph name="CONFLICTING_GESTURE_TWO" />» og «<ph name="CONFLICTING_GESTURE_THREE" />». Prøv å velge en annen bevegelse om du kan.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1313405956111467313">Automatisk konfigurasjon av proxy-tjener</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Logg av når maskinen lukkes</translation>
 <translation id="185970820835152459">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chromium-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kaldere</translation>
+<translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
 <translation id="1866589962721094893">Gi Android-apper kontroll over USB-enheter på denne Chromebooken. Du blir spurt om tillatelse hver gang du kobler til en USB-enhet. Individuelle Android-apper kommer til å spørre om tilleggstillatelser.</translation>
 <translation id="1877377290348678128">Etikett (valgfritt)</translation>
 <translation id="1877860345998737529">Tilordning av bryterhandlinger</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Oppdateringer</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940546824932169984">Tilkoblede enheter</translation>
+<translation id="1941410638996203291">Starttid: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versjon: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">En oppdatering ble funnet</translation>
 <translation id="1948528728718281125">Kameratilgang er tillatt for apper, nettsteder med kameratillatelsen og systemtjenester</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Språket som brukes ved oversetting av sider</translation>
 <translation id="2319459402137712349">Velg et tekstfelt for å åpne tastaturet. Du kan også velge Tastatur-ikonet nederst på skjermen.</translation>
 <translation id="2319993584768066746">Bilder på påloggingsskjermen</translation>
+<translation id="2322622365472107569">Sluttid: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Lagrede Wifi-nettverk</translation>
 <translation id="2325444234681128157">Husk passordet</translation>
 <translation id="2326188115274135041">Bekreft PIN-koden for å slå på automatisk opplåsing</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Lukk begge øynene et kort øyeblikk</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581786034175502848">Trykk på Shift fem ganger for å slå den på igjen</translation>
+<translation id="2581992808349413349">Bruk en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System). Dette gjøres ved bruk av en administrert tjenesteleverandør på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2584109212074498965">Kunne ikke hente Kerberos-saken. Prøv på nytt, eller kontakt enhetsadministratoren for organisasjonen din. (Feilkode <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Administrer mikrofontillatelser for nettsteder i Chrome</translation>
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">Flere detaljer</translation>
 <translation id="2808985063107661499">«<ph name="MAIN_GESTURE" />» overlapper muligens «<ph name="CONFLICTING_GESTURE_ONE" />» og «<ph name="CONFLICTING_GESTURE_TWO" />». Prøv å velge en annen bevegelse om du kan.</translation>
 <translation id="2809346626032021864">Lesing</translation>
+<translation id="2811205483104563968">Kontoer</translation>
 <translation id="2813094189969465044">Foreldrekontroll</translation>
 <translation id="2817435998497102771">Angi bakgrunn og stil</translation>
 <translation id="2818476747334107629">Skriverdetaljer</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Skjul/vis</translation>
 <translation id="2833144527504272627">Naviger med tekstmarkøren</translation>
 <translation id="2835177225987815960">Den nåværende konfigurasjonen din for skanning blir tilbakestilt, inkludert eventuelle brytere som er tilordnet, og hastighetsinnstillinger for automatisk skanning.</translation>
+<translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
 <translation id="2844809857160214557">Se og administrer utskriftsjobber</translation>
 <translation id="2849035674501872372">Slå opp</translation>
 <translation id="2860710618359053450">Flytt kjeven til høyre</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369067987974711168">Vis flere handlinger for denne porten</translation>
 <translation id="3370260763947406229">Autokorrektur</translation>
+<translation id="3371140690572404006">USB-C-enhet (porten foran på høyre side)</translation>
 <translation id="3371351218553893534">Linjen er for lang: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">Tillatelser som gis for Steam, gjelder for alle Steam-spill og -apper.</translation>
 <translation id="338323348408199233">Blokkér trafikk uten VPN</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. <ph name="PRODUCT_NAME" /> bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser, blir dataene fremdeles sendt til Google for å fastslå riktige oppdateringer, men de blir ikke lagret eller brukt ellers.</translation>
 <translation id="3445465968953598059">Ansiktskontroll</translation>
+<translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3448492834076427715">Oppdater kontoen</translation>
 <translation id="345078987193237421">Dette gir apper, nettsteder med kameratillatelsen og systemtjenester tilgang til kameraet</translation>
 <translation id="3453082738208775226">Vil du rydde opp i lagringsplassen utenfor nettet?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Hurtiginfo-definisjon</translation>
 <translation id="3994075804072562819">Gi <ph name="SPECIFIC_NAME" /> kontroll over USB-enheter.</translation>
 <translation id="3994530503403062649">Finn knappene på tegnebrettet</translation>
+<translation id="3995138139523574647">USB-C-enhet (porten bak på høyre side)</translation>
 <translation id="3997429360543082038">Om ChromiumOS</translation>
 <translation id="4001540981461989979">Fremhev musemarkøren når den er i bevegelse</translation>
 <translation id="4005817994523282006">Metode for registrering av tidssone</translation>
@@ -1327,6 +1339,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5324780743567488672">Angi tidssonen automatisk ved hjelp av posisjonen din</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
+<translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="5334113802138581043">Mikrofontilgang</translation>
 <translation id="5336689872433667741">Markør og styreflate</translation>
 <translation id="5337926771328966926">Det nåværende enhetsnavnet er <ph name="DEVICE_NAME" /></translation>
@@ -1349,6 +1362,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5435274640623994081">Slå på loggføring av lydikon</translation>
 <translation id="5441133529460183413">Nettprogram som er installert fra Chrome-nettleseren</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5449551289610225147">Ugyldig passord</translation>
 <translation id="5450469615146335984">Velg en hurtigtast for hver handling</translation>
 <translation id="5452446625764825792">Nå kan du se telefonens nylige bilder, medier og apper</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer uten nett)</translation>
@@ -1644,6 +1658,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6444147596556711162">Bruk «Neste» og «Forrige» for å bevege deg mellom elementer på skjermen</translation>
 <translation id="6452961788130242735">Nettverksproblem eller ugyldig område</translation>
 <translation id="6453921811609336127">For å bytte til neste inndatametode, trykk på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellomrom<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6461170143930046705">Søker etter nettverk …</translation>
 <translation id="6463488491707167747">Slett denne ordlisten</translation>
 <translation id="6463596731306859179">Får du uønskede forgrunnsvinduer, eller opplever du annen uventet atferd? Noen ganger kan apper og utvidelser du installerer, endre ChromeOS-innstillinger uten at du er klar over det.</translation>
 <translation id="6465841119675156448">Uten internett</translation>
@@ -1660,6 +1675,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="648204537326351595">Gi <ph name="SPECIFIC_NAME" /> tilgang til mikrofonen</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="648927581764831596">Ikke tilgjengelig</translation>
+<translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
 <translation id="6497784818439587832">Endre skjermstørrelsen for å gjøre elementer på skjermen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulling med musen</translation>
 <translation id="650185290742160385">Senk terskelen</translation>
@@ -1824,6 +1840,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7090714929377281710">Slå av wifi-sone automatisk</translation>
 <translation id="7092504544229909737">Kan ikke brukes med Android-apper</translation>
 <translation id="7093220653036489319">Hurtigsvar</translation>
+<translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
 <translation id="7099337801055912064">Kan ikke laste inn stor PPD. Maksimal størrelse er 250 kB.</translation>
 <translation id="7107609441453408294">Spill av den samme lyden på alle høyttalere</translation>
 <translation id="7116931001458704701">Rist for å finne markøren</translation>
@@ -1885,6 +1902,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7323315405936922211">Størrelse på markørområdet</translation>
 <translation id="7325209047678309347">Papiret sitter fast</translation>
 <translation id="7331646370422660166">alt + nedoverpil</translation>
+<translation id="7345706641791090287">Bekreft passordet</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7360333718677093875">emojivelger</translation>
@@ -2261,6 +2279,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="85486688517848470">Hold Søk-tasten inne for å endre funksjonene for tastene på øverste rad</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
 <translation id="8553342806078037065">Administrer andre</translation>
+<translation id="8554899698005018844">Ingen språk</translation>
 <translation id="8555444629041783356">Automatisk tidsplan basert på solnedgang</translation>
 <translation id="8563043098557365232">Bare tillatt for systemtjenester</translation>
 <translation id="8571687764447439720">Legg til Kerberos-sak</translation>
@@ -2367,12 +2386,14 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="8900413463156971200">Slå på mobildata</translation>
 <translation id="8902667442496790482">Åpne innstillingene for Tekstopplesing</translation>
 <translation id="8903733144777177139">Mikrofontilgang er blokkert</translation>
+<translation id="8910222113987937043">Endringer i bokmerkene, loggen, passordene og andre innstillinger du har, blir ikke lenger synkronisert med Google-kontoen din. Data som allerede er lagret i Google-kontoen din, blir imidlertid værende og kan administreres ved hjelp av <ph name="BEGIN_LINK" />Google Oversikt<ph name="END_LINK" />.</translation>
 <translation id="8912810933860534797">Aktivér automatisk skanning</translation>
 <translation id="8922624386829239660">Beveg skjermen når musen berører kantene av skjermen</translation>
 <translation id="8929738682246584251">Forstørrer på/av</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8931713990831679796">Disse skriverne er tilkoblet og klare til bruk. Lagre dem i profilen din for å få enklere tilgang.</translation>
 <translation id="8932654652795262306">Detaljer for umiddelbar internettdeling</translation>
+<translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8940888110818450052">Påloggingsalternativer</translation>
 <translation id="8944099748578356325">bruke opp batteriet raskere (for øyeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Ikonstørrelse</translation>
@@ -2469,6 +2490,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="930893132043726269">Roamer for øyeblikket</translation>
 <translation id="93393615658292258">Bare passord</translation>
 <translation id="942296794412775122">Mikrofon på/av</translation>
+<translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="950307215746360464">Konfigureringsveiledning</translation>
 <translation id="952471655966876828">Enheten kobles til automatisk når den slås på og er i bruk</translation>
 <translation id="956013912698841780">Høyreklikk for å oppsummere innhold, få definisjoner, skrive med større selvtillit, lage bilder med mer. Har begrenset tilgjengelighet for øyeblikket.</translation>

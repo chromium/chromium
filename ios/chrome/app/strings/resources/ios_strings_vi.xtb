@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Bạn muốn dừng tải xuống?</translation>
 <translation id="4796496140132859135">Nhóm thẻ. Đã thu gọn.</translation>
 <translation id="4800912004582762296">Đang nhấp chuột</translation>
+<translation id="4800930308997591052">Chuyển sang <ph name="EMAIL" /> để chia sẻ liền mạch các thẻ giữa các thiết bị, cũng như sử dụng mật khẩu, dấu trang và nhiều dữ liệu khác trong Tài khoản Google của bạn.</translation>
 <translation id="4802185666270672526">Ẩn tuỳ chọn Yêu cầu trang web dành cho máy tính</translation>
 <translation id="4803185665210547709">Do tổ chức của bạn quản lý.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7618220760967055820">Chọn nút sẽ xuất hiện trên thanh công cụ</translation>
 <translation id="7620522820075868385">Huỷ</translation>
 <translation id="762078666799342162">Bạn có thể xem các tệp đã tải xuống trong <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Tiếp tục tại nơi bạn bỏ dở trên máy tính</translation>
 <translation id="7638584964844754484">Cụm mật khẩu không chính xác</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mật khẩu bị lộ}=1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="7640669552036055091">Thẻ trên Android</translation>

@@ -129,6 +129,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1460751212339734034">Spar tid ved at indtaste mindre</translation>
 <translation id="146522654774760805">Adgangskoder og autofyld</translation>
 <translation id="1466383950273130737">Vælg sprog i Chrome</translation>
+<translation id="1473344277210704336">Gemini og dine vigtigste værktøjer på den nye værktøjslinje nederst</translation>
 <translation id="1477626028522505441">Download af <ph name="FILE_NAME" /> mislykkedes på grund af serverproblemer.</translation>
 <translation id="147982357559798527">Ændret</translation>
 <translation id="1480287803138246127">Noget af din historik vises muligvis ikke her. Hvis du vil se hele din Chrome-historik, skal du åbne den komplette Chrome-historik.</translation>
@@ -907,6 +908,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4537987892902330164">Du er stadig logget ind som <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4558311620361989323">Genveje på websider</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-medlemskab.</translation>
 <translation id="4572422548854449519">Log ind på managerstyret konto</translation>
 <translation id="4577115723294378384">Sortér fra A til Å</translation>
 <translation id="4578289292431526768">Kom i gang</translation>
@@ -914,6 +916,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4585751637295612750">Åbn en ny fane for at føje den til dit spørgsmål</translation>
 <translation id="4585793705637313973">Rediger side</translation>
 <translation id="4587589328781138893">Websites</translation>
+<translation id="4587590257937792551">Chrome har en ny, praktisk værktøjslinje nederst Du kan til enhver tid skifte tilbage i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Denne offlineside er fra <ph name="CREATION_TIME" /> og kan afvige fra onlineversionen.</translation>
 <translation id="4595237294768457124">Åbn siden Ny fane</translation>
 <translation id="4595276580892809760">Vedhæft billeder fra galleriet</translation>
@@ -1451,6 +1454,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6633067410344541938">Lås op for inkognito</translation>
 <translation id="6636623428211296678">Find flere indstillinger nedenfor, eller afslut nu</translation>
 <translation id="6637100877383020115">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Dine vigtigste værktøjer direkte på værktøjslinjen nederst. Du kan til enhver tid skifte tilbage i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Vedhæft faner</translation>
 <translation id="6647441008198474441">De websites, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}}</translation>
@@ -1649,6 +1653,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt fane, der er fastgjort og deler indhold</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7314734791127433392">Kan ikke tjekke adgangskoder</translation>
+<translation id="7324177883197548771">Chrome har fået et nyt, praktisk udseende. Du kan til enhver tid skifte tilbage i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Send en "Do Not Track"-anmodning</translation>
 <translation id="7333041109965360609">Du har afmeldt notifikationer</translation>
 <translation id="7335766481146072567">Tryk på Fortsæt</translation>
@@ -1750,6 +1755,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7697383401610880082">Håndtag</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Feltet i bunden med den seneste aktivitet er åbnet i fuld højde</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" />-medlemskab.</translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7708994397325774423">Få alle dine adgangskoder</translation>
 <translation id="7714077993070342304">Åbn Chrome-menuen</translation>

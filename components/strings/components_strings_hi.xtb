@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">लेगसी टेक्नोलॉजी इवेंट वाले जिन पेजों पर आपने विज़िट किया है उनके यूआरएल की सीमित सूची</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 टैब शेयर किया जाएगा}one{{NUM_TABS} टैब शेयर किया जाएगा}other{{NUM_TABS} टैब शेयर किए जाएंगे}}</translation>
 <translation id="2357481397660644965">आपके डिवाइस को <ph name="DEVICE_MANAGER" /> और खाते को <ph name="ACCOUNT_MANAGER" /> प्रबंधित करता है.</translation>
+<translation id="2358479643736965923">इस टैब पर, Google के एआई से मिला जवाब देखें</translation>
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="236000571258713023">वाहन</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">इवेंट के टिकट को Wallet में सेव करें</translation>
 <translation id="2925454999967523701">'दस्तावेज़ बनाएं' बटन, फटाफट नया Google दस्तावेज़ बनाने के लिए इसे चालू करें</translation>
 <translation id="2925673989565098301">डिलीवरी का तरीका</translation>
+<translation id="2927328994673424423">दो हफ़्ते पहले</translation>
 <translation id="2928426578619531300">उपयोगकर्ता के खाते से जुड़े</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="2930531075747147366">आपके दूसरे डिवाइस से टैब भेजा गया है</translation>
@@ -1306,6 +1308,7 @@
 <translation id="3196374699162453920">बुकिंग कोड</translation>
 <translation id="3196902089458890316">क्या बेहतर जवाब पाने के लिए, काम के टैब हमेशा अपने-आप शेयर होने की सुविधा चालू करनी है?</translation>
 <translation id="3197136577151645743">साइट, यह जानकारी मांग सकती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
+<translation id="3201749168732432347">ऑफ़र और लॉयल्टी कार्ड</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, आपने जो जानकारी सिंक की है उसे मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
@@ -2310,6 +2313,7 @@
 <translation id="4850886885716139402">देखें</translation>
 <translation id="4854853140771946034">Google Keep में जल्दी से नया नोट बनाएं</translation>
 <translation id="4855395119669662878">आपका एडमिन, <ph name="DATE_TIME" /> को <ph name="CLOUD_PROVIDER" /> पर आपकी फ़ाइलें अपलोड करना शुरू करेगा. फ़ाइल अपलोड होने तक, अपने डिवाइस को इंटरनेट से कनेक्ट रखें. इस दौरान, डिवाइस में सेव की गई फ़ाइलों को सिर्फ़ पढ़ा जा सकेगा.</translation>
+<translation id="4856655096879441213">अपनी जानकारी <ph name="GOOGLE_WALLET_TITLE" /> में सेव करें और Google के सभी प्रॉडक्ट पर, फ़ॉर्म भरने जैसे काम तेज़ी से करें. <ph name="ACCOUNT" /> के लिए, निजी पास की सेटिंग में जाकर <ph name="HOW_INFO_IS_USED_LINK" /> को कंट्रोल किया जा सकता है.</translation>
 <translation id="485902285759009870">कोड की पुष्टि की जा रही है...</translation>
 <translation id="4860260582253463350">YouTube पर जारी रखने के लिए, आपको अपनी पहचान की पुष्टि करनी होगी. आपको वहीं सेटिंग मिलेंगी जो Family Link में आपके माता-पिता ने तय की हैं.</translation>
 <translation id="4861514638281352187">रीड्रेस नंबर को सुरक्षित तरीके से जोड़ें</translation>
@@ -4894,7 +4898,6 @@
 <translation id="9192361865877479444">मेटल (मैट)</translation>
 <translation id="9193018794001479794">ज़्यादा शब्दों में लिखो</translation>
 <translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> से पूछें</translation>
-<translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
 <translation id="9198613052465150219">आपके Google खाते में <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> पर कुछ तरह का ब्राउज़िंग इतिहास अब भी सेव हो सकता है</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>
 <translation id="9204089334327209740">अपलोड पूरा हो जाने के बाद, <ph name="CLOUD_PROVIDER" /> में अपनी फ़ाइलों में बदलाव किए जा सकते हैं. लोकल स्टोरेज में मौजूद फ़ाइलों के साथ-साथ, ट्रैश में भेजी गई फ़ाइलें भी अपने-आप हट जाएंगी.</translation>

@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">Уштедите време, куцајте мање</translation>
 <translation id="146522654774760805">Лозинке и аутоматско попуњавање</translation>
 <translation id="1466383950273130737">Изаберите језик за Chrome</translation>
+<translation id="1473344277210704336">Gemini и основне ствари на новој доњој траци с алаткама</translation>
 <translation id="1477626028522505441">Преузимање датотеке <ph name="FILE_NAME" /> није успело због проблема на серверу.</translation>
 <translation id="147982357559798527">Промењено</translation>
 <translation id="1480287803138246127">Део историје се можда неће приказивати овде. Да бисте видели комплетну историју Chrome-а, отворите целу историју Chrome-а.</translation>
@@ -907,6 +908,7 @@ Google налог можда има друге облике историје п�
 <translation id="4537987892902330164">Остали сте пријављени као <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картица}one{<ph name="TAB_COUNT_MANY" /> картица, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}few{<ph name="TAB_COUNT_MANY" /> картице, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}other{<ph name="TAB_COUNT_MANY" /> картица, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}}</translation>
 <translation id="4558311620361989323">Пречице за веб-странице</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> претплата.</translation>
 <translation id="4572422548854449519">Пријавите се на налог којим се управља</translation>
 <translation id="4577115723294378384">Сортирај од A до Z</translation>
 <translation id="4578289292431526768">Идемо</translation>
@@ -914,6 +916,7 @@ Google налог можда има друге облике историје п�
 <translation id="4585751637295612750">Отворите нову картицу да бисте је додали у питање</translation>
 <translation id="4585793705637313973">Измени страницу</translation>
 <translation id="4587589328781138893">Сајтови</translation>
+<translation id="4587590257937792551">Chrome има нову доњу траку с алаткама, направљену ради практичности. Увек можете да се вратите на претходну у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="4594952190837476234">Ова офлајн страница је од <ph name="CREATION_TIME" /> и може да се разликује од онлајн верзије.</translation>
 <translation id="4595237294768457124">Отворите страницу нове картице</translation>
 <translation id="4595276580892809760">Приложите слике из галерије</translation>
@@ -1096,6 +1099,7 @@ Google налог можда има друге облике историје п�
 <translation id="5257142004843671642">Промените величину бочне табле</translation>
 <translation id="5264813352784073502">последња 24 сата</translation>
 <translation id="5267572070504076962">Укључите Безбедно прегледање да бисте добили заштиту од опасних сајтова</translation>
+<translation id="526760395289305534">Проширите или скупите вертикалне картице</translation>
 <translation id="5273031377282080577">Администратор управља овим подешавањем.</translation>
 <translation id="5284295735376057059">Својства документа</translation>
 <translation id="5286907366254680517">Откривено</translation>
@@ -1451,6 +1455,7 @@ Google налог можда има друге облике историје п�
 <translation id="6633067410344541938">Откључај картице без архивирања</translation>
 <translation id="6636623428211296678">Истражите још подешавања у наставку или завршите</translation>
 <translation id="6637100877383020115">Chrome шаље Google-у податке о коришћењу и отказивању ради побољшања апликације. <ph name="BEGIN_UMA_LINK" />Управљајте<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">Основне ствари, директно на доњој траци с алаткама. Увек можете да се вратите на претходну у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">Приложите картице</translation>
 <translation id="6647441008198474441">URL-ови које посећујете се шаљу Google-у да би се предвидели сајтови које ћете можда следеће посетити</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1649,6 +1654,7 @@ Google налог можда има друге облике историје п�
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, изабрана закачена картица за дељење</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7314734791127433392">Провера лозинки није успела</translation>
+<translation id="7324177883197548771">Chrome има нов изглед, направљен ради практичности. Увек можете да се вратите на претходну у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">Пошаљите захтев „Do Not Track“</translation>
 <translation id="7333041109965360609">Пријава за обавештења је отказана</translation>
 <translation id="7335766481146072567">Притисните Настави</translation>
@@ -1750,6 +1756,7 @@ Google налог можда има друге облике историје п�
 <translation id="7697383401610880082">Идентификатор за превлачење</translation>
 <translation id="7698359219371678927">Напишите имејл у апликацији <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Доња табела са недавним активностима је отворена на целом екрану</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> претплата.</translation>
 <translation id="7707922173985738739">Користи мобилне податке</translation>
 <translation id="7708994397325774423">Преузмите све лозинке</translation>
 <translation id="7714077993070342304">Отворите Chrome мени</translation>

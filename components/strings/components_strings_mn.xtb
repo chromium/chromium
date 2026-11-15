@@ -1308,6 +1308,7 @@
 <translation id="3196374699162453920">Захиалгын код</translation>
 <translation id="3196902089458890316">Илүү сайн хариулт авахын тулд хамааралтай табуудыг үргэлж хуваалцах уу?</translation>
 <translation id="3197136577151645743">Таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
+<translation id="3201749168732432347">Санал, лояалти карт</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3203025201812691413">URL хоосон байх боломжгүй</translation>
 <translation id="320323717674993345">Төлбөрийг цуцлах</translation>
@@ -2313,6 +2314,7 @@
 <translation id="4850886885716139402">Харах</translation>
 <translation id="4854853140771946034">Google Keep-д шинэ тэмдэглэл шуурхай үүсгээрэй</translation>
 <translation id="4855395119669662878">Танай администратор <ph name="DATE_TIME" />-д таны файлуудыг <ph name="CLOUD_PROVIDER" />-д байршуулж эхэлнэ. Файлаа байршуулж дуусах хүртэл төхөөрөмжөө холбоотой байлгана уу. Байршуулах үеэр та зөвхөн дотоод файлуудыг унших боломжтой болно.</translation>
+<translation id="4856655096879441213">Мэдээллээ <ph name="GOOGLE_WALLET_TITLE" />-д хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н хувийн картын тохиргооноосоо <ph name="HOW_INFO_IS_USED_LINK" />-г хянах боломжтой.</translation>
 <translation id="485902285759009870">Кодыг баталгаажуулж байна...</translation>
 <translation id="4860260582253463350">YouTube рүү үргэлжлүүлэхийн тулд бид таныг мөн болохыг баталгаажуулах шаардлагатай. Та эцэг эх эсвэл асран хамгаалагчийнхаа Family Link-д тохируулсан тохиргоог авна.</translation>
 <translation id="4861514638281352187">Залруулгын хяналтын дугаарыг (redress number) аюулгүй нэмэх</translation>
@@ -4894,7 +4896,6 @@
 <translation id="9192361865877479444">Металл (мaтте)</translation>
 <translation id="9193018794001479794">Сайтар боловсруулах</translation>
 <translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" />-с асуух</translation>
-<translation id="9195969368671142407">Танай байгууллага таны Google Бүртгэлд хадгалахыг хязгаарлахад та табын бүлэг хуваалцах, нэгдэх боломжгүй</translation>
 <translation id="9198613052465150219">Таны Google Бүртгэл <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> дээр хөтчийн түүхийн өөр хэлбэртэй байж болзошгүй</translation>
 <translation id="9199905725844810519">Хэвлэхийг блоклосон байна</translation>
 <translation id="9204089334327209740">Байршуулж дууссаны дараа та <ph name="CLOUD_PROVIDER" /> дахь файлуудаа өөрчлөх боломжтой. Хогийн саван дахь аливаа файл зэрэг дотоод хадгалах санг автоматаар хасна.</translation>

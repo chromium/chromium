@@ -243,6 +243,7 @@
 <translation id="3561853857681580870">如要分享螢幕內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登入 Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />，<ph name="EMAIL" />，會員。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。你的無痕視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
 <translation id="3675854891107786059">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chromium 資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chromium 中的瀏覽記錄。</translation>
@@ -535,6 +536,7 @@
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防範攻擊的能力會稍微降低。這項設定已開啟。</translation>
 <translation id="6754665438209053659">{count,plural, =1{部分 Chromium 資料尚未儲存到 Google 帳戶，請稍候幾分鐘再登出。如果現在登出，系統將刪除這類資料 (1 個項目)。}other{部分 Chromium 資料尚未儲存到 Google 帳戶，請稍候幾分鐘再登出。如果現在登出，系統將刪除這類資料 ({count} 個項目)。}}</translation>
 <translation id="6804256634866838775">關閉進行中的搜尋</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />，會員。</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="684888714667046800">無法連上網際網路。如果你使用防火牆，請確認 <ph name="PRODUCT_EXE_NAME" /> 已加入許可清單。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>

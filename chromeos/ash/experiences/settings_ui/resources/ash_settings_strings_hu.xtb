@@ -9,6 +9,7 @@
 <translation id="1010136228650201057">Felhasználói adatok titkosítása</translation>
 <translation id="1011003645819296594">Mentett eszközök</translation>
 <translation id="1011355516189274711">Szövegfelolvasó hangereje</translation>
+<translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1022719295563085177">Hálózati alapbeállítás</translation>
 <translation id="1026655690966755180">Port hozzáadása</translation>
@@ -86,6 +87,7 @@
 <translation id="1245628370644070008">Helyi adatok helyreállítása</translation>
 <translation id="1247372569136754018">Mikrofon (belső)</translation>
 <translation id="1251366534849411931">Hiányzó nyitó kapcsos zárójel: <ph name="ERROR_LINE" /></translation>
+<translation id="1251578593170406502">Mobiladat-hálózatok keresése…</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
 <translation id="1261380933454402672">Mérsékelt</translation>
 <translation id="1263733306853729545">Karakterlisták lapozása a <ph name="MINUS" /> és az <ph name="EQUAL" /> billentyűvel</translation>
@@ -101,6 +103,7 @@
 <translation id="1288300545283011870">Beszéd tulajdonságai</translation>
 <translation id="1291057703584594733">Ha olyan arckifejezést választ ki, amely már hozzá van rendelve egy művelethez, azzal eltávolítja az eredeti műveletből.</translation>
 <translation id="1291421198328146277">Billentyűk visszaállítása</translation>
+<translation id="1293264513303784526">C típusú USB-vel kompatibilis eszköz (bal oldali port)</translation>
 <translation id="1293360286536751243">A(z) „<ph name="MAIN_GESTURE" />” arckifejezés ütközhet a következő arckifejezésekkel: „<ph name="CONFLICTING_GESTURE_ONE" />”, „<ph name="CONFLICTING_GESTURE_TWO" />” és „<ph name="CONFLICTING_GESTURE_THREE" />”. Ha lehetséges, próbáljon meg másik arckifejezést választani.</translation>
 <translation id="1293556467332435079">Fájlok</translation>
 <translation id="1313405956111467313">Automatikus proxykonfiguráció</translation>
@@ -270,6 +273,7 @@
 <translation id="1848219224579402567">Kijelentkezés, ha le van zárva a fedél</translation>
 <translation id="185970820835152459">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chromium böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Hideg színek</translation>
+<translation id="1864454756846565995">C típusú USB-vel kompatibilis eszköz (hátsó port)</translation>
 <translation id="1866589962721094893">Az USB-eszközök feletti irányítás átadása az Android-alkalmazásoknak ezen a Chromebookon. A rendszer minden alkalommal engedélyt kér, amikor Ön USB-eszközt csatlakoztat. Az egyes Android-alkalmazások további engedélyeket kérnek.</translation>
 <translation id="1877377290348678128">Címke (nem kötelező)</translation>
 <translation id="1877860345998737529">Művelet hozzárendelése kapcsolóhoz</translation>
@@ -292,6 +296,7 @@
 <translation id="1928696683969751773">Frissítések</translation>
 <translation id="1938351510777341717">Külső parancs</translation>
 <translation id="1940546824932169984">Társított eszközök</translation>
+<translation id="1941410638996203291">Kezdési idő: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verzió: <ph name="APP_VERSION" /></translation>
 <translation id="1944921356641260203">A rendszer frissítést talált</translation>
 <translation id="1948528728718281125">A kamerához való hozzáférés engedélyezett az alkalmazások, a kamerahasználati engedéllyel rendelkező webhelyek és a rendszerszolgáltatások számára</translation>
@@ -405,6 +410,7 @@
 <translation id="2314774579020744484">Oldalak fordításánál használt nyelv</translation>
 <translation id="2319459402137712349">A billentyűzet megnyitásához válasszon ki egy szövegmezőt. Kiválaszthatja a képernyő alján található Billentyűzet ikont is.</translation>
 <translation id="2319993584768066746">Fotók a bejelentkezési képernyőn</translation>
+<translation id="2322622365472107569">Befejezési idő: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Mentett Wi-Fi-hálózatok</translation>
 <translation id="2325444234681128157">Jelszó megjegyzése</translation>
 <translation id="2326188115274135041">A PIN-kód megerősítése az automatikus feloldás bekapcsolásához</translation>
@@ -488,6 +494,7 @@
 <translation id="2577127557293415225">Rövid időre csukja be mindkét szemét</translation>
 <translation id="258095186877893873">Hosszú</translation>
 <translation id="2581786034175502848">Az újbóli engedélyezéshez nyomja meg ötször a Shift billentyűt</translation>
+<translation id="2581992808349413349">Használjon biztonságos kapcsolatot a webhelyek IP-címének DNS-ben (domainnévrendszerben) való kereséséhez. Ez a funkció felügyelt szolgáltatót használ (URL: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="2584109212074498965">Nem sikerült a Kerberos-jegy lekérése. Próbálja újra, vagy forduljon a szervezet eszközadminisztrátorához. (Hibakód: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">A webhelyek mikrofonhasználatra vonatkozó engedélyeinek kezelése a Chrome-ban</translation>
 <translation id="2609980095400624569">Nem sikerült létrehozni a kapcsolatot</translation>
@@ -562,6 +569,7 @@
 <translation id="2805770823691782631">További adatok</translation>
 <translation id="2808985063107661499">A(z) „<ph name="MAIN_GESTURE" />” arckifejezés ütközhet a következő arckifejezésekkel: „<ph name="CONFLICTING_GESTURE_ONE" />” és „<ph name="CONFLICTING_GESTURE_TWO" />”. Ha lehetséges, próbáljon meg másik arckifejezést választani.</translation>
 <translation id="2809346626032021864">Olvasás</translation>
+<translation id="2811205483104563968">Fiókok</translation>
 <translation id="2813094189969465044">Szülői felügyelet</translation>
 <translation id="2817435998497102771">Háttérkép és stílus beállítása</translation>
 <translation id="2818476747334107629">Nyomtató részletei</translation>
@@ -569,6 +577,7 @@
 <translation id="2822634587701817431">Méretcsökkentés/kibontás</translation>
 <translation id="2833144527504272627">Navigálás szövegkurzorral</translation>
 <translation id="2835177225987815960">Az aktuális keresési beállítások visszaállításra kerülnek, beleértve a hozzárendelt kapcsolókat és az automatikus keresés sebességbeállításait is.</translation>
+<translation id="2844169650293029770">C típusú USB-vel kompatibilis eszköz (bal első port)</translation>
 <translation id="2844809857160214557">Nyomtatási feladatok megtekintése és kezelése</translation>
 <translation id="2849035674501872372">Nézzen fel</translation>
 <translation id="2860710618359053450">Állkapocs jobbra mozgatása</translation>
@@ -707,6 +716,7 @@
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369067987974711168">A porttal kapcsolatos további műveletek megjelenítése</translation>
 <translation id="3370260763947406229">Automatikus javítás</translation>
+<translation id="3371140690572404006">C típusú USB-vel kompatibilis eszköz (jobb első port)</translation>
 <translation id="3371351218553893534">A sor túl hosszú: <ph name="ERROR_LINE" /></translation>
 <translation id="3378627645871606983">A Steam számára megadott engedélyek az összes Steam-játékra és -alkalmazásra érvényesek.</translation>
 <translation id="338323348408199233">VPN nélküli adatforgalom letiltása</translation>
@@ -732,6 +742,7 @@
 <translation id="3441824746233675597">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A(z) <ph name="PRODUCT_NAME" /> biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
 <translation id="3442674350323953953">Hardveradatok használatának engedélyezése a Google számára a <ph name="DEVICE_OS" /> fejlesztéséhez. Ha nem engedélyezi, a rendszeri akkor is elküldi az adatokat a Google-nak, hogy meghatározhatók legyenek a megfelelő frissítések, viszont az adatok tárolására vagy egyéb jellegű felhasználására nem kerül sor.</translation>
 <translation id="3445465968953598059">Arckifejezéssel való vezérlés</translation>
+<translation id="3445925074670675829">C típusú USB-vel kompatibilis eszköz</translation>
 <translation id="3448492834076427715">Fiók frissítése</translation>
 <translation id="345078987193237421">Ez lehetővé teszi a kamerához való hozzáférést az alkalmazások, a kameraengedéllyel rendelkező webhelyek és a rendszerszolgáltatások számára.</translation>
 <translation id="3453082738208775226">Szeretne offline tárhelyet felszabadítani?</translation>
@@ -914,6 +925,7 @@
 <translation id="3984862166739904574">Gyors válaszok – definíció</translation>
 <translation id="3994075804072562819">Az USB-eszközök feletti irányítás átadása a következőnek: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3994530503403062649">A táblagép gombjai helyének meghatározása</translation>
+<translation id="3995138139523574647">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>
 <translation id="3997429360543082038">A ChromiumOS névjegye</translation>
 <translation id="4001540981461989979">Egérkurzor kiemelése mozgatáskor</translation>
 <translation id="4005817994523282006">Időzóna-észlelési módszer</translation>
@@ -1327,6 +1339,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5324780743567488672">Időzóna automatikus beállítása a tartózkodási hely alapján</translation>
 <translation id="5327248766486351172">Név</translation>
 <translation id="5331568967879689647">ChromeOS-rendszeralkalmazás</translation>
+<translation id="5331975486040154427">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
 <translation id="5334113802138581043">Hozzáférés a mikrofonhoz</translation>
 <translation id="5336689872433667741">Kurzor és érintőpad</translation>
 <translation id="5337926771328966926">Eszköz jelenlegi neve: <ph name="DEVICE_NAME" /></translation>
@@ -1350,6 +1363,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5435274640623994081">Hangjelzés naplózásának engedélyezése</translation>
 <translation id="5441133529460183413">A Chrome böngészőből letöltött internetes alkalmazás</translation>
 <translation id="5445400788035474247">10×</translation>
+<translation id="5449551289610225147">Érvénytelen jelszó</translation>
 <translation id="5450469615146335984">Válasszon billentyűparancsot az egyes műveletekhez</translation>
 <translation id="5452446625764825792">Mostantól megtekintheti a telefonon legutóbb megnyitott fotókat, médiatartalmakat és alkalmazásokat</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (offline állapotban is működik)</translation>
@@ -1645,6 +1659,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="6444147596556711162">A „Következő” és „Előző” kapcsolókkal a képernyőn lévő elemek között mozoghat.</translation>
 <translation id="6452961788130242735">Hálózati probléma vagy helytelen tartomány</translation>
 <translation id="6453921811609336127">A következő beviteli módszerre való váltáshoz nyomja le a <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Szóköz<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> billentyűkombinációt</translation>
+<translation id="6461170143930046705">Hálózatok keresése…</translation>
 <translation id="6463488491707167747">Szótár törlése</translation>
 <translation id="6463596731306859179">Nem kívánt előugró ablakokat kap, vagy más váratlan viselkedéssel találkozik? Egyes telepített alkalmazások és bővítmények az Ön tudta nélkül módosíthatják a ChromeOS beállításait.</translation>
 <translation id="6465841119675156448">Internet nélkül</translation>
@@ -1661,6 +1676,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="648204537326351595">A mikrofon használatának engedélyezése a(z) <ph name="SPECIFIC_NAME" /> számára</translation>
 <translation id="6482559668224714696">Teljes képernyős nagyító</translation>
 <translation id="648927581764831596">Nincs elérhető</translation>
+<translation id="6490471652906364588">C típusú USB-vel kompatibilis eszköz (jobb oldali port)</translation>
 <translation id="6497784818439587832">Módosíthatja a megjelenítési méretet, ha azt szeretné, hogy kisebbek vagy nagyobbak legyenek a képernyőn megjelenő elemek.</translation>
 <translation id="6497789971060331894">Fordított görgetés az egérrel</translation>
 <translation id="650185290742160385">Küszöbérték csökkentése</translation>
@@ -1825,6 +1841,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="7090714929377281710">Hotspot automatikus kikapcsolása</translation>
 <translation id="7092504544229909737">Nem használható Android-alkalmazásokkal</translation>
 <translation id="7093220653036489319">Gyors válaszok</translation>
+<translation id="7098389117866926363">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
 <translation id="7099337801055912064">Nem használható túl nagy PPD. A maximális méret 250 kB.</translation>
 <translation id="7107609441453408294">Hanganyag együttes lejátszása minden hangszórón</translation>
 <translation id="7116931001458704701">Rázás a kurzor megkereséséhez</translation>
@@ -1886,6 +1903,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="7323315405936922211">Kurzorterület beállítása</translation>
 <translation id="7325209047678309347">A papír elakadt</translation>
 <translation id="7331646370422660166">alt + lefelé mutató nyíl</translation>
+<translation id="7345706641791090287">Erősítse meg a jelszót</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7360333718677093875">emojiválasztó</translation>
@@ -2261,6 +2279,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="85486688517848470">A legfelső billentyűsor viselkedésének módosításához tartsa lenyomva a keresőgombot</translation>
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>
 <translation id="8553342806078037065">Más személyek kezelése</translation>
+<translation id="8554899698005018844">Nincs nyelv</translation>
 <translation id="8555444629041783356">Automatikus naplemente-ütemezés</translation>
 <translation id="8563043098557365232">Csak rendszerszolgáltatások számára engedélyezett</translation>
 <translation id="8571687764447439720">Kerberos-jegy hozzáadása</translation>
@@ -2367,12 +2386,14 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="8900413463156971200">Mobilhálózat engedélyezése</translation>
 <translation id="8902667442496790482">Felolvasási beállítások megnyitása</translation>
 <translation id="8903733144777177139">A mikrofonhoz való hozzáférés le van tiltva</translation>
+<translation id="8910222113987937043">A könyvjelzők, előzmények, jelszavak és egyéb beállítások módosításai nem lesznek szinkronizálva Google-fiókjával. Meglévő adatait azonban továbbra is tárolni fogja Google-fiókja, és azokat a <ph name="BEGIN_LINK" />Google Irányítópulton<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="8912810933860534797">Automatikus keresés engedélyezése</translation>
 <translation id="8922624386829239660">Képernyő mozgatása, amikor az egérmutató érinti a képernyő széleit</translation>
 <translation id="8929738682246584251">Nagyító be/ki</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>
 <translation id="8931713990831679796">Ezek a nyomtatók csatlakoztatva vannak, és készen állnak a használatra. Az egyszerűbb hozzáférés érdekében mentse őket el a profiljába.</translation>
 <translation id="8932654652795262306">Azonnali internetmegosztás részletei</translation>
+<translation id="8938800817013097409">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>
 <translation id="8940888110818450052">Bejelentkezési beállítások</translation>
 <translation id="8944099748578356325">Megnövekedett akkuhasználat (jelenleg <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Ikon mérete</translation>
@@ -2469,6 +2490,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="930893132043726269">Jelenleg aktív a roaming</translation>
 <translation id="93393615658292258">Csak jelszó</translation>
 <translation id="942296794412775122">Mikrofon be/ki</translation>
+<translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="950307215746360464">Beállítási útmutató</translation>
 <translation id="952471655966876828">Az eszköz automatikusan csatlakozik, amikor bekapcsolásra kerül, vagy használatban van</translation>
 <translation id="956013912698841780">A jobb egérgombbal kattintva összefoglalót kérhet tartalmakról, definíciókat kaphat, magabiztosabban írhat, képeket készíthet, stb. Ez a funkció jelenleg csak korlátozottan áll rendelkezésre.</translation>

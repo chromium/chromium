@@ -207,6 +207,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1807709131360304325">नई विंडो खोलें</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> पर <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल जारी नहीं रखा जा सकता</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ऐसा टैब जिसका कॉन्टेंट रिकॉर्ड किया जा रहा है</translation>
+<translation id="1817594121551034302">पता बार का शॉर्टकट</translation>
 <translation id="1819443852740954262">सभी यूआरएल गुप्त विंडो में खोलें</translation>
 <translation id="1820408774134375111">साइन इन करने के लिए, खातों की सूची</translation>
 <translation id="1824902652744048041">'ब्राउज़िंग डेटा मिटाएं' पर टैप करें</translation>
@@ -831,6 +832,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, पिक्चर में पिक्चर मोड में खुला गुप्त टैब</translation>
 <translation id="4285498937028063278">अनपिन करें</translation>
 <translation id="4285846616383034558">कुकी, कैश मेमोरी, और अन्य साइट डेटा</translation>
+<translation id="429016203314124112">आपका चुना हुआ सर्च इंजन, Chrome में डिफ़ॉल्ट रूप से इस्तेमाल किया जाएगा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग में, स्क्रीन लॉक चालू करें<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">फ़ोन</translation>
 <translation id="4295640788982898778">ये एक्सटेंशन आपके Google खाते में सेव हैं. हालांकि, इन एक्सटेंशन की मदद से सिर्फ़ इस डिवाइस में सेव किया गया डेटा मिटाया जा सकता है</translation>
@@ -1047,6 +1049,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> विंडो चुनी गई}one{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गई}other{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गईं}}</translation>
 <translation id="5058506215037547387">पेज की झलक देखें</translation>
 <translation id="506254248375231072">कोई टैब नहीं है</translation>
+<translation id="5065494736868031814">टूलबार में</translation>
 <translation id="5075939510584558547">एन्क्रिप्ट (सुरक्षित) किए बिना सेव करें</translation>
 <translation id="5078638979202084724">सभी टैब बुकमार्क करें</translation>
 <translation id="5085038751173179818">अपने सभी डिवाइसों पर बुकमार्क वगैरह पाने के लिए, इस साइट पर और Chrome, दोनों में साइन इन करें</translation>
@@ -1096,6 +1099,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5257142004843671642">साइड पैनल का साइज़ बदलें</translation>
 <translation id="5264813352784073502">पिछले 24 घंटे का</translation>
 <translation id="5267572070504076962">खतरनाक साइटों से बचने के लिए, सुरक्षित ब्राउज़िंग की सुविधा को चालू करें</translation>
+<translation id="526760395289305534">वर्टिकल टैब को बड़ा या छोटा करें</translation>
 <translation id="5273031377282080577">आपका एडमिन इस सेटिंग को मैनेज करता है.</translation>
 <translation id="5284295735376057059">दस्तावेज़ की जानकारी</translation>
 <translation id="5286907366254680517">भाषा का पता चला</translation>
@@ -1263,6 +1267,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए ये अनुमतियां हटा दी हैं, क्योंकि आपने हाल ही में इसका इस्तेमाल नहीं किया है</translation>
 <translation id="5995726099713306770">क्या पेज को फिर से डाउनलोड करना है?</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
+<translation id="6000860861660592745">चुना गया विकल्प सेव किया गया</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6011308810877101166">खोज से जुड़े सुझावों को बेहतर बनाएं</translation>
 <translation id="6013305291643746595">पुराने से नए के क्रम में लगाया जा रहा है</translation>
@@ -1289,6 +1294,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6095578583683628124">अगर Google आपका डिफ़ॉल्ट सर्च इंजन भी है, तो आपको बेहतर और संदर्भ के हिसाब से ज़्यादा काम के सुझाव मिलेंगे</translation>
 <translation id="6104768972315313991">जनरेट किया गया क्यूआर कोड</translation>
 <translation id="610630277578876674">मैसेज में लिंक को तेज़ी से खोलें और अन्य सुविधाएं पाएं</translation>
+<translation id="6110067234345111822">आपके देश/इलाके के कानून के आधार पर, आपको Chrome के लिए अपना सर्च इंजन चुनना होगा</translation>
 <translation id="6112702117600201073">पृष्‍ठ रीफ्रेश किया जा रहा है</translation>
 <translation id="612221930823678863">क्वेरी की जगह <ph name="QUERY" /> वाला यूआरएल</translation>
 <translation id="6122831415929794347">क्या आप सुरक्षित ब्राउज़िंग की सुविधा का इस्तेमाल बंद करना चाहते हैं?</translation>
@@ -1456,6 +1462,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6659594942844771486">टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="6669390930482049506">मुझे सूचना दें</translation>
+<translation id="6670742294143102726">अपनी खोज में जोड़ने के लिए, एक या उससे ज़्यादा टैब चुनें</translation>
 <translation id="6671495933530132209">इमेज की कॉपी बनाएं</translation>
 <translation id="6672697278890207089">अपना पासफ़्रेज दर्ज करें</translation>
 <translation id="6675622031235530028">Chrome बंद करने के लिए, Ctrl+Q दबाकर रखें</translation>
@@ -1587,6 +1594,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> को बंद करें</translation>
 <translation id="7121179479711575744">Chrome में साइन इन करें</translation>
 <translation id="7130633106249192408">इस डिवाइस से ब्राउज़िंग डेटा मिटाएं</translation>
+<translation id="7134511521562699550">पता बार में</translation>
 <translation id="7136694880210472378">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 साइट के लिए अनुमतियों की समीक्षा की गई}one{# साइट के लिए अनुमतियों की समीक्षा की गई}other{# साइटों के लिए अनुमतियों की समीक्षा की गई}}</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -1619,6 +1627,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7196455519852483601">आपके पास अपना ब्राउज़िंग इतिहास, कुकी, साइट डेटा, और अन्य डेटा का कुछ हिस्सा या पूरा डेटा मिटाने का विकल्प है</translation>
 <translation id="7197682514647286393">ब्राउज़िंग डेटा को तुरंत मिटाएं</translation>
 <translation id="719791532916917144">कीबोर्ड शॉर्टकट</translation>
+<translation id="7198747540865146057">अपना डिफ़ॉल्ट सर्च इंजन चुनें</translation>
 <translation id="7203150201908454328">विस्तृत</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> टैब को, नए बैकग्राउंड वाले टैब की तरह पहले जैसा करें.</translation>
 <translation id="7217781228893594884">Chrome बंद करने पर, गुप्त टैब लॉक हो जाएंगे</translation>
@@ -1930,6 +1939,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> टैब ग्रुप}one{<ph name="TAB_GROUPS_MANY" /> टैब ग्रुप}other{<ph name="TAB_GROUPS_MANY" /> टैब ग्रुप}}</translation>
 <translation id="8387617938027387193">अपनी पहचान की पुष्टि करें</translation>
+<translation id="8392241619862061825">Gemini का शॉर्टकट बटन दिखाएं</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8398389123831319859">गुप्त मोड पर स्विच करने के लिए, दो बार टैप करके रखें</translation>
 <translation id="8401904657382223224">होस्ट के हिसाब से फ़िल्टर करें</translation>
@@ -2011,6 +2021,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8639963783467694461">ऑटोमैटिक भरना की सेटिंग...</translation>
 <translation id="8642256427178803328">'Chrome इस्तेमाल न करने पर, गुप्त टैब लॉक करें' को टॉगल करके चालू करें</translation>
 <translation id="8644482734962137770">Gemini को Chrome इस्तेमाल करने की अनुमति चाहिए</translation>
+<translation id="8653883575875371543">Gemini को टूलबार में दिखाएं</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करें</translation>
 <translation id="8664979001105139458">इस नाम की फ़ाइल पहले से मौजूद है</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> में साइन अप करें</translation>

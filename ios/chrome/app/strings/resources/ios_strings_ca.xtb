@@ -1214,6 +1214,7 @@
 <translation id="479628432297359449">Vols aturar la baixada?</translation>
 <translation id="4796496140132859135">Grup de pestanyes. Replegat.</translation>
 <translation id="4800912004582762296">Fer clic</translation>
+<translation id="4800930308997591052">Canvia a <ph name="EMAIL" /> per compartir pestanyes fàcilment entre els teus dispositius i obtenir les contrasenyes, les adreces d'interès i més dades del teu Compte de Google.</translation>
 <translation id="4802185666270672526">Amaga l'opció Sol·licita el lloc web per a ordinadors</translation>
 <translation id="4803185665210547709">Gestionat per la teva organització.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -2148,6 +2149,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7618220760967055820">Tria quin botó vols que es mostri a la barra d'eines</translation>
 <translation id="7620522820075868385">Cancel·la</translation>
 <translation id="762078666799342162">Pots veure les baixades anteriors a <ph name="BEGIN_LINK" />Fitxers<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Continua des d'on ho vas deixar a l'ordinador</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Contrasenyes en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
 <translation id="7640669552036055091">Pestanyes d'Android</translation>
@@ -2690,7 +2692,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="942624946817804130">Exporta</translation>
-<translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="94870150074703282">Vols suprimir el grup?</translation>
 <translation id="951090530321144895">Emissors de CA</translation>
 <translation id="952704832371081537">Cancel·la</translation>

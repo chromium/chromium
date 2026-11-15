@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975761176769946178">Изисква се URL адрес</translation>
 <translation id="297667759942911166">Сътрудничество в групи раздели</translation>
+<translation id="2986080119218811913">Назад към <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">За да използвате Gemini в Chrome, влезте в браузъра с профила си в Google</translation>
 <translation id="2987670534697681860">Потвърдете самоличността си, за да имате достъп до всичките си пароли на това устройство.</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
@@ -1214,6 +1215,7 @@
 <translation id="479628432297359449">Искате ли да спрете изтеглянето?</translation>
 <translation id="4796496140132859135">Група раздели. Свита.</translation>
 <translation id="4800912004582762296">Кликва</translation>
+<translation id="4800930308997591052">Превключете към <ph name="EMAIL" />, за да споделяте безпроблемно раздели между устройствата си и да получите достъп до паролите, отметките си и др. от профила ви в Google.</translation>
 <translation id="4802185666270672526">Скриване на „Заявка за настолния сайт“</translation>
 <translation id="4803185665210547709">Управлява се от организацията ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1290,6 +1292,7 @@
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />). Управлява се от организацията ви.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Цветът на групата раздели е <ph name="COLOR" /></translation>
+<translation id="500126251490468002">В Google Мениджър на пароли няма парола за този сайт. Върнете се към <ph name="ACTOR_NAME" />, за да влезете в профила си, или добавете парола към Google Мениджър на пароли.</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="5009127379503001909">Продължаване на разглеждането</translation>
@@ -2148,6 +2151,7 @@
 <translation id="7618220760967055820">Изберете кой бутон да се показва в лентата с инструменти</translation>
 <translation id="7620522820075868385">Отказ</translation>
 <translation id="762078666799342162">Можете да прегледате файловете, които сте изтеглили по-рано, във <ph name="BEGIN_LINK" />Файлове<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Продължете оттам, откъдето сте прекъснали на компютъра си</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="7640669552036055091">Раздели от Android</translation>

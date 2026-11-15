@@ -2312,6 +2312,7 @@
 <translation id="4850886885716139402">表示</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="4855395119669662878">管理者は <ph name="DATE_TIME" /> に <ph name="CLOUD_PROVIDER" /> へのファイルのアップロードを開始します。ファイルのアップロードが完了するまでデバイスを接続したままにしてください。アップロード中は、ローカル ファイルの読み取りのみが可能です。</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> のプライベート パスの設定で、<ph name="HOW_INFO_IS_USED_LINK" />を管理できます。</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
 <translation id="4860260582253463350">YouTube にアクセスするには本人確認が必要です。保護者の方がファミリー リンクで設定した内容が反映されます。</translation>
 <translation id="4861514638281352187">Redress 番号を安全に追加</translation>
@@ -4895,7 +4896,6 @@
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9193018794001479794">より詳しく</translation>
 <translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> に質問する</translation>
-<translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9198613052465150219">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>
