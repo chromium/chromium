@@ -57,6 +57,10 @@
   max-height: var(--cr-searchbox-height);
 }
 
+#suggestionActivity {
+  padding-bottom: 0;
+}
+
 #inputContainer {
   box-sizing: border-box;
   display: flex;
