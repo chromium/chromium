@@ -483,7 +483,7 @@
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2458827363789845126">{count,plural, =1{‫{count} مورد از سابقه}one{‫{count} مورد از سابقه}other{‫{count} مورد از سابقه}}</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
-<translation id="2462736546165239215">می‌توانید همه سابقه مرورتان را در اینجا ببینید.</translation>
+<translation id="2462736546165239215">می‌توانید کل سابقه مرورتان را در اینجا ببینید.</translation>
 <translation id="2466518891828668184">گذرواژه‌هایتان را ذخیره کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
@@ -1555,7 +1555,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5912796581727968237">‏باز کردن «کیف پول Google»</translation>
 <translation id="5922999516621365983">برای سنجاق کردن زبانه، آن را اینجا بکشید.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{تا ۱ فایل، زبانه، یا تصویر اضافه کنید}one{تا {COUNT} فایل، زبانه، یا تصویر اضافه کنید}other{تا {COUNT} فایل، زبانه، یا تصویر اضافه کنید}}</translation>
-<translation id="5936006948844852401">مدیریت کردن فضای ذخیره‌سازی</translation>
+<translation id="5936006948844852401">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="5936065461722368675">ترجمه کل صفحه</translation>
 <translation id="5937560539988385583">صفحه ترجمه شد</translation>
 <translation id="5938160824633642847">دستگاهتان تقریباً پر است. فضا آزاد کنید و دوباره امتحان کنید.</translation>

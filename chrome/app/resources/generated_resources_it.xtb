@@ -4768,7 +4768,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4622051949285931942">Vuoi disattivare gli aggiornamenti automatici?</translation>
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4623894491222334521">Documenti di identità</translation>
-<translation id="4624054169152573743">Tema a colori</translation>
+<translation id="4624054169152573743">Tema cromatico</translation>
 <translation id="4625350031596795804">Stile selezione grande</translation>
 <translation id="4625905218692741757">Colore predefinito grigio</translation>
 <translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
@@ -8498,7 +8498,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7502528909759062987">Metti in pausa la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Torna a Gemini</translation>
 <translation id="7502804472671406749">È possibile scorrere e aumentare lo zoom delle schede condivise</translation>
-<translation id="750314150962284310">Selezione riga</translation>
+<translation id="750314150962284310">Evidenziazione riga</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
 <translation id="7503259455663961898">Modifica per me</translation>
 <translation id="7503985202154027481">Sul tuo token di sicurezza verrà memorizzato un record della tua visita a questo sito.</translation>
@@ -9146,7 +9146,7 @@ File di chiave: <ph name="KEY_FILE" />
 
 Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove versioni dell'estensione.</translation>
 <translation id="8000020256436988724">Barra degli strumenti</translation>
-<translation id="800117767980299235">Punto saliente vocale</translation>
+<translation id="800117767980299235">Evidenziazione vocale</translation>
 <translation id="8001561107130904792">Condivisione dei contenuti della pagina</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
 <translation id="8002597610026749658">Chrome può creare sottotitoli codificati per le lingue mostrate qui</translation>

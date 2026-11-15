@@ -2097,7 +2097,7 @@
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
 <translation id="4489977488133295402">先驗證身分再自動填入付款方式</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
+<translation id="449126573531210296">使用 Google 帳戶為已同步的密碼加密</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4497843134750481377">管理優惠</translation>
 <translation id="4500587658229086076">不安全的內容</translation>
@@ -3831,7 +3831,7 @@
       &lt;li&gt;前往 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 說明中心&lt;/a&gt;瞭解如何將該軟體從電腦上永久移除
       &lt;/ol&gt;</translation>
 <translation id="7410852728357935715">投放到裝置</translation>
-<translation id="741204030948306876">是，我要啟用</translation>
+<translation id="741204030948306876">啟用同步功能</translation>
 <translation id="7412081313067625215">卡片已儲存至 Google 錢包，日後購物時會自動填入卡片資訊</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4458,7 +4458,7 @@
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8461289985785035071">編輯補救號碼 (Redress number)</translation>
-<translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
+<translation id="8461694314515752532">使用自己的同步通關密語，為已同步的資料加密</translation>
 <translation id="8461973047386722744">找不到密碼</translation>
 <translation id="8467494337615822642">前往設定中的 Chrome 安全檢查頁面</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

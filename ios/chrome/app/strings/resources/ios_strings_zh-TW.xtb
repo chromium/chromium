@@ -806,7 +806,7 @@
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530024057633834563">目前未儲存任何密碼或密碼金鑰。不過，你可以刪除你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
-<translation id="3530767473765895035">管理這部裝置上的帳戶</translation>
+<translation id="3530767473765895035">管理這部裝置上的帳戶…</translation>
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3534738261102690620">問問 Gemini</translation>
 <translation id="3540141921715814660">加入書籤</translation>
@@ -828,7 +828,7 @@
 <translation id="3585482760087850407">這個網站的相機存取權</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587558433833997099">使用相機或在圖片上辨識、購買或翻譯所見事物</translation>
-<translation id="3587885837929752825">貴機構對你能在 Google 帳戶中儲存的內容設有限制。</translation>
+<translation id="3587885837929752825">貴機構已限制你能在 Google 帳戶中儲存的內容。</translation>
 <translation id="3588820906588687999">在新分頁開啟圖片</translation>
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="3602260545951981695">選擇「強化防護」</translation>
@@ -1546,7 +1546,7 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889333064153755823">刪除瀏覽資料</translation>
 <translation id="5896576662943111387">專為 iOS 打造</translation>
-<translation id="5897749768294722429">如要快速造訪先前瀏覽的網站，請同步處理分頁和歷史記錄。</translation>
+<translation id="5897749768294722429">同步分頁和歷史記錄，即可快速造訪先前瀏覽的網站。</translation>
 <translation id="5898848375214731122">質量</translation>
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方使用相機或 QR 掃描器應用程式掃描這個 QR code</translation>
 <translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
@@ -2037,7 +2037,7 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 篇未讀文章。</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">繼續</translation>
-<translation id="741204030948306876">是，我要啟用</translation>
+<translation id="741204030948306876">啟用同步功能</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>

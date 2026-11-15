@@ -1442,7 +1442,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, 고정되고 녹화 중인 시크릿 탭</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
 <translation id="6745063744988317486">Mono</translation>
-<translation id="6746338529702829275">계정 데이터 검토</translation>
+<translation id="6746338529702829275">계정 데이터를 검토합니다</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6754359471209693699">새 검색 시작</translation>
 <translation id="6756507620369789050">의견 공유</translation>
@@ -1578,7 +1578,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7182051712900867547">다른 계정 사용</translation>
 <translation id="7182520625618447753">주소 표시줄 위치를 상단 또는 하단으로 전환하여 탐색 환경을 맞춤설정하세요.</translation>
 <translation id="7183517696921903380">앱 필터 시트가 열렸습니다.</translation>
-<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
+<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식을 제어합니다</translation>
 <translation id="7189516830800112767">{NUM_TABS,plural, =1{탭 고정을 닫으려면 Ctrl+W 키를 다시 누르세요}other{탭 고정을 닫으려면 Ctrl+W 키를 다시 누르세요}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />님을 차단하시겠습니까?</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>

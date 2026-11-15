@@ -1845,7 +1845,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6750456911389438250">{count,plural, =1{Imported {count} history item}other{Imported {count} history items}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} option for credential available above your keyboard.}other{{count} options for credential available above your keyboard.}}</translation>
 <translation id="6753460329812070808">Suggestion removed from Chrome</translation>
-<translation id="6755200887046212842">Manage Accounts</translation>
+<translation id="6755200887046212842">Manage accounts</translation>
 <translation id="6757899787818440812">Medium height</translation>
 <translation id="6759709389246683070">You can touch and hold this tab to set a reminder to revisit later</translation>
 <translation id="6761393919622941301">Audio</translation>
@@ -2364,7 +2364,7 @@ You can restart at any time.</translation>
 <translation id="8366466717204352506">Check never run</translation>
 <translation id="8367705492654390392">Ask anything</translation>
 <translation id="8368001212524806591">Track price</translation>
-<translation id="8368198938968349418">Turn on Autofill…</translation>
+<translation id="8368198938968349418">Turn on AutoFill…</translation>
 <translation id="8370406443343902172">Go to Settings...</translation>
 <translation id="8370929854657845191">Expand to medium</translation>
 <translation id="8371494817541821097">Passkey created on <ph name="DATE" /></translation>

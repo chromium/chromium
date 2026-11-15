@@ -694,7 +694,7 @@
 <translation id="6320212353742551423">Arxiu <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Salutació</translation>
 <translation id="6327785803543103246">Detecció automàtica de servidors intermediaris web</translation>
-<translation id="6356685157277930264">Finestra de suggeriments en fitxers</translation>
+<translation id="6356685157277930264">Finestra de comentaris en fitxers</translation>
 <translation id="6358884629796491903">Drac</translation>
 <translation id="636254897931573416">Valor no vàlid de sufix de domini coincident</translation>
 <translation id="6364301859968397756">L'emmagatzematge de l'organització està ple</translation>
@@ -1090,7 +1090,7 @@
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="941005944931359847">Búlgar</translation>
 <translation id="943972244133411984">Modificat per</translation>
-<translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="947144732524271678">S'ha seleccionat un interval de <ph name="ENTRY_COUNT" /> entrades, de l'entrada <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">La política de l'administrador impedeix:</translation>
 <translation id="965477715979482472">Anglès (Sud-àfrica)</translation>

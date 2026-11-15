@@ -345,7 +345,7 @@
 <translation id="2364498172489649528">Comprovació superada</translation>
 <translation id="2367335866686097760">Clau del mapatge de teclat</translation>
 <translation id="2380886658946992094">Legal</translation>
-<translation id="2391082728065870591">Envia un informe de suggeriments</translation>
+<translation id="2391082728065870591">Envia un informe de comentaris</translation>
 <translation id="2407209115954268704">Estat de bloqueig de la SIM</translation>
 <translation id="240798792848608143">Per obtenir la transcripció en <ph name="LANGUAGE_NAME" />, reinicia el dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Torna a obrir la tapa per fer la prova</translation>
@@ -1568,7 +1568,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8028993641010258682">Mida</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
-<translation id="8041089156583427627">Envia suggeriments</translation>
+<translation id="8041089156583427627">Envia comentaris</translation>
 <translation id="8045012663542226664">Silenci del micròfon</translation>
 <translation id="8054112564438735763">beix</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> sobre un fons <ph name="CHARACTERS_BACKGROUND" /></translation>
@@ -1831,7 +1831,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9211490828691860325">Tots els escriptoris</translation>
 <translation id="9218016617214286986">Mostra els APN coneguts</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
 <translation id="950520315903467048">Falta la tecla per a <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparar les veus al llarg de la gravació perquè la transcripció reflecteixi què ha dit cada interlocutor i en quin moment</translation>
 <translation id="952992212772159698">No activat</translation>
