@@ -38,6 +38,13 @@ class HTMLHeadingElement final : public HTMLElement {
   }
 };
 
+template <>
+struct DowncastTraits<HTMLHeadingElement> {
+  static bool AllowFrom(const Node& node) {
+    return node.GetElementType() == ElementType::kHTMLHeadingElement;
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_HEADING_ELEMENT_H_

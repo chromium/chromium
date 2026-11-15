@@ -40,7 +40,9 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_heading_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
+#include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -101,6 +103,40 @@ bool IsEditableRootPhrasingContent(const Position& position) {
   }
   return EnclosingNodeOfType(FirstPositionInOrBeforeNode(*editable_root),
                              IsPhrasingContent);
+}
+
+// Returns true if element cannot have the new paragraph element as a child.
+// CreateDefaultParagraphElement() creates the new paragraph element: a <div>
+// by default, or a <p> if "defaultParagraphSeparator" is set to "p". Neither
+// is allowed in <p>, <h1>-<h6>, or phrasing content elements such as <span>,
+// because those elements can contain only phrasing content.
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element
+// https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements
+// https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
+bool CannotHaveDivElementChild(const Element& element) {
+  return IsPhrasingContent(&element) || IsA<HTMLParagraphElement>(element) ||
+         IsA<HTMLHeadingElement>(element);
+}
+
+// Returns true if `start_block`, the enclosing block of `position`, is an
+// editing host which cannot have a new paragraph, e.g.,
+// `<span contenteditable style="display:block">` or `<p contenteditable>`.
+// DoApply() would nest a new paragraph into such a host, so a line break should
+// be inserted instead. If `start_block` is a block inside the editing host,
+// e.g., `<span contenteditable><div>a|b</div></span>`, `start_block` should be
+// split as usual.
+bool ShouldInsertLineBreakInEditingHost(const Position& position,
+                                        const Element& start_block) {
+  if (!RuntimeEnabledFeatures::
+          InsertParagraphInEditingHostCannotHaveDivEnabled()) {
+    // TODO(editing-dev): Remove this and IsEditableRootPhrasingContent() with
+    // the InsertParagraphInEditingHostCannotHaveDiv flag.
+    return IsEditableRootPhrasingContent(position);
+  }
+  // Don't use HighestEditableRoot() here. It differs from the editing host if
+  // the editing host is in a non-editable element in another editing host.
+  return IsRootEditableElement(start_block) &&
+         CannotHaveDivElementChild(start_block);
 }
 
 bool IsDisplayInlineType(const HTMLElement* element) {
@@ -279,7 +315,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   Position canonical_pos =
       CreateVisiblePosition(insertion_position).DeepEquivalent();
   if (!start_block || !start_block->NonShadowBoundaryParentNode() ||
-      IsEditableRootPhrasingContent(insertion_position) ||
+      ShouldInsertLineBreakInEditingHost(insertion_position, *start_block) ||
       IsDisplayInlineType(list_child) || IsTableCell(start_block) ||
       IsA<HTMLFormElement>(*start_block) ||
       start_block->HasTagName(html_names::kPreTag) ||

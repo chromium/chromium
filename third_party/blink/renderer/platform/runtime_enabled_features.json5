@@ -4040,6 +4040,15 @@
       name: "InsertBlockquoteBeforeOuterBlock",
       status: "stable",
     },
+    // Make insertParagraph insert a line break instead of a <div> when the
+    // editing host cannot have a <div>, e.g., <p contenteditable>, and split a
+    // block inside such an editing host instead of inserting a line break.
+    // Kill switch, enabled by default in M160.
+    // crbug.com/40869970
+    {
+      name: "InsertParagraphInEditingHostCannotHaveDiv",
+      status: "stable",
+    },
     {
       name: "InstalledApp",
       public: true,

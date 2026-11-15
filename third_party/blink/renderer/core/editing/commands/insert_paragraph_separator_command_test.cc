@@ -131,6 +131,7 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObjectWithFloat) {
 }
 
 // crbug.com/1420675
+// A block in an editing host which cannot have a <div> should be split.
 TEST_F(InsertParagraphSeparatorCommandTest, PhrasingContent) {
   const char* html = R"HTML("
     <span contenteditable>
@@ -141,8 +142,8 @@ TEST_F(InsertParagraphSeparatorCommandTest, PhrasingContent) {
   const char* expected_html = R"HTML("
     <span contenteditable>
       <div>
-        <span>a<br>|<br></span>
-      </div>
+        <span>a</span>
+      </div><div><span>|<br></span></div>
     </span>)HTML";
   Selection().SetSelection(SetSelectionTextToBody(html), SetSelectionOptions());
   auto* command =
