@@ -228,6 +228,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
           data: "Sends the locale of the user, "
                 "to ensure string localizations are correct."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "type.googleapis.com"
           internal {
             contacts {
               email: "chrome-desktop-ntp@google.com"
@@ -291,6 +292,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
           data: "Sends the locale of the user, "
                 "to ensure string localizations are correct."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "type.googleapis.com"
           internal {
             contacts {
               email: "chrome-desktop-ntp@google.com"
@@ -465,6 +467,7 @@ void WallpaperSearchHandler::SetBackgroundToInspirationImage(
             "and the user is signed in."
           data: "This request does not send any user data."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "type.googleapis.com"
           internal {
             contacts {
               email: "chrome-desktop-ntp@google.com"
