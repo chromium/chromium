@@ -441,6 +441,8 @@ if (is_win || is_mac || is_linux) {
         "linux/setup/linux_setup.cc",
         "linux/systemd_util.cc",
         "linux/systemd_util.h",
+        "net/network_fetcher_libcurl.cc",
+        "net/network_fetcher_libcurl.h",
         "net/network_fetcher_linux.cc",
         "setup_linux.cc",
         "update_service_internal_impl_qualifying_linux.cc",
