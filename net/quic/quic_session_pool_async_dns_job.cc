@@ -1145,6 +1145,30 @@ const base::flat_set<std::string>* QuicSessionPool::AsyncDnsJob::GetDnsAliases()
   return &service_endpoint_request_->GetDnsAliasResults();
 }
 
+std::optional<IPEndPoint> QuicSessionPool::AsyncDnsJob::GetFallbackIpv4Address(
+    const IPEndPoint& ipv6_endpoint) const {
+  if (!ipv6_endpoint.address().IsIPv6()) {
+    return std::nullopt;
+  }
+  for (const UsableEndpoint& usable : GetUsableEndpoints()) {
+    if (std::ranges::contains(usable.endpoint.ipv6_endpoints, ipv6_endpoint) &&
+        !usable.endpoint.ipv4_endpoints.empty()) {
+      return usable.endpoint.ipv4_endpoints.front();
+    }
+  }
+  return std::nullopt;
+}
+
+void QuicSessionPool::AsyncDnsJob::MaybeUpdateFallbackIpv4Addresses(
+    ConnectionState& state) {
+  for (EndpointConnector* connector :
+       {state.primary_connector.get(), state.secondary_connector.get()}) {
+    if (connector) {
+      connector->MaybeUpdateFallbackIpv4Address();
+    }
+  }
+}
+
 std::optional<int>
 QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   if (MaybePoolToExistingSession()) {
@@ -1157,6 +1181,7 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   ConnectionState& state = service_endpoint_request_->IsStaleWhileRefreshing()
                                ? stale_state_
                                : fresh_state_;
+  MaybeUpdateFallbackIpv4Addresses(state);
 
   // We already checked for eager pooling matches. Since none were found,
   // there is nothing to do while every connector keeps an attempt in flight.

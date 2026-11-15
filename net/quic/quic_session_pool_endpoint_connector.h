@@ -106,6 +106,9 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   // existing session with a matching IP.
   void CancelForPooling();
 
+  // Updates the fallback IPv4 address on the current IPv6 attempt, if any.
+  void MaybeUpdateFallbackIpv4Address();
+
   // QuicSessionAttempt::Delegate implementation.
   QuicSessionPool* GetQuicSessionPool() override;
   const QuicSessionAliasKey& GetKey() override;

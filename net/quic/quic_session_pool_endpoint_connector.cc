@@ -73,6 +73,7 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
         /*crypto_client_config_handle=*/nullptr,
         params.session_creation_initiator, params.quic_connection_reuse_details,
         params.connection_management_config, is_stale());
+    MaybeUpdateFallbackIpv4Address();
 
     int rv = attempt_->Start(base::BindOnce(
         &EndpointConnector::OnAttemptComplete, weak_factory_.GetWeakPtr()));
@@ -128,6 +129,16 @@ void QuicSessionPool::EndpointConnector::CancelForPooling() {
   RecordAttemptTime("IpPooled");
   attempt_in_flight_ = false;
   attempt_->CancelForProactiveIpPooling();
+}
+
+void QuicSessionPool::EndpointConnector::MaybeUpdateFallbackIpv4Address() {
+  if (!is_attempting_ipv6()) {
+    return;
+  }
+  if (std::optional<IPEndPoint> fallback_ipv4 =
+          job_->GetFallbackIpv4Address(attempt_->ip_endpoint())) {
+    attempt_->SetFallbackIpv4PeerAddress(*fallback_ipv4);
+  }
 }
 
 QuicSessionPool* QuicSessionPool::EndpointConnector::GetQuicSessionPool() {

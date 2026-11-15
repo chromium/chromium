@@ -255,6 +255,11 @@ class QuicSessionPool::AsyncDnsJob
   // flight.
   void OnAttemptInFlight(const EndpointConnector& connector);
 
+  // Returns the first IPv4 address from the usable ServiceEndpoint that
+  // contains `ipv6_endpoint`, or std::nullopt if none is currently available.
+  std::optional<IPEndPoint> GetFallbackIpv4Address(
+      const IPEndPoint& ipv6_endpoint) const;
+
  private:
   static const char* SuccessSourceToCompletionReason(SuccessSource source);
 
@@ -301,6 +306,10 @@ class QuicSessionPool::AsyncDnsJob
   // when an attempt is in flight, or std::nullopt when the job is waiting for
   // more resolver results.
   std::optional<int> ProcessServiceEndpointResults();
+
+  // Updates in-flight IPv6 attempts in `state` with a fallback IPv4 address
+  // if one has become available in the resolver results.
+  void MaybeUpdateFallbackIpv4Addresses(ConnectionState& state);
 
   // Advances `connector` when it has no attempt in flight. Returns what the
   // connector returned, ERR_IO_PENDING when it kept the attempt it already

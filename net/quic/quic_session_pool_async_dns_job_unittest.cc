@@ -7739,4 +7739,138 @@ TEST_P(QuicSessionPoolAsyncDnsJobProactivePoolingTest,
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+class QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest
+    : public QuicSessionPoolAsyncDnsJobTest {
+ protected:
+  QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest()
+      : QuicSessionPoolAsyncDnsJobTest(
+            EnabledFeatures({features::kEnableQuicV6ToV4Migration}),
+            DisabledFeatures(),
+            {{features::kAsyncDnsQuicJob, {}}}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AsyncQuicSession"
+                                             : "SyncQuicSession";
+                         });
+
+TEST_P(QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest,
+       FallbackIpv4AddressPopulatedWhenARecordArrivesDuringAttempt) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddConnect(SYNCHRONOUS, OK);
+  ipv6_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  ipv6_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  // 1. AAAA record arrives first; IPv6 attempt starts without an IPv4 fallback.
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    TestCompletionCallback creation_callback;
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  ASSERT_TRUE(GetPendingSession(kDefaultDestination));
+  EXPECT_FALSE(GetPendingSession(kDefaultDestination)
+                   ->fallback_ipv4_peer_address()
+                   .has_value());
+
+  // 2. A record arrives while the IPv6 handshake is still in flight.
+  endpoint_request->set_endpoints(
+      {MakeUsableDualEndpoint(kIpv6Addr1, kIpv4Addr1)});
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(ToIPEndPoint(session->peer_address()), MakeIPEndPoint(kIpv6Addr1));
+  ASSERT_TRUE(session->fallback_ipv4_peer_address().has_value());
+  EXPECT_EQ(ToIPEndPoint(*session->fallback_ipv4_peer_address()),
+            MakeIPEndPoint(kIpv4Addr1));
+
+  ipv6_data.ExpectAllReadDataConsumed();
+  ipv6_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest,
+       FallbackIpv4AddressPopulatedWhenDualEndpointAvailableAtAttemptStart) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddConnect(SYNCHRONOUS, OK);
+  ipv6_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  ipv6_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  endpoint_request->add_endpoint(
+      MakeUsableDualEndpoint(kIpv6Addr1, kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    TestCompletionCallback creation_callback;
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  ASSERT_TRUE(GetPendingSession(kDefaultDestination));
+  ASSERT_TRUE(GetPendingSession(kDefaultDestination)
+                  ->fallback_ipv4_peer_address()
+                  .has_value());
+  EXPECT_EQ(ToIPEndPoint(*GetPendingSession(kDefaultDestination)
+                              ->fallback_ipv4_peer_address()),
+            MakeIPEndPoint(kIpv4Addr1));
+
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_EQ(ToIPEndPoint(session->peer_address()), MakeIPEndPoint(kIpv6Addr1));
+  ASSERT_TRUE(session->fallback_ipv4_peer_address().has_value());
+  EXPECT_EQ(ToIPEndPoint(*session->fallback_ipv4_peer_address()),
+            MakeIPEndPoint(kIpv4Addr1));
+
+  ipv6_data.ExpectAllReadDataConsumed();
+  ipv6_data.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test
