@@ -6574,10 +6574,8 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 #endif  // !PA_BUILDFLAG(OFFICIAL) && PA_BUILDFLAG(IS_DEBUG)
 #endif  // PA_USE_DEATH_TESTS()
 
-// Not on chromecast, since gtest considers extra output from itself as a test
-// failure:
-// https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_USE_DEATH_TESTS()
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_USE_DEATH_TESTS() && \
+    PA_CONFIG(HAS_ATFORK_HANDLER)
 
 namespace {
 
@@ -6616,10 +6614,15 @@ class ThreadDelegateForPreforkHandler
 
 }  // namespace
 
-// Disabled because executing it causes Gtest to show a warning in the output,
-// which confuses the runner on some platforms, making the test report an
-// "UNKNOWN" status even though it succeeded.
-TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
+// Verifies that PartitionAlloc's prefork and postfork handlers prevent
+// deadlocks when `fork()` is called while other threads are concurrently
+// calling `malloc()` and `free()`.
+TEST(PartitionAllocPreforkTest, PreforkHandler) {
+  // Force `"fast"` death test style (`fork()` without `exec()`) so
+  // `EXPECT_EXIT()` exercises the `pthread_atfork()` handlers in the forked
+  // child instead of re-executing the test binary under `"threadsafe"` mode.
+  GTEST_FLAG_SET(death_test_style, "fast");
+
   std::atomic<bool> please_stop;
   std::atomic<int> started_threads{0};
 
@@ -6639,11 +6642,16 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   while (started_threads != kThreads) {
   }
 
+  // Call `std::_Exit(1)` instead of `std::exit(1)` to avoid running
+  // `atexit()` handlers and C++ static destructors (such as
+  // `XmlUnitTestResultPrinter`) in the forked child process, which would
+  // prematurely close the test runner's XML output stream and cause
+  // `"UNKNOWN"` test status.
   EXPECT_EXIT(
       {
         void* ptr = malloc(kAllocSize);
         FreeForTest(ptr);
-        exit(1);
+        std::_Exit(1);
       },
       ::testing::ExitedWithCode(1), "");
 
@@ -6654,7 +6662,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_USE_DEATH_TESTS()
+        // PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_ATFORK_HANDLER)
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
