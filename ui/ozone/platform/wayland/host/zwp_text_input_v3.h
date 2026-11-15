@@ -38,14 +38,23 @@ class ZwpTextInputV3Client {
                                const gfx::Range& preedit_cursor) = 0;
 
   // Called when client needs to delete all or part of the text surrounding
-  // the cursor. |index| and |length| are expected to be a byte offset of |text|
-  // passed via ZwpTextInputV3::SetSurroundingText, including preedit.
-  virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
+  // the cursor. |before_length| and |after_length| are the number of bytes
+  // before and after the current cursor index (excluding the selection) to
+  // delete. If preedit text is present, it is removed first and the deletion
+  // happens around it.
+  virtual void OnDeleteSurroundingText(uint32_t before_length,
+                                       uint32_t after_length) = 0;
 
   // Called when a complete input sequence has been entered.  The text to
   // commit could be either just a single character after a key press or the
   // result of some composing (pre-edit).
   virtual void OnCommitString(std::string_view text) = 0;
+
+  // Called after the input events of a done event have been applied, before
+  // the pending state is sent. The client should update the surrounding text
+  // to reflect the applied events, as the text input client may only update
+  // it asynchronously, i.e. after the next done event.
+  virtual void OnInputEventsApplied() = 0;
 };
 
 class ZwpTextInputV3 {
@@ -111,15 +120,11 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     uint32_t content_purpose = ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL;
   };
   struct SurroundingText {
-    // Checks equality for the sent surrounding text data.
-    bool operator==(const SurroundingText& other) const;
+    bool operator==(const SurroundingText& other) const = default;
     // These fields are sent to IME.
     std::string text;
     int32_t cursor = 0;
     int32_t anchor = 0;
-    // The following fields are used for caching only and not sent or compared.
-    size_t full_length;
-    gfx::Range delete_around_range;
   };
   struct PreeditData {
     constexpr PreeditData() = default;

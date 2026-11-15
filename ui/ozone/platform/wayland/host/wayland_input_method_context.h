@@ -80,12 +80,17 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                        const gfx::Range& preedit_cursor);
   void OnCommitString(std::string_view text);
   void OnCursorPosition(int32_t index, int32_t anchor);
-  // `index` and `length` are UTF-8 byte offsets into the surrounding text last
-  // sent to the compositor.
-  void OnDeleteSurroundingText(int32_t index, uint32_t length);
+  // `before_length` and `after_length` are the number of UTF-8 bytes to delete
+  // before and after the current cursor or preedit, excluding the selection,
+  // as in text-input-v3.
+  void OnDeleteSurroundingTextAroundCursor(uint32_t before_length,
+                                           uint32_t after_length);
   // `index` is a UTF-8 byte offset relative to the current cursor position, and
   // `length` is measured in UTF-8 bytes, as in text-input-v1.
   void OnDeleteSurroundingTextRelativeToCursor(int32_t index, uint32_t length);
+  // Sends the predicted surrounding text, which reflects the input events
+  // applied since the text input client last updated it.
+  void SendPredictedSurroundingText();
   void OnKeysym(uint32_t keysym,
                 uint32_t state,
                 uint32_t modifiers,
@@ -121,6 +126,12 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Deletes the UTF-8 byte range [`start`, `end`) of the predicted surrounding
   // text. The range must cover the current selection.
   void DeleteSurroundingTextInRange(size_t start, size_t end);
+  // Sends the surrounding text to the text input, trimmed to the maximum size
+  // allowed by the protocol.
+  void SendSurroundingText(const std::u16string& text,
+                           const gfx::Range& text_range,
+                           const gfx::Range& composition_range,
+                           const gfx::Range& selection_range);
 
   const raw_ptr<WaylandConnection>
       connection_;  // TODO(jani) Handle this better
@@ -157,7 +168,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // including dead key etc.
   CharacterComposer character_composer_;
 
-  // Stores the parameters required for OnDeleteSurroundingText.
+  // Stores the parameters required for OnCursorPosition.
   // The index moved by SetSurroundingText due to the maximum length of wayland
   // messages limitation. It is specified as 4000 bytes in the protocol spec of
   // text-input-unstable-v3.

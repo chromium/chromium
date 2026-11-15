@@ -235,8 +235,13 @@ class WaylandInputmethodContextV3Client : public ZwpTextInputV3Client {
     context_->OnCommitString(text);
   }
 
-  void OnDeleteSurroundingText(int32_t index, uint32_t length) override {
-    context_->OnDeleteSurroundingText(index, length);
+  void OnDeleteSurroundingText(uint32_t before_length,
+                               uint32_t after_length) override {
+    context_->OnDeleteSurroundingTextAroundCursor(before_length, after_length);
+  }
+
+  void OnInputEventsApplied() override {
+    context_->SendPredictedSurroundingText();
   }
 
  private:
@@ -496,14 +501,31 @@ void WaylandInputMethodContext::SetSurroundingText(
     return;
   }
 
-  size_t utf16_offset = text_range.GetMin();
-  surrounding_text_tracker_.Update(text, utf16_offset, selection_range);
+  surrounding_text_tracker_.Update(text, text_range.GetMin(), selection_range);
+  SendSurroundingText(text, text_range, composition_range, selection_range);
+}
 
+void WaylandInputMethodContext::SendPredictedSurroundingText() {
+  const auto& [surrounding_text, utf16_offset, selection, composition] =
+      surrounding_text_tracker_.predicted_state();
+  SendSurroundingText(
+      surrounding_text,
+      gfx::Range(utf16_offset, utf16_offset + surrounding_text.length()),
+      composition.is_empty() ? gfx::Range::InvalidRange() : composition,
+      selection);
+}
+
+void WaylandInputMethodContext::SendSurroundingText(
+    const std::u16string& text,
+    const gfx::Range& text_range,
+    const gfx::Range& composition_range,
+    const gfx::Range& selection_range) {
   if (!text_input_v3_ && !text_input_v1_) {
     return;
   }
 
   // Convert into UTF8 unit.
+  size_t utf16_offset = text_range.GetMin();
   std::vector<size_t> offsets_for_adjustment = {
       selection_range.start() - utf16_offset,
       selection_range.end() - utf16_offset};
@@ -749,16 +771,29 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   surrounding_text_tracker_.OnSetEditableSelectionRange(new_selection_range);
 }
 
-void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
-                                                        uint32_t length) {
-  if (index < 0) {
-    LOG(ERROR) << "The deletion index is negative.";
+void WaylandInputMethodContext::OnDeleteSurroundingTextAroundCursor(
+    uint32_t before_length,
+    uint32_t after_length) {
+  const auto& [surrounding_text, utf16_offset, selection, composition] =
+      surrounding_text_tracker_.predicted_state();
+  CHECK(selection.IsValid(), base::NotFatalUntil::M163);
+
+  // The preedit text is removed before the deletion, so delete around it if
+  // present. The lengths exclude the selection.
+  const gfx::Range& range = composition.is_empty() ? selection : composition;
+  std::vector<size_t> offsets = {range.GetMin() - utf16_offset,
+                                 range.GetMax() - utf16_offset};
+  const std::string text_utf8 =
+      base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+  if (std::ranges::contains(offsets, std::u16string::npos)) {
+    LOG(ERROR) << "The selection range for surrounding text is invalid.";
     return;
   }
-  // Move by offset calculated in SetSurroundingText to adjust to the original
-  // text place.
-  const size_t start = surrounding_text_offset_ + index;
-  DeleteSurroundingTextInRange(start, start + length);
+
+  // Clamp the deletion to the surrounding text.
+  DeleteSurroundingTextInRange(
+      offsets[0] - std::min<size_t>(before_length, offsets[0]),
+      std::min<size_t>(offsets[1] + after_length, text_utf8.size()));
 }
 
 void WaylandInputMethodContext::OnDeleteSurroundingTextRelativeToCursor(

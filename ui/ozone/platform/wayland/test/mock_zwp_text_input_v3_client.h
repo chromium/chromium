@@ -26,8 +26,9 @@ class MockZwpTextInputV3Client : public ZwpTextInputV3Client {
   MOCK_METHOD(void, OnCommitString, (std::string_view text), (override));
   MOCK_METHOD(void,
               OnDeleteSurroundingText,
-              (int32_t index, uint32_t length),
+              (uint32_t before_length, uint32_t after_length),
               (override));
+  MOCK_METHOD(void, OnInputEventsApplied, (), (override));
 };
 
 }  // namespace ui
