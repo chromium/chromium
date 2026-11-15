@@ -321,7 +321,6 @@ public class BrowsingDataBridgeTest {
         // Check that frozen state was cleaned up.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    restored[0].destroy();
                     restored[0] =
                             TabStateExtractor.from(frozen[0])
                                     .contentsState
@@ -332,7 +331,6 @@ public class BrowsingDataBridgeTest {
         assertEquals(0, controller.getLastCommittedEntryIndex());
         assertThat(getUrls(controller), Matchers.contains(url2));
         assertNull(frozen[0].getWebContents());
-        ThreadUtils.runOnUiThreadBlocking(() -> restored[0].destroy());
     }
 
     /**

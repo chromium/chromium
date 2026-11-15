@@ -41,7 +41,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
-#include "third_party/jni_zero/jni_zero.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -186,8 +185,9 @@ WebContents* WebContents::FromJavaWebContents(
     return NULL;
 
   WebContentsAndroid* web_contents_android =
-      Java_WebContentsImpl_getNativePointer(AttachCurrentThread(),
-                                            jweb_contents_android);
+      reinterpret_cast<WebContentsAndroid*>(
+          Java_WebContentsImpl_getNativePointer(AttachCurrentThread(),
+                                                jweb_contents_android));
   if (!web_contents_android)
     return NULL;
   return web_contents_android->web_contents();
@@ -196,7 +196,9 @@ WebContents* WebContents::FromJavaWebContents(
 // static
 static void JNI_WebContentsImpl_DestroyWebContents(
     JNIEnv* env,
-    WebContentsAndroid* web_contents_android) {
+    int64_t jweb_contents_android_ptr) {
+  WebContentsAndroid* web_contents_android =
+      reinterpret_cast<WebContentsAndroid*>(jweb_contents_android_ptr);
   if (!web_contents_android)
     return;
 
@@ -212,7 +214,8 @@ WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
       navigation_controller_(&(web_contents->GetController())) {
   JNIEnv* env = AttachCurrentThread();
   java_peer_id_ = Java_WebContentsImpl_createAndGetPeerId(
-      env, jni_zero::MakeRaw(this), navigation_controller_.GetJavaObject());
+      env, reinterpret_cast<intptr_t>(this),
+      navigation_controller_.GetJavaObject());
 }
 
 WebContentsAndroid::~WebContentsAndroid() {
