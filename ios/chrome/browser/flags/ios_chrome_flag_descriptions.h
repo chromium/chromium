@@ -999,6 +999,11 @@ inline constexpr char kGeminiMultiTabContextName[] = "Gemini Multi Tab Context";
 inline constexpr char kGeminiMultiTabContextDescription[] =
     "Enables attaching multiple tabs in Gemini.";
 
+inline constexpr char kGeminiNativeHeaderName[] = "Gemini Native Header";
+inline constexpr char kGeminiNativeHeaderDescription[] =
+    "When enabled, replaces the Gemini SDK header with the Chrome native "
+    "header. Requires 'iOS Gemini Bottom Sheet Migration' to be enabled.";
+
 inline constexpr char kGeminiPreciseLocationName[] = "BWG Precise Location";
 inline constexpr char kGeminiPreciseLocationDescription[] =
     "When enabled, the precise location row is shown in BWG settings.";

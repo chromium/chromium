@@ -1009,3 +1009,10 @@ BASE_FEATURE(kGeminiHostExperimentIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiHostExperimentIDsEnabled() {
   return base::FeatureList::IsEnabled(kGeminiHostExperimentIDs);
 }
+
+BASE_FEATURE(kGeminiNativeHeader, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiNativeHeaderEnabled() {
+  return IsIOSGeminiBottomSheetMigrationEnabled() &&
+         base::FeatureList::IsEnabled(kGeminiNativeHeader);
+}

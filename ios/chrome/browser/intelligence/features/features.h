@@ -564,4 +564,11 @@ BASE_DECLARE_FEATURE(kGeminiHostExperimentIDs);
 // Returns true if `kGeminiHostExperimentIDs` is enabled.
 bool IsGeminiHostExperimentIDsEnabled();
 
+// Feature flag to replace the Gemini SDK header with the Chrome native header.
+BASE_DECLARE_FEATURE(kGeminiNativeHeader);
+
+// Returns true if both `kGeminiNativeHeader` and
+// `kIOSGeminiBottomSheetMigration` are enabled.
+bool IsGeminiNativeHeaderEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
