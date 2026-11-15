@@ -23,8 +23,14 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
   //
   // The actual system color isn't used due to fingerprinting concerns.
   // See: https://crbug.com/436597797
-  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0xb3, 0xd7, 0xff)};
-  mixer[kColorCssSystemHighlightText] = {SK_ColorBLACK};
+  const bool use_dark_selection_colors =
+      key.forced_colors == ColorProviderKey::ForcedColors::kNone &&
+      key.color_mode == ColorProviderKey::ColorMode::kDark;
+  mixer[kColorCssSystemHighlight] = {use_dark_selection_colors
+                                         ? SkColorSetRGB(0x3f, 0x63, 0x8b)
+                                         : SkColorSetRGB(0xb3, 0xd7, 0xff)};
+  mixer[kColorCssSystemHighlightText] = {
+      use_dark_selection_colors ? SK_ColorWHITE : SK_ColorBLACK};
 }
 
 }  // namespace ui

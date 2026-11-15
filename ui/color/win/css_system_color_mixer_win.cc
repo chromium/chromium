@@ -20,8 +20,6 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
     mixer[kColorCssSystemBtnFace] = {kColorNativeBtnFace};
     mixer[kColorCssSystemBtnText] = {kColorNativeBtnText};
     mixer[kColorCssSystemGrayText] = {kColorNativeGrayText};
-    mixer[kColorCssSystemHighlight] = {kColorNativeHighlight};
-    mixer[kColorCssSystemHighlightText] = {kColorNativeHighlightText};
     mixer[kColorCssSystemHotlight] = {kColorNativeHotlight};
     mixer[kColorCssSystemMenuHilight] = {kColorNativeMenuHilight};
     mixer[kColorCssSystemScrollbar] = {kColorNativeScrollbar};
@@ -32,6 +30,19 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
     mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
     mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
     mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
+  }
+
+  // In general, leave the Highlight colors at their defaults, which match the
+  // text selection colors as required by the CSS specification.
+  // https://www.w3.org/TR/css-color-4/#css-system-colors
+  //
+  // If we are forcing system colors, however, text selection evaluation
+  // looks to the system highlight color for resolution. The two will still
+  // be in sync, but this becomes the source of truth, so should be mapped
+  // to the actual native color. crbug.com/40262493
+  if (key.forced_colors == ColorProviderKey::ForcedColors::kSystem) {
+    mixer[kColorCssSystemHighlight] = {kColorNativeHighlight};
+    mixer[kColorCssSystemHighlightText] = {kColorNativeHighlightText};
   }
 }
 

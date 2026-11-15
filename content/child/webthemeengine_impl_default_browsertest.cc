@@ -4,9 +4,9 @@
 
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/browser_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -30,11 +30,6 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
   if (base::win::OSInfo::GetInstance()->version_type() ==
       base::win::VersionType::SUITE_SERVER) {
     return;
-  }
-  // TODO(crbug.com/550092588): Disabled on Win11 due to highlighter color
-  // difference.
-  if (base::win::GetVersion() >= base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping on Win11 due to highlighter color difference.";
   }
   GURL url(
       "data:text/html,"
@@ -122,18 +117,18 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                                   "windowFrame",
                                   "windowText"};
   const std::vector<std::string> expected_colors = {
-      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 102, 204)",
-      "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
-      "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
-      "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
+      "rgb(0, 0, 0)",          "rgb(255, 255, 255)", "rgb(0, 102, 204)",
+      "rgb(255, 255, 255)",    "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+      "rgb(240, 240, 240)",    "rgb(240, 240, 240)", "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",    "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",    "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
+      "rgba(0, 65, 198, 0.8)", "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",    "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",          "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",          "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+      "rgb(240, 240, 240)",    "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+      "rgb(0, 0, 0)",          "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",          "rgb(0, 0, 0)"};
 
   ASSERT_EQ(ids.size(), expected_colors.size());
 
