@@ -24,7 +24,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createSuggestTemplateInfo, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -3345,6 +3345,78 @@ suite('NewTabPageAppTest', () => {
     test('Contextual entrypoint IPH', () => {
       assertTrue(app.canShowHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID));
     });
+
+    test(
+        'closeComposebox owns backend resets and skips them after submit',
+        async () => {
+          const searchbox = $$<NtpSearchboxElement>(app, '#searchbox');
+          assertTrue(!!searchbox);
+
+          const resetMethods =
+              ['clearFiles', 'setActiveToolMode', 'setActiveModelMode'] as
+              const;
+          const callOrder: string[] = [];
+          const openWithActiveToolAndModel = async (text: string) => {
+            searchbox.dispatchEvent(new CustomEvent(
+                'open-composebox', {detail: {text, files: []}}));
+            await microtasksFinished();
+            const composebox =
+                app.shadowRoot.querySelector<NtpComposeboxElement>(
+                    '#composebox');
+            assertTrue(!!composebox);
+            composebox.onInputStateChanged(new MockInputState({
+              activeTool: ToolMode.kDeepSearch,
+              activeModel: ModelMode.kGeminiPro,
+            }));
+            await microtasksFinished();
+            callOrder.length = 0;
+            resetMethods.forEach(method => {
+              searchboxHandler.resetResolver(method);
+              searchboxHandler.setResultMapperFor(method, () => {
+                callOrder.push(method);
+              });
+            });
+            return composebox;
+          };
+
+          // Closing after a submit (e.g. a modifier-click that opens the
+          // results in a new tab) must leave the backend state alone, since
+          // the submitted query may still be using it.
+          let composebox = await openWithActiveToolAndModel('');
+          composebox.closeComposebox(/*afterSubmit=*/ true);
+          await microtasksFinished();
+
+          assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+          assertDeepEquals([], callOrder);
+
+          // An explicit dismiss (Escape, cancel button, or the AI Mode exit
+          // button) resets the backend state exactly once, from
+          // closeComposebox() rather than again from the app's close handler.
+          composebox = await openWithActiveToolAndModel('draft');
+          composebox.closeComposebox(/*afterSubmit=*/ false);
+          await microtasksFinished();
+
+          assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+          assertEquals('draft', searchbox.$.input.inputElement.value);
+          assertDeepEquals(
+              [
+                'setActiveToolMode',
+                'clearFiles',
+                'setActiveToolMode',
+                'setActiveModelMode',
+              ],
+              callOrder);
+          assertEquals(false, searchboxHandler.getArgs('clearFiles')[0]);
+          assertDeepEquals(
+              [
+                [ToolMode.kUnspecified, false],
+                [ToolMode.kUnspecified, false],
+              ],
+              searchboxHandler.getArgs('setActiveToolMode'));
+          assertDeepEquals(
+              [[ModelMode.kUnspecified, false]],
+              searchboxHandler.getArgs('setActiveModelMode'));
+        });
 
     suite('OutsideClick', () => {
       const BLOCKED_SELECTOR =
