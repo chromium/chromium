@@ -20,6 +20,10 @@
 class PrefService;
 class TemplateURLService;
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 // A test AimEligibilityService that returns a fixed eligibility value.
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
@@ -83,6 +87,8 @@ class LensOverlayInteractiveTestBase : public InteractiveFeaturePromoTest {
 
   void SetUp() override;
   virtual void SetUpFeatureList();
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override;
   void WaitForTemplateURLServiceToLoad();
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;

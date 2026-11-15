@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 
+#include <memory>
+
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
@@ -29,12 +33,12 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_types.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -165,12 +169,22 @@ void LensOverlayInteractiveTestBase::SetUpFeatureList() {
                             {lens::features::kLensOverlayContextualSearchbox,
                              {{"use-pdfs-as-context", "true"},
                               {"auto-focus-searchbox", "false"}}}},
-      /*disabled_features=*/{
-          contextual_tasks::kContextualTasks,
-          contextual_tasks::kContextualTasksSidePanel,
-          contextual_tasks::kContextualTasksRearchitecture,
-          contextual_tasks::kContextualTasksSidePanelRearchitecture,
-          features::kNonBlockingOsClipboardReads});
+      /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+}
+
+void LensOverlayInteractiveTestBase::SetUpBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  InteractiveFeaturePromoTest::SetUpBrowserContextKeyedServices(context);
+
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+        Profile* profile = Profile::FromBrowserContext(context);
+        return std::make_unique<TestingAimEligibilityService>(
+            /*is_aim_eligible=*/true, /*is_cobrowse_eligible=*/true,
+            CHECK_DEREF(profile->GetPrefs()),
+            TemplateURLServiceFactory::GetForProfile(profile));
+      }));
 }
 
 void LensOverlayInteractiveTestBase::WaitForTemplateURLServiceToLoad() {
