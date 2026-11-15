@@ -107,6 +107,7 @@
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
@@ -1343,7 +1344,11 @@ class ContextualTasksPinningV2ParamMixin
     }
     // Keep the pinned actions container wide enough to never overflow and skip
     // its layout animation so popped-out buttons show synchronously.
-    this->browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 800));
+    ui_test_utils::SetAndWaitForBounds(*this->browser(),
+                                       gfx::Rect(0, 0, 1280, 800));
+    BrowserView::GetBrowserViewForBrowser(this->browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
     if (auto* pinned_actions = ToolbarButtonProvider::From(this->browser())
                                    ->GetPinnedToolbarActions()) {
       if (auto* container = views::AsViewClass<PinnedToolbarActionsContainer>(
