@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -60,6 +60,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/extension_user_activation_service.h"
 #include "extensions/browser/extension_zoom_request_client.h"
@@ -610,27 +611,26 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   BrowserWindowInterface* last_active_browser =
       browser_window_util::GetLastActiveBrowserWithProfile(
           *profile, include_incognito_information());
+  WindowController* last_active_window =
+      last_active_browser
+          ? BrowserExtensionWindowController::From(last_active_browser)
+          : nullptr;
 
-  // Note that the current browser is allowed to be null: you can still query
+  // Note that the current window is allowed to be null: you can still query
   // the tabs in this case.
-  BrowserWindowInterface* current_browser = nullptr;
-  WindowController* current_window_controller =
+  WindowController* current_window =
       ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-  if (current_window_controller) {
-    current_browser = current_window_controller->GetBrowserWindowInterface();
-    // Note: current_browser may still be null.
-  }
 
   base::ListValue result =
-      BuildTabList(current_browser, last_active_browser, url_patterns,
+      BuildTabList(current_window, last_active_window, url_patterns,
                    window_type, window_id, index);
 
   return RespondNow(WithArguments(std::move(result)));
 }
 
 base::ListValue TabsQueryFunction::BuildTabList(
-    BrowserWindowInterface* current_browser,
-    BrowserWindowInterface* last_active_browser,
+    WindowController* current_window,
+    WindowController* last_active_window,
     const URLPatternSet& url_patterns,
     const std::string& window_type,
     int window_id,
@@ -640,41 +640,34 @@ base::ListValue TabsQueryFunction::BuildTabList(
   if (query_info_.title && !query_info_.title->empty()) {
     title_pattern = base::UTF8ToUTF16(*query_info_.title);
   }
-  // Historically, we queried browsers in creation order. Maintain that behavior
+  // Historically, we queried windows in creation order. Maintain that behavior
   // (for now).
-  std::vector<BrowserWindowInterface*> all_browsers =
-      GetAllBrowserWindowInterfaces();
-  for (auto* browser : all_browsers) {
-    if (!MatchesWindow(browser, current_browser, last_active_browser,
+  for (WindowController* window_controller :
+       *WindowControllerList::GetInstance()) {
+    if (!MatchesWindow(window_controller, current_window, last_active_window,
                        window_type, window_id)) {
       continue;
     }
 
-    TabListInterface* tab_list = TabListInterface::From(browser);
-    // On Android the tab list can be gone while the window is still
-    // enumerable (crbug.com/578132340), and a tab slot can be null when the
-    // native tab was destroyed while still referenced by the Java tab model
-    // (crbug.com/578128713). Skip both instead of crashing.
-    if (!tab_list) {
-      continue;
-    }
-    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    BrowserWindowInterface* browser =
+        window_controller->GetBrowserWindowInterface();
+    TabListInterface* tab_list =
+        browser ? TabListInterface::From(browser) : nullptr;
+    const int tab_count = window_controller->GetTabCount();
+    for (int i = 0; i < tab_count; ++i) {
       if (tab_index > -1 && i != tab_index) {
         continue;
       }
 
-      ::tabs::TabInterface* tab = tab_list->GetTab(i);
-      if (!tab) {
-        continue;
-      }
-
+      content::WebContents* web_contents =
+          window_controller->GetWebContentsAt(i);
       std::optional<ExtensionTabUtil::ScrubTabBehavior> scrub_tab_behavior =
-          MatchesTab(tab, url_patterns, title_pattern);
+          MatchesTab(web_contents, url_patterns, title_pattern);
       if (!scrub_tab_behavior) {
         continue;
       }
 
-      result.Append(ExtensionTabUtil::CreateTabObject(tab->GetContents(),
+      result.Append(ExtensionTabUtil::CreateTabObject(web_contents,
                                                       *scrub_tab_behavior,
                                                       extension(), tab_list, i)
                         .ToValue());
@@ -683,14 +676,13 @@ base::ListValue TabsQueryFunction::BuildTabList(
   return result;
 }
 
-bool TabsQueryFunction::MatchesWindow(
-    BrowserWindowInterface* candidate_browser,
-    BrowserWindowInterface* current_browser,
-    BrowserWindowInterface* last_active_browser,
-    const std::string& target_window_type,
-    int target_window_id) {
+bool TabsQueryFunction::MatchesWindow(WindowController* candidate_window,
+                                      WindowController* current_window,
+                                      WindowController* last_active_window,
+                                      const std::string& target_window_type,
+                                      int target_window_id) {
   // First, check if the profile matches.
-  Profile* candidate_profile = candidate_browser->GetProfile();
+  Profile* candidate_profile = candidate_window->profile();
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!profile->IsSameOrParent(candidate_profile)) {
     return false;
@@ -699,46 +691,45 @@ bool TabsQueryFunction::MatchesWindow(
     return false;
   }
 
-  if (!candidate_browser->GetWindow()) {
+  if (!candidate_window->IsVisibleToTabsAPIForExtension(
+          extension(), /*include_dev_tools_windows=*/false)) {
     return false;
   }
 
-  WindowController* window_controller =
-      BrowserExtensionWindowController::From(candidate_browser);
-  // Some browser candidates don't have window controllers.
-  // https://crbug.com/501003339
-  if (!window_controller) {
-    return false;
-  }
-  if (!window_controller->IsVisibleToTabsAPIForExtension(
-          extension(), /*include_dev_tools_windows=*/false)) {
-    return false;
+  if (BrowserWindowInterface* browser =
+          candidate_window->GetBrowserWindowInterface()) {
+    // On Android the tab list can be gone while the window is still
+    // enumerable (crbug.com/578132340).
+    if (!browser->GetWindow() || browser->IsDeleteScheduled() ||
+        !TabListInterface::From(browser)) {
+      return false;
+    }
   }
 
   // Note: `target_window_id` may be -1 or -2, which indicate unknown and
   // current windows.
   if (target_window_id >= 0 &&
-      target_window_id != ExtensionTabUtil::GetWindowId(candidate_browser)) {
+      target_window_id != candidate_window->GetWindowId()) {
     return false;
   }
 
   if (target_window_id == extension_misc::kCurrentWindowId &&
-      candidate_browser != current_browser) {
+      candidate_window != current_window) {
     return false;
   }
 
   if (!MatchesBool(query_info_.current_window,
-                   candidate_browser == current_browser)) {
+                   candidate_window == current_window)) {
     return false;
   }
 
   if (!MatchesBool(query_info_.last_focused_window,
-                   candidate_browser == last_active_browser)) {
+                   candidate_window == last_active_window)) {
     return false;
   }
 
   if (!target_window_type.empty() &&
-      target_window_type != window_controller->GetWindowTypeText()) {
+      target_window_type != candidate_window->GetWindowTypeText()) {
     return false;
   }
 
@@ -746,29 +737,36 @@ bool TabsQueryFunction::MatchesWindow(
 }
 
 std::optional<ExtensionTabUtil::ScrubTabBehavior> TabsQueryFunction::MatchesTab(
-    ::tabs::TabInterface* candidate_tab,
+    content::WebContents* web_contents,
     const URLPatternSet& target_url_patterns,
     const std::optional<std::u16string>& title_pattern) {
-  content::WebContents* web_contents = candidate_tab->GetContents();
-
   if (!web_contents) {
     return std::nullopt;
   }
 
-  if (!MatchesBool(query_info_.highlighted, candidate_tab->IsSelected())) {
+  // Standalone windows (e.g. Document PiP) host a single active/highlighted
+  // WebContents with no TabInterface; they cannot be pinned, grouped, or split.
+  ::tabs::TabInterface* candidate_tab =
+      ::tabs::TabInterface::MaybeGetFromContents(web_contents);
+
+  if (!MatchesBool(query_info_.highlighted,
+                   candidate_tab ? candidate_tab->IsSelected() : true)) {
     return std::nullopt;
   }
 
-  if (!MatchesBool(query_info_.active, candidate_tab->IsActivated())) {
+  if (!MatchesBool(query_info_.active,
+                   candidate_tab ? candidate_tab->IsActivated() : true)) {
     return std::nullopt;
   }
 
-  if (!MatchesBool(query_info_.pinned, candidate_tab->IsPinned())) {
+  if (!MatchesBool(query_info_.pinned,
+                   candidate_tab && candidate_tab->IsPinned())) {
     return std::nullopt;
   }
 
   if (query_info_.group_id.has_value()) {
-    std::optional<tab_groups::TabGroupId> group = candidate_tab->GetGroup();
+    std::optional<tab_groups::TabGroupId> group =
+        candidate_tab ? candidate_tab->GetGroup() : std::nullopt;
     if (query_info_.group_id.value() == -1) {
       if (group.has_value()) {
         return std::nullopt;
@@ -782,7 +780,8 @@ std::optional<ExtensionTabUtil::ScrubTabBehavior> TabsQueryFunction::MatchesTab(
   }
 
   if (query_info_.split_view_id.has_value()) {
-    std::optional<split_tabs::SplitTabId> split = candidate_tab->GetSplit();
+    std::optional<split_tabs::SplitTabId> split =
+        candidate_tab ? candidate_tab->GetSplit() : std::nullopt;
     if (query_info_.split_view_id.value() == -1) {
       if (split.has_value()) {
         return std::nullopt;
@@ -802,6 +801,8 @@ std::optional<ExtensionTabUtil::ScrubTabBehavior> TabsQueryFunction::MatchesTab(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Standalone WebContents lack TabLifecycleUnitExternal; treat them as
+  // unfrozen, undiscarded, and auto-discardable to match CreateTabObject().
   auto* tab_lifecycle_unit_external =
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
           web_contents);
@@ -809,19 +810,22 @@ std::optional<ExtensionTabUtil::ScrubTabBehavior> TabsQueryFunction::MatchesTab(
   // TODO(https://crbug.com/505306735): Add support (or appropriately handle)
   // tab freezing, discarding, and auto-discarding on desktop android.
   if (!MatchesBool(query_info_.frozen,
-                   tab_lifecycle_unit_external->GetTabState() ==
-                       ::mojom::LifecycleUnitState::FROZEN)) {
+                   tab_lifecycle_unit_external &&
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::FROZEN)) {
     return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.discarded,
-                   tab_lifecycle_unit_external->GetTabState() ==
-                       ::mojom::LifecycleUnitState::DISCARDED)) {
+                   tab_lifecycle_unit_external &&
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::DISCARDED)) {
     return std::nullopt;
   }
 
   if (!MatchesBool(query_info_.auto_discardable,
-                   tab_lifecycle_unit_external->IsAutoDiscardable())) {
+                   !tab_lifecycle_unit_external ||
+                       tab_lifecycle_unit_external->IsAutoDiscardable())) {
     return std::nullopt;
   }
 #endif

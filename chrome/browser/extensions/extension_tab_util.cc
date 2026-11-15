@@ -376,7 +376,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   bool is_active = tab_interface ? tab_interface->IsActivated() : true;
   tab_object.active = is_active;
   tab_object.selected = is_active;
-  tab_object.highlighted = tab_interface && tab_interface->IsSelected();
+  tab_object.highlighted = tab_interface ? tab_interface->IsSelected() : true;
   tab_object.pinned = tab_interface && tab_interface->IsPinned();
 
   tab_object.group_id = -1;

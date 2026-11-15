@@ -2595,6 +2595,7 @@ source_set("browser_tests") {
     "//chrome/browser/tab_list",
     "//chrome/browser/task_manager:test_support",
     "//chrome/browser/ui:browser_live_tab_context",
+    "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/autofill",

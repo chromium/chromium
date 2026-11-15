@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -241,16 +242,16 @@ bool HasAnyPrivacySensitiveFields(const base::DictValue& dict) {
 class TestFunctionDispatcherDelegate
     : public extensions::ExtensionFunctionDispatcher::Delegate {
  public:
-  explicit TestFunctionDispatcherDelegate(BrowserWindowInterface* browser)
-      : browser_(browser) {}
+  explicit TestFunctionDispatcherDelegate(WindowController* window_controller)
+      : window_controller_(window_controller) {}
   ~TestFunctionDispatcherDelegate() override = default;
 
  private:
   extensions::WindowController* GetExtensionWindowController() override {
-    return BrowserExtensionWindowController::From(browser_);
+    return window_controller_;
   }
 
-  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<WindowController> window_controller_;
 };
 
 class ExtensionTabsTest : public ExtensionApiTest {
@@ -271,14 +272,23 @@ class ExtensionTabsTest : public ExtensionApiTest {
   std::optional<base::Value> RunFunctionWithDispatcherDelegateAndReturnValue(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args,
-      BrowserWindowInterface* browser) {
+      WindowController* window_controller) {
     auto dispatcher = std::make_unique<extensions::ExtensionFunctionDispatcher>(
-        browser->GetProfile());
-    TestFunctionDispatcherDelegate dispatcher_delegate(browser);
+        window_controller->profile());
+    TestFunctionDispatcherDelegate dispatcher_delegate(window_controller);
     dispatcher->set_delegate(&dispatcher_delegate);
     return utils::RunFunctionWithDelegateAndReturnSingleResult(
         std::move(function), args, std::move(dispatcher),
         utils::FunctionMode::kNone);
+  }
+
+  std::optional<base::Value> RunFunctionWithDispatcherDelegateAndReturnValue(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args,
+      BrowserWindowInterface* browser) {
+    return RunFunctionWithDispatcherDelegateAndReturnValue(
+        std::move(function), args,
+        BrowserExtensionWindowController::From(browser));
   }
 
   content::WebContents* OpenUrlAndWaitForLoad(const GURL& url) {
@@ -1224,6 +1234,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
       base::MakeRefCounted<TabsHighlightFunction>(),
       R"([{"windowId": $1, "tabs": 0}])");
   EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+}
+
+// Verifies that tabs.query() excludes Chrome App windows even when queried by
+// an owning extension (e.g. an allowlisted IME extension).
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
+                       TabsQueryExcludesAppWindowForOwningExtension) {
+  AppWindow* app_window = CreateTestAppWindow("{}");
+  const Extension* app = app_window->GetExtension();
+  ASSERT_TRUE(app);
+  const int app_window_id = app_window->session_id().id();
+
+  // Build a regular extension sharing the app's ID (modeling an allowlisted
+  // extension that owns an AppWindow, unlike a platform app for which browser
+  // windows are also hidden).
+  scoped_refptr<const Extension> owning_extension =
+      ExtensionBuilder("OwningExtension").SetID(app->id()).Build();
+  ASSERT_FALSE(owning_extension->is_platform_app());
+
+  WindowController* app_window_controller =
+      ExtensionTabUtil::GetControllerInProfileWithId(
+          profile(), app_window_id, /*also_match_incognito_profile=*/false,
+          /*error_message=*/nullptr);
+  ASSERT_TRUE(app_window_controller);
+  EXPECT_FALSE(app_window_controller->IsVisibleToTabsAPIForExtension(
+      owning_extension.get(), /*include_dev_tools_windows=*/false));
+
+  for (const Extension* caller : {owning_extension.get(), app}) {
+    auto targeted_query = base::MakeRefCounted<TabsQueryFunction>();
+    targeted_query->set_extension(caller);
+    base::ListValue targeted_tabs =
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            targeted_query.get(),
+            base::StringPrintf(R"([{"windowId": %d}])", app_window_id),
+            profile()));
+    EXPECT_TRUE(targeted_tabs.empty());
+  }
+
+  auto all_tabs_query = base::MakeRefCounted<TabsQueryFunction>();
+  all_tabs_query->set_extension(owning_extension.get());
+  base::ListValue all_tabs =
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          all_tabs_query.get(), R"([{}])", profile()));
+  EXPECT_EQ(static_cast<size_t>(GetTabListInterface()->GetTabCount()),
+            all_tabs.size());
+  for (const base::Value& tab_val : all_tabs) {
+    EXPECT_NE(api::tabs::TAB_ID_NONE, GetTabId(tab_val.GetDict()));
+    EXPECT_NE(app_window_id, GetTabWindowId(tab_val.GetDict()));
+  }
+
+  CloseAppWindow(app_window);
 }
 
 // Crashes on Mac/Win only.  http://crbug.com/40514319
@@ -5896,6 +5956,91 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   ASSERT_FALSE(
       PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
   expect_disallowed_pip_states();
+}
+
+// Verifies that TabsQueryFunction returns the active tab of a standalone
+// WindowController across both targeted and untargeted queries.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsQuery_StandaloneWindowIdReturnsTab) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  RecentlyAudibleHelper::CreateForWebContents(web_contents.get());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsQueryStandaloneTest").Build();
+
+  std::string targeted_query =
+      base::StringPrintf(R"([{"windowId": %d}])", standalone_window_id.id());
+  base::ListValue targeted_tabs =
+      RunQueryFunction(extension.get(), targeted_query.c_str());
+  ASSERT_EQ(1u, targeted_tabs.size());
+  const base::DictValue& tab_dict = targeted_tabs[0].GetDict();
+  EXPECT_EQ(tab_id, tab_dict.FindInt("id"));
+  EXPECT_EQ(standalone_window_id.id(), tab_dict.FindInt("windowId"));
+  EXPECT_EQ(true, tab_dict.FindBool("active"));
+  EXPECT_EQ(true, tab_dict.FindBool("highlighted"));
+
+  // Untargeted queries and active/highlighted queries should include the
+  // standalone tab.
+  auto contains_standalone_tab = [&](const base::ListValue& tabs_list) {
+    for (const base::Value& val : tabs_list) {
+      if (val.GetDict().FindInt("id") == tab_id) {
+        return true;
+      }
+    }
+    return false;
+  };
+  EXPECT_TRUE(
+      contains_standalone_tab(RunQueryFunction(extension.get(), R"([{}])")));
+  EXPECT_TRUE(contains_standalone_tab(
+      RunQueryFunction(extension.get(), R"([{"active": true}])")));
+  EXPECT_TRUE(contains_standalone_tab(
+      RunQueryFunction(extension.get(), R"([{"highlighted": true}])")));
+
+  // When called from inside the standalone window, currentWindow queries should
+  // return its tab.
+  auto current_window_function = base::MakeRefCounted<TabsQueryFunction>();
+  current_window_function->set_extension(extension.get());
+  base::ListValue current_window_tabs =
+      utils::ToList(RunFunctionWithDispatcherDelegateAndReturnValue(
+          current_window_function.get(), R"([{"currentWindow": true}])",
+          &standalone_controller));
+  ASSERT_EQ(1u, current_window_tabs.size());
+  EXPECT_EQ(tab_id, current_window_tabs[0].GetDict().FindInt("id"));
+
+  // Tab-level filters should also be evaluated for standalone windows.
+  std::string inactive_query = base::StringPrintf(
+      R"([{"windowId": %d, "active": false}])", standalone_window_id.id());
+  EXPECT_TRUE(
+      RunQueryFunction(extension.get(), inactive_query.c_str()).empty());
+  std::string pinned_query = base::StringPrintf(
+      R"([{"windowId": %d, "pinned": true}])", standalone_window_id.id());
+  EXPECT_TRUE(RunQueryFunction(extension.get(), pinned_query.c_str()).empty());
+  std::string audible_query = base::StringPrintf(
+      R"([{"windowId": %d, "audible": true}])", standalone_window_id.id());
+  EXPECT_TRUE(RunQueryFunction(extension.get(), audible_query.c_str()).empty());
+  RecentlyAudibleHelper::FromWebContents(web_contents.get())
+      ->SetRecentlyAudibleForTesting();
+  EXPECT_EQ(1u,
+            RunQueryFunction(extension.get(), audible_query.c_str()).size());
+  RecentlyAudibleHelper::FromWebContents(web_contents.get())
+      ->SetNotRecentlyAudibleForTesting();
+
+  base::ListValue normal_tabs =
+      RunQueryFunction(extension.get(), R"([{"windowType": "normal"}])");
+  EXPECT_FALSE(contains_standalone_tab(normal_tabs));
 }
 
 }  // namespace extensions
