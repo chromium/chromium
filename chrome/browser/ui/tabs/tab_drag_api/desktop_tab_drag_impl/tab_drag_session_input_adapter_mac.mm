@@ -30,10 +30,46 @@ class MacInputAdapter::CocoaMouseCaptureDelegateImpl
       : adapter_(adapter) {}
 
   bool PostCapturedEvent(NSEvent* event) override {
-    return adapter_->PostCapturedEvent(event);
+    if (!adapter_->callback_) {
+      return false;
+    }
+    NSPoint ns_screen_point = [NSEvent mouseLocation];
+    if (event.window) {
+      ns_screen_point =
+          [event.window convertPointToScreen:event.locationInWindow];
+    }
+    const gfx::Point screen_coords =
+        gfx::ScreenPointFromNSPoint(ns_screen_point);
+
+    if (event.type == NSEventTypeLeftMouseDragged ||
+        event.type == NSEventTypeRightMouseDragged ||
+        event.type == NSEventTypeOtherMouseDragged ||
+        event.type == NSEventTypeMouseMoved) {
+      adapter_->callback_.Run({TabDragInputEvent::Type::kMoved, screen_coords});
+      return true;
+    } else if (event.type == NSEventTypeLeftMouseUp ||
+               event.type == NSEventTypeRightMouseUp ||
+               event.type == NSEventTypeOtherMouseUp) {
+      adapter_->callback_.Run(
+          {TabDragInputEvent::Type::kDropped, screen_coords});
+      return true;
+    }
+    return false;
   }
-  void OnMouseCaptureLost() override { adapter_->OnMouseCaptureLost(); }
-  NSWindow* GetWindow() const override { return adapter_->GetWindow(); }
+
+  void OnMouseCaptureLost() override {
+    if (adapter_->callback_ && !adapter_->suspended_) {
+      adapter_->callback_.Run({TabDragInputEvent::Type::kCaptureChanged});
+    }
+  }
+
+  NSWindow* GetWindow() const override {
+    if (adapter_->active_window_ &&
+        adapter_->active_window_->GetNativeWindow()) {
+      return adapter_->active_window_->GetNativeWindow().GetNativeNSWindow();
+    }
+    return nullptr;
+  }
 
  private:
   raw_ptr<MacInputAdapter> adapter_;
@@ -52,7 +88,7 @@ MacInputAdapter::StartInputCapture(EventCallback callback,
                                    TabDragWindowAdapter* initial_window) {
   callback_ = std::move(callback);
   active_window_ = initial_window;
-  if (GetWindow() != nullptr) {
+  if (capture_delegate_->GetWindow() != nullptr) {
     capture_ = std::make_unique<remote_cocoa::CocoaMouseCapture>(
         capture_delegate_.get());
   }
@@ -75,7 +111,7 @@ void MacInputAdapter::SuspendInputCapture() {
 
 void MacInputAdapter::ResumeInputCapture() {
   suspended_ = false;
-  if (!capture_ && GetWindow() != nullptr) {
+  if (!capture_ && capture_delegate_->GetWindow() != nullptr) {
     capture_ = std::make_unique<remote_cocoa::CocoaMouseCapture>(
         capture_delegate_.get());
   }
@@ -90,49 +126,10 @@ void MacInputAdapter::SetActiveWindowContext(TabDragWindowAdapter* new_window) {
   capture_.reset();
   active_window_ = new_window;
   suspended_ = was_suspended;
-  if (!suspended_ && GetWindow() != nullptr) {
+  if (!suspended_ && capture_delegate_->GetWindow() != nullptr) {
     capture_ = std::make_unique<remote_cocoa::CocoaMouseCapture>(
         capture_delegate_.get());
   }
-}
-
-bool MacInputAdapter::PostCapturedEvent(NSEvent* event) {
-  if (!callback_) {
-    return false;
-  }
-  NSPoint ns_screen_point = [NSEvent mouseLocation];
-  if (event.window) {
-    ns_screen_point =
-        [event.window convertPointToScreen:event.locationInWindow];
-  }
-  const gfx::Point screen_coords = gfx::ScreenPointFromNSPoint(ns_screen_point);
-
-  if (event.type == NSEventTypeLeftMouseDragged ||
-      event.type == NSEventTypeRightMouseDragged ||
-      event.type == NSEventTypeOtherMouseDragged ||
-      event.type == NSEventTypeMouseMoved) {
-    callback_.Run({TabDragInputEvent::Type::kMoved, screen_coords});
-    return true;
-  } else if (event.type == NSEventTypeLeftMouseUp ||
-             event.type == NSEventTypeRightMouseUp ||
-             event.type == NSEventTypeOtherMouseUp) {
-    callback_.Run({TabDragInputEvent::Type::kDropped, screen_coords});
-    return true;
-  }
-  return false;
-}
-
-void MacInputAdapter::OnMouseCaptureLost() {
-  if (callback_ && !suspended_) {
-    callback_.Run({TabDragInputEvent::Type::kCaptureChanged});
-  }
-}
-
-NSWindow* MacInputAdapter::GetWindow() const {
-  if (active_window_ && active_window_->GetNativeWindow()) {
-    return active_window_->GetNativeWindow().GetNativeNSWindow();
-  }
-  return nullptr;
 }
 
 void MacInputAdapter::OnEvent(const ui::Event& event) {

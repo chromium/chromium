@@ -13,15 +13,6 @@
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/events/event_observer.h"
 
-// Forward declarations for ObjC classes used in the delegate interface.
-#if defined(__OBJC__)
-@class NSEvent;
-@class NSWindow;
-#else
-class NSEvent;
-class NSWindow;
-#endif
-
 namespace views {
 class EventMonitor;
 }
@@ -51,11 +42,6 @@ class MacInputAdapter : public TabDragSessionInputAdapter,
 
   // ui::EventObserver overrides:
   void OnEvent(const ui::Event& event) override;
-
-  // Called by CocoaMouseCaptureDelegateImpl helper:
-  bool PostCapturedEvent(NSEvent* event);
-  void OnMouseCaptureLost();
-  NSWindow* GetWindow() const;
 
  private:
   class CocoaMouseCaptureDelegateImpl;
