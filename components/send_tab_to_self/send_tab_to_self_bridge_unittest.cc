@@ -44,8 +44,7 @@
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_sessions/fake_session_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,28 +140,6 @@ class MockSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
               OnEntriesRemovedRemotely,
               (base::span<const std::string>),
               (override));
-};
-
-class FakeSessionSyncService : public sync_sessions::SessionSyncService {
- public:
-  syncer::GlobalIdMapper* GetGlobalIdMapper() const override { return nullptr; }
-
-  sync_sessions::FakeOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
-    return &open_tabs_delegate_;
-  }
-
-  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) override {
-    return base::CallbackListSubscription();
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return nullptr;
-  }
-
- private:
-  sync_sessions::FakeOpenTabsUIDelegate open_tabs_delegate_;
 };
 
 MATCHER_P(GuidIs, e, "") {
@@ -345,7 +322,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   std::unique_ptr<syncer::DeviceInfo> local_device_;
 
-  FakeSessionSyncService session_sync_service_;
+  sync_sessions::FakeSessionSyncService session_sync_service_;
 };
 
 TEST_F(SendTabToSelfBridgeTest, CheckEmpties) {

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,14 +23,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
-#include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_sessions/sessions_global_id_mapper.h"
+#include "components/sync_sessions/fake_session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -58,46 +55,12 @@
 
 namespace {
 
-class FakeSessionSyncService : public sync_sessions::SessionSyncService {
- public:
-  FakeSessionSyncService() = default;
-  ~FakeSessionSyncService() override = default;
-
-  syncer::GlobalIdMapper* GetGlobalIdMapper() const override {
-    return &global_id_mapper_;
-  }
-
-  sync_sessions::FakeOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
-    return &open_tabs_ui_delegate_;
-  }
-
-  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) override {
-    return subscriber_list_.Add(cb);
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return nullptr;
-  }
-
- private:
-  base::RepeatingClosureList subscriber_list_;
-  sync_sessions::FakeOpenTabsUIDelegate open_tabs_ui_delegate_;
-  mutable sync_sessions::SessionsGlobalIdMapper global_id_mapper_;
-};
+using ::sync_sessions::FakeSessionSyncService;
 
 class ForeignTabsPageHandlerBrowserTest : public InProcessBrowserTest {
  public:
-  ForeignTabsPageHandlerBrowserTest() {
-    dependency_manager_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ForeignTabsPageHandlerBrowserTest::RegisterFakeServices,
-                base::Unretained(this)));
-  }
-
-  void RegisterFakeServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
     SessionSyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
@@ -132,9 +95,6 @@ class ForeignTabsPageHandlerBrowserTest : public InProcessBrowserTest {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
-
- private:
-  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
