@@ -177,13 +177,11 @@ template("rust_cxx") {
       visibility = invoker.visibility
     }
     sources = get_target_outputs(":${target_name}_gen")
+    public_deps = [ ":${target_name}_gen" ]
     if (!defined(deps)) {
       deps = []
     }
-    deps += [
-      ":${target_name}_gen",
-      "//build/rust:cxx_cppdeps",
-    ]
+    deps += [ "//build/rust:cxx_cppdeps" ]
     if (defined(invoker.configs)) {
       configs = []
       configs = invoker.configs

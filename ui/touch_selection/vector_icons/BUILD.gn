@@ -17,8 +17,8 @@ aggregate_vector_icons("touch_selection_vector_icons") {
 source_set("vector_icons") {
   sources = get_target_outputs(":touch_selection_vector_icons")
 
+  public_deps = [ ":touch_selection_vector_icons" ]
   deps = [
-    ":touch_selection_vector_icons",
     "//base",
     "//skia",
     "//ui/gfx",

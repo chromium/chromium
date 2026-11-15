@@ -1467,8 +1467,8 @@ action("locales_list_gen") {
 }
 
 source_set("locales_list") {
-  deps = [ ":locales_list_gen" ]
   sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
+  public_deps = [ ":locales_list_gen" ]
 }
 
 buildflag_header("ozone_buildflags") {

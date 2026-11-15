@@ -312,6 +312,7 @@ static_library("content_shell_lib") {
     ":android_shell_descriptors",
 
     # content_shell_lib also exposes all public content APIs.
+    ":protocol_sources",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/child",
@@ -323,7 +324,6 @@ static_library("content_shell_lib") {
   ]
   deps = [
     ":content_browsertests_mojom",
-    ":protocol_sources",
     ":resources",
     ":rust_test_mojom",
     ":rust_test_mojom_js",

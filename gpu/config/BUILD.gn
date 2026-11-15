@@ -131,6 +131,7 @@ component("config") {
   defines = [ "GPU_CONFIG_IMPLEMENTATION" ]
 
   public_deps = [
+    ":process_json",
     "//components/crash/core/common:crash_key",
     "//third_party/dawn/include/dawn:cpp_headers",
   ]
@@ -140,7 +141,6 @@ component("config") {
   }
 
   deps = [
-    ":process_json",
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",

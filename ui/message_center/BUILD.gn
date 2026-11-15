@@ -42,8 +42,8 @@ component("message_center") {
   defines = [ "MESSAGE_CENTER_IMPLEMENTATION" ]
 
   if (enable_message_center) {
+    public_deps += [ ":message_center_vector_icons" ]
     deps += [
-      ":message_center_vector_icons",
       "//base:i18n",
       "//components/url_formatter",
       "//skia",

@@ -143,8 +143,8 @@ aggregate_vector_icons("omnibox_vector_icons") {
 
 static_library("vector_icons") {
   sources = get_target_outputs(":omnibox_vector_icons")
+  public_deps = [ ":omnibox_vector_icons" ]
   deps = [
-    ":omnibox_vector_icons",
     "//components/vector_icons",
     "//skia",
     "//ui/gfx",

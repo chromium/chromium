@@ -60,14 +60,16 @@ static_library("field_trial_config") {
   sources += get_target_outputs(":field_trial_testing_config_action")
 
   deps = [
-    ":field_trial_testing_config_action",
     "//base",
     "//components/variations",
     "//components/variations/proto",
     "//net",
   ]
 
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+  public_deps = [
+    ":field_trial_testing_config_action",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 }
 
 source_set("unit_tests") {

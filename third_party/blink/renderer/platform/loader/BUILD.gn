@@ -204,8 +204,6 @@ blink_platform_sources("loader") {
       get_target_outputs(":make_platform_loader_generated_delivery_type_names")
 
   deps = [
-    ":make_platform_loader_generated_delivery_type_names",
-    ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
     "//components/persistent_cache",
     "//components/variations/net",
@@ -223,6 +221,8 @@ blink_platform_sources("loader") {
     "//third_party/blink/renderer/platform/scheduler",
   ]
   public_deps = [
+    ":make_platform_loader_generated_delivery_type_names",
+    ":make_platform_loader_generated_fetch_initiator_type_names",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//third_party/blink/renderer/platform/heap",
   ]

@@ -274,12 +274,13 @@ source_set("automation_client_lib") {
   sources += get_target_outputs(":embed_mobile_devices_in_cpp")
   sources += get_target_outputs(":embed_bidimapper_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
-
-  deps = [
+  public_deps = [
     ":embed_bidimapper_in_cpp",
     ":embed_js_in_cpp",
     ":embed_mobile_devices_in_cpp",
     ":embed_user_data_dir_in_cpp",
+  ]
+  deps = [
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:non_code_constants",

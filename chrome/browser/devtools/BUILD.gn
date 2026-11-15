@@ -132,6 +132,7 @@ static_library("devtools") {
 
   public_deps = [
     ":devtools_toggle_action",
+    ":protocol_generated_sources",
     "//chrome/browser:primitives",
     "//content/public/browser",
     "//content/public/common:buildflags",
@@ -165,7 +166,6 @@ static_library("devtools") {
 
     # Similar bandaid as the above. Since we cannot depend on
     # //chrome/browser:browser, we include indirect dependencies here.
-    ":protocol_generated_sources",
     "//chrome/browser/autofill",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",

@@ -334,9 +334,9 @@ source_set("ondevice") {
       output_proto_descriptors_cc_file,
       output_proto_enum_templates_h_file,
     ]
+    public_deps += [ ":on_device_model_execution_proto_generator" ]
     deps += [
       ":core_util",
-      ":on_device_model_execution_proto_generator",
       "//components/component_updater",
       "//components/prefs",
       "//components/update_client",

@@ -27,8 +27,8 @@ blink_modules_sources("v8") {
       generated_sync_iterator_sources_in_modules +
       generated_typedef_sources_in_modules + generated_union_sources_in_modules
 
+  public_deps = [ ":generated" ]
   deps = [
-    ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
@@ -50,8 +50,8 @@ source_set("testing") {
             generated_interface_sources_for_testing_in_modules +
             generated_interface_extra_sources_for_testing_in_modules
 
+  public_deps = [ ":generated" ]
   deps = [
-    ":generated",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",

@@ -23,8 +23,8 @@ blink_core_sources("v8") {
             generated_sync_iterator_sources_in_core +
             generated_typedef_sources_in_core + generated_union_sources_in_core
 
+  public_deps = [ ":generated" ]
   deps = [
-    ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
@@ -47,8 +47,8 @@ source_set("testing") {
             generated_interface_sources_for_testing_in_core +
             generated_union_sources_for_testing_in_core
 
+  public_deps = [ ":generated" ]
   deps = [
-    ":generated",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform",
     "//v8",

@@ -60,8 +60,8 @@ template("private_metrics_builders") {
   static_library(target_name) {
     sources = get_target_outputs(":generate_${target_name}")
 
+    public_deps = [ ":generate_${target_name}" ]
     deps = [
-      ":generate_${target_name}",
       "//base",
       "//components/metrics/private_metrics",
     ]

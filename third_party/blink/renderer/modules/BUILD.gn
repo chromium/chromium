@@ -398,6 +398,11 @@ blink_modules_sources("modules_generated") {
   foreach(current, targets_generating_sources) {
     sources += get_target_outputs(current)
   }
+  public_deps = [
+    ":make_modules_generated_event_names",
+    ":make_modules_generated_event_target_names",
+    ":make_modules_generated_indexed_db_names",
+  ]
 }
 
 source_set("unit_tests") {

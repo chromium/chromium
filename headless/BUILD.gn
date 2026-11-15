@@ -203,8 +203,8 @@ inspector_protocol_generate("protocol_sources") {
 }
 
 static_library("backend_cdp_bindings") {
+  public_deps = [ ":protocol_sources" ]
   deps = [
-    ":protocol_sources",
     "//base",
     "//third_party/inspector_protocol:crdtp",
   ]

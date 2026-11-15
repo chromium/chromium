@@ -108,9 +108,8 @@ action("gen_ukm_builders") {
 
 static_library("ukm_builders") {
   sources = get_target_outputs(":gen_ukm_builders")
-
+  public_deps = [ ":gen_ukm_builders" ]
   deps = [
-    ":gen_ukm_builders",
     ":metrics_cpp",
     "//base",
   ]

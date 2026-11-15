@@ -65,7 +65,7 @@ blink_platform_sources("network") {
   ]
 
   sources += get_target_outputs(":http_names")
-
+  public_deps = [ ":http_names" ]
   deps = [
     "//media",
     "//services/metrics/public/cpp:ukm_builders",

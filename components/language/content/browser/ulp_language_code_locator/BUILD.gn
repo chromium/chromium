@@ -44,9 +44,9 @@ source_set("ulp_language_code_locator") {
               "ulp_language_code_locator.cc",
               "ulp_language_code_locator.h",
             ] + get_target_outputs(":ulp_serialized_to_static_c")
+  public_deps = [ ":ulp_serialized_to_static_c" ]
   deps = [
     ":s2langquadtree",
-    ":ulp_serialized_to_static_c",
     "//base",
     "//components/language/content/browser:language_code_locator",
     "//components/prefs",

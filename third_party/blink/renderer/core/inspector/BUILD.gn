@@ -118,7 +118,6 @@ source_set("generated") {
   }
 
   deps = [
-    ":protocol_sources",
     "//skia",
     "//third_party/blink/renderer/core:all_generators",
     "//third_party/blink/renderer/core/probe:generated",
@@ -128,6 +127,7 @@ source_set("generated") {
   ]
 
   public_deps = [
+    ":protocol_sources",
     "//third_party/inspector_protocol:crdtp",
     "//v8:v8_internal_headers",
     "//v8/src/inspector:inspector_headers",

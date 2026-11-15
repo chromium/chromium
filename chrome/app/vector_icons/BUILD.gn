@@ -427,8 +427,8 @@ aggregate_vector_icons("chrome_vector_icons") {
 source_set("vector_icons") {
   sources = get_target_outputs(":chrome_vector_icons")
 
+  public_deps = [ ":chrome_vector_icons" ]
   deps = [
-    ":chrome_vector_icons",
     "//base",
     "//skia",
     "//ui/gfx",

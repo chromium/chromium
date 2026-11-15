@@ -122,10 +122,8 @@ template("wayland_protocol") {
   source_set(source_set_name) {
     sources = get_target_outputs(":$action_name")
 
-    deps = [
-      ":$action_name",
-      "//third_party/wayland:wayland_util",
-    ]
+    public_deps = [ ":$action_name" ]
+    deps = [ "//third_party/wayland:wayland_util" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]

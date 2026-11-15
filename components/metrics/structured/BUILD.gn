@@ -225,13 +225,11 @@ source_set("structured_events") {
 
   public_deps = [
     ":events",
+    ":gen_structured_events_cpp",
     "//components/metrics/structured/buildflags",
   ]
 
-  deps = [
-    ":gen_structured_events_cpp",
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 action("gen_structured_metrics_validator") {
@@ -284,10 +282,9 @@ source_set("structured_metrics_validator") {
               "project_validator.cc",
               "project_validator.h",
             ]
-
+  public_deps = [ ":gen_structured_metrics_validator" ]
   deps = [
     ":events",
-    ":gen_structured_metrics_validator",
     "//base",
     "//third_party/metrics_proto",
   ]

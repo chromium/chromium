@@ -22,8 +22,8 @@ aggregate_vector_icons("window_control_vector_icons") {
 source_set("vector_icons") {
   sources = get_target_outputs(":window_control_vector_icons")
 
+  public_deps = [ ":window_control_vector_icons" ]
   deps = [
-    ":window_control_vector_icons",
     "//base",
     "//skia",
     "//ui/gfx",

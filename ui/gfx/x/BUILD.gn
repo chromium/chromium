@@ -139,10 +139,8 @@ if (regenerate_x11_protos) {
 
 source_set("build_xprotos") {
   visibility = [ ":x" ]
-  deps = [
-    ":gen_xprotos",
-    "//base",
-  ]
+  public_deps = [ ":gen_xprotos" ]
+  deps = [ "//base" ]
   sources = get_target_outputs(":gen_xprotos")
   configs += [
     ":build_xprotos_config",

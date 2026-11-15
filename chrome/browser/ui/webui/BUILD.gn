@@ -322,14 +322,12 @@ source_set("webui") {
 
   public_deps = [
     ":plural_string_handler",
+    ":webui_hosts",
+    ":webui_url_hashes",
     "//content/public/browser",
   ]
 
-  deps = [
-    ":webui_hosts",
-    ":webui_url_hashes",
-    "//chrome/common",
-  ]
+  deps = [ "//chrome/common" ]
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
   }

@@ -41,7 +41,7 @@ action("canonical_language_tags_gen") {
 }
 
 source_set("canonical_language_tags") {
-  deps = [ ":canonical_language_tags_gen" ]
+  public_deps = [ ":canonical_language_tags_gen" ]
   sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_tags.inc" ]
   visibility = [
     ":*",

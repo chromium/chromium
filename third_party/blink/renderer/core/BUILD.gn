@@ -687,7 +687,10 @@ source_set("testing") {
     "timing/internals_profiler.h",
   ]
 
-  public_deps = [ "//testing/gmock" ]
+  public_deps = [
+    ":generated_testing_idls_settings",
+    "//testing/gmock",
+  ]
 }
 
 if (is_ios) {

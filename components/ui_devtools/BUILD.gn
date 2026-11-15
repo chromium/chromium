@@ -91,7 +91,6 @@ component("ui_devtools") {
 
   deps = [
     ":features",
-    ":protocol_generated_sources",
     "//base",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
@@ -103,6 +102,7 @@ component("ui_devtools") {
   ]
 
   public_deps = [
+    ":protocol_generated_sources",
     "//content/public/browser",
     "//services/service_manager/public/cpp",
     "//services/tracing/public/cpp",
