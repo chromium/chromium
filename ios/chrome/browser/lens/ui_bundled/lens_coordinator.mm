@@ -457,16 +457,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // Web page and we are expecting a Lens Web page load, dismiss the Lens UI.
   if (self.viewController && self.lensWebPageLoadTriggeredFromInputSelection &&
       ios::provider::IsLensWebResultsURL(webState->GetLastCommittedURL())) {
-    self.lensWebPageLoadTriggeredFromInputSelection = NO;
-    self.loadingWebState = nil;
-    [self dismissViewController];
-
-    // As this was a successful Lens Web results page load, trigger the toolbar
-    // slide-in animation.
-    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-    id<ToolbarCommands> toolbarCommandsHandler =
-        HandlerForProtocol(dispatcher, ToolbarCommands);
-    [toolbarCommandsHandler triggerToolbarSlideInAnimation];
+    [self dismissLensUIForLensWebPageLoad];
   }
 }
 
@@ -474,6 +465,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   const id<ChromeLensController> lensController = self.lensController;
   if (self.lensWebPageLoadTriggeredFromInputSelection && lensController) {
     [lensController triggerSecondaryTransitionAnimation];
+
+    // With no loading results panel, show the Lens Web page as soon as it
+    // starts loading so the Lens UI doesn't appear frozen.
+    if (self.viewController &&
+        base::FeatureList::IsEnabled(kLensHideLoadingWebResultsPanel)) {
+      [self dismissLensUIForLensWebPageLoad];
+    }
   }
 }
 
@@ -520,6 +518,19 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
   loadParams.in_incognito = self.isOffTheRecord;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
+}
+
+// Dismisses the Lens UI to reveal the Lens Web page load and triggers the
+// toolbar slide-in animation.
+- (void)dismissLensUIForLensWebPageLoad {
+  self.lensWebPageLoadTriggeredFromInputSelection = NO;
+  self.loadingWebState = nil;
+  [self dismissViewController];
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<ToolbarCommands> toolbarCommandsHandler =
+      HandlerForProtocol(dispatcher, ToolbarCommands);
+  [toolbarCommandsHandler triggerToolbarSlideInAnimation];
 }
 
 - (void)dismissViewController {
