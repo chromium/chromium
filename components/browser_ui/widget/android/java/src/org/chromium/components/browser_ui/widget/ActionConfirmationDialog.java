@@ -319,25 +319,6 @@ public class ActionConfirmationDialog {
         }
 
         @Override
-        public String toString() {
-            return "ConfirmationDialogParams{"
-                    + "mTitle='"
-                    + mTitle
-                    + '\''
-                    + ", mDescription="
-                    + mDescription
-                    + ", mPositiveButtonText='"
-                    + mPositiveButtonText
-                    + '\''
-                    + ", mNegativeButtonText='"
-                    + mNegativeButtonText
-                    + '\''
-                    + ", mSupportStopShowing="
-                    + mSupportStopShowing
-                    + '}';
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null) return false;
