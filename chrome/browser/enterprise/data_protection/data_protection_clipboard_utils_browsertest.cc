@@ -1815,6 +1815,48 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   run_loop_bypass.Run();
 }
 
+// Bypassing a copy warning after its source subframe is removed must neither
+// crash nor let the copy through unchecked.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyWarnedThenBypassed_SourceSubframeRemoved) {
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
+                                   "sources": {"urls": ["*"]},
+                                   "destinations": {"os_clipboard": true},
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("/iframe.html")));
+  content::RenderFrameHostWrapper child_frame(
+      content::ChildFrameAt(contents(), 0));
+  ASSERT_TRUE(child_frame.get());
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      content::CreateClipboardEndpoint(*child_frame.get()),
+      {.size = 1234, .format_type = ui::ClipboardFormatType::PlainTextType()},
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  helper.WaitForDialogToInitialize();
+
+  ASSERT_TRUE(
+      content::ExecJs(contents(), "document.getElementById('test').remove();"));
+  ASSERT_TRUE(child_frame.WaitUntilRenderFrameDeleted());
+  EXPECT_FALSE(future.IsReady());
+
+  helper.BypassWarning();
+  helper.WaitForDialogToClose();
+
+  EXPECT_TRUE(future.Get<content::ClipboardPasteData>().empty());
+  EXPECT_FALSE(future.Get<std::optional<std::u16string>>());
+}
+
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyWarnedThenBypassed_OsClipboardDestination) {
   active_user_test_mixin_->SetFakeCookieValue();

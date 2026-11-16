@@ -111,18 +111,21 @@ GURL GetUrlFromEndpoint(const content::ClipboardEndpoint& endpoint) {
 
 bool SkipDataControlOrContentAnalysisChecks(
     const content::ClipboardEndpoint& main_endpoint) {
-  // Data Controls and content analysis copy/paste checks require an active tab
-  // to be meaningful, so if it's gone they can be skipped.
-  if (main_endpoint.web_contents()) {
-    return false;
+  // Every lookup past this point needs a BrowserContext. The fetcher returns
+  // null once the endpoint's frame, worker or context is gone, even if its tab
+  // is still open, e.g. when a subframe is removed.
+  if (!main_endpoint.browser_context()) {
+    return true;
   }
 
-  // A service worker never has a tab, but it does have a BrowserContext to
-  // evaluate rules against, so the checks still apply. The fetcher returns
-  // null once the worker or its context is gone, and every lookup past this
-  // point needs one.
-  return !(main_endpoint.is_service_worker() &&
-           main_endpoint.browser_context());
+  // Data Controls and content analysis copy/paste checks require an active tab
+  // to be meaningful, so if it's gone they can be skipped.
+  // A service worker never has a tab, but the checks still apply to it.
+  if (!main_endpoint.web_contents()) {
+    return !main_endpoint.is_service_worker();
+  }
+
+  return false;
 }
 
 // Returns the level a copy kept in managed Chrome is tracked with: "managed
@@ -922,7 +925,9 @@ void OnDataControlsCopyWarning(
     data_controls::Verdict verdict,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     bool bypassed) {
-  if (bypassed) {
+  // Without its source, e.g. a subframe removed while the warning was shown,
+  // the copy can't be checked further, so it's refused even if bypassed.
+  if (bypassed && !SkipDataControlOrContentAnalysisChecks(source)) {
     MaybeReportDataControlsCopy(source, metadata, verdict, /*bypassed=*/true);
     IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
     return;
