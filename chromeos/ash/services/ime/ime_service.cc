@@ -161,6 +161,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAutocorrectParamsTuning,
       &features::kImeDownloaderExperiment,
       &features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod,
+      &features::kUseDirectXkbLayoutForThaiTisInputMethod,
   };
 
   static constexpr std::string_view kEnabledFeatures[] = {

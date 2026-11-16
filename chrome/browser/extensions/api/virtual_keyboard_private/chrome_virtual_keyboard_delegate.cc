@@ -548,6 +548,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "usedirectxkblayoutforthaikedmaneeinputmethod",
       base::FeatureList::IsEnabled(
           ash::features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod)));
+  features.Append(GenerateFeatureFlag(
+      "usedirectxkblayoutforthaitisinputmethod",
+      base::FeatureList::IsEnabled(
+          ash::features::kUseDirectXkbLayoutForThaiTisInputMethod)));
 
   results.Set("features", std::move(features));
 
