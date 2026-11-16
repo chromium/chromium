@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -24,6 +26,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
@@ -60,7 +63,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     private UpdateStatusProvider.@Nullable UpdateStatus mUpdateStatus;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final @Nullable SigninManager mSigninManager;
+    private final SigninManager mSigninManager;
 
     /**
      * Passwords fetch service for account passwords. Should only be used if the user is signed-in.
@@ -74,21 +77,23 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         assert profile != null;
         mProfile = profile;
 
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (mSigninManager != null) {
-            mSigninManager.addSignInStateObserver(this);
-        }
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mSigninManager.addSignInStateObserver(this);
 
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         mAccountPasswordsFetchService =
                 new SafetyHubPasswordsFetchService(
                         passwordManagerHelper,
                         prefService,
-                        SafetyHubUtils.getAccountEmail(profile));
+                        SafetyHubUtils.getAccountEmail(profile),
+                        identityManager);
 
         mLocalPasswordsFetchService =
-                new SafetyHubPasswordsFetchService(passwordManagerHelper, prefService, null);
+                new SafetyHubPasswordsFetchService(
+                        passwordManagerHelper, prefService, null, identityManager);
 
         // Fetch latest update status.
         UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
@@ -118,10 +123,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     @Override
     public void destroy() {
-        if (mSigninManager != null) {
-            mSigninManager.removeSignInStateObserver(this);
-        }
-
+        mSigninManager.removeSignInStateObserver(this);
         UpdateStatusProvider.getInstance().removeObserver(mUpdateCallback);
     }
 

@@ -23,8 +23,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
@@ -36,16 +40,35 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-/** Unit tests for SafetyHubFetchService. */
-@RunWith(BaseRobolectricTestRunner.class)
+/**
+ * Unit tests for SafetyHubFetchService.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
+ */
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class SafetyHubFetchServiceTest {
     private static final int ONE_DAY_IN_MILLISECONDS = (int) TimeUnit.DAYS.toMillis(1);
 
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection<Object> data() {
+        return Arrays.asList(false, true);
+    }
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
+
+    @Parameter(0)
+    public boolean isIdentityManagerSourceOfAccounts;
 
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Mock private FetchAccountCredentialsCallback mTaskFinishedCallback;
@@ -57,6 +80,10 @@ public class SafetyHubFetchServiceTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                isIdentityManagerSourceOfAccounts);
+
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         mProfile = mSafetyHubTestRule.getProfile();
         mPrefService = mSafetyHubTestRule.getPrefService();

@@ -17,6 +17,10 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 
 /** Manages fetching and setting the password information for Safety Hub. */
 @NullMarked
@@ -32,6 +36,7 @@ public class SafetyHubPasswordsFetchService {
     private final PrefService mPrefService;
     private final PasswordManagerHelper mPasswordManagerHelper;
     private final AccountManagerFacade mAccountManagerFacade;
+    private final IdentityManager mIdentityManager;
 
     /**
      * These booleans indicate if the specific type of passwords count has returned. They are used
@@ -58,10 +63,12 @@ public class SafetyHubPasswordsFetchService {
     SafetyHubPasswordsFetchService(
             PasswordManagerHelper passwordManagerHelper,
             PrefService prefService,
-            @Nullable String account) {
+            @Nullable String account,
+            IdentityManager identityManager) {
         mPasswordManagerHelper = passwordManagerHelper;
         mPrefService = prefService;
         mAccount = account;
+        mIdentityManager = identityManager;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
     }
 
@@ -176,6 +183,15 @@ public class SafetyHubPasswordsFetchService {
      * there isn't yet information about accounts on the device, returns false.
      */
     private boolean noAccountsOnDevice() {
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    != RefreshTokensLoadingState.SUCCEEDED) {
+                return false;
+            }
+            return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken().isEmpty();
+        }
+
         if (!mAccountManagerFacade.getAccounts().isFulfilled()
                 || !mAccountManagerFacade.didAccountFetchSucceed()) {
             return false;
