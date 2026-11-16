@@ -291,11 +291,10 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(
-          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
+      resource->InitializeSoftware(CreateWeakPtr(),
+                                   shared_image_interface_provider_);
     } else {
-      resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_);
+      resource->Initialize(CreateWeakPtr());
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {

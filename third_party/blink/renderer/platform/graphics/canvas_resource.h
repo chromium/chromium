@@ -104,8 +104,8 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
+ private:
   const base::PlatformThreadRef owning_thread_ref_;
-  const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 };
 
 // Resource type for SharedImage
@@ -135,12 +135,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   void InitializeSoftware(base::WeakPtr<Client> client,
                           base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-                              shared_image_interface_provider,
-                          const gfx::HDRMetadata& hdr_metadata);
-  void Initialize(base::WeakPtr<Client> client,
-                  base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-                      context_provider_wrapper,
-                  const gfx::HDRMetadata& hdr_metadata);
+                              shared_image_interface_provider);
+  void Initialize(base::WeakPtr<Client> client);
   bool IsInitialized() const { return is_initialized_; }
 
   void OnRefReturned(scoped_refptr<CanvasResource> resource) final;
@@ -171,6 +167,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   ~CanvasResourceSharedImage() override;
 
+ private:
   SkImageInfo CreateSkImageInfo() const;
 
   // These members are either only accessed on the owning thread, or are only
@@ -178,15 +175,10 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // We ensure to correctly update their state in Transfer, which is called
   // before a resource is used on a different thread.
   bool resource_is_lost_ = false;
-
-  // This should only be de-referenced on the owning thread but may be copied
-  // on a different thread.
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   gpu::SyncToken acquire_sync_token_;
 
   // Accessed on any thread.
   bool is_initialized_ = false;
-  gfx::HDRMetadata hdr_metadata_;
   base::WeakPtr<Client> client_;
 };
 

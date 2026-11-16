@@ -76,9 +76,7 @@ BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
 CanvasResource::CanvasResource(
     scoped_refptr<gpu::ClientSharedImage> shared_image)
     : gpu::ClientImage(std::move(shared_image)),
-      owning_thread_ref_(base::PlatformThread::CurrentRef()),
-      owning_thread_task_runner_(
-          ThreadScheduler::Current()->CleanupTaskRunner()) {
+      owning_thread_ref_(base::PlatformThread::CurrentRef()) {
   subclass_manages_destruction_sync_token_ = true;
 }
 
@@ -104,14 +102,12 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 void CanvasResourceSharedImage::InitializeSoftware(
     base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider,
-    const gfx::HDRMetadata& hdr_metadata) {
+        shared_image_interface_provider) {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
   DCHECK(shared_image_interface_provider);
 
   client_ = std::move(client);
-  hdr_metadata_ = hdr_metadata;
 
   // This class doesn't currently have a way of verifying the sync token for
   // software SharedImages at the time of vending it in VerifySyncToken(),
@@ -127,18 +123,11 @@ void CanvasResourceSharedImage::InitializeSoftware(
   is_initialized_ = true;
 }
 
-void CanvasResourceSharedImage::Initialize(
-    base::WeakPtr<Client> client,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    const gfx::HDRMetadata& hdr_metadata) {
+void CanvasResourceSharedImage::Initialize(base::WeakPtr<Client> client) {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
-  DCHECK(context_provider_wrapper);
-  DCHECK(context_provider_wrapper->ContextProvider().RasterInterface());
 
   client_ = std::move(client);
-  context_provider_wrapper_ = std::move(context_provider_wrapper);
-  hdr_metadata_ = hdr_metadata;
 
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(GetSharedImage()->creation_sync_token());
@@ -171,10 +160,9 @@ CanvasResourceSharedImage::CreateForTesting(
   auto canvas_resource = image_pool->GetImage();
   if (is_software) {
     canvas_resource->InitializeSoftware(
-        client, std::move(shared_image_interface_provider), gfx::HDRMetadata());
+        client, std::move(shared_image_interface_provider));
   } else {
-    canvas_resource->Initialize(client, context_provider_wrapper,
-                                gfx::HDRMetadata());
+    canvas_resource->Initialize(client);
   }
   return canvas_resource;
 }

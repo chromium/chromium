@@ -31,6 +31,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -131,6 +132,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -332,11 +334,9 @@ BaseRenderingContext2D::NewOrRecycledResource() {
     if (image_pool_->GetImageInfo().is_software) {
       resource->InitializeSoftware(
           resource_client_weak_ptr_factory_.GetWeakPtr(),
-          shared_image_interface_provider_, color_params_.GetGfxHdrMetadata());
+          shared_image_interface_provider_);
     } else {
-      resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr(),
-                           context_provider_wrapper_,
-                           color_params_.GetGfxHdrMetadata());
+      resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr());
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
@@ -1062,10 +1062,10 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
       cached_snapshot_ =
           AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
               client_shared_image, resource_->sync_token(),
-              client_shared_image->alpha_type(), resource_->hdr_metadata_,
-              resource_->context_provider_wrapper_,
-              resource_->owning_thread_ref_,
-              resource_->owning_thread_task_runner_,
+              client_shared_image->alpha_type(),
+              color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
+              base::PlatformThread::CurrentRef(),
+              ThreadScheduler::Current()->CleanupTaskRunner(),
               std::move(release_callback));
 
       if (cached_snapshot_ && IsSingleBuffered()) {
