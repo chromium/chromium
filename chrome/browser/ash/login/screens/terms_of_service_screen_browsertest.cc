@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

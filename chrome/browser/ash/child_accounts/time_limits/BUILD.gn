@@ -128,6 +128,7 @@ source_set("browser_tests") {
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc/mojom",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/services/app_service/public/cpp:app_types",
     "//components/user_manager",
     "//content/test:test_support",

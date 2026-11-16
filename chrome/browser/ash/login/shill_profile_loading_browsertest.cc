@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_settings.pb.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"

@@ -24,6 +24,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mock_cloud_policy_client.h"
 #include "services/network/test/test_network_connection_tracker.h"

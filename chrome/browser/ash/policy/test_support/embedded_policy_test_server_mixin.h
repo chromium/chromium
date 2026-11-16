@@ -17,10 +17,13 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 class AccountId;
+
+namespace enterprise_management {
+class CloudPolicySettings;
+}  // namespace enterprise_management
 
 namespace policy {
 class EmbeddedPolicyTestServer;

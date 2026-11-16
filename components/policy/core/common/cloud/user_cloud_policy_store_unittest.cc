@@ -25,6 +25,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

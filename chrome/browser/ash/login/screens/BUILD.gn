@@ -564,6 +564,7 @@ source_set("browser_tests") {
     "//components/account_id",
     "//components/consent_auditor:test_support",
     "//components/language/core/browser",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",

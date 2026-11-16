@@ -42,6 +42,7 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"

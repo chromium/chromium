@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

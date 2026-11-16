@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"

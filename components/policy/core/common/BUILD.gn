@@ -508,7 +508,10 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [ "//services/network:test_support" ]
+  deps = [
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//services/network:test_support",
+  ]
 }
 
 source_set("common_constants") {
@@ -690,6 +693,7 @@ source_set("unit_tests") {
     "//components/enterprise/connectors/core:constants",
     "//components/invalidation:test_support",
     "//components/metrics",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy:generated",
     "//components/prefs:test_support",
     "//components/version_info",

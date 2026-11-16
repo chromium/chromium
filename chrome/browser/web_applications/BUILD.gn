@@ -1363,6 +1363,7 @@ source_set("web_applications_browser_tests") {
     "//components/browsing_data/core",
     "//components/embedder_support",
     "//components/permissions:test_support",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/services/app_service",

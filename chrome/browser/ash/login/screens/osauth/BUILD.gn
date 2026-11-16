@@ -110,6 +110,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/public",
     "//components/account_id",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy/core/common:test_support",
     "//components/prefs",
     "//components/user_manager:common",

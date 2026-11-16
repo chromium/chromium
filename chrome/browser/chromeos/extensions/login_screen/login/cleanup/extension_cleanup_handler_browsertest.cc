@@ -25,6 +25,7 @@
 #include "components/app_constants/constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"

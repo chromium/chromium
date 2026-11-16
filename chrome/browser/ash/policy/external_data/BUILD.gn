@@ -133,6 +133,7 @@ source_set("browser_tests") {
     "//chrome/test/base:in_process_browser_test",
     "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",

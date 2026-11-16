@@ -155,6 +155,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/app_constants",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/prefs",

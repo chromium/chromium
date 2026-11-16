@@ -67,6 +67,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_test_support",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/services/app_service/public/cpp:app_types",
     "//components/web_package",
     "//components/web_package/test_support",
@@ -118,6 +119,7 @@ static_library("test_support") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/experiences/settings_ui",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/web_package",
     "//components/webapps/isolated_web_apps",
   ]

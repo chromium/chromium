@@ -208,6 +208,7 @@ source_set("browser_tests") {
     "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id",
     "//components/account_id:test_support",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy/proto",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
@@ -264,6 +265,7 @@ if (is_chromeos_device) {
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",
       "//chrome/test/supervised_user:test_support",
+      "//components/policy:cloud_policy_proto_generated_compile",
       "//ui/aura",
       "//url",
     ]

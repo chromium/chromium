@@ -862,6 +862,7 @@ if (!is_android) {
       "//components/metrics/private_metrics:dwa_recorder",
       "//components/metrics/private_metrics:private_metrics_features",
       "//components/metrics/structured",
+      "//components/policy:cloud_policy_proto_generated_compile",
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/policy/core/common",

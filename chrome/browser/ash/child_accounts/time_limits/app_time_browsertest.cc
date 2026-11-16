@@ -29,6 +29,7 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

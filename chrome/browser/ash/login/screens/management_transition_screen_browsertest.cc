@@ -31,6 +31,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"

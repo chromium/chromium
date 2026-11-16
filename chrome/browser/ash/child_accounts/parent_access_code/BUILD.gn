@@ -80,6 +80,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
     "//components/account_id",
     "//components/account_id:test_support",
+    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/prefs",
     "//components/user_manager",
     "//content/test:test_support",

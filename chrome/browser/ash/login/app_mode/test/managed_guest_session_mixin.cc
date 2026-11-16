@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 
 namespace em = enterprise_management;
 

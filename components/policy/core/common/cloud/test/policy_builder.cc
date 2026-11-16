@@ -12,6 +12,7 @@
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "google_apis/gaia/gaia_id.h"

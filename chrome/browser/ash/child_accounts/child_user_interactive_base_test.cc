@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 
 namespace {
 constexpr char kEduCoexistenceToSVersion[] = "333024512";

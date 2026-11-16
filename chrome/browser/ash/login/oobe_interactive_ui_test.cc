@@ -84,6 +84,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"

@@ -29,6 +29,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"

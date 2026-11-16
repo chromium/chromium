@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/keypair.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -177,6 +176,7 @@ class TypedPolicyBuilder : public PolicyBuilder {
   TypedPolicyBuilder();
   TypedPolicyBuilder(const TypedPolicyBuilder&) = delete;
   TypedPolicyBuilder& operator=(const TypedPolicyBuilder&) = delete;
+  ~TypedPolicyBuilder() override;
 
   // Returns a reference to the payload protobuf being built. Note that an
   // initial payload protobuf is created in the constructor.
@@ -186,17 +186,26 @@ class TypedPolicyBuilder : public PolicyBuilder {
   void CreatePayload() { payload_ = std::make_unique<PayloadProto>(); }
 
   // PolicyBuilder:
-  void Build() override {
-    if (payload_) {
-      CHECK(payload_->SerializeToString(policy_data().mutable_policy_value()));
-    }
-
-    PolicyBuilder::Build();
-  }
+  void Build() override;
 
  private:
   std::unique_ptr<PayloadProto> payload_;
 };
+
+// Defined out of line so that the explicit instantiation declaration of
+// `UserPolicyBuilder` below suppresses their instantiation in its users, which
+// therefore don't need the (large) `cloud_policy.pb.h`.
+template <typename PayloadProto>
+TypedPolicyBuilder<PayloadProto>::~TypedPolicyBuilder() = default;
+
+template <typename PayloadProto>
+void TypedPolicyBuilder<PayloadProto>::Build() {
+  if (payload_) {
+    CHECK(payload_->SerializeToString(policy_data().mutable_policy_value()));
+  }
+
+  PolicyBuilder::Build();
+}
 
 // PolicyBuilder extension that allows for building policy blobs carrying string
 // payloads.
@@ -217,6 +226,13 @@ class StringPolicyBuilder : public PolicyBuilder {
   std::string payload_;
 };
 
+// Defined and instantiated in `policy_builder.cc`, which includes
+// `cloud_policy.pb.h`.
+template <>
+TypedPolicyBuilder<
+    enterprise_management::CloudPolicySettings>::TypedPolicyBuilder();
+extern template class TypedPolicyBuilder<
+    enterprise_management::CloudPolicySettings>;
 using UserPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::CloudPolicySettings>;
 

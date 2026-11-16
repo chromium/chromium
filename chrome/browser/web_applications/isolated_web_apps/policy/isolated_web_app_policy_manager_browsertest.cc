@@ -57,6 +57,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"

@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "password_selection_screen.h"
 #include "testing/gtest/include/gtest/gtest.h"
