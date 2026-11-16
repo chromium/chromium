@@ -141,10 +141,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       Array<TitleItem|TabData|TabGroupData|SplitViewData> = [];
   private accessor searchOptions_:
       SearchOptions<TabData|TabGroupData|SplitViewData> = {
-        includeScore: true,
-        includeMatches: true,
-        ignoreLocation: false,
-        threshold: 0.0,
         distance: 200,
         keys:
             [
