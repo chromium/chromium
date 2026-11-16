@@ -374,13 +374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.Scripts.ParsingBlocking.StartedStreaming"
-    enum="BooleanStreamed" expires_after="2023-06-01">
-  <owner>leszeks@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>Whether a parsing blocking script was streamed or not.</summary>
-</histogram>
-
 <histogram name="WebCore.Scripts.V8CodeCacheMetadata.Get"
     enum="V8CodeCacheGetMetadataType" expires_after="2025-10-12">
   <owner>marja@chromium.org</owner>

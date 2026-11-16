@@ -703,11 +703,8 @@ void RecordStartedStreamingHistogram(ScriptSchedulingType type,
   StreamedBoolean streamed = did_use_streamer ? StreamedBoolean::kStreamed
                                               : StreamedBoolean::kNotStreamed;
   switch (type) {
-    case ScriptSchedulingType::kParserBlocking: {
-      UMA_HISTOGRAM_ENUMERATION(
-          "WebCore.Scripts.ParsingBlocking.StartedStreaming", streamed);
+    case ScriptSchedulingType::kParserBlocking:
       break;
-    }
     case ScriptSchedulingType::kDefer: {
       UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Deferred.StartedStreaming",
                                 streamed);
