@@ -16,22 +16,8 @@
 # To disable on public builder only, modify chromeos/tast_control.gni.template
 # (for now)
 
-# http://crbug.com/1335213
-tast.arc.WindowState.clamshell
-
 # b/241122961
 tast.policy.BlockThirdPartyCookies
-
-# https://crbug.com/1455848
-tast.arc.CheckAndroidVersion
-tast.arc.Downloads
-
-# b/346793249, b/330290054
-tast.videoconferencing.OpenCLCacher
-
-# b/394108883
-tast.security.NetworkListenersNonARC@jacuzzi
-tast.security.NetworkListenersNonARC@octopus
 
 # https://crbug.com/394821952
 tast.ui.WebUIJSErrors
