@@ -12,7 +12,6 @@
 #include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -31,6 +30,7 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "url/gurl.h"
 
 using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
@@ -200,7 +200,9 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
 
   const BookmarkNode* node1 = AddFolder(0, 0, u"title1", GetStoreType());
   SetTitle(0, node1, u"new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{u"new_title1", GURL()}}, /*cryptographer=*/nullptr)
+                  .Wait());
 
   std::string description = "Not My Fault";
   std::string url = "www.google.com";
@@ -297,7 +299,9 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, ClientDataObsoleteTest) {
 
   const BookmarkNode* node1 = AddFolder(0, 0, u"title1", GetStoreType());
   SetTitle(0, node1, u"new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{u"new_title1", GURL()}}, /*cryptographer=*/nullptr)
+                  .Wait());
 
   // Remember cache_guid before actionable error.
   syncer::SyncStatus status;
@@ -327,7 +331,9 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, EncryptionObsoleteErrorTest) {
 
   const BookmarkNode* node1 = AddFolder(0, 0, u"title1", GetStoreType());
   SetTitle(0, node1, u"new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{u"new_title1", GURL()}}, /*cryptographer=*/nullptr)
+                  .Wait());
 
   GetFakeServer()->TriggerActionableProtocolError(
       sync_pb::SyncEnums::ENCRYPTION_OBSOLETE, "Not My Fault", "www.google.com",
@@ -363,7 +369,9 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, DisableDatatypeWhileRunning) {
 
   const BookmarkNode* node1 = AddFolder(0, 0, u"title1", GetStoreType());
   SetTitle(0, node1, u"new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{u"new_title1", GURL()}}, /*cryptographer=*/nullptr)
+                  .Wait());
 }
 
 // Tests that the unsynced entity will be eventually committed even after failed
