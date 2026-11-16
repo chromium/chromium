@@ -4765,9 +4765,11 @@ class PageContextWrapperViewportGeometryTest : public PageContextWrapperTest {
                        CGPoint content_offset = CGPointZero) {
     UIScrollView* scroll_view =
         [web_state()->GetWebViewProxy().scrollViewProxy asUIScrollView];
-    // Waits for the zoom scale and its layer tree presentation update to
-    // finish before applying `content_offset`, so an in-flight zoom commit
-    // does not reset the scroll offset.
+    // Wait for `window.visualViewport.scale` and `ZoomScale()` to settle before
+    // calling `WaitForPresentationUpdate()` so mid-zoom snapshots do not revert
+    // `UIScrollView.zoomScale`. Waiting for the presentation update before
+    // applying `content_offset` prevents an in-flight zoom commit from
+    // resetting the scroll offset.
     ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForActionTimeout, ^{
           if (std::fabs(ZoomScale() - target_zoom_scale) >
@@ -4775,32 +4777,38 @@ class PageContextWrapperViewportGeometryTest : public PageContextWrapperTest {
             [scroll_view setZoomScale:target_zoom_scale animated:NO];
             base::RunLoop().RunUntilIdle();
           }
-          return WaitForPresentationUpdate() &&
-                 std::fabs(ZoomScale() - target_zoom_scale) <=
+          const double visual_viewport_scale =
+              EvaluateNumber("window.visualViewport.scale");
+          return std::fabs(visual_viewport_scale - target_zoom_scale) <=
                      kZoomScaleTolerance &&
-                 std::fabs(EvaluateNumber("window.visualViewport.scale") -
-                           target_zoom_scale) <= kZoomScaleTolerance;
+                 std::fabs(ZoomScale() - target_zoom_scale) <=
+                     kZoomScaleTolerance;
         }));
+    ASSERT_TRUE(WaitForPresentationUpdate());
     const double expected_page_left = content_offset.x / target_zoom_scale;
     const double expected_page_top = content_offset.y / target_zoom_scale;
     ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForActionTimeout, ^{
+          if (std::fabs(ZoomScale() - target_zoom_scale) >
+              kZoomScaleTolerance) {
+            [scroll_view setZoomScale:target_zoom_scale animated:NO];
+          }
           const UIEdgeInsets insets = scroll_view.adjustedContentInset;
           [scroll_view
               setContentOffset:CGPointMake(content_offset.x - insets.left,
                                            content_offset.y - insets.top)
                       animated:NO];
           base::RunLoop().RunUntilIdle();
-          return WaitForPresentationUpdate() &&
-                 std::fabs(ZoomScale() - target_zoom_scale) <=
-                     kZoomScaleTolerance &&
-                 std::fabs(EvaluateNumber("window.visualViewport.pageLeft") -
+          return std::fabs(EvaluateNumber("window.visualViewport.pageLeft") -
                            expected_page_left) <=
                      kVisualViewportWidthRoundingTolerance &&
                  std::fabs(EvaluateNumber("window.visualViewport.pageTop") -
                            expected_page_top) <=
-                     kVisualViewportWidthRoundingTolerance;
+                     kVisualViewportWidthRoundingTolerance &&
+                 std::fabs(ZoomScale() - target_zoom_scale) <=
+                     kZoomScaleTolerance;
         }));
+    ASSERT_TRUE(WaitForPresentationUpdate());
   }
 
   // Loads a standards-mode page without a `<meta name="viewport">` tag. WebKit
@@ -5375,9 +5383,8 @@ TEST_P(PageContextWrapperViewportGeometryTest,
 // rounding `visualViewport` dimensions to whole pixels) rather than being
 // divided by `visualViewport.scale`, and zooming in from rest scales
 // `viewport_geometry` down to the zoomed `visualViewport` dimensions.
-// TODO(crbug.com/584794136): Re-enable once ZoomPageToScale() is deflaked.
 TEST_P(PageContextWrapperViewportGeometryTest,
-       DISABLED_DesktopLayoutPageAtRestAndZoomedMatchesVisualViewport) {
+       DesktopLayoutPageAtRestAndZoomedMatchesVisualViewport) {
   ASSERT_NO_FATAL_FAILURE(LoadDesktopLayoutPage(ZoomablePageBody()));
   const CGFloat resting_zoom_scale = ZoomScale();
   const double layout_width =
