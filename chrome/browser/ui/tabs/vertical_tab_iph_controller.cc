@@ -87,7 +87,10 @@ void VerticalTabIphController::MaybeShowPromo() {
   }
   views::View* tab = browser_view->tab_strip_view()->GetTabAnchorView(
       first_unpinned_tab->GetHandle());
-  if (IsTabShrunk(tab)) {
+  if (IsTabShrunk(tab) ||
+      feature_engagement::kIPHVerticalTabstripTutorialMinTabsParam.Get() <
+          feature_engagement::kIPHVerticalTabstripTutorialMinTabsParam
+              .default_value) {
     BrowserUserEducationInterface::From(browser_window_interface_)
         ->MaybeShowFeaturePromo(
             feature_engagement::kIPHVerticalTabstripTutorialFeature);

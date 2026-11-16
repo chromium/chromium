@@ -1033,7 +1033,10 @@ if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "vertical_tab_strip_state_controller_interactive_uitest.cc" ]
+    sources = [
+      "vertical_tab_iph_controller_interactive_uitest.cc",
+      "vertical_tab_strip_state_controller_interactive_uitest.cc",
+    ]
 
     sources += [ "tab_dialog_manager_interactive_uitest.cc" ]
 
@@ -1042,6 +1045,7 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
