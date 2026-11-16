@@ -36,7 +36,6 @@ build_webui("build") {
     "images/default_browser_bg_right_light.svg",
     "images/default_browser_frame.svg",
     "images/default_browser_frame_dark.svg",
-    "images/refresh_showcase_illustration_chromium.png",
     "intro.html",
     "intro_refresh.html",
     "welcome/welcome.html",
@@ -58,6 +57,7 @@ build_webui("build") {
 
     if (!is_chrome_branded) {
       static_files += [
+        "images/refresh_showcase_illustration_chromium.png",
         "images/security.svg",
         "images/security_old.svg",
       ]
