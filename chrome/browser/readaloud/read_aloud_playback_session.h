@@ -62,6 +62,11 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   void SetCustomMetadata(const std::string& title,
                          const std::string& publisher);
 
+  // Stops active media playing on the page and evicts players from MediaSession
+  // so that Read Aloud does not play concurrently with page audio and prevents
+  // dual-resuming page players.
+  void StopPageMedia();
+
   // content::MediaSessionPlayerObserver overrides:
   void OnSuspend(int player_id, bool triggered_by_user) override;
   void OnResume(int player_id, bool triggered_by_user) override;
@@ -139,6 +144,7 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
 
   bool is_paused_ = true;
   bool is_registered_ = false;
+  bool is_suspending_page_media_ = false;
 
   std::optional<media_session::MediaMetadata> custom_metadata_;
   SessionCommand pending_session_command_ = SessionCommand::kNone;

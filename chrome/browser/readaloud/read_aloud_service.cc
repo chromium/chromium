@@ -134,6 +134,10 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
 
   user_requested_play_ = true;
 
+  if (media_session_ && !IsWaitingForOverviewContent()) {
+    media_session_->StopPageMedia();
+  }
+
   if (playback_mode_ == PlaybackMode::kClassic && !waiting_for_first_audio_ &&
       !first_audio_emitted_) {
     standard_playback_start_time_ = base::TimeTicks::Now();
@@ -304,6 +308,20 @@ void ReadAloudService::PrimaryPageChanged(content::Page& page) {
   Stop();
 }
 
+void ReadAloudService::OnFrameAudioStateChanged(
+    content::RenderFrameHost* /*rfh*/,
+    bool audible) {
+  if (!user_requested_play_) {
+    return;
+  }
+  // Pause whenever the page produces sound (including when a muted video is
+  // unmuted). For accessibility, speech narration must not overlap with page
+  // audio.
+  if (audible) {
+    Pause();
+  }
+}
+
 // `OnSessionSuspended()` and `OnSessionResumed()` run synchronously while
 // `MediaSession` iterates over its players. They must not destroy or replace
 // `media_session_`.
@@ -469,6 +487,9 @@ void ReadAloudService::OnOverviewGenerated(mojo_base::BigBuffer response_bytes,
   // If user did not cancel play, signal Play() so that content
   // starts playing as soon as the overview text content is set.
   if (user_requested_play_) {
+    if (media_session_) {
+      media_session_->StopPageMedia();
+    }
     utility_player_->Play();
   }
   utility_player_->SetOverviewContent(

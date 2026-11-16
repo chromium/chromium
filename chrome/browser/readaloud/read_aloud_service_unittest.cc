@@ -1799,6 +1799,136 @@ TEST_F(ReadAloudServiceMediaSessionTest,
   EXPECT_EQ(fake_controller()->pause_count(), 2);
 }
 
+TEST_F(ReadAloudServiceMediaSessionTest,
+       AudibleFrameAudioStateChangedPausesReadAloud) {
+  StartReadAloud();
+  EXPECT_EQ(fake_controller()->pause_count(), 0);
+
+  base::RunLoop run_loop;
+  fake_controller()->set_pause_callback(run_loop.QuitClosure());
+  service()->OnFrameAudioStateChanged(web_contents()->GetPrimaryMainFrame(),
+                                      /*audible=*/true);
+  run_loop.Run();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       InaudibleFrameAudioStateChangedDoesNotPauseReadAloud) {
+  StartReadAloud();
+  EXPECT_EQ(fake_controller()->pause_count(), 0);
+
+  service()->OnFrameAudioStateChanged(web_contents()->GetPrimaryMainFrame(),
+                                      /*audible=*/false);
+  fake_controller()->FlushForTesting();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 0);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       ResumeReadAloudStopsActivePageMediaAndPreventsDualResume) {
+  StartReadAloud();
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+
+  // Page audio becoming audible pauses Read Aloud.
+  base::RunLoop pause_loop;
+  fake_controller()->set_pause_callback(pause_loop.QuitClosure());
+  service()->OnFrameAudioStateChanged(web_contents()->GetPrimaryMainFrame(),
+                                      /*audible=*/true);
+  pause_loop.Run();
+
+  // Simulate utility player acknowledging the pause.
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
+  fake_controller()->FlushForTesting();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+  EXPECT_EQ(page_player.suspend_count(), 0);
+
+  // Now user resumes Read Aloud while page audio is still active.
+  // Resuming Read Aloud must stop and evict active page players.
+  service()->Play(web_contents());
+
+  EXPECT_EQ(page_player.suspend_count(), 1);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->play_count(), 2);
+
+  // Simulate resuming the MediaSession via UI (e.g. Bluetooth headset).
+  // Page player must not be resumed because it was cleared from the session.
+  media_session()->Resume(content::MediaSession::SuspendType::kUI);
+
+  EXPECT_EQ(page_player.resume_count(), 0);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       StartReadAloudStopsAlreadyPlayingPageMedia) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  // Page media starts playing before Read Aloud has ever been initialized.
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+  EXPECT_EQ(page_player.suspend_count(), 0);
+
+  // Starting Read Aloud from idle must initialize the session and stop
+  // active page media immediately.
+  service()->Play(web_contents());
+
+  EXPECT_EQ(page_player.suspend_count(), 1);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->play_count(), 1);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       AudibleFrameAudioWhileAlreadyPausedDoesNotPauseAgain) {
+  StartReadAloud();
+  service()->Pause();
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+
+  // Subsequent audible frame audio while Read Aloud is already paused returns
+  // early and does not trigger redundant Pause() calls.
+  service()->OnFrameAudioStateChanged(web_contents()->GetPrimaryMainFrame(),
+                                      /*audible=*/true);
+  fake_controller()->FlushForTesting();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       OverviewModeDefersStoppingPageMediaUntilOverviewGenerated) {
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+  EXPECT_EQ(page_player.suspend_count(), 0);
+
+  web_distiller::ViewRequestDelegate* view_delegate = StartOverviewSession();
+  ASSERT_NE(view_delegate, nullptr);
+
+  // Calling Play in overview mode while waiting for overview generation does
+  // not stop page media yet.
+  service()->Play(web_contents());
+  EXPECT_EQ(page_player.suspend_count(), 0);
+
+  // Once the overview is generated and delivered, page media is stopped and
+  // playback begins.
+  DeliverDistilledArticle(view_delegate);
+  EXPECT_EQ(page_player.suspend_count(), 1);
+  EXPECT_EQ(fake_controller()->play_count(), 1);
+}
+
+TEST_F(ReadAloudServiceMediaSessionTest,
+       RedundantPlayWhilePlayingDoesNotSuspendPageMedia) {
+  StartReadAloud();
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+
+  // Calling Play() while Read Aloud is already playing should be a no-op
+  // and must not suspend page media.
+  service()->Play(web_contents());
+  EXPECT_EQ(page_player.suspend_count(), 0);
+}
+
 // `kEndOfStream` keeps Read Aloud in the MediaSession as a paused player (not
 // `RemovePlayer`), so resuming the session routes `Play()` back to Read Aloud.
 TEST_F(ReadAloudServiceMediaSessionTest,

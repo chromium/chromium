@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
@@ -113,6 +114,28 @@ void ReadAloudPlaybackSession::OnPlaybackRateChanged(float rate) {
   RefreshMediaSessionPosition();
 }
 
+void ReadAloudPlaybackSession::StopPageMedia() {
+  if (pending_session_command_ == SessionCommand::kResume || !is_paused_) {
+    return;
+  }
+  if (content::MediaSession* session = GetMediaSessionIfExists()) {
+    media_session::mojom::MediaSessionInfoPtr info =
+        session->GetMediaSessionInfoSync();
+    if (info &&
+        (info->state ==
+             media_session::mojom::MediaSessionInfo::SessionState::kActive ||
+         info->state ==
+             media_session::mojom::MediaSessionInfo::SessionState::kDucking)) {
+      // Suppress Read Aloud's own OnSuspend() callback while stopping active
+      // page media. Stopping the session suspends all normal players and clears
+      // them from MediaSession, preventing subsequent session resumes (e.g. via
+      // Bluetooth headset or system media notification) from dual-resuming page
+      // players.
+      base::AutoReset<bool> reset(&is_suspending_page_media_, true);
+      session->Stop(content::MediaSession::SuspendType::kUI);
+    }
+  }
+}
 bool ReadAloudPlaybackSession::ConsumePendingSessionCommand(
     SessionCommand command) {
   return std::exchange(pending_session_command_, SessionCommand::kNone) ==
@@ -172,7 +195,7 @@ content::MediaSession* ReadAloudPlaybackSession::GetMediaSessionIfExists() {
 
 void ReadAloudPlaybackSession::OnSuspend(int player_id,
                                          bool triggered_by_user) {
-  if (player_id != kPlayerId) {
+  if (player_id != kPlayerId || is_suspending_page_media_) {
     return;
   }
   pending_session_command_ = SessionCommand::kSuspend;

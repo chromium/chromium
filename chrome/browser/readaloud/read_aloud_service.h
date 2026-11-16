@@ -27,6 +27,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -240,6 +241,8 @@ class ReadAloudService
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
+  void OnFrameAudioStateChanged(content::RenderFrameHost* rfh,
+                                bool audible) override;
 
   // KeyedService:
   void Shutdown() override;
