@@ -21,6 +21,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -309,6 +311,7 @@ class AttemptOtpFillingToolTest : public testing::Test {
   // Invokes the tool with `FillOtp()` pending, destroys the tool and expects
   // `kCancelledDuringFillOtp` as the only sample.
   void InvokeAndExpectCancelledDuringFillOtp();
+  void InvokeAndExpectAllowPslMatching(bool expected_allow_psl_matching);
 
   // Ensures `tool` passes time-of-use validation for `target` by setting up an
   // `AnnotatedPageContent` with an element corresponding to `target`.
@@ -1065,6 +1068,54 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpError, 1);
+}
+
+// Shared by the `Invoke_*_AllowPslMatching*` tests below. Invokes the tool and
+// expects `RetrieveOtp()` to be called with `expected_allow_psl_matching`.
+void AttemptOtpFillingToolTest::InvokeAndExpectAllowPslMatching(
+    bool expected_allow_psl_matching) {
+  EXPECT_CALL(delegate().mock_otp_service(),
+              RetrieveOtp(_, _, _, expected_allow_psl_matching, _, _))
+      .WillOnce(RunOnceCallback<5>(base::unexpected(
+          one_time_tokens::OneTimeTokenRetrievalError::kSubscriptionExpired)));
+  PageTarget target(gfx::Point(10, 10));
+  AttemptOtpFillingTool tool = CreateTool({target});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+  SetupSuccessfulTimeOfUseValidation(tool, target);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+// Login flows always allow PSL matching.
+TEST_F(AttemptOtpFillingToolTest, Invoke_LoginFlow_AllowPslMatching) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  InvokeAndExpectAllowPslMatching(/*expected_allow_psl_matching=*/true);
+}
+
+// Non-login flows don't allow PSL matching when
+// `kGlicActorAutofillOneTimePasswordPslMatching` is disabled.
+TEST_F(AttemptOtpFillingToolTest,
+       Invoke_NotLoginFlow_FeatureDisabled_DisallowPslMatching) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kGlicActorAutofillOneTimePasswordPslMatching);
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
+      .WillOnce(Return(std::nullopt));
+  InvokeAndExpectAllowPslMatching(/*expected_allow_psl_matching=*/false);
+}
+
+// Non-login flows allow PSL matching when
+// `kGlicActorAutofillOneTimePasswordPslMatching` is enabled.
+TEST_F(AttemptOtpFillingToolTest,
+       Invoke_NotLoginFlow_FeatureEnabled_AllowPslMatching) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGlicActorAutofillOneTimePasswordPslMatching);
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
+      .WillOnce(Return(std::nullopt));
+  InvokeAndExpectAllowPslMatching(/*expected_allow_psl_matching=*/true);
 }
 
 struct RetrieveOtpErrorTestCase {
