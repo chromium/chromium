@@ -181,6 +181,41 @@ TEST_F(EventsXTest, ButtonEvents) {
   // TODO(derat): Test XInput code.
 }
 
+TEST_F(EventsXTest, BackForwardButtonEvents) {
+  x11::Event event;
+  constexpr gfx::Point kLocation(5, 10);
+
+  // X buttons 8 and 11 (BTN_SIDE and BTN_BACK) are back; 9 and 10 (BTN_EXTRA
+  // and BTN_FORWARD) are forward.
+  constexpr struct {
+    int button;
+    int flag;
+  } kCases[] = {
+      {8, ui::EF_BACK_MOUSE_BUTTON},
+      {9, ui::EF_FORWARD_MOUSE_BUTTON},
+      {10, ui::EF_FORWARD_MOUSE_BUTTON},
+      {11, ui::EF_BACK_MOUSE_BUTTON},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.button);
+
+    InitButtonEvent(&event, true, kLocation, test_case.button, {});
+    EXPECT_EQ(ui::EventType::kMousePressed, ui::EventTypeFromXEvent(event));
+    EXPECT_EQ(test_case.flag, ui::EventFlagsFromXEvent(event));
+    EXPECT_EQ(test_case.flag, ui::GetChangedMouseButtonFlagsFromXEvent(event));
+
+    InitButtonEvent(&event, false, kLocation, test_case.button, {});
+    EXPECT_EQ(ui::EventType::kMouseReleased, ui::EventTypeFromXEvent(event));
+    EXPECT_EQ(test_case.flag, ui::EventFlagsFromXEvent(event));
+    EXPECT_EQ(test_case.flag, ui::GetChangedMouseButtonFlagsFromXEvent(event));
+  }
+
+  // Buttons beyond 11 have no event flag.
+  InitButtonEvent(&event, true, kLocation, 12, {});
+  EXPECT_EQ(ui::EventType::kMousePressed, ui::EventTypeFromXEvent(event));
+  EXPECT_EQ(ui::EF_NONE, ui::GetChangedMouseButtonFlagsFromXEvent(event));
+}
+
 TEST_F(EventsXTest, AvoidExtraEventsOnWheelRelease) {
   x11::Event event;
   gfx::Point location(5, 10);
