@@ -49,7 +49,9 @@ class V8MemoryDumpProviderBackgroundModeTest
 };
 
 // Checks if the dump provider runs without crashing and dumps root objects.
-TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
+// TODO(crbug.com/585630704): Fails on the first attempt in nearly every
+// build when run in a batch; passes when retried alone.
+TEST_F(V8MemoryDumpProviderTest, DISABLED_DumpStatistics) {
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
