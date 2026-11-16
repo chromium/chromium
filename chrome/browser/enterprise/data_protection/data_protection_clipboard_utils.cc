@@ -1654,13 +1654,10 @@ bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents) {
   return true;
 }
 
-void CopyTextToClipboard(content::RenderFrameHost* rfh,
-                         const std::u16string& text) {
-  if (!rfh) {
-    return;
-  }
-
-  content::ClipboardEndpoint clipboard_endpoint = MakeClipboardEndpoint(*rfh);
+void CopyTextToClipboard(content::RenderFrameHost& rfh,
+                         const std::u16string& text,
+                         base::OnceCallback<void(bool copied)> callback) {
+  content::ClipboardEndpoint clipboard_endpoint = MakeClipboardEndpoint(rfh);
   auto dte = std::make_unique<ui::DataTransferEndpoint>(
       *clipboard_endpoint.data_transfer_endpoint());
 
@@ -1677,18 +1674,26 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
       std::move(data),
       base::BindOnce(
           [](std::unique_ptr<ui::DataTransferEndpoint> dte,
+             base::OnceCallback<void(bool copied)> callback,
              const ui::ClipboardFormatType& data_type,
              const content::ClipboardPasteData& data,
              std::optional<std::u16string> replacement_data) {
-            ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                          std::move(dte));
-            if (replacement_data) {
-              scw.WriteText(std::move(*replacement_data));
-            } else {
-              scw.WriteText(data.text);
+            // A copy blocked by policy comes back empty.
+            bool copied = !replacement_data && !data.text.empty();
+            // The writer commits when it goes out of scope, so `callback` runs
+            // once the text is on the clipboard.
+            {
+              ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
+                                            std::move(dte));
+              if (replacement_data) {
+                scw.WriteText(std::move(*replacement_data));
+              } else {
+                scw.WriteText(data.text);
+              }
             }
+            std::move(callback).Run(copied);
           },
-          std::move(dte)));
+          std::move(dte), std::move(callback)));
 }
 
 void CopyImageToClipboard(content::RenderFrameHost& rfh,

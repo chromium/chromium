@@ -2229,7 +2229,10 @@ TEST_F(DataProtectionClipboardDistilledURLTest,
 
 TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Allowed) {
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  CopyTextToClipboard(test_web_contents_->GetPrimaryMainFrame(), u"test text");
+  base::test::TestFuture<bool> copied_future;
+  CopyTextToClipboard(*test_web_contents_->GetPrimaryMainFrame(), u"test text",
+                      copied_future.GetCallback());
+  EXPECT_TRUE(copied_future.Get());
 
   base::test::TestFuture<std::u16string> future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -2241,7 +2244,10 @@ TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Allowed) {
 TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Block) {
   SetBlockCopyingFromSourceURLRule();
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  CopyTextToClipboard(test_web_contents_->GetPrimaryMainFrame(), u"test text");
+  base::test::TestFuture<bool> copied_future;
+  CopyTextToClipboard(*test_web_contents_->GetPrimaryMainFrame(), u"test text",
+                      copied_future.GetCallback());
+  EXPECT_FALSE(copied_future.Get());
 
   base::test::TestFuture<std::u16string> future;
   ui::Clipboard::GetForCurrentThread()->ReadText(

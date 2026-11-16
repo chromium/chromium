@@ -209,8 +209,11 @@ bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents);
 
 // Copies `text` to the OS clipboard. This routes the data to
 // `IsClipboardCopyAllowedByPolicy` to check if the copy is allowed.
-void CopyTextToClipboard(content::RenderFrameHost* rfh,
-                         const std::u16string& text);
+// `callback` always runs once policies are evaluated, which can be after a
+// content analysis scan, with whether `text` itself ended up on the clipboard.
+void CopyTextToClipboard(content::RenderFrameHost& rfh,
+                         const std::u16string& text,
+                         base::OnceCallback<void(bool copied)> callback);
 
 // Copies `bitmap` to the OS clipboard. This routes the data to
 // `IsClipboardCopyAllowedByPolicy` to check if the copy is allowed.

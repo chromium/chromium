@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -95,8 +96,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // was unsuccessful.
   void CompleteWithError(shared_highlighting::LinkGenerationError error);
 
-  // Copies given text to clipboard.
-  void CopyTextToClipboard(const std::string& text);
+  // Copies given text to clipboard. `callback` always runs, with whether the
+  // text itself was copied.
+  void CopyTextToClipboard(const std::string& text,
+                           base::OnceCallback<void(bool copied)> callback);
 
   // Returns the label for the "Copy link to text" context menu item.
   std::u16string GetCopyLinkToTextLabel() const;

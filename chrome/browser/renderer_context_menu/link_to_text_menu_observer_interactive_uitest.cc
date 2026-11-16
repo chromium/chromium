@@ -681,6 +681,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   std::u16string text = ui::clipboard_test_util::ReadText(
       clipboard, ui::ClipboardBuffer::kCopyPaste, nullptr);
   EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesCopyingLinkToText) {
