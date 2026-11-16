@@ -7,8 +7,7 @@ found in the LICENSE file.
 
 <!-- Layout for icon that indicates where an autofill card or profile is stored. -->
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:srcCompat="@drawable/google_pay"
+    android:id="@+id/server_data_label"
     android:layout_width="48dp"
     android:layout_height="20dp"
     android:layout_gravity="end"

@@ -40,7 +40,6 @@ import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -210,7 +209,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     }
 
     private Preference getPreferenceForBankAccount(BankAccount bankAccount) {
-        Preference bankAccountPref = new ChromeBasePreference(getStyledContext());
+        Preference bankAccountPref = new AutofillServerDataPreference(getStyledContext());
 
         bankAccountPref.setTitle(bankAccount.getBankName());
         bankAccountPref.setKey(
@@ -221,7 +220,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 R.string.settings_pix_bank_account_identifer,
                                 getBankAccountTypeString(bankAccount.getAccountType()),
                                 bankAccount.getAccountNumberSuffix()));
-        bankAccountPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
         bankAccountPref.setIcon(
                 AutofillImageFetcherFactory.getForProfile(getProfile())
                         .getPixAccountIcon(getStyledContext(), bankAccount.getDisplayIconUrl()));
@@ -237,7 +235,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     }
 
     private Preference getEwalletRowItem(Ewallet eWallet) {
-        Preference eWalletPref = new ChromeBasePreference(getStyledContext());
+        Preference eWalletPref = new AutofillServerDataPreference(getStyledContext());
 
         eWalletPref.setTitle(eWallet.getEwalletName());
         eWalletPref.setKey(
@@ -247,7 +245,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                         .getString(
                                 R.string.settings_ewallet_account_identifer,
                                 eWallet.getAccountDisplayName()));
-        eWalletPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
         eWalletPref.setIcon(
                 AutofillUiUtils.getCardIcon(
                         getStyledContext(),

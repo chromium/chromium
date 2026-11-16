@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.components.autofill.payments.BnplIssuerForSettings;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -108,7 +107,8 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
     private void createPreferencesForBnplTerms() {
         for (BnplIssuerForSettings issuer : mPersonalDataManager.getBnplIssuersForSettings()) {
             // Add a preference for the BNPL issuer.
-            ChromeBasePreference issuerPref = new ChromeBasePreference(getStyledContext());
+            AutofillServerDataPreference issuerPref =
+                    new AutofillServerDataPreference(getStyledContext());
             issuerPref.setDividerAllowedAbove(true);
             issuerPref.setDividerAllowedBelow(true);
             issuerPref.setTitle(issuer.getDisplayName());
@@ -133,9 +133,6 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
                             : resourceProvider.getBnplIssuerDrawableId(
                                     /* issuerId= */ issuer.getIssuerId(), /* isLinked= */ true);
             issuerPref.setIcon(AppCompatResources.getDrawable(getStyledContext(), issuerImageId));
-
-            // Add GPay icon.
-            issuerPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
 
             getPreferenceScreen().addPreference(issuerPref);
         }

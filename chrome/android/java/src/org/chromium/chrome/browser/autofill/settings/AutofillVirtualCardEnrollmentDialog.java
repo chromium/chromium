@@ -98,7 +98,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                             R.string.autofill_virtual_card_enrollment_dialog_title_label));
             ImageView titleIconView = customView.findViewById(R.id.title_icon);
             titleIconView.setVisibility(View.VISIBLE);
-            titleIconView.setImageResource(R.drawable.googlepay_with_gradient);
+            titleIconView.setImageResource(AutofillUiUtils.getGPayLogoDrawableId());
         } else {
             AutofillUiUtils.inlineTitleStringWithLogo(
                     mContext,

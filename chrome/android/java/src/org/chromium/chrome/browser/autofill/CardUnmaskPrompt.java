@@ -36,8 +36,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -204,10 +202,7 @@ public class CardUnmaskPrompt
 
         updateTitleForCustomView(title);
         ImageView titleIconView = mMainView.findViewById(R.id.title_icon);
-        titleIconView.setImageResource(
-                ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-                        ? R.drawable.googlepay_with_gradient
-                        : R.drawable.google_pay);
+        titleIconView.setImageResource(AutofillUiUtils.getGPayLogoDrawableId());
         mInstructions = mMainView.findViewById(R.id.instructions);
         mInstructions.setText(instructions);
         mNoRetryErrorMessage = mMainView.findViewById(R.id.no_retry_error_message);

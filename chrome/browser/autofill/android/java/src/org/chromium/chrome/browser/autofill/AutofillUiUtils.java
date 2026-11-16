@@ -43,8 +43,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -1025,13 +1025,15 @@ public class AutofillUiUtils {
     }
 
     /**
-     * Returns the widget layout resource ID for server-stored payment method.
+     * Returns the Google Pay logo drawable resource ID. This helper tries to be the single place
+     * where all Google Pay logos are retrieved from on the Java side, but certain icons passed from
+     * the C++ side aren't handled by it.
      *
-     * @return The layout resource ID for the Google Pay widget icon.
+     * @return The drawable resource ID for the Google Pay logo.
      */
-    public static @LayoutRes int getServerDataWidgetLayout() {
+    public static @DrawableRes int getGPayLogoDrawableId() {
         return ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-                ? R.layout.autofill_server_data_gradient_label
-                : R.layout.autofill_server_data_label;
+                ? R.drawable.googlepay_with_gradient
+                : R.drawable.google_pay;
     }
 }

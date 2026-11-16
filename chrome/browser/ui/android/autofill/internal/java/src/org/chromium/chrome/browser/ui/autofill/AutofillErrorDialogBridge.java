@@ -23,9 +23,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -110,10 +109,7 @@ public class AutofillErrorDialogBridge {
         TextView titleView = errorDialogContentView.findViewById(R.id.title);
         titleView.setText(title);
         ImageView iconView = errorDialogContentView.findViewById(R.id.title_icon);
-        iconView.setImageResource(
-                ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-                        ? R.drawable.googlepay_with_gradient
-                        : R.drawable.google_pay);
+        iconView.setImageResource(AutofillUiUtils.getGPayLogoDrawableId());
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)

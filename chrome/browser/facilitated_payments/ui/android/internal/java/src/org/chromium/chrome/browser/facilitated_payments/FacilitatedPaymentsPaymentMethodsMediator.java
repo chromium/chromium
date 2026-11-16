@@ -75,6 +75,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AccountLinkingSuccessScreenProperties;
@@ -91,7 +92,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.AccountType;
@@ -504,12 +504,7 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
                                     .getDimension(
                                             R.dimen.facilitated_payments_gpay_icon_header_height);
             headerBuilder
-                    .with(
-                            PRODUCT_ICON_DRAWABLE_ID,
-                            ChromeFeatureList.isEnabled(
-                                            AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-                                    ? R.drawable.googlepay_with_gradient
-                                    : R.drawable.google_pay)
+                    .with(PRODUCT_ICON_DRAWABLE_ID, AutofillUiUtils.getGPayLogoDrawableId())
                     .with(PRODUCT_ICON_HEIGHT, productIconHeight)
                     .with(
                             PRODUCT_ICON_CONTENT_DESCRIPTION_ID,

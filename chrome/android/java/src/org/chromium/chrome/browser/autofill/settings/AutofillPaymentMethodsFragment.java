@@ -320,7 +320,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
             // Add a preference for the credit card. It's multi-line to support cards with long
             // nicknames.
-            Preference cardPref = new ChromeBasePreference(getStyledContext());
+            Preference cardPref =
+                    card.getIsLocal()
+                            ? new ChromeBasePreference(getStyledContext())
+                            : new AutofillServerDataPreference(getStyledContext());
             cardPref.setTitle(card.getCardLabel());
 
             // Show virtual card enabled status for enrolled cards, expiration date otherwise.
@@ -350,7 +353,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         this::showLocalCardEditPageAfterAuthenticationIfRequired);
             } else {
                 cardPref.setFragment(AutofillServerCardEditor.class.getName());
-                cardPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
             }
 
             Bundle args = cardPref.getExtras();
@@ -361,7 +363,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         // Display all IBANs.
         for (Iban iban : personalDataManager.getIbansForSettings()) {
-            Preference ibanPref = new ChromeBasePreference(getStyledContext());
+            Preference ibanPref =
+                    iban.getRecordType() == IbanRecordType.SERVER_IBAN
+                            ? new AutofillServerDataPreference(getStyledContext())
+                            : new ChromeBasePreference(getStyledContext());
             ibanPref.setIcon(R.drawable.iban_icon);
             ibanPref.setTitle(iban.getLabel());
             ibanPref.setSummary(iban.getNickname());
@@ -370,7 +375,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 Bundle args = ibanPref.getExtras();
                 args.putString(AutofillEditorBase.AUTOFILL_GUID, iban.getGuid());
             } else if (iban.getRecordType() == IbanRecordType.SERVER_IBAN) {
-                ibanPref.setWidgetLayoutResource(AutofillUiUtils.getServerDataWidgetLayout());
                 ibanPref.setOnPreferenceClickListener(
                         preference -> {
                             mServerIbanManageLinkOpenerCallback.onResult(

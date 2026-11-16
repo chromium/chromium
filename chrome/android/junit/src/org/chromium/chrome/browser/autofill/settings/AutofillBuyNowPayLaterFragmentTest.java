@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
@@ -231,6 +232,11 @@ public class AutofillBuyNowPayLaterFragmentTest {
         assertTrue(mBnplIssuerPref.isSelectable());
         assertEquals(
                 R.layout.autofill_server_data_label, mBnplIssuerPref.getWidgetLayoutResource());
+        ImageView widgetView =
+                mAutofillBuyNowPayLaterFragment.getListView().findViewById(R.id.server_data_label);
+        assertNotNull(widgetView);
+        assertEquals(
+                R.drawable.google_pay, shadowOf(widgetView.getDrawable()).getCreatedFromResId());
         assertEquals(
                 AutofillBuyNowPayLaterFragment.PREF_KEY_BNPL_ISSUER_TERM, mBnplIssuerPref.getKey());
 
@@ -264,8 +270,13 @@ public class AutofillBuyNowPayLaterFragmentTest {
         assertNotNull(mBnplIssuerPref.getIcon());
         assertTrue(mBnplIssuerPref.isSelectable());
         assertEquals(
-                R.layout.autofill_server_data_gradient_label,
-                mBnplIssuerPref.getWidgetLayoutResource());
+                R.layout.autofill_server_data_label, mBnplIssuerPref.getWidgetLayoutResource());
+        ImageView widgetView =
+                mAutofillBuyNowPayLaterFragment.getListView().findViewById(R.id.server_data_label);
+        assertNotNull(widgetView);
+        assertEquals(
+                R.drawable.googlepay_with_gradient,
+                shadowOf(widgetView.getDrawable()).getCreatedFromResId());
         assertEquals(
                 AutofillBuyNowPayLaterFragment.PREF_KEY_BNPL_ISSUER_TERM, mBnplIssuerPref.getKey());
 

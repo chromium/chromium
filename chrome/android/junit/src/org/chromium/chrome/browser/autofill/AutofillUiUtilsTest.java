@@ -370,17 +370,15 @@ public class AutofillUiUtilsTest {
 
     @Test
     @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-    public void testGetServerDataWidgetLayout() {
+    public void testGetGPayLogoDrawableId() {
         Assert.assertEquals(
-                R.layout.autofill_server_data_gradient_label,
-                AutofillUiUtils.getServerDataWidgetLayout());
+                R.drawable.googlepay_with_gradient, AutofillUiUtils.getGPayLogoDrawableId());
     }
 
     @Test
     @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
-    public void testGetServerDataWidgetLayoutWithGradientGoogleLogosDisabled() {
-        Assert.assertEquals(
-                R.layout.autofill_server_data_label, AutofillUiUtils.getServerDataWidgetLayout());
+    public void testGetGPayLogoDrawableIdWithGradientGoogleLogosDisabled() {
+        Assert.assertEquals(R.drawable.google_pay, AutofillUiUtils.getGPayLogoDrawableId());
     }
 
     private @ErrorType int getExpirationDateErrorForUserEnteredMonthAndYear() {
