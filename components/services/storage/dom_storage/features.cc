@@ -55,10 +55,7 @@ DomStorageSqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
                ? DomStorageSqliteRolloutStage::kUseSqliteOnly
                : DomStorageSqliteRolloutStage::kUseLevelDbOnly;
   }
-  if (base::FeatureList::IsEnabled(kDomStorageSqliteNewDatabases)) {
-    return kDomStorageSqliteNewDatabasesStage.Get();
-  }
-  return DomStorageSqliteRolloutStage::kUseLevelDbOnly;
+  return kDomStorageSqliteNewDatabasesStage.Get();
 }
 
 bool IsExperimentalRolloutStage(DomStorageSqliteRolloutStage stage) {
