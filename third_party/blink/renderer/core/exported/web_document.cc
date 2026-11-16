@@ -404,7 +404,7 @@ void WebDocument::SnapshotAccessibilityTree(
     base::TimeDelta timeout,
     ui::AXTreeUpdate* response,
     ui::AXMode mode,
-    std::set<ui::AXSerializationErrorFlag>* out_error) {
+    ui::AXSerializationErrorFlagSet* out_error) {
   // This creates a different AXObjectCache from any owned by document for
   // case where a11y stays on, because the AXMode may require a different set
   // of nodes.

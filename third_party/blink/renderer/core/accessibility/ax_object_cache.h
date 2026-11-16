@@ -239,7 +239,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
       size_t max_nodes,
       base::TimeDelta timeout,
       ui::AXTreeUpdate*,
-      std::set<ui::AXSerializationErrorFlag>* out_error) = 0;
+      ui::AXSerializationErrorFlagSet* out_error) = 0;
 
   // Recompute the entire tree and reserialize it.
   // This method is useful when something that potentially affects most of the

@@ -196,12 +196,11 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Returns the referrer for this document.
   WebString OutgoingReferrer() const;
 
-  void SnapshotAccessibilityTree(
-      size_t max_nodes,
-      base::TimeDelta timeout,
-      ui::AXTreeUpdate* response,
-      ui::AXMode mode,
-      std::set<ui::AXSerializationErrorFlag>* out_error);
+  void SnapshotAccessibilityTree(size_t max_nodes,
+                                 base::TimeDelta timeout,
+                                 ui::AXTreeUpdate* response,
+                                 ui::AXMode mode,
+                                 ui::AXSerializationErrorFlagSet* out_error);
 
   // Returns the number of active resource requests that are being loaded by the
   // document's ResourceFetcher.

@@ -6331,7 +6331,7 @@ void AXObjectCacheImpl::SerializeEntireTreeAndDispose(
     size_t max_node_count,
     base::TimeDelta timeout,
     ui::AXTreeUpdate* response,
-    std::set<ui::AXSerializationErrorFlag>* out_error) {
+    ui::AXSerializationErrorFlagSet* out_error) {
   CHECK(for_snapshot_only_);
   CHECK(GetDocument().IsActive());
   // Forces CommitAXUpdates(), which builds the tree.

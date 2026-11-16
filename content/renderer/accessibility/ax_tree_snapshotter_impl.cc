@@ -4,8 +4,6 @@
 
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 
-#include <set>
-
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/renderer/render_frame_impl.h"
@@ -18,8 +16,6 @@
 #define RECORD_ERROR(histogram)                                       \
   base::UmaHistogramEnumeration(kAXTreeSnapshotterErrorHistogramName, \
                                 AXTreeSnapshotErrorReason::k##histogram)
-
-using ErrorSet = std::set<ui::AXSerializationErrorFlag>;
 
 namespace content {
 
@@ -82,20 +78,20 @@ void AXTreeSnapshotterImpl::SerializeTreeWithLimits(
     size_t max_nodes,
     base::TimeDelta timeout,
     ui::AXTreeUpdate* response) {
-  ErrorSet out_error;
+  ui::AXSerializationErrorFlagSet out_error;
   document_.SnapshotAccessibilityTree(max_nodes, timeout, response, ax_mode_,
                                       &out_error);
 
-  ErrorSet::iterator max_nodes_iter =
-      out_error.find(ui::AXSerializationErrorFlag::kMaxNodesReached);
-  ErrorSet::iterator timeout_iter =
-      out_error.find(ui::AXSerializationErrorFlag::kTimeoutReached);
+  const bool max_nodes_reached =
+      out_error.Has(ui::AXSerializationErrorFlag::kMaxNodesReached);
+  const bool timeout_reached =
+      out_error.Has(ui::AXSerializationErrorFlag::kTimeoutReached);
 
-  if (max_nodes_iter != out_error.end() && timeout_iter != out_error.end()) {
+  if (max_nodes_reached && timeout_reached) {
     RECORD_ERROR(SerializeMaxNodesAndTimeoutReached);
-  } else if (max_nodes_iter != out_error.end()) {
+  } else if (max_nodes_reached) {
     RECORD_ERROR(SerializeMaxNodesReached);
-  } else if (timeout_iter != out_error.end()) {
+  } else if (timeout_reached) {
     RECORD_ERROR(SerializeTimeoutReached);
   }
 }

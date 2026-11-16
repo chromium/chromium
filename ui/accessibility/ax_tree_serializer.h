@@ -106,10 +106,9 @@ class AXTreeSerializer {
   // Returns true on success. On failure, returns false and calls Reset();
   // this only happens when the source tree has a problem like duplicate
   // ids or changing during serialization.
-  bool SerializeChanges(
-      AXSourceNode node,
-      AXTreeUpdateType out_update,
-      std::set<AXSerializationErrorFlag>* out_error = nullptr);
+  bool SerializeChanges(AXSourceNode node,
+                        AXTreeUpdateType out_update,
+                        AXSerializationErrorFlagSet* out_error = nullptr);
 
   // Invalidate the subtree rooted at this node, ensuring that the entire
   // subtree is re-serialized the next time any of those nodes end up
@@ -219,10 +218,9 @@ class AXTreeSerializer {
   void DeleteClientSubtree(ClientTreeNode* client_node);
 
   // Helper function, called recursively with each new node to serialize.
-  bool SerializeChangedNodes(
-      AXSourceNode node,
-      AXTreeUpdateType out_update,
-      std::set<AXSerializationErrorFlag>* out_error = nullptr);
+  bool SerializeChangedNodes(AXSourceNode node,
+                             AXTreeUpdateType out_update,
+                             AXSerializationErrorFlagSet* out_error = nullptr);
 
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
@@ -676,14 +674,14 @@ template <typename AXSourceNode,
           typename AXTreeUpdateType,
           typename AXTreeDataType,
           typename AXNodeDataType>
-bool AXTreeSerializer<AXSourceNode,
-                      AXSourceNodeVectorType,
-                      AXTreeUpdateType,
-                      AXTreeDataType,
-                      AXNodeDataType>::
-    SerializeChanges(AXSourceNode node,
-                     AXTreeUpdateType out_update,
-                     std::set<AXSerializationErrorFlag>* out_error) {
+bool AXTreeSerializer<
+    AXSourceNode,
+    AXSourceNodeVectorType,
+    AXTreeUpdateType,
+    AXTreeDataType,
+    AXNodeDataType>::SerializeChanges(AXSourceNode node,
+                                      AXTreeUpdateType out_update,
+                                      AXSerializationErrorFlagSet* out_error) {
   if (!timeout_.is_zero())
     timer_ = std::make_unique<base::ElapsedTimer>();
 
@@ -911,7 +909,7 @@ bool AXTreeSerializer<AXSourceNode,
                       AXNodeDataType>::
     SerializeChangedNodes(AXSourceNode node,
                           AXTreeUpdateType out_update,
-                          std::set<AXSerializationErrorFlag>* out_error) {
+                          AXSerializationErrorFlagSet* out_error) {
   // This method has three responsibilities:
   // 1. Serialize |node| into an AXNodeData, and append it to
   //    the AXTreeUpdateType to be sent to the client.
@@ -944,7 +942,7 @@ bool AXTreeSerializer<AXSourceNode,
   if (max_node_count_ > 0 && out_update->nodes.size() >= max_node_count_) {
     should_terminate_early = true;
     if (out_error) {
-      (*out_error).insert(AXSerializationErrorFlag::kMaxNodesReached);
+      out_error->Put(AXSerializationErrorFlag::kMaxNodesReached);
     }
   }
 
@@ -955,7 +953,7 @@ bool AXTreeSerializer<AXSourceNode,
       // keep checking if we timed out.
       should_terminate_early = true;
       if (out_error) {
-        (*out_error).insert(AXSerializationErrorFlag::kTimeoutReached);
+        out_error->Put(AXSerializationErrorFlag::kTimeoutReached);
       }
       timer_.reset();
     } else if (!timer_) {

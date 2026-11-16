@@ -313,7 +313,7 @@ TEST_F(AccessibilityTest, HistogramTest) {
     Member<blink::AXObjectCache> snapshot_cache =
         blink::AXObjectCache::CreateSnapshotter(GetDocument(),
                                                 ui::kAXModeBasic);
-    std::set<ui::AXSerializationErrorFlag> out_error;
+    ui::AXSerializationErrorFlagSet out_error;
     snapshot_cache->SerializeEntireTreeAndDispose(/* max_node_count */ 1000,
                                                   base::TimeDelta::FiniteMax(),
                                                   &response, &out_error);
@@ -365,7 +365,7 @@ TEST_F(AccessibilityTest, SnapshotWithDanglingAriaOwnsInOwnedSubtree) {
   Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
       GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
   ui::AXTreeUpdate response;
-  std::set<ui::AXSerializationErrorFlag> out_error;
+  ui::AXSerializationErrorFlagSet out_error;
   snapshot_cache->SerializeEntireTreeAndDispose(
       /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
 
@@ -387,7 +387,7 @@ TEST_F(AccessibilityTest, SnapshotWithValidAriaOwnsInOwnedSubtree) {
   Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
       GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
   ui::AXTreeUpdate response;
-  std::set<ui::AXSerializationErrorFlag> out_error;
+  ui::AXSerializationErrorFlagSet out_error;
   snapshot_cache->SerializeEntireTreeAndDispose(
       /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
 
@@ -2818,7 +2818,7 @@ TEST_F(AccessibilityTest, SnapshotWithNestedAriaOwnsRestoringParent) {
   Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
       GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
   ui::AXTreeUpdate response;
-  std::set<ui::AXSerializationErrorFlag> out_error;
+  ui::AXSerializationErrorFlagSet out_error;
   snapshot_cache->SerializeEntireTreeAndDispose(
       /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
 

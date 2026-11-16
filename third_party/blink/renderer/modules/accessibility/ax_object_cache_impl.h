@@ -629,7 +629,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
       size_t max_nodes,
       base::TimeDelta timeout,
       ui::AXTreeUpdate*,
-      std::set<ui::AXSerializationErrorFlag>* out_error) override;
+      ui::AXSerializationErrorFlagSet* out_error) override;
 
   // Marks an object as dirty to be serialized in the next serialization.
   // If |subtree| is true, the entire subtree is dirty.

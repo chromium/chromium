@@ -971,6 +971,7 @@ _CONFIG = [
             'ui::AXNodeData',
             'ui::AXRelativeBounds',
             'ui::AXSerializationErrorFlag',
+            'ui::AXSerializationErrorFlagSet',
             'ui::AXTreeChecks',
             'ui::AXTreeData',
             'ui::AXTreeID',
@@ -1568,6 +1569,7 @@ _CONFIG = [
             # For accessibility tree snapshots.
             'ui::AXMode',
             'ui::AXSerializationErrorFlag',
+            'ui::AXSerializationErrorFlagSet',
             'ui::AXTreeUpdate',
         ],
     },

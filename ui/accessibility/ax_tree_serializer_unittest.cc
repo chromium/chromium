@@ -408,7 +408,11 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
   serializer_ = std::make_unique<BasicAXTreeSerializer>(tree0_source_.get());
   serializer_->set_max_node_count(4);
   AXTreeUpdate update;
-  ASSERT_TRUE(serializer_->SerializeChanges(tree0_->root(), &update));
+  AXSerializationErrorFlagSet out_error;
+  ASSERT_TRUE(
+      serializer_->SerializeChanges(tree0_->root(), &update, &out_error));
+  EXPECT_EQ(out_error, AXSerializationErrorFlagSet(
+                           {AXSerializationErrorFlag::kMaxNodesReached}));
   // It actually serializes 5 nodes, not 4 - to be consistent.
   // It skips the children of node 5.
   ASSERT_EQ(5u, update.nodes.size());
