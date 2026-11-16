@@ -5957,7 +5957,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.WebUI.ResultChangedToRepaintLatency.ToPaint"
-    units="ms" expires_after="2026-12-22">
+    units="ms" expires_after="2027-05-08">
   <owner>mahmadi@chromium.org</owner>
   <owner>kylixrd@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
