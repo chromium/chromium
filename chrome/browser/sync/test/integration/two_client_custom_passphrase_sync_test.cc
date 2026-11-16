@@ -4,11 +4,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -141,7 +141,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientCustomPassphraseSyncTest,
   AddTestBookmarksToClient(kEncryptingClientId);
   // Wait for the client to commit the update.
   ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kEncryptingClientId)).Wait());
+      CommittedAllNudgedChangesChecker(GetSyncService(kEncryptingClientId))
+          .Wait());
 
   // Set up the second (decrypting) sync client.
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
