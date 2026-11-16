@@ -64,6 +64,30 @@
 #     -> Never runs HangingTestCase/testMethod on physical devices (e.g. because it hangs
 #        until the test runner times out).
 #
+# What expectation is used:
+# > [IMPORTANT]
+# > **Priority rules** to find the expectation of a test (`TestCase/testMethod` or
+# > `TestCase.testMethod`) among the lines whose tags match the current configuration
+# > (see the tag matching semantics above):
+# > 1. Lines naming the test method have priority over lines naming only its test case.
+# > 2. Among those, the last matching line in this file has priority.
+# > 3. If no line matches, the test is expected to pass.
+# >
+# > **Tips**:
+# > 1. Use these priority rules to carve out exceptions to expectations that have a
+# >    broad scope.
+# > 2. Prefer using these rules over unrolling expectations into long lists of
+# >    fine-grained expectations.
+#
+# Examples:
+# crbug.com/1 MyTestCase [ Failure ]
+# crbug.com/2 MyTestCase/testMethod [ Pass Failure ]
+#     -> Expects all tests of MyTestCase to fail, except MyTestCase/testMethod, which is
+#        expected to be flaky (rule 1).
+# crbug.com/1 [ iPhone ] MyTestCase/testMethod [ Failure ]
+# crbug.com/1 [ iOS18 ] MyTestCase/testMethod [ Pass Failure ]
+#     -> Expects MyTestCase/testMethod to be flaky on iPhones running iOS 18 (rule 2). To
+#        expect it to always fail on iPhones running iOS 18 instead, swap the two lines.
 
 # Smoke test to verify expectations functionality. Do not remove.
 crbug.com/523267238 SmokeTestCase/testFailingMethod [ Failure Crash ]
