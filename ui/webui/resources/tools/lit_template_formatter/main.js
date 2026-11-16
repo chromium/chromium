@@ -5,10 +5,10 @@
 import assert from 'node:assert';
 // Disable no-restricted-syntax to allow NodeJS imports which are extensionless.
 // eslint-disable-next-line no-restricted-syntax
-import {readFile, unlink, writeFile} from 'node:fs/promises';
+import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import os from 'node:os';
-import {dirname, join} from 'node:path';
-import {argv, exit, stdout} from 'node:process';
+import {basename, dirname, join} from 'node:path';
+import {exit, stdout} from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 
@@ -33,8 +33,6 @@ const MAX_CONCURRENCY = Math.max(1, Math.min(os.availableParallelism(), 8));
 // Returns the formatted file contents, or null if a Lit HTML template cannot
 // be extracted from |filePath|.
 async function formatFile(filePath, sortAttributes, quiet = false) {
-  const tempFilePath = `${filePath}.tmp.ts`;
-
   // Step 1: Extract and process template content
   const {
     result: replacedTemplate,
@@ -86,17 +84,16 @@ async function formatFile(filePath, sortAttributes, quiet = false) {
   // Step 4b: Serialize HTML AST back to string
   const formattedHtml = serializeHtmlAst(ast, placeholderMap, sortAttributes);
 
-  // Step 5: Write rest of file to temp file, run clang-format.
-  await writeFile(tempFilePath, restOfFile, 'utf-8');
+  // Step 5: Pipe rest of file to clang-format via stdin so concurrent
+  // formatter processes (e.g. parallel PRESUBMIT.py CheckPatchFormatted runs)
+  // never race on a shared temporary file on disk.
   if (!quiet) {
-    console.info(`Running clang-format on temporary file...`);
+    console.info(`Running clang-format on ${filePath}...`);
   }
-  await runClangFormat(clangFormatPath, ['-i', tempFilePath]);
+  const formattedRest = await runClangFormat(
+      clangFormatPath, [`--assume-filename=${filePath}`], restOfFile);
 
   // Step 6: Reconstruction
-  // Read formatted temp file
-  const formattedRest = await readFile(tempFilePath, 'utf-8');
-
   // Reconstruct the file by putting back the formatted and resolved template
   const parts = formattedRest.split(placeholder);
   assert.ok(
@@ -119,12 +116,7 @@ async function formatFile(filePath, sortAttributes, quiet = false) {
     }
   }
 
-  const finalContent = parts[0] + templateHtml + parts[1];
-
-  // Clean up temp file if it exists
-  await unlink(tempFilePath);
-
-  return finalContent;
+  return parts[0] + templateHtml + parts[1];
 }
 
 /**
@@ -158,18 +150,20 @@ async function processOneFile(f, sortAttributes, isDryRun, isDiff) {
     return {file: f, hasDiff: true};
   }
 
-  const writePath = isDiff ? `${f}.formatted.tmp.ts` : f;
-  await writeFile(writePath, formattedContent, 'utf-8');
-
   if (isDiff) {
+    const tmpDir = await mkdtemp(join(os.tmpdir(), 'lit-template-formatter-'));
     try {
+      const writePath = join(tmpDir, `${basename(f)}.formatted.tmp.ts`);
+      await writeFile(writePath, formattedContent, 'utf-8');
       const diffOutput =
           await execAsync(`python3 "${diffHelperPath}" "${f}" "${writePath}"`);
       return {file: f, hasDiff: true, diffOutput};
     } finally {
-      await unlink(writePath);
+      await rm(tmpDir, {recursive: true, force: true});
     }
   }
+
+  await writeFile(f, formattedContent, 'utf-8');
 
   console.info(`Successfully formatted and updated ${f}`);
   return {file: f, hasDiff: true};

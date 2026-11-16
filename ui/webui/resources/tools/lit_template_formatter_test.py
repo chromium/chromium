@@ -276,6 +276,48 @@ class LitTemplateFormatterTest(unittest.TestCase):
       actual = self._read_file(dest_path)
       self.assertMultiLineEqual(expected, actual)
 
+  def testConcurrentDryRun(self):
+    from concurrent import futures
+
+    filename = "test_basic_expressions.html.ts"
+    expected_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", "expected", filename
+    )
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(expected_path, dest_path)
+
+    with futures.ThreadPoolExecutor(max_workers=4) as executor:
+      runs = [
+        executor.submit(self._run_formatter, ["--dry-run", dest_path])
+        for _ in range(4)
+      ]
+      for run in runs:
+        run.result()
+    self.assertEqual([filename], os.listdir(self._out_dir))
+
+  def testConcurrentDiff(self):
+    from concurrent import futures
+
+    filename = "test_basic_expressions.html.ts"
+    src_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", filename
+    )
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(src_path, dest_path)
+
+    with futures.ThreadPoolExecutor(max_workers=4) as executor:
+      runs = [
+        executor.submit(self._run_formatter, ["--diff", dest_path])
+        for _ in range(4)
+      ]
+      for run in runs:
+        stdout = run.result()
+        self.assertIn("--- ", stdout)
+        self.assertIn("+++ ", stdout)
+        self.assertIn("-    <h1>${this.title}</h1>", stdout)
+        self.assertIn("+  <h1>${this.title}</h1>", stdout)
+    self.assertEqual([filename], os.listdir(self._out_dir))
+
 
 if __name__ == "__main__":
   unittest.main()
