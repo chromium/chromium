@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -372,7 +373,13 @@ class TestPreconnectManagerObserver
   void Wait() {
     base::RunLoop run_loop;
     DCHECK(!run_loop_);
-    run_loop_ = &run_loop;
+
+    // `-Wlifetime-safety` has no way to know that `run_loop_` is reset
+    // at its end, and so points out that it looks like frame-local
+    // `run_loop` is smuggled out by member assignment. `AutoReset`
+    // spells out that this cannot happen.
+    base::AutoReset<decltype(run_loop_)> resetter{&run_loop_, &run_loop};
+
     CheckForWaitingLoop();
     run_loop.Run();
   }
