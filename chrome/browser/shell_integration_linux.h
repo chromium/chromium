@@ -45,7 +45,8 @@ std::string GetProgramClassClass();
 // or a profile with a per-profile desktop entry). This is `desktop_id` itself,
 // unless the user set --class: taskbars that group windows by res_class (e.g.
 // ones based on libwnck) then show these windows separately from the browser
-// and look up their desktop entry from it.
+// and look up their desktop entry from it. It is also the Wayland app ID of
+// these windows, so --class overrides the app ID too.
 std::string GetProgramClassClassForDesktopId(const std::string& desktop_id);
 
 // Returns name of the browser icon (without a path or file extension).

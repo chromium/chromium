@@ -92,13 +92,15 @@ BrowserNativeWidgetAuraLinux::GetWindowClass() const {
         BrowserInitState::From(&browser)->create_params().app_name;
     CHECK(!app_name.empty());
     CHECK(!browser.GetProfile()->GetPath().empty());
-    window_class.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
-        app_name, browser.GetProfile()->GetPath());
+    const std::string desktop_id =
+        shell_integration_linux::GetXdgAppIdForWebApp(
+            app_name, browser.GetProfile()->GetPath());
+    // --class overrides the app ID, like it overrides the X11 res_class.
+    window_class.wayland_app_id =
+        shell_integration_linux::GetProgramClassClassForDesktopId(desktop_id);
     if (base::StartsWith(app_name, web_app::kCrxAppPrefix)) {
-      window_class.wm_class_name = window_class.wayland_app_id;
-      window_class.wm_class_class =
-          shell_integration_linux::GetProgramClassClassForDesktopId(
-              window_class.wayland_app_id);
+      window_class.wm_class_name = desktop_id;
+      window_class.wm_class_class = window_class.wayland_app_id;
     }
   } else {
     window_class.wayland_app_id = window_class.wm_class_class;
@@ -115,7 +117,7 @@ BrowserNativeWidgetAuraLinux::GetWindowClass() const {
         window_class.wm_class_class =
             shell_integration_linux::GetProgramClassClassForDesktopId(
                 desktop_id);
-        window_class.wayland_app_id = desktop_id;
+        window_class.wayland_app_id = window_class.wm_class_class;
       }
     }
   }

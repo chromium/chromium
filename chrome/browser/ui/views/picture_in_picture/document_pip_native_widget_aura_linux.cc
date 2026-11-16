@@ -218,7 +218,8 @@ std::unique_ptr<views::Widget> CreateDocumentPipWidgetLinux(
           host->GetProfile()->GetOriginalProfile()->GetPath());
   if (!desktop_id.empty()) {
     params.wm_class_name = desktop_id;
-    params.wayland_app_id = desktop_id;
+    params.wayland_app_id =
+        shell_integration_linux::GetProgramClassClassForDesktopId(desktop_id);
   }
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.native_widget = native_widget;
