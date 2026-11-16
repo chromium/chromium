@@ -721,24 +721,67 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
           profile_);
   bool is_new_copy = creation_time_ > tracker->last_toast_time();
   // Shows `toast_id`, unless it's already showing for the same copy.
-  auto maybe_show_toast = [&](ToastId toast_id) {
+  // `on_close` runs once the toast closes, for any reason.
+  auto maybe_show_toast = [&](ToastId toast_id,
+                              base::OnceClosure on_close = {}) {
     auto* toast_controller =
         ToastController::MaybeGetForWebContents(web_contents_.get());
     if (toast_controller && wait_for_verdict &&
-        (is_new_copy || toast_controller->GetCurrentToastId() != toast_id) &&
-        toast_controller->MaybeShowToast(ToastParams(toast_id))) {
-      tracker->set_last_toast_time(base::TimeTicks::Now());
+        (is_new_copy || toast_controller->GetCurrentToastId() != toast_id)) {
+      ToastParams params(toast_id);
+      params.toast_close_callback =
+          base::ScopedClosureRunner(std::move(on_close));
+      if (toast_controller->MaybeShowToast(std::move(params))) {
+        tracker->set_last_toast_time(base::TimeTicks::Now());
+      }
     }
   };
   switch (final_result_) {
     case FinalContentAnalysisResult::WARNING:
       if (web_contents_) {
+        // Without waiting for the verdict, the copy already went through (see
+        // CreateForWebContents()), so there's nothing to warn about or decline.
+        if (!wait_for_verdict) {
+          return false;
+        }
+        // Some windows can't show toasts, e.g. popups (crbug.com/582866360).
+        // Block the copy then, rather than leaving it waiting on a warning the
+        // user can't see. MaybeShowToast() only fails if CanShowToast() does.
+        auto* toast_controller =
+            ToastController::MaybeGetForWebContents(web_contents_.get());
+        if (!toast_controller ||
+            !toast_controller->CanShowToast(ToastId::kEnterpriseCopyWarning)) {
+          // Don't use `Cancel()`: it would delete this scan's upload while the
+          // upload is still running this code.
+          FillAllResultsWith(false);
+          RunCallback();
+          return false;
+        }
+        // Closing the warning without "Copy anyway" declines the copy, so its
+        // clipboard write doesn't stay pending and hold back later copies. A
+        // copy made after the toast showed is left alone, as it has its own
+        // warning.
+        maybe_show_toast(
+            ToastId::kEnterpriseCopyWarning,
+            base::BindOnce(
+                [](base::WeakPtr<content::WebContents> web_contents,
+                   base::TimeTicks shown_time) {
+                  ContentAnalysisDelegate* delegate =
+                      CopyWarningDelegateTracker::GetDelegate(
+                          web_contents.get());
+                  if (delegate && delegate->creation_time_ <= shown_time) {
+                    CopyWarningDelegateTracker::CancelAndClear(
+                        web_contents.get());
+                  }
+                },
+                web_contents_, base::TimeTicks::Now()));
         // Set the delegate in the tracker so it can be found by the toast
-        // controller later to bypass the copy warning.
+        // controller later to bypass the copy warning. It's set after showing
+        // the toast, as showing it can drop a queued older warning, whose
+        // close shouldn't decline this copy.
         CopyWarningDelegateTracker::SetDelegate(web_contents_.get(), this);
-        maybe_show_toast(ToastId::kEnterpriseCopyWarning);
-        // Delay deleting the content analysis delegate until the toast is
-        // clicked.
+        // Delay deleting the content analysis delegate until the user acts on
+        // the toast.
         return true;
       }
       return false;

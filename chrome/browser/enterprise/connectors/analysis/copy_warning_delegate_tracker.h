@@ -47,6 +47,11 @@ class CopyWarningDelegateTracker
   static void ClearIfMatches(content::WebContents* web_contents,
                              ContentAnalysisDelegate* delegate);
 
+  // Returns the delegate whose copy warning is waiting on the user in
+  // `web_contents`, or null if there's none or `web_contents` is null.
+  static ContentAnalysisDelegate* GetDelegate(
+      content::WebContents* web_contents);
+
   CopyWarningDelegateTracker(const CopyWarningDelegateTracker&) = delete;
   CopyWarningDelegateTracker& operator=(const CopyWarningDelegateTracker&) =
       delete;

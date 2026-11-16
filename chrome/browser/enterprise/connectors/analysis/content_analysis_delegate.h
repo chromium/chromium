@@ -306,9 +306,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // true if `this` must stay alive for the UI to finish handling the result,
   // and false if the caller may delete `this` right away. The dialog methods
   // return false when there is no dialog. ShowFinalResultInToast() returns
-  // true only for a warning, which the user may still bypass from the toast;
-  // it returns false after showing any other toast, such as a blocked or
-  // audit one, as those need nothing further from `this`.
+  // true only for a warning shown in a toast, which the user may still bypass;
+  // a warning that can't be shown blocks the copy instead. It returns false
+  // after showing any other toast, such as a blocked or audit one, as those
+  // need nothing further from `this`.
   virtual bool ShowFinalResultInDialog();
   virtual bool ShowFinalResultInToast();
   virtual bool CancelDialog();

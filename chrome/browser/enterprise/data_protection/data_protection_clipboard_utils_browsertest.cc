@@ -409,8 +409,6 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
             ToastId::kEnterpriseCopyWarning);
 
   toast_controller->GetToastWidgetForTesting()->CloseNow();
-  enterprise_connectors::CopyWarningDelegateTracker::SetDelegate(contents(),
-                                                                 nullptr);
 
   EXPECT_EQ(future.Get<0>().GetName(), metadata.format_type.GetName());
 
@@ -2940,8 +2938,86 @@ IN_PROC_BROWSER_TEST_P(
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(toast_controller->IsShowingToast());
+  // The copy didn't wait for the verdict, so nothing waits on the user.
+  EXPECT_FALSE(enterprise_connectors::CopyWarningDelegateTracker::GetDelegate(
+      contents()));
 
   EXPECT_TRUE(future.Wait());
+}
+
+// Popup windows can't show toasts (crbug.com/582866360), so a warned copy made
+// in one is blocked rather than left waiting on a warning the user can't see.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyContentAnalysisWarning_BlockedInPopup) {
+  active_user_test_mixin_->SetFakeCookieValue();
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::WARN);
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  content::WebContents* popup_contents =
+      CreateBrowserForPopup(browser()->GetProfile())
+          ->GetTabStripModel()
+          ->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(popup_contents, url));
+  ASSERT_FALSE(ToastController::MaybeGetForWebContents(popup_contents));
+
+  auto source = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(url),
+      base::BindLambdaForTesting(
+          [popup_contents]() { return popup_contents->GetBrowserContext(); }),
+      *popup_contents->GetPrimaryMainFrame());
+
+  ui::ClipboardMetadata metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  content::ClipboardPasteData data;
+  data.text = std::u16string(100, 'a');
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get<1>().empty());
+  auto replacement = future.Get<2>();
+  ASSERT_TRUE(replacement.has_value());
+  EXPECT_EQ(*replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+  EXPECT_FALSE(enterprise_connectors::CopyWarningDelegateTracker::GetDelegate(
+      popup_contents));
 }
 
 // Copying an image scans its bitmap and its `<img>` markup separately. Their

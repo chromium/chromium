@@ -82,6 +82,16 @@ void CopyWarningDelegateTracker::ClearIfMatches(
   }
 }
 
+// static
+ContentAnalysisDelegate* CopyWarningDelegateTracker::GetDelegate(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* tracker = FromWebContents(web_contents);
+  return tracker ? tracker->delegate_.get() : nullptr;
+}
+
 CopyWarningDelegateTracker::CopyWarningDelegateTracker(
     content::WebContents* web_contents)
     : content::WebContentsUserData<CopyWarningDelegateTracker>(*web_contents) {}
