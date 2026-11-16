@@ -278,7 +278,7 @@ def launch_agsa(args: OptionsNamespace):
         + [
             '--splashscreen=skip',
             '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',  # pylint: disable=line-too-long
-            '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo","skip_deterministic_script_injection":true}',  # pylint: disable=line-too-long
+            '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_002.wprgo","skip_deterministic_script_injection":true}',  # pylint: disable=line-too-long
             '--embedder-process-name=googleapp',
             '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',  # pylint: disable=line-too-long
             f'--disable-features={",".join(fragments.disable_features)}',

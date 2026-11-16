@@ -228,7 +228,7 @@ class AndroidProfileTool:
       + [
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
-        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"'
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_002.wprgo"'
         + ',"skip_deterministic_script_injection":true}',
         '--embedder-process-name=googleapp',
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
