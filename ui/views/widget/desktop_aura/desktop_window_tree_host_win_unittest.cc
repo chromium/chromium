@@ -38,6 +38,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -1860,6 +1861,99 @@ TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
 
   ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
   EXPECT_EQ(compositor->display_color_spaces(), display_color_spaces);
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, WindowTargeterReturnsHTTransparent) {
+  for (Widget::InitParams::Type type :
+       {Widget::InitParams::TYPE_POPUP,
+        Widget::InitParams::TYPE_WINDOW_FRAMELESS}) {
+    Widget widget;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET, type);
+    params.bounds = gfx::Rect(100, 100, 200, 200);
+    widget.Init(std::move(params));
+    widget.Show();
+
+    aura::Window* content = widget.GetNativeWindow();
+    ASSERT_TRUE(content);
+    auto targeter = std::make_unique<aura::WindowTargeter>();
+    targeter->SetInsets(gfx::Insets::TLBR(40, 16, 16, 16));
+    content->SetEventTargeter(std::move(targeter));
+
+    HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+    ASSERT_TRUE(hwnd);
+
+    auto hit_test_client_point = [hwnd](int client_x, int client_y) -> LRESULT {
+      POINT pt = {client_x, client_y};
+      ::ClientToScreen(hwnd, &pt);
+      return ::SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
+    };
+
+    EXPECT_EQ(HTTRANSPARENT, hit_test_client_point(100, 20));
+    EXPECT_EQ(HTTRANSPARENT, hit_test_client_point(8, 100));
+    EXPECT_EQ(HTTRANSPARENT, hit_test_client_point(192, 100));
+    EXPECT_EQ(HTTRANSPARENT, hit_test_client_point(100, 192));
+    EXPECT_EQ(HTCLIENT, hit_test_client_point(100, 100));
+  }
+}
+
+TEST_F(DesktopWindowTreeHostWinTest,
+       WindowTargeterReturnsHTTransparentForWindowWithNonClientView) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  aura::Window* content = widget.GetNativeWindow();
+  ASSERT_TRUE(content);
+  auto targeter = std::make_unique<aura::WindowTargeter>();
+  targeter->SetInsets(gfx::Insets::TLBR(40, 16, 16, 16));
+  content->SetEventTargeter(std::move(targeter));
+
+  HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  ASSERT_TRUE(hwnd);
+
+  // A point in the client area but inside the targeter's insets is
+  // transparent, even though the window has a NonClientView.
+  POINT pt = {100, 20};
+  ::ClientToScreen(hwnd, &pt);
+  EXPECT_EQ(HTTRANSPARENT,
+            ::SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y)));
+}
+
+TEST_F(DesktopWindowTreeHostWinTest,
+       WindowTargeterDoesNotAffectNativeFrameHitTest) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  ASSERT_TRUE(hwnd);
+
+  // Find a point on the native frame, just left of the client area.
+  RECT window_rect;
+  ::GetWindowRect(hwnd, &window_rect);
+  POINT client_origin = {0, 0};
+  ::ClientToScreen(hwnd, &client_origin);
+  ASSERT_LT(window_rect.left, client_origin.x)
+      << "Test requires a window with a native frame.";
+  POINT pt = {window_rect.left, client_origin.y + 100};
+
+  const LRESULT expected =
+      ::SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
+  ASSERT_NE(HTTRANSPARENT, expected);
+
+  aura::Window* content = widget.GetNativeWindow();
+  ASSERT_TRUE(content);
+  content->SetEventTargeter(std::make_unique<aura::WindowTargeter>());
+
+  EXPECT_EQ(expected,
+            ::SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y)));
 }
 
 }  // namespace test

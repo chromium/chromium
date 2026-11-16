@@ -131,6 +131,59 @@ TEST_F(FullWebUIOmniboxFrameTest, UpdateWindowTargeterWithoutWidget) {
   unattached_frame->SetElevation(0);
   unattached_frame->SetForwardMouseEvents(true);
 }
+
+TEST_F(FullWebUIOmniboxFrameTest, RoundedOmniboxResultsFrameTargeterInsets) {
+  auto* frame =
+      widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
+          new views::View(), &location_bar_, /*forward_mouse_events=*/true));
+  widget_->Show();
+
+  aura::Window* window = widget_->GetNativeWindow();
+  ASSERT_TRUE(window);
+  ASSERT_TRUE(window->targeter());
+
+  // When forward_mouse_events is true and cutout is visible, targeter insets
+  // should include both the shadow insets and the top cutout height.
+  gfx::Rect mouse_rect, touch_rect;
+  window->targeter()->GetHitTestRects(window, &mouse_rect, &touch_rect);
+  gfx::Insets expected_insets =
+      frame->GetInsets() +
+      gfx::Insets::TLBR(RoundedOmniboxResultsFrame::GetNonResultSectionHeight(
+                            /*include_cutout=*/true),
+                        0, 0, 0);
+  gfx::Rect expected_rect = window->bounds();
+  expected_rect.Inset(expected_insets);
+  EXPECT_EQ(mouse_rect, expected_rect);
+
+  // Hiding the cutout should update the targeter to exclude only the shadow
+  // insets.
+  frame->SetCutoutVisibility(false);
+  window->targeter()->GetHitTestRects(window, &mouse_rect, &touch_rect);
+  expected_rect = window->bounds();
+  expected_rect.Inset(frame->GetInsets());
+  EXPECT_EQ(mouse_rect, expected_rect);
+}
+
+TEST_F(FullWebUIOmniboxFrameTest,
+       DoesNotInstallWindowTargeterWhenNotClientContentsView) {
+  auto* container = widget_->SetContentsView(std::make_unique<views::View>());
+  auto* rounded_frame =
+      container->AddChildView(std::make_unique<RoundedOmniboxResultsFrame>(
+          new views::View(), &location_bar_, /*forward_mouse_events=*/true));
+  auto* full_frame =
+      container->AddChildView(std::make_unique<FullWebUIOmniboxFrame>(
+          new views::View(), &location_bar_, /*forward_mouse_events=*/true));
+  widget_->Show();
+
+  aura::Window* window = widget_->GetNativeWindow();
+  ASSERT_TRUE(window);
+  EXPECT_FALSE(window->targeter());
+
+  rounded_frame->SetCutoutVisibility(false);
+  full_frame->SetElevation(0);
+  full_frame->SetForwardMouseEvents(false);
+  EXPECT_FALSE(window->targeter());
+}
 #else  // !defined(USE_AURA)
 
 TEST_F(FullWebUIOmniboxFrameTest, ViewTargeterHitTesting) {

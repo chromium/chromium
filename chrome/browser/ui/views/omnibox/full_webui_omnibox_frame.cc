@@ -19,15 +19,12 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#include "ui/aura/window_targeter.h"
-#else
+#if !defined(USE_AURA)
 #include "ui/compositor/layer.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
-#endif  // USE_AURA
+#endif  // !USE_AURA
 
 namespace {
 
@@ -172,20 +169,8 @@ gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() const {
 }
 
 #if defined(USE_AURA)
-void FullWebUIOmniboxFrame::UpdateWindowTargeter() {
-  if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
-    return;
-  }
-  auto* window = GetWidget()->GetNativeWindow();
-  const gfx::Insets insets =
-      forward_mouse_events() ? GetEventForwardingInsets() : shadow_margin_;
-  if (window->targeter()) {
-    window->targeter()->SetInsets(insets);
-  } else {
-    auto targeter = std::make_unique<aura::WindowTargeter>();
-    targeter->SetInsets(insets);
-    window->SetEventTargeter(std::move(targeter));
-  }
+gfx::Insets FullWebUIOmniboxFrame::GetWindowTargeterInsets() const {
+  return forward_mouse_events() ? GetEventForwardingInsets() : shadow_margin_;
 }
 #endif  // USE_AURA
 
