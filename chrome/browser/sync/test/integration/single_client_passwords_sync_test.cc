@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 
   const std::vector<sync_pb::SyncEntity> entities =
       fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS);
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 
   const std::vector<sync_pb::SyncEntity> entities =
       fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS);
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 
   std::string prior_encryption_key_name;
   {
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   ASSERT_TRUE(
       ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
           .Wait());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 
   const std::vector<sync_pb::SyncEntity> entities =
       fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS);
