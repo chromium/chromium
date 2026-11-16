@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
+#include <optional>
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
@@ -15,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -40,11 +44,10 @@ StyleColor::UnresolvedColorMix* MakeEqualUnresolvedColorMix(
     Color::HueInterpolationMethod hue_interpolation_method,
     const StyleColor& color1,
     const StyleColor& color2) {
-  using Item = StyleColor::UnresolvedColorMix::Item;
   return MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
       color_interpolation_space, hue_interpolation_method,
-      StyleColor::UnresolvedColorMix::ItemVector{Item(color1), Item(color2)},
-      /*percentage=*/0.5, /*alpha_multiplier=*/1.0);
+      StyleColor::UnresolvedColorMix::ItemVector{{color1, 0.5}, {color2, 0.5}},
+      /*alpha_multiplier=*/1.0);
 }
 
 }  // namespace
@@ -98,6 +101,47 @@ TEST(StyleBuilderConverterTest, ResolveColorValue_ZeroCombinedPercentage) {
   EXPECT_EQ(ResolveColorValue(*color_mix_value, context),
             StyleColor(Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f,
                                              0.0f, 0.5f, 0.0f)));
+}
+
+// currentcolor keeps the mix unresolved, and serializes the same way in the
+// declared and computed values.
+TEST(StyleBuilderConverterTest,
+     ResolveColorValue_ColorMixPercentageSerialization) {
+  using Percentages = Vector<std::optional<double>>;
+  const Percentages tests[] = {
+      // 100 * (1 / 3) isn't exactly 100 / 3.
+      {std::nullopt, std::nullopt, std::nullopt},
+      // Ten times 0.1 adds up to just below 1, so the alpha multiplier isn't
+      // exactly 1.
+      Percentages(10, 10.0),
+      {30, 30},
+      {20, std::nullopt, std::nullopt},
+  };
+  const CSSIdentifierValue* currentcolor =
+      CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  const ResolveColorValueContext context{
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
+      .text_link_colors = TextLinkColors()};
+
+  for (const Percentages& percentages : tests) {
+    cssvalue::CSSColorMixValue::ItemVector items;
+    for (const std::optional<double>& percentage : percentages) {
+      items.push_back(cssvalue::CSSColorMixItem{
+          currentcolor,
+          percentage
+              ? CSSNumericLiteralValue::Create(
+                    *percentage, CSSPrimitiveValue::UnitType::kPercentage)
+              : nullptr});
+    }
+    const auto* color_mix_value =
+        MakeGarbageCollected<cssvalue::CSSColorMixValue>(
+            std::move(items), Color::ColorSpace::kSRGB,
+            Color::HueInterpolationMethod::kShorter);
+
+    const StyleColor computed = ResolveColorValue(*color_mix_value, context);
+    ASSERT_TRUE(computed.IsUnresolvedColorFunction());
+    EXPECT_EQ(computed.ToCSSValue()->CssText(), color_mix_value->CssText());
+  }
 }
 
 TEST_F(StyleBuilderConverterPageTest, PaletteMix_ZeroCombinedPercentage) {

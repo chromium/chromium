@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_color.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/color_function.h"
@@ -301,23 +302,23 @@ void StyleColor::UnresolvedAlphaColor::Trace(Visitor* visitor) const {
   visitor->Trace(alpha_);
 }
 
-StyleColor::UnresolvedColorMix::Item::Item(const StyleColor& color)
+StyleColor::UnresolvedColorMix::Item::Item(const StyleColor& color,
+                                           double percentage)
     : color(color.color_or_unresolved_color_function_),
-      color_type(ResolveColorOperandType(color)) {}
+      color_type(ResolveColorOperandType(color)),
+      percentage(percentage) {}
 
 StyleColor::UnresolvedColorMix::UnresolvedColorMix(
     Color::ColorSpace color_interpolation_space,
     Color::HueInterpolationMethod hue_interpolation_method,
     ItemVector items,
-    double percentage,
     double alpha_multiplier)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kColorMix),
       color_interpolation_space_(color_interpolation_space),
       hue_interpolation_method_(hue_interpolation_method),
       items_(std::move(items)),
-      percentage_(percentage),
       alpha_multiplier_(alpha_multiplier) {
-  CHECK_EQ(items_.size(), 2u);
+  CHECK(!items_.empty());
 }
 
 void StyleColor::UnresolvedColorMix::Trace(Visitor* visitor) const {
@@ -329,35 +330,39 @@ bool StyleColor::UnresolvedColorMix::operator==(
     const UnresolvedColorMix& other) const {
   return color_interpolation_space_ == other.color_interpolation_space_ &&
          hue_interpolation_method_ == other.hue_interpolation_method_ &&
-         percentage_ == other.percentage_ &&
          alpha_multiplier_ == other.alpha_multiplier_ && items_ == other.items_;
 }
 
 Color StyleColor::UnresolvedColorMix::Resolve(
     const Color& current_color) const {
-  const Color c1 =
-      ResolveColorOperand(items_[0].color, items_[0].color_type, current_color);
-  const Color c2 =
-      ResolveColorOperand(items_[1].color, items_[1].color_type, current_color);
-  return Color::FromColorMix(color_interpolation_space_,
-                             hue_interpolation_method_, c1, c2, percentage_,
-                             alpha_multiplier_);
+  const Vector<Color, 2> colors(items_, [&current_color](const Item& item) {
+    return ResolveColorOperand(item.color, item.color_type, current_color);
+  });
+  return Color::FromColorMix(
+      color_interpolation_space_, hue_interpolation_method_, colors,
+      Vector<double, 2>(items_, &Item::percentage), alpha_multiplier_);
 }
 
 CSSValue* StyleColor::UnresolvedColorMix::ToCSSValue() const {
-  const CSSPrimitiveValue* percent1 = CSSNumericLiteralValue::Create(
-      100 * (1.0 - percentage_) * alpha_multiplier_,
-      CSSPrimitiveValue::UnitType::kPercentage);
-  const CSSPrimitiveValue* percent2 =
-      CSSNumericLiteralValue::Create(100 * percentage_ * alpha_multiplier_,
-                                     CSSPrimitiveValue::UnitType::kPercentage);
-
+  // If all percentages are equal to each other, we can treat them as if they
+  // were omitted for serialization purposes, even if they don't quite sum up
+  // to 100% due to rounding error.
+  const bool is_equal_mix =
+      alpha_multiplier_ == 1.0 &&
+      std::ranges::all_of(items_, [this](const Item& item) {
+        return item.percentage == items_[0].percentage;
+      });
   return MakeGarbageCollected<cssvalue::CSSColorMixValue>(
-      cssvalue::CSSColorMixValue::ItemVector{
-          {ConvertColorOperandToCSSValue(items_[0].color, items_[0].color_type),
-           percent1},
-          {ConvertColorOperandToCSSValue(items_[1].color, items_[1].color_type),
-           percent2}},
+      cssvalue::CSSColorMixValue::ItemVector(
+          items_,
+          [is_equal_mix](const Item& item) {
+            return cssvalue::CSSColorMixItem{
+                ConvertColorOperandToCSSValue(item.color, item.color_type),
+                is_equal_mix ? nullptr
+                             : CSSNumericLiteralValue::Create(
+                                   100.0 * item.percentage,
+                                   CSSPrimitiveValue::UnitType::kPercentage)};
+          }),
       color_interpolation_space_, hue_interpolation_method_);
 }
 

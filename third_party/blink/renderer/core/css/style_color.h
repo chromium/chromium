@@ -142,33 +142,33 @@ class CORE_EXPORT StyleColor {
 
   class CORE_EXPORT UnresolvedColorMix : public UnresolvedColorFunction {
    public:
-    // A color argument of the mix.
     struct Item {
       DISALLOW_NEW();
 
      public:
-      CORE_EXPORT explicit Item(const StyleColor& color);
+      CORE_EXPORT Item(const StyleColor& color, double percentage);
 
       void Trace(Visitor* visitor) const { visitor->Trace(color); }
 
       bool operator==(const Item& other) const {
         return color_type == other.color_type &&
+               percentage == other.percentage &&
                ColorOrUnresolvedColorFunction::Equals(color, other.color,
                                                       color_type);
       }
 
       ColorOrUnresolvedColorFunction color;
       UnderlyingColorType color_type;
+      double percentage;
     };
 
     using ItemVector = HeapVector<Item>;
 
-    // `items` must have exactly two items for now, and `percentage` is the
-    // progress percentage towards the second one.
+    // `alpha_multiplier` isn't recomputed from the item percentages, because
+    // their sum can round to just below 1.
     UnresolvedColorMix(Color::ColorSpace color_interpolation_space,
                        Color::HueInterpolationMethod hue_interpolation_method,
                        ItemVector items,
-                       double percentage,
                        double alpha_multiplier);
 
     void Trace(Visitor* visitor) const override;
@@ -184,7 +184,6 @@ class CORE_EXPORT StyleColor {
     Color::HueInterpolationMethod hue_interpolation_method_ =
         Color::HueInterpolationMethod::kShorter;
     ItemVector items_;
-    double percentage_ = 0.0;
     double alpha_multiplier_ = 1.0;
   };
 

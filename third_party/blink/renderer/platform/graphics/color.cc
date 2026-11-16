@@ -300,16 +300,48 @@ Color Color::FromHWBA(std::optional<float> h,
 // static
 Color Color::FromColorMix(Color::ColorSpace interpolation_space,
                           std::optional<HueInterpolationMethod> hue_method,
+                          base::span<const Color> colors,
+                          base::span<const double> percentages,
+                          float alpha_multiplier) {
+  CHECK(!colors.empty());
+  CHECK_EQ(colors.size(), percentages.size());
+  CHECK(alpha_multiplier >= 0.0f && alpha_multiplier <= 1.0f);
+
+  Color result = colors[0];
+  if (colors.size() == 1) {
+    // A sole color is still converted to the interpolation color space.
+    // https://github.com/w3c/csswg-drafts/issues/12234
+    result.ConvertToColorSpaceForInterpolation(interpolation_space);
+  } else {
+    double accumulated_percentage = percentages[0];
+    for (size_t i = 1; i < colors.size(); ++i) {
+      const double combined_percentage =
+          accumulated_percentage + percentages[i];
+      // https://github.com/w3c/csswg-drafts/issues/14013
+      const double progress = combined_percentage == 0.0
+                                  ? 0.5
+                                  : percentages[i] / combined_percentage;
+      result = InterpolateColors(interpolation_space, hue_method, result,
+                                 colors[i], progress);
+      accumulated_percentage = combined_percentage;
+    }
+  }
+
+  result.alpha_ *= alpha_multiplier;
+  return result;
+}
+
+// static
+Color Color::FromColorMix(Color::ColorSpace interpolation_space,
+                          std::optional<HueInterpolationMethod> hue_method,
                           Color color1,
                           Color color2,
                           float percentage,
                           float alpha_multiplier) {
-  DCHECK(alpha_multiplier >= 0.0f && alpha_multiplier <= 1.0f);
-  Color result = InterpolateColors(interpolation_space, hue_method, color1,
-                                   color2, percentage);
-
-  result.alpha_ *= alpha_multiplier;
-  return result;
+  const Color colors[] = {color1, color2};
+  const double percentages[] = {1.0 - percentage, percentage};
+  return FromColorMix(interpolation_space, hue_method, colors, percentages,
+                      alpha_multiplier);
 }
 
 // static

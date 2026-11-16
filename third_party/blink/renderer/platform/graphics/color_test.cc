@@ -30,8 +30,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace {
@@ -212,6 +215,204 @@ TEST(BlinkColor, ColorMixNone) {
   EXPECT_EQ(result.param1_, color1.param1_);
   EXPECT_EQ(result.param2_is_none_, false);
   EXPECT_EQ(result.param2_, color2.param2_);
+}
+
+TEST(BlinkColor, ColorMixTwoColorsMatchesInterpolation) {
+  // The two-color FromColorMix() turns the progress percentage into two
+  // percentages, and the list-based one turns them back.
+  const Color color1 = Color::FromRGBA(255, 0, 0, 200);
+  const Color color2 = Color::FromColorSpace(Color::ColorSpace::kOklch, 0.7f,
+                                             0.1f, 200.0f, 0.5f);
+  for (Color::ColorSpace space :
+       {Color::ColorSpace::kSRGB, Color::ColorSpace::kOklch,
+        Color::ColorSpace::kHSL}) {
+    for (int percent = 0; percent <= 100; ++percent) {
+      const float percentage = percent / 100.0f;
+      EXPECT_EQ(Color::FromColorMix(space, std::nullopt, color1, color2,
+                                    percentage, /*alpha_multiplier=*/1.0f),
+                Color::InterpolateColors(space, std::nullopt, color1, color2,
+                                         percentage))
+          << percent << "%";
+    }
+  }
+}
+
+TEST(BlinkColor, ColorMixMultiple) {
+  const Color red = CreateSRGBColor(1.0f, 0.0f, 0.0f, 1.0f);
+  const Color green = Color::FromRGB(0, 128, 0);
+  const Color blue = CreateSRGBColor(0.0f, 0.0f, 1.0f, 1.0f);
+  const Color white = CreateSRGBColor(1.0f, 1.0f, 1.0f, 1.0f);
+  struct {
+    Vector<Color> colors;
+    Vector<double> percentages;
+    float alpha_multiplier;
+    Color expected;
+  } tests[] = {
+      // Expected values from WPT css/css-color/parsing/
+      // color-computed-color-mix-function.html.
+      {{red, green, blue},
+       {0.5, 0.3, 0.2},
+       1.0f,
+       CreateSRGBColor(0.5f, 0.150588f, 0.2f, 1.0f)},
+      {{red, green, blue, white},
+       {0.25, 0.25, 0.25, 0.25},
+       1.0f,
+       CreateSRGBColor(0.5f, 0.375490f, 0.5f, 1.0f)},
+      // When the percentages add up to zero, each pair is mixed half and half.
+      {{red, green, blue},
+       {0.0, 0.0, 0.0},
+       0.0f,
+       CreateSRGBColor(0.25f, 0.125490f, 0.5f, 0.0f)},
+      {{red, green, blue},
+       {0.0, 0.0, 1.0},
+       1.0f,
+       CreateSRGBColor(0.0f, 0.0f, 1.0f, 1.0f)},
+  };
+  for (const auto& test : tests) {
+    EXPECT_COLOR_NEAR(
+        Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt, test.colors,
+                            test.percentages, test.alpha_multiplier),
+        test.expected);
+  }
+}
+
+TEST(BlinkColor, ColorMixSingle) {
+  Color result = Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt,
+                                     {Color::FromRGB(255, 0, 0)}, {0.5},
+                                     /*alpha_multiplier=*/0.5f);
+  EXPECT_EQ(result.GetColorSpace(), Color::ColorSpace::kSRGB);
+  EXPECT_FLOAT_EQ(result.Param0(), 1.0f);
+  EXPECT_FLOAT_EQ(result.Param1(), 0.0f);
+  EXPECT_FLOAT_EQ(result.Param2(), 0.0f);
+  EXPECT_FLOAT_EQ(result.Alpha(), 0.5f);
+
+  // The components of a transparent color are kept (no premultiplication).
+  result = Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt,
+                               {Color::FromRGBA(255, 0, 0, 0)}, {1.0},
+                               /*alpha_multiplier=*/1.0f);
+  EXPECT_FLOAT_EQ(result.Param0(), 1.0f);
+  EXPECT_FLOAT_EQ(result.Alpha(), 0.0f);
+
+  result = Color::FromColorMix(
+      Color::ColorSpace::kHSL, std::nullopt,
+      {Color::FromColorSpace(Color::ColorSpace::kHSL, std::nullopt, 0.5f, 0.5f,
+                             1.0f)},
+      {1.0}, /*alpha_multiplier=*/1.0f);
+  EXPECT_EQ(result.GetColorSpace(), Color::ColorSpace::kHSL);
+  EXPECT_TRUE(result.Param0IsNone());
+
+  // A powerless hue becomes missing when converting.
+  result =
+      Color::FromColorMix(Color::ColorSpace::kHSL, std::nullopt,
+                          {Color::FromColorSpace(Color::ColorSpace::kHWB,
+                                                 180.0f, 1.0f, 0.25f, 1.0f)},
+                          {1.0}, /*alpha_multiplier=*/1.0f);
+  EXPECT_EQ(result.GetColorSpace(), Color::ColorSpace::kHSL);
+  EXPECT_TRUE(result.Param0IsNone());
+
+  result =
+      Color::FromColorMix(Color::ColorSpace::kOklab, std::nullopt,
+                          {Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f,
+                                                 0.0f, 0.0f, std::nullopt)},
+                          {1.0}, /*alpha_multiplier=*/1.0f);
+  EXPECT_EQ(result.GetColorSpace(), Color::ColorSpace::kOklab);
+  EXPECT_TRUE(result.AlphaIsNone());
+}
+
+TEST(BlinkColor, ColorMixMultipleHueInterpolation) {
+  // Three hsl colors at 50%, 30% and 20%: the first two colors are mixed at
+  // 30 / 80, then the result is mixed with the third color at 20 / 100.
+  const double percentages[] = {0.5, 0.3, 0.2};
+  struct {
+    std::array<float, 3> hues;
+    Color::HueInterpolationMethod hue_method;
+    float expected_hue;
+  } tests[] = {
+      // 0 and 90 give 33.75, then 33.75 and 200 give 67.
+      {{0.0f, 90.0f, 200.0f}, Color::HueInterpolationMethod::kShorter, 67.0f},
+      // 360 and 90 give 258.75, then 258.75 and 560 give 319.
+      {{0.0f, 90.0f, 200.0f}, Color::HueInterpolationMethod::kLonger, 319.0f},
+      // The shorter arc crosses 0 / 360 in the first step only: 330 and 390
+      // give 352.5, then 352.5 and 200 give 322. Increasing would give 34, and
+      // decreasing 214.
+      {{330.0f, 30.0f, 200.0f},
+       Color::HueInterpolationMethod::kShorter,
+       322.0f},
+  };
+  for (const auto& test : tests) {
+    const Color colors[] = {
+        Color::FromColorSpace(Color::ColorSpace::kHSL, test.hues[0], 1.0f, 0.5f,
+                              1.0f),
+        Color::FromColorSpace(Color::ColorSpace::kHSL, test.hues[1], 1.0f, 0.5f,
+                              1.0f),
+        Color::FromColorSpace(Color::ColorSpace::kHSL, test.hues[2], 1.0f, 0.5f,
+                              1.0f)};
+    EXPECT_COLOR_NEAR(
+        Color::FromColorMix(Color::ColorSpace::kHSL, test.hue_method, colors,
+                            percentages, /*alpha_multiplier=*/1.0f),
+        Color::FromColorSpace(Color::ColorSpace::kHSL, test.expected_hue, 1.0f,
+                              0.5f, 1.0f));
+  }
+}
+
+TEST(BlinkColor, ColorMixMultipleWithAlpha) {
+  // Colors are interpolated with premultiplied alpha, so in a rectangular
+  // space the result is the weighted average of the premultiplied colors:
+  // 0.5 * (0.8, 0, 0) + 0.3 * (0, 0, 0.4) + 0.2 * (0, 0.2, 0) = (0.4, 0.04,
+  // 0.12), with alpha 0.5 * 0.8 + 0.3 * 0.4 + 0.2 * 0.2 = 0.56.
+  const Color colors[] = {CreateSRGBColor(1.0f, 0.0f, 0.0f, 0.8f),
+                          CreateSRGBColor(0.0f, 0.0f, 1.0f, 0.4f),
+                          CreateSRGBColor(0.0f, 1.0f, 0.0f, 0.2f)};
+  struct {
+    Vector<double> percentages;
+    float alpha_multiplier;
+    float expected_alpha;
+  } tests[] = {
+      {{0.5, 0.3, 0.2}, 1.0f, 0.56f},
+      // The same proportions, with percentages adding up to 50%.
+      {{0.25, 0.15, 0.1}, 0.5f, 0.28f},
+  };
+  for (const auto& test : tests) {
+    EXPECT_COLOR_NEAR(
+        Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt, colors,
+                            test.percentages, test.alpha_multiplier),
+        CreateSRGBColor(0.4f / 0.56f, 0.04f / 0.56f, 0.12f / 0.56f,
+                        test.expected_alpha));
+  }
+}
+
+TEST(BlinkColor, ColorMixMultipleMissingComponents) {
+  // The first two colors are mixed at 30 / 80, then the result is mixed with
+  // the third color at 20 / 100. A component missing from both of the first
+  // two colors is still missing from their mix, so the third color's value is
+  // used.
+  const Color colors[] = {
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 0.2f, 0.4f,
+                            1.0f),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 0.6f,
+                            std::nullopt, 1.0f),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.9f, 0.0f, 0.8f, 1.0f)};
+  const double percentages[] = {0.5, 0.3, 0.2};
+  // Green: 0.2 and 0.6 give 0.35, then 0.35 and 0 give 0.28. Blue: the second
+  // color takes 0.4 from the first one, then 0.4 and 0.8 give 0.48.
+  EXPECT_COLOR_NEAR(
+      Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt, colors,
+                          percentages, /*alpha_multiplier=*/1.0f),
+      CreateSRGBColor(0.9f, 0.28f, 0.48f, 1.0f));
+}
+
+TEST(BlinkColor, ColorMixMultipleTransparent) {
+  // The mix of the first two colors is fully transparent. Its components have
+  // no weight once premultiplied, so mixing it with red half and half gives
+  // red at half opacity.
+  const Color colors[] = {CreateSRGBColor(0.0f, 0.0f, 1.0f, 0.0f),
+                          CreateSRGBColor(0.0f, 1.0f, 0.0f, 0.0f),
+                          CreateSRGBColor(1.0f, 0.0f, 0.0f, 1.0f)};
+  const double percentages[] = {0.25, 0.25, 0.5};
+  EXPECT_COLOR_NEAR(
+      Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt, colors,
+                          percentages, /*alpha_multiplier=*/1.0f),
+      CreateSRGBColor(1.0f, 0.0f, 0.0f, 0.5f));
 }
 
 TEST(BlinkColor, ColorInterpolation) {

@@ -39,11 +39,12 @@ StyleColor::UnresolvedColorMix* MakeColorMix(
     const StyleColor& color2,
     double progress,
     double alpha_multiplier) {
-  using Item = StyleColor::UnresolvedColorMix::Item;
   return MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
       color_interpolation_space, hue_interpolation_method,
-      StyleColor::UnresolvedColorMix::ItemVector{Item(color1), Item(color2)},
-      progress, alpha_multiplier);
+      StyleColor::UnresolvedColorMix::ItemVector{
+          {color1, (1.0 - progress) * alpha_multiplier},
+          {color2, progress * alpha_multiplier}},
+      alpha_multiplier);
 }
 
 }  // namespace

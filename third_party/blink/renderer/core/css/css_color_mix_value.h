@@ -5,13 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_MIX_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_MIX_VALUE_H_
 
+#include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
@@ -52,8 +55,17 @@ namespace cssvalue {
 class CORE_EXPORT CSSColorMixValue : public CSSValue {
  public:
   using ItemVector = HeapVector<CSSColorMixItem>;
+  using PercentageVector = HeapVector<Member<const CSSPrimitiveValue>, 2>;
 
-  // `items` must have exactly two items for now.
+  // NormalizedPercentages and its helpers will eventually be shared by other
+  // *-mix() functions.
+  //
+  // https://drafts.csswg.org/css-values-5/#normalize-mix-percentages
+  struct NormalizedPercentages {
+    Vector<double, 2> percentages;
+    double alpha_multiplier = 1.0;
+  };
+
   CSSColorMixValue(ItemVector items,
                    const Color::ColorSpace color_interpolation_space,
                    const Color::HueInterpolationMethod hue_interpolation_method)
@@ -61,7 +73,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
         items_(std::move(items)),
         color_interpolation_space_(color_interpolation_space),
         hue_interpolation_method_(hue_interpolation_method) {
-    CHECK_EQ(items_.size(), 2u);
+    CHECK(!items_.empty());
   }
 
   String CustomCSSText() const;
@@ -78,20 +90,25 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
     return hue_interpolation_method_;
   }
 
+  // Takes fractions (1 is 100%), as Color::FromColorMix() does.
+  static NormalizedPercentages NormalizeMixPercentages(
+      base::span<const std::optional<double>> percentages);
+  NormalizedPercentages NormalizeMixPercentages(
+      const CSSLengthResolver& length_resolver) const;
+
   // https://www.w3.org/TR/css-color-5/#color-mix-percent-norm
+  // For palette-mix(), which needs the mix_amount, i.e. the progress towards
+  // the second value, computed by this function.
   static void NormalizePercentages(const CSSPrimitiveValue* percentage1,
                                    const CSSPrimitiveValue* percentage2,
                                    double& mix_amount,
                                    double& alpha_multiplier,
                                    const CSSLengthResolver& length_resolver);
-  void NormalizePercentages(double& mix_amount,
-                            double& alpha_multiplier,
-                            const CSSLengthResolver& length_resolver) const {
-    NormalizePercentages(items_[0].percentage, items_[1].percentage, mix_amount,
-                         alpha_multiplier, length_resolver);
-  }
 
   // https://drafts.csswg.org/css-color-5/#serial-color-mix
+  static PercentageVector PercentageValuesForSerialization(
+      base::span<const Member<const CSSPrimitiveValue>> percentages);
+  // For palette-mix(), which has exactly two percentages.
   static std::pair<const CSSPrimitiveValue*, const CSSPrimitiveValue*>
   PercentageValuesForSerialization(const CSSPrimitiveValue* p1,
                                    const CSSPrimitiveValue* p2);

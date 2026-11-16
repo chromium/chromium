@@ -2918,28 +2918,28 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
           return ResolveColorValueImpl(*item.color, context,
                                        depends_on_accent_color);
         });
-    double alpha_multiplier;
-    double mix_amount;
-    color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
-                                          context.length_resolver);
-    const StyleColor::UnresolvedColorMix* unresolved_color_mix =
-        MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
-            color_mix_value->ColorInterpolationSpace(),
-            color_mix_value->HueInterpolationMethod(),
-            StyleColor::UnresolvedColorMix::ItemVector(
-                style_colors,
-                [](const StyleColor& style_color) {
-                  return StyleColor::UnresolvedColorMix::Item(style_color);
-                }),
-            mix_amount, alpha_multiplier);
+    const cssvalue::CSSColorMixValue::NormalizedPercentages normalized =
+        color_mix_value->NormalizeMixPercentages(context.length_resolver);
     // https://drafts.csswg.org/css-color-5/#resolving-mix
     // If all parameters are resolvable at computed-value time, the color-mix
     // function should be resolved at computed-value time as well.
     // Otherwise we need to store an unresolved value on StyleColor.
     if (std::ranges::all_of(style_colors, &StyleColor::IsAbsoluteColor)) {
-      return StyleColor(unresolved_color_mix->Resolve(Color()));
+      return StyleColor(Color::FromColorMix(
+          color_mix_value->ColorInterpolationSpace(),
+          color_mix_value->HueInterpolationMethod(),
+          Vector<Color, 2>(style_colors, &StyleColor::GetColor),
+          normalized.percentages, normalized.alpha_multiplier));
     }
-    return StyleColor(unresolved_color_mix);
+    StyleColor::UnresolvedColorMix::ItemVector items;
+    items.reserve(style_colors.size());
+    for (wtf_size_t i = 0; i < style_colors.size(); ++i) {
+      items.emplace_back(style_colors[i], normalized.percentages[i]);
+    }
+    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
+        color_mix_value->ColorInterpolationSpace(),
+        color_mix_value->HueInterpolationMethod(), std::move(items),
+        normalized.alpha_multiplier));
   }
 
   if (auto* relative_color_value =

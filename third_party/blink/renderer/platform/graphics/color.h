@@ -239,9 +239,20 @@ class PLATFORM_EXPORT Color {
     kDecreasing,
   };
 
-  // Creates a color with the Color-Mix method in CSS Color 5. This will produce
-  // an interpolation between two colors, and apply an alpha multiplier if the
-  // proportion was not 100% when parsing.
+  // Creates a color with the color-mix() method in CSS Color 5. This will
+  // produce an interpolation between the colors, and apply an alpha multiplier
+  // if their percentages did not add up to 100% when parsing.
+  // https://drafts.csswg.org/css-color-5/#color-mix-result
+  static Color FromColorMix(ColorSpace interpolation_space,
+                            std::optional<HueInterpolationMethod> hue_method,
+                            base::span<const Color> colors,
+                            base::span<const double> percentages,
+                            float alpha_multiplier);
+
+  // This is now a wrapper over the list version above. It's kept for palette
+  // interpolation, which stores a progress percentage towards `color2`.
+  // TODO(crbug.com/407806416): Remove it once palette interpolation calls the
+  // list version.
   static Color FromColorMix(ColorSpace interpolation_space,
                             std::optional<HueInterpolationMethod> hue_method,
                             Color color1,
