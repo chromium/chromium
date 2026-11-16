@@ -21,8 +21,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.Locale;
-
 /** The model properties for the URL bar text component. */
 @NullMarked
 class UrlBarProperties {
@@ -60,17 +58,6 @@ class UrlBarProperties {
             this.selection = selection;
             this.originChanged = originChanged;
         }
-
-        @Override
-        public String toString() {
-            return String.format(
-                    Locale.US,
-                    "%s: text: %s; scrollType: %d; selectionState: %s",
-                    getClass().getSimpleName(),
-                    text,
-                    scrollType,
-                    selection);
-        }
     }
 
     /** Contains the necessary information to display inline autocomplete text. */
@@ -99,19 +86,6 @@ class UrlBarProperties {
             this.autocompleteText = autocompleteText;
             this.additionalText = additionalText;
             this.siteSearchLabel = siteSearchLabel;
-        }
-
-        @Override
-        public String toString() {
-            return String.format(
-                    Locale.US,
-                    "%s: user text: %s; autocomplete text: %s; additional text: %s; site search"
-                            + " label: %s",
-                    getClass().getSimpleName(),
-                    userText,
-                    autocompleteText,
-                    additionalText,
-                    siteSearchLabel);
         }
     }
 
