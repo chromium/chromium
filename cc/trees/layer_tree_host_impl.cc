@@ -61,6 +61,7 @@
 #include "cc/input/browser_controls_offset_manager_cib.h"
 #include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/append_quads_context.h"
@@ -2510,6 +2511,15 @@ void LayerTreeHostImpl::ReportScrollJankStats(uint32_t total_frames,
   if (render_frame_metadata_observer_) {
     render_frame_metadata_observer_->ReportScrollJankStats(total_frames,
                                                            janky_frames);
+  }
+#endif
+}
+
+void LayerTreeHostImpl::ReportBrowserControlsSnapHint(
+    const BrowserControlsSnapHint& hint) {
+#if BUILDFLAG(IS_ANDROID)
+  if (render_frame_metadata_observer_) {
+    render_frame_metadata_observer_->ReportBrowserControlsSnapHint(hint);
   }
 #endif
 }

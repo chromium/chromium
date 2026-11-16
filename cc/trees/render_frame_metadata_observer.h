@@ -14,6 +14,8 @@ class CompositorFrameMetadata;
 
 namespace cc {
 
+struct BrowserControlsSnapHint;
+
 // Observes RenderFrameMetadata associated with the submission of a frame.
 // LayerTreeHostImpl will create the metadata when submitting a CompositorFrame.
 //
@@ -48,6 +50,10 @@ class CC_EXPORT RenderFrameMetadataObserver {
   // Android) at the end of a scroll.
   virtual void ReportScrollJankStats(uint32_t total_frames,
                                      uint32_t janky_frames) {}
+
+  // Forwards a browser controls snap animation hint to the browser process.
+  virtual void ReportBrowserControlsSnapHint(
+      const BrowserControlsSnapHint& hint) {}
 #endif
 };
 

@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+// Corresponds to |cc::BrowserControlsSnapHint::Action|.
+enum BrowserControlsSnapHintAction {
+  kMustShow,
+  kCanShow,
+  kCanHide,
+};
+
+// Corresponds to |cc::BrowserControlsSnapHint|. Sent from the renderer
+// compositor to the browser process, which decides whether to animate the
+// browser controls. See
+// RenderFrameMetadataObserverClient.ReportBrowserControlsSnapHint.
+struct BrowserControlsSnapHint {
+  BrowserControlsSnapHintAction action;
+  // Must be in [0, 1].
+  float slowness;
+  bool is_scroll_end_or_inertial;
+};

@@ -198,6 +198,13 @@ void RenderFrameMetadataProviderImpl::ReportScrollJankStats(
     observer.OnReportScrollJankStats(total_frames, janky_frames);
   }
 }
+
+void RenderFrameMetadataProviderImpl::ReportBrowserControlsSnapHint(
+    const cc::BrowserControlsSnapHint& hint) {
+  for (Observer& observer : observers_) {
+    observer.OnReportBrowserControlsSnapHint(hint);
+  }
+}
 #endif
 
 }  // namespace content

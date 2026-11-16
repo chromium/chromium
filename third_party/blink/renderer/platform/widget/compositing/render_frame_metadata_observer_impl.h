@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
 
 #include "build/build_config.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/mojom/render_frame_metadata.mojom-blink.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
@@ -49,6 +50,8 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
 #if BUILDFLAG(IS_ANDROID)
   void ReportScrollJankStats(uint32_t total_frames,
                              uint32_t janky_frames) override;
+  void ReportBrowserControlsSnapHint(
+      const cc::BrowserControlsSnapHint& hint) override;
 #endif
 
   // mojom::RenderFrameMetadataObserver:

@@ -4,11 +4,13 @@
 
 #include "cc/input/browser_controls_offset_manager_cib.h"
 
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_offset_tags.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,8 +22,11 @@
 namespace cc {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::FieldsAre;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 
@@ -48,17 +53,26 @@ class MockClient : public BrowserControlsOffsetManagerClient {
   float CurrentBottomControlsShownRatio() const override {
     return bottom_ratio_;
   }
-  gfx::PointF ViewportScrollOffset() const override { return gfx::PointF(); }
+  gfx::PointF ViewportScrollOffset() const override {
+    return viewport_scroll_offset_;
+  }
   float MaxViewportScrollOffsetY() const override { return 1000.0f; }
   MOCK_METHOD(void, DidChangeBrowserControlsPosition, (), (override));
   bool OnlyExpandTopControlsAtPageTop() const override { return false; }
   bool HaveRootScrollNode() const override { return true; }
   MOCK_METHOD(void, SetNeedsCommit, (BeginMainFrameReason), (override));
   float DeviceScaleFactor() const override { return 1.0f; }
+  MOCK_METHOD(void,
+              ReportBrowserControlsSnapHint,
+              (const BrowserControlsSnapHint&),
+              (override));
 
   void set_heights(float top, float bottom) {
     top_controls_height_ = top;
     bottom_controls_height_ = bottom;
+  }
+  void set_viewport_scroll_offset_y(float y) {
+    viewport_scroll_offset_.set_y(y);
   }
 
  private:
@@ -66,13 +80,37 @@ class MockClient : public BrowserControlsOffsetManagerClient {
   float bottom_controls_height_ = 50.0f;
   float top_ratio_ = 1.0f;
   float bottom_ratio_ = 1.0f;
+  gfx::PointF viewport_scroll_offset_;
 };
 
 class BrowserControlsOffsetManagerCibTest : public ::testing::Test {
  protected:
+  // Places the viewport well inside the can-hide region for 100px top and
+  // 50px bottom controls, so that scrolling down produces a kCanHide hint.
+  void ScrollViewportIntoCanHideRegion() {
+    client_.set_viewport_scroll_offset_y(500.0f);
+  }
+
+  // Two scroll updates 10ms apart, which is the minimum the snap controller
+  // needs to compute a velocity and produce a hint.
+  void ScrollDown(bool is_inertial = false) {
+    constexpr gfx::Vector2dF kDelta(0.0f, 20.0f);
+    manager_.ScrollBy(kDelta, is_inertial);
+    clock_.Advance(base::Milliseconds(10));
+    manager_.ScrollBy(kDelta, is_inertial);
+  }
+
+  base::ScopedMockClockOverride clock_;
   NiceMock<MockClient> client_;
   BrowserControlsOffsetManagerCib manager_{&client_};
 };
+
+auto SnapHint(BrowserControlsSnapHint::Action action,
+              bool is_scroll_end_or_inertial) {
+  return AllOf(Field(&BrowserControlsSnapHint::action, action),
+               Field(&BrowserControlsSnapHint::is_scroll_end_or_inertial,
+                     is_scroll_end_or_inertial));
+}
 
 TEST_F(BrowserControlsOffsetManagerCibTest,
        GetOffsetTagValuesReturnsOnlyContentOffsetTag) {
@@ -343,6 +381,79 @@ TEST_F(BrowserControlsOffsetManagerCibTest, ResetAnimationsStopsInPlace) {
             manager_.Animate(kStartTime + base::Milliseconds(200)));
   EXPECT_FLOAT_EQ(0.5f, manager_.TopControlsShownRatio());
   EXPECT_FALSE(manager_.HasAnimation());
+}
+
+TEST_F(BrowserControlsOffsetManagerCibTest,
+       ReportsSnapHintWhenActionOrFingerStateChanges) {
+  ScrollViewportIntoCanHideRegion();
+  {
+    InSequence sequence;
+    EXPECT_CALL(client_,
+                ReportBrowserControlsSnapHint(SnapHint(
+                    BrowserControlsSnapHint::Action::kCanHide, false)));
+    EXPECT_CALL(client_, ReportBrowserControlsSnapHint(SnapHint(
+                             BrowserControlsSnapHint::Action::kCanHide, true)));
+  }
+
+  manager_.ScrollBegin();
+  ScrollDown();
+  // Further updates in the same direction repeat the hint and are dropped.
+  ScrollDown();
+  ScrollDown(/*is_inertial=*/true);
+  ScrollDown(/*is_inertial=*/true);
+  manager_.ScrollEnd(gfx::Vector2dF());
+}
+
+TEST_F(BrowserControlsOffsetManagerCibTest,
+       ScrollBeginAllowsRepeatingLastSnapHint) {
+  ScrollViewportIntoCanHideRegion();
+  EXPECT_CALL(client_, ReportBrowserControlsSnapHint(SnapHint(
+                           BrowserControlsSnapHint::Action::kCanHide, false)))
+      .Times(2);
+  EXPECT_CALL(client_, ReportBrowserControlsSnapHint(SnapHint(
+                           BrowserControlsSnapHint::Action::kCanHide, true)))
+      .Times(2);
+
+  manager_.ScrollBegin();
+  ScrollDown();
+  manager_.ScrollEnd(gfx::Vector2dF());
+  manager_.ScrollBegin();
+  ScrollDown();
+  manager_.ScrollEnd(gfx::Vector2dF());
+}
+
+TEST_F(BrowserControlsOffsetManagerCibTest, NoSnapHintWhilePinching) {
+  ScrollViewportIntoCanHideRegion();
+  EXPECT_CALL(client_, ReportBrowserControlsSnapHint).Times(0);
+
+  manager_.ScrollBegin();
+  manager_.PinchBegin();
+  ScrollDown();
+  manager_.PinchEnd();
+  ::testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // The scroll sequence continues after the pinch and starts a new hint
+  // computation.
+  {
+    InSequence sequence;
+    EXPECT_CALL(client_,
+                ReportBrowserControlsSnapHint(SnapHint(
+                    BrowserControlsSnapHint::Action::kCanHide, false)));
+    EXPECT_CALL(client_, ReportBrowserControlsSnapHint(SnapHint(
+                             BrowserControlsSnapHint::Action::kCanHide, true)));
+  }
+  ScrollDown();
+  manager_.ScrollEnd(gfx::Vector2dF());
+}
+
+TEST_F(BrowserControlsOffsetManagerCibTest, NoSnapHintWithoutControls) {
+  ScrollViewportIntoCanHideRegion();
+  client_.set_heights(/*top=*/0.0f, /*bottom=*/0.0f);
+  EXPECT_CALL(client_, ReportBrowserControlsSnapHint).Times(0);
+
+  manager_.ScrollBegin();
+  ScrollDown();
+  manager_.ScrollEnd(gfx::Vector2dF());
 }
 
 }  // namespace

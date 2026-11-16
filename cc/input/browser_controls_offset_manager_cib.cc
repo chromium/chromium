@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -22,6 +23,8 @@
 namespace cc {
 
 namespace {
+
+constexpr int64_t kAnimationMaxDurationMs = 200;
 
 // Schedules `animation` towards `target_visible_height / controls_height` over
 // `duration` using `curve` so the shown-ratio update and viewport
@@ -61,7 +64,8 @@ void StartAnimation(BrowserControlsAnimation& animation,
 
 BrowserControlsOffsetManagerCib::BrowserControlsOffsetManagerCib(
     BrowserControlsOffsetManagerClient* client)
-    : BrowserControlsOffsetManagerInterface(client) {}
+    : BrowserControlsOffsetManagerInterface(client),
+      snap_controller_(client, kAnimationMaxDurationMs) {}
 
 BrowserControlsOffsetManagerCib::~BrowserControlsOffsetManagerCib() = default;
 
@@ -128,20 +132,48 @@ void BrowserControlsOffsetManagerCib::SetAnimation(
   }
 }
 
-void BrowserControlsOffsetManagerCib::ScrollBegin() {}
+void BrowserControlsOffsetManagerCib::ScrollBegin() {
+  if (pinch_gesture_active_) {
+    return;
+  }
+  last_reported_hint_.reset();
+  snap_controller_.OnScrollBegin();
+}
 
 gfx::Vector2dF BrowserControlsOffsetManagerCib::ScrollBy(
     const gfx::Vector2dF& pending_delta,
     bool is_inertial) {
+  // The controls never consume scroll. The delta only feeds the snap hint,
+  // which decides when to snap the controls fully shown or hidden in the same
+  // way as the snap animation in BrowserControlsOffsetManager.
+  if (!pinch_gesture_active_) {
+    ReportSnapHint(snap_controller_.OnScrollUpdate(pending_delta, is_inertial));
+  }
   return pending_delta;
 }
 
 void BrowserControlsOffsetManagerCib::ScrollEnd(
-    const gfx::Vector2dF& compensated_scroll_delta) {}
+    const gfx::Vector2dF& compensated_scroll_delta) {
+  if (pinch_gesture_active_) {
+    return;
+  }
+  ReportSnapHint(snap_controller_.OnScrollEnd());
+}
 
-void BrowserControlsOffsetManagerCib::PinchBegin() {}
+void BrowserControlsOffsetManagerCib::PinchBegin() {
+  DCHECK(!pinch_gesture_active_);
+  pinch_gesture_active_ = true;
+}
 
-void BrowserControlsOffsetManagerCib::PinchEnd() {}
+void BrowserControlsOffsetManagerCib::PinchEnd() {
+  DCHECK(pinch_gesture_active_);
+  // Pinch{Begin,End} always occur within the scope of Scroll{Begin,End}, so
+  // return to a state expected by the remaining scroll sequence. Without the
+  // reset, the first ScrollBy() after the pinch would compute a velocity
+  // across the pinch gap from samples taken at a different page scale.
+  pinch_gesture_active_ = false;
+  ScrollBegin();
+}
 
 gfx::Vector2dF BrowserControlsOffsetManagerCib::Animate(
     base::TimeTicks monotonic_time) {
@@ -166,6 +198,23 @@ gfx::Vector2dF BrowserControlsOffsetManagerCib::Animate(
 void BrowserControlsOffsetManagerCib::ResetAnimations() {
   top_controls_animation_.Reset();
   bottom_controls_animation_.Reset();
+}
+
+void BrowserControlsOffsetManagerCib::ReportSnapHint(
+    std::optional<BrowserControlsSnapHint> hint) {
+  if (!hint) {
+    return;
+  }
+  // The controller produces a hint on every scroll update past the trigger
+  // threshold. Only a change in action or in the finger-lifted state is new
+  // information for the browser process.
+  if (last_reported_hint_ && last_reported_hint_->action == hint->action &&
+      last_reported_hint_->is_scroll_end_or_inertial ==
+          hint->is_scroll_end_or_inertial) {
+    return;
+  }
+  last_reported_hint_ = hint;
+  client().ReportBrowserControlsSnapHint(*hint);
 }
 
 }  // namespace cc

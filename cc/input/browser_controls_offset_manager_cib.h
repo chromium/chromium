@@ -5,6 +5,7 @@
 #ifndef CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CIB_H_
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CIB_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,8 @@
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_animation.h"
 #include "cc/input/browser_controls_offset_manager_interface.h"
+#include "cc/input/browser_controls_snap_animation_controller.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -25,7 +28,8 @@ struct BrowserControlsAnimationParams;
 // renderer compositor, and in its Viz display tree when TreesInViz is enabled;
 // never in the browser process. The browser process owns the controls
 // position; this class only applies the positions and animations that the
-// browser process sends.
+// browser process sends, and reports snap animation hints derived from
+// scrolling so that the browser process can decide when to animate.
 class CC_EXPORT BrowserControlsOffsetManagerCib
     : public BrowserControlsOffsetManagerInterface {
  public:
@@ -60,9 +64,18 @@ class CC_EXPORT BrowserControlsOffsetManagerCib
                                      bool animate) override;
 
  private:
+  // Reports `hint` to the browser process unless it repeats the last hint
+  // of the current scroll sequence.
+  void ReportSnapHint(std::optional<BrowserControlsSnapHint> hint);
+
   // Shown-ratio animations driven by the browser process.
   BrowserControlsAnimation top_controls_animation_;
   BrowserControlsAnimation bottom_controls_animation_;
+
+  BrowserControlsSnapAnimationController snap_controller_;
+  // The last hint reported during the current scroll sequence.
+  std::optional<BrowserControlsSnapHint> last_reported_hint_;
+  bool pinch_gesture_active_ = false;
 };
 
 }  // namespace cc

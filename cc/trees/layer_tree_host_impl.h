@@ -102,6 +102,7 @@ namespace cc {
 
 class BrowserControlsOffsetManagerInterface;
 struct BrowserControlsAnimationParams;
+struct BrowserControlsSnapHint;
 class CompositorFrameReportingController;
 class RasterDarkModeFilter;
 class DebugRectHistory;
@@ -215,6 +216,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool HaveRootScrollNode() const override;
   void SetNeedsCommit(
       BeginMainFrameReason reason = BeginMainFrameReason::kOther) override;
+  void ReportBrowserControlsSnapHint(
+      const BrowserControlsSnapHint& hint) override;
 
   // ImageAnimationController::Delegate implementation.
   void RequestBeginFrameForAnimatedImages() override;

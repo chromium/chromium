@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/mojom/render_frame_metadata.mojom-blink.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -54,6 +55,8 @@ class MockRenderFrameMetadataObserverClient
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(ReportScrollJankStats,
                void(uint32_t total_frames, uint32_t janky_frames));
+  MOCK_METHOD1(ReportBrowserControlsSnapHint,
+               void(const cc::BrowserControlsSnapHint& hint));
 #endif
 
  private:

@@ -102,6 +102,8 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
 #if BUILDFLAG(IS_ANDROID)
   void ReportScrollJankStats(uint32_t total_frames,
                              uint32_t janky_frames) override;
+  void ReportBrowserControlsSnapHint(
+      const cc::BrowserControlsSnapHint& hint) override;
 #endif
 
   base::ObserverList<Observer> observers_;

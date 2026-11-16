@@ -13,6 +13,7 @@
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_offset_tags.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -45,6 +46,8 @@ class MockBrowserControlsOffsetManagerClient
   bool HaveRootScrollNode() const override { return true; }
   MOCK_METHOD(void, SetNeedsCommit, (BeginMainFrameReason), (override));
   float DeviceScaleFactor() const override { return 1.0f; }
+  void ReportBrowserControlsSnapHint(
+      const BrowserControlsSnapHint& hint) override {}
 };
 
 class TestBrowserControlsOffsetManager

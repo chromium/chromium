@@ -109,6 +109,7 @@ mojom("mojom_browser_controls") {
     "browser_controls_offset_tag_modifications.mojom",
     "browser_controls_offset_tags.mojom",
     "browser_controls_params.mojom",
+    "browser_controls_snap_hint.mojom",
   ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
@@ -155,6 +156,19 @@ mojom("mojom_browser_controls") {
         },
       ]
       traits_headers = [ "browser_controls_params_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.BrowserControlsSnapHint"
+          cpp = "::cc::BrowserControlsSnapHint"
+        },
+        {
+          mojom = "cc.mojom.BrowserControlsSnapHintAction"
+          cpp = "::cc::BrowserControlsSnapHint::Action"
+        },
+      ]
+      traits_headers = [ "browser_controls_snap_hint_mojom_traits.h" ]
     },
   ]
   cpp_typemaps = shared_typemaps

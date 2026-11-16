@@ -8,6 +8,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/common/content_export.h"
 
@@ -50,6 +51,11 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
 #if BUILDFLAG(IS_ANDROID)
     virtual void OnReportScrollJankStats(uint32_t total_frames,
                                          uint32_t janky_frames) {}
+    // Called when the renderer suggests that the browser controls should
+    // snap to shown or hidden. Only called when the browser process owns the
+    // browser controls position.
+    virtual void OnReportBrowserControlsSnapHint(
+        const cc::BrowserControlsSnapHint& hint) {}
 #endif
   };
 

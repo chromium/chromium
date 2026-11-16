@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
@@ -157,6 +158,8 @@ class MockBrowserControlsOffsetManagerClient
   }
 
   float DeviceScaleFactor() const override { return 1.0f; }
+  void ReportBrowserControlsSnapHint(
+      const BrowserControlsSnapHint& hint) override {}
 
  private:
   FakeImplTaskRunnerProvider task_runner_provider_;

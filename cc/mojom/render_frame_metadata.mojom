@@ -4,6 +4,7 @@
 
 module cc.mojom;
 
+import "cc/mojom/browser_controls_snap_hint.mojom";
 import "cc/mojom/root_scroll_offset_update_frequency.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
@@ -177,4 +178,10 @@ interface RenderFrameMetadataObserverClient {
   // report to the OS. janky_frames must be less than or equal to total_frames.
   [EnableIf=is_android]
   ReportScrollJankStats(uint32 total_frames, uint32 janky_frames);
+
+  // Notified when scrolling suggests that the browser controls should snap
+  // to shown or hidden. Only sent when the browser process owns the
+  // browser controls position (Controls-in-Browser).
+  [EnableIf=is_android]
+  ReportBrowserControlsSnapHint(BrowserControlsSnapHint hint);
 };

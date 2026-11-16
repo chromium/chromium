@@ -280,6 +280,11 @@ void RenderFrameMetadataObserverImpl::ReportScrollJankStats(
   render_frame_metadata_observer_client_->ReportScrollJankStats(total_frames,
                                                                 janky_frames);
 }
+
+void RenderFrameMetadataObserverImpl::ReportBrowserControlsSnapHint(
+    const cc::BrowserControlsSnapHint& hint) {
+  render_frame_metadata_observer_client_->ReportBrowserControlsSnapHint(hint);
+}
 #endif
 
 }  // namespace blink

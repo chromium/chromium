@@ -876,6 +876,7 @@ cc_test("cc_unittests") {
     "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
     "mojom/browser_controls_animation_params_mojom_traits_unittest.cc",
+    "mojom/browser_controls_snap_hint_mojom_traits_unittest.cc",
     "paint/clear_for_opaque_raster_unittest.cc",
     "paint/deferred_value_generators_unittest.cc",
     "paint/deferred_values_unittest.cc",

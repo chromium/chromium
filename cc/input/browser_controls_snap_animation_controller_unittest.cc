@@ -55,6 +55,8 @@ class FakeBrowserControlsOffsetManagerClient
   bool HaveRootScrollNode() const override { return true; }
   void SetNeedsCommit(BeginMainFrameReason reason) override {}
   float DeviceScaleFactor() const override { return kDeviceScaleFactor; }
+  void ReportBrowserControlsSnapHint(
+      const BrowserControlsSnapHint& hint) override {}
 
   void set_top_controls_height(float height) { top_controls_height_ = height; }
   void set_top_controls_min_height(float min_height) {
