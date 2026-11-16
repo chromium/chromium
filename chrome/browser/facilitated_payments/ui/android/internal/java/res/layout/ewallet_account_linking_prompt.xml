@@ -28,7 +28,6 @@ found in the LICENSE file.
             android:paddingTop="@dimen/ewallet_account_linking_prompt_product_icon_vertical_padding"
             android:paddingBottom="@dimen/ewallet_account_linking_prompt_product_icon_vertical_padding"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/google_pay"
             android:importantForAccessibility="no" />
 
         <ImageView

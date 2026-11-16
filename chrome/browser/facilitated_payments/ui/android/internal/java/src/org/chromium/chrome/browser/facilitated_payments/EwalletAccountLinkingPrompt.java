@@ -13,10 +13,12 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -36,6 +38,8 @@ public class EwalletAccountLinkingPrompt implements FacilitatedPaymentsSequenceV
                                         R.layout.ewallet_account_linking_prompt,
                                         viewContainer,
                                         false);
+        ImageView gpayLogo = mView.findViewById(R.id.gpay_logo);
+        gpayLogo.setImageResource(AutofillUiUtils.getGPayLogoDrawableId());
     }
 
     @Override
