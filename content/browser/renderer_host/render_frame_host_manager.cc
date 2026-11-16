@@ -649,10 +649,6 @@ void RecordWastedAndReplacementRFHDiff(
     RenderProcessHost* new_rph = new_site_instance->HasProcess()
                                      ? new_site_instance->GetProcess()
                                      : nullptr;
-    base::UmaHistogramBoolean(
-        base::StrCat({"Navigation.", initiator_type,
-                      ".WastedSpeculativeRFH.ProcessDiffers"}),
-        wasted_rfh_site_instance->GetProcess() != new_rph);
     // If the previous speculative RFH's process only has the speculative RFH in
     // it, it's likely that the renderer process was created for that
     // speculative RFH (it's also possible but less likely that all other RFH

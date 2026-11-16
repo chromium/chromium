@@ -7189,10 +7189,6 @@ IN_PROC_BROWSER_TEST_P(
       histogram_tester.ExpectUniqueSample(
           "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
           true, 1);
-      // Process differs between the wasted speculative RFH and the newly picked
-      // RFH.
-      histogram_tester.ExpectUniqueSample(
-          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers", true, 1);
       // No cross-origin isolation difference.
       histogram_tester.ExpectUniqueSample(
           "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
@@ -7304,12 +7300,6 @@ IN_PROC_BROWSER_TEST_P(
       histogram_tester.ExpectUniqueSample(
           "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
           false, 1);
-      // Process differs between the wasted speculative RFH and the newly picked
-      // RFH if the wasted one created a new process. The new RFH must be in the
-      // current / D's process.
-      histogram_tester.ExpectUniqueSample(
-          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
-          first_call_created_new_process, 1);
       // No cross-origin isolation difference.
       histogram_tester.ExpectUniqueSample(
           "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
@@ -7378,18 +7368,13 @@ IN_PROC_BROWSER_TEST_P(
       // TODO(https://crbug.com/419469455): These metrics do not behave properly
       // with default SiteInstanceGroups. They indicate that in this case, a new
       // process is created, whereas in fact it is not created but rather
-      // reused.  As a result, ProcessDiffers and ReplacementRFHCreateNewProcess
-      // are both incorrect (true instead of false) with default
-      // SiteInstanceGroups, which should be fixed.
+      // reused.  As a result, ReplacementRFHCreateNewProcess is incorrect (true
+      // instead of false) with default SiteInstanceGroups, which should be
+      // fixed.
       if (!ShouldUseDefaultSiteInstanceGroup()) {
         histogram_tester.ExpectUniqueSample(
             "Navigation.All.WastedSpeculativeRFH."
             "ReplacementRFHCreatedNewProcess",
-            AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
-        // Process differs between the wasted RFH and the newly chosen RFH if a
-        // new process is created for E.
-        histogram_tester.ExpectUniqueSample(
-            "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
             AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
       }
       // No cross-origin isolation difference.

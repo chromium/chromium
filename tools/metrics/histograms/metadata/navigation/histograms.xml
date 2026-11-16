@@ -3221,25 +3221,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ProcessDiffers"
-    enum="Boolean" expires_after="2025-03-01">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-security-architecture@google.com</owner>
-  <summary>
-    For {InitiatorType} navigations that result in wasting a speculative RFH
-    that's previously created for the navigation (i.e. when the
-    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
-    kWasted_NowUseNewSpeculativeRFH), records whether the renderer process for
-    the wasted speculative RFH and the new RFH differ.
-
-    Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
-    {InitiatorType} navigations that picked a RenderFrameHost that is different
-    from a speculative RFH previously created for the navigation.
-  </summary>
-  <token key="InitiatorType" variants="InitiatorType"/>
-</histogram>
-
-<histogram
     name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess"
     enum="Boolean" expires_after="2027-04-11">
   <owner>rakina@chromium.org</owner>
