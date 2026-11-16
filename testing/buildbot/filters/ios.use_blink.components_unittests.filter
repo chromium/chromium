@@ -18,30 +18,15 @@
 -AutofillAgentTest.CheckIfSuggestionsAvailable_PriorInFlightQueryPreserved
 -AutofillAgentTest.DriverFillSpecificFormField
 -AutofillAgentTest.DriverFillSpecificFormField_ReplaceSelectionForAtMemory
--AutofillAgentTest.DriverPreviewSpecificFormField
 -AutofillAgentTest.FillSpecificFormField
 -AutofillAgentTest.ScrollFieldIntoView
--AutofillAgentTest.showAutofillPopup_EmptyIconInCreditCardSuggestion
--AutofillAgentTest.showAutofillPopup_PreferCustomIconForCreditCardSuggestions
--AutofillAgentTest.showAutofillPopup_ShowVirtualCards
--AutofillAgentTest.FillSpecificFormField_UpdateWithResults_WhenFailure
 -AutofillAgentTest.FillSpecificFormField_UpdateWithResults_WhenSuccess
 
 # TODO(crbug.com/339492594): The below tests have been failing since
 # https://crrev.com/c/5496051. It looks like it's missing a
 # content::BrowserTaskEnvironment member in your fixture.
 -AutofillAgentTest.DidSelectSuggestion_AutocompleteEntry
--AutofillAgentTest.FillData_UnknowFieldIdInResults
 -AutofillAgentTest.FillData_UpdateWithResults
-
-# TODO(crbug.com/332933545): Test currently fails on iOS Blink.
--LanguageDetectionJavascriptTest.DetectLanguageWithNoTranslateMeta
--LanguageDetectionJavascriptTest.DetectLanguageWithoutNoTranslateMeta
--LanguageDetectionJavascriptTest.ExtractWhitespace
--LanguageDetectionJavascriptTest.HtmlLang
--LanguageDetectionJavascriptTest.LanguageDetectionTextCapturedResponseBody
--LanguageDetectionJavascriptTest.LongTextContent
--LanguageDetectionJavascriptTest.RetrieveBufferedTextContent
 
 # TODO(crbug.com/40945936): Test currently fails on iOS blink. And,
 # https://crrev.com/c/5854580 changed some test type to value-parameterized
@@ -116,9 +101,6 @@
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/0
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/1
 
-# TODO(crbug.com/40945942): Test currently fails on iOS blink.
--FormJsTest.GetIframeElements
-
 # TODO(crbug.com/40945946): Test currently fails on iOS blink.
 -PasswordFormHelperTest.FindPasswordFormsInView
 -PasswordFormHelperTest.ExtractPasswordFormData
@@ -144,10 +126,6 @@
 # TODO(crbug.com/40281649): Test currently fails on iOS blink.
 -SharedPasswordControllerTest.FillField
 -SharedPasswordControllerTest.ScrollAndCheckViewAreaVisible
-
-# TODO(crbug.com/40945948): Test currently fails on iOS blink.
--SecurityStateUtilsTest.GetMaliciousContentStatus
--SecurityStateUtilsTest.GetSecurityLevelForWebStateMaliciousContent
 
 # TODO(crbug.com/40945963): Test currently fails on iOS blink.
 -UkmUrlRecorderTest.Basic
@@ -179,10 +157,6 @@
 # https://crrev.com/c/5682403.
 -AutofillAcrossIframesTest.FrameDoubleRegistration_Notify
 -AutofillAcrossIframesTest.FrameDoubleRegistration_Unregister
--AutofillAgentTestFrameInitializationOrderFrames.BothFramesAvailableThenPageLoaded
--AutofillAgentTestFrameInitializationOrderFrames.MainFrameAvailableThenPageLoadedThenIframeAvailable
--AutofillAgentTestFrameInitializationOrderFrames.PageLoadedThenIframeThenMainFrame
--AutofillAgentTestFrameInitializationOrderFrames.PageLoadedThenMainFrameThenIframe
 
 # TODO(crbug.com/364348914): These tests have been failing since
 # https://crrev.com/c/5774002.
