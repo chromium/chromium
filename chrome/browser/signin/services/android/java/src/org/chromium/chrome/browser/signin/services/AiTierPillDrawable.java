@@ -30,7 +30,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
  * without them, e.g. in builds without branding, only the fill is drawn.
  */
 @NullMarked
-public class AiTierPillDrawable extends Drawable {
+class AiTierPillDrawable extends Drawable {
     private static final float WAVE_BLUR_RADIUS_DP = 3f;
     private static final float SHADOW_BLUR_RADIUS_DP = 5f;
     private static final float SHADOW_DX_DP = 0.6f;
@@ -54,7 +54,7 @@ public class AiTierPillDrawable extends Drawable {
      * @param brandingDelegate Provides the wave and the shadow color. Null in builds without
      *     branding, which draw only the fill.
      */
-    public AiTierPillDrawable(
+    AiTierPillDrawable(
             Context context, @Nullable SubscriptionTierBrandingDelegate brandingDelegate) {
         mBrandingDelegate = brandingDelegate;
         mDensity = context.getResources().getDisplayMetrics().density;
