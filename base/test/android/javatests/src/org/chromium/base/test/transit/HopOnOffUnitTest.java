@@ -231,9 +231,10 @@ public class HopOnOffUnitTest {
 
     @Test
     public void testTransition_withMultipleStationsActive_keepsWindowPosition() throws Throwable {
-        // Travelling in the first window must not move its Station behind the second window's:
+        // Travelling in one window must keep every window's Station in its slot:
         // AutoResetCtaTransitTestRule and BatchedPublicTransitRule take the first active Station
-        // as the first window's.
+        // as the first window's. Hopping on abandons every active Station, so hop on in the first
+        // window before adding the others.
         Activity firstActivity = resumeActivity(Activity.class);
         TestStation firstWindow = hopOnTo(firstActivity, new TestStation());
         TestStation secondWindow =
@@ -241,15 +242,38 @@ public class HopOnOffUnitTest {
                         /* activityClass= */ null, /* withUnfulfillableExitCondition= */ false);
         secondWindow.setStateActiveWithoutTransition();
         TrafficControl.notifyActiveStationsChanged(List.of(), List.of(secondWindow));
-        assertEquals(List.of(firstWindow, secondWindow), TrafficControl.getActiveStations());
+        TestStation thirdWindow =
+                new TestStation(
+                        /* activityClass= */ null, /* withUnfulfillableExitCondition= */ false);
+        thirdWindow.setStateActiveWithoutTransition();
+        TrafficControl.notifyActiveStationsChanged(List.of(), List.of(thirdWindow));
+        assertEquals(
+                List.of(firstWindow, secondWindow, thirdWindow),
+                TrafficControl.getActiveStations());
 
-        TestStation destination = new TestStation();
+        // Travel in the first window.
+        TestStation firstDestination = new TestStation();
         mTransitRule.runTransition(
-                () -> Triggers.noopTo().withContext(firstWindow).arriveAt(destination));
+                () -> Triggers.noopTo().withContext(firstWindow).arriveAt(firstDestination));
 
         assertEquals(Phase.FINISHED, firstWindow.getPhase());
-        assertEquals(Phase.ACTIVE, destination.getPhase());
-        assertEquals(List.of(destination, secondWindow), TrafficControl.getActiveStations());
+        assertEquals(Phase.ACTIVE, firstDestination.getPhase());
+        assertEquals(
+                List.of(firstDestination, secondWindow, thirdWindow),
+                TrafficControl.getActiveStations());
+
+        // Travel in the middle window.
+        TestStation secondDestination =
+                new TestStation(
+                        /* activityClass= */ null, /* withUnfulfillableExitCondition= */ false);
+        mTransitRule.runTransition(
+                () -> Triggers.noopTo().withContext(secondWindow).arriveAt(secondDestination));
+
+        assertEquals(Phase.FINISHED, secondWindow.getPhase());
+        assertEquals(Phase.ACTIVE, secondDestination.getPhase());
+        assertEquals(
+                List.of(firstDestination, secondDestination, thirdWindow),
+                TrafficControl.getActiveStations());
     }
 
     @Test
