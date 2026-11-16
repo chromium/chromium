@@ -187,6 +187,9 @@ public class IncognitoReauthControllerImpl
      */
     private final Supplier<Boolean> mIsIncognitoReauthPendingOnRestoreSupplier;
 
+    /** A supplier to indicate if the Activity is being recreated. */
+    private final Supplier<Boolean> mIsActivityRecreatingSupplier;
+
     // No strong reference to this should be made outside of this class because
     // we set this to null in hideDialogIfShowing for it to be garbage collected.
     private @Nullable IncognitoReauthCoordinator mIncognitoReauthCoordinator;
@@ -208,6 +211,8 @@ public class IncognitoReauthControllerImpl
      * @param incognitoReauthPendingOnRestoreSupplier Supplier to indicate where the {@link
      *     IncognitoReauthControllerImpl#KEY_IS_INCOGNITO_REAUTH_PENDING} was set to true in the
      *     saved instance state.
+     * @param isActivityRecreatingSupplier Supplier to indicate whether the {@link ChromeActivity}
+     *     associated with this controller is being recreated.
      * @param taskId The task Id of the {@link ChromeActivity} associated with this controller.
      */
     public IncognitoReauthControllerImpl(
@@ -217,6 +222,7 @@ public class IncognitoReauthControllerImpl
             MonotonicObservableSupplier<Profile> profileSupplier,
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory,
             Supplier<Boolean> incognitoReauthPendingOnRestoreSupplier,
+            Supplier<Boolean> isActivityRecreatingSupplier,
             int taskId) {
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
@@ -228,6 +234,7 @@ public class IncognitoReauthControllerImpl
                 incognitoReauthCoordinatorFactory.getBackPressRunnable();
         mTaskId = taskId;
         mIsIncognitoReauthPendingOnRestoreSupplier = incognitoReauthPendingOnRestoreSupplier;
+        mIsActivityRecreatingSupplier = isActivityRecreatingSupplier;
 
         layoutStateProviderOneshotSupplier.onAvailable(
                 mCallbackController.makeCancelable(
@@ -366,7 +373,9 @@ public class IncognitoReauthControllerImpl
     @Override
     public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
         if (taskId != mTaskId) return;
-        if (!isVisible) {
+        // A task is also reported as not visible while its Activity is recreated in the foreground.
+        // The user did not leave Chrome then, so keep the current state.
+        if (!isVisible && !mIsActivityRecreatingSupplier.get()) {
             mIncognitoReauthPending =
                     mTabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
         }

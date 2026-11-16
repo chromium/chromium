@@ -1858,6 +1858,7 @@ public class RootUiCoordinator
                         mProfileSupplier,
                         incognitoReauthCoordinatorFactory,
                         () -> mIsIncognitoReauthPendingOnRestore,
+                        mActivity::isChangingConfigurations,
                         mActivity.getTaskId());
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }

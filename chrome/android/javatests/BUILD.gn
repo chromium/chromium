@@ -937,6 +937,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.incognito") {
     "src/org/chromium/chrome/browser/incognito/IncognitoNotificationServiceTest.java",
     "src/org/chromium/chrome/browser/incognito/IncognitoPermissionLeakageTest.java",
     "src/org/chromium/chrome/browser/incognito/IncognitoProfileDestroyerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoReauthRecreationTest.java",
     "src/org/chromium/chrome/browser/incognito/IncognitoStorageLeakageTest.java",
     "src/org/chromium/chrome/browser/incognito/IncognitoTabLauncherTest.java",
     "src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotControllerIntegrationTest.java",

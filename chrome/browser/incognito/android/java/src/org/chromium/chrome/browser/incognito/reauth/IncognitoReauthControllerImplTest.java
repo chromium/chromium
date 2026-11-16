@@ -76,6 +76,7 @@ public class IncognitoReauthControllerImplTest {
     private SettableMonotonicObservableSupplier<Profile> mProfileObservableSupplier;
 
     private boolean mIsIncognitoReauthPendingOnRestore;
+    private boolean mIsActivityRecreating;
 
     private void switchToIncognitoTabModel() {
         doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
@@ -141,6 +142,7 @@ public class IncognitoReauthControllerImplTest {
                         mProfileObservableSupplier,
                         mIncognitoReauthCoordinatorFactoryMock,
                         () -> mIsIncognitoReauthPendingOnRestore,
+                        () -> mIsActivityRecreating,
                         TASK_ID);
         mProfileObservableSupplier.set(mProfileMock);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -199,6 +201,42 @@ public class IncognitoReauthControllerImplTest {
                         + " exists already after coming to foreground.",
                 mIncognitoReauthController.isReauthPageShowing());
         verify(mIncognitoReauthCoordinatorMock).show();
+    }
+
+    /** The task is also reported as not visible while the Activity is recreated in foreground. */
+    @Test
+    public void testTaskNotVisible_WhileActivityRecreating_DoesNotMakeReauthPending() {
+        doReturn(1).when(mIncognitoTabModelMock).getCount();
+        switchToIncognitoTabModel();
+
+        mIsActivityRecreating = true;
+        mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
+
+        assertFalse(
+                "Re-auth should not be pending when the Activity is only recreated.",
+                mIncognitoReauthController.isIncognitoReauthPending());
+        mIncognitoReauthController.onStartWithNative();
+        assertFalse(
+                "IncognitoReauthCoordinator should not be created when the Activity is only"
+                        + " recreated.",
+                mIncognitoReauthController.isReauthPageShowing());
+    }
+
+    @Test
+    public void testTaskNotVisible_WhileActivityRecreating_KeepsReauthPending() {
+        doReturn(1).when(mIncognitoTabModelMock).getCount();
+        switchToIncognitoTabModel();
+        mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
+        assertTrue(
+                "Re-auth should be pending after the task went to background.",
+                mIncognitoReauthController.isIncognitoReauthPending());
+
+        mIsActivityRecreating = true;
+        mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
+
+        assertTrue(
+                "A recreation should not clear a pending re-auth.",
+                mIncognitoReauthController.isIncognitoReauthPending());
     }
 
     @Test

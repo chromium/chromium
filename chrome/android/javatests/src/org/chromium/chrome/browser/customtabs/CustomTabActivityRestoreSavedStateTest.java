@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -158,12 +160,59 @@ public class CustomTabActivityRestoreSavedStateTest {
     }
 
     /**
-     * The saved incognito re-auth flag is restored, so a recreated incognito Custom Tab with
-     * Incognito lock enabled shows the re-auth page, as ChromeTabbedActivity does.
+     * A foreground recreation alone does not make re-auth pending: the user did not leave the
+     * incognito Custom Tab.
      */
     @Test
     @MediumTest
-    public void testIncognitoCustomTab_withIncognitoLock_showsReauthAfterRecreation() {
+    public void testIncognitoCustomTab_withIncognitoLock_noReauthAfterRecreation() {
+        CustomTabActivity activity = launchIncognitoWithIncognitoLock();
+
+        CustomTabActivity recreated =
+                recreateWithSavedFullscreenOptions(activity, /* injectFullscreenOptions= */ false);
+
+        assertFalse(
+                "Re-auth should not be pending after a foreground recreation",
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getReauthController(recreated).isIncognitoReauthPending()));
+        assertFalse(
+                "Re-auth page should not be shown after a foreground recreation",
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getReauthController(recreated).isReauthPageShowing()));
+    }
+
+    /**
+     * The saved incognito re-auth flag is restored, so a re-auth that was already required is still
+     * required in the recreated incognito Custom Tab, as in ChromeTabbedActivity.
+     */
+    @Test
+    @MediumTest
+    public void testIncognitoCustomTab_withIncognitoLock_keepsPendingReauthAfterRecreation() {
+        CustomTabActivity activity = launchIncognitoWithIncognitoLock();
+        // Make re-auth pending as if the task had been in the background and came back.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IncognitoReauthControllerImpl controller =
+                            (IncognitoReauthControllerImpl) getReauthController(activity);
+                    controller.onTaskVisibilityChanged(activity.getTaskId(), false);
+                    controller.onStartWithNative();
+                    assertTrue(
+                            "Re-auth page should be shown before the recreation",
+                            controller.isReauthPageShowing());
+                });
+
+        CustomTabActivity recreated =
+                recreateWithSavedFullscreenOptions(activity, /* injectFullscreenOptions= */ false);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    IncognitoReauthController controller = getReauthController(recreated);
+                    return controller != null && controller.isReauthPageShowing();
+                },
+                "Re-auth page should be shown again in the recreated activity");
+    }
+
+    private CustomTabActivity launchIncognitoWithIncognitoLock() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
         mReauthEnabled = true;
@@ -172,20 +221,13 @@ public class CustomTabActivityRestoreSavedStateTest {
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true));
+        return activity;
+    }
 
-        CustomTabActivity recreated =
-                recreateWithSavedFullscreenOptions(activity, /* injectFullscreenOptions= */ false);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    IncognitoReauthController controller =
-                            recreated
-                                    .getRootUiCoordinatorForTesting()
-                                    .getIncognitoReauthControllerSupplier()
-                                    .get();
-                    return controller != null && controller.isReauthPageShowing();
-                },
-                "Re-auth page should be shown in the recreated activity");
+    private static IncognitoReauthController getReauthController(CustomTabActivity activity) {
+        return activity.getRootUiCoordinatorForTesting()
+                .getIncognitoReauthControllerSupplier()
+                .get();
     }
 
     private static void assertBundleHoldsCipherKey(CustomTabActivity activity) {
