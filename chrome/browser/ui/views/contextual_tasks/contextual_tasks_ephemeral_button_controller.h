@@ -142,7 +142,7 @@ class ContextualTasksEphemeralButtonController
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
   std::optional<base::Uuid> GetActiveTaskId();
-  bool HasPanelResults() const;
+  bool HasPanelResultsOrUnsubmittedInput() const;
   base::TimeTicks NowTicks() const;
   void SettlePendingOpenClick(OpenSidePanelSessionCounts& counts,
                               bool closed_by_user);

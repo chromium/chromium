@@ -4244,4 +4244,88 @@ TEST_F(
 }
 #endif
 
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HasUnsubmittedQuery_ManualTabAndLensCrop) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  // Attaching a manual tab sets `HasUnsubmittedQuery()` to true.
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  // Removing the tab resets `HasUnsubmittedQuery()` to false.
+  user_data->DeleteContext(token);
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  // Mounting a Lens region crop sets `HasUnsubmittedQuery()` to true.
+  user_data->OnLensThumbnailCreated("raw-jpeg-bytes");
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  // Removing the Lens crop resets `HasUnsubmittedQuery()` to false.
+  user_data->RemoveLensCrop();
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HasUnsubmittedQuery_OnInputPlateStateChanged) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  using OnInputPlateStateChanged =
+      lens::SearchToClientMessage::OnInputPlateStateChanged;
+  auto send_input_plate_state =
+      [&](OnInputPlateStateChanged::CompositionState composition_state) {
+        lens::SearchToClientMessage message;
+        message.mutable_on_input_plate_state_changed()->set_composition_state(
+            composition_state);
+        std::vector<uint8_t> bytes(message.ByteSizeLong());
+        message.SerializeToArray(bytes.data(), bytes.size());
+        return user_data->OnSearchMessageReceived(bytes);
+      };
+
+  EXPECT_TRUE(send_input_plate_state(OnInputPlateStateChanged::COMPOSING));
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  EXPECT_TRUE(send_input_plate_state(OnInputPlateStateChanged::EMPTY));
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  EXPECT_TRUE(send_input_plate_state(OnInputPlateStateChanged::COMPOSING));
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  EXPECT_TRUE(send_input_plate_state(OnInputPlateStateChanged::DISABLED));
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  // `ClearFiles()` only drops files and tabs, so text typed in the AIM input
+  // plate still counts as unsubmitted input.
+  EXPECT_TRUE(send_input_plate_state(OnInputPlateStateChanged::COMPOSING));
+  user_data->ClearFiles();
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  // `ClearInputPlateState()` also resets the AIM input plate unsubmitted state.
+  user_data->ClearInputPlateState();
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+}
+
 }  // namespace contextual_tasks

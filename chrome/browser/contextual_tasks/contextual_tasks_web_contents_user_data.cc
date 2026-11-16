@@ -303,6 +303,7 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   bool has_recorded_first_thread_context_library_update = false;
   std::vector<std::vector<uint8_t>> pending_search_messages;
   bool is_lens_crop_mounted = false;
+  bool has_aim_unsubmitted_input = false;
   std::string last_lens_crop_data_uri;
   bool context_library_is_active = false;
   bool tab_picker_is_active = false;
@@ -609,6 +610,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   }
   page_state.pending_search_messages.clear();
   page_state.is_lens_crop_mounted = false;
+  page_state.has_aim_unsubmitted_input = false;
   page_state.context_library_is_active = false;
   page_state.tab_picker_is_active = false;
   page_state.is_zero_state = false;
@@ -749,6 +751,12 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
     case lens::SearchToClientMessage::kOnPageChanged:
       OnPageChanged(search_to_client_message.on_page_changed().is_zero_state());
       return true;
+    case lens::SearchToClientMessage::kOnInputPlateStateChanged:
+      GetPrimaryPageSearchState().has_aim_unsubmitted_input =
+          search_to_client_message.on_input_plate_state_changed()
+              .composition_state() ==
+          lens::SearchToClientMessage::OnInputPlateStateChanged::COMPOSING;
+      return true;
     case lens::SearchToClientMessage::EVENT_MESSAGE_NOT_SET:
       return false;
   }
@@ -874,14 +882,13 @@ bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
   return !tab_context.attached.empty() || !tab_context.restored.empty();
 }
 
-bool ContextualTasksWebContentsUserData::CanShareTabsForCurrentPage() {
+bool ContextualTasksWebContentsUserData::CanShareTabsForCurrentPage() const {
   Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   if (!CanShareTabContext(profile)) {
     return false;
   }
-  const auto* page_state =
-      PageSearchState::GetForPage(GetWebContents().GetPrimaryPage());
+  const auto* page_state = GetPrimaryPageSearchState();
   return !page_state || page_state->server_supports_tabs;
 }
 
@@ -1990,6 +1997,7 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_zero_state = false;
   page_state.has_known_page_state = true;
+  page_state.has_aim_unsubmitted_input = false;
   has_unsubmitted_query_ = false;
   implicit_tab_.reset();
   pending_context_uploads_.clear();
@@ -2019,6 +2027,27 @@ void ContextualTasksWebContentsUserData::CloseLensAsync(
 std::optional<base::UnguessableToken>
 ContextualTasksWebContentsUserData::pending_submit_overlay_token() const {
   return pending_submit_ ? pending_submit_->overlay_token : std::nullopt;
+}
+
+bool ContextualTasksWebContentsUserData::HasUnsubmittedQuery() const {
+  if (has_unsubmitted_query_) {
+    return true;
+  }
+  const auto* page_state = GetPrimaryPageSearchState();
+  if (page_state && (page_state->has_aim_unsubmitted_input ||
+                     page_state->is_lens_crop_mounted)) {
+    return true;
+  }
+  if (!subscribed_session_handle_ || !CanShareTabsForCurrentPage()) {
+    return false;
+  }
+  // A manually added tab counts as unsubmitted input; the auto-suggested
+  // (implicit) tab and tabs whose upload failed do not.
+  return std::ranges::any_of(
+      GetSelectedTabsSnapshot(), [&](const contextual_search::TabInfo& tab) {
+        return !(implicit_tab_ && tab.context_token == implicit_tab_->token) &&
+               !failed_context_uploads_.contains(tab.context_token);
+      });
 }
 
 std::vector<contextual_search::TabInfo>
@@ -2330,6 +2359,7 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_zero_state = false;
   page_state.has_known_page_state = false;
+  page_state.has_aim_unsubmitted_input = false;
   page_state.last_lens_crop_data_uri.clear();
   if (page_state.is_lens_crop_mounted) {
     page_state.is_lens_crop_mounted = false;

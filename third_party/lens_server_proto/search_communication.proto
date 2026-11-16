@@ -235,6 +235,28 @@ message SearchToClientMessage {
     bool is_zero_state = 1;
   }
 
+  // Message sent by Search Web to Chrome when the AIM input plate
+  // composition state changes.
+  message OnInputPlateStateChanged {
+    // Input plate composition states, mirroring
+    // search.next.aim.ui.inputplate.CompositionState.
+    enum CompositionState {
+      COMPOSITION_STATE_UNSPECIFIED = 0;
+
+      // Input plate is empty.
+      EMPTY = 1;
+
+      // A query is being composed.
+      COMPOSING = 2;
+
+      // Input plate is disabled.
+      DISABLED = 4;
+
+      reserved 3;
+    }
+    CompositionState composition_state = 1;
+  }
+
   oneof event_message {
     // Handshake response sent by Search Web acknowledging readiness.
     HandshakeResponse handshake_response = 1;
@@ -252,6 +274,9 @@ message SearchToClientMessage {
 
     // Sent to notify Chrome that the page has changed.
     OnPageChanged on_page_changed = 5;
+
+    // Sent to notify Chrome when the AIM input plate state changes.
+    OnInputPlateStateChanged on_input_plate_state_changed = 6;
   }
 }
 

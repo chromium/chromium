@@ -1325,6 +1325,23 @@ bool ContextualTasksSidePanelCoordinator::HasResults() const {
   return IsShowingLensResults() || IsShowingAimResults();
 }
 
+bool ContextualTasksSidePanelCoordinator::HasUnsubmittedInput() const {
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
+    return false;
+  }
+
+  auto cache_it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second ||
+      !cache_it->second->web_contents) {
+    return false;
+  }
+
+  const auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+      cache_it->second->web_contents.get());
+  return user_data && user_data->HasUnsubmittedQuery();
+}
+
 ContextualTasksPanelController::EntrySource
 ContextualTasksSidePanelCoordinator::GetActiveEntrySource() const {
   if (content::WebContents* active_web_contents = GetActiveWebContents()) {
@@ -2468,7 +2485,8 @@ void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
 
 bool ContextualTasksSidePanelCoordinator::ShouldPreserveTaskOnClose() const {
   if (!browser_window_ || !browser_window_->GetProfile() ||
-      browser_window_->GetProfile()->IsOffTheRecord()) {
+      browser_window_->GetProfile()->IsOffTheRecord() ||
+      (!HasResults() && !HasUnsubmittedInput())) {
     return false;
   }
   const bool can_resume_from_pinned_button =
@@ -2843,7 +2861,7 @@ bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
   auto cache_it = task_id_to_web_contents_cache_.find(task->GetTaskId());
   if (cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second ||
       !cache_it->second->web_contents) {
-    return false;
+    return task->GetThread().has_value();
   }
 
   ContextualTasksUiService* ui_service = GetUiService();
@@ -2851,17 +2869,10 @@ bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
     return false;
   }
 
-  content::WebContents* web_contents = cache_it->second->web_contents.get();
-  const auto* user_data =
-      ContextualTasksWebContentsUserData::FromWebContents(web_contents);
-  const bool has_unsubmitted_query =
-      user_data && user_data->has_unsubmitted_query();
-
   const GURL url = GetActiveResultsUrl();
   if (!url.is_empty()) {
     return ui_service->IsAiUrl(url) &&
-           (!ContextualTasksUI::IsZeroState(url, ui_service) ||
-            has_unsubmitted_query);
+           !ContextualTasksUI::IsZeroState(url, ui_service);
   }
 
   // Pre-rearchitecture, the side panel `WebContents` loads
@@ -2870,7 +2881,7 @@ bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
   // task without navigating the embedded frame). In that state,
   // `GetActiveResultsUrl()` is empty even though the task already has an
   // active thread.
-  return task->GetThread().has_value() || has_unsubmitted_query;
+  return task->GetThread().has_value();
 }
 
 void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
