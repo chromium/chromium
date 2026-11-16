@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Notification;
@@ -16,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import org.junit.After;
@@ -139,6 +141,7 @@ public class NotificationManagerTest {
                 .markEntryActivated(
                         any(), eq(GUID), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
         verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
+        verify(mMetricsMock, never()).recordOpenedInNativeApp(anyInt());
 
         // Verify that the started intent is explicit and targets Chrome.
         Intent startedIntent =
@@ -173,6 +176,7 @@ public class NotificationManagerTest {
                 .markEntryActivated(
                         any(), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
         verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
+        verify(mMetricsMock).recordOpenedInNativeApp(NativeAppOpenEntryPoint.MOBILE_NOTIFICATION);
 
         // Verify that the started intent is implicit and doesn't target Chrome.
         Intent startedIntent =
@@ -206,6 +210,7 @@ public class NotificationManagerTest {
                 .markEntryActivated(
                         any(), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
         verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
+        verify(mMetricsMock, never()).recordOpenedInNativeApp(anyInt());
 
         // Verify that the started intent targets Chrome (because feature is disabled by default).
         Intent startedIntent =
@@ -230,8 +235,11 @@ public class NotificationManagerTest {
         Assert.assertNotNull(NotificationManager.getMatchingNativeAppResolveInfo(uri));
         Assert.assertTrue(NotificationManager.canOpenInNativeApp(uri));
 
-        boolean result = NotificationManager.openInNativeAppIfPossible(uri);
+        boolean result =
+                NotificationManager.openInNativeAppIfPossible(
+                        uri, NativeAppOpenEntryPoint.MOBILE_NOTIFICATION);
         Assert.assertTrue(result);
+        verify(mMetricsMock).recordOpenedInNativeApp(NativeAppOpenEntryPoint.MOBILE_NOTIFICATION);
 
         // Verify that the started intent is implicit and doesn't target Chrome.
         Intent startedIntent =
@@ -254,12 +262,42 @@ public class NotificationManagerTest {
         Assert.assertNull(NotificationManager.getMatchingNativeAppResolveInfo(uri));
         Assert.assertFalse(NotificationManager.canOpenInNativeApp(uri));
 
-        boolean result = NotificationManager.openInNativeAppIfPossible(uri);
+        boolean result =
+                NotificationManager.openInNativeAppIfPossible(
+                        uri, NativeAppOpenEntryPoint.MOBILE_NOTIFICATION);
         Assert.assertFalse(result);
+        verify(mMetricsMock, never()).recordOpenedInNativeApp(anyInt());
 
         Intent startedIntent =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
         Assert.assertNull(startedIntent);
+    }
+
+    /**
+     * Verifies that `openInNativeAppIfPossible` returns `false` and does not record the native app
+     * open metric when starting the activity fails (`ActivityNotFoundException`).
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
+    public void testOpenInNativeAppIfPossible_StartActivityFails_DoesNotRecordMetric() {
+        String url = "https://www.example.com/app/path";
+        Uri uri = Uri.parse(url);
+
+        // Force `canOpenInNativeApp` to return `true` while no activity is actually registered in
+        // `PackageManager`, and instruct Robolectric's `ShadowApplication` to throw
+        // `ActivityNotFoundException` when an unresolvable intent is started.
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.app";
+        resolveInfo.activityInfo.name = "com.example.app.MissingActivity";
+        NotificationManager.setResolveInfoForTesting(resolveInfo);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication()).checkActivities(true);
+
+        boolean result =
+                NotificationManager.openInNativeAppIfPossible(
+                        uri, NativeAppOpenEntryPoint.MOBILE_NOTIFICATION);
+        Assert.assertFalse(result);
+        verify(mMetricsMock, never()).recordOpenedInNativeApp(anyInt());
     }
 
     /**

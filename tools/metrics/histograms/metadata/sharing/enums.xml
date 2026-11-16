@@ -140,6 +140,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:FormFieldMatchOutcome) -->
 
+<!-- LINT.IfChange(SendTabToSelfNativeAppOpenEntryPoint) -->
+
+<enum name="SendTabToSelfNativeAppOpenEntryPoint">
+  <int value="0" label="Mobile Notification"/>
+  <int value="1" label="Link Received Message Banner"/>
+  <int value="2" label="Continue to App Message Banner"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:SendTabToSelfNativeAppOpenEntryPoint) -->
+
 <!-- LINT.IfChange(SendTabToSelfResult) -->
 
 <enum name="SendTabToSelfResult">

@@ -128,9 +128,11 @@ public class NotificationManager {
      * Opens the URI in the matching native app, if there is one.
      *
      * @param uri The URI to open.
+     * @param entryPoint The UI entry point that triggered the native app launch.
      * @return true if the native app was launched, false otherwise.
      */
-    public static boolean openInNativeAppIfPossible(@Nullable Uri uri) {
+    public static boolean openInNativeAppIfPossible(
+            @Nullable Uri uri, @NativeAppOpenEntryPoint int entryPoint) {
         if (!canOpenInNativeApp(uri)) {
             return false;
         }
@@ -138,7 +140,11 @@ public class NotificationManager {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return IntentUtils.safeStartActivity(context, intent);
+        if (!IntentUtils.safeStartActivity(context, intent)) {
+            return false;
+        }
+        SendTabToSelfMetricsRecorder.recordOpenedInNativeApp(entryPoint);
+        return true;
     }
 
     /**
@@ -157,7 +163,7 @@ public class NotificationManager {
             @Nullable Uri uri,
             @Nullable String scrollToTextFragment,
             byte @Nullable [] pageContext) {
-        if (openInNativeAppIfPossible(uri)) {
+        if (openInNativeAppIfPossible(uri, NativeAppOpenEntryPoint.MOBILE_NOTIFICATION)) {
             return;
         }
 

@@ -44,6 +44,12 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordEntryPointInvoked(
   RecordEntryPointInvoked(entry_point);
 }
 
+static void JNI_SendTabToSelfMetricsRecorder_RecordOpenedInNativeApp(
+    JNIEnv* env,
+    NativeAppOpenEntryPoint entry_point) {
+  RecordOpenedInNativeApp(entry_point);
+}
+
 }  // namespace send_tab_to_self
 
 DEFINE_JNI(SendTabToSelfMetricsRecorder)

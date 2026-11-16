@@ -56,6 +56,10 @@ public class SendTabToSelfMetricsRecorder {
         SendTabToSelfMetricsRecorderJni.get().recordEntryPointInvoked(entryPoint);
     }
 
+    public static void recordOpenedInNativeApp(@NativeAppOpenEntryPoint int entryPoint) {
+        SendTabToSelfMetricsRecorderJni.get().recordOpenedInNativeApp(entryPoint);
+    }
+
     @NativeMethods
     interface Natives {
         void recordNotificationStatus(
@@ -69,5 +73,9 @@ public class SendTabToSelfMetricsRecorder {
 
         void recordEntryPointInvoked(
                 @JniType("send_tab_to_self::ShareEntryPoint") @ShareEntryPoint int entryPoint);
+
+        void recordOpenedInNativeApp(
+                @JniType("send_tab_to_self::NativeAppOpenEntryPoint") @NativeAppOpenEntryPoint
+                        int entryPoint);
     }
 }

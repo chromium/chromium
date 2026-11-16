@@ -390,7 +390,10 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Records the entry point from which a received Send Tab to Self tab was
-    activated by the user or automatically activated by the system.
+    activated by the user or automatically activated by the system. On Android,
+    &quot;Mobile Notification&quot; and &quot;Mobile Message Banner&quot; also
+    include activations that launch a native app directly; see
+    Sharing.SendTabToSelf.OpenedInNativeApp for the native-app breakdown.
 
     If a tab is opened in the background but is closed or the browser is shut
     down before the user activates it, this is recorded as &quot;Tab or Browser
@@ -477,6 +480,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Status of STTS notifications. Recorded whenever a target device is chosen, a
     received notification is shown, or an action is taken on the notification.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendTabToSelf.OpenedInNativeApp"
+    enum="SendTabToSelfNativeAppOpenEntryPoint" expires_after="2027-06-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the UI entry point from which a received Send Tab to Self link was
+    successfully launched in a native Android app instead of (or after) opening
+    in a Chrome tab. Recorded on Android when the native app intent is started.
+    Each sample corresponds to an activated entry in
+    Sharing.SendTabToSelf.ActivatedEntryPoint (specifically the &quot;Mobile
+    Notification&quot;, &quot;Mobile Message Banner&quot;, and &quot;Tab
+    Strip&quot; buckets), which can be used as the denominator.
   </summary>
 </histogram>
 
