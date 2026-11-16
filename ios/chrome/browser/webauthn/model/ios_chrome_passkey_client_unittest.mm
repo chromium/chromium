@@ -24,6 +24,7 @@
 #import "components/webauthn/core/browser/device_authorization/mock_device_authorization_service.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
@@ -32,13 +33,42 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+// Target registered with `CommandDispatcher` strictly for the Embedded ReAuth
+// selector, which takes a move-only `base::OnceCallback` by value (unsupported
+// by `NSInvocation` / `OCMProtocolMock`). All other `IOSPasskeyClientCommands`
+// selectors remain backed by `OCMStrictProtocolMock`.
+@interface EmbeddedReAuthCommandTarget : NSObject
+@property(nonatomic, readonly) BOOL showPasskeyEmbeddedReAuthCalled;
+@property(nonatomic, copy) NSString* lastPackagedLookupToken;
+@property(nonatomic, assign) std::string reauthProofToken;
+@end
+
+@implementation EmbeddedReAuthCommandTarget
+
+- (void)
+    showPasskeyEmbeddedReAuthWithPackagedLookupToken:
+        (NSString*)packagedLookupToken
+                                            callback:
+                                                (webauthn::IOSPasskeyClient::
+                                                     EmbeddedReAuthCallback)
+                                                    callback {
+  _showPasskeyEmbeddedReAuthCalled = YES;
+  self.lastPackagedLookupToken = packagedLookupToken;
+  std::move(callback).Run(self.reauthProofToken);
+}
+
+@end
 
 namespace {
 
 using ::base::test::EqualsProto;
 using ::base::test::RunOnceCallback;
+using ::testing::_;
 using ::testing::Return;
 
 constexpr int32_t kDeviceAuthorizationKeyVersion = 1;
@@ -82,6 +112,31 @@ class IOSChromePasskeyClientTest : public PlatformTest {
   }
 
  protected:
+  // Wires `client_` to a `CommandDispatcher` backed by `OCMStrictProtocolMock`
+  // for all `IOSPasskeyClientCommands` selectors except Embedded ReAuth, which
+  // dispatches to `reauth_command_target_` and completes with
+  // `reauth_proof_token`.
+  EmbeddedReAuthCommandTarget* SetUpEmbeddedReAuthCommandTarget(
+      std::string reauth_proof_token) {
+    command_dispatcher_ = [[CommandDispatcher alloc] init];
+    strict_commands_mock_ =
+        OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+    reauth_command_target_ = [[EmbeddedReAuthCommandTarget alloc] init];
+    reauth_command_target_.reauthProofToken = std::move(reauth_proof_token);
+
+    SEL selector =
+        @selector(showPasskeyEmbeddedReAuthWithPackagedLookupToken:callback:);
+    [command_dispatcher_
+        startDispatchingToTarget:strict_commands_mock_
+                     forProtocol:@protocol(IOSPasskeyClientCommands)];
+    [command_dispatcher_ stopDispatchingForSelector:selector];
+    [command_dispatcher_ startDispatchingToTarget:reauth_command_target_
+                                      forSelector:selector];
+    client_->SetIOSPasskeyClientCommandsHandler(
+        HandlerForProtocol(command_dispatcher_, IOSPasskeyClientCommands));
+    return reauth_command_target_;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -90,6 +145,9 @@ class IOSChromePasskeyClientTest : public PlatformTest {
   raw_ptr<webauthn::MockDeviceAuthorizationService>
       device_authorization_service_ = nullptr;
   std::unique_ptr<IOSChromePasskeyClient> client_;
+  CommandDispatcher* command_dispatcher_ = nil;
+  id strict_commands_mock_ = nil;
+  EmbeddedReAuthCommandTarget* reauth_command_target_ = nil;
 };
 
 // Tests that passkey saving is enabled when all conditions are met.
@@ -231,7 +289,8 @@ TEST_F(IOSChromePasskeyClientTest, AutomaticPasskeyUpgradePref) {
   EXPECT_TRUE(client_->IsAutomaticPasskeyUpgradeEnabled());
 }
 
-// Tests that the fetched device authorization keys are passed to the caller.
+// Tests that the fetched device authorization keys are passed directly to the
+// caller without triggering Embedded ReAuth.
 TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeys) {
   webauthn::DeviceAuthorizationKeys keys;
   webauthn::DeviceAuthorizationKey* key = keys.add_keys();
@@ -239,6 +298,12 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeys) {
   key->set_key(kDeviceAuthorizationKey);
   EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
       .WillOnce(RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(keys)));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  id strict_commands_handler =
+      OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+  client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
   client_->FetchDeviceAuthorizationKeys(future.GetCallback());
@@ -246,6 +311,134 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeys) {
   const webauthn::DeviceAuthorizationKeys* fetched_keys = future.Get().keys();
   ASSERT_TRUE(fetched_keys);
   EXPECT_THAT(*fetched_keys, EqualsProto(keys));
+  EXPECT_OCMOCK_VERIFY(strict_commands_handler);
+}
+
+// Tests that a `kError` result from `GetOrFetchKeys` is forwarded directly
+// without triggering Embedded ReAuth.
+TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysError) {
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(RunOnceCallback<0>(webauthn::DeviceAuthFetchResult()));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  id strict_commands_handler =
+      OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+  client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
+  EXPECT_OCMOCK_VERIFY(strict_commands_handler);
+}
+
+// Tests that when `GetOrFetchKeys` requires ReAuth, the client shows the
+// embedded ReAuth UI and retries fetching keys with the returned ReAuth proof
+// token.
+TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysReAuthSucceeds) {
+  webauthn::DeviceAuthorizationReAuthParams reauth_params;
+  reauth_params.set_plt("test_packaged_lookup_token");
+
+  webauthn::DeviceAuthorizationKeys keys;
+  webauthn::DeviceAuthorizationKey* key = keys.add_keys();
+  key->set_version(kDeviceAuthorizationKeyVersion);
+  key->set_key(kDeviceAuthorizationKey);
+
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(
+          RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(reauth_params)));
+  EXPECT_CALL(*device_authorization_service_,
+              FetchKeysWithReAuthToken("test_reauth_proof_token", _))
+      .WillOnce(RunOnceCallback<1>(webauthn::DeviceAuthFetchResult(keys)));
+
+  EmbeddedReAuthCommandTarget* reauth_target =
+      SetUpEmbeddedReAuthCommandTarget("test_reauth_proof_token");
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  const webauthn::DeviceAuthorizationKeys* fetched_keys = future.Get().keys();
+  ASSERT_TRUE(fetched_keys);
+  EXPECT_THAT(*fetched_keys, EqualsProto(keys));
+  EXPECT_TRUE(reauth_target.showPasskeyEmbeddedReAuthCalled);
+  EXPECT_NSEQ(reauth_target.lastPackagedLookupToken,
+              @"test_packaged_lookup_token");
+  EXPECT_OCMOCK_VERIFY(strict_commands_mock_);
+}
+
+// Tests that when the embedded ReAuth flow fails (returns an empty ReAuth proof
+// token), `FetchDeviceAuthorizationKeys` returns an error without retrying.
+TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysReAuthFails) {
+  webauthn::DeviceAuthorizationReAuthParams reauth_params;
+  reauth_params.set_plt("test_packaged_lookup_token");
+
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(
+          RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(reauth_params)));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  EmbeddedReAuthCommandTarget* reauth_target =
+      SetUpEmbeddedReAuthCommandTarget("");
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
+  EXPECT_TRUE(reauth_target.showPasskeyEmbeddedReAuthCalled);
+  EXPECT_NSEQ(reauth_target.lastPackagedLookupToken,
+              @"test_packaged_lookup_token");
+  EXPECT_OCMOCK_VERIFY(strict_commands_mock_);
+}
+
+// Tests that when ReAuth is required with an empty Packaged Lookup Token,
+// `FetchDeviceAuthorizationKeys` returns an error without presenting ReAuth UI
+// or retrying.
+TEST_F(IOSChromePasskeyClientTest,
+       FetchDeviceAuthorizationKeysReAuthMissingPackagedLookupToken) {
+  webauthn::DeviceAuthorizationReAuthParams reauth_params;
+
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(
+          RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(reauth_params)));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  id strict_commands_handler =
+      OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+  client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
+  EXPECT_OCMOCK_VERIFY(strict_commands_handler);
+}
+
+// Tests that when ReAuth is required with a null command handler,
+// `FetchDeviceAuthorizationKeys` returns an error without retrying.
+TEST_F(IOSChromePasskeyClientTest,
+       FetchDeviceAuthorizationKeysReAuthNullCommandHandler) {
+  webauthn::DeviceAuthorizationReAuthParams reauth_params;
+  reauth_params.set_plt("test_packaged_lookup_token");
+
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(
+          RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(reauth_params)));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  client_->SetIOSPasskeyClientCommandsHandler(nil);
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
 }
 
 // Tests that fetching device authorization keys fails when the device

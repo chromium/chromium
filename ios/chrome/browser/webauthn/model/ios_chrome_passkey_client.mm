@@ -6,8 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -222,8 +224,51 @@ void IOSChromePasskeyClient::FetchDeviceAuthorizationKeys(
     return;
   }
 
-  // TODO(crbug.com/405036154): Show the ReAuth UI if ReAuth is required.
-  service->GetOrFetchKeys(std::move(callback));
+  // TODO(crbug.com/586442316): Explore showing a spinner while fetching keys.
+  service->GetOrFetchKeys(
+      base::BindOnce(&IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched(
+    webauthn::FetchDeviceAuthKeysCallback callback,
+    webauthn::DeviceAuthFetchResult result) {
+  if (result.status() !=
+      webauthn::DeviceAuthFetchResult::Status::kReAuthRequired) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  const webauthn::DeviceAuthorizationReAuthParams* reauth_params =
+      result.reauth_params();
+  if (!command_handler_ || !reauth_params || reauth_params->plt().empty()) {
+    std::move(callback).Run(webauthn::DeviceAuthFetchResult());
+    return;
+  }
+
+  NSString* packaged_lookup_token =
+      base::SysUTF8ToNSString(reauth_params->plt());
+  EmbeddedReAuthCallback reauth_callback =
+      base::BindOnce(&IOSChromePasskeyClient::OnEmbeddedReAuthCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  [command_handler_
+      showPasskeyEmbeddedReAuthWithPackagedLookupToken:packaged_lookup_token
+                                              callback:std::move(
+                                                           reauth_callback)];
+}
+
+void IOSChromePasskeyClient::OnEmbeddedReAuthCompleted(
+    webauthn::FetchDeviceAuthKeysCallback callback,
+    std::string reauth_proof_token) {
+  webauthn::DeviceAuthorizationService* service =
+      IOSDeviceAuthorizationServiceFactory::GetForProfile(profile_);
+  if (!service || reauth_proof_token.empty()) {
+    std::move(callback).Run(webauthn::DeviceAuthFetchResult());
+    return;
+  }
+
+  service->FetchKeysWithReAuthToken(std::move(reauth_proof_token),
+                                    std::move(callback));
 }
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(

@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_CHROME_PASSKEY_CLIENT_H_
 #define IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_CHROME_PASSKEY_CLIENT_H_
 
+#import <string>
+
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 
@@ -46,9 +49,20 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
  private:
   PasskeyKeychainProviderBridge* GetPasskeyKeychainProviderBridge();
 
+  // Handles the result of `DeviceAuthorizationService::GetOrFetchKeys()`,
+  // initiating the embedded ReAuth flow if required.
+  void OnDeviceAuthorizationKeysFetched(
+      webauthn::FetchDeviceAuthKeysCallback callback,
+      webauthn::DeviceAuthFetchResult result);
+
+  // Handles the completion of the embedded ReAuth challenge and retries
+  // fetching device authorization keys with `reauth_proof_token` if non-empty.
+  void OnEmbeddedReAuthCompleted(webauthn::FetchDeviceAuthKeysCallback callback,
+                                 std::string reauth_proof_token);
+
   // Pointer to the associated ProfileIOS. Must outlive
   // IOSChromePasskeyClient.
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 
   // Command handler for the browser.
   id<IOSPasskeyClientCommands> command_handler_;
@@ -59,6 +73,8 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
 
   // Weak WebState.
   base::WeakPtr<web::WebState> web_state_;
+
+  base::WeakPtrFactory<IOSChromePasskeyClient> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_CHROME_PASSKEY_CLIENT_H_
