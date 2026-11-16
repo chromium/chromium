@@ -30,6 +30,7 @@ class ContextualTasksExtensionBinderProvider;
 namespace extensions {
 
 class ExtensionMojoBinderRegistryTest;
+class ExtensionMojoJsBrowserTest;
 class RendererStartupHelperTest;
 class ServiceWorkerTest;
 
@@ -79,6 +80,13 @@ void ExtensionMojoBinderRegistry::RegisterProvider(
 template <>
 void ExtensionMojoBinderRegistry::RegisterProvider(
     base::PassKey<ExtensionMojoBinderRegistryTest>,
+    std::unique_ptr<ExtensionMojoBinderProvider> provider) {
+  RegisterProviderImpl(std::move(provider));
+}
+
+template <>
+void ExtensionMojoBinderRegistry::RegisterProvider(
+    base::PassKey<ExtensionMojoJsBrowserTest>,
     std::unique_ptr<ExtensionMojoBinderProvider> provider) {
   RegisterProviderImpl(std::move(provider));
 }

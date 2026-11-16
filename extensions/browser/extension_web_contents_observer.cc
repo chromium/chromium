@@ -4,15 +4,20 @@
 
 #include "extensions/browser/extension_web_contents_observer.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -38,13 +43,116 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/origin.h"
 
 namespace extensions {
+
+namespace {
+
+// Returns whether `origin` belongs to `extension`. This eliminates origins that
+// are not within a hosted app's web extent, and sandboxed extension frames with
+// an opaque origin.
+// TODO(crbug.com/40725839) See if this check is still needed after the bug is
+// fixed.
+bool IsOriginOfExtension(content::BrowserContext* browser_context,
+                         const url::Origin& origin,
+                         const Extension& extension) {
+  return !origin.opaque() &&
+         ExtensionRegistry::Get(browser_context)
+                 ->enabled_extensions()
+                 .GetExtensionOrAppByURL(origin.GetURL()) == &extension;
+}
+
+// Holds the receiving end of the MojoJS broker pipe of a navigation that is
+// ready to commit, along with the ID of the extension that the document belongs
+// to, until the document commits and gets its ExtensionFrameInterfaceBroker.
+// Dropped along with the navigation if it does not commit.
+class PendingMojoJsBroker
+    : public content::NavigationHandleUserData<PendingMojoJsBroker> {
+ public:
+  PendingMojoJsBroker(const PendingMojoJsBroker&) = delete;
+  PendingMojoJsBroker& operator=(const PendingMojoJsBroker&) = delete;
+  ~PendingMojoJsBroker() override = default;
+
+  const ExtensionId& extension_id() const { return extension_id_; }
+
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> TakeReceiver() {
+    return std::move(receiver_);
+  }
+
+ private:
+  friend content::NavigationHandleUserData<PendingMojoJsBroker>;
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
+  PendingMojoJsBroker(
+      content::NavigationHandle& navigation_handle,
+      ExtensionId extension_id,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver)
+      : extension_id_(std::move(extension_id)),
+        receiver_(std::move(receiver)) {}
+
+  const ExtensionId extension_id_;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver_;
+};
+
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(PendingMojoJsBroker);
+
+// A BrowserInterfaceBroker that serves only the frame binders registered by an
+// extension's `ExtensionMojoBinderProvider`, for a single extension document.
+// `Mojo.bindInterface()` requests for any other interface, including ones the
+// frame's own BrowserInterfaceBroker serves, are reported as bad messages.
+// Created once the document has committed, so that binders run against it
+// rather than against the previous document of the same RenderFrameHost.
+// Requests that the document sends before then are queued in the pipe.
+// Destroyed along with the document.
+class ExtensionFrameInterfaceBroker
+    : public content::DocumentUserData<ExtensionFrameInterfaceBroker>,
+      public blink::mojom::BrowserInterfaceBroker {
+ public:
+  ExtensionFrameInterfaceBroker(const ExtensionFrameInterfaceBroker&) = delete;
+  ExtensionFrameInterfaceBroker& operator=(
+      const ExtensionFrameInterfaceBroker&) = delete;
+  ~ExtensionFrameInterfaceBroker() override = default;
+
+  // blink::mojom::BrowserInterfaceBroker:
+  void GetInterface(mojo::GenericPendingReceiver receiver) override {
+    if (!binder_map_.TryBind(&render_frame_host(), &receiver)) {
+      // Treat requests for unregistered interfaces as a bad message.
+      receiver_.ReportBadMessage(
+          base::StrCat({"No binder found for interface ",
+                        receiver.interface_name().value_or(""),
+                        " in the extension MojoJS broker"}));
+    }
+  }
+
+ private:
+  friend content::DocumentUserData<ExtensionFrameInterfaceBroker>;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+  ExtensionFrameInterfaceBroker(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*> binder_map,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver)
+      : DocumentUserData(render_frame_host),
+        binder_map_(std::move(binder_map)),
+        receiver_(this, std::move(receiver)) {}
+
+  mojo::BinderMapWithContext<content::RenderFrameHost*> binder_map_;
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> receiver_;
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(ExtensionFrameInterfaceBroker);
+
+}  // namespace
 
 // static
 ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
@@ -204,10 +312,6 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, render_frame_host->GetProcess());
 
-  if (IsMojoJsEnabled(*extension)) {
-    render_frame_host->EnableMojoJsBindings(/*features=*/nullptr);
-  }
-
   if (IsJsErrorReportingEnabled(*extension)) {
     render_frame_host->SetWantErrorMessageStackTrace();
   }
@@ -242,6 +346,7 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
+  MaybeEnableMojoJsBindings(navigation_handle);
 
   ScriptInjectionTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);
 
@@ -294,6 +399,8 @@ void ExtensionWebContentsObserver::DidFinishNavigation(
   if (!navigation_handle->HasCommitted()) {
     return;
   }
+
+  MaybeCreateMojoJsBroker(navigation_handle);
 
   ProcessManager* pm = ProcessManager::Get(browser_context_);
 
@@ -358,19 +465,11 @@ const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
     return nullptr;
   }
 
-  if (verify_url) {
-    const url::Origin& origin(render_frame_host->GetLastCommittedOrigin());
-    // This check is needed to eliminate origins that are not within a
-    // hosted-app's web extent, and sandboxed extension frames with an opaque
-    // origin.
-    // TODO(crbug.com/40725839) See if extension check is still needed after bug
-    // is fixed.
-    auto* extension_for_origin = ExtensionRegistry::Get(browser_context)
-                                     ->enabled_extensions()
-                                     .GetExtensionOrAppByURL(origin.GetURL());
-    if (origin.opaque() || extension_for_origin != extension) {
-      return nullptr;
-    }
+  if (verify_url &&
+      !IsOriginOfExtension(browser_context,
+                           render_frame_host->GetLastCommittedOrigin(),
+                           *extension)) {
+    return nullptr;
   }
 
   return extension;
@@ -440,12 +539,79 @@ void ExtensionWebContentsObserver::OnWindowIdChanged(SessionID id) {
       });
 }
 
-bool ExtensionWebContentsObserver::IsMojoJsEnabled(
-    const Extension& extension) const {
-  const auto* registry =
-      ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
-          browser_context_);
-  return registry && registry->IsMojoJsEnabledForFrame(extension);
+void ExtensionWebContentsObserver::MaybeEnableMojoJsBindings(
+    content::NavigationHandle* navigation_handle) {
+  // An activated page keeps the broker of its existing document, and so does a
+  // document that navigates within itself.
+  if (navigation_handle->IsPageActivation() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+  content::RenderFrameHost* render_frame_host =
+      navigation_handle->GetRenderFrameHost();
+  const Extension* extension =
+      GetExtensionFromFrame(render_frame_host, /*verify_url=*/false);
+  if (!extension) {
+    return;
+  }
+  auto* registry = ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+      browser_context_);
+  if (!registry || !registry->IsMojoJsEnabledForFrame(*extension)) {
+    return;
+  }
+  // The document has not committed yet, so check the origin that it will
+  // commit, as GetExtensionFromFrame() does with the last committed origin.
+  // MojoJS and its broker are only set up for a document that passes this
+  // check, so it is not repeated once the document commits.
+  std::optional<url::Origin> origin_to_commit =
+      navigation_handle->GetOriginToCommit();
+  if (!origin_to_commit ||
+      !IsOriginOfExtension(browser_context_, *origin_to_commit, *extension)) {
+    return;
+  }
+  // Use a dedicated broker rather than RenderFrameHost::EnableMojoJsBindings(),
+  // which would expose the frame's entire BrowserInterfaceBroker (and the
+  // process-scoped interfaces) to Mojo.bindInterface(). The broker is created
+  // once the document commits; until then, requests queue in the pipe.
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver;
+  render_frame_host->EnableMojoJsBindingsWithBroker(
+      receiver.InitWithNewPipeAndPassRemote());
+  PendingMojoJsBroker::CreateForNavigationHandle(
+      *navigation_handle, extension->id(), std::move(receiver));
+}
+
+void ExtensionWebContentsObserver::MaybeCreateMojoJsBroker(
+    content::NavigationHandle* navigation_handle) {
+  auto* pending =
+      PendingMojoJsBroker::GetForNavigationHandle(*navigation_handle);
+  if (!pending) {
+    return;
+  }
+  // MaybeEnableMojoJsBindings() already decided, from the origin to commit,
+  // that this document may use MojoJS, and the browser makes sure that the
+  // document commits that origin. So the origin is not checked again here.
+  // However, the extension may have been unloaded, or may no longer be allowed
+  // to use MojoJS, between ReadyToCommitNavigation and now, so check that
+  // before populating its binders. If it fails, no broker is created and the
+  // document's MojoJS requests go nowhere, as the renderer already has MojoJS
+  // enabled with a broker pipe that is never bound.
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(pending->extension_id());
+  auto* registry = ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+      browser_context_);
+  if (!extension || !registry ||
+      !registry->IsMojoJsEnabledForFrame(*extension)) {
+    return;
+  }
+  content::RenderFrameHost* render_frame_host =
+      navigation_handle->GetRenderFrameHost();
+  // Populate the binders now that the document has committed, so that
+  // providers see the new document rather than the previous one.
+  mojo::BinderMapWithContext<content::RenderFrameHost*> binder_map;
+  registry->PopulateFrameBinders(&binder_map, render_frame_host, *extension);
+  ExtensionFrameInterfaceBroker::CreateForCurrentDocument(
+      render_frame_host, std::move(binder_map), pending->TakeReceiver());
 }
 
 bool ExtensionWebContentsObserver::IsJsErrorReportingEnabled(

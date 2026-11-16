@@ -84,7 +84,7 @@ class ExtensionWebContentsObserver : public content::WebContentsObserver {
   // Returns the extension associated with the given `render_frame_host`, or
   // null if there is none.
   // If `verify_url` is false, only the SiteInstance is taken into account.
-  // If `verify_url` is true, the frame's last committed URL is also used to
+  // If `verify_url` is true, the frame's last committed origin is also used to
   // improve the classification of the frame.
   const Extension* GetExtensionFromFrame(
       content::RenderFrameHost* render_frame_host,
@@ -160,10 +160,6 @@ class ExtensionWebContentsObserver : public content::WebContentsObserver {
   virtual void SetUpRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
-  // Returns true if `extension` is allowed to use Mojo JS bindings.
-  // Default queries ExtensionMojoBinderRegistry.
-  virtual bool IsMojoJsEnabled(const Extension& extension) const;
-
   // Returns true if JS error reporting (e.g. stack trace collection) should be
   // enabled for the given `extension`. Default queries ExtensionConfigMap.
   virtual bool IsJsErrorReportingEnabled(const Extension& extension) const;
@@ -184,6 +180,17 @@ class ExtensionWebContentsObserver : public content::WebContentsObserver {
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
 
   void OnWindowIdChanged(SessionID id);
+
+  // Enables MojoJS for the document that `navigation_handle` is about to
+  // commit, if the origin it will commit belongs to an extension that is
+  // allowed to use it.
+  void MaybeEnableMojoJsBindings(content::NavigationHandle* navigation_handle);
+
+  // Creates the broker for the document that `navigation_handle` committed, if
+  // MaybeEnableMojoJsBindings() enabled MojoJS for it and its extension is
+  // still loaded and allowed to use MojoJS. Must only be called for committed
+  // navigations.
+  void MaybeCreateMojoJsBroker(content::NavigationHandle* navigation_handle);
 
   // The BrowserContext associated with the WebContents being observed.
   raw_ptr<content::BrowserContext> browser_context_;

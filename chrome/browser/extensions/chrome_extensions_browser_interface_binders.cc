@@ -308,11 +308,6 @@ void PopulateChromeFrameBindersForExtension(
   binder_map->Add<mime_handler::MimeHandlerService>(&BindMimeHandlerService);
   binder_map->Add<mime_handler::BeforeUnloadControl>(&BindBeforeUnloadControl);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  if (auto* registry = ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
-          render_frame_host->GetBrowserContext())) {
-    registry->PopulateFrameBinders(binder_map, render_frame_host, *extension);
-  }
 }
 
 void PopulateChromeServiceWorkerBindersForExtension(

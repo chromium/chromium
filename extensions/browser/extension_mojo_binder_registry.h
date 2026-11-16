@@ -43,8 +43,9 @@ class ExtensionMojoBinderProvider {
   // service worker contexts. Defaults to false.
   virtual bool IsMojoJsEnabledForServiceWorker() const;
 
-  // Registers Mojo interface binders for document frames belonging to this
-  // extension.
+  // Registers the Mojo interface binders that the extension's documents can
+  // reach through MojoJS. Only called for documents of an extension whose
+  // provider returns true from `IsMojoJsEnabledForFrame()`.
   virtual void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,
