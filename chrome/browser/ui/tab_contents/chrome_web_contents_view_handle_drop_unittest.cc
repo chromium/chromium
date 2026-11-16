@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging/logging_settings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
@@ -326,6 +328,14 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
   }
 
   void TearDown() override {
+    web_contents_.reset();
+    enterprise_connectors::ContentAnalysisDelegate::
+        SetOnAckAllRequestsCallbackForTesting(base::NullCallback());
+    enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+    enterprise_connectors::ContentAnalysisDelegate::EnableUIAfterTesting();
+    enterprise_connectors::FilesRequestHandler::ResetFactoryForTesting();
+    enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
 #if BUILDFLAG(IS_CHROMEOS)
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
         "fake_mount");
