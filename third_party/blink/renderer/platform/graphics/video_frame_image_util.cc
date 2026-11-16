@@ -220,9 +220,8 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
   CHECK(context_provider_wrapper_);
   raster_context_provider_ = base::WrapRefCounted(
       context_provider_wrapper_->ContextProvider().RasterContextProvider());
-  if (raster_context_provider_) {
-    raster_context_provider_->AddObserver(this);
-  }
+  CHECK(raster_context_provider_);
+  raster_context_provider_->AddObserver(this);
 
   if (auto* sii = context_provider_wrapper_->ContextProvider()
                       .SharedImageInterface()) {
@@ -257,9 +256,7 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
-  }
+  raster_context_provider_->RemoveObserver(this);
 }
 
 void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
