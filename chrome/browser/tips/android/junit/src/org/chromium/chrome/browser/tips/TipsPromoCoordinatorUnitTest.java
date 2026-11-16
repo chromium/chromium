@@ -573,7 +573,8 @@ public class TipsPromoCoordinatorUnitTest {
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
         verify(mBottomSheetController).hideContent(any(), eq(true));
-        verify(mTabCreator).createNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        verify(mTabCreator)
+                .createNewTab(any(), eq(TabLaunchType.FROM_TIPS_NOTIFICATIONS), eq(null));
 
         histogramWatcher.assertExpected();
     }

@@ -3054,7 +3054,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     createBottomSheetSigninCoordinator(
                                             new BottomSheetSigninAndHistorySyncCoordinator
                                                     .Delegate() {},
-                                            SigninAccessPoint.SET_UP_LIST),
+                                            SigninAccessPoint.TIPS_NOTIFICATION),
                                     getTabCreator(/* incognito= */ false),
                                     windowAndroid,
                                     getCurrentTabModel().isIncognito(),

@@ -144,7 +144,7 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
                         new LoadUrlParams(
                                 UrlConstants.RECENT_TABS_URL, PageTransition.AUTO_BOOKMARK);
                 mRegularTabCreator.createNewTab(
-                        params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
+                        params, TabLaunchType.FROM_TIPS_NOTIFICATIONS, /* parent= */ null);
                 break;
             default:
                 assert false : "Invalid feature type: " + mFeatureType;
