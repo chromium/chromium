@@ -17,6 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -1872,7 +1873,21 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-TEST_P(SyncFlagValidationTest, NonSync) {
+// TODO(crbug.com/585643729): Flaky on Android, where a Rust bindings test that
+// ran earlier in the same process leaves a panicking default process error
+// handler installed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NonSync DISABLED_NonSync
+#define MAYBE_OneSync DISABLED_OneSync
+#define MAYBE_NoSyncAssociatedWithNoSync DISABLED_NoSyncAssociatedWithNoSync
+#define MAYBE_OneSyncAssociatedWithNoSync DISABLED_OneSyncAssociatedWithNoSync
+#else
+#define MAYBE_NonSync NonSync
+#define MAYBE_OneSync OneSync
+#define MAYBE_NoSyncAssociatedWithNoSync NoSyncAssociatedWithNoSync
+#define MAYBE_OneSyncAssociatedWithNoSync OneSyncAssociatedWithNoSync
+#endif
+TEST_P(SyncFlagValidationTest, MAYBE_NonSync) {
   Remote<mojom::NoSync> remote;
   NoSyncImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -1884,7 +1899,7 @@ TEST_P(SyncFlagValidationTest, NonSync) {
       std::move(responder));
 }
 
-TEST_P(SyncFlagValidationTest, OneSync) {
+TEST_P(SyncFlagValidationTest, MAYBE_OneSync) {
   Remote<mojom::OneSync> remote;
   OneSyncImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -1896,7 +1911,7 @@ TEST_P(SyncFlagValidationTest, OneSync) {
       std::move(responder));
 }
 
-TEST_P(SyncFlagValidationTest, NoSyncAssociatedWithNoSync) {
+TEST_P(SyncFlagValidationTest, MAYBE_NoSyncAssociatedWithNoSync) {
   Remote<mojom::NoSync> remote;
   NoSyncImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -1913,7 +1928,7 @@ TEST_P(SyncFlagValidationTest, NoSyncAssociatedWithNoSync) {
       std::move(responder));
 }
 
-TEST_P(SyncFlagValidationTest, OneSyncAssociatedWithNoSync) {
+TEST_P(SyncFlagValidationTest, MAYBE_OneSyncAssociatedWithNoSync) {
   Remote<mojom::NoSync> remote;
   NoSyncImpl impl(remote.BindNewPipeAndPassReceiver());
 
