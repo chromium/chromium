@@ -94,6 +94,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -6729,6 +6730,126 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
 
   // Make sure we did activate the page and issued no network requests
   EXPECT_EQ(GetRequestCount(prerendering_url), 1);
+}
+
+// Regression test for https://crbug.com/537548152. When a main-frame
+// cross-document navigation N1 in a prerendered page is pending commit (moved
+// out of FrameTreeNode::navigation_request_ into the speculative RFH) and a
+// second cross-document navigation N2 (e.g. location.replace from page or
+// extension content script) starts before N1's commit IPC is processed,
+// PrerenderHost must cancel prerendering rather than hitting
+// CHECK(!is_ready_for_activation_) in DidFinishNavigation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       OverlappingMainFrameNavigationsCancelPrerender) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  const GURL nav1_url = GetUrl("/empty.html?nav1");
+  const GURL nav2_url = GetUrl("/empty.html?nav2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  ASSERT_TRUE(host_id);
+  RenderFrameHostImpl* initial_prerender_rfh =
+      GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(initial_prerender_rfh);
+
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  TestNavigationManager nav2_manager(web_contents(), nav2_url);
+
+  // Pause N1 right when its DidCommitProvisionalLoad IPC arrives at the
+  // browser (while N1 is pending commit in speculative_render_frame_host_ and
+  // frame_tree_node->navigation_request() is nullptr), and start a second
+  // cross-document main-frame navigation N2 before N1 finishes.
+  CommitMessageDelayer nav1_commit_delayer(
+      web_contents(), nav1_url,
+      base::BindLambdaForTesting([&](RenderFrameHost* committing_rfh) {
+        if (ShouldCreateNewHostForAllFrames()) {
+          EXPECT_NE(committing_rfh, initial_prerender_rfh);
+        }
+        PrerenderHost* prerender_host = web_contents_impl()
+                                            ->GetPrerenderHostRegistry()
+                                            ->FindNonReservedHostById(host_id);
+        ASSERT_TRUE(prerender_host);
+        prerender_host->GetNavigationController().LoadURL(
+            nav2_url, Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+      }));
+
+  NavigatePrerenderedPage(host_id, nav1_url);
+  nav1_commit_delayer.Wait();
+
+  ASSERT_TRUE(nav2_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav2_manager.was_committed());
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(host_observer.was_activated());
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
+}
+
+// Verifies that if overlapping main-frame navigations cancel a prerender while
+// a primary-page activation is deferred on PrerenderCommitDeferringCondition,
+// the activation cleanly falls back to a regular navigation.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    OverlappingMainFrameNavigationsDuringDeferredActivation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  const GURL nav1_url = GetUrl("/empty.html?nav1");
+  const GURL nav2_url = GetUrl("/empty.html?nav2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  ASSERT_TRUE(host_id);
+  RenderFrameHostImpl* initial_prerender_rfh =
+      GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(initial_prerender_rfh);
+
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+
+  // Start an activation navigation and pause it before CommitDeferringCondition
+  // checks complete.
+  TestActivationManager activation_observer(shell()->web_contents(),
+                                            prerendering_url);
+  ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     JsReplace("location = $1", prerendering_url)));
+  ASSERT_TRUE(activation_observer.WaitForBeforeChecks());
+
+  TestNavigationManager nav2_manager(web_contents(), nav2_url);
+  CommitMessageDelayer nav1_commit_delayer(
+      web_contents(), nav1_url,
+      base::BindLambdaForTesting([&](RenderFrameHost* committing_rfh) {
+        if (ShouldCreateNewHostForAllFrames()) {
+          EXPECT_NE(committing_rfh, initial_prerender_rfh);
+        }
+        PrerenderHost* prerender_host = web_contents_impl()
+                                            ->GetPrerenderHostRegistry()
+                                            ->FindNonReservedHostById(host_id);
+        ASSERT_TRUE(prerender_host);
+        prerender_host->GetNavigationController().LoadURL(
+            nav2_url, Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+      }));
+
+  // Start N1 in the prerendered page and wait for its response so
+  // PrerenderCommitDeferringCondition is guaranteed to defer on the ongoing
+  // navigation when activation resumes.
+  TestNavigationManager nav1_manager(web_contents(), nav1_url);
+  NavigatePrerenderedPage(host_id, nav1_url);
+  ASSERT_TRUE(nav1_manager.WaitForResponse());
+  activation_observer.ResumeActivation();
+  nav1_manager.ResumeNavigation();
+  nav1_commit_delayer.Wait();
+
+  ASSERT_TRUE(nav2_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav2_manager.was_committed());
+  host_observer.WaitForDestroyed();
+  activation_observer.WaitForNavigationFinished();
+
+  EXPECT_FALSE(activation_observer.was_activated());
+  EXPECT_TRUE(activation_observer.was_successful());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
 }
 
 // Regression test for https://crbug.com/553918186. Activating a prerendered

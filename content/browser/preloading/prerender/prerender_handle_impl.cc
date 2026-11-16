@@ -127,6 +127,7 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
       return false;
 
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
+    case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
       return true;
 
     // Prerendering is intentionally canceled by the Delete Browsing Data

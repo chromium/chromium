@@ -590,6 +590,9 @@ PrerenderHost::~PrerenderHost() {
 bool PrerenderHost::StartPrerendering() {
   TRACE_EVENT("navigation", "PrerenderHost::StartPrerendering");
 
+  CHECK(!has_started_prerendering_);
+  has_started_prerendering_ = true;
+
   // Since prerender started we mark it as eligible and set it to running.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
 
@@ -645,7 +648,7 @@ bool PrerenderHost::StartPrerendering() {
   // can fail during navigation start, for example, due to prerendering a
   // non-supported URL scheme that is filtered out in
   // PrerenderNavigationThrottle.
-  if (final_status_.has_value()) {
+  if (IsFailed()) {
     return false;
   }
 
@@ -656,6 +659,9 @@ bool PrerenderHost::StartPrerendering() {
   // PrerenderNavigationThrottle during `LoadURLWithParams` above.
   if (initial_navigation_id_.has_value()) {
     CHECK_EQ(*initial_navigation_id_,
+             created_navigation_handle->GetNavigationId());
+    CHECK(expected_main_frame_navigation_id_.has_value());
+    CHECK_EQ(*expected_main_frame_navigation_id_,
              created_navigation_handle->GetNavigationId());
     CHECK(begin_params_);
     CHECK(common_params_);
@@ -669,6 +675,9 @@ bool PrerenderHost::StartPrerendering() {
     // afterwards.
     CHECK(!begin_params_);
     CHECK(!common_params_);
+    CHECK(!expected_main_frame_navigation_id_.has_value());
+    expected_main_frame_navigation_id_ =
+        created_navigation_handle->GetNavigationId();
   } else {
     // Prerender navigation failed before reaching the throttle for some reason.
     // For example, `ContentBrowserClient::ShouldOverrideUrlLoading()` may block
@@ -683,6 +692,11 @@ bool PrerenderHost::StartPrerendering() {
 
 void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
+  if (prerender_host_id_ != navigation_request->GetPrerenderHostId() ||
+      IsFailed()) {
+    return;
+  }
+
   if (!navigation_request->IsInPrerenderedMainFrame()) {
     UpdateDevtoolsAttemptForSubFrame(navigation_request->GetFrameTreeNodeId(),
                                      navigation_handle->GetURL(),
@@ -690,16 +704,36 @@ void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  // Do nothing for the initial navigation.
-  if (IsInitialNavigation(*navigation_request)) {
+  is_ready_for_activation_ = false;
+
+  // When `kPrerender2ReuseHost` transfers a live FrameTree from a reusable
+  // host (e.g., DSE prewarm) into a new speculation-rule PrerenderHost that is
+  // queued in `pending_prerenders_`, the previous document can initiate a
+  // main-frame navigation before `StartPrerendering()` is invoked. Cancel the
+  // host so the prior document cannot hijack `initial_navigation_id_` or mark
+  // the host ready for activation.
+  if (!has_started_prerendering_) {
+    Cancel(PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
     return;
   }
 
-  // Reset `is_ready_for_activation_` since it can be set to true more than once
-  // and CHECK will fail when the main frame navigation happens in a
-  // prerendered page and PrerenderHost::DidFinishNavigation is called multiple
-  // times.
-  is_ready_for_activation_ = false;
+  const int64_t navigation_id = navigation_request->GetNavigationId();
+  if (!expected_main_frame_navigation_id_.has_value()) {
+    expected_main_frame_navigation_id_ = navigation_id;
+    return;
+  }
+
+  if (*expected_main_frame_navigation_id_ == navigation_id) {
+    // The initial navigation on a reused host already recorded its ID while
+    // waiting in WAITING_FOR_RENDERER_RESPONSE for BeforeUnload.
+    return;
+  }
+
+  // Another cross-document main-frame navigation started before the expected
+  // navigation finished (e.g., queued behind a pending commit). Cancel
+  // prerendering rather than tracking overlapping main-frame navigations.
+  expected_main_frame_navigation_id_.reset();
+  Cancel(PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
 }
 
 void PrerenderHost::ReadyToCommitNavigation(
@@ -776,7 +810,8 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // PrerenderHostRegistry finds the PrerenderHost by the FrameTreeNodeId, this
   // will cause the DidFinishNavigation callback of the previous PrerenderHost
   // to be sent to the new PrerenderHost.
-  if (prerender_host_id_ != navigation_request->GetPrerenderHostId()) {
+  if (prerender_host_id_ != navigation_request->GetPrerenderHostId() ||
+      IsFailed()) {
     return;
   }
 
@@ -793,6 +828,12 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   const bool is_prerender_main_frame =
       navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;
+  const bool is_expected_main_frame_navigation =
+      is_prerender_main_frame && expected_main_frame_navigation_id_ ==
+                                     navigation_request->GetNavigationId();
+  if (is_expected_main_frame_navigation) {
+    expected_main_frame_navigation_id_.reset();
+  }
 
   // Cancel prerendering on navigation request failure.
   //
@@ -810,6 +851,15 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     status = PrerenderFinalStatus::kNavigationRequestNetworkError;
   } else if (is_prerender_main_frame && !navigation_request->HasCommitted()) {
     status = PrerenderFinalStatus::kNavigationNotCommitted;
+  } else if (is_prerender_main_frame &&
+             (!is_expected_main_frame_navigation ||
+              GetFrameTree()->root()->HasPendingCrossDocumentNavigation())) {
+    // Defense-in-depth: cancel prerendering instead of marking the host ready
+    // for activation (which would either leave `is_ready_for_activation_` true
+    // while another cross-document navigation is still pending commit, or hit
+    // `CHECK(!is_ready_for_activation_)` if an untracked/duplicate
+    // `DidFinishNavigation` callback arrives).
+    status = PrerenderFinalStatus::kUnexpectedMainFrameNavigation;
   }
   if (status.has_value()) {
     Cancel(*status);
@@ -819,18 +869,17 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // The prerendered contents are considered ready for activation when the
   // main frame navigation reaches DidFinishNavigation and the prerender host
   // has not been canceled yet.
-  if (!final_status_) {
-    if (is_prerender_main_frame) {
-      CHECK(!is_ready_for_activation_);
-      is_ready_for_activation_ = true;
+  CHECK(!IsFailed());
+  if (is_prerender_main_frame) {
+    CHECK(!is_ready_for_activation_);
+    is_ready_for_activation_ = true;
 
-      // Prerender is ready to activate. Set the status to kReady.
-      SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
-    } else if (navigation_request->HasCommitted()) {
-      UpdateDevtoolsAttemptForSubFrame(navigation_request->GetFrameTreeNodeId(),
-                                       navigation_handle->GetURL(),
-                                       PreloadingTriggeringOutcome::kReady);
-    }
+    // Prerender is ready to activate. Set the status to kReady.
+    SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+  } else if (navigation_request->HasCommitted()) {
+    UpdateDevtoolsAttemptForSubFrame(navigation_request->GetFrameTreeNodeId(),
+                                     navigation_handle->GetURL(),
+                                     PreloadingTriggeringOutcome::kReady);
   }
 }
 
@@ -1671,6 +1720,7 @@ void PrerenderHost::SetFailureReason(const PrerenderCancellationReason& reason,
     case PrerenderFinalStatus::kBrowsingDataRemoved:
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
     case PrerenderFinalStatus::kCrossDocumentRestart:
+    case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

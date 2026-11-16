@@ -183,8 +183,10 @@ enum class PrerenderFinalStatus {
   kFormSubmitWhenPrerendering = 89,
   kCrossDocumentRestart = 90,
   kPrefetchFailedCrossOriginSubframe = 91,
+  // Cancelled when an overlapping or unexpected main-frame navigation occurs.
+  kUnexpectedMainFrameNavigation = 92,
 
-  kMaxValue = kPrefetchFailedCrossOriginSubframe,
+  kMaxValue = kUnexpectedMainFrameNavigation,
 };
 // LINT.ThenChange(
 //     //third_party/blink/public/devtools_protocol/domains/Preload.pdl,

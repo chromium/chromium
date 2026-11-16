@@ -333,6 +333,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kPrerenderHostReused:
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
     case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
+    case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
       NOTREACHED();
   }
 

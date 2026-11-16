@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -211,14 +212,16 @@ class CONTENT_EXPORT PrerenderHost {
   // Returns false if prerendering hasn't been started.
   bool StartPrerendering();
 
-  // Called from PrerenderHostRegistry::DidStartNavigation(). It may reset
-  // `is_ready_for_activation_` flag when the main frame navigation happens in
-  // a prerendered page.
+  // Called from PrerenderHostRegistry::DidStartNavigation(). Tracks the
+  // expected cross-document main-frame navigation and resets
+  // `is_ready_for_activation_`, or cancels prerendering if main-frame
+  // navigations overlap.
   void DidStartNavigation(NavigationHandle* navigation_handle);
 
   // Called from PrerenderHostRegistry::DidFinishNavigation(). If the navigation
-  // request is for the main frame and doesn't have an error, then the host will
-  // be ready for activation.
+  // request matches the expected main-frame navigation and commits without
+  // error, then the host will be ready for activation; otherwise unexpected
+  // main-frame navigations cancel prerendering.
   void DidFinishNavigation(NavigationHandle* navigation_handle);
 
   // Called from PrerenderHostRegistry::ReadyToCommitNavigation().
@@ -360,6 +363,13 @@ class CONTENT_EXPORT PrerenderHost {
   int initiator_ukm_id() const { return attributes_.initiator_ukm_id; }
 
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
+
+  // Returns true if prerendering has failed or been cancelled and is awaiting
+  // asynchronous destruction.
+  bool IsFailed() const {
+    return final_status_.has_value() &&
+           *final_status_ != PrerenderFinalStatus::kActivated;
+  }
 
   PreloadingTriggerType trigger_type() const {
     return attributes_.trigger_type;
@@ -631,6 +641,17 @@ class CONTENT_EXPORT PrerenderHost {
 
   // Holds the navigation ID for the main frame initial navigation.
   std::optional<int64_t> initial_navigation_id_;
+
+  // Holds the navigation ID for the currently expected in-flight
+  // cross-document main-frame navigation, or std::nullopt when no
+  // cross-document main-frame navigation is in progress.
+  std::optional<int64_t> expected_main_frame_navigation_id_;
+
+  // True once `StartPrerendering()` has been invoked on this host. Any
+  // main-frame navigation starting before `StartPrerendering()` (e.g., from the
+  // prior document on a reused host while queued in `pending_prerenders_`) is
+  // unexpected and cancels the host.
+  bool has_started_prerendering_ = false;
 
   // WebContents where this prerenderer is embedded. Keeping a reference is safe
   // as WebContentsImpl owns PrerenderHostRegistry, which in turn owns

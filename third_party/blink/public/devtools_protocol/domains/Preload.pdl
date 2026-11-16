@@ -193,6 +193,7 @@ experimental domain Preload
       FormSubmitWhenPrerendering
       CrossDocumentRestart
       PrefetchFailedCrossOriginSubframe
+      UnexpectedMainFrameNavigation
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

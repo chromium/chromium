@@ -98,14 +98,17 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
               .GetWeakPtr()) {
   CHECK(prerender_host_);
 
+  // If the host has already failed/cancelled (e.g., due to an overlapping
+  // main-frame navigation in DidStartNavigation), do not update its initial
+  // navigation state; Will*Request() will cancel the navigation.
+  if (prerender_host_->IsFailed()) {
+    return;
+  }
+
   // This throttle is responsible for setting the initial navigation id on the
   // PrerenderHost, since the PrerenderHost obtains the NavigationRequest,
   // which has the ID, only after the navigation throttles run.
-  if (prerender_host_->GetInitialNavigationId().has_value()) {
-    // If the host already has an initial navigation id, this throttle
-    // will later cancel the navigation in Will*Request(). Just do nothing
-    // until then.
-  } else {
+  if (!prerender_host_->GetInitialNavigationId().has_value()) {
     prerender_host_->SetInitialNavigation(
         NavigationRequest::From(&registry.GetNavigationHandle()));
   }
@@ -113,7 +116,7 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
-  if (!prerender_host_) {
+  if (!prerender_host_ || prerender_host_->IsFailed()) {
     return CANCEL;
   }
 
@@ -249,7 +252,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillProcessResponse() {
-  if (!prerender_host_) {
+  if (!prerender_host_ || prerender_host_->IsFailed()) {
     return CANCEL;
   }
 

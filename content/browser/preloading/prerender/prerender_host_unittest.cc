@@ -5,21 +5,24 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
@@ -582,6 +585,169 @@ TEST_F(PrerenderHostTest, StartPrerenderingPopulatesUpfrontNavigationUIData) {
   EXPECT_TRUE(callback_invoked);
   EXPECT_EQ(kPrecursorData, observed_precursor_data);
   EXPECT_EQ(expected_navigation_id, observed_populated_navigation_id);
+}
+
+// Regression test for https://crbug.com/537548152: overlapping cross-document
+// main-frame navigations in a prerendered page cancel the prerender with
+// kUnexpectedMainFrameNavigation rather than crashing on
+// CHECK(!is_ready_for_activation_).
+TEST_F(PrerenderHostTest, OverlappingMainFrameNavigationCancelsPrerender) {
+  const GURL kPrerenderingUrl("https://example.com/next");
+  const GURL kNav1Url("https://example.com/nav1");
+  const GURL kNav2Url("https://example.com/nav2");
+
+  RenderFrameHostImpl* prerender_rfh =
+      contents()->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  ASSERT_NE(prerender_rfh, nullptr);
+  PrerenderHost* prerender_host =
+      registry().FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_NE(prerender_host, nullptr);
+  EXPECT_TRUE(prerender_host->is_ready_for_activation());
+
+  test::PrerenderHostObserver prerender_host_observer(*contents(),
+                                                      kPrerenderingUrl);
+
+  // Start a first post-commit navigation N1 and advance it to ReadyToCommit
+  // (moving N1 out of FrameTreeNode::navigation_request_ into the pending
+  // commit RFH).
+  auto nav1 =
+      NavigationSimulatorImpl::CreateRendererInitiated(kNav1Url, prerender_rfh);
+  nav1->ReadyToCommit();
+  EXPECT_FALSE(prerender_host->is_ready_for_activation());
+
+  // Start a second cross-document main-frame navigation N2 before N1 commits.
+  // This should immediately cancel the prerender and abort N2 in
+  // PrerenderNavigationThrottle.
+  auto nav2 =
+      NavigationSimulatorImpl::CreateRendererInitiated(kNav2Url, prerender_rfh);
+  nav2->Start();
+  EXPECT_EQ(NavigationThrottle::CANCEL, nav2->GetLastThrottleCheckResult());
+
+  prerender_host_observer.WaitForDestroyed();
+  EXPECT_FALSE(prerender_host_observer.was_activated());
+  EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  ExpectFinalStatus(PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
+}
+
+// Verifies that if a reusable PrerenderHost's FrameTree is transferred into a
+// new PrerenderHost that sits in `pending_prerenders_` before
+// StartPrerendering() runs, a main-frame navigation from the prior document
+// immediately cancels the queued host rather than hijacking
+// `initial_navigation_id_` or `is_ready_for_activation_`.
+TEST_F(PrerenderHostTest,
+       NavigationBeforeStartPrerenderingOnQueuedReusedHostCancelsPrerender) {
+  base::test::ScopedFeatureList feature_list(features::kPrerender2ReuseHost);
+
+  const GURL kFirstSpecRuleUrl("https://example.com/first");
+  const GURL kReusablePrewarmUrl("https://example.com/prewarm");
+  const GURL kQueuedSpecRuleUrl("https://example.com/second");
+  const GURL kRogueUrl("https://example.com/rogue");
+
+  // Start a first speculation-rule prerender and leave it running so
+  // subsequent speculation-rule prerenders are queued in `pending_prerenders_`.
+  const PrerenderHostId first_host_id = registry().CreateAndStartHost(
+      GeneratePrerenderAttributes(kFirstSpecRuleUrl));
+  ASSERT_TRUE(first_host_id);
+
+  // Create and commit a reusable embedder prewarm host on the same site.
+  PrerenderAttributes prewarm_attributes(
+      kReusablePrewarmUrl, PreloadingTriggerType::kEmbedder, "PrewarmSuffix",
+      /*speculation_rules_params=*/std::nullopt, Referrer(),
+      /*no_vary_search_hint=*/std::nullopt,
+      /*initiator_render_frame_host=*/nullptr, contents()->GetWeakPtr(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
+      blink::mojom::SpeculationAction::kPrerender,
+      /*url_match_predicate=*/{},
+      /*prerender_navigation_handle_callback=*/{},
+      PreloadPipelineInfoImpl::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+      /*allow_reuse=*/true,
+      /*form_submission=*/false);
+  const PrerenderHostId prewarm_host_id =
+      registry().CreateAndStartHost(prewarm_attributes);
+  ASSERT_TRUE(prewarm_host_id);
+  PrerenderHost* prewarm_host =
+      registry().FindNonReservedHostById(prewarm_host_id);
+  ASSERT_NE(prewarm_host, nullptr);
+  CommitPrerenderNavigation(*prewarm_host);
+  RenderFrameHostImpl* reused_rfh = prewarm_host->GetPrerenderedMainFrameHost();
+  ASSERT_NE(reused_rfh, nullptr);
+
+  // Queue a second speculation-rule prerender, which reuses `prewarm_host`'s
+  // FrameTree while remaining in `pending_prerenders_` (StartPrerendering() not
+  // yet called).
+  const PrerenderHostId queued_host_id = registry().CreateAndStartHost(
+      GeneratePrerenderAttributes(kQueuedSpecRuleUrl));
+  ASSERT_TRUE(queued_host_id);
+  PrerenderHost* queued_host =
+      registry().FindHostByUrlForTesting(kQueuedSpecRuleUrl);
+  ASSERT_NE(queued_host, nullptr);
+  EXPECT_EQ(queued_host->GetInitialNavigationId(), std::nullopt);
+  test::PrerenderHostObserver queued_host_observer(*contents(),
+                                                   kQueuedSpecRuleUrl);
+
+  // A main-frame navigation initiated by the prior document before
+  // StartPrerendering() must cancel `queued_host` immediately.
+  auto rogue_nav =
+      NavigationSimulatorImpl::CreateRendererInitiated(kRogueUrl, reused_rfh);
+  rogue_nav->Start();
+  EXPECT_EQ(NavigationThrottle::CANCEL,
+            rogue_nav->GetLastThrottleCheckResult());
+
+  queued_host_observer.WaitForDestroyed();
+  EXPECT_FALSE(queued_host_observer.was_activated());
+  EXPECT_EQ(registry().FindHostByUrlForTesting(kQueuedSpecRuleUrl), nullptr);
+  ExpectFinalStatus(PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
+
+  registry().CancelHost(first_host_id, PrerenderFinalStatus::kTriggerDestroyed);
+}
+
+// Verifies the defense-in-depth check in PrerenderHost::DidFinishNavigation: if
+// DidFinishNavigation receives a committed main-frame navigation that does not
+// match `expected_main_frame_navigation_id_` (when `is_ready_for_activation_`
+// is already true), it cancels the prerender with
+// kUnexpectedMainFrameNavigation rather than hitting
+// CHECK(!is_ready_for_activation_).
+TEST_F(PrerenderHostTest, UnexpectedDidFinishNavigationCancelsPrerender) {
+  const GURL kPrerenderingUrl("https://example.com/next");
+  const GURL kNavUrl("https://example.com/nav1");
+
+  RenderFrameHostImpl* prerender_rfh =
+      contents()->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  ASSERT_NE(prerender_rfh, nullptr);
+  PrerenderHost* prerender_host =
+      registry().FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_NE(prerender_host, nullptr);
+  EXPECT_TRUE(prerender_host->is_ready_for_activation());
+
+  test::PrerenderHostObserver prerender_host_observer(*contents(),
+                                                      kPrerenderingUrl);
+
+  // `observer` is registered after `PrerenderHostRegistry`, so its
+  // DidFinishNavigation runs right after the expected DidFinishNavigation has
+  // already cleared `expected_main_frame_navigation_id_` and set
+  // `is_ready_for_activation_ = true`. Delivering an unexpected extra
+  // DidFinishNavigation at that point exercises the fallback guard.
+  testing::NiceMock<MockWebContentsObserver> observer(contents());
+  EXPECT_CALL(observer, DidFinishNavigation(_))
+      .WillOnce([&](NavigationHandle* handle) {
+        ASSERT_EQ(handle->GetURL(), kNavUrl);
+        EXPECT_TRUE(prerender_host->is_ready_for_activation());
+        prerender_host->DidFinishNavigation(handle);
+      });
+
+  auto nav =
+      NavigationSimulatorImpl::CreateRendererInitiated(kNavUrl, prerender_rfh);
+  nav->SetHasUserGesture(false);
+  nav->set_should_replace_current_entry(true);
+  nav->Commit();
+
+  prerender_host_observer.WaitForDestroyed();
+  EXPECT_FALSE(prerender_host_observer.was_activated());
+  EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  ExpectFinalStatus(PrerenderFinalStatus::kUnexpectedMainFrameNavigation);
 }
 
 TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {

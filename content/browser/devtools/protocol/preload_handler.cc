@@ -200,6 +200,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
       return Preload::PrerenderFinalStatusEnum::
           PrefetchFailedCrossOriginSubframe;
+    case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
+      return Preload::PrerenderFinalStatusEnum::UnexpectedMainFrameNavigation;
   }
 }
 
