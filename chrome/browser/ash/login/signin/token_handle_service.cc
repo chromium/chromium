@@ -72,6 +72,11 @@ void TokenHandleService::MaybeFetchForNewUser(
 
 void TokenHandleService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
+  if (!refresh_tokens_loaded_) {
+    // Initial token load from disk at session start; ignore.
+    return;
+  }
+
   const AccountId& account_id =
       ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
 
@@ -80,6 +85,10 @@ void TokenHandleService::OnRefreshTokenUpdatedForAccount(
   }
   token_handle_store_->SetTokenHandleStale(account_id);
   MaybeFetchForExistingUser(account_id);
+}
+
+void TokenHandleService::OnRefreshTokensLoaded() {
+  refresh_tokens_loaded_ = true;
 }
 
 void TokenHandleService::FetchAccessToken(const AccountId& account_id) {

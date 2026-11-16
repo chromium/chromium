@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -43,9 +44,14 @@ class TokenHandleService : public KeyedService,
                             const std::string& refresh_token_hash);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      TokenHandleServiceTest,
+      RefreshTokenUpdateBeforeRefreshTokensLoadedIsIgnored);
+
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnRefreshTokensLoaded() override;
 
   void FetchAccessToken(const AccountId& account_id);
   void OnAccessTokenFetchComplete(const AccountId& account_id,
@@ -68,6 +74,7 @@ class TokenHandleService : public KeyedService,
       access_token_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<TokenHandleStore> token_handle_store_;
+  bool refresh_tokens_loaded_ = false;
 
   base::WeakPtrFactory<TokenHandleService> weak_factory_{this};
 };
