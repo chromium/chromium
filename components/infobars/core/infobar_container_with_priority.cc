@@ -4,6 +4,9 @@
 
 #include "components/infobars/core/infobar_container_with_priority.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -92,8 +95,20 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
       }
 
       // OnInfoBarAdded contains the AdmitOrQueue logic needed to properly
-      // handle prioritization.
-      for (InfoBar* infobar : manager()->infobars()) {
+      // handle prioritization. Iterate over a snapshot of the initial infobars
+      // because showing an infobar fires a synchronous native accessibility
+      // alert that may re-entrantly mutate `manager()->infobars()` or change
+      // the observed manager. Any infobar added re-entrantly is handled by
+      // OnInfoBarAdded().
+      const std::vector<InfoBar*> initial_infobars(
+          manager()->infobars().begin(), manager()->infobars().end());
+      for (InfoBar* infobar : initial_infobars) {
+        if (manager() != infobar_manager) {
+          return;
+        }
+        if (!std::ranges::contains(manager()->infobars(), infobar)) {
+          continue;
+        }
         const auto priority = infobar->delegate()
                                   ? infobar->delegate()->GetPriority()
                                   : InfoBarDelegate::InfobarPriority::kDefault;
@@ -194,8 +209,8 @@ void InfoBarContainerWithPriority::AddInfoBarAndTrack(
     size_t position,
     bool animate,
     InfoBarDelegate::InfobarPriority priority) {
-  AddInfoBar(infobar, position, animate);
   MarkVisible(infobar, priority);
+  AddInfoBar(infobar, position, animate);
   RecordInfoBarPendingQueueSize();
 }
 

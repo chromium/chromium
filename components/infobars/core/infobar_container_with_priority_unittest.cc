@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -891,6 +892,117 @@ TEST_F(InfoBarContainerWithPriorityTest,
   EXPECT_EQ(0u, container.PendingInfoBarCount());
 
   manager.RemoveInfoBar(default_infobar_2);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReentrantAddInfoBarDuringManagerChange) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  auto first_infobar_unique =
+      std::make_unique<MockInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault));
+  MockInfoBar* first_infobar = first_infobar_unique.get();
+  manager.AddInfoBar(std::move(first_infobar_unique));
+  auto* second_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_EQ(2u, manager.infobars().size());
+  ASSERT_EQ(2u, manager.infobars().capacity());
+
+  TestInfoBar* reentrant_infobar = nullptr;
+  EXPECT_CALL(*first_infobar, PlatformSpecificShow(false)).WillOnce([&](bool) {
+    reentrant_infobar =
+        AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  });
+
+  container.ChangeInfoBarManager(&manager);
+
+  ASSERT_NE(nullptr, reentrant_infobar);
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(first_infobar));
+  EXPECT_FALSE(container.IsCurrentlyVisible(second_infobar));
+  EXPECT_FALSE(container.IsCurrentlyVisible(reentrant_infobar));
+  EXPECT_EQ(2u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(first_infobar);
+  EXPECT_TRUE(container.IsCurrentlyVisible(reentrant_infobar));
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(reentrant_infobar);
+  EXPECT_TRUE(container.IsCurrentlyVisible(second_infobar));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(second_infobar);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReentrantAddAdmittedInfoBarDuringManagerChange) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  auto first_infobar_unique =
+      std::make_unique<MockInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kLow,
+          InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR,
+          /*closeable=*/false));
+  MockInfoBar* first_infobar = first_infobar_unique.get();
+  manager.AddInfoBar(std::move(first_infobar_unique));
+  auto* second_infobar =
+      AddNonCloseableInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+  ASSERT_EQ(2u, manager.infobars().size());
+  ASSERT_EQ(2u, manager.infobars().capacity());
+
+  TestInfoBar* reentrant_infobar = nullptr;
+  EXPECT_CALL(*first_infobar, PlatformSpecificShow(false)).WillOnce([&](bool) {
+    reentrant_infobar =
+        AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  });
+
+  container.ChangeInfoBarManager(&manager);
+
+  ASSERT_NE(nullptr, reentrant_infobar);
+  EXPECT_EQ(3u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(first_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(second_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(reentrant_infobar));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(first_infobar);
+  manager.RemoveInfoBar(second_infobar);
+  manager.RemoveInfoBar(reentrant_infobar);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReentrantRemoveEarlierInfoBarDuringManagerChange) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  auto* first_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kCriticalSecurity);
+  auto second_infobar_unique =
+      std::make_unique<MockInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kCriticalSecurity));
+  MockInfoBar* second_infobar = second_infobar_unique.get();
+  manager.AddInfoBar(std::move(second_infobar_unique));
+  auto* third_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+
+  EXPECT_CALL(*second_infobar, PlatformSpecificShow(false)).WillOnce([&](bool) {
+    manager.RemoveInfoBar(first_infobar);
+  });
+
+  container.ChangeInfoBarManager(&manager);
+
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(second_infobar));
+  EXPECT_FALSE(container.IsCurrentlyVisible(third_infobar));
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(second_infobar);
+  EXPECT_TRUE(container.IsCurrentlyVisible(third_infobar));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(third_infobar);
 }
 
 }  // namespace
