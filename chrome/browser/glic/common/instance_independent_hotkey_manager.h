@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -37,6 +38,14 @@ class InstanceIndependentHotkeyManager
   // LocalHotkeyManager::EventHandler:
   bool AcceleratorPressed(LocalHotkeyManager::Command command) override;
   bool CanHandleAccelerators() const override;
+
+  // Whether `GlicBackgroundModeManager` can register the OS-global panel
+  // toggle hotkey with `ui::GlobalAcceleratorListener`. It can't when there is
+  // no listener (e.g. on GNOME Wayland without the GlobalShortcuts portal) or
+  // when the listener only registers shortcuts it gets from extension
+  // commands (the GlobalShortcuts portal on Wayland). The hotkey is then
+  // handled locally, while a Chrome window is focused.
+  static bool IsGlobalHotkeySupported();
 
  private:
 #if !BUILDFLAG(IS_ANDROID)

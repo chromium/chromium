@@ -128,6 +128,9 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        AcceleratorPressedReturnsFalseWhenGlobalScopeEnabled) {
+  if (!InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
+    GTEST_SKIP() << "OS-global hotkeys aren't supported";
+  }
   g_browser_process->local_state()->SetBoolean(
       prefs::kGlicHotkeyGlobalScopeEnabled, true);
 
@@ -139,6 +142,24 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
   // Verify that the panel is not showing.
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// When OS-global hotkeys aren't supported (e.g. on Wayland), the hotkey is
+// handled locally even in Global scope.
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerBrowserTest,
+    AcceleratorPressedLaunchesGlicInGlobalScopeWithoutGlobalHotkeys) {
+  if (InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
+    GTEST_SKIP() << "OS-global hotkeys are supported";
+  }
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, true);
+
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  ASSERT_OK(WaitForGlicOpen());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        CaptureRegionHotkeyOpensGlicWhenPromptBoxDisabled) {
@@ -271,6 +292,9 @@ class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
     AcceleratorPressedDoesNotLaunchGlicWhenLauncherEnabled) {
+  if (!InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
+    GTEST_SKIP() << "OS-global hotkeys aren't supported";
+  }
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
 
@@ -285,6 +309,26 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the panel is not showing.
   WaitForDuration(base::Milliseconds(300));
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+}
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+// When OS-global hotkeys aren't supported (e.g. on Wayland), the hotkey is
+// handled locally instead.
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
+    AcceleratorPressedLaunchesGlicWithoutGlobalHotkeys) {
+  if (InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
+    GTEST_SKIP() << "OS-global hotkeys are supported";
+  }
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+
+  EXPECT_TRUE(
+      coordinator().GetHotkeyManagerForTesting()->CanHandleAccelerators());
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  ASSERT_OK(WaitForGlicOpen());
 }
 #endif
 

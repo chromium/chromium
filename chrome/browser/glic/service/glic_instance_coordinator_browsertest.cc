@@ -18,6 +18,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
@@ -1648,6 +1649,9 @@ class GlicInstanceCoordinatorLocalHotkeyScopeDisabledTest
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocalHotkeyScopeDisabledTest,
                        HotkeyIsSkipped) {
+  if (!InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
+    GTEST_SKIP() << "OS-global hotkeys aren't supported";
+  }
   EXPECT_EQ(coordinator().GetInstances().size(), 0u);
 
   // Simulate receiving the hotkey command.

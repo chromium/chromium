@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/gfx/geometry/rect.h"
 #endif
 
@@ -58,6 +59,11 @@ bool SupportsOsEntryPoints(Profile* profile) {
 // `profile`'s provider doesn't support OS-level entry points.
 bool IsPanelToggleHotkeyGlobal(Profile* profile) {
   if (!SupportsOsEntryPoints(profile)) {
+    return false;
+  }
+  // When OS-global hotkeys can't be registered, handle the hotkey here, while a
+  // Chrome window is focused.
+  if (!InstanceIndependentHotkeyManager::IsGlobalHotkeySupported()) {
     return false;
   }
   if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope)) {
@@ -109,6 +115,16 @@ InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
 }
 
 InstanceIndependentHotkeyManager::~InstanceIndependentHotkeyManager() = default;
+
+// static
+bool InstanceIndependentHotkeyManager::IsGlobalHotkeySupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
+  auto* const listener = ui::GlobalAcceleratorListener::GetInstance();
+  return listener && !listener->IsRegistrationHandledExternally();
+#endif
+}
 
 void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
   const bool registration_allowed =
