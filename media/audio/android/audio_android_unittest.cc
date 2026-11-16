@@ -1556,6 +1556,11 @@ TEST_P(AudioAndroidInputTest, StartInputStreamCallbacksNonDefaultParameters) {
 // Start output streaming using default output parameters and ensure that the
 // callback sequence is sane.
 TEST_P(AudioAndroidOutputTest, StartOutputStreamCallbacks) {
+  // TODO(crbug.com/585643639): The callback timing checks fail on CI for this
+  // API (too fast on x86 emulators, too slow on arm64 devices).
+  if (GetParam() == AudioApi::AAudioWithCommunicationDevices) {
+    GTEST_SKIP() << "Flaky timing on Android CI, see crbug.com/585643639.";
+  }
   AudioParameters params = GetDefaultOutputStreamParametersOnAudioThread();
   StartOutputStreamCallbacks(params);
 }
@@ -1566,6 +1571,11 @@ TEST_P(AudioAndroidOutputTest, StartOutputStreamCallbacks) {
 // device in mono.
 // TODO(henrika): possibly add support for more variations.
 TEST_P(AudioAndroidOutputTest, StartOutputStreamCallbacksNonDefaultParameters) {
+  // TODO(crbug.com/585643639): The callback timing checks fail on x86
+  // emulators for OpenSLES.
+  if (GetParam() == AudioApi::OpenSLES) {
+    GTEST_SKIP() << "Flaky timing on Android CI, see crbug.com/585643639.";
+  }
   AudioParameters default_params =
       GetDefaultOutputStreamParametersOnAudioThread();
   AudioParameters params(default_params.format(), ChannelLayoutConfig::Mono(),
