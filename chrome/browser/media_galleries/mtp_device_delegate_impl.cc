@@ -1582,7 +1582,9 @@ void MTPDeviceDelegateImpl::OnDidGetFileInfoToCreateSnapshotFile(
     std::unique_ptr<SnapshotRequestInfo> snapshot_request_info,
     const base::File::Info& file_info) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  CHECK(!current_snapshot_request_info_.get(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/584382770): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!current_snapshot_request_info_.get());
   CHECK(snapshot_request_info.get(), base::NotFatalUntil::M161);
   CHECK(task_in_progress_, base::NotFatalUntil::M161);
   base::File::Error error = base::File::FILE_OK;
