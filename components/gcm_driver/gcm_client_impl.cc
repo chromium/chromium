@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -115,19 +116,6 @@ int ConstructGCMVersion(const std::string& chrome_version) {
   int gcm_version = 0;
   base::StringToInt(parts->first, &gcm_version);
   return gcm_version;
-}
-
-bool DeserializeInstanceIDData(const std::string& serialized_data,
-                               std::string* instance_id,
-                               std::string* extra_data) {
-  DCHECK(instance_id && extra_data);
-  auto parts = base::SplitStringOnce(serialized_data, ',');
-  if (!parts) {
-    return false;
-  }
-  *instance_id = parts->first;
-  *extra_data = parts->second;
-  return !instance_id->empty() && !extra_data->empty();
 }
 
 bool InstanceIDUsesSubtypeForAppId(const std::string& app_id) {
@@ -267,14 +255,7 @@ void GCMClientImpl::OnLoadCompleted(
   }
 
   CHECK(registration_manager_);
-  for (const auto& [key, value] : result->instance_id_data) {
-    std::string instance_id;
-    std::string extra_data;
-    if (DeserializeInstanceIDData(value, &instance_id, &extra_data)) {
-      registration_manager_->mutable_instance_id_data()[key] =
-          std::make_pair(instance_id, extra_data);
-    }
-  }
+  registration_manager_->OnRegistrationDataLoaded(*result);
 
   load_result_ = std::move(result);
   state_ = LOADED;
@@ -418,24 +399,17 @@ void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
 void GCMClientImpl::RemoveInstanceIDData(const std::string& app_id) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   CHECK(registration_manager_);
-  registration_manager_->mutable_instance_id_data().erase(app_id);
-  gcm_store_->RemoveInstanceIDData(
-      app_id, base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
-                             weak_ptr_factory_.GetWeakPtr()));
+  registration_manager_->RemoveInstanceIDData(app_id);
 }
 
 void GCMClientImpl::GetInstanceIDData(const std::string& app_id,
                                       std::string* instance_id,
                                       std::string* extra_data) {
-  DCHECK(instance_id && extra_data);
+  CHECK(instance_id);
+  CHECK(extra_data);
   CHECK(registration_manager_);
-
-  auto iter = registration_manager_->instance_id_data().find(app_id);
-  if (iter == registration_manager_->instance_id_data().end()) {
-    return;
-  }
-  *instance_id = iter->second.first;
-  *extra_data = iter->second.second;
+  std::tie(*instance_id, *extra_data) =
+      registration_manager_->GetInstanceIDData(app_id);
 }
 
 void GCMClientImpl::StartCheckin() {
@@ -555,12 +529,6 @@ void GCMClientImpl::SetDeviceCredentialsCallback(bool success) {
 void GCMClientImpl::UpdateRegistrationCallback(bool success) {
   // TODO(fgorski): This is one of the signals that store needs a rebuild.
   DCHECK(success);
-}
-
-void GCMClientImpl::IgnoreWriteResultCallback(bool success) {
-  // TODO(crbug.com/40691191): Implement proper error handling.
-  // TODO(fgorski): Ignoring the write result for now to make sure
-  // sync_intergration_tests are not broken.
 }
 
 void GCMClientImpl::DestroyStoreCallback(bool success) {

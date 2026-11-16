@@ -217,9 +217,6 @@ class GCMClientImpl : public GCMClient,
   // Callback for persisting registration info in the |gcm_store_|.
   void UpdateRegistrationCallback(bool success);
 
-  // Callback for store operation where result does not matter.
-  void IgnoreWriteResultCallback(bool success);
-
   // Callback for destroying the GCM store.
   void DestroyStoreCallback(bool success);
 

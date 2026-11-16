@@ -12,10 +12,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "components/gcm_driver/gcm_registration_manager.h"
+#include "google_apis/gcm/engine/gcm_store.h"
 
 namespace gcm {
-
-class GCMStore;
 
 // `GCMRegistrationManager` implementation that caches and persists registration
 // and Instance ID data in `GCMStore`.
@@ -33,17 +32,22 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
 
   ~GCMRegistrationManagerImpl() override;
 
+  // Populates cached registration and Instance ID data from `load_result`.
+  void OnRegistrationDataLoaded(const GCMStore::LoadResult& load_result);
+
   // GCMRegistrationManager implementation:
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data) override;
+  void RemoveInstanceIDData(const std::string& app_id) override;
+  std::pair<std::string, std::string> GetInstanceIDData(
+      const std::string& app_id) const override;
 
-  // TODO(b/545115204): Remove temporary accessors once all Instance ID
+  // TODO(b/545115204): Remove temporary accessor once all Instance ID
   // methods are migrated from `GCMClientImpl`.
   const InstanceIDDataMap& instance_id_data() const {
     return instance_id_data_;
   }
-  InstanceIDDataMap& mutable_instance_id_data() { return instance_id_data_; }
 
  private:
   const raw_ref<GCMStore> gcm_store_;
