@@ -4726,21 +4726,33 @@ class AXPosition {
         // anchor_id=4 would create a kUpstream position, while anchor_id=7
         // would create a kDownstream position.
 
-        AXPositionInstance this_text_position_ancestor =
-            LowestCommonAncestorPosition(other,
-                                         ax::mojom::MoveDirection::kBackward);
+        AXPositionInstance this_text_position_ancestor = CreateAncestorPosition(
+            common_anchor, ax::mojom::MoveDirection::kBackward);
         AXPositionInstance other_text_position_ancestor =
-            other.LowestCommonAncestorPosition(
-                *this, ax::mojom::MoveDirection::kBackward);
+            other.CreateAncestorPosition(common_anchor,
+                                         ax::mojom::MoveDirection::kBackward);
         CHECK(this_text_position_ancestor->IsTextPosition(),
               base::NotFatalUntil::M163);
         CHECK(other_text_position_ancestor->IsTextPosition(),
               base::NotFatalUntil::M163);
 
-        this_affinity = this_text_position_ancestor->affinity();
-        other_affinity = other_text_position_ancestor->affinity();
         optional_result = this_text_position_ancestor->text_offset() -
                           other_text_position_ancestor->text_offset();
+
+        // If the offsets are equal, compute ancestor positions using a forward
+        // direction so that a position inside an "object replacement character"
+        // compares after a position before the character.
+        if (*optional_result == 0) {
+          this_text_position_ancestor = CreateAncestorPosition(
+              common_anchor, ax::mojom::MoveDirection::kForward);
+          other_text_position_ancestor = other.CreateAncestorPosition(
+              common_anchor, ax::mojom::MoveDirection::kForward);
+          optional_result = this_text_position_ancestor->text_offset() -
+                            other_text_position_ancestor->text_offset();
+        }
+
+        this_affinity = this_text_position_ancestor->affinity();
+        other_affinity = other_text_position_ancestor->affinity();
       }
 
       if (optional_result) {

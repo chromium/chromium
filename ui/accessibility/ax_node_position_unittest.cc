@@ -11944,6 +11944,37 @@ TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   EXPECT_EQ(*after_inline_box_5, *before_inline_box_8);
 }
 
+TEST_F(AXPositionTest, CompareToEmptyTextBeforeEmbeddedObject) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // ++1 kRootWebArea "<embedded_object>"
+  // ++++2 kStaticText (empty)
+  // ++++3 kGenericContainer "World"
+  // ++++++4 kStaticText "Wo"
+  // ++++++5 kStaticText "rld"
+  Init(TestAXTreeUpdate(
+      {ax::mojom::Role::kRootWebArea,
+       {TestAXTreeUpdateNode(""),
+        {ax::mojom::Role::kGenericContainer,
+         {TestAXTreeUpdateNode("Wo"), TestAXTreeUpdateNode("rld")}}}}));
+  const AXNode& root = *GetTree()->root();
+
+  auto empty_text = CreateTextPosition(*root.children()[0], 0,
+                                       ax::mojom::TextAffinity::kDownstream);
+  auto start_of_object =
+      CreateTextPosition(*root.children()[1]->children()[0], 0,
+                         ax::mojom::TextAffinity::kDownstream);
+  auto inside_object = CreateTextPosition(*root.children()[1]->children()[1], 1,
+                                          ax::mojom::TextAffinity::kDownstream);
+
+  // Empty text before an object equals its start and precedes the rest of it.
+  EXPECT_EQ(*empty_text, *start_of_object);
+  EXPECT_LT(*empty_text->SlowCompareTo(*inside_object), 0);
+  EXPECT_GT(*inside_object->SlowCompareTo(*empty_text), 0);
+  EXPECT_LT(*empty_text, *inside_object);
+}
+
 TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {
   TestPositionType null_position1 = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position1);
