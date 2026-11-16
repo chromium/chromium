@@ -155,6 +155,9 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   // See https://w3c.github.io/webappsec-csp/#create-violation-for-global.
   // These functions are used to create the violation object.
   virtual SourceLocation* GetSourceLocation() = 0;
+  virtual const ExecutionContext* GetExecutionContext() const {
+    return nullptr;
+  }
   virtual std::optional<uint16_t> GetStatusCode() = 0;
   // If the Delegate is not bound to a document, a null string should be
   // returned as the referrer.
@@ -522,6 +525,10 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool HasEnforceFrameAncestorsDirectives();
 
   void Count(WebFeature feature) const;
+
+  const ExecutionContext* GetExecutionContext() const {
+    return delegate_ ? delegate_->GetExecutionContext() : nullptr;
+  }
 
   // Start the mode to disallow any script executions for synthetic response.
   void DisallowScriptForSyntheticResponse() {

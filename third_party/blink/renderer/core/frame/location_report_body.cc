@@ -16,17 +16,27 @@ LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     const String& file,
     std::optional<uint32_t> line_number,
     std::optional<uint32_t> column_number) {
-  return file.empty() ? CreateReportLocation(CaptureSourceLocation())
+  return file.empty() ? ReportLocation{}
                       : ReportLocation{file, line_number, column_number};
 }
 
 // static
 LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     SourceLocation* location) {
-  return (location->IsUnknown() || location->IsOpaque())
+  // CaptureSourceLocation(execution_context) returns SourceLocation(url, "", 0,
+  // 0) (for which IsUnknown() is false) when no stack or parser line exists.
+  return (!location || !location->LineNumber() || location->IsUnknown() ||
+          location->IsOpaque())
              ? ReportLocation{}
              : ReportLocation{location->Url(), location->LineNumber(),
                               location->ColumnNumber()};
+}
+
+// static
+LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
+    const ExecutionContext* execution_context) {
+  return CreateReportLocation(
+      CaptureSourceLocationForReporting(execution_context));
 }
 
 void LocationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {

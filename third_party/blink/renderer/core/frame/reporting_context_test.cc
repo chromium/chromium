@@ -204,7 +204,7 @@ TEST_F(ReportingContextTest, CountQueuedReports) {
   // violation.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
       "FeatureId", base::Time::FromMillisecondsSinceUnixEpoch(2e9),
-      "Test report");
+      "Test report", dummy_page_holder->GetFrame().DomWindow());
   Report* report = MakeGarbageCollected<Report>(
       "deprecation", dummy_page_holder->GetDocument().Url().GetString(), body);
 
@@ -225,7 +225,8 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
                                               run_loop.QuitClosure());
 
   auto* body = MakeGarbageCollected<DeprecationReportBody>(
-      "FeatureId", base::Time::FromSecondsSinceUnixEpoch(1), "Test report");
+      "FeatureId", base::Time::FromSecondsSinceUnixEpoch(1), "Test report",
+      win);
   auto* report = MakeGarbageCollected<Report>(
       "deprecation", win->document()->Url().GetString(), body);
   ReportingContext::From(win)->QueueReport(report);
@@ -246,7 +247,8 @@ TEST_F(ReportingContextTest, PermissionsPolicyViolationReportMessage) {
   MockReportingServiceProxy reporting_service(win->GetBrowserInterfaceBroker(),
                                               run_loop.QuitClosure());
   auto* body = MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
-      "FeatureId", "TestMessage1", "enforce");
+      "FeatureId", "TestMessage1", "enforce", /*allow_attribute=*/"",
+      /*src_attribute=*/"", win);
   auto* report = MakeGarbageCollected<Report>(
       "permissions-policy-violation", win->document()->Url().GetString(), body);
   auto* reporting_context = ReportingContext::From(win);

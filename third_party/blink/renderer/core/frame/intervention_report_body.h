@@ -16,8 +16,10 @@ class CORE_EXPORT InterventionReportBody : public LocationReportBody {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  InterventionReportBody(const String& id, const String& message)
-      : id_(id), message_(message) {}
+  InterventionReportBody(const String& id,
+                         const String& message,
+                         const ExecutionContext* execution_context)
+      : LocationReportBody(execution_context), id_(id), message_(message) {}
 
   ~InterventionReportBody() override = default;
 

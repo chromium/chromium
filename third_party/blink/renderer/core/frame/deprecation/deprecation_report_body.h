@@ -21,8 +21,12 @@ class CORE_EXPORT DeprecationReportBody : public LocationReportBody {
  public:
   DeprecationReportBody(const String& id,
                         std::optional<base::Time> anticipated_removal,
-                        const String& message)
-      : id_(id), message_(message), anticipated_removal_(anticipated_removal) {}
+                        const String& message,
+                        const ExecutionContext* execution_context)
+      : LocationReportBody(execution_context),
+        id_(id),
+        message_(message),
+        anticipated_removal_(anticipated_removal) {}
 
   ~DeprecationReportBody() override = default;
 

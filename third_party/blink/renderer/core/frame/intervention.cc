@@ -46,7 +46,7 @@ void Intervention::GenerateReportWithoutAdditionalConsoleWarning(
   // Construct the intervention report.
   auto* window = frame->DomWindow();
   InterventionReportBody* body =
-      MakeGarbageCollected<InterventionReportBody>(id, message);
+      MakeGarbageCollected<InterventionReportBody>(id, message, window);
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kIntervention, window->document()->Url().GetString(), body);
 

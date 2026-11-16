@@ -1226,6 +1226,13 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // Kill switch for https://crbug.com/582918766. Checks that the current
+      // and incumbent V8 contexts are same-origin with the target
+      // ExecutionContext before capturing a V8 stack trace.
+      name: "CaptureSourceLocationSameOriginCheck",
+      status: "stable",
+    },
+    {
       // Allows automated test runners to keep focused carets visible.
       name: "CaretBlinking",
       status: "stable",

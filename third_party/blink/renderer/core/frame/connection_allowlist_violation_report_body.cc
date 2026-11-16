@@ -53,8 +53,9 @@ ConnectionAllowlistViolationReportBody::ConnectionAllowlistViolationReportBody(
     const String& url,
     const String& connection,
     const Vector<String>& allowlist,
-    const V8ConnectionAllowlistDisposition& disposition)
-    : LocationReportBody(),
+    const V8ConnectionAllowlistDisposition& disposition,
+    const ExecutionContext* execution_context)
+    : LocationReportBody(execution_context),
       url_(url),
       connection_(connection),
       allowlist_(allowlist),
@@ -93,7 +94,8 @@ void ConnectionAllowlistViolationReportBody::QueueReport(
 
   ConnectionAllowlistViolationReportBody* body =
       MakeGarbageCollected<ConnectionAllowlistViolationReportBody>(
-          safe_document_url, connection, blink_allowlist, disposition_obj);
+          safe_document_url, connection, blink_allowlist, disposition_obj,
+          &execution_context);
 
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kConnectionAllowlistViolation, safe_document_url, body);

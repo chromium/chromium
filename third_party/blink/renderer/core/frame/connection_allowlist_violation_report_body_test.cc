@@ -24,10 +24,10 @@ TEST(ConnectionAllowlistViolationReportBodyMatchIdTest,
       V8ConnectionAllowlistDisposition::Enum::kEnforce);
 
   EXPECT_EQ(ConnectionAllowlistViolationReportBody(url, connection, allowlist,
-                                                   disposition)
+                                                   disposition, nullptr)
                 .MatchId(),
             ConnectionAllowlistViolationReportBody(url, connection, allowlist,
-                                                   disposition)
+                                                   disposition, nullptr)
                 .MatchId());
 
   url = "https://test.org";
@@ -37,10 +37,10 @@ TEST(ConnectionAllowlistViolationReportBodyMatchIdTest,
       V8ConnectionAllowlistDisposition::Enum::kReport);
 
   EXPECT_EQ(ConnectionAllowlistViolationReportBody(url, connection, allowlist,
-                                                   disposition)
+                                                   disposition, nullptr)
                 .MatchId(),
             ConnectionAllowlistViolationReportBody(url, connection, allowlist,
-                                                   disposition)
+                                                   disposition, nullptr)
                 .MatchId());
 }
 
@@ -56,31 +56,31 @@ TEST(ConnectionAllowlistViolationReportBodyMatchIdTest,
   // Input 1
   match_ids.insert(ConnectionAllowlistViolationReportBody(
                        "https://example1.com", "https://conn1.com",
-                       {"a.com", "b.com"}, enforce)
+                       {"a.com", "b.com"}, enforce, nullptr)
                        .MatchId());
 
   // Input 2 (different URL)
   match_ids.insert(ConnectionAllowlistViolationReportBody(
                        "https://example2.com", "https://conn1.com",
-                       {"a.com", "b.com"}, enforce)
+                       {"a.com", "b.com"}, enforce, nullptr)
                        .MatchId());
 
   // Input 3 (different connection)
   match_ids.insert(ConnectionAllowlistViolationReportBody(
                        "https://example1.com", "https://conn2.com",
-                       {"a.com", "b.com"}, enforce)
+                       {"a.com", "b.com"}, enforce, nullptr)
                        .MatchId());
 
   // Input 4 (different allowlist)
   match_ids.insert(ConnectionAllowlistViolationReportBody(
                        "https://example1.com", "https://conn1.com",
-                       {"a.com", "c.com"}, enforce)
+                       {"a.com", "c.com"}, enforce, nullptr)
                        .MatchId());
 
   // Input 5 (different disposition)
   match_ids.insert(ConnectionAllowlistViolationReportBody(
                        "https://example1.com", "https://conn1.com",
-                       {"a.com", "b.com"}, report)
+                       {"a.com", "b.com"}, report, nullptr)
                        .MatchId());
 
   // Ensure the match IDs are all distinct (meaning, the size of the set is
@@ -93,9 +93,9 @@ TEST(ConnectionAllowlistViolationReportBodyMatchIdTest,
   const V8ConnectionAllowlistDisposition enforce(
       V8ConnectionAllowlistDisposition::Enum::kEnforce);
 
-  EXPECT_NE(ConnectionAllowlistViolationReportBody("https://example1.com",
-                                                   "https://conn1.com",
-                                                   {"a.com", "b.com"}, enforce)
+  EXPECT_NE(ConnectionAllowlistViolationReportBody(
+                "https://example1.com", "https://conn1.com", {"a.com", "b.com"},
+                enforce, nullptr)
                 .MatchId(),
             0u);
 }

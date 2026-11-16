@@ -9,21 +9,41 @@
 
 namespace blink {
 
+namespace {
+
+String CreateMessage(const String& feature_id, const String& message) {
+  return message.empty() ? StrCat({"Document policy violation: ", feature_id,
+                                   " is not allowed in this document."})
+                         : StrCat({"Document policy violation: ", message});
+}
+
+}  // namespace
+
 DocumentPolicyViolationReportBody::DocumentPolicyViolationReportBody(
     const String& feature_id,
     const String& message,
     const String& disposition,
     // URL of the resource that violated the document policy.
     const String& resource_url)
-    : LocationReportBody(resource_url),
+    : LocationReportBody(resource_url, std::nullopt, std::nullopt),
       feature_id_(feature_id),
-      message_(message.empty()
-                   ? StrCat({"Document policy violation: ", feature_id,
-                             " is not allowed in this document."})
-                   : StrCat({"Document policy violation: ", message})),
+      message_(CreateMessage(feature_id, message)),
       disposition_(disposition) {
-  DCHECK(!feature_id.empty());
-  DCHECK(!disposition.empty());
+  CHECK(!feature_id.empty());
+  CHECK(!disposition.empty());
+}
+
+DocumentPolicyViolationReportBody::DocumentPolicyViolationReportBody(
+    const String& feature_id,
+    const String& message,
+    const String& disposition,
+    const ExecutionContext* execution_context)
+    : LocationReportBody(execution_context),
+      feature_id_(feature_id),
+      message_(CreateMessage(feature_id, message)),
+      disposition_(disposition) {
+  CHECK(!feature_id.empty());
+  CHECK(!disposition.empty());
 }
 
 void DocumentPolicyViolationReportBody::BuildJSONValue(

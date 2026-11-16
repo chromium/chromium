@@ -16,9 +16,9 @@ namespace {
 
 TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
   test::TaskEnvironment task_environment;
-  DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      "test_id", std::nullopt, "test_message");
   V8TestingScope scope;
+  DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
+      "test_id", std::nullopt, "test_message", scope.GetExecutionContext());
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
   body->BuildJSONValue(builder);
@@ -37,10 +37,10 @@ TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
 
 TEST(DeprecationReportBodyJSONTest, actualAnticipatedRemoval) {
   test::TaskEnvironment task_environment;
+  V8TestingScope scope;
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
       "test_id", base::Time::FromMillisecondsSinceUnixEpoch(1575950400000),
-      "test_message");
-  V8TestingScope scope;
+      "test_message", scope.GetExecutionContext());
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
   body->BuildJSONValue(builder);

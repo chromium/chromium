@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,17 +16,23 @@
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
+#include "third_party/blink/renderer/core/frame/csp/csp_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -34,6 +41,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -2212,6 +2220,125 @@ TEST_F(ContentSecurityPolicyTest,
                KURL("http://example.test/insecure.png"),
                ResourceRequest::RedirectStatus::kNoRedirect);
          });
+}
+
+TEST_F(ContentSecurityPolicyTest,
+       ReportViolationDoesNotLeakCrossOriginStackLocation) {
+  V8TestingScope same_origin_scope(KURL("https://example.test/script.js"));
+  V8TestingScope child_scope(KURL("https://child.example.test/secret/path"));
+
+  auto* mock_reporting_context =
+      MakeGarbageCollected<MockReportingContext>(*execution_context);
+  Supplement<ExecutionContext>::ProvideTo(*execution_context,
+                                          mock_reporting_context);
+
+  auto* policy = MakeGarbageCollected<ContentSecurityPolicy>();
+  execution_context->SetURL(secure_url);
+  policy->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "img-src 'none'", ContentSecurityPolicyType::kReport,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+
+  // 1. Positive control: a same-origin stack frame is captured.
+  frame_test_helpers::RunInScriptStack(
+      same_origin_scope.GetScriptState(),
+      KURL("https://example.test/script.js"), [&]() {
+        policy->ReportViolation(
+            CSPDirectiveName::ImgSrc, KURL("https://example.test/blocked1.png"),
+            /*report_endpoints=*/Vector<String>{"endpoint"},
+            /*use_reporting_api=*/true,
+            /*header=*/"img-src 'none'", ContentSecurityPolicyType::kReport,
+            ContentSecurityPolicyViolationType::kURLViolation,
+            /*source_location=*/nullptr);
+      });
+
+  ASSERT_EQ(1u, mock_reporting_context->reports().size());
+  const auto* same_origin_body = static_cast<const CSPViolationReportBody*>(
+      mock_reporting_context->reports()[0]->body());
+  EXPECT_EQ("https://example.test/script.js", same_origin_body->sourceFile());
+  EXPECT_EQ(2u, same_origin_body->lineNumber());
+  EXPECT_EQ(9u, same_origin_body->columnNumber());
+
+  // 2. Cross-origin stack frame is dropped.
+  frame_test_helpers::RunInScriptStack(
+      child_scope.GetScriptState(),
+      KURL("https://child.example.test/secret/path"), [&]() {
+        policy->ReportViolation(
+            CSPDirectiveName::ImgSrc, KURL("https://example.test/blocked2.png"),
+            /*report_endpoints=*/Vector<String>{"endpoint"},
+            /*use_reporting_api=*/true,
+            /*header=*/"img-src 'none'", ContentSecurityPolicyType::kReport,
+            ContentSecurityPolicyViolationType::kURLViolation,
+            /*source_location=*/nullptr);
+      });
+
+  ASSERT_EQ(2u, mock_reporting_context->reports().size());
+  const auto* cross_origin_body = static_cast<const CSPViolationReportBody*>(
+      mock_reporting_context->reports()[1]->body());
+  EXPECT_TRUE(cross_origin_body->sourceFile().IsNull());
+  EXPECT_EQ(std::nullopt, cross_origin_body->lineNumber());
+  EXPECT_EQ(std::nullopt, cross_origin_body->columnNumber());
+
+  // 3. Disabling the kill switch restores legacy stack capture.
+  {
+    ScopedCaptureSourceLocationSameOriginCheckForTest disable_check(false);
+    frame_test_helpers::RunInScriptStack(
+        child_scope.GetScriptState(),
+        KURL("https://child.example.test/secret/path"), [&]() {
+          policy->ReportViolation(
+              CSPDirectiveName::ImgSrc,
+              KURL("https://example.test/blocked3.png"),
+              /*report_endpoints=*/Vector<String>{"endpoint"},
+              /*use_reporting_api=*/true,
+              /*header=*/"img-src 'none'", ContentSecurityPolicyType::kReport,
+              ContentSecurityPolicyViolationType::kURLViolation,
+              /*source_location=*/nullptr);
+        });
+  }
+
+  ASSERT_EQ(3u, mock_reporting_context->reports().size());
+  const auto* kill_switch_body = static_cast<const CSPViolationReportBody*>(
+      mock_reporting_context->reports()[2]->body());
+  EXPECT_EQ("https://child.example.test/secret/path",
+            kill_switch_body->sourceFile());
+  EXPECT_EQ(2u, kill_switch_body->lineNumber());
+  EXPECT_EQ(9u, kill_switch_body->columnNumber());
+}
+
+TEST_F(ContentSecurityPolicyTest,
+       AllowInlineDoesNotLeakCrossOriginStackLocation) {
+  V8TestingScope child_scope(KURL("https://child.example.test/secret/path"));
+
+  auto* mock_reporting_context =
+      MakeGarbageCollected<MockReportingContext>(*execution_context);
+  Supplement<ExecutionContext>::ProvideTo(*execution_context,
+                                          mock_reporting_context);
+
+  auto* policy = MakeGarbageCollected<ContentSecurityPolicy>();
+  execution_context->SetURL(secure_url);
+  policy->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'none'; report-to endpoint",
+      ContentSecurityPolicyType::kEnforce, ContentSecurityPolicySource::kHTTP,
+      *secure_origin));
+
+  frame_test_helpers::RunInScriptStack(
+      child_scope.GetScriptState(),
+      KURL("https://child.example.test/secret/path"), [&]() {
+        EXPECT_FALSE(policy->AllowInline(
+            ContentSecurityPolicy::InlineType::kScriptAttribute,
+            /*element=*/nullptr, "1", /*nonce=*/String(),
+            secure_url.GetString(),
+            TextPosition(OrdinalNumber::FromOneBasedInt(10),
+                         OrdinalNumber::FromOneBasedInt(5))));
+      });
+
+  ASSERT_EQ(1u, mock_reporting_context->reports().size());
+  const auto* body = static_cast<const CSPViolationReportBody*>(
+      mock_reporting_context->reports()[0]->body());
+  EXPECT_EQ(secure_url.GetString(), body->sourceFile());
+  EXPECT_EQ(10u, body->lineNumber());
+  EXPECT_EQ(5u, body->columnNumber());
 }
 
 }  // namespace blink

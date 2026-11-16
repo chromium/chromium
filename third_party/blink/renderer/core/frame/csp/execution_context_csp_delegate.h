@@ -31,6 +31,9 @@ class ExecutionContextCSPDelegate final
   void NotifyBrowserOfInsecureRequestPolicy(
       mojom::blink::InsecureRequestPolicy added_policy) override;
   SourceLocation* GetSourceLocation() override;
+  const ExecutionContext* GetExecutionContext() const override {
+    return execution_context_.Get();
+  }
   std::optional<uint16_t> GetStatusCode() override;
   String GetDocumentReferrer() override;
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,

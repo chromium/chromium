@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -170,9 +171,10 @@ void ReportViolationWithLocation(
                     "logged but no further action has been taken."
                   : " The action has been blocked."});
 
-  SourceLocation* source_location =
-      CaptureSourceLocation(context_url, context_position.line_.OneBasedInt(),
-                            context_position.column_.OneBasedInt());
+  SourceLocation* source_location = CaptureSourceLocationForReporting(
+      policy->GetExecutionContext(), context_url,
+      context_position.line_.OneBasedInt(),
+      context_position.column_.OneBasedInt());
   policy->LogToConsoleAndReportViolation(
       effective_type, message, blocked_url, csp.report_endpoints,
       csp.use_reporting_api, csp.header->header_value, csp.header->type,

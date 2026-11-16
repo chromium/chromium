@@ -12,12 +12,85 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
+
+namespace {
+
+std::unique_ptr<v8_inspector::V8StackTrace> CaptureStackTraceForReporting(
+    const ExecutionContext* execution_context) {
+  if (!RuntimeEnabledFeatures::CaptureSourceLocationSameOriginCheckEnabled()) {
+    return SourceLocation::CaptureStackTraceInternal(false);
+  }
+  if (!execution_context) {
+    return nullptr;
+  }
+  v8::Isolate* isolate = execution_context->GetIsolate();
+  if (!isolate || !isolate->InContext()) {
+    return nullptr;
+  }
+  const SecurityOrigin* target_origin = execution_context->GetSecurityOrigin();
+  ExecutionContext* current_context = CurrentExecutionContext(isolate);
+  const SecurityOrigin* current_origin =
+      current_context ? current_context->GetSecurityOrigin() : nullptr;
+  if (!target_origin || !current_origin ||
+      !target_origin->CanAccess(current_origin)) {
+    return nullptr;
+  }
+  ThreadDebugger* debugger = ThreadDebugger::From(isolate);
+  if (!debugger) {
+    return nullptr;
+  }
+  ScriptForbiddenScope::AllowUserAgentScript allow_scripting;
+  v8::HandleScope handle_scope(isolate);
+  // Unlike V8Inspector::captureStackTrace (which sets
+  // kExposeFramesAcrossSecurityOrigins), v8::StackTrace::CurrentStackTrace with
+  // kDetailed skips frames that are not same-origin with `current_context`.
+  return debugger->GetV8Inspector()->createStackTrace(
+      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1,
+                                        v8::StackTrace::kDetailed));
+}
+
+SourceLocation* CreateSourceLocationFromStackTraceOrExecutionContext(
+    std::unique_ptr<v8_inspector::V8StackTrace> stack_trace,
+    const ExecutionContext* execution_context) {
+  if (stack_trace && !stack_trace->isEmpty()) {
+    return SourceLocation::CreateFromNonEmptyV8StackTraceInternal(
+        std::move(stack_trace));
+  }
+
+  if (const LocalDOMWindow* window =
+          DynamicTo<LocalDOMWindow>(execution_context)) {
+    Document* document = window->document();
+    TextPosition position = TextPosition::BelowRangePosition();
+    // Only fall back to the HTML parser position when no script is executing;
+    // if a cross-origin script stack was rejected while `document`'s parser is
+    // paused, we must not misattribute the action to the parser line.
+    v8::Isolate* isolate = execution_context->GetIsolate();
+    if ((!isolate || !isolate->InContext()) &&
+        document->GetScriptableDocumentParser() &&
+        !document->IsInDocumentWrite() &&
+        document->GetScriptableDocumentParser()->IsParsingAtLineNumber()) {
+      position = document->GetScriptableDocumentParser()->GetTextPosition();
+    }
+    return MakeGarbageCollected<SourceLocation>(
+        document->Url().GetString(), String(), position.line_.OneBasedInt(),
+        position.column_.OneBasedInt(), std::move(stack_trace));
+  }
+
+  return MakeGarbageCollected<SourceLocation>(
+      execution_context ? execution_context->Url().GetString() : String(),
+      String(), 0, 0, std::move(stack_trace));
+}
+
+}  // namespace
 
 String CaptureCurrentScriptUrl(v8::Isolate* isolate) {
   DCHECK(isolate);
@@ -64,30 +137,31 @@ Vector<String> CaptureScriptUrlsFromCurrentStack(v8::Isolate* isolate,
   return unique_urls;
 }
 
-SourceLocation* CaptureSourceLocation(ExecutionContext* execution_context) {
+SourceLocation* CaptureSourceLocation(
+    const ExecutionContext* execution_context) {
+  return CreateSourceLocationFromStackTraceOrExecutionContext(
+      SourceLocation::CaptureStackTraceInternal(false), execution_context);
+}
+
+SourceLocation* CaptureSourceLocationForReporting(
+    const ExecutionContext* execution_context) {
+  return CreateSourceLocationFromStackTraceOrExecutionContext(
+      CaptureStackTraceForReporting(execution_context), execution_context);
+}
+
+SourceLocation* CaptureSourceLocationForReporting(
+    const ExecutionContext* execution_context,
+    const String& url,
+    unsigned line_number,
+    unsigned column_number) {
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace =
-      SourceLocation::CaptureStackTraceInternal(false);
+      CaptureStackTraceForReporting(execution_context);
   if (stack_trace && !stack_trace->isEmpty()) {
     return SourceLocation::CreateFromNonEmptyV8StackTraceInternal(
         std::move(stack_trace));
   }
-
-  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    Document* document = window->document();
-    TextPosition position = TextPosition::BelowRangePosition();
-    if (document->GetScriptableDocumentParser() &&
-        !document->IsInDocumentWrite() &&
-        document->GetScriptableDocumentParser()->IsParsingAtLineNumber()) {
-      position = document->GetScriptableDocumentParser()->GetTextPosition();
-    }
-    return MakeGarbageCollected<SourceLocation>(
-        document->Url().GetString(), String(), position.line_.OneBasedInt(),
-        position.column_.OneBasedInt(), std::move(stack_trace));
-  }
-
   return MakeGarbageCollected<SourceLocation>(
-      execution_context ? execution_context->Url().GetString() : String(),
-      String(), 0, 0, std::move(stack_trace));
+      url, String(), line_number, column_number, std::move(stack_trace));
 }
 
 SourceLocation* CaptureSourceLocation(v8::Isolate* isolate,

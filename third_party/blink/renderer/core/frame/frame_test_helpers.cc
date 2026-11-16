@@ -71,8 +71,10 @@
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/frame_swap_scope.h"
@@ -82,6 +84,7 @@
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
@@ -1258,6 +1261,36 @@ void TestWidgetInputHandlerHost::RequestMouseLock(
     RequestMouseLockCallback callback) {
   std::move(callback).Run(mojom::blink::PointerLockResult::kSuccess,
                           /*context=*/mojo::NullRemote());
+}
+
+void RunInScriptStack(ScriptState* script_state,
+                      const KURL& script_url,
+                      base::FunctionRef<void()> callback,
+                      SanitizeScriptErrors sanitize,
+                      const String& source_suffix) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::Local<v8::Value> fn =
+      v8::Function::New(
+          context,
+          [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+            (*static_cast<base::FunctionRef<void()>*>(
+                info.DataV2().As<v8::External>()->Value(
+                    v8::kExternalPointerTypeTagDefault)))();
+          },
+          v8::External::New(isolate, &callback,
+                            v8::kExternalPointerTypeTagDefault))
+          .ToLocalChecked();
+  v8::Local<v8::Value> wrapper =
+      ClassicScript::CreateUnspecifiedScript(
+          WebScriptSource(StrCat({"\n(fn) => fn()", source_suffix}),
+                          script_url),
+          sanitize)
+          ->RunScriptOnScriptStateAndReturnValue(script_state)
+          .GetSuccessValueOrEmpty();
+  wrapper.As<v8::Function>()
+      ->Call(context, context->Global(), 1, &fn)
+      .ToLocalChecked();
 }
 
 }  // namespace frame_test_helpers

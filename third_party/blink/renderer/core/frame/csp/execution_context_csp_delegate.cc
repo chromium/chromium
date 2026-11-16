@@ -142,7 +142,7 @@ void ExecutionContextCSPDelegate::NotifyBrowserOfInsecureRequestPolicy(
 }
 
 SourceLocation* ExecutionContextCSPDelegate::GetSourceLocation() {
-  return CaptureSourceLocation(execution_context_);
+  return CaptureSourceLocationForReporting(execution_context_);
 }
 
 std::optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {

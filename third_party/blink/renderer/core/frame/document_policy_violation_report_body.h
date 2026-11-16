@@ -24,6 +24,12 @@ class CORE_EXPORT DocumentPolicyViolationReportBody
       // URL of the resource that violated the document policy.
       const String& resource_url);
 
+  // Captures the source location from `execution_context`.
+  DocumentPolicyViolationReportBody(const String& feature_id,
+                                    const String& message,
+                                    const String& disposition,
+                                    const ExecutionContext* execution_context);
+
   const String& featureId() const { return feature_id_; }
   const String& disposition() const { return disposition_; }
   const String& message() const { return message_; }

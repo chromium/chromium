@@ -65,7 +65,8 @@ class CORE_EXPORT ConnectionAllowlistViolationReportBody
       const String& url,
       const String& connection,
       const Vector<String>& allowlist,
-      const V8ConnectionAllowlistDisposition& disposition);
+      const V8ConnectionAllowlistDisposition& disposition,
+      const ExecutionContext* execution_context);
 
  private:
   static void QueueReport(const String& connection,

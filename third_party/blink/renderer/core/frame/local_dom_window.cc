@@ -679,7 +679,8 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
 
   PermissionsPolicyViolationReportBody* body =
       MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
-          feature_name, message, disp_str);
+          feature_name, message, disp_str, /*allow_attribute=*/g_empty_string,
+          /*src_attribute=*/g_empty_string, this);
 
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kPermissionsPolicyViolation, Url().GetString(), body);
@@ -719,7 +720,8 @@ void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
 
   PermissionsPolicyViolationReportBody* body =
       MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
-          feature_name, message, disp_str, allow_attribute, src_attribute);
+          feature_name, message, disp_str, allow_attribute, src_attribute,
+          this);
 
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kPotentialPermissionsPolicyViolation, Url().GetString(),
@@ -760,8 +762,11 @@ void LocalDOMWindow::ReportDocumentPolicyViolation(
                      : GetSecurityContext().GetDocumentPolicy();
 
   DocumentPolicyViolationReportBody* body =
-      MakeGarbageCollected<DocumentPolicyViolationReportBody>(
-          feature_name, message, disp_str, source_file);
+      source_file.empty()
+          ? MakeGarbageCollected<DocumentPolicyViolationReportBody>(
+                feature_name, message, disp_str, this)
+          : MakeGarbageCollected<DocumentPolicyViolationReportBody>(
+                feature_name, message, disp_str, source_file);
 
   Report* report = MakeGarbageCollected<Report>(
       ReportType::kDocumentPolicyViolation, Url().GetString(), body);

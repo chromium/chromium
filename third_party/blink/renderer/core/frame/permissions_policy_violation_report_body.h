@@ -22,9 +22,11 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& feature_id,
       const String& message,
       const String& disposition,
-      const String& allow_attribute = g_empty_string,
-      const String& src_attribute = g_empty_string)
-      : feature_id_(feature_id),
+      const String& allow_attribute,
+      const String& src_attribute,
+      const ExecutionContext* execution_context)
+      : LocationReportBody(execution_context),
+        feature_id_(feature_id),
         message_(StrCat(
             {(allow_attribute.empty()
                   ? "Permissions policy violation: "

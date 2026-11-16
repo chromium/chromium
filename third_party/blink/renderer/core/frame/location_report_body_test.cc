@@ -10,7 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -18,8 +19,11 @@ namespace {
 
 class TestLocationReportBody : public LocationReportBody {
  public:
+  explicit TestLocationReportBody(const ExecutionContext* execution_context)
+      : LocationReportBody(execution_context) {}
+
   explicit TestLocationReportBody(
-      const String& source_file = g_empty_string,
+      const String& source_file,
       std::optional<uint32_t> line_number = std::nullopt,
       std::optional<uint32_t> column_number = std::nullopt)
       : LocationReportBody(source_file, line_number, column_number) {}
@@ -78,9 +82,8 @@ TEST(LocationReportBodyMatchIdTest, MatchIdGeneratedShouldNotBeZero) {
   }
 }
 
-// When URL is empty, LocationReportBody would call |CaptureSourceLocation()|
-// to determine the location, and ignore |line_number| and |column_number|
-// specified in constructor params.
+// When URL is empty, LocationReportBody ignores |line_number| and
+// |column_number| specified in constructor params.
 TEST(LocationReportBodyMatchIdTest,
      EmptyURLGenerateSameMatchIdRegardlessOfOtherParams) {
   const unsigned empty_hash =
@@ -114,51 +117,90 @@ TEST(LocationReportBodyTest, ExtensionURLsAreIdentified) {
 TEST(LocationReportBodyTest, OpaqueScriptLocationIsDropped) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.com/"));
-  v8::Isolate* isolate = scope.GetIsolate();
-  v8::Local<v8::Context> context = scope.GetContext();
-
-  Persistent<TestLocationReportBody> captured_body;
-  v8::Local<v8::Function> capture_fn =
-      v8::Function::New(
-          context,
-          [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-            auto* storage = static_cast<Persistent<TestLocationReportBody>*>(
-                info.DataV2().As<v8::External>()->Value(
-                    v8::kExternalPointerTypeTagDefault));
-            *storage = MakeGarbageCollected<TestLocationReportBody>();
-          },
-          v8::External::New(isolate, &captured_body,
-                            v8::kExternalPointerTypeTagDefault))
-          .ToLocalChecked();
-  context->Global()
-      ->Set(context, V8AtomicString(isolate, "captureReport"), capture_fn)
-      .Check();
 
   // 1. Non-opaque script (e.g. same-origin or CORS-enabled cross-origin):
   // location is preserved.
-  ClassicScript::Create(
-      "\ncaptureReport();", KURL("https://cdn.example.net/cors.js"),
-      KURL("https://example.com/"), ScriptFetchOptions(),
-      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kDoNotSanitize)
-      ->RunScriptOnScriptState(scope.GetScriptState());
+  Persistent<TestLocationReportBody> captured_body;
+  frame_test_helpers::RunInScriptStack(
+      scope.GetScriptState(), KURL("https://cdn.example.net/cors.js"), [&]() {
+        captured_body = MakeGarbageCollected<TestLocationReportBody>(
+            scope.GetExecutionContext());
+      });
   ASSERT_TRUE(captured_body);
   EXPECT_EQ("https://cdn.example.net/cors.js", captured_body->sourceFile());
   EXPECT_EQ(2u, captured_body->lineNumber());
-  EXPECT_EQ(1u, captured_body->columnNumber());
+  EXPECT_EQ(9u, captured_body->columnNumber());
 
   // 2. Opaque script (even with a same-origin pre-redirect URL and a
   // //# sourceURL= directive): location is dropped.
   captured_body = nullptr;
-  ClassicScript::Create(
-      "\ncaptureReport();\n//# sourceURL=webpack:///./src/index.js",
+  frame_test_helpers::RunInScriptStack(
+      scope.GetScriptState(),
       KURL("https://example.com/redirect-to-cross-origin.js"),
-      KURL("https://example.com/"), ScriptFetchOptions(),
-      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize)
-      ->RunScriptOnScriptState(scope.GetScriptState());
+      [&]() {
+        captured_body = MakeGarbageCollected<TestLocationReportBody>(
+            scope.GetExecutionContext());
+      },
+      SanitizeScriptErrors::kSanitize,
+      "\n//# sourceURL=webpack:///./src/index.js");
   ASSERT_TRUE(captured_body);
   EXPECT_TRUE(captured_body->sourceFile().IsNull());
   EXPECT_EQ(std::nullopt, captured_body->lineNumber());
   EXPECT_EQ(std::nullopt, captured_body->columnNumber());
+}
+
+TEST(LocationReportBodyTest, CrossOriginExecutionContextLocationIsDropped) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope parent_scope(KURL("https://parent.example.com/"));
+  V8TestingScope running_scope(KURL("https://child.example.com/secret/path"));
+
+  ScopedNullExecutionContext same_origin_context;
+  same_origin_context.GetExecutionContext().SetURL(
+      KURL("https://child.example.com/other"));
+  same_origin_context.GetExecutionContext().SetUpSecurityContextForTesting();
+
+  ScopedNullExecutionContext cross_origin_context;
+  cross_origin_context.GetExecutionContext().SetURL(
+      KURL("https://parent.example.com/"));
+  cross_origin_context.GetExecutionContext().SetUpSecurityContextForTesting();
+
+  Persistent<TestLocationReportBody> same_origin_body;
+  Persistent<TestLocationReportBody> cross_origin_body;
+  Persistent<TestLocationReportBody> parent_entered_body;
+  frame_test_helpers::RunInScriptStack(
+      running_scope.GetScriptState(),
+      KURL("https://child.example.com/secret/path"), [&]() {
+        same_origin_body = MakeGarbageCollected<TestLocationReportBody>(
+            &same_origin_context.GetExecutionContext());
+        cross_origin_body = MakeGarbageCollected<TestLocationReportBody>(
+            &cross_origin_context.GetExecutionContext());
+
+        // Even if both CurrentExecutionContext and GetIncumbentContext() match
+        // the target context (e.g. via a bound built-in callback invoked with
+        // BackupIncumbentScope), the cross-origin frame on the V8 stack must
+        // not be captured.
+        ScriptState::Scope parent_script_scope(parent_scope.GetScriptState());
+        v8::Context::BackupIncumbentScope backup_incumbent(
+            parent_scope.GetContext());
+        parent_entered_body = MakeGarbageCollected<TestLocationReportBody>(
+            parent_scope.GetExecutionContext());
+      });
+
+  ASSERT_TRUE(same_origin_body);
+  EXPECT_EQ("https://child.example.com/secret/path",
+            same_origin_body->sourceFile());
+  EXPECT_EQ(2u, same_origin_body->lineNumber());
+  EXPECT_EQ(9u, same_origin_body->columnNumber());
+
+  ASSERT_TRUE(cross_origin_body);
+  EXPECT_TRUE(cross_origin_body->sourceFile().IsNull());
+  EXPECT_EQ(std::nullopt, cross_origin_body->lineNumber());
+  EXPECT_EQ(std::nullopt, cross_origin_body->columnNumber());
+
+  ASSERT_TRUE(parent_entered_body);
+  EXPECT_TRUE(parent_entered_body->sourceFile().IsNull());
+  EXPECT_EQ(std::nullopt, parent_entered_body->lineNumber());
+  EXPECT_EQ(std::nullopt, parent_entered_body->columnNumber());
 }
 
 }  // namespace

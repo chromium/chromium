@@ -15,6 +15,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class CORE_EXPORT LocationReportBody : public ReportBody {
  private:
   struct ReportLocation {
@@ -30,6 +32,9 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
 
   static ReportLocation CreateReportLocation(SourceLocation* location);
 
+  static ReportLocation CreateReportLocation(
+      const ExecutionContext* execution_context);
+
   explicit LocationReportBody(const ReportLocation& location)
       : source_file_(location.file),
         line_number_(location.line_number),
@@ -39,10 +44,13 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
   explicit LocationReportBody(SourceLocation* location)
       : LocationReportBody(CreateReportLocation(location)) {}
 
-  explicit LocationReportBody(
-      const String& source_file = g_empty_string,
-      std::optional<uint32_t> line_number = std::nullopt,
-      std::optional<uint32_t> column_number = std::nullopt)
+  // Captures the source location from `execution_context`.
+  explicit LocationReportBody(const ExecutionContext* execution_context)
+      : LocationReportBody(CreateReportLocation(execution_context)) {}
+
+  LocationReportBody(const String& source_file,
+                     std::optional<uint32_t> line_number,
+                     std::optional<uint32_t> column_number)
       : LocationReportBody(
             CreateReportLocation(source_file, line_number, column_number)) {}
 

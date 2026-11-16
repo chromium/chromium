@@ -30,7 +30,21 @@ CORE_EXPORT Vector<String> CaptureScriptUrlsFromCurrentStack(
 
 // Shortcut when location is unknown. Tries to capture call stack or parsing
 // location if available.
-CORE_EXPORT SourceLocation* CaptureSourceLocation(ExecutionContext*);
+CORE_EXPORT SourceLocation* CaptureSourceLocation(const ExecutionContext*);
+
+// Same as CaptureSourceLocation, but for web-exposed reporting: only captures
+// the top stack frame if it is same-origin with `execution_context`.
+CORE_EXPORT SourceLocation* CaptureSourceLocationForReporting(
+    const ExecutionContext* execution_context);
+
+// Tries to capture the top stack frame if it is same-origin with
+// `execution_context`, or falls back to the given `url`, `line_number`, and
+// `column_number`.
+CORE_EXPORT SourceLocation* CaptureSourceLocationForReporting(
+    const ExecutionContext* execution_context,
+    const String& url,
+    unsigned line_number,
+    unsigned column_number);
 
 // Shortcut when location is unknown. Tries to capture call stack or parsing
 // location using message if available.

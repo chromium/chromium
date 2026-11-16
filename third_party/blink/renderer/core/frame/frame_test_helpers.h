@@ -64,6 +64,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"  // IWYU pragma: export
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
@@ -80,6 +81,7 @@ class TickClock;
 
 namespace blink {
 class AgentGroupScheduler;
+class ScriptState;
 class WebFrame;
 class WebLocalFrameImpl;
 struct WebNavigationParams;
@@ -91,6 +93,13 @@ namespace frame_test_helpers {
 class TestWebFrameClient;
 class TestWidgetInputHandlerHost;
 class WebViewHelper;
+
+void RunInScriptStack(
+    ScriptState* script_state,
+    const KURL& script_url,
+    base::FunctionRef<void()> callback,
+    SanitizeScriptErrors sanitize = SanitizeScriptErrors::kDoNotSanitize,
+    const String& source_suffix = g_empty_string);
 
 cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings();
 
