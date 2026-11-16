@@ -14,22 +14,24 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -43,14 +45,10 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-constexpr char kDeclarativeEventPrefix[] = "declarative";
-#endif
-
-constexpr char kDeclarativeContentEventPrefix[] = "declarativeContent.";
-constexpr char kDeclarativeWebRequestEventPrefix[] = "declarativeWebRequest.";
-constexpr char kDeclarativeWebRequestWebViewEventPrefix[] =
-    "webViewInternal.declarativeWebRequest.";
+constexpr char kDeclarativeWebRequestWebViewOnRequestEvent[] =
+    "webViewInternal.declarativeWebRequest.onRequest";
+constexpr char kRulesRegistryNotAvailableError[] =
+    "Internal error: rules registry is not available.";
 
 // The type of Declarative API. To collect more granular metrics, a distinction
 // is made when the declarative web request API is used from a webview.
@@ -79,15 +77,15 @@ enum class DeclarativeAPIFunctionType {
 };
 
 DeclarativeAPIType GetDeclarativeAPIType(const std::string& event_name) {
-  if (base::StartsWith(event_name, kDeclarativeContentEventPrefix,
-                       base::CompareCase::SENSITIVE))
+  if (event_name == declarative_content_constants::kOnPageChanged) {
     return DeclarativeAPIType::kContent;
-  if (base::StartsWith(event_name, kDeclarativeWebRequestEventPrefix,
-                       base::CompareCase::SENSITIVE))
+  }
+  if (event_name == declarative_webrequest_constants::kOnRequest) {
     return DeclarativeAPIType::kWebRequest;
-  if (base::StartsWith(event_name, kDeclarativeWebRequestWebViewEventPrefix,
-                       base::CompareCase::SENSITIVE))
+  }
+  if (event_name == kDeclarativeWebRequestWebViewOnRequestEvent) {
     return DeclarativeAPIType::kWebRequestWebview;
+  }
   return DeclarativeAPIType::kUnknown;
 }
 
@@ -142,52 +140,97 @@ RulesFunction::RulesFunction() = default;
 RulesFunction::~RulesFunction() = default;
 
 ExtensionFunction::ResponseAction RulesFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(CreateParams());
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
-  const auto& event_name_value = args()[0];
-  const auto& web_view_instance_id_value = args()[1];
-  EXTENSION_FUNCTION_VALIDATE(event_name_value.is_string());
-  EXTENSION_FUNCTION_VALIDATE(web_view_instance_id_value.is_int());
-  std::string event_name = event_name_value.GetString();
-  int web_view_instance_id = web_view_instance_id_value.GetInt();
-
-  EXTENSION_FUNCTION_VALIDATE(extension_);
-
-  // <webview> embedders use the declarativeWebRequest API via
-  // <webview>.onRequest.
-  if (web_view_instance_id && !extension_->permissions_data()->HasAPIPermission(
-                                  mojom::APIPermissionID::kWebView)) {
-    return RespondNow(Error("Missing webview permission"));
+  // Declarative rule functions are restricted to privileged extension contexts.
+  if (!extension_ ||
+      source_context_type() != mojom::ContextType::kPrivilegedExtension) {
+    return RespondNow(BadMessage());
   }
 
-  RecordUMA(event_name);
+  // Validate IPC arguments against the generated schema (which also guarantees
+  // `args()[0]` is a string `eventName` and `args()[1]` is an int
+  // `webViewInstanceId`).
+  if (!CreateParams()) {
+    return RespondNow(BadMessage());
+  }
+  const std::string event_name = args()[0].GetString();
+  const int web_view_instance_id = args()[1].GetInt();
+  // `0` indicates a regular extension event; `> 0` is a `<webview>` instance
+  // ID.
+  if (web_view_instance_id < 0) {
+    return RespondNow(BadMessage());
+  }
+
+  // Only allow the three declarative events that actually support rules.
+  const DeclarativeAPIType api_type = GetDeclarativeAPIType(event_name);
+  if (api_type == DeclarativeAPIType::kUnknown) {
+    return RespondNow(BadMessage());
+  }
+
+  // `<webview>` instance IDs must be paired exclusively with the `<webview>`
+  // declarativeWebRequest event.
+  const bool from_web_view = web_view_instance_id > 0;
+  if (from_web_view != (api_type == DeclarativeAPIType::kWebRequestWebview)) {
+    return RespondNow(BadMessage());
+  }
+
+  // <webview> embedders use the declarativeWebRequest API via
+  // <webview>.request.onRequest from an embedder frame (never a service
+  // worker). Unlike `declarativeContent` and `declarativeWebRequest`,
+  // `kWebView` sets `kFlagCannotBeOptional` and `<webview>` bindings are never
+  // instantiated without it, so an uncompromised renderer cannot send
+  // `web_view_instance_id > 0` without `kWebView`.
+  if (from_web_view) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    if (is_from_service_worker() || render_frame_host() == nullptr ||
+        !extension_->permissions_data()->HasAPIPermission(
+            mojom::APIPermissionID::kWebView)) {
+      return RespondNow(BadMessage());
+    }
+#else
+    return RespondNow(BadMessage());
+#endif
+  }
+
+  // Verify the target declarative API (`declarativeContent`,
+  // `declarativeWebRequest`, or `webViewInternal`) is available to this
+  // extension and context. Return `Error` rather than `BadMessage` because
+  // `declarativeContent` and `declarativeWebRequest` can be optional
+  // permissions and `DeclarativeEvent` wrappers do not re-check access on call.
+  Feature::Availability availability =
+      ExtensionAPI::GetSharedInstance()->IsAvailable(
+          event_name, extension_.get(), source_context_type(), source_url(),
+          CheckAliasStatus::ALLOWED, context_id(), *GetContextData());
+  if (!availability.is_available()) {
+    return RespondNow(Error(availability.message()));
+  }
 
   // If we are not operating on a particular <webview>, then the key is 0.
   int rules_registry_id = rules_registry_ids::kDefaultRulesRegistryID;
+  std::string registry_event_name = event_name;
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-  bool from_web_view = web_view_instance_id != 0;
   if (from_web_view) {
-    // Sample event names:
-    // webViewInternal.declarativeWebRequest.onRequest.
-    // webViewInternal.declarativeWebRequest.onMessage.
-    // The "webViewInternal." prefix is removed from the event name.
-    std::size_t found = event_name.find(kDeclarativeEventPrefix);
-    EXTENSION_FUNCTION_VALIDATE(found != std::string::npos);
-    event_name = event_name.substr(found);
-
+    registry_event_name = declarative_webrequest_constants::kOnRequest;
     rules_registry_id = WebViewGuest::GetOrGenerateRulesRegistryID(
         source_process_id(), web_view_instance_id);
   }
 #endif
 
-  // The following call will return a NULL pointer for apps_shell, but should
-  // never be called there anyways.
-  rules_registry_ = RulesRegistryService::Get(browser_context())->
-      GetRulesRegistry(rules_registry_id, event_name);
-  // Raw access to this function is not available to extensions, therefore
-  // there should never be a request for a nonexisting rules registry.
-  EXTENSION_FUNCTION_VALIDATE(rules_registry_.get());
+  RulesRegistryService* rules_registry_service =
+      RulesRegistryService::Get(browser_context());
+  rules_registry_ = rules_registry_service
+                        ? rules_registry_service->GetRulesRegistry(
+                              rules_registry_id, registry_event_name)
+                        : nullptr;
+  // `rules_registry_` is only null on an invalid `source_process_id()`, during
+  // `RulesRegistryService` shutdown, or in embedders without a
+  // `ContentRulesRegistry`. None of these indicate a misbehaving renderer, so
+  // return a normal error rather than `BadMessage()`.
+  if (!rules_registry_) {
+    return RespondNow(Error(kRulesRegistryNotAvailableError));
+  }
+
+  RecordUMA(event_name);
 
   return RespondNow(RunInternal());
 }

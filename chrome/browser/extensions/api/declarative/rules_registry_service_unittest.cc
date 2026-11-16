@@ -210,10 +210,13 @@ TEST_F(RulesRegistryServiceTest, DefaultRulesRegistryRegistered) {
         declarative_content_constants::kOnPageChanged));
     EXPECT_TRUE(registry_service.content_rules_registry());
 
-    // Rules registries for web views should always be created.
+    // Rules registries for web views should always be created for `kOnRequest`,
+    // and rejected for listener-only event names such as `kOnMessage`.
     const int kWebViewRulesRegistryID = 1;
     EXPECT_TRUE(registry_service.GetRulesRegistry(
         kWebViewRulesRegistryID, declarative_webrequest_constants::kOnRequest));
+    EXPECT_FALSE(registry_service.GetRulesRegistry(
+        kWebViewRulesRegistryID, declarative_webrequest_constants::kOnMessage));
 
     // Invalid rules registry IDs must never lazily create a registry.
     EXPECT_FALSE(registry_service.GetRulesRegistry(

@@ -215,8 +215,7 @@
     "internal": true,
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "contexts": "all",
-    "matches": ["<all_urls>"]
+    "contexts": ["privileged_extension"]
   },
   "feedbackPrivate": [
     {

@@ -11,23 +11,32 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
+#include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 // This file tests declarativeWebRequest, which is not supported on Android.
 static_assert(!BUILDFLAG(IS_ANDROID));
@@ -100,6 +109,49 @@ const char kRedirectToDataNoRules[] =
     "chrome.runtime.onInstalled.addListener(function(details) {\n"
     "  chrome.test.sendMessage(\"ready\", function(reply) {})\n"
     "});\n";
+
+struct ApiRequestResult {
+  bool succeeded = false;
+  std::string error;
+};
+
+// Simulates `frame`'s renderer sending a raw `mojom::LocalFrameHost::Request`
+// IPC directly to the browser's `ExtensionFrameHost` (bypassing renderer JS
+// bindings so tests can forge arbitrary `function_name` / `context_type`
+// payloads as a compromised renderer would).
+ApiRequestResult SendApiRequestFromFrame(content::RenderFrameHost* frame,
+                                         const std::string& function_name,
+                                         const std::string& extension_id,
+                                         mojom::ContextType context_type,
+                                         base::ListValue arguments) {
+  auto params = mojom::RequestParams::New();
+  params->name = function_name;
+  params->arguments = std::move(arguments);
+  params->extension_id = extension_id;
+  params->source_url = frame->GetLastCommittedURL();
+  params->context_type = context_type;
+  params->request_id = 1;
+  params->has_callback = true;
+  params->worker_thread_id = kMainThreadId;
+  params->service_worker_version_id =
+      blink::mojom::kInvalidServiceWorkerVersionId;
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+  auto* extension_frame_host =
+      ExtensionWebContentsObserver::GetForWebContents(web_contents)
+          ->extension_frame_host_for_testing();
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      frame);
+  base::test::TestFuture<bool, base::ListValue, const std::string&,
+                         mojom::ExtraResponseDataPtr>
+      response_future;
+  extension_frame_host->Request(std::move(params),
+                                response_future.GetCallback());
+  extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
+      nullptr);
+  auto [success, response_wrapper, error, extra_data] = response_future.Take();
+  return {success, error};
+}
 
 }  // namespace
 
@@ -269,6 +321,94 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
   EXPECT_NE(kTestTitle, GetTitle());
   EXPECT_EQ(0u, NumberOfRegisteredRules(extension_id));
   EXPECT_FALSE(extension_prefs->HasPrefForExtension(extension_id));
+}
+
+// Regression test for crbug.com/574789262: a compromised web renderer that ran
+// an extension's content script must not be able to register
+// `declarativeWebRequest` rules via `events.addRules` (claiming either
+// `kContentScript` or `kPrivilegedExtension`), even when WebRequest proxying is
+// active or the extension holds `declarativeWebRequest`.
+IN_PROC_BROWSER_TEST_F(DeclarativeApiTest,
+                       ContentScriptCannotAccessDeclarativeRules) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir mv3_dir;
+  mv3_dir.WriteManifest(R"({
+    "name": "MV3 Content Script + DNR",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["declarativeNetRequest"],
+    "content_scripts": [{
+      "matches": ["<all_urls>"], "js": ["cs.js"], "run_at": "document_start"
+    }]
+  })");
+  mv3_dir.WriteFile(FILE_PATH_LITERAL("cs.js"),
+                    "chrome.test.sendMessage('mv3_cs_ready');");
+
+  TestExtensionDir mv2_dir;
+  mv2_dir.WriteManifest(R"({
+    "name": "MV2 With DeclarativeWebRequest",
+    "version": "1.0",
+    "manifest_version": 2,
+    "permissions": ["declarativeWebRequest", "<all_urls>"],
+    "content_scripts": [{
+      "matches": ["<all_urls>"], "js": ["cs.js"], "run_at": "document_start"
+    }]
+  })");
+  mv2_dir.WriteFile(FILE_PATH_LITERAL("cs.js"),
+                    "chrome.test.sendMessage('mv2_cs_ready');");
+
+  ExtensionTestMessageListener mv3_ready("mv3_cs_ready");
+  ExtensionTestMessageListener mv2_ready("mv2_cs_ready");
+  const Extension* mv3_ext = LoadExtension(mv3_dir.UnpackedPath());
+  const Extension* mv2_ext = LoadExtension(mv2_dir.UnpackedPath());
+  ASSERT_TRUE(mv3_ext);
+  ASSERT_TRUE(mv2_ext);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(mv3_ready.WaitUntilSatisfied());
+  ASSERT_TRUE(mv2_ready.WaitUntilSatisfied());
+
+  content::RenderFrameHost* web_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  constexpr char kHijackRuleArgs[] = R"([
+    "declarativeWebRequest.onRequest", 0, [{
+      "id": "r1",
+      "conditions": [{
+        "instanceType": "declarativeWebRequest.RequestMatcher",
+        "url": {"schemes": ["http"]}
+      }],
+      "actions": [{
+        "instanceType": "declarativeWebRequest.RedirectRequest",
+        "redirectUrl": "data:text/html;charset=utf-8,<title>HIJACKED</title>"
+      }]
+    }]
+  ])";
+
+  for (const Extension* ext : {mv3_ext, mv2_ext}) {
+    SCOPED_TRACE(ext->name());
+    ApiRequestResult cs_res =
+        SendApiRequestFromFrame(web_frame, "events.addRules", ext->id(),
+                                mojom::ContextType::kContentScript,
+                                base::test::ParseJsonList(kHijackRuleArgs));
+    EXPECT_FALSE(cs_res.succeeded);
+    EXPECT_EQ("Access to extension API denied.", cs_res.error);
+
+    ApiRequestResult spoof_res =
+        SendApiRequestFromFrame(web_frame, "events.addRules", ext->id(),
+                                mojom::ContextType::kPrivilegedExtension,
+                                base::test::ParseJsonList(kHijackRuleArgs));
+    EXPECT_FALSE(spoof_res.succeeded);
+    EXPECT_EQ("Invalid context type provided.", spoof_res.error);
+
+    EXPECT_EQ(0u, NumberOfRegisteredRules(ext->id()));
+  }
+
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_EQ("Title Of Awesomeness", GetTitle());
 }
 
 }  // namespace extensions
