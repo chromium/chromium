@@ -6797,14 +6797,21 @@ def CheckForCcIncludes(input_api, output_api):
     return results
 
 
+def _IsWatchlistStringLiteral(node, ast):
+    return isinstance(node, ast.Constant) and isinstance(node.value, str)
+
+
 def _CheckWatchlistDefinitionsEntrySyntax(key, value, ast):
-    if not isinstance(key, ast.Str):
+    if not _IsWatchlistStringLiteral(key, ast):
         return 'Key at line %d must be a string literal' % key.lineno
     if not isinstance(value, ast.Dict):
         return 'Value at line %d must be a dict' % value.lineno
     if len(value.keys) != 1:
         return 'Dict at line %d must have single entry' % value.lineno
-    if not isinstance(value.keys[0], ast.Str) or value.keys[0].s != 'filepath':
+    if (
+        not _IsWatchlistStringLiteral(value.keys[0], ast)
+        or value.keys[0].value != 'filepath'
+    ):
         return (
             'Entry at line %d must have a string literal \'filepath\' as key'
             % value.lineno
@@ -6813,18 +6820,18 @@ def _CheckWatchlistDefinitionsEntrySyntax(key, value, ast):
 
 
 def _CheckWatchlistsEntrySyntax(key, value, ast, email_regex):
-    if not isinstance(key, ast.Str):
+    if not _IsWatchlistStringLiteral(key, ast):
         return 'Key at line %d must be a string literal' % key.lineno
     if not isinstance(value, ast.List):
         return 'Value at line %d must be a list' % value.lineno
     for element in value.elts:
-        if not isinstance(element, ast.Str):
+        if not _IsWatchlistStringLiteral(element, ast):
             return 'Watchlist elements on line %d is not a string' % key.lineno
-        if not email_regex.match(element.s):
+        if not email_regex.match(element.value):
             return (
                 'Watchlist element on line %d doesn\'t look like a valid '
                 + 'email: %s'
-            ) % (key.lineno, element.s)
+            ) % (key.lineno, element.value)
     return None
 
 
@@ -6870,18 +6877,18 @@ def _CheckWATCHLISTSEntries(wd_dict, w_dict, input_api):
         if result is not None:
             return 'Bad entry in WATCHLISTS dict: %s' % result
 
-        if wd_key.s != w_key.s:
+        if wd_key.value != w_key.value:
             return mismatch_template % (
-                '%s at line %d' % (wd_key.s, wd_key.lineno),
-                '%s at line %d' % (w_key.s, w_key.lineno),
+                '%s at line %d' % (wd_key.value, wd_key.lineno),
+                '%s at line %d' % (w_key.value, w_key.lineno),
             )
 
-        if wd_key.s < last_key:
+        if wd_key.value < last_key:
             return (
                 'WATCHLISTS dict is not sorted lexicographically at line %d and %d'
                 % (wd_key.lineno, w_key.lineno)
             )
-        last_key = wd_key.s
+        last_key = wd_key.value
 
         i = i + 1
 
@@ -6900,8 +6907,8 @@ def _CheckWATCHLISTSSyntax(expression, input_api):
     second_value = dictionary.values[1]
 
     if (
-        not isinstance(first_key, ast.Str)
-        or first_key.s != 'WATCHLIST_DEFINITIONS'
+        not _IsWatchlistStringLiteral(first_key, ast)
+        or first_key.value != 'WATCHLIST_DEFINITIONS'
         or not isinstance(first_value, ast.Dict)
     ):
         return (
@@ -6910,8 +6917,8 @@ def _CheckWATCHLISTSSyntax(expression, input_api):
         )
 
     if (
-        not isinstance(second_key, ast.Str)
-        or second_key.s != 'WATCHLISTS'
+        not _IsWatchlistStringLiteral(second_key, ast)
+        or second_key.value != 'WATCHLISTS'
         or not isinstance(second_value, ast.Dict)
     ):
         return (

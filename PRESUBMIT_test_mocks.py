@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import ast
 from collections import defaultdict
 import fnmatch
 import inspect
@@ -86,6 +87,7 @@ class MockInputApi(object):
     DEFAULT_FILES_TO_SKIP = ()
 
     def __init__(self):
+        self.ast = ast
         self.basename = os.path.basename
         self.canned_checks = MockCannedChecks()
         self.fnmatch = fnmatch

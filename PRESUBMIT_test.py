@@ -8172,5 +8172,86 @@ class ExtensionFastPathsTest(unittest.TestCase):
         self.assertTrue(PRESUBMIT._HasCPlusPlusFiles(mock_inp_inl))
         self.assertTrue(PRESUBMIT._HasCPlusPlusHeaderFiles(mock_inp_inl))
 
+
+class CheckWATCHLISTSTest(unittest.TestCase):
+    def _run_check(self, lines):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [MockFile('WATCHLISTS', lines)]
+        return PRESUBMIT.CheckWATCHLISTS(mock_input_api, MockOutputApi())
+
+    def testValidWatchlists(self):
+        lines = [
+            '{',
+            '  "WATCHLIST_DEFINITIONS": {',
+            '    "alpha": {"filepath": "alpha/"},',
+            '    "beta": {"filepath": "beta/"},',
+            '  },',
+            '  "WATCHLISTS": {',
+            '    "alpha": ["alice@chromium.org"],',
+            '    "beta": ["bob@chromium.org"],',
+            '  },',
+            '}',
+        ]
+        self.assertEqual([], self._run_check(lines))
+
+    def testNonStringTopLevelKey(self):
+        lines = [
+            '{',
+            '  123: {},',
+            '  "WATCHLISTS": {},',
+            '}',
+        ]
+        results = self._run_check(lines)
+        self.assertEqual(1, len(results))
+        self.assertIn('WATCHLIST_DEFINITIONS', results[0].message)
+
+    def testNonStringDefinitionKey(self):
+        lines = [
+            '{',
+            '  "WATCHLIST_DEFINITIONS": {',
+            '    123: {"filepath": "alpha/"},',
+            '  },',
+            '  "WATCHLISTS": {',
+            '    "alpha": ["alice@chromium.org"],',
+            '  },',
+            '}',
+        ]
+        results = self._run_check(lines)
+        self.assertEqual(1, len(results))
+        self.assertIn('string literal', results[0].message)
+
+    def testInvalidEmailInWatchlist(self):
+        lines = [
+            '{',
+            '  "WATCHLIST_DEFINITIONS": {',
+            '    "alpha": {"filepath": "alpha/"},',
+            '  },',
+            '  "WATCHLISTS": {',
+            '    "alpha": ["not-an-email"],',
+            '  },',
+            '}',
+        ]
+        results = self._run_check(lines)
+        self.assertEqual(1, len(results))
+        self.assertIn('valid email', results[0].message)
+
+    def testUnsortedKeys(self):
+        lines = [
+            '{',
+            '  "WATCHLIST_DEFINITIONS": {',
+            '    "beta": {"filepath": "beta/"},',
+            '    "alpha": {"filepath": "alpha/"},',
+            '  },',
+            '  "WATCHLISTS": {',
+            '    "beta": ["bob@chromium.org"],',
+            '    "alpha": ["alice@chromium.org"],',
+            '  },',
+            '}',
+        ]
+        results = self._run_check(lines)
+        self.assertEqual(1, len(results))
+        self.assertIn('not sorted lexicographically', results[0].message)
+
+
 if __name__ == '__main__':
     unittest.main()
