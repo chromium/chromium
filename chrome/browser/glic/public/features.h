@@ -214,6 +214,10 @@ BASE_DECLARE_FEATURE(kGlicGuestInitialSize);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);
 extern const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel;
+// Whether a wiggle opens the overlay.
+extern const base::FeatureParam<bool> kGlicShakeTriggerShouldTrigger;
+// Whether every available detector also runs, only to count wiggles.
+extern const base::FeatureParam<bool> kGlicShakeTriggerShouldCount;
 
 BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 

@@ -369,10 +369,10 @@ void GlicSelectionObserver::OnInputEvent(
   if (!IsListenedToInputEvent(event.GetType())) {
     return;
   }
-  // Only the shake detector uses mouse moves. Skip them when it's off, so
-  // that each mouse move doesn't post a task.
+  // Only the shake trigger uses mouse moves. Skip them when it doesn't need
+  // them, so that each mouse move doesn't post a task.
   if (event.GetType() == blink::WebInputEvent::Type::kMouseMove &&
-      !shake_trigger_->IsEnabled()) {
+      !shake_trigger_->ShouldObserveMouseMoves()) {
     return;
   }
   // If text selection context was previously sent to the panel (e.g. via the

@@ -331,6 +331,10 @@ BASE_FEATURE(kGlicGuestInitialSize, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel{
     &kGlicShakeTrigger, "only_on_side_panel", true};
+const base::FeatureParam<bool> kGlicShakeTriggerShouldTrigger{
+    &kGlicShakeTrigger, "should_trigger", true};
+const base::FeatureParam<bool> kGlicShakeTriggerShouldCount{
+    &kGlicShakeTrigger, "should_count", false};
 
 BASE_FEATURE(kGlicAndroidTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 

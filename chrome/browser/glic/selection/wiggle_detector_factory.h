@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/selection/wiggle_detector.h"
 
 namespace glic {
@@ -21,7 +23,20 @@ enum class WiggleDetectorType {
   kMaxValue = kLegacyShake,
 };
 
-// Returns a new detector of `type`, or nullptr if this build doesn't have it.
+// kLegacyShake, plus the levels in branded builds.
+base::span<const WiggleDetectorType> GetAvailableWiggleDetectorTypes();
+
+// How long to ignore the pointer after a detection, after a click, and after
+// it rests for `pause_threshold`.
+struct WiggleTiming {
+  base::TimeDelta cooldown;
+  base::TimeDelta ignore_after_click;
+  base::TimeDelta pause_threshold;
+  base::TimeDelta ignore_after_pause;
+};
+WiggleTiming GetDefaultWiggleTiming();
+
+// `type` must be in GetAvailableWiggleDetectorTypes().
 std::unique_ptr<WiggleDetector> CreateWiggleDetector(WiggleDetectorType type);
 
 }  // namespace glic

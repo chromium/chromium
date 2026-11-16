@@ -4,10 +4,26 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/selection/legacy_shake_detector.h"
 #include "chrome/browser/glic/selection/wiggle_detector_factory.h"
 
 namespace glic {
+
+base::span<const WiggleDetectorType> GetAvailableWiggleDetectorTypes() {
+  static constexpr WiggleDetectorType kTypes[] = {
+      WiggleDetectorType::kLegacyShake};
+  return kTypes;
+}
+
+WiggleTiming GetDefaultWiggleTiming() {
+  return {.cooldown = base::TimeDelta(),
+          .ignore_after_click = base::TimeDelta(),
+          .pause_threshold = base::TimeDelta::Max(),
+          .ignore_after_pause = base::TimeDelta()};
+}
 
 std::unique_ptr<WiggleDetector> CreateWiggleDetector(WiggleDetectorType type) {
   switch (type) {
@@ -17,7 +33,7 @@ std::unique_ptr<WiggleDetector> CreateWiggleDetector(WiggleDetectorType type) {
     case WiggleDetectorType::kLevel1:
     case WiggleDetectorType::kLevel2:
     case WiggleDetectorType::kLevel3:
-      return nullptr;
+      NOTREACHED() << "Not available in this build";
   }
 }
 

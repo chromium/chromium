@@ -1233,7 +1233,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       GlicHandler::ShouldShowExperimentalTriggeringToggle(profile));
   html_source->AddBoolean(
       "showGlicShakeTrigger",
-      base::FeatureList::IsEnabled(features::kGlicShakeTrigger));
+      base::FeatureList::IsEnabled(features::kGlicShakeTrigger) &&
+          features::kGlicShakeTriggerShouldTrigger.Get());
 }
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {

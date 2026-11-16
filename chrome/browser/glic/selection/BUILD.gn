@@ -91,7 +91,10 @@ source_set("selection") {
 
 source_set("shake_trigger") {
   sources = [ "shake_trigger.h" ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":wiggle_detector",
+    "//base",
+  ]
 }
 
 source_set("wiggle_detector") {
