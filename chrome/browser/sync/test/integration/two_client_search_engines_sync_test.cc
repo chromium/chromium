@@ -8,7 +8,6 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -21,6 +20,7 @@ using search_engines_helper::AllServicesMatch;
 using search_engines_helper::ChangeDefaultSearchProvider;
 using search_engines_helper::DeleteSearchEngine;
 using search_engines_helper::EditSearchEngine;
+using search_engines_helper::FakeServerHasSearchEngineChecker;
 using search_engines_helper::GetDefaultSearchEngineKeyword;
 using search_engines_helper::GetServiceForBrowserContext;
 using search_engines_helper::HasSearchEngine;
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, DisableSync) {
 
   ASSERT_TRUE(GetClient(1)->DisableAllSelectableTypes());
   AddSearchEngine(/*profile_index=*/0, "test0");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(FakeServerHasSearchEngineChecker("test0").Wait());
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "test0"));
   EXPECT_FALSE(HasSearchEngine(/*profile_index=*/1, "test0"));
 
