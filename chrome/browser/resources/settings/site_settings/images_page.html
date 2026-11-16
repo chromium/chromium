@@ -1,13 +1,17 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    .searchTerm="${this.searchTerm_}"
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsImagesDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.IMAGES]]"
+      .category="${ContentSettingsTypes.IMAGES}"
       allow-option-label="$i18n{siteSettingsImagesAllowed}"
       allow-option-icon="privacy:imagesmode"
       block-option-label="$i18n{siteSettingsImagesBlocked}"
@@ -15,9 +19,9 @@
       block-option-icon="privacy:hide-image">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.IMAGES]]"
+      .category="${ContentSettingsTypes.IMAGES}"
       allow-header="$i18n{siteSettingsImagesAllowedExceptions}"
       block-header="$i18n{siteSettingsImagedBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

@@ -1,13 +1,17 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsKeyboardLock}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    .searchTerm="${this.searchTerm_}"
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsKeyboardLockDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
+      .category="${ContentSettingsTypes.KEYBOARD_LOCK}"
       ask-option-label=
           "$i18n{siteSettingsKeyboardLockAsk}"
       ask-option-icon="settings20:keyboard-lock"
@@ -15,11 +19,11 @@
       block-option-icon="settings20:keyboard-lock-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
+      .category="${ContentSettingsTypes.KEYBOARD_LOCK}"
       allow-header=
           "$i18n{siteSettingsKeyboardLockAllowedExceptions}"
       block-header=
           "$i18n{siteSettingsKeyboardLockBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>
