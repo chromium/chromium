@@ -158,7 +158,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ui/tab_sharing:tab_sharing",
   "//chrome/browser/ui/views/crostini:crostini",
   "//chrome/browser/ui/views/media_preview:media_preview",
-  "//chrome/browser/ui/views/profiles:profile_picker_post_sign_in_adapter",
   "//chrome/browser/ui/views/select_file_dialog_extension:select_file_dialog_extension",
   "//chrome/browser/ui/views/side_panel:side_panel",
   "//chrome/browser/ui/views/user_education:user_education",
