@@ -2562,6 +2562,39 @@ TEST_F(HistoryBackendTest, QueryHistoryWithTextQueryIncludesActorSource) {
                       testing::Property(&URLResult::has_actor_source, true))));
 }
 
+// Tests that text and host-only searches record
+// History.QueryHistoryText.Duration, and not the basic query histogram.
+TEST_F(HistoryBackendTest, QueryHistoryTextRecordsDuration) {
+  ASSERT_TRUE(backend_.get());
+
+  HistoryAddPageArgs args;
+  args.url = GURL("https://www.example.com/");
+  args.time = base::Time::Now();
+  backend_->AddPage(args);
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryResults results =
+        backend_->QueryHistory(/*text_query=*/u"example", options);
+    EXPECT_EQ(1u, results.size());
+    histogram_tester.ExpectTotalCount("History.QueryHistoryText.Duration", 1);
+    histogram_tester.ExpectTotalCount("History.QueryHistoryBasic.Duration", 0);
+  }
+
+  {
+    // Host-only searches also go through `QueryHistoryText()`.
+    options.hostname_suffix = "example.com";
+    base::HistogramTester histogram_tester;
+    QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+    EXPECT_EQ(1u, results.size());
+    histogram_tester.ExpectTotalCount("History.QueryHistoryText.Duration", 1);
+    histogram_tester.ExpectTotalCount("History.QueryHistoryBasic.Duration", 0);
+  }
+}
+
 // Tests that a text search returns each visit's own content annotations.
 TEST_F(HistoryBackendTest,
        QueryHistoryWithTextQueryIncludesContentAnnotations) {

@@ -3024,6 +3024,8 @@ std::vector<URLResult> HistoryBackend::QueryHistoryBasicLegacy(
 void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                       const QueryOptions& options,
                                       QueryResults* result) {
+  base::ElapsedTimer timer;
+
   URLRows text_matches;
   if (text_query.empty()) {
     // Host-only search.
@@ -3101,6 +3103,9 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       url_result.set_content_annotations(std::move(annot_it->second));
     }
   }
+
+  base::UmaHistogramTimes("History.QueryHistoryText.Duration", timer.Elapsed());
+
   result->SetURLResults(std::move(matching_visits));
   result->set_has_more_results(has_more_results);
 }

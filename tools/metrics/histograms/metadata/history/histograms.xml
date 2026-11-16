@@ -173,6 +173,11 @@ chromium-metrics-reviews@google.com.
     (i.e. when the page is opened, when the user scrolls to the bottom of the
     available list, and when the user changes the search terms). Records the
     number of {LocalOrRemote} visits from {VisitAge}.
+
+    Counts entries after BrowsingHistoryService merges visits. Since M159,
+    chrome://history queries with QueryOptions::KEEP_ALL_DUPLICATES, so a batch
+    holds a fixed number of visits rather than entries, and Desktop values
+    decrease from M159.
   </summary>
   <token key="LocalOrRemote">
     <variant name="Combined" summary="combined (local and remote)"/>
@@ -2123,6 +2128,10 @@ chromium-metrics-reviews@google.com.
     Records the backend thread execution duration (in milliseconds) for
     HistoryBackend::QueryHistoryBasic to scan visits, look up URL rows, and
     attach visit content annotations.
+
+    Since M159, chrome://history queries with QueryOptions::KEEP_ALL_DUPLICATES,
+    so the database no longer skips earlier same-day visits to a URL for that
+    query, and Desktop values may change from M159.
   </summary>
 </histogram>
 
@@ -2133,6 +2142,24 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of URLResult items assembled and returned by
     HistoryBackend::QueryHistoryBasic.
+
+    Since M159, chrome://history queries with QueryOptions::KEEP_ALL_DUPLICATES,
+    so results include earlier same-day visits to a URL, and Desktop values
+    increase from M159.
+  </summary>
+</histogram>
+
+<histogram name="History.QueryHistoryText.Duration" units="ms"
+    expires_after="2027-11-15">
+  <owner>kutylbeky@google.com</owner>
+  <owner>kalinino@google.com</owner>
+  <owner>src/components/history/OWNERS</owner>
+  <summary>
+    Records how long a history search takes on the history backend thread, in
+    milliseconds. A history search looks for visits whose page title or URL
+    matches a search text, or whose host matches a hostname. Recorded once per
+    search. History queries without a search text or hostname are recorded in
+    History.QueryHistoryBasic.Duration.
   </summary>
 </histogram>
 
