@@ -290,8 +290,9 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
 
   CHECK(rules_->CanFocusWindow(window, nullptr), base::NotFatalUntil::M163);
   if (window) {
-    CHECK_EQ(window, rules_->GetFocusableWindow(window),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/584969301): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(window, rules_->GetFocusableWindow(window));
   }
 
   base::AutoReset<bool> updating_focus(&updating_focus_, true);
