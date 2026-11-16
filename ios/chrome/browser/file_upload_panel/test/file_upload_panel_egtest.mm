@@ -649,10 +649,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   chrome_test_util::GREYAssertErrorNil(error);
 }
 
-// TODO(crbug.com/458669054): Test is flaky.
 // Tests that the camera is presented directly when the capture attribute is
 // set.
-- (void)FLAKY_testDirectCameraPresentation {
+- (void)testDirectCameraPresentation {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -883,13 +882,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that tapping the camera action logs the correct metric.
-// TODO(crbug.com/459838957): Test is flaky on devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuActionCamera testContextMenuActionCamera
-#else
-#define MAYBE_testContextMenuActionCamera FLAKY_testContextMenuActionCamera
-#endif
-- (void)MAYBE_testContextMenuActionCamera {
+- (void)testContextMenuActionCamera {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -923,8 +916,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that taking a photo and submitting it records the correct metrics. Test
 // is disabled on simulator because the camera cannot be used.
-// TODO(crbug.com/465123880): Failing on device.
-- (void)DISABLED_testDirectCameraPresentationAndSubmit {
+- (void)testDirectCameraPresentationAndSubmit {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1027,9 +1019,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking a directory logs the success metrics.
-// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
-// re-enable test when it has been fixed. The test is also flaky on device.
-- (void)FLAKY_testFilePickerDirectorySelectionSuccess {
+- (void)testFilePickerDirectorySelectionSuccess {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1084,16 +1074,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking a single file logs the success metrics.
-// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
-// re-enable test when it has been fixed.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testFilePickerSingleFileSelectionSuccess \
-  FLAKY_testFilePickerSingleFileSelectionSuccess
-#else
-#define MAYBE_testFilePickerSingleFileSelectionSuccess \
-  testFilePickerSingleFileSelectionSuccess
-#endif
-- (void)MAYBE_testFilePickerSingleFileSelectionSuccess {
+- (void)testFilePickerSingleFileSelectionSuccess {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1146,9 +1127,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that the `accept` attribute for images correctly disables non-matching
 // files.
-// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
-// re-enable test when it has been fixed. The test is also flaky on device.
-- (void)FLAKY_testFilePickerAcceptAttributeImage {
+- (void)testFilePickerAcceptAttributeImage {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1189,9 +1168,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that the `accept` attribute for video correctly disables non-matching
 // files.
-// TODO(crbug.com/464179603): Marked flaky because of an iOS bug,
-// re-enable test when it has been fixed.
-- (void)FLAKY_testFilePickerAcceptAttributeVideo {
+- (void)testFilePickerAcceptAttributeVideo {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1232,9 +1209,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking multiple files logs the success metrics.
-// TODO(crbug.com/464179603): Disabled because of an iOS bug, re-enable test
-// when it has been fixed.
-- (void)DISABLED_testFilePickerMultipleFileSelectionSuccess {
+- (void)testFilePickerMultipleFileSelectionSuccess {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");

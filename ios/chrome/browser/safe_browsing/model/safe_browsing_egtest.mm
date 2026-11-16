@@ -976,11 +976,6 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
 - (void)testRestoreToWarningPagePreservesHistory {
-  // TODO(crbug.com/41489568): Test fails on iOS 18.4. Re-enable the test.
-  if (@available(iOS 18.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.4.");
-  }
-
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
   [ChromeEarlGrey loadURL:_safeURL1];
@@ -1145,13 +1140,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 
 // Verifies that the Enteprise warning interstitial allows to bypass the warning
 // and navigate to urls flagged by Enterprise organizations.
-// TODO(crbug.com/522400526): Test fails on physical iOS 18 devices.
 - (void)testEnterpriseWarningPageBypass {
-#if !TARGET_OS_SIMULATOR
-  if (!@available(iOS 26.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on physical iOS 18 devices.");
-  }
-#endif
   EnableEnterpriseUrlFilteringPrefs();
 
   [ChromeEarlGrey loadURL:_safeURL1];
@@ -1197,13 +1186,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 // Verifies that the Enteprise warning interstitial allows to bypass the warning
 // after refreshing the warning page and navigate to urls flagged by Enterprise
 // organizations.
-// TODO(crbug.com/522400526): Test fails on physical iOS 18 devices.
 - (void)testEnterpriseWarningPageRefreshedThenBypass {
-#if !TARGET_OS_SIMULATOR
-  if (!@available(iOS 26.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on physical iOS 18 devices.");
-  }
-#endif
   EnableEnterpriseUrlFilteringPrefs();
 
   [ChromeEarlGrey loadURL:_safeURL1];

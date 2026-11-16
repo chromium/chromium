@@ -125,8 +125,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page.
-// TODO(crbug.com/454267702): test is flaky, disable it.
-- (void)DISABLED_testTwoColorsSnapshot {
+- (void)testTwoColorsSnapshot {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];

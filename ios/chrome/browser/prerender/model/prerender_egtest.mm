@@ -103,9 +103,8 @@ GREYElementInteraction* RequestDesktopButton() {
 #define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
   DISABLED_testOpenTabInTabStripBeforePrerenderedTab
 #else
-// TODO(crbug.com/441756543): Re-enable this test once the flakiness is fixed.
 #define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
-  FLAKY_testOpenTabInTabStripBeforePrerenderedTab
+  testOpenTabInTabStripBeforePrerenderedTab
 #endif  // defined(OFFICIAL_BUILD)
 
 - (void)addURLToHistory {
@@ -149,15 +148,7 @@ GREYElementInteraction* RequestDesktopButton() {
 #pragma mark - Tests
 
 // Test that tapping the prerendered suggestions opens it.
-// TODO(crbug.com/40833424): Reenable.
-- (void)DISABLED_testTapPrerenderSuggestions {
-  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
-  // letters problem is fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
+- (void)testTapPrerenderSuggestions {
   [self addURLToHistory];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageString = base::SysUTF8ToNSString(pageURL.GetContent());
@@ -202,8 +193,7 @@ GREYElementInteraction* RequestDesktopButton() {
 
 // Tests that tapping the prerendered suggestions keeps the UserAgent of the
 // previous page.
-// TODO(crbug.com/40708867): Test is flaky.
-- (void)DISABLED_testUserAgentTypeInPreviousLoad {
+- (void)testUserAgentTypeInPreviousLoad {
   [self addURLToHistory];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageString = base::SysUTF8ToNSString(pageURL.GetContent());

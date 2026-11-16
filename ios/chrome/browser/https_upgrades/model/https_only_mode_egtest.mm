@@ -362,13 +362,6 @@ enum class TestType {
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL
 // which redirects to the original HTTP URL. This should show the interstitial.
 - (void)test_HTTPSRedirectsToHTTP_ShouldFallback {
-  // TODO(crbug.com/521729379): Fails on iOS 26 and below on physical device.
-#if !TARGET_IPHONE_SIMULATOR
-  if (!@available(iOS 26.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 26.0 and below on device.");
-  }
-#endif
-
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -422,15 +415,7 @@ enum class TestType {
 // Tests that prerendered navigations that should be upgraded are cancelled.
 // This test is adapted from testTapPrerenderSuggestions() in
 // prerender_egtest.mm.
-// TODO(crbug.com/40833424): Reenable.
-- (void)DISABLED_test_BadHTTPS_ShouldCancelPrerender {
-  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
-  // letters problem is fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
+- (void)test_BadHTTPS_ShouldCancelPrerender {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -503,15 +488,7 @@ enum class TestType {
 // 3. Type the first letter of the http:// URL in step 1. This will prerender
 //    the http URL.
 // 4. Check that the prerender was cancelled properly.
-// TODO(crbug.com/40833424): Reenable.
-- (void)DISABLED_test_Prerender_CancelShouldNotCrash {
-  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
-  // letters problem is fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
+- (void)test_Prerender_CancelShouldNotCrash {
   // Step 1: Disable HTTPS-Only Mode and visit an http:// URL. This puts the
   // URL in browser history.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
@@ -939,13 +916,6 @@ enum class TestType {
 // navigate to a new page and go back. This should load the HTTP URL
 // without showing the interstitial again.
 - (void)test_BadHTTPS_GoBackToAllowlistedSite {
-  // TODO(crbug.com/521729379): Fails on iOS 26 and below on physical device.
-#if !TARGET_IPHONE_SIMULATOR
-  if (!@available(iOS 26.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 26.0 and below on device.");
-  }
-#endif
-
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -982,13 +952,6 @@ enum class TestType {
 // interstitial. Then, navigate to a new page and go back. This should load the
 // HTTP URL without showing the interstitial again.
 - (void)test_SlowHTTPS_GoBackToAllowlistedSite {
-  // TODO(crbug.com/521729379): Fails on iOS 26 and below on physical device.
-#if !TARGET_IPHONE_SIMULATOR
-  if (!@available(iOS 26.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 26.0 and below on device.");
-  }
-#endif
-
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS

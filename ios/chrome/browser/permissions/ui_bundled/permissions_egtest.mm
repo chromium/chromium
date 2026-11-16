@@ -281,8 +281,7 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that when microphone permission is granted, the user could see a banner
 // notification and then toggle microphone permission through the infobar modal
 // through the location bar badge.
-// TODO(crbug.com/460744137): Test is flaky.
-- (void)FLAKY_testAllowAndBlockMicrophonePermission {
+- (void)testAllowAndBlockMicrophonePermission {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/microphone_only.html")];
@@ -465,8 +464,7 @@ void TapDoneButtonOnInfobarModal() {
 }
 
 // Tests that permissions are reset after user navigation.
-// TODO(crbug.com/40921852): Re-enable the test.
-- (void)DISABLED_testPermissionsAfterNavigation {
+- (void)testPermissionsAfterNavigation {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/microphone_only.html")];
@@ -509,11 +507,6 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions stay the same after user switches to another tab then
 // comes back.
 - (void)testPermissionsAfterTabSwitch {
-  // TODO(crbug.com/40921852): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iOS17.");
-  }
-
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // Opens a page that requests both camera and microphone permissions, and
   // block microphone permission.
@@ -635,15 +628,7 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that a supervised user account with parental controls enabled does not
 // have access to modify camera or microphone site permissions.
-// TODO(crbug.com/40921852): Failing on iOS17 on physical devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess \
-  testSupervisedUserPermissionsNoCameraOrMicAccess
-#else
-#define MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess \
-  DISABLED_testSupervisedUserPermissionsNoCameraOrMicAccess
-#endif
-- (void)MAYBE_testSupervisedUserPermissionsNoCameraOrMicAccess {
+- (void)testSupervisedUserPermissionsNoCameraOrMicAccess {
   // These settings are controlled in Family Link and would be updated through
   // Sync content settings.
   [ChromeEarlGrey setContentSetting:ContentSetting::CONTENT_SETTING_BLOCK

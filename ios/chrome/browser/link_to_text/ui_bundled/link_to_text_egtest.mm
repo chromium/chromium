@@ -124,8 +124,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 // Tests that a link can be generated for a simple text selection.
-// crbug.com/1403831 Disable flaky test
-- (void)DISABLED_testGenerateLinkForSimpleText {
+- (void)testGenerateLinkForSimpleText {
   [ChromeEarlGrey clearPasteboard];
   GURL pageURL = self.testServer->GetURL(kTestURL);
   [ChromeEarlGrey loadURL:pageURL];
@@ -203,8 +202,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
 }
 
-// TODO(crbug.com/386205292): Test is flaky.
-- (void)FLAKY_testInputDisablesGenerateLink {
+- (void)testInputDisablesGenerateLink {
   // In order to make the menu show up later in the test, the pasteboard can't
   // be empty.
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
