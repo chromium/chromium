@@ -25,6 +25,10 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace net {
 class IsolationInfo;
 }  // namespace net
@@ -62,6 +66,7 @@ class CONTENT_EXPORT WorkerScriptLoader
   WorkerScriptLoader(
       ChildProcessId process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
+      const blink::StorageKey& worker_storage_key,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,

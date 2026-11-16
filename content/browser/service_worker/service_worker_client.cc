@@ -650,10 +650,12 @@ std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
 }
 
 // For dedicated/shared worker cases, if a storage key is returned, it will have
-// its origin replaced by |origin|. This would mean that the origin of the
-// WorkerHost and the origin as used by the service worker code don't match,
-// however in cases where these wouldn't match the load will be aborted later
-// anyway.
+// its origin replaced by |origin| (the script URL's origin). The worker's own
+// StorageKey origin is never opaque here:
+// ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker() refuses to
+// create a ServiceWorkerClient for opaque-origin workers, so this substitution
+// cannot turn an opaque worker into a client matching its precursor origin's
+// registrations (crbug.com/578670204).
 std::optional<blink::StorageKey> GetStorageKeyFromDedicatedWorkerHost(
     content::StoragePartition* storage_partition,
     blink::DedicatedWorkerToken dedicated_worker_token,
@@ -663,6 +665,7 @@ std::optional<blink::StorageKey> GetStorageKeyFromDedicatedWorkerHost(
   auto* worker_host =
       worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
   if (worker_host) {
+    DUMP_WILL_BE_CHECK(!worker_host->GetWorkerStorageKey().origin().opaque());
     return worker_host->GetWorkerStorageKey().WithOrigin(origin);
   }
   return std::nullopt;
@@ -677,6 +680,7 @@ std::optional<blink::StorageKey> GetStorageKeyFromSharedWorkerHost(
   auto* worker_host =
       worker_service->GetSharedWorkerHostFromToken(shared_worker_token);
   if (worker_host) {
+    DUMP_WILL_BE_CHECK(!worker_host->GetWorkerStorageKey().origin().opaque());
     return worker_host->GetWorkerStorageKey().WithOrigin(origin);
   }
   return std::nullopt;
