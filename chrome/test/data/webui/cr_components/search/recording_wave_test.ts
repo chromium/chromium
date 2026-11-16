@@ -314,8 +314,10 @@ suite('RecordingWaveElementTest', () => {
       'AudioProcessor simulation mode returns simulated volume from transcript',
       async () => {
         const origPerformanceNow = performance.now.bind(performance);
+        const originalRandom = Math.random;
         let mockNowMs = 1000;
         performance.now = () => mockNowMs;
+        Math.random = () => 0;
         AudioProcessor.setSimulate(true);
         try {
           assertEquals(
@@ -382,6 +384,7 @@ suite('RecordingWaveElementTest', () => {
               'Volume must reset to exactly 0 after stopListening()');
         } finally {
           performance.now = origPerformanceNow;
+          Math.random = originalRandom;
           AudioProcessor.setSimulate(false);
         }
       });
