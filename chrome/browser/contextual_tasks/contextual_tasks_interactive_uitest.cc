@@ -6032,6 +6032,72 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
                   1));
 }
 
+// This tests the following CUJ:
+//  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
+//  (2) User types a query into the Lens Overlay Contextual Searchbox and
+//      presses Enter to submit.
+//  (3) The Contextual Tasks side panel opens on an AI Mode page.
+//  (4) User clicks the toolbar overflow menu button to open the menu.
+//  (5) User clicks the Help menu item.
+//  (6) The Help Center article opens in a new foreground tab.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
+                       OverflowMenuHelpOpensNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHelpTab);
+
+  const DeepQuery kOverflowMenuButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "#overflowMenuButton",
+  };
+  const DeepQuery kOverflowMenu{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-overflow-menu",
+  };
+  const DeepQuery kHelpButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-overflow-menu",
+      "#helpButton",
+  };
+  const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
+  const GURL kHelpUrl(GetContextualTasksOverflowMenuHelpUrl());
+
+  RunTestSequence(
+      // Steps 1-3: Open the Contextual Tasks side panel on an AI page from a
+      // Contextual Searchbox query, then instrument the rearchitecture toolbar.
+      SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
+                                                    kAimUrl),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+
+      // Step 4: Open the toolbar overflow menu and wait for the Help item.
+      WaitForElementVisible(kSidePanelToolbarWebContentsId,
+                            kOverflowMenuButton),
+      ClickButton(kSidePanelToolbarWebContentsId, kOverflowMenuButton),
+      WaitForElementExists(kSidePanelToolbarWebContentsId, kOverflowMenu),
+      WaitForJsResultAt(kSidePanelToolbarWebContentsId, kOverflowMenu,
+                        "el => Boolean(el.shadowRoot.querySelector('#menu')"
+                        "?.open && el.shadowRoot.querySelector('#helpButton'))",
+                        true),
+
+      // Step 5: Click the Help item. Instrument the next tab first so the new
+      // tab is tracked as soon as it is added.
+      InstrumentNextTab(kHelpTab),
+      ClickButton(kSidePanelToolbarWebContentsId, kHelpButton),
+
+      // Step 6: The Help Center article opens in a new foreground tab.
+      WaitForWebContentsNavigation(kHelpTab, kHelpUrl),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          1));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
