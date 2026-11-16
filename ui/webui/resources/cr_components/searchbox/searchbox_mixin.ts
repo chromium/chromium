@@ -978,19 +978,19 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (this.handleVirtualFocusEnter(e)) {
         return;
       }
-      // If no new query's `results` are pending (though new async results for
-      // the current query may be pending), navigate. Otherwise, the user
-      // pressed enter after sending a new query that hasn't returned any
-      // results yet. Wait for the 1st results of the new query before
-      // navigating.
-      if (this.activeQueryId === -1 ||
-          this.result?.queryId === this.activeQueryId) {
+      const resultsPending = this.activeQueryId !== -1 &&
+          this.result?.queryId !== this.activeQueryId;
+      if (isPureCtrlEnter) {
+        // Ctrl+Enter adds 'www.' and '.com' to the input or to the selected
+        // match. It doesn't need the up-to-date matches; if they're pending,
+        // the selection is stale, so use the input instead.
+        this.openCtrlEnterMatch(
+            !resultsPending && this.selectedMatch ? this.matchIndex : -1);
+      } else if (!resultsPending) {
+        // If no new query's `results` are pending (though new async results for
+        // the current query may be pending), navigate.
         if (this.selectedMatch) {
-          if (isPureCtrlEnter) {
-            this.openCtrlEnterMatch(this.matchIndex);
-          } else {
-            this.navigateToMatch(this.matchIndex, e);
-          }
+          this.navigateToMatch(this.matchIndex, e);
         }
       } else {
         // User typed and pressed 'Enter' too quickly. Ignore this for now

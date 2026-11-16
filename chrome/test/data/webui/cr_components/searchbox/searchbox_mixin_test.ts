@@ -653,6 +653,44 @@ suite('SearchboxMixinTest', () => {
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
 
+  test('pressing Ctrl+Enter on input too quickly', async () => {
+    element.shouldAppendDotCom = true;
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    // Press Ctrl+Enter before the 'hello world' matches arrive.
+    await simulateUserTextInput(mockInput, 'hello world');
+    const queryId = element.activeQueryId;
+    const ctrlEnter = createKeyboardEvent('Enter', {ctrlKey: true});
+    mockInput.inputElement.dispatchEvent(ctrlEnter);
+    assertTrue(ctrlEnter.defaultPrevented);
+    await microtasksFinished();
+
+    // Opens the input with '.com' appended right away, instead of waiting for
+    // the matches to open the default match.
+    assertEquals(
+        1, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    const args =
+        testProxy.handler.getArgs('openPopupSelectionWithDisposition')[0];
+    assertEquals(-1, args.selection.line);
+    assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
+
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId,
+      input: 'hello world',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
   test('pressing Ctrl+Enter in keyword mode acts as normal enter', async () => {
     element.shouldAppendDotCom = true;
     element.keywordModeManager.enter(
