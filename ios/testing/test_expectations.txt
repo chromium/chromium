@@ -427,7 +427,6 @@ crbug.com/464179603 [ iPhone Simulator iOS26 ] FileUploadPanelTestCase/testFileP
 crbug.com/464179603 FileUploadPanelTestCase/testFilePickerMultipleFileSelectionSuccess [ Pass Failure ]
 crbug.com/464179603 [ iPhone Simulator iOS26 ] FileUploadPanelTestCase/testFilePickerMultipleFileSelectionSuccess [ Failure ]
 crbug.com/477857213 [ Device ] FileUploadPanelTestCase/testPhotoPickerVideoSelection [ Pass Failure ]
-crbug.com/477857213 [ iPhone Device ] FileUploadPanelTestCase/testPhotoPickerVideoSelection [ Failure ]
 crbug.com/521729379 [ Device iOS18 ] ZZZ_HttpsOnlyModeTestCase/test_HTTPSRedirectsToHTTP_ShouldFallback [ Pass Failure ]
 crbug.com/521729379 [ Device iOS18 ] ZZZ_HttpsUpgradesTestCase/test_HTTPSRedirectsToHTTP_ShouldFallback [ Pass Failure ]
 crbug.com/40833424 ZZZ_HttpsOnlyModeTestCase/test_BadHTTPS_ShouldCancelPrerender [ Pass Failure ]
