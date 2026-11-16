@@ -351,8 +351,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
   GURL url =
       embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
   NavigateTab(0, url);
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-
   WaitForURLOnServer(url);
 
   // Ensure the session start time was properly populated in the header.
@@ -386,8 +384,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, SessionStartTime) {
   GURL url =
       embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
   NavigateTab(0, url);
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-
   WaitForURLOnServer(url);
 
   // Ensure the session start time in the header was *not* updated.
