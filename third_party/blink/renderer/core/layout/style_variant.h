@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_STYLE_VARIANT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_STYLE_VARIANT_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/compiler_specific.h"
 

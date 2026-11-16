@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_ANCHOR_QUERY_ENUMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_ANCHOR_QUERY_ENUMS_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace blink {
 

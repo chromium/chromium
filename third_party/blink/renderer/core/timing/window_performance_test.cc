@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstdint>
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"

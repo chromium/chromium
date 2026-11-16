@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_MANAGER_H_
 
-#include <cstdint>
-
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"

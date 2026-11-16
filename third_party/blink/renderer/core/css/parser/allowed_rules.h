@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_ALLOWED_RULES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_ALLOWED_RULES_H_
 
-#include <cstdint>
 #include <initializer_list>
 
 #include "css_at_rule_id.h"

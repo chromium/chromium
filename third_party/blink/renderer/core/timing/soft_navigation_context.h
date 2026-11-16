@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_CONTEXT_H_
 
-#include <cstdint>
-
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"

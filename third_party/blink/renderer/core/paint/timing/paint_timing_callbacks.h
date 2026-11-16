@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CALLBACKS_H_
 
-#include <cstdint>
 #include <optional>
 
 #include "third_party/blink/renderer/platform/wtf/functional.h"

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_INTERACTION_EFFECTS_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_INTERACTION_EFFECTS_MONITOR_H_
 
-#include <cstdint>
-
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_WHITE_SPACE_H_
 
 #include <bit>
-#include <cstdint>
 
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 

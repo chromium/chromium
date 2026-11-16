@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <cstdint>
 #include <optional>
 
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"

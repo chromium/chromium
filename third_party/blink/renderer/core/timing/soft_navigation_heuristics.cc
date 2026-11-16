@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <iterator>
 #include <utility>
 

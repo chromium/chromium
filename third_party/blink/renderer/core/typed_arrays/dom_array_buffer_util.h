@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_UTIL_H_
 
 #include <concepts>
-#include <cstdint>
 #include <utility>
 
 #include "base/check.h"

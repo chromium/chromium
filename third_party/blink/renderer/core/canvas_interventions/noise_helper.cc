@@ -6,7 +6,6 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_BACKGROUND_TRACING_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_BACKGROUND_TRACING_HELPER_H_
 
-#include <cstdint>
 #include <string>
 #include <string_view>
 

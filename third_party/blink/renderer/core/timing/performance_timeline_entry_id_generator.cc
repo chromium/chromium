@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 
-#include <cstdint>
-
 #include "base/check.h"
 #include "base/rand_util.h"
 

@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
 
-#include <cstdint>
-
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"

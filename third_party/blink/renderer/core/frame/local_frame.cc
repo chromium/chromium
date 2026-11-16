@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <limits>
 #include <memory>
 #include <utility>

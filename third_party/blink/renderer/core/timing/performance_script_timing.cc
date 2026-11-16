@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 
-#include <cstdint>
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_invoker_type.h"

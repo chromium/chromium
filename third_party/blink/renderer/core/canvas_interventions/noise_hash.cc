@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 
 #include <bit>
-#include <cstdint>
 
 #include "base/check.h"
 #include "base/containers/span.h"
