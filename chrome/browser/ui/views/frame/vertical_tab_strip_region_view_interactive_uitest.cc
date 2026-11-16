@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -409,7 +410,7 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
               return browser_view()
                   ->GetLocationBar()
                   ->GetOmniboxPopupView()
-                  ->presenter()
+                  ->popup_host()
                   ->GetWebUIContent();
             }))),
         InSameContext(WaitForWebContentsReady(
@@ -444,9 +445,10 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
   views::Widget* GetOmniboxPopupWidget() {
     OmniboxPopupView* popup_view =
         browser_view()->GetLocationBar()->GetOmniboxPopupView();
-    OmniboxPopupPresenterBase* presenter =
-        popup_view ? popup_view->presenter() : nullptr;
-    return presenter ? presenter->GetWidget() : nullptr;
+    OmniboxPopupHost* host = popup_view ? popup_view->popup_host() : nullptr;
+    OmniboxPopupWebUIBaseContent* content =
+        host ? host->GetWebUIContent() : nullptr;
+    return content ? content->GetWidget() : nullptr;
   }
 
   // Waits until the omnibox popup, if any, isn't clipped.
