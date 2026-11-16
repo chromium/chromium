@@ -4,14 +4,13 @@
 
 import 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 
-import {createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, UrlDeemphasisMode} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertIconMaskImageUrl, createClipboardEvent, createUrlMatch} from './searchbox_test_utils.js';
+import {assertIconMaskImageUrl, createClipboardEvent, createSearchMatch, createUrlMatch} from './searchbox_test_utils.js';
 
 async function createInput(properties: Partial<SearchboxInputElement> = {}):
     Promise<SearchboxInputElement> {
@@ -71,7 +70,7 @@ suite('SearchboxInputTest', () => {
   test('Copying or cutting search match fails', async () => {
     input = await createInput();
     input.setInput({text: 'hello ', inline: 'world'});
-    input.selectedMatch = createSearchMatchForTesting({
+    input.selectedMatch = createSearchMatch({
       allowedToBeDefaultMatch: true,
       inlineAutocompletion: 'world',
     });

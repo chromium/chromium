@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {createAutocompleteMatch} from '//resources/cr_components/search/autocomplete_match_utils.js';
 import {getUrlForCss, resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -15,7 +16,7 @@ import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebo
 import {computeImageUrl} from './common.js';
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
-import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.js';
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
 
 export interface ComposeboxMatchElement {
   $: {

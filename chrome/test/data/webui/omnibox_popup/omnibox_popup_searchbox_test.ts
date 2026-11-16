@@ -6,12 +6,11 @@ import {isMac} from '//resources/js/platform.js';
 import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
-import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createMatchKeywordModel, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -298,17 +297,16 @@ suite('OmniboxPopupSearchboxTest', function() {
 
         // Autocomplete result arrives for 'r' with inline autocompletion
         // 'eddit.com'.
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              input: 'r',
-              matches: [
-                createSearchMatchForTesting({
-                  allowedToBeDefaultMatch: true,
-                  inlineAutocompletion: 'eddit.com',
-                  fillIntoEdit: 'reddit.com',
-                }),
-              ],
-            }));
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          input: 'r',
+          matches: [
+            createSearchMatch({
+              allowedToBeDefaultMatch: true,
+              inlineAutocompletion: 'eddit.com',
+              fillIntoEdit: 'reddit.com',
+            }),
+          ],
+        }));
         await microtasksFinished();
         // Verify that raw typed 'r' was not overwritten by inline
         // autocompletion.
@@ -552,16 +550,15 @@ suite('OmniboxPopupSearchboxTest', function() {
     await microtasksFinished();
 
     // Send a stale autocomplete result (from an older query, e.g. "stale").
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'stale',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'https://stale.com',
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      input: 'stale',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'https://stale.com',
+        }),
+      ],
+    }));
     await microtasksFinished();
 
     // Verify draft was protected (not overwritten) and dropdown remains closed.
@@ -1079,13 +1076,12 @@ suite('OmniboxPopupSearchboxTest', function() {
       matchesUpdate: MatchesUpdate.kQueryZps,
     }));
     await microtasksFinished();
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: searchbox.activeQueryId,
-          sequenceId: 1,
-          input: testText,
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      sequenceId: 1,
+      input: testText,
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     testProxy.handler.reset();
@@ -1114,13 +1110,12 @@ suite('OmniboxPopupSearchboxTest', function() {
       matchesUpdate: MatchesUpdate.kQueryZps,
     }));
     await microtasksFinished();
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: searchbox.activeQueryId,
-          sequenceId: 1,
-          input: testText,
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      sequenceId: 1,
+      input: testText,
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     testProxy.handler.reset();
@@ -1151,13 +1146,12 @@ suite('OmniboxPopupSearchboxTest', function() {
     }));
     await microtasksFinished();
     const queryId = searchbox.activeQueryId;
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId,
-          sequenceId: 1,
-          input: testText,
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId,
+      sequenceId: 1,
+      input: testText,
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     testProxy.handler.reset();
@@ -1268,13 +1262,12 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(testProxy.handler.getArgs('stopAutocomplete')[0]);
 
     // Late results for the stopped query don't open the dropdown.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: firstClickQueryId,
-          sequenceId: 1,
-          input: testText,
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: firstClickQueryId,
+      sequenceId: 1,
+      input: testText,
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertFalse(searchbox.dropdownIsVisible);
 
@@ -1303,13 +1296,12 @@ suite('OmniboxPopupSearchboxTest', function() {
     await microtasksFinished();
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
     const firstClickQueryId = searchbox.activeQueryId;
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: firstClickQueryId,
-          sequenceId: 1,
-          input: testText,
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: firstClickQueryId,
+      sequenceId: 1,
+      input: testText,
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
 
@@ -1323,13 +1315,12 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertTrue(searchbox.dropdownIsVisible);
 
     // Further updates for the stopped query are ignored.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: firstClickQueryId,
-          sequenceId: 2,
-          input: testText,
-          matches: [],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: firstClickQueryId,
+      sequenceId: 2,
+      input: testText,
+      matches: [],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
 
@@ -1362,8 +1353,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     // happens: the URL is only used as the input state pushed to the WebUI.
     const url = 'https://www.google.com/search?q=cats';
     const zeroSuggestMatches = [
-      createSearchMatchForTesting({fillIntoEdit: 'dogs'}),
-      createSearchMatchForTesting({fillIntoEdit: 'birds'}),
+      createSearchMatch({fillIntoEdit: 'dogs'}),
+      createSearchMatch({fillIntoEdit: 'birds'}),
     ];
     const getMatchTexts = () =>
         searchbox.result?.matches.map(match => match.fillIntoEdit);
@@ -1378,12 +1369,11 @@ suite('OmniboxPopupSearchboxTest', function() {
     }));
     await microtasksFinished();
     const zeroSuggestQueryId = searchbox.activeQueryId;
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: zeroSuggestQueryId,
-          input: url,
-          matches: zeroSuggestMatches,
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: zeroSuggestQueryId,
+      input: url,
+      matches: zeroSuggestMatches,
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     assertDeepEquals(['dogs', 'birds'], getMatchTexts());
@@ -1411,16 +1401,14 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     // Further updates of the zero-prefix query are still shown, but a default
     // match doesn't restore the deleted text.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: zeroSuggestQueryId,
-          input: url,
-          matches: [
-            createSearchMatchForTesting(
-                {allowedToBeDefaultMatch: true, fillIntoEdit: url}),
-            ...zeroSuggestMatches,
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: zeroSuggestQueryId,
+      input: url,
+      matches: [
+        createSearchMatch({allowedToBeDefaultMatch: true, fillIntoEdit: url}),
+        ...zeroSuggestMatches,
+      ],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     assertDeepEquals([url, 'dogs', 'birds'], getMatchTexts());
@@ -1459,12 +1447,11 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(zeroSuggestQueryId, searchbox.activeQueryId);
 
     // Its suggestions are shown once they arrive.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: zeroSuggestQueryId,
-          input: url,
-          matches: [createSearchMatchForTesting({fillIntoEdit: 'dogs'})],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: zeroSuggestQueryId,
+      input: url,
+      matches: [createSearchMatch({fillIntoEdit: 'dogs'})],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     assertEquals('', input.value);
@@ -1483,12 +1470,11 @@ suite('OmniboxPopupSearchboxTest', function() {
     input.dispatchEvent(new InputEvent(
         'input', {inputType: 'insertText', bubbles: true, composed: true}));
     await microtasksFinished();
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: searchbox.activeQueryId,
-          input: 'hello world',
-          matches: [createSearchMatchForTesting()],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: 'hello world',
+      matches: [createSearchMatch()],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
     handler.reset();
@@ -2223,15 +2209,14 @@ suite('OmniboxPopupSearchboxTest', function() {
       matchesUpdate: MatchesUpdate.kQueryZps,
     }));
     await microtasksFinished();
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: searchbox.activeQueryId,
-          input: '',
-          matches: [
-            createSearchMatchForTesting({fillIntoEdit}),
-            createSearchMatchForTesting({fillIntoEdit: 'news'}),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: '',
+      matches: [
+        createSearchMatch({fillIntoEdit}),
+        createSearchMatch({fillIntoEdit: 'news'}),
+      ],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
 
@@ -2338,16 +2323,15 @@ suite('OmniboxPopupSearchboxTest', function() {
     }
 
     // Arrow down to preview the non-default match "hello world".
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: searchbox.activeQueryId,
-          input: 'hello',
-          matches: [
-            createSearchMatchForTesting(
-                {allowedToBeDefaultMatch: true, fillIntoEdit: 'hello'}),
-            createSearchMatchForTesting({fillIntoEdit: 'hello world'}),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: 'hello',
+      matches: [
+        createSearchMatch(
+            {allowedToBeDefaultMatch: true, fillIntoEdit: 'hello'}),
+        createSearchMatch({fillIntoEdit: 'hello world'}),
+      ],
+    }));
     await microtasksFinished();
     searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
       bubbles: true,
@@ -2536,16 +2520,15 @@ suite('OmniboxPopupSearchboxTest', function() {
     // bounds.
     searchbox.activeQueryId = 0;
     searchbox.lastQueriedInput = '';
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: '',
-          matches: [
-            createSearchMatchForTesting(),
-            createSearchMatchForTesting(),
-            createSearchMatchForTesting(),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: '',
+      matches: [
+        createSearchMatch(),
+        createSearchMatch(),
+        createSearchMatch(),
+      ],
+    }));
     await microtasksFinished();
 
     testProxy.handler.reset();
@@ -2582,16 +2565,15 @@ suite('OmniboxPopupSearchboxTest', function() {
     searchbox.activeQueryId = 0;
 
     // Populate results to make dropdown visible.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'hello',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'hello world',
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      input: 'hello',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'hello world',
+        }),
+      ],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
 
@@ -2804,16 +2786,16 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    // Simulate autocomplete results.
    searchbox.lastQueriedInput = 'test';
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'test',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          inlineAutocompletion: 'ing',
          fillIntoEdit: 'testing',
        }),
-       createSearchMatchForTesting(),
+       createSearchMatch(),
      ],
    }));
    await microtasksFinished();
@@ -2857,11 +2839,11 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    searchbox.activeQueryId = 0;
    searchbox.lastQueriedInput = '';
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: '',
      matches: [
-       createSearchMatchForTesting(),
+       createSearchMatch(),
      ],
    }));
    await microtasksFinished();
@@ -2879,10 +2861,10 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('InputWrapperFocusout_NullRelatedTarget', async () => {
    searchbox.activeQueryId = 0;
    searchbox.lastQueriedInput = 'hello';
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'hello',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -2915,21 +2897,20 @@ suite('OmniboxPopupSearchboxTest', function() {
      searchbox.getInputElement().inputElement.value = 'a';
      searchbox.lastQueriedInput = 'a';
      searchbox.activeQueryId = 0;
-     testProxy.page.autocompleteResultChanged(
-         createAutocompleteResultForTesting({
-           input: 'a',
-           matches: [
-             createSearchMatchForTesting({
-               allowedToBeDefaultMatch: true,
-               fillIntoEdit: 'a',
-               inlineAutocompletion: '',
-             }),
-             createSearchMatchForTesting({
-               allowedToBeDefaultMatch: false,
-               fillIntoEdit: 'suggestion-1',
-             }),
-           ],
-         }));
+     testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+       input: 'a',
+       matches: [
+         createSearchMatch({
+           allowedToBeDefaultMatch: true,
+           fillIntoEdit: 'a',
+           inlineAutocompletion: '',
+         }),
+         createSearchMatch({
+           allowedToBeDefaultMatch: false,
+           fillIntoEdit: 'suggestion-1',
+         }),
+       ],
+     }));
      await microtasksFinished();
      assertTrue(searchbox.dropdownIsVisible);
 
@@ -3094,10 +3075,10 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    searchbox.activeQueryId = 0;
    searchbox.lastQueriedInput = '';
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: '',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
 
@@ -3285,14 +3266,14 @@ suite('OmniboxPopupSearchboxTest', function() {
    searchbox.activeQueryId = 0;
    searchbox.lastQueriedInput = 'search query';
    searchbox.getInputElement().inputElement.value = 'search query';
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'search query',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          fillIntoEdit: 'search query',
-         keywordModel: createMatchKeywordModelForTesting({
+         keywordModel: createMatchKeywordModel({
            type: KeywordType.kInKeyword,
            keyword: 'youtube.com',
          }),
@@ -3388,14 +3369,14 @@ suite('OmniboxPopupSearchboxTest', function() {
    searchbox.activeQueryId = 0;
    searchbox.lastQueriedInput = '';
    searchbox.getInputElement().inputElement.value = '';
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: '',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          fillIntoEdit: 'youtube.com',
-         keywordModel: createMatchKeywordModelForTesting({
+         keywordModel: createMatchKeywordModel({
            type: KeywordType.kInKeyword,
            keyword: 'youtube.com',
          }),
@@ -3465,10 +3446,10 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('EscapeIgnoredDuringIMEComposition', async () => {
    searchbox.lastQueriedInput = 'a';
    searchbox.activeQueryId = 0;
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      input: 'a',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          fillIntoEdit: 'autocomplete.com',
          inlineAutocompletion: 'utocomplete.com',
@@ -3498,8 +3479,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
 
    const matches = [
-     createSearchMatchForTesting({suggestionGroupId: 1}),
-     createSearchMatchForTesting({suggestionGroupId: 100}),
+     createSearchMatch({suggestionGroupId: 1}),
+     createSearchMatch({suggestionGroupId: 100}),
    ];
    const suggestionGroupsMap = {
      1: {
@@ -3514,7 +3495,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      },
    };
 
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 1001,
      input: 'test',
@@ -3535,11 +3516,11 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('OpensAimPopupWhenComposeButtonClicked', async () => {
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 456,
      input: 'test',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -3559,11 +3540,11 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('OpensAimPopupWhenComposeButtonKeyboardActivated', async () => {
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 789,
      input: 'test',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -3773,10 +3754,10 @@ suite('OmniboxPopupSearchboxTest', function() {
 
      // The pending results are discarded, so their inline autocompletion
      // doesn't replace the selection and they don't open the dropdown.
-     searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     searchbox.onAutocompleteResultChanged(createAutocompleteResult({
        queryId,
        input: 'youtub',
-       matches: [createSearchMatchForTesting({
+       matches: [createSearchMatch({
          allowedToBeDefaultMatch: true,
          inlineAutocompletion: 'e.com',
        })],
@@ -3918,10 +3899,10 @@ suite('OmniboxPopupSearchboxTest', function() {
      inputEl.dispatchEvent(
          new InputEvent('input', {bubbles: true, composed: true}));
      await microtasksFinished();
-     searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     searchbox.onAutocompleteResultChanged(createAutocompleteResult({
        queryId: searchbox.activeQueryId,
        input: 'zxqv',
-       matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+       matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
      }));
      await microtasksFinished();
 
@@ -4137,14 +4118,14 @@ suite('OmniboxPopupSearchboxTest', function() {
        new InputEvent('input', {bubbles: true, composed: true}));
    await microtasksFinished();
 
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'a',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          fillIntoEdit: 'a',
-         keywordModel: createMatchKeywordModelForTesting({
+         keywordModel: createMatchKeywordModel({
            type: KeywordType.kInKeyword,
            keyword: 'google.com',
          }),
@@ -4212,14 +4193,14 @@ suite('OmniboxPopupSearchboxTest', function() {
        new InputEvent('input', {bubbles: true, composed: true}));
    await microtasksFinished();
 
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'cats',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          fillIntoEdit: 'cats',
-         keywordModel: createMatchKeywordModelForTesting({
+         keywordModel: createMatchKeywordModel({
            type: KeywordType.kInKeyword,
            keyword: 'google.com',
          }),
@@ -4432,22 +4413,21 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        // Simulate autocomplete results.
        const matches = [
-         createSearchMatchForTesting({
+         createSearchMatch({
            allowedToBeDefaultMatch: true,
            isSearchType: false,
            fillIntoEdit: 'https://helloworld.com',
            inlineAutocompletion: 'world.com',
          }),
-         createSearchMatchForTesting({
+         createSearchMatch({
            fillIntoEdit: 'hello second',
          }),
        ];
-       testProxy.page.autocompleteResultChanged(
-           createAutocompleteResultForTesting({
-             queryId: searchbox.activeQueryId,
-             input: 'hello',
-             matches: matches,
-           }));
+       testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+         queryId: searchbox.activeQueryId,
+         input: 'hello',
+         matches: matches,
+       }));
        await microtasksFinished();
 
        assertTrue(searchbox.dropdownIsVisible);
@@ -4504,24 +4484,23 @@ suite('OmniboxPopupSearchboxTest', function() {
      searchbox.getInputElement().inputElement.value = 'king';
      searchbox.lastQueriedInput = 'king';
      searchbox.activeQueryId = 0;
-     testProxy.page.autocompleteResultChanged(
-         createAutocompleteResultForTesting({
-           queryId: 0,
-           input: 'king',
-           matches: [
-             createSearchMatchForTesting({
-               allowedToBeDefaultMatch: true,
-               isSearchType: false,
-               destinationUrl: 'https://en.wikipedia.org/wiki/King_Arthur',
-               fillIntoEdit: 'en.wikipedia.org/wiki/King_Arthur',
-               inlineAutocompletion: ' Arthur - Wikipedia',
-               additionalText: additionalText,
-             }),
-             createSearchMatchForTesting({
-               fillIntoEdit: 'king',
-             }),
-           ],
-         }));
+     testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+       queryId: 0,
+       input: 'king',
+       matches: [
+         createSearchMatch({
+           allowedToBeDefaultMatch: true,
+           isSearchType: false,
+           destinationUrl: 'https://en.wikipedia.org/wiki/King_Arthur',
+           fillIntoEdit: 'en.wikipedia.org/wiki/King_Arthur',
+           inlineAutocompletion: ' Arthur - Wikipedia',
+           additionalText: additionalText,
+         }),
+         createSearchMatch({
+           fillIntoEdit: 'king',
+         }),
+       ],
+     }));
      await microtasksFinished();
 
      assertTrue(searchbox.dropdownIsVisible);
@@ -4600,11 +4579,11 @@ suite('OmniboxPopupSearchboxTest', function() {
    searchbox.getInputElement().inputElement.value = 'king';
    searchbox.lastQueriedInput = 'king';
    searchbox.activeQueryId = 0;
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'king',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          isSearchType: false,
          destinationUrl: 'https://en.wikipedia.org/wiki/King_Arthur',
@@ -4676,7 +4655,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      testProxy.page.updateLensSearchEligibility(true);
      testProxy.page.updateContentSharingPolicy(true);
 
-     const result = createAutocompleteResultForTesting({
+     const result = createAutocompleteResult({
        input: '',
        matches: [],
      });
@@ -4710,7 +4689,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
      testProxy.page.updateLensSearchEligibility(true);
 
-     const result = createAutocompleteResultForTesting({
+     const result = createAutocompleteResult({
        input: '',
        matches: [],
      });
@@ -4869,7 +4848,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        const inputElement = localSearchbox.getInputElement();
        inputElement.multiLineEnabled = true;
        await microtasksFinished();
-       localSearchbox.result = createAutocompleteResultForTesting({
+       localSearchbox.result = createAutocompleteResult({
          input: 'hello world',
          matches: [],
        });
@@ -4959,11 +4938,11 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('HandlesClearPopup', async () => {
    // Populate autocomplete result to show dropdown.
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 123,
      input: 'test',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -4980,11 +4959,11 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('ClearsAutocompleteMatchesOnSetInputState', async () => {
    // Populate autocomplete result to show dropdown.
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 123,
      input: 'test',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -5002,11 +4981,11 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertFalse(!!searchbox.result);
 
    // Populate autocomplete result again on Tab 2.
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 124,
      input: 'test2',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -5033,13 +5012,13 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  suite('InputIconState', () => {
    test('InputMatchUpdatesWithSelectedMatch', async () => {
-     const navMatch = createSearchMatchForTesting({
+     const navMatch = createSearchMatch({
        suggestTemplate: createSuggestTemplateInfo({primaryText: 'example.com'}),
        destinationUrl: 'https://example.com/',
        isSearchType: false,
        type: 'history-url',
      });
-     const searchMatch = createSearchMatchForTesting({
+     const searchMatch = createSearchMatch({
        suggestTemplate:
            createSuggestTemplateInfo({primaryText: 'example query'}),
        destinationUrl: 'https://www.google.com/search?q=example',
@@ -5048,7 +5027,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      });
 
      searchbox.activeQueryId = 0;
-     const result = createAutocompleteResultForTesting({
+     const result = createAutocompleteResult({
        input: 'example',
        matches: [navMatch, searchMatch],
        queryId: 0,
@@ -5087,13 +5066,13 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
 
    test('InputMatchClearsWhenCutEmptiesInput', async () => {
-     const navMatch = createSearchMatchForTesting({
+     const navMatch = createSearchMatch({
        suggestTemplate: createSuggestTemplateInfo({primaryText: 'example.com'}),
        destinationUrl: 'https://example.com/',
        isSearchType: false,
        type: 'history-url',
      });
-     const searchMatch = createSearchMatchForTesting({
+     const searchMatch = createSearchMatch({
        suggestTemplate:
            createSuggestTemplateInfo({primaryText: 'example query'}),
        destinationUrl: 'https://www.google.com/search?q=example',
@@ -5102,7 +5081,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      });
 
      searchbox.activeQueryId = 0;
-     const result = createAutocompleteResultForTesting({
+     const result = createAutocompleteResult({
        input: 'example',
        matches: [navMatch, searchMatch],
        queryId: 0,
@@ -5155,7 +5134,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          }));
          await microtasksFinished();
 
-         const navMatch = createSearchMatchForTesting({
+         const navMatch = createSearchMatch({
            suggestTemplate:
                createSuggestTemplateInfo({primaryText: 'example.com'}),
            destinationUrl: 'https://example.com/',
@@ -5163,7 +5142,7 @@ suite('OmniboxPopupSearchboxTest', function() {
            isSearchType: false,
          });
          searchbox.activeQueryId = 0;
-         const result = createAutocompleteResultForTesting({
+         const result = createAutocompleteResult({
            input: 'example',
            matches: [navMatch],
            queryId: 0,
@@ -5210,7 +5189,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    test(
        'SelectedMatchRestoredForInputOnTabSwitchWithCurrentMatch', async () => {
-         const navMatch = createSearchMatchForTesting({
+         const navMatch = createSearchMatch({
            suggestTemplate:
                createSuggestTemplateInfo({primaryText: 'espn.com'}),
            destinationUrl: 'https://espn.com/',
@@ -5401,17 +5380,17 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('TabKeyPrioritizesKeywordEntryOverInlineAutocomplete', async () => {
    searchbox.virtualFocusEnabled = false;
    const keyword = 'youtube.com';
-   const match = createSearchMatchForTesting({
+   const match = createSearchMatch({
      allowedToBeDefaultMatch: true,
      suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube'}),
-     keywordModel: createMatchKeywordModelForTesting({
+     keywordModel: createMatchKeywordModel({
        type: KeywordType.kChip,
        keyword,
        chipHint: 'Search YouTube',
      }),
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'you',
      matches: [match],
@@ -5442,12 +5421,12 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('TabKeyFallsBackToInlineAutocompleteWhenNoKeywordChip', async () => {
    searchbox.virtualFocusEnabled = false;
-   const match = createSearchMatchForTesting({
+   const match = createSearchMatch({
      allowedToBeDefaultMatch: true,
      suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube.com'}),
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'you',
      matches: [match],
@@ -5518,17 +5497,17 @@ suite('OmniboxPopupSearchboxTest', function() {
    loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
    searchbox.virtualFocusEnabled = true;
 
-   const match = createSearchMatchForTesting({
+   const match = createSearchMatch({
      allowedToBeDefaultMatch: true,
      fillIntoEdit: 'youtube.com',
-     keywordModel: createMatchKeywordModelForTesting({
+     keywordModel: createMatchKeywordModel({
        type: KeywordType.kChip,
        keyword: 'youtube.com',
        chipHint: 'Search YouTube',
      }),
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'youtube.com',
      matches: [match],
@@ -5577,12 +5556,12 @@ suite('OmniboxPopupSearchboxTest', function() {
    loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
    searchbox.virtualFocusEnabled = true;
 
-   const match = createSearchMatchForTesting({
+   const match = createSearchMatch({
      destinationUrl: 'https://example.com/delete',
      supportsDeletion: true,
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'delete query',
      matches: [match],
@@ -5612,7 +5591,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('SelectionStaysOnDeletedLineAfterMatchDeletion', async () => {
    const matches = [0, 1, 2, 3].map(i => {
-     return createSearchMatchForTesting({
+     return createSearchMatch({
        allowedToBeDefaultMatch: i === 0,
        fillIntoEdit: `query ${i}`,
        destinationUrl: `https://example.com/${i}`,
@@ -5620,7 +5599,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      });
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'query',
      matches,
@@ -5642,7 +5621,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    // Like the native omnibox, the selection stays on the deleted line rather
    // than moving to the default match.
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'query',
      matches: matches.filter((_, i) => i !== 2),
@@ -5862,21 +5841,20 @@ suite('OmniboxPopupSearchboxTest', function() {
        testProxy.page.updateAimPopupEligibility(true);
        await microtasksFinished();
 
-       const match1 = createSearchMatchForTesting({
+       const match1 = createSearchMatch({
          allowedToBeDefaultMatch: true,
          suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
        });
-       const match2 = createSearchMatchForTesting({
+       const match2 = createSearchMatch({
          allowedToBeDefaultMatch: false,
          suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 2'}),
        });
        localSearchbox.activeQueryId = 0;
-       localSearchbox.onAutocompleteResultChanged(
-           createAutocompleteResultForTesting({
-             queryId: 0,
-             input: 'test',
-             matches: [match1, match2],
-           }));
+       localSearchbox.onAutocompleteResultChanged(createAutocompleteResult({
+         queryId: 0,
+         input: 'test',
+         matches: [match1, match2],
+       }));
        await microtasksFinished();
 
        assertTrue(localSearchbox.showContextEntrypoint);
@@ -6010,15 +5988,14 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
 
    localSearchbox.activeQueryId = 0;
-   localSearchbox.onAutocompleteResultChanged(
-       createAutocompleteResultForTesting({
-         queryId: 0,
-         input: 'test',
-         matches: [createSearchMatchForTesting({
-           allowedToBeDefaultMatch: true,
-           suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
-         })],
-       }));
+   localSearchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId: 0,
+     input: 'test',
+     matches: [createSearchMatch({
+       allowedToBeDefaultMatch: true,
+       suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
+     })],
+   }));
    await microtasksFinished();
 
    assertTrue(localSearchbox.showContextEntrypoint);
@@ -6094,15 +6071,14 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
 
    localSearchbox.activeQueryId = 0;
-   localSearchbox.onAutocompleteResultChanged(
-       createAutocompleteResultForTesting({
-         queryId: 0,
-         input: 'test',
-         matches: [createSearchMatchForTesting({
-           allowedToBeDefaultMatch: true,
-           suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
-         })],
-       }));
+   localSearchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId: 0,
+     input: 'test',
+     matches: [createSearchMatch({
+       allowedToBeDefaultMatch: true,
+       suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
+     })],
+   }));
    await microtasksFinished();
 
    assertTrue(localSearchbox.showContextEntrypoint);
@@ -6195,16 +6171,14 @@ suite('OmniboxPopupSearchboxTest', function() {
        await microtasksFinished();
 
        localSearchbox.activeQueryId = 0;
-       localSearchbox.onAutocompleteResultChanged(
-           createAutocompleteResultForTesting({
-             queryId: 0,
-             input: 'test',
-             matches: [createSearchMatchForTesting({
-               allowedToBeDefaultMatch: true,
-               suggestTemplate:
-                   createSuggestTemplateInfo({primaryText: 'match 1'}),
-             })],
-           }));
+       localSearchbox.onAutocompleteResultChanged(createAutocompleteResult({
+         queryId: 0,
+         input: 'test',
+         matches: [createSearchMatch({
+           allowedToBeDefaultMatch: true,
+           suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
+         })],
+       }));
        await microtasksFinished();
 
        assertTrue(localSearchbox.showContextEntrypoint);
@@ -6410,18 +6384,17 @@ suite('OmniboxPopupSearchboxTest', function() {
        searchbox.virtualFocusEnabled = true;
        searchbox.dropdownIsVisible = true;
 
-       const match = createSearchMatchForTesting({
+       const match = createSearchMatch({
          allowedToBeDefaultMatch: true,
          suggestTemplate:
              createSuggestTemplateInfo({primaryText: 'first match'}),
        });
        searchbox.activeQueryId = 0;
-       searchbox.onAutocompleteResultChanged(
-           createAutocompleteResultForTesting({
-             queryId: 0,
-             input: 'first',
-             matches: [match],
-           }));
+       searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+         queryId: 0,
+         input: 'first',
+         matches: [match],
+       }));
        await microtasksFinished();
 
        searchbox.focusInput();
@@ -6520,13 +6493,13 @@ suite('OmniboxPopupSearchboxTest', function() {
    searchbox.dropdownIsVisible = true;
    searchbox.focusInput();
 
-   const match = createSearchMatchForTesting({
+   const match = createSearchMatch({
      allowedToBeDefaultMatch: true,
      suggestTemplate: createSuggestTemplateInfo({primaryText: 'first match'}),
      inlineAutocompletion: ' match',
    });
    searchbox.activeQueryId = 0;
-   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
      queryId: 0,
      input: 'first',
      matches: [match],
@@ -7186,13 +7159,12 @@ suite('OmniboxPopupSearchboxTest', function() {
        matchesUpdate: MatchesUpdate.kQueryZps,
      }));
      await microtasksFinished();
-     testProxy.page.autocompleteResultChanged(
-         createAutocompleteResultForTesting({
-           queryId: searchbox.activeQueryId,
-           sequenceId: 1,
-           input: 'helloworld',
-           matches: [createSearchMatchForTesting()],
-         }));
+     testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+       queryId: searchbox.activeQueryId,
+       sequenceId: 1,
+       input: 'helloworld',
+       matches: [createSearchMatch()],
+     }));
      await microtasksFinished();
      assertTrue(searchbox.dropdownIsVisible);
      testProxy.handler.reset();
@@ -7393,11 +7365,11 @@ suite('OmniboxPopupSearchboxTest', function() {
      isFocused: false,
      selection: {start: 0, end: 0},
    }));
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      sequenceId: 1,
      input: 'test',
-     matches: [createSearchMatchForTesting()],
+     matches: [createSearchMatch()],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
@@ -8044,11 +8016,11 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(null, searchbox.$.input.urlEmphasis);
 
    // Push autocomplete results with precomputed urlEmphasis on default match.
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'https://example.com/test',
      matches: [
-       createSearchMatchForTesting({
+       createSearchMatch({
          allowedToBeDefaultMatch: true,
          isSearchType: false,
          fillIntoEdit: 'https://example.com/test',
@@ -8171,14 +8143,14 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        // Provide autocomplete results with precomputed urlEmphasis.
        const matches = [
-         createSearchMatchForTesting({
+         createSearchMatch({
            allowedToBeDefaultMatch: true,
            isSearchType: false,
            fillIntoEdit: 'redhat.com',
            inlineAutocompletion: 'hat.com',
            urlEmphasis: match0Emphasis,
          }),
-         createSearchMatchForTesting({
+         createSearchMatch({
            allowedToBeDefaultMatch: false,
            isSearchType: false,
            fillIntoEdit: 'https://redhat.com',
@@ -8186,12 +8158,11 @@ suite('OmniboxPopupSearchboxTest', function() {
            urlEmphasis: match1Emphasis,
          }),
        ];
-       testProxy.page.autocompleteResultChanged(
-           createAutocompleteResultForTesting({
-             queryId: searchbox.activeQueryId,
-             input: 'red',
-             matches: matches,
-           }));
+       testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+         queryId: searchbox.activeQueryId,
+         input: 'red',
+         matches: matches,
+       }));
        await microtasksFinished();
 
        assertTrue(searchbox.dropdownIsVisible);
@@ -8302,14 +8273,14 @@ suite('OmniboxPopupSearchboxTest', function() {
    };
 
    const zpsMatches = [
-     createSearchMatchForTesting({
+     createSearchMatch({
        allowedToBeDefaultMatch: false,
        isSearchType: false,
        fillIntoEdit: 'https://redhat.com',
        destinationUrl: 'https://redhat.com',
        urlEmphasis: match0Emphasis,
      }),
-     createSearchMatchForTesting({
+     createSearchMatch({
        allowedToBeDefaultMatch: false,
        isSearchType: false,
        fillIntoEdit: 'https://chromium.org',
@@ -8334,7 +8305,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'example.com/page',
      matches: zpsMatches,
@@ -8387,7 +8358,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'example.com/page',
      matches: zpsMatches,
@@ -8459,7 +8430,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    }));
    await microtasksFinished();
 
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+   testProxy.page.autocompleteResultChanged(createAutocompleteResult({
      queryId: searchbox.activeQueryId,
      input: 'example.com/page',
      matches: zpsMatches,
@@ -8527,10 +8498,10 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     // Open the dropdown by populating autocomplete matches.
     searchbox.activeQueryId = 0;
-    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+    searchbox.onAutocompleteResultChanged(createAutocompleteResult({
       queryId: 0,
       input: 'test',
-      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+      matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
     }));
     await microtasksFinished();
     assertTrue(searchbox.dropdownIsVisible);
@@ -8630,10 +8601,10 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     test('LightDismissClosesDropdown', async () => {
       searchbox.activeQueryId = 0;
-      searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      searchbox.onAutocompleteResultChanged(createAutocompleteResult({
         queryId: 0,
         input: 'test',
-        matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+        matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
       }));
       await microtasksFinished();
       assertTrue(searchbox.dropdownIsVisible);

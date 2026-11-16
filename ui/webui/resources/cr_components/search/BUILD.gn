@@ -23,6 +23,7 @@ build_webui("build") {
     "animated_glow.ts",
     "audio_wave.html.ts",
     "audio_wave.ts",
+    "autocomplete_match_utils.ts",
     "constants.ts",
     "drag_drop_handler.ts",
     "drag_drop_host.ts",

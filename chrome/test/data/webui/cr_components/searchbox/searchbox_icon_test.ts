@@ -5,7 +5,8 @@
 import 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 import 'chrome://webui-test/strings.m.js';
 
-import {createAutocompleteMatch, createSuggestTemplateInfo, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createSuggestTemplateInfo} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
+import {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BadgeType} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';

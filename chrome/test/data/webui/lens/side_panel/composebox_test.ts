@@ -10,11 +10,11 @@ import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/s
 import type {ComposeboxElement} from 'chrome-untrusted://resources/cr_components/composebox/composebox.js';
 import {PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {createAutocompleteResult, createSearchMatch} from 'chrome-untrusted://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
@@ -299,9 +299,9 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches = [createSearchMatchForTesting({fillIntoEdit: 'match 1'})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 
@@ -331,9 +331,9 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches = [createSearchMatchForTesting({fillIntoEdit: 'match 1'})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 
@@ -362,9 +362,9 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
-    const matches = [createSearchMatchForTesting({fillIntoEdit: 'match 1'})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 
@@ -396,16 +396,16 @@ suite('Composebox', () => {
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox and assert dropdown is visible.
-    const matches = [createSearchMatchForTesting({fillIntoEdit: 'match 1'})];
+    const matches = [createSearchMatch({fillIntoEdit: 'match 1'})];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
     assertTrue(isVisible(dropdown));
 
     // Send empty suggestions and assert dropdown is hidden.
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches: []}));
+        createAutocompleteResult({matches: []}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
     assertFalse(isVisible(dropdown));
@@ -520,14 +520,14 @@ suite('Composebox', () => {
     input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
 
-    const matches = [createSearchMatchForTesting({
+    const matches = [createSearchMatch({
       fillIntoEdit: query,
       destinationUrl:
           `https://www.google.com/search?q=${query.replace(/ /g, '+')}`,
       allowedToBeDefaultMatch: true,
     })];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           input: query,
           matches: matches,
         }));
@@ -590,11 +590,11 @@ suite('Composebox', () => {
 
     // Send suggestions to the composebox.
     const matches = [
-      createSearchMatchForTesting({fillIntoEdit: 'match 1'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 
@@ -749,12 +749,12 @@ suite('Composebox', () => {
 
     // Send 3 suggestions to the composebox.
     const matches = [
-      createSearchMatchForTesting({fillIntoEdit: 'match 1'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 2'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 3'}),
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 3'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 
@@ -823,12 +823,12 @@ suite('Composebox', () => {
 
     // Send 3 suggestions to the composebox.
     const matches = [
-      createSearchMatchForTesting({fillIntoEdit: 'match 1'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 2'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 3'}),
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 3'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
+        createAutocompleteResult({matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(composebox);
 

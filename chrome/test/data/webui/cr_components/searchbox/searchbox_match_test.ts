@@ -5,7 +5,8 @@
 import 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import 'chrome://webui-test/strings.m.js';
 
-import {createAutocompleteMatch, createFormattedString, createMatchKeywordModelForTesting, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createFormattedString} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
+import {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -13,7 +14,7 @@ import {ActionIconType, ColorType} from 'chrome://resources/mojo/components/omni
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createFormattedStringFragment, createSuggestTemplateInfo} from './searchbox_test_utils.js';
+import {createFormattedStringFragment, createMatchKeywordModel, createSuggestTemplateInfo} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('CrComponentsRealboxMatchTest', () => {
@@ -185,8 +186,7 @@ suite('CrComponentsRealboxMatchTest', () => {
   test('UpdateSelectionUpdatesClasses', async () => {
     // Add keyword chip and 2 actions.
     const match = createAutocompleteMatch();
-    match.keywordModel =
-        createMatchKeywordModelForTesting({chipHint: 'keyword'});
+    match.keywordModel = createMatchKeywordModel({chipHint: 'keyword'});
     match.actions.push({
       hint: 'hint',
       suggestionContents: 'suggestionContents',
@@ -403,8 +403,8 @@ suite('CrComponentsRealboxMatchTest', () => {
     const match = createAutocompleteMatch();
     match.a11yLabel = 'Search Google';
     match.suggestTemplate.secondaryText = createFormattedString('Google');
-    match.keywordModel = createMatchKeywordModelForTesting(
-        {chipA11y: 'Search Google in Keyword Mode'});
+    match.keywordModel =
+        createMatchKeywordModel({chipA11y: 'Search Google in Keyword Mode'});
     match.actions = [
       {
         hint: 'action hint',
@@ -467,7 +467,7 @@ suite('CrComponentsRealboxMatchTest', () => {
   test('InstantKeywordMatchClickFiresKeywordClickAndRefocuses', async () => {
     matchEl.match = createAutocompleteMatch({
       destinationUrl: 'http://bookmarks',
-      keywordModel: createMatchKeywordModelForTesting({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kInstant,
         keyword: '@bookmarks',
         chipHint: 'Bookmarks',

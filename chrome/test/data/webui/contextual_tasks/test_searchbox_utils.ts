@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import type {PageHandlerRemote as SearchboxPageHandlerRemote, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -29,7 +29,7 @@ export async function setupAutocompleteResults(
     createAutocompleteMatch(),
   ];
   searchboxCallbackRouterRemote.autocompleteResultChanged(
-      createAutocompleteResultForTesting({
+      createAutocompleteResult({
         queryId: queryId,
         input: testQuery,
         matches: matches,

@@ -13,7 +13,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {DriveDisclaimerStatus, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {assertIconMaskImageUrl, assertStyle, createAutocompleteResultForTesting, createClipboardEvent, createSearchMatchForTesting, createSuggestTemplateInfo, createUrlMatch, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {assertIconMaskImageUrl, assertStyle, createAutocompleteResult, createClipboardEvent, createSearchMatch, createSuggestTemplateInfo, createUrlMatch, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -310,9 +310,9 @@ suite('SearchboxTest', () => {
 
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
 
-    const matches = [createSearchMatchForTesting(), createUrlMatch()];
+    const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: '',
           matches: matches,
@@ -336,9 +336,9 @@ suite('SearchboxTest', () => {
     realbox.$.input.inputElement.value = 'hello';
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
-    const matches = [createSearchMatchForTesting(), createUrlMatch()];
+    const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -357,7 +357,7 @@ suite('SearchboxTest', () => {
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -376,7 +376,7 @@ suite('SearchboxTest', () => {
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -386,9 +386,9 @@ suite('SearchboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     // Browser returns only 1 match.
-    const singleMatch = [createSearchMatchForTesting()];
+    const singleMatch = [createSearchMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: singleMatch,
@@ -410,10 +410,10 @@ suite('SearchboxTest', () => {
     // painted.
     assertEquals(0, testMetricsReporterProxy.getCallCount('umaReportTime'));
 
-    let matches = [createSearchMatchForTesting()];
+    let matches = [createSearchMatch()];
     MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -429,13 +429,13 @@ suite('SearchboxTest', () => {
     realbox.$.input.inputElement.value = 'h';
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
-    matches = [createSearchMatchForTesting({
+    matches = [createSearchMatch({
       allowedToBeDefaultMatch: true,
       inlineAutocompletion: 'ello',
     })];
     MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -463,13 +463,13 @@ suite('SearchboxTest', () => {
     realbox.$.input.inputElement.dispatchEvent(keyEvent);
     assertTrue(keyEvent.defaultPrevented);
 
-    matches = [createSearchMatchForTesting({
+    matches = [createSearchMatch({
       allowedToBeDefaultMatch: true,
       inlineAutocompletion: 'llo',
     })];
     MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: 'he',
           matches: matches,
@@ -494,11 +494,11 @@ suite('SearchboxTest', () => {
         realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
         const matches = [
-          createSearchMatchForTesting({iconPath: 'clock.svg'}),
+          createSearchMatch({iconPath: 'clock.svg'}),
           createUrlMatch({iconPath: 'page.svg'}),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: realbox.activeQueryId,
               input: realbox.$.input.inputElement.value.trimStart(),
               matches: matches,
@@ -571,7 +571,7 @@ suite('SearchboxTest', () => {
             {allowedToBeDefaultMatch: true, iconPath: 'page.svg'})];
 
         testProxy.callbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: realbox.activeQueryId,
               input: realbox.$.input.inputElement.value.trimStart(),
               matches: matches,
@@ -600,7 +600,7 @@ suite('SearchboxTest', () => {
 
         const matches = [
           createUrlMatch({iconPath: 'page.svg'}),
-          createSearchMatchForTesting({
+          createSearchMatch({
             iconPath: 'clock.svg',
             suggestTemplate: createSuggestTemplateInfo({
               secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
@@ -609,7 +609,7 @@ suite('SearchboxTest', () => {
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: realbox.activeQueryId,
               input: realbox.$.input.inputElement.value.trimStart(),
               matches: matches,
@@ -768,7 +768,7 @@ suite('SearchboxTest', () => {
             iconUrl: 'https://helloworld.com/url.png',
             iconPath: 'page.svg',
           }),
-          createSearchMatchForTesting({
+          createSearchMatch({
             iconUrl: 'https://helloworld.com/search.png',
             iconPath: 'clock.svg',
             suggestTemplate: createSuggestTemplateInfo({
@@ -778,7 +778,7 @@ suite('SearchboxTest', () => {
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: realbox.activeQueryId,
               input: realbox.$.input.inputElement.value.trimStart(),
               matches: matches,
@@ -908,7 +908,7 @@ suite('SearchboxTest', () => {
       }),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -1022,7 +1022,7 @@ suite('SearchboxTest', () => {
       createUrlMatch({iconPath: 'page.svg'}),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
@@ -1062,7 +1062,7 @@ suite('SearchboxTest', () => {
       },
     };
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: '',
           matches: matches,
@@ -1074,7 +1074,7 @@ suite('SearchboxTest', () => {
     // realbox dropdown show.
     suggestionGroupsMap[100].sideType = SideType.kDefaultPrimary;
     testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: realbox.activeQueryId,
           input: '',
           matches: matches,

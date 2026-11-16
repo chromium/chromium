@@ -6,10 +6,11 @@ import 'chrome://webui-test/strings.m.js';
 
 import {KeywordModeEntryMethod, KeywordModeManager} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import type {KeywordClearedEvent} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
-import {createMatchKeywordModelForTesting, createSearchMatchForTesting} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {KeywordType, SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {createMatchKeywordModel, createSearchMatch} from './searchbox_test_utils.js';
 
 suite('KeywordModeManagerTest', () => {
   let manager: KeywordModeManager;
@@ -544,9 +545,9 @@ suite('KeywordModeManagerTest', () => {
           'trailing space',
       () => {
         // Case 1: 'yout<tab><backspace>' -> restore 'youtube.com'
-        const match = createSearchMatchForTesting({
+        const match = createSearchMatch({
           allowedToBeDefaultMatch: true,
-          keywordModel: createMatchKeywordModelForTesting({
+          keywordModel: createMatchKeywordModel({
             type: KeywordType.kChip,
             keyword: 'youtube.com',
             chipHint: 'Search YouTube',
@@ -733,8 +734,8 @@ suite('KeywordModeManagerTest', () => {
       });
 
   test('handleBackspace click entry restores keyword with space', () => {
-    const match = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const match = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
@@ -810,13 +811,13 @@ suite('KeywordModeManagerTest', () => {
   });
 
   test('handleKeywordClick', () => {
-    const matchWithoutKeyword = createSearchMatchForTesting({
+    const matchWithoutKeyword = createSearchMatch({
       keywordModel: undefined,
     });
     assertThrows(() => manager.handleKeywordClick(matchWithoutKeyword));
 
-    const matchWithKeyword = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const matchWithKeyword = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
@@ -834,22 +835,22 @@ suite('KeywordModeManagerTest', () => {
   });
 
   test('acceptTab', () => {
-    const matchWithoutKeyword = createSearchMatchForTesting({
+    const matchWithoutKeyword = createSearchMatch({
       allowedToBeDefaultMatch: true,
       keywordModel: undefined,
     });
-    const matchWithKeyword = createSearchMatchForTesting({
+    const matchWithKeyword = createSearchMatch({
       allowedToBeDefaultMatch: true,
-      keywordModel: createMatchKeywordModelForTesting({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
         placeholder: 'Search YouTube videos',
       }),
     });
-    const matchWithKeywordNotAllowedDefault = createSearchMatchForTesting({
+    const matchWithKeywordNotAllowedDefault = createSearchMatch({
       allowedToBeDefaultMatch: false,
-      keywordModel: createMatchKeywordModelForTesting({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
@@ -880,7 +881,7 @@ suite('KeywordModeManagerTest', () => {
   });
 
   test('formatMatchFillIntoEdit', () => {
-    const match = createSearchMatchForTesting({
+    const match = createSearchMatch({
       fillIntoEdit: 'google.com chromium news',
     });
 
@@ -897,7 +898,7 @@ suite('KeywordModeManagerTest', () => {
         manager.formatMatchFillIntoEdit(match, /*matchIndex=*/ 0));
 
     // In keyword mode with non-matching fillIntoEdit -> returns original.
-    const otherMatch = createSearchMatchForTesting({
+    const otherMatch = createSearchMatch({
       fillIntoEdit: 'other fill',
     });
     assertEquals(
@@ -908,7 +909,7 @@ suite('KeywordModeManagerTest', () => {
 
     // Default match with lastQueriedInput -> restores lastQueriedInput +
     // inlineAutocompletion.
-    const urlMatch = createSearchMatchForTesting({
+    const urlMatch = createSearchMatch({
       fillIntoEdit: 'https://chromium.org/',
       inlineAutocompletion: 'ium.org/',
       allowedToBeDefaultMatch: true,
@@ -920,8 +921,8 @@ suite('KeywordModeManagerTest', () => {
   });
 
   test('onSelectedMatchChanged', () => {
-    const matchWithKeyword = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const matchWithKeyword = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
@@ -951,7 +952,7 @@ suite('KeywordModeManagerTest', () => {
         'Search YouTube videos', manager.inputKeywordModel.placeholder);
 
     // Match without keyword model -> resets keyword model to null.
-    const matchWithoutKeyword = createSearchMatchForTesting({
+    const matchWithoutKeyword = createSearchMatch({
       keywordModel: undefined,
     });
     manager.onSelectedMatchChanged(
@@ -969,8 +970,8 @@ suite('KeywordModeManagerTest', () => {
     assertEquals('youtube.com', manager.inputKeywordModel.keyword);
 
     // Instant keyword match -> enters keyword mode immediately.
-    const instantMatchBookmarks = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const instantMatchBookmarks = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kInstant,
         keyword: '@bookmarks',
         chipHint: 'Bookmarks',
@@ -986,8 +987,8 @@ suite('KeywordModeManagerTest', () => {
     assertEquals('Bookmarks', manager.inputKeywordModel.displayText);
 
     // Selecting another instant keyword match -> updates keyword mode.
-    const instantMatchHistory = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const instantMatchHistory = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kInstant,
         keyword: '@history',
         chipHint: 'History',
@@ -1033,8 +1034,8 @@ suite('KeywordModeManagerTest', () => {
       originalEnter(...args);
     };
     manager.onSelectedMatchChanged(
-        createSearchMatchForTesting({
-          keywordModel: createMatchKeywordModelForTesting({
+        createSearchMatch({
+          keywordModel: createMatchKeywordModel({
             type: KeywordType.kChip,
             keyword: 'YOUTUBE.COM',
           }),
@@ -1057,8 +1058,8 @@ suite('KeywordModeManagerTest', () => {
 
     // Navigating away from keyword match to non-keyword match and back to
     // kInKeyword match -> exits and re-enters keyword mode.
-    const inKeywordMatch = createSearchMatchForTesting({
-      keywordModel: createMatchKeywordModelForTesting({
+    const inKeywordMatch = createSearchMatch({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kInKeyword,
         keyword: 'youtube.com',
         chipHint: 'Search YouTube',
@@ -1093,10 +1094,10 @@ suite('KeywordModeManagerTest', () => {
     manager.enter('youtube.com', 'Search YouTube', KeywordModeEntryMethod.TAB);
 
     // Exact keyword fill on default match with lastQueriedInput -> returns ''.
-    const defaultKeywordMatch = createSearchMatchForTesting({
+    const defaultKeywordMatch = createSearchMatch({
       fillIntoEdit: 'youtube.com',
       allowedToBeDefaultMatch: true,
-      keywordModel: createMatchKeywordModelForTesting({
+      keywordModel: createMatchKeywordModel({
         type: KeywordType.kChip,
         keyword: 'youtube.com',
       }),
@@ -1108,7 +1109,7 @@ suite('KeywordModeManagerTest', () => {
             /*lastQueriedInput=*/ 'youtube.com'));
 
     // Keyword match with query fill -> returns query part.
-    const searchMatch = createSearchMatchForTesting({
+    const searchMatch = createSearchMatch({
       fillIntoEdit: 'youtube.com funny cats',
     });
     assertEquals(
@@ -1116,7 +1117,7 @@ suite('KeywordModeManagerTest', () => {
         manager.formatMatchFillIntoEdit(searchMatch, /*matchIndex=*/ 1));
 
     // Keyword match with case-differing query fill -> returns query part.
-    const upperSearchMatch = createSearchMatchForTesting({
+    const upperSearchMatch = createSearchMatch({
       fillIntoEdit: 'YouTube.com funny cats',
     });
     assertEquals(
@@ -1124,14 +1125,14 @@ suite('KeywordModeManagerTest', () => {
         manager.formatMatchFillIntoEdit(upperSearchMatch, /*matchIndex=*/ 1));
 
     // Keyword match with exact keyword fill -> returns ''.
-    const exactMatch = createSearchMatchForTesting({
+    const exactMatch = createSearchMatch({
       fillIntoEdit: 'youtube.com',
     });
     assertEquals(
         '', manager.formatMatchFillIntoEdit(exactMatch, /*matchIndex=*/ 1));
 
     // Keyword match with case-differing exact keyword fill -> returns ''.
-    const upperExactMatch = createSearchMatchForTesting({
+    const upperExactMatch = createSearchMatch({
       fillIntoEdit: 'YOUTUBE.COM',
     });
     assertEquals(
