@@ -642,7 +642,9 @@ suite('SearchboxMixinTest', () => {
     await microtasksFinished();
     assertTrue(element.dropdownIsVisible);
 
-    // Pressing Ctrl+Enter.
+    // Pressing Ctrl, then Enter.
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Control', {ctrlKey: true}));
     const enterEvent = createKeyboardEvent('Enter', {ctrlKey: true});
     mockInput.inputElement.dispatchEvent(enterEvent);
     assertTrue(enterEvent.defaultPrevented);
@@ -677,6 +679,8 @@ suite('SearchboxMixinTest', () => {
     assertEquals(1, element.selectedMatchIndex);
     await simulateUserTextInput(mockInput, 'hello world');
     const queryId = element.activeQueryId;
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Control', {ctrlKey: true}));
     const ctrlEnter = createKeyboardEvent('Enter', {ctrlKey: true});
     mockInput.inputElement.dispatchEvent(ctrlEnter);
     assertTrue(ctrlEnter.defaultPrevented);
@@ -728,6 +732,8 @@ suite('SearchboxMixinTest', () => {
     await microtasksFinished();
     assertTrue(element.dropdownIsVisible);
 
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Control', {ctrlKey: true}));
     const enterEvent = createKeyboardEvent('Enter', {ctrlKey: true});
     mockInput.inputElement.dispatchEvent(enterEvent);
     assertTrue(enterEvent.defaultPrevented);
@@ -741,6 +747,39 @@ suite('SearchboxMixinTest', () => {
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.viaKeyboard);
   });
+
+  test(
+      'pressing Ctrl+Enter acts as normal enter if Ctrl was pressed elsewhere',
+      async () => {
+        element.shouldAppendDotCom = true;
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'hello');
+
+        const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
+        element.onAutocompleteResultChanged(createAutocompleteResult({
+          queryId: element.activeQueryId,
+          input: 'hello',
+          matches: matches,
+        }));
+        await microtasksFinished();
+        assertTrue(element.dropdownIsVisible);
+
+        // Ctrl was pressed before the searchbox had focus, e.g. to focus it
+        // with Ctrl+L from the page, so only Enter is seen with Ctrl held.
+        const enterEvent = createKeyboardEvent('Enter', {ctrlKey: true});
+        mockInput.inputElement.dispatchEvent(enterEvent);
+        assertTrue(enterEvent.defaultPrevented);
+        await microtasksFinished();
+
+        assertEquals(
+            0,
+            testProxy.handler.getCallCount(
+                'openPopupSelectionWithDisposition'));
+        const args =
+            await testProxy.handler.whenCalled('openAutocompleteMatch');
+        assertEquals(0, args.line);
+        assertEquals(matches[0]!.destinationUrl, args.url);
+      });
 
   test(
       'pressing Ctrl+Enter acts as normal enter on non-omnibox searchbox',
@@ -764,7 +803,9 @@ suite('SearchboxMixinTest', () => {
         await microtasksFinished();
         assertTrue(element.dropdownIsVisible);
 
-        // Pressing Ctrl+Enter.
+        // Pressing Ctrl, then Enter.
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Control', {ctrlKey: true}));
         const enterEvent = createKeyboardEvent('Enter', {ctrlKey: true});
         mockInput.inputElement.dispatchEvent(enterEvent);
         assertTrue(enterEvent.defaultPrevented);
@@ -3644,6 +3685,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
     await microtasksFinished();
 
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Control', {ctrlKey: true}));
     const ctrlEnterEvent = createKeyboardEvent('Enter', {
       ctrlKey: true,
     });

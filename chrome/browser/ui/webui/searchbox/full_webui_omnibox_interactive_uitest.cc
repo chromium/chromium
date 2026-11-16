@@ -6341,6 +6341,53 @@ IN_PROC_BROWSER_TEST_P(
       WaitForZeroSuggestDropdown());
 }
 
+#if defined(USE_AURA)
+// Verifies that holding Ctrl from the page through Ctrl+L and then Enter
+// searches for the draft, like the native omnibox, instead of adding 'www.' and
+// '.com' like Ctrl+Enter. The omnibox doesn't see the Ctrl press, which the
+// page had focus for. Sends the keys with `ui::test::EventGenerator`, since
+// `SendKeyPress()` presses and releases Ctrl around each key, so it can't hold
+// Ctrl while focus moves to the omnibox. Aura only, since the keys go to Aura
+// root windows, and on Mac, Cmd+L focuses the omnibox instead.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       CtrlLFromPageThenEnterWithCtrlHeldSearches) {
+  RunTestSequence(
+      // Type a query, then click the page, keeping it as an unfocused draft.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      ClickWebPageBody(kTab1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForVisibleOmniboxUnfocused(), WaitForPopupTransitionLockout(),
+      // Press Ctrl with the page focused, then L, which focuses the omnibox and
+      // selects the draft.
+      Do([this]() {
+        ui::test::EventGenerator generator(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetNativeWindow()
+                ->GetRootWindow());
+        generator.PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+        generator.PressAndReleaseKey(ui::VKEY_L, ui::EF_CONTROL_DOWN);
+      }),
+      WaitForPopupActive(), WaitForOmniboxFocus(true),
+      InAnyContext(WaitForWebUIInputValue("a")),
+      InAnyContext(WaitForWebUIInputAllSelected()),
+      // Still holding Ctrl, press Enter in the omnibox, then release Ctrl.
+      Do([this]() {
+        views::Widget* popup_widget = GetPopupWidget(browser());
+        ASSERT_TRUE(popup_widget);
+        ui::test::EventGenerator generator(
+            popup_widget->GetNativeWindow()->GetRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_CONTROL_DOWN);
+        generator.ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+      }),
+      WaitForGoogleSearch(kTab1, {{"q", "a"}}));
+}
+#endif  // defined(USE_AURA)
+
 // Verifies that text typed into the omnibox at startup reaches WebUI, whether
 // or not the popup is ready yet. On the Views toolbar,
 // `NativeFocusHandoffKeepsDraftAndSelection` forces the not-ready case.
