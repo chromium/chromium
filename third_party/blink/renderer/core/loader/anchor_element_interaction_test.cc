@@ -1014,8 +1014,15 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
             hosts_[0]->calls_[1].is_eager.value());
 }
 
+// TODO(crbug.com/585641957): Fails in batched runs on Android because an
+// earlier test leaves a NetworkStateNotifier override set.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PreloadingDataSaverEnabled DISABLED_PreloadingDataSaverEnabled
+#else
+#define MAYBE_PreloadingDataSaverEnabled PreloadingDataSaverEnabled
+#endif
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,
-       PreloadingDataSaverEnabled) {
+       MAYBE_PreloadingDataSaverEnabled) {
   ScopedSyntheticMouseHoverOverInactivePageForTest
       disable_synthetic_mouse_hover_over_inactive_page(false);
   WebNetworkStateNotifier::SetSaveDataEnabled(true);
@@ -1268,8 +1275,17 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest, MultipleAnchors) {
   EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/two"));
 }
 
+// TODO(crbug.com/585641957): Fails in batched runs on Android because
+// EagerHoverDwellTime() caches a feature param from an earlier test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PointerDownImmediatelyAfterScroll \
+  DISABLED_PointerDownImmediatelyAfterScroll
+#else
+#define MAYBE_PointerDownImmediatelyAfterScroll \
+  PointerDownImmediatelyAfterScroll
+#endif
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,
-       PointerDownImmediatelyAfterScroll) {
+       MAYBE_PointerDownImmediatelyAfterScroll) {
   // When this is enabled, host receives an additional PointerOver call that it
   // does not expect. This test should account for mouse hover over both active
   // and inactive pages. https://issues.chromium.org/issues/488090081
