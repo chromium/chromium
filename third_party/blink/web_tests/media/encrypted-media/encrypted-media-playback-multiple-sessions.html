@@ -128,9 +128,9 @@
                 }).then(function(mediaKeys) {
                     waitForEventAndRunStep('encrypted', video, onEncrypted, test);
                     waitForEventAndRunStep('playing', video, onPlaying, test);
-                    video.src = content;
                     return video.setMediaKeys(mediaKeys);
                 }).then(function(result) {
+                    video.src = content;
                     video.play();
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
