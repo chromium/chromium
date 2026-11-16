@@ -463,28 +463,26 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToUniversalOptOut) {
 }
 
 TEST_F(AccountCapabilitiesTest,
-       MustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill) {
+       MustShowEquallyWeightedButtonsForPrivatePassesInAutofill) {
   AccountCapabilities capabilities;
   EXPECT_EQ(
       capabilities
-          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+          .must_show_equally_weighted_buttons_for_private_passes_in_autofill(),
       signin::Tribool::kUnknown);
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator
-      .set_must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(
-          true);
+  mutator.set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+      true);
   EXPECT_EQ(
       capabilities
-          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+          .must_show_equally_weighted_buttons_for_private_passes_in_autofill(),
       signin::Tribool::kTrue);
 
-  mutator
-      .set_must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(
-          false);
+  mutator.set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+      false);
   EXPECT_EQ(
       capabilities
-          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(),
+          .must_show_equally_weighted_buttons_for_private_passes_in_autofill(),
       signin::Tribool::kFalse);
 }
 

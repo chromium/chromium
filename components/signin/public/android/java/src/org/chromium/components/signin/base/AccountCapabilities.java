@@ -209,12 +209,12 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return mustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill capability value.
+     * @return mustShowEquallyWeightedButtonsForPrivatePassesInAutofill capability value.
      */
-    public @Tribool int mustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill() {
+    public @Tribool int mustShowEquallyWeightedButtonsForPrivatePassesInAutofill() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
-                        .MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_CHROME_AUTOFILL_CAPABILITY_NAME);
+                        .MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_AUTOFILL_CAPABILITY_NAME);
     }
 
     /**

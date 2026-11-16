@@ -1168,7 +1168,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 // Tests that `MayPerformAutofillAiAction()` returns `false` for `kImport` and
 // `kImportToWallet` on private passes when
 // `kAutofillRegionalizedPrivatePassesUxRefine` is enabled and the
-// `must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill()`
+// `must_show_equally_weighted_buttons_for_private_passes_in_autofill()`
 // capability is `kUnknown`.
 TEST_F(
     AutofillAiMayPerformImportToWalletTest,
@@ -1210,8 +1210,7 @@ TEST_F(AutofillAiPermissionUtilsTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillRegionalizedPrivatePassesUxRefine);
-  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
-      true);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(true);
   EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(
       client().GetIdentityManager()));
 }
@@ -1225,13 +1224,11 @@ TEST_F(AutofillAiPermissionUtilsTest,
       features::kAutofillRegionalizedPrivatePassesUxRefine};
   EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(nullptr));
 
-  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
-      false);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(false);
   EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(
       client().GetIdentityManager()));
 
-  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
-      true);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(true);
   EXPECT_TRUE(MustShowEquallyWeightedButtonsForPrivatePasses(
       client().GetIdentityManager()));
 
@@ -1248,15 +1245,13 @@ TEST_F(AutofillAiPermissionUtilsTest,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillRegionalizedPrivatePassesUxRefine};
 
-  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
-      true);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(true);
   EXPECT_TRUE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
                                              EntityType(kPassport)));
   EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
                                               EntityType(kVehicle)));
 
-  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
-      false);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(false);
   EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
                                               EntityType(kPassport)));
   EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),

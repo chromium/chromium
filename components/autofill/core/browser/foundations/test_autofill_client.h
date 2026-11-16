@@ -649,7 +649,7 @@ class TestAutofillClientTemplate : public T {
         "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
     SetSupportsWalletPrivatePassesInAutofill(true);
-    SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(false);
+    SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(false);
     SetVariationConfigCountryCode(GeoIpCountryCode("US"));
     return SetAutofillAiOptInStatus(*this, AutofillAiOptInStatus::kOptedIn);
   }
@@ -680,14 +680,14 @@ class TestAutofillClientTemplate : public T {
 
   // Updates whether the currently signed in primary account must show equally
   // weighted buttons for private passes in Autofill.
-  void SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+  void SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(
       bool must_show) {
     AccountInfo account_info = GetIdentityManager()->FindExtendedAccountInfo(
         GetIdentityManager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin));
     CHECK(!account_info.GetAccountId().empty());
     AccountCapabilitiesTestMutator(&account_info)
-        .set_must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill(
+        .set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
             must_show);
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
   }

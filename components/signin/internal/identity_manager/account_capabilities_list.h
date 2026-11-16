@@ -172,8 +172,8 @@ ACCOUNT_CAPABILITY(kMustFetchAppleAgeRangeInChromeCapabilityName,
 #endif
 
 ACCOUNT_CAPABILITY(
-    kMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofillCapabilityName,
-    MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_CHROME_AUTOFILL_CAPABILITY_NAME,
+    kMustShowEquallyWeightedButtonsForPrivatePassesInAutofillCapabilityName,
+    MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_AUTOFILL_CAPABILITY_NAME,
     "accountcapabilities/gm3denjnmnqxa")
 
 #if BUILDFLAG(IS_IOS)

@@ -473,7 +473,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillRegionalizedPrivatePassesUxRefine) &&
       capabilities
-              .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill() ==
+              .must_show_equally_weighted_buttons_for_private_passes_in_autofill() ==
           signin::Tribool::kUnknown) {
     MaybeOutputReason(
         debug_message,
@@ -1011,7 +1011,7 @@ bool MustShowEquallyWeightedButtonsForPrivatePasses(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   const signin::Tribool must_show_equally_weighted_buttons =
       account_info.GetAccountCapabilities()
-          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill();
+          .must_show_equally_weighted_buttons_for_private_passes_in_autofill();
   return must_show_equally_weighted_buttons != signin::Tribool::kFalse;
 }
 

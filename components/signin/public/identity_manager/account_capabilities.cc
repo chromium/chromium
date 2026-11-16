@@ -277,10 +277,9 @@ signin::Tribool AccountCapabilities::must_fetch_apple_age_range_in_chrome()
 #endif
 
 signin::Tribool AccountCapabilities::
-    must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill()
-        const {
+    must_show_equally_weighted_buttons_for_private_passes_in_autofill() const {
   return GetCapabilityByName(
-      kMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofillCapabilityName);
+      kMustShowEquallyWeightedButtonsForPrivatePassesInAutofillCapabilityName);
 }
 
 #if BUILDFLAG(IS_IOS)
