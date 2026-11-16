@@ -47,19 +47,13 @@ suite('TrustedVaultErrorDialogTest', function() {
 
   test('clicking cancel closes the dialog', function() {
     assertTrue(dialog.$.dialog.open);
-    const cancelButton =
-        dialog.shadowRoot.querySelector<HTMLElement>('#cancelButton');
-    assertTrue(!!cancelButton);
-    cancelButton.click();
+    dialog.$.cancelButton.click();
     assertFalse(dialog.$.dialog.open);
   });
 
   test('clicking verify calls startTrustedVaultUnlock', async function() {
     assertTrue(dialog.$.dialog.open);
-    const verifyButton =
-        dialog.shadowRoot.querySelector<HTMLElement>('#verifyButton');
-    assertTrue(!!verifyButton);
-    verifyButton.click();
+    dialog.$.verifyButton.click();
     await passwordManager.whenCalled('startTrustedVaultUnlock');
     assertFalse(dialog.$.dialog.open);
   });
@@ -73,10 +67,10 @@ suite('TrustedVaultErrorDialogTest', function() {
         dialog.shadowRoot.querySelector('.body-text')!.textContent.trim());
     assertEquals(
         loadTimeData.getString('trustedVaultErrorDialogContinue'),
-        dialog.shadowRoot.querySelector('#verifyButton')!.textContent.trim());
+        dialog.$.verifyButton.textContent.trim());
     assertEquals(
         loadTimeData.getString('trustedVaultErrorDialogNotNow'),
-        dialog.shadowRoot.querySelector('#cancelButton')!.textContent.trim());
+        dialog.$.cancelButton.textContent.trim());
   });
 
   test('records shown with default source', function() {
@@ -108,8 +102,7 @@ suite('TrustedVaultErrorDialogTest', function() {
           await createDialog(source);
 
           const whenCancel = eventToPromise('cancel', dialog.$.dialog);
-          dialog.shadowRoot.querySelector<HTMLElement>(
-                               '#cancelButton')!.click();
+          dialog.$.cancelButton.click();
           await whenCancel;
 
           assertEquals(2, metrics.count(histogramName(source)));
@@ -130,7 +123,7 @@ suite('TrustedVaultErrorDialogTest', function() {
       metrics = fakeMetricsPrivate();
       await createDialog(source);
 
-      dialog.shadowRoot.querySelector<HTMLElement>('#verifyButton')!.click();
+      dialog.$.verifyButton.click();
       await passwordManager.whenCalled('startTrustedVaultUnlock');
       await microtasksFinished();
 

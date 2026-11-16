@@ -525,7 +525,7 @@ suite('PasswordManagerAppTest', function() {
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     const whenClosed = eventToPromise('close', errorDialog);
-    errorDialog.shadowRoot.querySelector<HTMLElement>('#cancelButton')!.click();
+    errorDialog.$.cancelButton.click();
     await whenClosed;
     await microtasksFinished();
     assertFalse(!!app.shadowRoot.querySelector('trusted-vault-error-dialog'));

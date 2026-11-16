@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -42,7 +43,9 @@ function recordTrustedVaultUnlockDialogAction(
 
 export interface TrustedVaultErrorDialogElement {
   $: {
+    cancelButton: CrButtonElement,
     dialog: CrDialogElement,
+    verifyButton: CrButtonElement,
   };
 }
 
