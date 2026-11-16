@@ -6024,19 +6024,16 @@ bool WebGLRenderingContextBase::ValidateValueFitNonNegInt32(
     const char* function_name,
     const char* param_name,
     int64_t value) {
-  if (value < 0) {
-    String error_msg = StrCat({param_name, " < 0"});
-    SynthesizeGLError(GL_INVALID_VALUE, function_name,
-                      error_msg.Ascii().c_str());
-    return false;
+  if (value >= 0 &&
+      value <= static_cast<int64_t>(std::numeric_limits<int>::max())) {
+    return true;
   }
-  if (value > static_cast<int64_t>(std::numeric_limits<int>::max())) {
-    String error_msg = StrCat({param_name, " more than 32-bit"});
-    SynthesizeGLError(GL_INVALID_OPERATION, function_name,
-                      error_msg.Ascii().c_str());
-    return false;
-  }
-  return true;
+  StringBuilder builder;
+  builder.Append(param_name);
+  builder.Append(value < 0 ? " < 0" : " more than 32-bit");
+  SynthesizeGLError(value < 0 ? GL_INVALID_VALUE : GL_INVALID_OPERATION,
+                    function_name, builder);
+  return false;
 }
 
 // TODO(fmalita): figure why ImageExtractor can't handle
@@ -8307,8 +8304,7 @@ bool WebGLRenderingContextBase::ValidateLocationLength(
     StringBuilder builder;
     builder.Append("location length > ");
     builder.AppendNumber(max_web_gl_location_length);
-    SynthesizeGLError(GL_INVALID_VALUE, function_name,
-                      builder.ToString().Ascii().c_str());
+    SynthesizeGLError(GL_INVALID_VALUE, function_name, builder);
     return false;
   }
   return true;
@@ -9379,10 +9375,18 @@ String GetErrorString(GLenum error) {
 
 }  // namespace
 
-void WebGLRenderingContextBase::SynthesizeGLError(
+NOINLINE void WebGLRenderingContextBase::SynthesizeGLError(
     GLenum error,
     const char* function_name,
     const char* description,
+    ConsoleDisplayPreference display) {
+  SynthesizeGLError(error, function_name, StringView(description), display);
+}
+
+void WebGLRenderingContextBase::SynthesizeGLError(
+    GLenum error,
+    const char* function_name,
+    const StringView& description,
     ConsoleDisplayPreference display) {
   String error_type = GetErrorString(error);
   if (synthesized_errors_to_console_ && display == kDisplayInConsole) {

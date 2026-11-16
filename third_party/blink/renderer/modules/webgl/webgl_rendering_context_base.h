@@ -32,6 +32,7 @@
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -1847,9 +1848,15 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // Reports an error to glGetError, sends a message to the JavaScript
   // console.
+  // Keep a non-inlined const char* overload to avoid constructing temporary
+  // StringViews at hundreds of string-literal call sites.
+  NOINLINE void SynthesizeGLError(GLenum,
+                                  const char* function_name,
+                                  const char* description,
+                                  ConsoleDisplayPreference = kDisplayInConsole);
   void SynthesizeGLError(GLenum,
                          const char* function_name,
-                         const char* description,
+                         const StringView& description,
                          ConsoleDisplayPreference = kDisplayInConsole);
   void EmitGLWarning(const char* function, const char* reason);
 
