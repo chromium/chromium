@@ -798,6 +798,9 @@ class ExceptionType(Enum):
 # Rules from safe_list.txt, extracted and pre-processed.
 SafeList = Dict[ExceptionType, List[re.Pattern]]
 
+SimplePathFilter = NewType("SimplePathFilter", str)
+GitPathSpec = NewType("GitPathSpec", str)
+
 
 def is_cog() -> bool:
   """Returns true if the script is running inside a Cog workspace."""
@@ -905,8 +908,8 @@ class FileFilter:
     return sorted(excludes)
 
   def _path_filters_to_pathspecs(
-    self, path_filters: List[str]
-  ) -> Optional[List[str]]:
+    self, path_filters: List[SimplePathFilter]
+  ) -> Optional[List[GitPathSpec]]:
     """Converts `path_filters` to Git pathspecs for scoping `git ls-files`.
 
     Returns None when no scoping should be applied (scan full worktree), or a
@@ -914,7 +917,7 @@ class FileFilter:
     if not path_filters or len(path_filters) > 100:
       return None
 
-    pathspecs: List[str] = []
+    pathspecs: List[GitPathSpec] = []
     for f in path_filters:
       f_clean = f.lstrip("/")
       if not f_clean:
@@ -927,15 +930,15 @@ class FileFilter:
         # contains a "." (e.g. "ui/v1.0/"). Check this before the "." test
         # below, which would otherwise mistake it for a (missing) file.
         if (SRC_DIR / dir_candidate).is_dir():
-          pathspecs.append(dir_candidate)
+          pathspecs.append(GitPathSpec(dir_candidate))
       elif "." in f_clean:
         # `_path_filters_match()` checks exact equality when "." is in the
         # filter; deleted files do not exist on disk and can be skipped here.
         if (SRC_DIR / f_clean).is_file():
-          pathspecs.append(f_clean)
+          pathspecs.append(GitPathSpec(f_clean))
       else:
         # `_path_filters_match()` checks `posix_path.startswith(f)`.
-        pathspecs.append(f"{f_clean}*")
+        pathspecs.append(GitPathSpec(f"{f_clean}*"))
 
     return pathspecs
 
@@ -964,7 +967,7 @@ class FileFilter:
   def _get_files_without_git_repo(
     self,
     git_cmd: str,
-    path_filters: Optional[List[str]] = None,
+    path_filters: Optional[List[SimplePathFilter]] = None,
     extra_excludes: Optional[List[str]] = None,
   ) -> List[str]:
     """Lists non-ignored worktree files using a throwaway `--git-dir`.
@@ -976,7 +979,7 @@ class FileFilter:
     # Without an index to read, `git ls-files` has to walk the worktree, which
     # takes a long time for all of Chromium on Cog. Only walk the paths in
     # path_filters instead, when there are any.
-    pathspecs: Optional[List[str]] = None
+    pathspecs: Optional[List[GitPathSpec]] = None
     if path_filters:
       pathspecs = self._path_filters_to_pathspecs(path_filters)
       if pathspecs is not None and not pathspecs:
@@ -1016,7 +1019,7 @@ class FileFilter:
 
   def get_files_from_git(
     self,
-    path_filters: Optional[List[str]] = None,
+    path_filters: Optional[List[SimplePathFilter]] = None,
     extra_excludes: Optional[List[str]] = None,
   ) -> None:
     """Populates self.git_files with the output of `git ls-files`."""
@@ -1879,7 +1882,10 @@ class Auditor:
     return any(r.match(posix_path) for r in safe_list[exception_type])
 
   def process_file(
-    self, relative_path: Path, compdb_files: Set[str], path_filters: List[str]
+    self,
+    relative_path: Path,
+    compdb_files: Set[str],
+    path_filters: List[SimplePathFilter],
   ) -> Optional[List[extractor.Annotation]]:
     absolute_path = SRC_DIR / relative_path
 
@@ -1941,7 +1947,10 @@ class Auditor:
     return max_mtime
 
   def run_extractor(
-    self, build_path: Path, path_filters: List[str], skip_compdb: bool
+    self,
+    build_path: Path,
+    path_filters: List[SimplePathFilter],
+    skip_compdb: bool,
   ) -> List[extractor.Annotation]:
     """Run the extractor on the codebase.
 
@@ -1951,7 +1960,7 @@ class Auditor:
     Args:
       build_path: Path
         Path to a directory where Chrome was built (e.g., out/Release)
-      path_filters: List[str]
+      path_filters: List[SimplePathFilter]
         If this list is empty, parse all .cc/.mm/.java files in the repository.
 
     Returns:
@@ -2229,7 +2238,9 @@ class Auditor:
 
     return errors
 
-  def _path_filters_match(self, path_filters: List[str], file_path: Path):
+  def _path_filters_match(
+    self, path_filters: List[SimplePathFilter], file_path: Path
+  ):
     """Checks if path_filters include the given file_path, or there are path
     filters which are folders (no "." in their name) and match the file
     name."""
@@ -2238,7 +2249,7 @@ class Auditor:
       "." not in f and posix_path.startswith(f) for f in path_filters
     )
 
-  def _add_missing_annotations(self, path_filters: List[str]):
+  def _add_missing_annotations(self, path_filters: List[SimplePathFilter]):
     """Adds all archived annotations (from annotations.xml) that match the
     following features, to self.extracted_annotations:
 
@@ -2256,7 +2267,10 @@ class Auditor:
         )
 
   def run_all_checks(
-    self, path_filters: List[str], report_xml_updates: bool, grouping_path: Path
+    self,
+    path_filters: List[SimplePathFilter],
+    report_xml_updates: bool,
+    grouping_path: Path,
   ) -> List[AuditorError]:
     """Performs all checks on extracted annotations, and writes annotations.xml.
 
@@ -2336,7 +2350,9 @@ class AuditorUI:
   ):
     self.build_path = build_path
     # Convert backslashes to slashes on Windows.
-    self.path_filters = [Path(f).as_posix() for f in path_filters]
+    self.path_filters: List[SimplePathFilter] = [
+      SimplePathFilter(Path(f).as_posix()) for f in path_filters
+    ]
     self.no_filtering = no_filtering
     self.test_only = test_only
     self.error_limit = error_limit
