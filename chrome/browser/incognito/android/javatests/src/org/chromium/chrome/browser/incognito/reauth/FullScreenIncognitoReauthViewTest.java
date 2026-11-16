@@ -11,11 +11,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.view.View;
@@ -159,7 +158,7 @@ public class FullScreenIncognitoReauthViewTest {
     public void testIncongitoReauthViewRenderTest_WithThreeDotsMenu() throws IOException {
         buildPropertyModelAndBindProcessor(/* isFullScreen= */ true);
         onView(withId(R.id.incognito_reauth_menu_button)).perform(click());
-        onViewWaiting(allOf(withText(R.string.menu_settings), isDisplayed()));
+        waitForView(withText(R.string.menu_settings));
         mRenderTestRule.render(
                 mIncognitoReauthMenuDelegate.getBasicListMenu().getContentView(),
                 "incognito_reauth_view_three_dots_menu");

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.url.JUnitTestGURLs.HTTP_URL;
 
 import android.app.Activity;
@@ -1109,7 +1109,7 @@ public class SendTabToSelfCoordinatorTest {
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> activity.findViewById(R.id.url_bar).performLongClick());
-        onViewWaiting(withText(R.string.menu_send_to_devices)).perform(click());
+        waitForView(withText(R.string.menu_send_to_devices)).click();
 
         CriteriaHelper.pollUiThread(
                 () -> verify(mTracker).notifyEvent(EventConstants.SEND_TAB_TO_SELF_OMNIBOX_USED));

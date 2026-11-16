@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.os.Environment;
 import android.view.View;
@@ -191,7 +190,7 @@ public class IncognitoDownloadLeakageTest {
 
     private void waitForDownloadToFinish() throws TimeoutException {
         int currentCallCount = mHttpDownloadFinishedCallback.getCallCount();
-        onViewWaiting(withId(R.id.message_primary_button)).perform(click());
+        waitForView(withId(R.id.message_primary_button)).click();
         mHttpDownloadFinishedCallback.waitForCallback(
                 currentCallCount, currentCallCount + 1, 5, TimeUnit.SECONDS);
     }

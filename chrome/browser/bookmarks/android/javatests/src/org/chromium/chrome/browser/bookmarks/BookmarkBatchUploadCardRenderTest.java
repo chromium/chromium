@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.view.View;
@@ -33,7 +34,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -90,7 +90,7 @@ public class BookmarkBatchUploadCardRenderTest {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 runOnUiThreadBlocking(
                         () -> getBookmarkHostActivity().findViewById(R.id.signin_settings_card));
@@ -111,7 +111,7 @@ public class BookmarkBatchUploadCardRenderTest {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 runOnUiThreadBlocking(
                         () -> getBookmarkHostActivity().findViewById(R.id.signin_settings_card));
@@ -140,7 +140,7 @@ public class BookmarkBatchUploadCardRenderTest {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 runOnUiThreadBlocking(
                         () -> getBookmarkHostActivity().findViewById(R.id.signin_settings_card));

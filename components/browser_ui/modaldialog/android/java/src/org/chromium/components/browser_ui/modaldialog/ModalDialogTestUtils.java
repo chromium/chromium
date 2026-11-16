@@ -14,6 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.app.Activity;
 import android.content.res.Resources;
 
@@ -30,7 +32,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 
@@ -180,7 +181,7 @@ public class ModalDialogTestUtils {
             boolean waitForShow) {
         ThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
         if (waitForShow) {
-            ViewUtils.waitForVisibleView(withId(R.id.modal_dialog_view));
+            waitForView(withId(R.id.modal_dialog_view));
         }
     }
 

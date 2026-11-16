@@ -7,13 +7,10 @@ package org.chromium.chrome.browser.collaboration;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -31,7 +28,6 @@ import static org.chromium.components.signin.test.util.TestAccounts.ACCOUNT1;
 import static org.chromium.components.signin.test.util.TestAccounts.ACCOUNT2;
 import static org.chromium.components.signin.test.util.TestAccounts.CHILD_ACCOUNT;
 import static org.chromium.components.signin.test.util.TestAccounts.MANAGED_ACCOUNT;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.graphics.Color;
 import android.view.View;
@@ -329,7 +325,7 @@ public class CollaborationIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and refuse.
         waitForView(withText(R.string.collaboration_sync_description));
-        onViewWaiting(withId(R.id.button_secondary)).perform(click());
+        waitForView(withId(R.id.button_secondary)).click();
 
         // The user is signed out.
         assertNull(mActivityTestRule.getSigninTestRule().getPrimaryAccount());
@@ -355,7 +351,7 @@ public class CollaborationIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         waitForView(withText(R.string.collaboration_sync_description));
-        onViewWaiting(withId(R.id.button_primary)).perform(click());
+        waitForView(withId(R.id.button_primary)).click();
 
         CriteriaHelper.pollInstrumentationThread(
                 joinCalled::get, WAIT_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -376,13 +372,10 @@ public class CollaborationIntegrationTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyTabSwitcherCardCount(cta, 1);
         clickFirstCardFromTabSwitcher(cta);
-        onViewWaiting(withId(R.id.share_button)).check(matches(isDisplayed())).perform(click());
+        waitForView(withId(R.id.share_button)).click();
 
         // Verify that bottom sheet sign-in is shown and accept.
-        onViewWaiting(
-                allOf(
-                        withText(R.string.collaboration_signin_bottom_sheet_description),
-                        isDisplayed()));
+        waitForView(withText(R.string.collaboration_signin_bottom_sheet_description));
         final String continueAsText =
                 mActivityTestRule
                         .getActivity()
@@ -391,7 +384,7 @@ public class CollaborationIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         waitForView(withText(R.string.collaboration_sync_description));
-        onViewWaiting(withId(R.id.button_primary)).perform(click());
+        waitForView(withId(R.id.button_primary)).click();
 
         CriteriaHelper.pollInstrumentationThread(
                 createCalled::get, WAIT_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -436,8 +429,7 @@ public class CollaborationIntegrationTest {
                 DataSharingSDKDelegateBridge.isInitializedForTesting());
 
         // Check share button changes to manage.
-        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription(R.string.manage_sharing_content_description));
     }
 
     @Test
@@ -455,7 +447,7 @@ public class CollaborationIntegrationTest {
         onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
 
         // Check share button doesn't change.
-        onViewWaiting(withText(R.string.tab_grid_share_button_text)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.tab_grid_share_button_text));
     }
 
     @Test
@@ -485,16 +477,15 @@ public class CollaborationIntegrationTest {
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
-        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription(R.string.manage_sharing_content_description));
 
         // Click "Delete group" from the menu.
-        onViewWaiting(withId(R.id.toolbar_menu_button))
-                .perform(CollaborationTestUtils.relaxedClick());
-        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_delete_group)).perform(click());
+        waitForView(withId(R.id.toolbar_menu_button))
+                .performViewAction(CollaborationTestUtils.relaxedClick());
+        waitForView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).click();
 
         // Click "Delete group" in confirmation dialog.
-        onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
+        waitForView(withText(R.string.delete_tab_group_action)).click();
 
         // Verify that the group is deleted and the card is gone from the tab switcher.
         CriteriaHelper.pollUiThread(
@@ -534,16 +525,15 @@ public class CollaborationIntegrationTest {
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
-        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription(R.string.manage_sharing_content_description));
 
         // Click "Leave group" from the menu.
-        onViewWaiting(withId(R.id.toolbar_menu_button))
-                .perform(CollaborationTestUtils.relaxedClick());
-        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_leave_group)).perform(click());
+        waitForView(withId(R.id.toolbar_menu_button))
+                .performViewAction(CollaborationTestUtils.relaxedClick());
+        waitForView(withText(R.string.tab_grid_dialog_toolbar_leave_group)).click();
 
         // Click "Leave group" in confirmation dialog.
-        onViewWaiting(withText(R.string.keep_tab_group_dialog_leave_action)).perform(click());
+        waitForView(withText(R.string.keep_tab_group_dialog_leave_action)).click();
 
         // Verify that the group is deleted and the card is gone from the tab switcher.
         CriteriaHelper.pollUiThread(
@@ -582,13 +572,12 @@ public class CollaborationIntegrationTest {
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
-        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription(R.string.manage_sharing_content_description));
 
         // Click "Close group" from the menu.
-        onViewWaiting(withId(R.id.toolbar_menu_button))
-                .perform(CollaborationTestUtils.relaxedClick());
-        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_close_group)).perform(click());
+        waitForView(withId(R.id.toolbar_menu_button))
+                .performViewAction(CollaborationTestUtils.relaxedClick());
+        waitForView(withText(R.string.tab_grid_dialog_toolbar_close_group)).click();
 
         // Dismiss the undo snackbar.
         ThreadUtils.runOnUiThreadBlocking(() -> cta.getTabModelSelector().commitAllTabClosures());
@@ -629,8 +618,7 @@ public class CollaborationIntegrationTest {
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
-        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription(R.string.manage_sharing_content_description));
 
         // Close each tab.
         List<Integer> tabIds =
@@ -648,7 +636,7 @@ public class CollaborationIntegrationTest {
         }
 
         // Click keep group.
-        onViewWaiting(withText(R.string.keep_tab_group_dialog_keep_action)).perform(click());
+        waitForView(withText(R.string.keep_tab_group_dialog_keep_action)).click();
 
         // Verify that the group is kept, but a replacement tab is created.
         ThreadUtils.runOnUiThreadBlocking(

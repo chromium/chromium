@@ -17,7 +17,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.os.Build;
 
@@ -127,7 +127,7 @@ public class IncognitoPermissionLeakageTest {
     }
 
     private void assertDialogIsShown() throws NoMatchingViewException {
-        onViewWaiting(withId(R.id.text)).check(matches(withText(containsString("location"))));
+        waitForView(withId(R.id.text)).check(matches(withText(containsString("location"))));
     }
 
     private void assertDialogIsNotShown() throws NoMatchingViewException {

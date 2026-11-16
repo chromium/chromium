@@ -40,7 +40,6 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Build;
 import android.text.TextUtils;
@@ -1307,7 +1306,7 @@ public class BookmarkTest {
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
 
         // Ensure that the sign-in promo is visible before testing its draggability.
-        onViewWaiting(withId(R.id.signin_promo_view_container));
+        waitForView(withId(R.id.signin_promo_view_container));
         ViewHolder promo = getViewHolderAtIndex(1);
         ImprovedBookmarkRow row = getNthBookmarkRow(1);
         startSelectionThroughMoreMenu(row);
@@ -1350,7 +1349,7 @@ public class BookmarkTest {
         // and not the promo. The test only passed while the model list happened to still be empty
         // when the index was computed; a warm batched process populates it sooner. Look the promo
         // up by its view type instead so the row under test is always the promo.
-        onViewWaiting(withId(R.id.signin_promo_view_container));
+        waitForView(withId(R.id.signin_promo_view_container));
         View promo = getViewHolderAtIndex(getSigninPromoIndex()).itemView;
         TouchCommon.longPressView(promo);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
@@ -1499,13 +1498,11 @@ public class BookmarkTest {
         if (DeviceInfo.isDesktop()) {
             onView(withText(startsWith("Mobile bookmarks"))).check(doesNotExist());
         } else {
-            onViewWaiting(allOf(withText(startsWith("Mobile bookmarks")), isDisplayed()));
+            waitForView(withText(startsWith("Mobile bookmarks")));
         }
-        onViewWaiting(
-                allOf(
-                        withText(startsWith("Reading list")),
-                        isDescendantOfA(withId(R.id.selectable_list_recycler_view)),
-                        isDisplayed()));
+        waitForView(
+                withText(startsWith("Reading list")),
+                isDescendantOfA(withId(R.id.selectable_list_recycler_view)));
         onView(
                         allOf(
                                 withText(startsWith("Bookmarks bar")),

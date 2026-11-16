@@ -6,8 +6,6 @@ package org.chromium.chrome.browser;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertEquals;
@@ -17,8 +15,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
@@ -245,7 +243,7 @@ public class TabsTest {
         View tabSwitcherBtn =
                 BottomBarTestUtils.findViewById(
                         mActivityTestRule.getActivity(), R.id.tab_switcher_button);
-        onViewWaiting(Matchers.is(tabSwitcherBtn)).check(matches(isDisplayed())).perform(click());
+        waitForView(Matchers.is(tabSwitcherBtn)).click();
         LayoutTestUtils.waitForHubLayout(mActivityTestRule.getActivity());
 
         int newTabButtonId =
@@ -254,7 +252,7 @@ public class TabsTest {
                         : R.id.toolbar_action_button;
         View newTabBtn =
                 BottomBarTestUtils.findViewById(mActivityTestRule.getActivity(), newTabButtonId);
-        onViewWaiting(Matchers.is(newTabBtn)).check(matches(isDisplayed())).perform(click());
+        waitForView(Matchers.is(newTabBtn)).click();
         LayoutTestUtils.waitForBrowsingLayout(mActivityTestRule.getActivity());
 
         int currentTabCount =

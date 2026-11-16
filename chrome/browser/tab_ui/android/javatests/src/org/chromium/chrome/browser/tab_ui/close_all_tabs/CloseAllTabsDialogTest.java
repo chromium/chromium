@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tab_ui.close_all_tabs;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -18,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -170,8 +166,8 @@ public class CloseAllTabsDialogTest {
         TabModel regularModel = setUpPinnedAndUnpinnedRegularTabs(selector);
 
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(R.id.modal_dialog_checkbox)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        waitForView(withId(R.id.modal_dialog_checkbox));
+        waitForView(withId(R.id.positive_button)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -193,8 +189,8 @@ public class CloseAllTabsDialogTest {
         TabModel regularModel = setUpPinnedAndUnpinnedRegularTabs(selector);
 
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(R.id.modal_dialog_checkbox)).perform(click());
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        waitForView(withId(R.id.modal_dialog_checkbox)).click();
+        waitForView(withId(R.id.positive_button)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

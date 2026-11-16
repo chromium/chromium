@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.jsdialog;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 
@@ -88,7 +85,7 @@ public class JavascriptAppModalDialogTest {
         // Click cancel and verify that the url is the same.
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
 
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
@@ -102,7 +99,7 @@ public class JavascriptAppModalDialogTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageLoaded =
                 getActiveTabTestCallbackHelperContainer().getOnPageFinishedHelper();
         int callCount = onPageLoaded.getCallCount();
-        onViewWaiting(withText(R.string.leave)).perform(click());
+        waitForView(withText(R.string.leave)).click();
         onPageLoaded.waitForCallback(callCount);
         Assert.assertEquals(
                 EMPTY_PAGE, mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
@@ -134,7 +131,7 @@ public class JavascriptAppModalDialogTest {
         // Click leave and verify that the tab is closed.
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withText(R.string.leave)).perform(click());
+        waitForView(withText(R.string.leave)).click();
         TabUiTestHelper.verifyTabModelTabCount(activity, 1, 0);
     }
 
@@ -175,7 +172,7 @@ public class JavascriptAppModalDialogTest {
         // Show a dialog once.
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
                 mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());
@@ -185,11 +182,10 @@ public class JavascriptAppModalDialogTest {
                 executeJavaScriptAndWaitForDialog("history.back();");
         jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withId(R.id.suppress_js_modal_dialogs))
-                .check(matches(isDisplayed()))
-                .perform(click())
-                .check(matches(isChecked()));
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        var suppressCheckbox = waitForView(withId(R.id.suppress_js_modal_dialogs));
+        suppressCheckbox.click();
+        suppressCheckbox.check(matches(isChecked()));
+        waitForView(withText(R.string.cancel)).click();
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
                 mActivityTestRule.getWebContents().getLastCommittedUrl().getSpec());

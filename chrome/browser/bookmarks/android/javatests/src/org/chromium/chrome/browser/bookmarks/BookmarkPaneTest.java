@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -18,8 +16,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -89,8 +87,8 @@ public class BookmarkPaneTest {
         enterTabSwitcher(cta);
         enterBookmarkPane();
 
-        onViewWaiting(withText("Mobile bookmarks")).perform(click());
-        onViewWaiting(withText("One")).check(matches(isDisplayed()));
+        waitForView(withText("Mobile bookmarks")).click();
+        waitForView(withText("One"));
     }
 
     @Test
@@ -115,7 +113,7 @@ public class BookmarkPaneTest {
         BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("One"));
 
         // Verify that "One" is displayed as a match.
-        onViewWaiting(allOf(withText("One"), withId(R.id.title))).check(matches(isDisplayed()));
+        waitForView(withText("One"), withId(R.id.title));
     }
 
     @Test
@@ -139,8 +137,8 @@ public class BookmarkPaneTest {
         enterTabSwitcher(cta);
         enterBookmarkPane();
 
-        onViewWaiting(withText("Mobile bookmarks")).perform(click());
-        onViewWaiting(withText("One")).perform(click());
+        waitForView(withText("Mobile bookmarks")).click();
+        waitForView(withText("One")).click();
 
         CriteriaHelper.pollUiThread(
                 () -> urlOne.equals(cta.getTabModelSelector().getCurrentTab().getUrl().getSpec()));

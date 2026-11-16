@@ -11,7 +11,6 @@ import static android.view.KeyEvent.META_SHIFT_ON;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -34,7 +33,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.res.Configuration;
 import android.os.SystemClock;
@@ -45,7 +44,6 @@ import android.view.ViewStub;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.EspressoKey;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.MediumTest;
@@ -133,8 +131,8 @@ public class BookmarkBarTest {
     @Test
     @MediumTest
     public void testOnAllBookmarksButtonClick() {
-        onViewDisplayed(bookmarkBarItemWithText("All bookmarks")).perform(click());
-        onViewDisplayed(withClassName(endsWith("BookmarkToolbar")));
+        waitForView(bookmarkBarItemWithText("All bookmarks")).click();
+        waitForView(withClassName(endsWith("BookmarkToolbar")));
     }
 
     @Test
@@ -216,7 +214,7 @@ public class BookmarkBarTest {
     public void testOnBookmarkFolderClick() throws ExecutionException {
         final String title = "Folder";
         mItemIds = List.of(addFolder(title));
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        waitForView(bookmarkBarItemWithText(title)).click();
 
         // Check that the Bookmark Manager toolbar does not appear anymore when the folder is
         // clicked.
@@ -238,7 +236,7 @@ public class BookmarkBarTest {
         final String title = "Google";
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        waitForView(bookmarkBarItemWithText(title)).click();
         CriteriaHelper.pollUiThread(
                 () -> {
                     final Tab currentTab = getCurrentTab();
@@ -262,7 +260,7 @@ public class BookmarkBarTest {
         mItemIds = List.of(addBookmark(/* index= */ 0, title, jsUrl));
 
         // Ctrl+click is a no-op since bookmarklets cannot open in new tabs.
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
+        waitForView(bookmarkBarItemWithText(title)).performViewAction(clickWith(META_CTRL_ON));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(initialTabCount, mCtaTestRule.tabsCount(/* incognito= */ false));
@@ -270,7 +268,7 @@ public class BookmarkBarTest {
                     assertNotEquals("BookmarkletRan", originalTab.getTitle());
                 });
 
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        waitForView(bookmarkBarItemWithText(title)).click();
         CriteriaHelper.pollUiThread(
                 () -> {
                     final Tab currentTab = getCurrentTab();
@@ -294,7 +292,7 @@ public class BookmarkBarTest {
             // Case: perform control-click via touch.
             final Tab originalTab = getCurrentTab();
             final GURL originalUrl = originalTab.getUrl();
-            onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
+            waitForView(bookmarkBarItemWithText(title)).performViewAction(clickWith(META_CTRL_ON));
             CriteriaHelper.pollUiThread(
                     () -> {
                         final Tab currentTab = getCurrentTab();
@@ -314,7 +312,9 @@ public class BookmarkBarTest {
         {
             // Case: perform ENTER-click to ensure control-click via touch is not sticky.
             final Tab originalTab = getCurrentTab();
-            onViewWaiting(bookmarkBarItemWithText(title)).perform(focus(), pressKey(KEYCODE_ENTER));
+            var item = waitForView(bookmarkBarItemWithText(title));
+            item.performViewAction(focus());
+            item.performViewAction(pressKey(KEYCODE_ENTER));
             CriteriaHelper.pollUiThread(
                     () -> {
                         final Tab currentTab = getCurrentTab();
@@ -350,7 +350,7 @@ public class BookmarkBarTest {
                 IntStream.range(0, 100)
                         .mapToObj(i -> itemOrNull(() -> addBookmark(i, "" + i, url)))
                         .collect(Collectors.toList());
-        onViewWaiting(bookmarkBarOverflowButton()).check(matches(isDisplayed())).perform(click());
+        waitForView(bookmarkBarOverflowButton()).click();
         // The full-screen Bookmark Manager should not appear.
         onView(bookmarkManagerToolbarWithText("Bookmarks bar")).check(doesNotExist());
         // Check that a popup menu list is displayed.
@@ -366,7 +366,7 @@ public class BookmarkBarTest {
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
 
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(longClick());
+        waitForView(bookmarkBarItemWithText(title)).performViewAction(longClick());
 
         // Check that a popup menu list is displayed.
         onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
@@ -377,7 +377,7 @@ public class BookmarkBarTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testOnBookmarkBarEmptySpaceLongClick() {
-        onViewWaiting(withId(R.id.bookmark_bar)).perform(longClick());
+        waitForView(withId(R.id.bookmark_bar)).performViewAction(longClick());
 
         // Check that a popup menu list is displayed.
         onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
@@ -393,7 +393,7 @@ public class BookmarkBarTest {
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
 
-        onViewWaiting(withId(R.id.bookmark_bar_items_container)).perform(longClick());
+        waitForView(withId(R.id.bookmark_bar_items_container)).performViewAction(longClick());
 
         // Check that a popup menu list is displayed.
         onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
@@ -495,10 +495,6 @@ public class BookmarkBarTest {
         final var activity = mCtaTestRule.getActivity();
         final var newConfig = new Configuration(activity.getSavedConfigurationForTesting());
         activity.onConfigurationChanged(newConfig);
-    }
-
-    private ViewInteraction onViewDisplayed(Matcher<View> viewMatcher) {
-        return onViewWaiting(allOf(viewMatcher, isDisplayed()));
     }
 
     private @Nullable <T> T itemOrNull(Callable<T> callable) {

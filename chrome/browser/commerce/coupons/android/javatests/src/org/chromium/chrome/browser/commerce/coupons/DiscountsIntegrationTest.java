@@ -4,17 +4,15 @@
 
 package org.chromium.chrome.browser.commerce.coupons;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_SHOPPING_DEALS;
 
 import androidx.test.filters.SmallTest;
@@ -45,7 +43,6 @@ import org.chromium.components.commerce.core.DiscountInfo;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.DiscountInfoCallback;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -111,10 +108,9 @@ public class DiscountsIntegrationTest {
 
     private void navigateAndWaitForDiscountsContextualPageActionIcon() {
         mActivityTestRule.loadUrl(mTestPageWithDiscounts);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_container_title)));
+        waitForView(
+                withId(R.id.optional_toolbar_button),
+                withContentDescription(R.string.discount_container_title));
     }
 
     @Test
@@ -145,15 +141,10 @@ public class DiscountsIntegrationTest {
     // TODO(402808581): Fix test and add integration tests for price tracking and price insights.
     public void testDiscountsContextualPageActionOnClickOpenBottomSheet() {
         mActivityTestRule.loadUrl(mTestPageWithDiscounts);
-        ViewUtils.waitForVisibleView(
-                allOf(
+        waitForView(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_container_title)));
-        onView(
-                        allOf(
-                                withId(R.id.optional_toolbar_button),
-                                withContentDescription(R.string.discount_container_title)))
-                .perform(click());
-        ViewUtils.waitForVisibleView(withId(R.id.commerce_bottom_sheet_content_container));
+                        withContentDescription(R.string.discount_container_title))
+                .click();
+        waitForView(withId(R.id.commerce_bottom_sheet_content_container));
     }
 }

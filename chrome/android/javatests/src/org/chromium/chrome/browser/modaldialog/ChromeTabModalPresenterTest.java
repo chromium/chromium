@@ -18,12 +18,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -246,7 +246,7 @@ public class ChromeTabModalPresenterTest {
         showDialog(mManager, dialog1, ModalDialogType.TAB);
         showDialog(mManager, dialog2, ModalDialogType.TAB);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
-        onViewWaiting(withId(R.id.tab_modal_dialog_container))
+        waitForView(withId(R.id.tab_modal_dialog_container))
                 .check(
                         matches(
                                 allOf(
@@ -478,7 +478,7 @@ public class ChromeTabModalPresenterTest {
         showDialog(mManager, dialog1, ModalDialogType.TAB);
         showDialog(mManager, dialog2, ModalDialogType.TAB);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
-        onViewWaiting(withId(R.id.tab_modal_dialog_container))
+        waitForView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -516,7 +516,7 @@ public class ChromeTabModalPresenterTest {
 
         // Show a tab modal dialog and verify it shows.
         showDialog(mManager, dialog1, ModalDialogType.TAB);
-        onViewWaiting(withId(R.id.tab_modal_dialog_container))
+        waitForView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -655,7 +655,7 @@ public class ChromeTabModalPresenterTest {
 
         // Show a tab modal dialog and verify it shows.
         showDialog(mManager, dialog1, ModalDialogType.TAB);
-        onViewWaiting(withId(R.id.tab_modal_dialog_container))
+        waitForView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -765,7 +765,7 @@ public class ChromeTabModalPresenterTest {
 
     private void ensureDialogContainerVisible() {
         final View dialogContainer = mTabModalPresenter.getDialogContainerForTest();
-        onViewWaiting(allOf(is(dialogContainer), isDisplayed()));
+        waitForView(is(dialogContainer));
     }
 
     private void pressBack() {

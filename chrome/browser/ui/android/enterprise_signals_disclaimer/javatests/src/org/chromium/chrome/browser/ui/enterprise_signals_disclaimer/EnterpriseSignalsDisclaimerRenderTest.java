@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.Activity;
 import android.view.View;
@@ -194,7 +194,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
         BottomSheetTestSupport.waitForOpen(bottomSheetController);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> new BottomSheetTestSupport(bottomSheetController).endAllAnimations());
-        waitForVisibleView(withId(R.id.disclaimer_container));
+        waitForView(withId(R.id.disclaimer_container));
         waitForStableView(mContainer);
         ChromeRenderTestRule.sanitize(mContainer);
         mRenderTestRule.render(mContainer, "bottom_sheet");
@@ -231,7 +231,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                                     .getCurrentPresenterForTest();
                             return presenter.getDialogForTesting().getWindow().getDecorView();
                         });
-        waitForVisibleView(withId(R.id.disclaimer_container));
+        waitForView(withId(R.id.disclaimer_container));
         waitForStableView(dialogDecorView);
         ChromeRenderTestRule.sanitize(dialogDecorView);
         mRenderTestRule.render(dialogDecorView, "modal_dialog");
@@ -270,7 +270,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                     coordinator.getView(),
                                     SemanticColorUtils.getColorSurfaceContainerLow(activity)));
                 });
-        waitForVisibleView(withId(R.id.disclaimer_footer));
+        waitForView(withId(R.id.disclaimer_footer));
         waitForStableView(mContainer);
         ChromeRenderTestRule.sanitize(mContainer);
         mRenderTestRule.render(mContainer, goldenId);

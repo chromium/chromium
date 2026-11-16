@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.pm.ActivityInfo;
 import android.view.View;
@@ -433,7 +433,7 @@ public class JavascriptTabModalDialogTest {
         executeJavaScriptAndWaitForDialog("alert('Android')");
 
         View tabSwitcherBtn = BottomBarTestUtils.findViewById(mActivity, R.id.tab_switcher_button);
-        onViewWaiting(is(tabSwitcherBtn)).perform(click());
+        waitForView(is(tabSwitcherBtn)).click();
 
         // Entering tab switcher should have dismissed the dialog.
         checkDialogShowing(

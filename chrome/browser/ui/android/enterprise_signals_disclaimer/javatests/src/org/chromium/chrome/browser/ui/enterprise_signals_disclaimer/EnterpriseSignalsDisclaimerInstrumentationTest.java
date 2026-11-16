@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.FocusFinder;
 import android.view.View;
@@ -162,7 +162,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     }
 
     private void waitForDisclaimerVisible() {
-        waitForVisibleView(withId(R.id.disclaimer_container));
+        waitForView(withId(R.id.disclaimer_container));
 
         onView(withId(R.id.disclaimer_title)).perform(scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_description))

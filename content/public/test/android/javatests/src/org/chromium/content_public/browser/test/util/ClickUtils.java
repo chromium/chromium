@@ -4,12 +4,9 @@
 
 package org.chromium.content_public.browser.test.util;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Instrumentation;
 import android.os.SystemClock;
@@ -76,7 +73,7 @@ public class ClickUtils {
      * @param y Relative y location to the view.
      */
     public static void mouseContextClickView(View v, int x, int y) {
-        onViewWaiting(allOf(is(v), isDisplayed()));
+        waitForView(is(v));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Post the actual click to the button's message queue, to ensure that it has

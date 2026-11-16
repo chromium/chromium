@@ -9,8 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -532,7 +532,7 @@ public class StatusBarColorControllerTest {
                 10);
 
         // Toolbar layout view should show.
-        onViewWaiting(withId(R.id.toolbar));
+        waitForView(withId(R.id.toolbar));
     }
 
     private void loadUrlAndWaitForShowing(String url) {

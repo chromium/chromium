@@ -15,7 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -741,7 +741,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     private void assertDialogShowing(boolean expectShowing) {
         String dialogTitle = "Install and create shortcut";
         if (expectShowing) {
-            onViewWaiting(withText(dialogTitle)).check(matches(isDisplayed()));
+            waitForView(withText(dialogTitle));
         } else {
             onView(withText(dialogTitle)).check(doesNotExist());
         }

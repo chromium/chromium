@@ -4,10 +4,9 @@
 
 package org.chromium.components.paintpreview.player;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.graphics.Rect;
 import android.os.Build;
@@ -47,7 +46,6 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -585,10 +583,7 @@ public class PaintPreviewPlayerTest {
                 TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        ViewUtils.onViewWaiting(
-                allOf(
-                        equalTo(((ViewGroup) mPlayerManager.getView()).getChildAt(0)),
-                        isDisplayed()));
+        waitForView(equalTo(((ViewGroup) mPlayerManager.getView()).getChildAt(0)));
 
         CriteriaHelper.pollUiThread(
                 () -> {
