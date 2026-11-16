@@ -131,10 +131,10 @@ gfx::AxisTransform2d DirectRenderer::CalculateTargetToDeviceTransform(
 
 gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
     const gfx::Rect& draw_rect) const {
-  gfx::Rect window_rect = draw_rect;
-  window_rect -=
-      current_frame()->current_render_pass->output_rect.OffsetFromOrigin();
-  return window_rect;
+  return gfx::Rect(
+      draw_rect.origin() -
+          current_frame()->current_render_pass->output_rect.OffsetFromOrigin(),
+      draw_rect.size());
 }
 
 std::optional<const DrawQuad*> DirectRenderer::CanPassBeDrawnDirectly(
@@ -617,8 +617,9 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
     // possible result bounds. If there will be zero pixels of output or the
     // scaling ratio was not reasonable, do not proceed.
     gfx::Rect output_rect = render_pass->output_rect;
-    if (request->has_area())
+    if (request->has_area()) {
       output_rect.Intersect(request->area());
+    }
 
     copy_output::RenderPassGeometry geometry;
     geometry.result_bounds =
@@ -634,17 +635,20 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
         request->result_format() == CopyOutputRequest::ResultFormat::RGBA
             ? geometry.result_bounds
             : media::MinimallyShrinkRectForI420(geometry.result_bounds);
-    if (request->has_result_selection())
+    if (request->has_result_selection()) {
       geometry.result_selection.Intersect(request->result_selection());
-    if (geometry.result_selection.IsEmpty())
+    }
+
+    if (geometry.result_selection.IsEmpty()) {
       continue;
+    }
 
     geometry.sampling_bounds = MoveFromDrawToWindowSpace(output_rect);
 
-    geometry.readback_offset =
-        MoveFromDrawToWindowSpace(geometry.result_selection +
-                                  output_rect.OffsetFromOrigin())
-            .OffsetFromOrigin();
+    geometry.readback_offset = geometry.sampling_bounds.OffsetFromOrigin() +
+                               geometry.result_selection.OffsetFromOrigin();
+    CHECK_GE(geometry.readback_offset.x(), 0);
+    CHECK_GE(geometry.readback_offset.y(), 0);
 
     // Tracked element rects should be transformed to the coordinate space of
     // the result bitmap from the CopyOutputRequest.
@@ -663,7 +667,9 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
                                static_cast<float>(request->scale_to().y()) /
                                    request->scale_from().y());
         }
-        pass_to_result.Translate(-output_rect.OffsetFromOrigin());
+        // Cast origin to Vector2dF before negation to avoid overflow.
+        pass_to_result.Translate(
+            -gfx::Vector2dF(output_rect.OffsetFromOrigin()));
 
         // Combined transform that maps from the root target space to the
         // coordinate space of the result bitmap.

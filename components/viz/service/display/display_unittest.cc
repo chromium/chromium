@@ -257,6 +257,11 @@ class DisplayTest : public testing::Test {
 
   void LatencyInfoCapTest(bool over_capacity);
 
+  gfx::Rect MoveFromDrawToWindowSpace(const gfx::Rect& draw_rect) const {
+    return display_->renderer_for_testing()->MoveFromDrawToWindowSpace(
+        draw_rect);
+  }
+
   size_t pending_presentation_group_timings_size() {
     return display_->pending_presentation_group_timings_.size();
   }
@@ -2550,6 +2555,27 @@ TEST_F(DisplayVisibilityTest, SetVisibleMarksRootSurfaceDamagedAndFullDamage) {
   display_->SetVisible(true);
   EXPECT_TRUE(display_->DrawAndSwap(params));
   EXPECT_EQ(gfx::Rect(size), software_output_device_->damage_rect());
+}
+
+// Verifies that a render pass with INT_MIN origin doesn't introduce error.
+TEST_F(DisplayTest, MoveFromDrawToWindowSpaceMinOrigin) {
+  SetUpSoftwareDisplay(RendererSettings());
+  display_->Initialize(client_.get(), manager_.surface_manager());
+
+  AggregatedRenderPass pass;
+  pass.output_rect = gfx::Rect(std::numeric_limits<int>::min(),
+                               std::numeric_limits<int>::min(), 100, 100);
+
+  DirectRenderer::DrawingFrame frame;
+  frame.current_render_pass = &pass;
+  display_->renderer_for_testing()->SetCurrentFrameForTesting(frame);
+
+  EXPECT_EQ(MoveFromDrawToWindowSpace(pass.output_rect),
+            gfx::Rect(0, 0, 100, 100));
+  EXPECT_EQ(MoveFromDrawToWindowSpace(
+                gfx::Rect(std::numeric_limits<int>::min() + 10,
+                          std::numeric_limits<int>::min() + 20, 30, 40)),
+            gfx::Rect(10, 20, 30, 40));
 }
 
 }  // namespace viz

@@ -209,6 +209,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   friend class SkiaDelegatedInkRendererTest;
   friend class DelegatedInkPointPixelTestHelper;
   friend class DelegatedInkDisplayTest;
+  friend class DisplayTest;
 
   struct RenderPassRequirements {
     gfx::Size size;
