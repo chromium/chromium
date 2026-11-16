@@ -32,6 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_SHARED_WORKER_GLOBAL_SCOPE_H_
 
 #include <memory>
+
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -51,11 +53,15 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
       SharedWorkerThread* thread,
       base::TimeTicks time_origin,
       const SharedWorkerToken& token,
-      bool require_cross_site_request_for_cookies);
+      bool require_cross_site_request_for_cookies,
+      net::StorageAccessApiStatus storage_access_api_status);
 
   ~SharedWorkerGlobalScope() override;
 
   bool IsSharedWorkerGlobalScope() const override { return true; }
+
+  // ExecutionContext
+  net::StorageAccessApiStatus GetStorageAccessApiStatus() const override;
 
   // EventTarget
   const AtomicString& InterfaceName() const override;
@@ -115,6 +121,10 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   const SharedWorkerToken token_;
 
   const bool require_cross_site_request_for_cookies_;
+
+  // `kAccessViaAPI` if this worker was created via
+  // `StorageAccessHandle.SharedWorker()`.
+  const net::StorageAccessApiStatus storage_access_api_status_;
 };
 
 template <>

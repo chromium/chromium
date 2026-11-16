@@ -50,6 +50,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -66,7 +67,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
       std::move(subresource_loader_factories), std::move(controller_info),
       std::move(policy_container), std::move(host), std::move(receiver),
       std::move(browser_interface_broker), ukm_source_id,
-      require_cross_site_request_for_cookies,
+      require_cross_site_request_for_cookies, storage_access_api_status,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
       RenderThreadImpl::current()->cors_exempt_header_list(),
       cross_origin_isolated);

@@ -63,16 +63,23 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
     const SharedWorkerToken& token,
-    bool require_cross_site_request_for_cookies)
+    bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status)
     : WorkerGlobalScope(std::move(creation_params),
                         thread,
                         time_origin,
                         /*is_service_worker_global_scope=*/false),
       token_(token),
       require_cross_site_request_for_cookies_(
-          require_cross_site_request_for_cookies) {}
+          require_cross_site_request_for_cookies),
+      storage_access_api_status_(storage_access_api_status) {}
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
+
+net::StorageAccessApiStatus SharedWorkerGlobalScope::GetStorageAccessApiStatus()
+    const {
+  return storage_access_api_status_;
+}
 
 const AtomicString& SharedWorkerGlobalScope::InterfaceName() const {
   return event_target_names::kSharedWorkerGlobalScope;

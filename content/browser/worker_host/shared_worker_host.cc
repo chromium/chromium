@@ -167,7 +167,8 @@ SharedWorkerHost::SharedWorkerHost(
     scoped_refptr<SiteInstanceImpl> site_instance,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
-    scoped_refptr<PolicyContainerHost> creator_policy_container_host)
+    scoped_refptr<PolicyContainerHost> creator_policy_container_host,
+    net::StorageAccessApiStatus storage_access_api_status)
     : service_(service),
       token_(blink::SharedWorkerToken()),
       instance_(instance),
@@ -184,7 +185,8 @@ SharedWorkerHost::SharedWorkerHost(
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
       creator_policy_container_host_(std::move(creator_policy_container_host)),
-      network_restrictions_id_(base::UnguessableToken::Create()) {
+      network_restrictions_id_(base::UnguessableToken::Create()),
+      storage_access_api_status_(storage_access_api_status) {
   CHECK(GetProcessHost(), base::NotFatalUntil::M160);
   CHECK(GetProcessHost()->IsInitializedAndNotDead(), base::NotFatalUntil::M160);
   CHECK(creator_policy_container_host_);
@@ -495,8 +497,8 @@ void SharedWorkerHost::Start(
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies(),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      cross_origin_isolated);
+      storage_access_api_status_, std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer), cross_origin_isolated);
   if (service_worker_handle_ &&
       service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();

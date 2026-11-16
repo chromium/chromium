@@ -3830,6 +3830,7 @@
     "bases": [
       "external/wpt/cookies/third-party-cookies",
       "external/wpt/service-workers/service-worker/partitioned-cookies.tentative.https.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html",
       "external/wpt/workers/shared-worker-partitioned-cookies.tentative.https.html",
       "http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js",
       "http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js"
@@ -3837,7 +3838,7 @@
     "args": [
       "--test-third-party-cookie-phaseout"
     ],
-    "expires": "May 1, 2026",
+    "expires": "Jul 1, 2027",
     "owners": [
       "shuuran@chromium.org",
       "dylancutler@google.com",

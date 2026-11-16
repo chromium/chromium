@@ -234,6 +234,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         coep_reporting_observer,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
@@ -301,8 +302,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       /*interface_registry=*/nullptr,
       /*agent_group_scheduler_compositor_task_runner=*/nullptr,
       /*top_level_frame_security_origin=*/nullptr,
-      /*parent_storage_access_api_status=*/
-      net::StorageAccessApiStatus::kNone,
+      /*parent_storage_access_api_status=*/storage_access_api_status,
       require_cross_site_request_for_cookies,
       blink::SecurityOrigin::CreateFromUrlOrigin(
           url::Origin(origin_from_browser)),
@@ -405,6 +405,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     WebSharedWorkerClient* client,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         coep_reporting_observer,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
@@ -423,8 +424,9 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       pause_worker_context_on_start, std::move(worker_main_script_load_params),
       std::move(policy_container), std::move(web_worker_fetch_context),
       ukm_source_id, require_cross_site_request_for_cookies,
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      is_cross_origin_isolated, permissions_policy);
+      storage_access_api_status, std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer), is_cross_origin_isolated,
+      permissions_policy);
   return worker;
 }
 

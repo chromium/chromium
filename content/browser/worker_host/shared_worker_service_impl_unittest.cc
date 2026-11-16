@@ -5,6 +5,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -43,6 +44,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
@@ -52,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -64,17 +67,12 @@ namespace {
 
 using ::testing::ElementsAre;
 
-void ConnectToSharedWorkerWithContextType(
-    mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
+blink::mojom::SharedWorkerInfoPtr MakeSharedWorkerInfo(
     const GURL& url,
-    const std::string& name,
-    blink::mojom::SharedWorkerCreationContextType creation_context_type,
-    MockSharedWorkerClient* client,
-    MessagePortChannel* local_port,
-    bool flush_connector = true) {
+    const std::string& name) {
   auto options = blink::mojom::WorkerOptions::New();
   options->name = name;
-  blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
+  return blink::mojom::SharedWorkerInfo::New(
       url, std::move(options),
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
       blink::mojom::FetchClientSettingsObject::New(
@@ -87,7 +85,18 @@ void ConnectToSharedWorkerWithContextType(
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset());
+}
+
+void ConnectToSharedWorkerWithContextType(
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
+    const GURL& url,
+    const std::string& name,
+    blink::mojom::SharedWorkerCreationContextType creation_context_type,
+    MockSharedWorkerClient* client,
+    MessagePortChannel* local_port,
+    bool flush_connector = true) {
+  blink::mojom::SharedWorkerInfoPtr info = MakeSharedWorkerInfo(url, name);
 
   blink::MessagePortDescriptorPair pipe;
   *local_port = MessagePortChannel(pipe.TakePort0());
@@ -374,6 +383,87 @@ TEST_F(SharedWorkerServiceImplTest, BasicTest) {
   // Tear down the worker host.
   worker_host->OnContextClosed();
   base::RunLoop().RunUntilIdle();
+}
+
+// Tests for the Storage Access API status that is sent to the renderer when a
+// shared worker is started. Workers created via
+// `StorageAccessHandle.SharedWorker()` pass a `storage_key_override` and must
+// be started with `kAccessViaAPI`, so that `WorkerFetchContext` marks their
+// subresource requests as eligible to use the storage-access grant.
+class SharedWorkerServiceImplStorageAccessApiStatusTest
+    : public SharedWorkerServiceImplTest {
+ protected:
+  // Connects to a new shared worker from a main frame, optionally with a
+  // first-party `storage_key_override`, and returns the
+  // `storage_access_api_status` the browser sent in CreateSharedWorker().
+  std::optional<net::StorageAccessApiStatus>
+  ConnectAndGetStorageAccessApiStatus(bool use_storage_key_override) {
+    std::unique_ptr<TestWebContents> web_contents =
+        CreateWebContents(GURL("https://example.com/"));
+    TestRenderFrameHost* render_frame_host =
+        web_contents->GetPrimaryMainFrame();
+    MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+    const int process_id = renderer_host->GetDeprecatedID();
+    renderer_host->OverrideBinderForTesting(
+        blink::mojom::SharedWorkerFactory::Name_,
+        base::BindRepeating(
+            &SharedWorkerServiceImplTest::BindSharedWorkerFactory,
+            base::Unretained(this), process_id));
+
+    // `SharedWorkerServiceImpl::ConnectToWorker()` requires the override to be
+    // the first-party version of the creator's storage key.
+    std::optional<blink::StorageKey> storage_key_override;
+    if (use_storage_key_override) {
+      storage_key_override = blink::StorageKey::CreateFirstParty(
+          render_frame_host->GetStorageKey().origin());
+    }
+
+    // Call ConnectToWorker() directly, since the SharedWorkerConnectorImpl
+    // factory that takes a `storage_key_override` is restricted to
+    // StorageAccessHandle.
+    MockSharedWorkerClient client;
+    mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_remote;
+    client.Bind(client_remote.InitWithNewPipeAndPassReceiver());
+    blink::MessagePortDescriptorPair pipe;
+    MessagePortChannel local_port(pipe.TakePort0());
+    const GURL kUrl("https://example.com/w.js");
+    static_cast<SharedWorkerServiceImpl*>(
+        browser_context_->GetDefaultStoragePartition()
+            ->GetSharedWorkerService())
+        ->ConnectToWorker(
+            render_frame_host->GetGlobalId(),
+            MakeSharedWorkerInfo(kUrl, "name"), std::move(client_remote),
+            blink::mojom::SharedWorkerCreationContextType::kSecure,
+            MessagePortChannel(pipe.TakePort1()),
+            /*blob_url_loader_factory=*/nullptr, storage_key_override);
+
+    mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+    std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
+    MockSharedWorkerFactory factory(std::move(factory_receiver));
+    EXPECT_TRUE(base::test::RunUntil(
+        [&] { return factory.last_storage_access_api_status().has_value(); }));
+
+    mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+    mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+    EXPECT_TRUE(factory.CheckReceivedCreateSharedWorker(
+        kUrl, "name", std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        &worker_host, &worker_receiver));
+    return factory.last_storage_access_api_status();
+  }
+};
+
+TEST_F(SharedWorkerServiceImplStorageAccessApiStatusTest,
+       NoStorageKeyOverride) {
+  EXPECT_EQ(ConnectAndGetStorageAccessApiStatus(
+                /*use_storage_key_override=*/false),
+            net::StorageAccessApiStatus::kNone);
+}
+
+TEST_F(SharedWorkerServiceImplStorageAccessApiStatusTest,
+       WithStorageKeyOverride) {
+  EXPECT_EQ(ConnectAndGetStorageAccessApiStatus(
+                /*use_storage_key_override=*/true),
+            net::StorageAccessApiStatus::kAccessViaAPI);
 }
 
 // Tests that the shared worker will not be started if the hosting web contents

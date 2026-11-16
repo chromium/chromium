@@ -84,6 +84,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
       bool require_cross_site_request_for_cookies,
+      net::StorageAccessApiStatus storage_access_api_status,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>

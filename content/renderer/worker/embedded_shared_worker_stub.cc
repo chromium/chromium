@@ -63,6 +63,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -140,7 +141,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       pause_on_start, std::move(worker_main_script_load_params),
       ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
-      require_cross_site_request_for_cookies,
+      require_cross_site_request_for_cookies, storage_access_api_status,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
       cross_origin_isolated, info->permissions_policy);
 

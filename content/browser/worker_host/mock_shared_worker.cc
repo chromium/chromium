@@ -163,6 +163,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -179,6 +180,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
   create_params_->ukm_source_id = ukm_source_id;
   create_params_->require_cross_site_request_for_cookies =
       require_cross_site_request_for_cookies;
+  last_storage_access_api_status_ = storage_access_api_status;
   if (create_worker_callback_) {
     std::move(create_worker_callback_).Run();
   }

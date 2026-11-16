@@ -56,14 +56,19 @@ WorkerOrWorkletGlobalScope* SharedWorkerThread::CreateWorkerGlobalScope(
     V8PerIsolateData::From(GetIsolate())
         ->InitializeTaskAttributionTrackerOnWorkerThread();
   }
-  // We need to pull this bool out of creation_params before we construct
+  // We need to pull these values out of creation_params before we construct
   // SharedWorkerGlobalScope as it has to move the pointer to the base class
   // before any information in it can be accessed.
   bool require_cross_site_request_for_cookies =
       creation_params->require_cross_site_request_for_cookies;
+  // Shared workers have no single parent; `parent_storage_access_api_status`
+  // carries the worker's own status, which is `kAccessViaAPI` if it was created
+  // via `StorageAccessHandle.SharedWorker()`.
+  net::StorageAccessApiStatus storage_access_api_status =
+      creation_params->parent_storage_access_api_status;
   return MakeGarbageCollected<SharedWorkerGlobalScope>(
       std::move(creation_params), this, time_origin_, token_,
-      require_cross_site_request_for_cookies);
+      require_cross_site_request_for_cookies, storage_access_api_status);
 }
 
 }  // namespace blink

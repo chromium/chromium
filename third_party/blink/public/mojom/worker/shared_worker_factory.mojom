@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
@@ -110,6 +111,12 @@ interface SharedWorkerFactory {
       // For context on usage see:
       // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
       bool require_cross_site_request_for_cookies,
+
+      // The Storage Access API status of the worker. This is `kAccessViaAPI`
+      // when the worker was created via `StorageAccessHandle.SharedWorker()`,
+      // and is attached to the worker's subresource requests so that they are
+      // eligible to use the storage-access grant.
+      network.mojom.StorageAccessApiStatus storage_access_api_status,
 
       // Used by a CrossOriginEmbedderPolicyReporter to send reports to the
       // ReportingObservers.

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_MOCK_SHARED_WORKER_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -96,6 +98,13 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
 
   void SetCreateWorkerCallback(base::OnceClosure callback);
 
+  // Returns the `storage_access_api_status` passed to the most recent
+  // CreateSharedWorker() call, or std::nullopt if it has not been called.
+  std::optional<net::StorageAccessApiStatus> last_storage_access_api_status()
+      const {
+    return last_storage_access_api_status_;
+  }
+
  private:
   // blink::mojom::SharedWorkerFactory methods:
   void CreateSharedWorker(
@@ -126,6 +135,7 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
       bool require_cross_site_request_for_cookies,
+      net::StorageAccessApiStatus storage_access_api_status,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -149,6 +159,9 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
   mojo::Receiver<blink::mojom::SharedWorkerFactory> receiver_;
   std::unique_ptr<CreateParams> create_params_;
   base::OnceClosure create_worker_callback_;
+  // Kept outside of `create_params_` because CheckReceivedCreateSharedWorker()
+  // consumes `create_params_`.
+  std::optional<net::StorageAccessApiStatus> last_storage_access_api_status_;
 };
 
 class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {

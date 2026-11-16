@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
+#include "net/storage_access_api/status.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -97,7 +98,8 @@ class CONTENT_EXPORT SharedWorkerHost
       scoped_refptr<SiteInstanceImpl> site_instance,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      scoped_refptr<PolicyContainerHost> creator_policy_container_host);
+      scoped_refptr<PolicyContainerHost> creator_policy_container_host,
+      net::StorageAccessApiStatus storage_access_api_status);
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
   SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
@@ -441,6 +443,11 @@ class CONTENT_EXPORT SharedWorkerHost
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   const base::UnguessableToken network_restrictions_id_;
+
+  // `kAccessViaAPI` if this worker was created via
+  // `StorageAccessHandle.SharedWorker()`. Sent to the renderer so that the
+  // worker's subresource requests are eligible to use the storage-access grant.
+  const net::StorageAccessApiStatus storage_access_api_status_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };

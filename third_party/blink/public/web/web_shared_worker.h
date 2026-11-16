@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "base/unguessable_token.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
@@ -103,6 +104,7 @@ class BLINK_EXPORT WebSharedWorker {
       WebSharedWorkerClient*,
       ukm::SourceId ukm_source_id,
       bool require_cross_site_request_for_cookies,
+      net::StorageAccessApiStatus storage_access_api_status,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>

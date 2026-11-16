@@ -127,7 +127,8 @@ class SharedWorkerHostTest : public testing::Test {
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-        base::MakeRefCounted<PolicyContainerHost>(std::move(creator_policies)));
+        base::MakeRefCounted<PolicyContainerHost>(std::move(creator_policies)),
+        net::StorageAccessApiStatus::kNone);
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -508,7 +509,8 @@ TEST_F(SharedWorkerHostTest, CreateBlobUrlStoreProviderOpaqueOrigin) {
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
   mojo::Remote<blink::mojom::BlobURLStore> remote;
   host->CreateBlobUrlStoreProvider(remote.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(remote.is_bound());
@@ -536,7 +538,8 @@ TEST_F(SharedWorkerHostTest,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
@@ -601,7 +604,8 @@ TEST_F(SharedWorkerHostTestWithLNAEnabled,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)),
+      net::StorageAccessApiStatus::kNone);
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
@@ -698,7 +702,8 @@ TEST_F(SharedWorkerHostTest, CreateWebSocketConnector_SameOrigin) {
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
   host->set_client_security_state_for_testing(
       network::mojom::ClientSecurityState::New());
 
@@ -740,7 +745,8 @@ TEST_F(SharedWorkerHostTest,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
   host->set_client_security_state_for_testing(
       network::mojom::ClientSecurityState::New());
 
@@ -823,7 +829,8 @@ TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
   auto host_cross_site = std::make_unique<SharedWorkerHost>(
       &service_, cross_site_instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
   EXPECT_EQ(host_cross_site->GetNetworkIsolationPartition(),
             net::NetworkIsolationPartition::kGeneral);
 
@@ -843,7 +850,8 @@ TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
   auto host_aba = std::make_unique<SharedWorkerHost>(
       &service_, aba_instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
   EXPECT_EQ(host_aba->GetNetworkIsolationPartition(),
             net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
 }

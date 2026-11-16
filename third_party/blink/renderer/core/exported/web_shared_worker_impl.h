@@ -135,6 +135,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
       ukm::SourceId ukm_source_id,
       bool require_cross_site_request_for_cookies,
+      net::StorageAccessApiStatus storage_access_api_status,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>

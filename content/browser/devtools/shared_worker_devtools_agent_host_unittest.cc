@@ -72,7 +72,8 @@ TEST_F(SharedWorkerDevToolsAgentHostTest, AvoidCrossProfileMatches) {
   auto worker_host1 = std::make_unique<SharedWorkerHost>(
       &service1, instance1, site_instance1,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
 
   // Create Agent Host
   auto agent_host = base::MakeRefCounted<SharedWorkerDevToolsAgentHost>(
@@ -101,7 +102,8 @@ TEST_F(SharedWorkerDevToolsAgentHostTest, AvoidCrossProfileMatches) {
   auto worker_host2 = std::make_unique<SharedWorkerHost>(
       &service2, instance2, site_instance2,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
 
   // Enforce that the agent host does not match a worker from another context,
   // even if they share identity.
