@@ -94,6 +94,10 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
 
  protected:
   bool IsFileDialogOpen() const { return file_dialog_ != nullptr; }
+  virtual void OnFileSelectionOpened();
+  // `file_selected` is whether the user selected files rather than canceling.
+  virtual void NotifyFileSelectionClosed(bool file_selected);
+  virtual void OpenAiMode();
 
  private:
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
@@ -105,17 +109,12 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   bool was_ai_mode_open_ = false;
   bool is_image_ = false;
 
-  base::RepeatingClosure open_ai_mode_callback_;
-  base::RepeatingClosure file_chooser_opened_callback_;
-  base::RepeatingClosure file_chooser_closed_callback_;
-
   // Prevents the omnibox popup from closing when focus shifts to the system
   // file dialog.
   std::unique_ptr<OmniboxPopupDeactivationBlocker> deactivation_blocker_;
-
-  // `file_selected` is whether the user selected files rather than canceling.
-  void NotifyFileSelectionClosed(bool file_selected);
-  void OpenAiMode();
+  base::RepeatingClosure open_ai_mode_callback_;
+  base::RepeatingClosure file_chooser_opened_callback_;
+  base::RepeatingClosure file_chooser_closed_callback_;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };

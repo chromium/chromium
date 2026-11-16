@@ -42,7 +42,6 @@ OmniboxEverywhereFileSelector::OmniboxEverywhereFileSelector(
       owning_window_(owning_window)
 #endif
 {
-  set_file_chooser_closed_callback(closed_callback_);
 }
 
 OmniboxEverywhereFileSelector::~OmniboxEverywhereFileSelector() = default;
@@ -101,9 +100,6 @@ void OmniboxEverywhereFileSelector::OpenFileUploadDialog(
 }
 
 void OmniboxEverywhereFileSelector::FileSelectionCanceled() {
-#if BUILDFLAG(IS_MAC)
-  ResetPendingShow();
-#endif
   OmniboxPopupFileSelector::FileSelectionCanceled();
   if (canceled_callback_) {
     canceled_callback_.Run();
@@ -119,12 +115,34 @@ void OmniboxEverywhereFileSelector::Cancel() {
 #endif
   const bool had_open_dialog = IsFileDialogOpen();
   CancelFileSelection();
-  if (had_pending_show && closed_callback_) {
-    closed_callback_.Run();
+  if (had_pending_show) {
+    NotifyFileSelectionClosed(/*file_selected=*/false);
   }
   if ((had_pending_show || had_open_dialog) && canceled_callback_) {
     canceled_callback_.Run();
   }
+}
+
+void OmniboxEverywhereFileSelector::OnFileSelectionOpened() {
+  // Intentional no-op: `opened_callback_` already ran at the start of
+  // `OpenFileUploadDialog()` to collapse the Composebox before waiting for
+  // widget bounds to shrink, and OmniboxEverywhere does not use the browser
+  // window's LocationBar deactivation blocker.
+}
+
+void OmniboxEverywhereFileSelector::NotifyFileSelectionClosed(
+    bool /*file_selected*/) {
+#if BUILDFLAG(IS_MAC)
+  ResetPendingShow();
+#endif
+  if (closed_callback_) {
+    closed_callback_.Run();
+  }
+}
+
+void OmniboxEverywhereFileSelector::OpenAiMode() {
+  // Intentional no-op: OmniboxEverywhere transitions to its Composebox via
+  // `OmniboxEverywhereUI::AddFileContext()` rather than `OmniboxEditModel`.
 }
 
 #if BUILDFLAG(IS_MAC)
