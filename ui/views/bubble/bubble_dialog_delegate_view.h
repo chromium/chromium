@@ -430,8 +430,8 @@ class VIEWS_EXPORT BubbleDialogDelegate
 
   // Call this method to inform BubbleDialogDelegate that the return value of
   // GetAnchorRect() has changed. You only need to do this if you have
-  // overridden GetAnchorRect() - if you are using an anchor view or anchor rect
-  // normally, do not call this.
+  // overridden GetAnchorRect(); if you are using an anchor view, tracked
+  // element, or anchor rect normally, do not call this.
   virtual void OnAnchorBoundsChanged();
 
   // Call this method to update view shown time stamp of underneath input
@@ -745,6 +745,9 @@ class VIEWS_EXPORT BubbleDialogDelegate
   void SetAnchoredDialogKey();
   void ClearAnchoredDialogKey();
 
+  // Updates bubble placement when `anchor_tracked_element_` reports new bounds.
+  void OnTrackedElementAnchorBoundsChanged(ui::TrackedElement* element);
+
   // Keeps `anchored_dialog_registration_` in sync: a bubble that is anchored to
   // a non-Views TrackedElement is inserted into that element's focus order
   // while it is visible and focus-traversable from its anchor. Called whenever
@@ -762,6 +765,9 @@ class VIEWS_EXPORT BubbleDialogDelegate
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
   ui::SafeElementReference anchor_tracked_element_;
+  // Subscription for bounds updates on `anchor_tracked_element_`.
+  std::optional<ui::ElementTracker::Subscription>
+      anchor_tracked_element_bounds_subscription_;
   // Set while this bubble is in the focus order of `anchor_tracked_element_`.
   std::unique_ptr<ui::AnchoredDialogRegistry::Registration>
       anchored_dialog_registration_;

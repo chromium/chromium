@@ -56,6 +56,7 @@
 #include "ui/views/bubble_histograms_variant.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -717,6 +718,7 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
 
 void BubbleDialogDelegate::OnAnchorWidgetDestroying() {
   anchor_tracked_element_ = nullptr;
+  anchor_tracked_element_bounds_subscription_.reset();
   SetAnchorView(nullptr);
 }
 
@@ -979,6 +981,21 @@ void BubbleDialogDelegate::OnAnchorBoundsChanged() {
   UpdateInputProtectorsTimeStamp();
 }
 
+void BubbleDialogDelegate::OnTrackedElementAnchorBoundsChanged(
+    ui::TrackedElement* element) {
+  if (!anchor_tracked_element_) {
+    anchor_tracked_element_bounds_subscription_.reset();
+    return;
+  }
+  if (element != anchor_tracked_element_.get()) {
+    return;
+  }
+  const std::optional<gfx::Rect> old_anchor_rect = anchor_rect_;
+  if (old_anchor_rect != GetAnchorRect()) {
+    OnAnchorBoundsChanged();
+  }
+}
+
 void BubbleDialogDelegate::UpdateInputProtectorsTimeStamp() {
   if (auto* dialog = GetDialogClientView()) {
     dialog->UpdateInputProtectorTimeStamp();
@@ -1135,6 +1152,7 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
   ClearAnchoredDialogKey();
   if (anchor_view) {
     anchor_tracked_element_ = nullptr;
+    anchor_tracked_element_bounds_subscription_.reset();
   }
   if (anchor_view && anchor_view->GetWidget()) {
     anchor_widget_observer_ =
@@ -1201,10 +1219,19 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
                     << "Widget.";
       SetAnchorWidget(widget);
       SetAnchoredDialogKey();
+
+      anchor_tracked_element_bounds_subscription_ =
+          ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+              ViewSubregionAnchor::kAnchorBoundsChangedEvent,
+              tracked_element->context(),
+              base::BindRepeating(
+                  &BubbleDialogDelegate::OnTrackedElementAnchorBoundsChanged,
+                  base::Unretained(this)));
     }
   } else {
     CHECK(anchor.IsNull());
     anchor_tracked_element_ = nullptr;
+    anchor_tracked_element_bounds_subscription_.reset();
     SetAnchorView(nullptr);
     SetAnchorRect(gfx::Rect());
   }

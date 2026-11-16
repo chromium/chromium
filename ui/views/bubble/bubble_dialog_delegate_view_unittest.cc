@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -35,6 +36,8 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -45,6 +48,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_highlighter_views.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -1454,6 +1458,152 @@ TEST_F(BubbleDialogDelegateViewTest,
   // pointer checks.
   bubble_delegate->SizeToContents();
   bubble_widget->CloseNow();
+}
+
+namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNonViewsAnchorElementId);
+
+// Fixture for testing bubbles anchored to a non-Views `ui::TrackedElement` when
+// anchor screen bounds change.
+class BubbleDialogDelegateViewNonViewsAnchorBoundsTest
+    : public BubbleDialogDelegateViewTest {
+ public:
+  BubbleDialogDelegateViewNonViewsAnchorBoundsTest() = default;
+  BubbleDialogDelegateViewNonViewsAnchorBoundsTest(
+      const BubbleDialogDelegateViewNonViewsAnchorBoundsTest&) = delete;
+  BubbleDialogDelegateViewNonViewsAnchorBoundsTest& operator=(
+      const BubbleDialogDelegateViewNonViewsAnchorBoundsTest&) = delete;
+  ~BubbleDialogDelegateViewNonViewsAnchorBoundsTest() override = default;
+
+  // BubbleDialogDelegateViewTest:
+  void SetUp() override {
+    BubbleDialogDelegateViewTest::SetUp();
+    anchor_widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                      Widget::InitParams::TYPE_WINDOW);
+    anchor_ = std::make_unique<ui::test::TestElement>(
+        kNonViewsAnchorElementId,
+        ElementTrackerViews::GetContextForWidget(anchor_widget_.get()));
+    anchor_->SetScreenBounds(kInitialAnchorBounds);
+    anchor_->SetNativeView(anchor_widget_->GetNativeView());
+    anchor_->Show();
+
+    bubble_delegate_ =
+        new TestBubbleDialogDelegateView(views::BubbleAnchor(anchor_.get()));
+    bubble_delegate_->set_close_on_deactivate(/*close=*/false);
+    bubble_widget_ = BubbleDialogDelegateView::CreateBubble(bubble_delegate_);
+    bubble_widget_->Show();
+    initial_bubble_bounds_ = bubble_widget_->GetWindowBoundsInScreen();
+  }
+
+  void TearDown() override {
+    if (bubble_widget_) {
+      Widget* const widget = bubble_widget_.ExtractAsDangling();
+      bubble_delegate_ = nullptr;
+      widget->CloseNow();
+    }
+    anchor_.reset();
+    anchor_widget_.reset();
+    BubbleDialogDelegateViewTest::TearDown();
+  }
+
+ protected:
+  static constexpr gfx::Rect kInitialAnchorBounds{/*x=*/100, /*y=*/150,
+                                                  /*width=*/50, /*height=*/60};
+  static constexpr gfx::Vector2d kMoveOffset{/*x=*/40, /*y=*/30};
+
+  // Updates `element` to `bounds` and emits `kAnchorBoundsChangedEvent`.
+  void NotifyAnchorBoundsChanged(ui::test::TestElement* element,
+                                 const gfx::Rect& bounds) {
+    element->SetScreenBounds(bounds);
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        element, ViewSubregionAnchor::kAnchorBoundsChangedEvent);
+  }
+
+  // Hides and destroys `anchor_` while keeping the bubble open.
+  void DestroyAnchor() {
+    anchor_->Hide();
+    anchor_.reset();
+  }
+
+  // Returns the non-Views tracked anchor element.
+  ui::test::TestElement* anchor() { return anchor_.get(); }
+
+  // Returns the open test bubble delegate.
+  TestBubbleDialogDelegateView* bubble_delegate() { return bubble_delegate_; }
+
+  // Returns the open test bubble widget.
+  Widget* bubble_widget() { return bubble_widget_; }
+
+  // Returns the bubble widget's screen bounds immediately after `Show()`.
+  const gfx::Rect& initial_bubble_bounds() const {
+    return initial_bubble_bounds_;
+  }
+
+ private:
+  // Host widget providing the native view and `ElementContext` for `anchor_`.
+  std::unique_ptr<Widget> anchor_widget_;
+  // Non-Views tracked element used as the bubble's anchor.
+  std::unique_ptr<ui::test::TestElement> anchor_;
+  // Delegate owned by `bubble_widget_`.
+  raw_ptr<TestBubbleDialogDelegateView> bubble_delegate_ = nullptr;
+  // Open bubble widget anchored to `anchor_`.
+  raw_ptr<Widget> bubble_widget_ = nullptr;
+  // Screen bounds of `bubble_widget_` before any anchor movement.
+  gfx::Rect initial_bubble_bounds_;
+};
+
+}  // namespace
+
+// Tests that `kAnchorBoundsChangedEvent` on a non-Views `TrackedElement`
+// repositions an open bubble to the updated screen bounds.
+TEST_F(BubbleDialogDelegateViewNonViewsAnchorBoundsTest,
+       AnchorBoundsChangedMovesBubble) {
+  // Move the anchor element and notify `ElementTracker`; the bubble widget
+  // should reposition by the exact same delta.
+  const gfx::Rect moved_bounds = kInitialAnchorBounds + kMoveOffset;
+  NotifyAnchorBoundsChanged(anchor(), moved_bounds);
+
+  EXPECT_EQ(moved_bounds, bubble_delegate()->GetAnchorRect());
+  EXPECT_EQ(initial_bubble_bounds() + kMoveOffset,
+            bubble_widget()->GetWindowBoundsInScreen());
+}
+
+// Tests that `kAnchorBoundsChangedEvent` from an unrelated `TrackedElement` in
+// the same `ElementContext` is ignored.
+TEST_F(BubbleDialogDelegateViewNonViewsAnchorBoundsTest,
+       IgnoresAnchorBoundsChangedFromOtherElement) {
+  // Events on a different element in the same context should be ignored.
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherElementId);
+  ui::test::TestElement other_element(kOtherElementId, anchor()->context());
+  other_element.SetScreenBounds(
+      gfx::Rect(/*x=*/300, /*y=*/300, /*width=*/50, /*height=*/60));
+  other_element.Show();
+
+  NotifyAnchorBoundsChanged(
+      &other_element,
+      gfx::Rect(/*x=*/340, /*y=*/330, /*width=*/50, /*height=*/60));
+
+  EXPECT_EQ(kInitialAnchorBounds, bubble_delegate()->GetAnchorRect());
+  EXPECT_EQ(initial_bubble_bounds(),
+            bubble_widget()->GetWindowBoundsInScreen());
+}
+
+// Tests that `kAnchorBoundsChangedEvent` updates the cached fallback bounds
+// even when the element is immediately hidden and destroyed.
+TEST_F(BubbleDialogDelegateViewNonViewsAnchorBoundsTest,
+       CachesUpdatedBoundsBeforeAnchorDestroyed) {
+  // Move, fire `kAnchorBoundsChangedEvent`, and immediately hide/destroy
+  // without an intervening `GetAnchorRect()` call; cached bounds must reflect
+  // the latest event.
+  const gfx::Rect moved_bounds = kInitialAnchorBounds + kMoveOffset;
+  NotifyAnchorBoundsChanged(anchor(), moved_bounds);
+  DestroyAnchor();
+
+  EXPECT_TRUE(bubble_delegate()->GetAnchor().IsNull());
+  EXPECT_EQ(moved_bounds, bubble_delegate()->GetAnchorRect());
+  EXPECT_EQ(initial_bubble_bounds() + kMoveOffset,
+            bubble_widget()->GetWindowBoundsInScreen());
 }
 
 // Anchoring Tests -------------------------------------------------------------
