@@ -148,6 +148,7 @@ source_set("browser_tests") {
     "//extensions/browser/mime_handler",
     "//mojo/public/cpp/test_support:test_utils",
     "//pdf:features",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

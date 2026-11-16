@@ -1786,10 +1786,13 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   }
 
   // Constructing the observer resets accessibility on the contents, which
-  // generates another round of accessibility events. Because this runs on every
-  // accessibility event until a PDF content frame is found, only recreate the
-  // observer when the contents to observe actually changes.
-  if (pdf_observer_ && pdf_observer_->web_contents() == pdf_contents) {
+  // generates another round of accessibility events. CheckForPdfContentFrame()
+  // can run several times before a PDF content frame is found, so only recreate
+  // the observer when the contents to observe changes. Without PDF contents,
+  // still reset the observer: a destroyed guest's observer has null contents
+  // too, and keeping it would hide the tab's contents.
+  if (pdf_contents && pdf_observer_ &&
+      pdf_observer_->web_contents() == pdf_contents) {
     return;
   }
 
