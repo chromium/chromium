@@ -24,6 +24,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -49,7 +50,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -867,6 +867,11 @@ class AccountSelectionMediator {
                 RecordHistogram.recordBooleanHistogram(
                         "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
                 break;
+            case IdentityRequestDialogLinkType.IDP_LINK:
+                // Not recorded, so that the histograms above only count the RP's links.
+                // TODO(crbug.com/581372729): Record clicks on each of the identity provider's
+                // links, and how often the links are shown.
+                break;
         }
         CustomTabActivity.showInfoPage(context, url.getSpec());
     }
@@ -1078,12 +1083,7 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(
-                                    mIdpForDisplay,
-                                    assumeNonNull(mSelectedAccount)
-                                            .getIdentityProviderData()
-                                            .getClientMetadata(),
-                                    mSelectedAccount.getFields())
+                            ? createDataSharingConsentItem(assumeNonNull(mSelectedAccount))
                             : null);
         }
         mModel.set(
@@ -1106,12 +1106,7 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(
-                                    mIdpForDisplay,
-                                    assumeNonNull(mSelectedAccount)
-                                            .getIdentityProviderData()
-                                            .getClientMetadata(),
-                                    mSelectedAccount.getFields())
+                            ? createDataSharingConsentItem(assumeNonNull(mSelectedAccount))
                             : null);
         }
         mModel.set(
@@ -1414,13 +1409,16 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createDataSharingConsentItem(
-            @Nullable String idpForDisplay,
-            ClientIdMetadata metadata,
-            @IdentityRequestDialogDisclosureField int[] disclosureFields) {
+    private PropertyModel createDataSharingConsentItem(Account account) {
+        IdentityProviderData identityProvider = account.getIdentityProviderData();
+        ClientIdMetadata metadata = identityProvider.getClientMetadata();
+        IdentityProviderMetadata idpMetadata = identityProvider.getIdpMetadata();
+        // Only the active mode sheet shows the identity provider's links, in the container UI.
+        boolean showIdpLinks =
+                mRpMode == RpMode.ACTIVE && ChromeFeatureList.sFedCmIdpLinks.isEnabled();
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties(
-                        idpForDisplay,
+                        identityProvider.getIdpForDisplay(),
                         metadata.getTermsOfServiceUrl(),
                         metadata.getPrivacyPolicyUrl(),
                         (Context context) -> {
@@ -1435,8 +1433,14 @@ class AccountSelectionMediator {
                                     IdentityRequestDialogLinkType.PRIVACY_POLICY,
                                     metadata.getPrivacyPolicyUrl());
                         },
+                        showIdpLinks ? idpMetadata.getAccountManagementUrl() : GURL.emptyGURL(),
+                        showIdpLinks ? idpMetadata.getPrivacyPolicyUrl() : GURL.emptyGURL(),
+                        showIdpLinks ? idpMetadata.getTermsOfServiceUrl() : GURL.emptyGURL(),
+                        (Context context, GURL url) -> {
+                            showUrl(context, IdentityRequestDialogLinkType.IDP_LINK, url);
+                        },
                         this::setFocusView,
-                        disclosureFields);
+                        account.getFields());
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

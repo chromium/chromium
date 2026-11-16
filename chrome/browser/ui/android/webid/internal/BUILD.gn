@@ -78,6 +78,8 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/drawable/account_selection_active_mode_consent_container_background.xml",
+    "java/res/drawable/account_selection_active_mode_consent_container_bottom_background.xml",
+    "java/res/drawable/account_selection_active_mode_consent_container_top_background.xml",
     "java/res/drawable/arrow_range.xml",
     "java/res/layout/account_selection_account_item.xml",
     "java/res/layout/account_selection_active_mode_account_chip.xml",

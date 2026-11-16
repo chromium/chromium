@@ -8805,7 +8805,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kFedCmActiveModeMultipleIdentityProviders)},
 
     {"fedcm-idp-links", flag_descriptions::kFedCmIdpLinksName,
-     flag_descriptions::kFedCmIdpLinksDescription, kOsDesktop,
+     flag_descriptions::kFedCmIdpLinksDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmIdpLinks)},
 
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,

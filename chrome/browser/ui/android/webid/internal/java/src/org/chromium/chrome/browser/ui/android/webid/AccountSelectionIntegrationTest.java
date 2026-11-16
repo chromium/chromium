@@ -78,7 +78,8 @@ import java.util.List;
 /**
  * Integration tests for the Account Selection component check that the calls to the Account
  * Selection API end up rendering a View. This class is parameterized to run all tests for each RP
- * mode, and for active mode with {@code FedCmPermissionUiWithContainer} enabled.
+ * mode, and for active mode with {@code FedCmPermissionUiWithContainer} or {@code FedCmIdpLinks}
+ * enabled.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -88,19 +89,26 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
             Arrays.asList(
-                    new ParameterSet().value(RpMode.PASSIVE, false).name("passive"),
-                    new ParameterSet().value(RpMode.ACTIVE, false).name("active"),
-                    new ParameterSet().value(RpMode.ACTIVE, true).name("activeWithContainer"));
+                    new ParameterSet().value(RpMode.PASSIVE, false, false).name("passive"),
+                    new ParameterSet().value(RpMode.ACTIVE, false, false).name("active"),
+                    new ParameterSet()
+                            .value(RpMode.ACTIVE, true, false)
+                            .name("activeWithContainer"),
+                    new ParameterSet()
+                            .value(RpMode.ACTIVE, false, true)
+                            .name("activeWithIdpLinks"));
 
     private final @BottomSheetController.SheetState int mExpectedSheetState;
     private final boolean mPermissionUiWithContainer;
+    private final boolean mIdpLinks;
 
     @Mock AccountSelectionComponent.Delegate mCustomTabMockBridge;
 
     public AccountSelectionIntegrationTest(
-            @RpMode.EnumType int rpMode, boolean permissionUiWithContainer) {
+            @RpMode.EnumType int rpMode, boolean permissionUiWithContainer, boolean idpLinks) {
         mRpMode = rpMode;
         mPermissionUiWithContainer = permissionUiWithContainer;
+        mIdpLinks = idpLinks;
         mExpectedSheetState =
                 rpMode == RpMode.ACTIVE
                         ? BottomSheetController.SheetState.HALF
@@ -112,6 +120,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     public void setUp() throws InterruptedException {
         FeatureOverrides.overrideFlag(
                 ChromeFeatureList.FED_CM_PERMISSION_UI_WITH_CONTAINER, mPermissionUiWithContainer);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.FED_CM_IDP_LINKS, mIdpLinks);
         super.setUp();
     }
 
@@ -196,9 +205,13 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     .withRootView(contentView)
                     .build();
         }
-        assertEquals(
-                mPermissionUiWithContainer,
-                contentView.findViewById(R.id.user_data_sharing_consent_container) != null);
+        // `FedCmIdpLinks` also enables the container, and only it shows the identity provider's
+        // links row.
+        View container = contentView.findViewById(R.id.user_data_sharing_consent_container);
+        assertEquals(mPermissionUiWithContainer || mIdpLinks, container != null);
+        if (container != null) {
+            assertEquals(mIdpLinks, container.findViewById(R.id.idp_links_row).isShown());
+        }
         assertTrue(consent.getText() instanceof Spanned);
         Spanned spannedString = (Spanned) consent.getText();
         ClickableSpan[] spans =

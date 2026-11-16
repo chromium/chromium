@@ -197,9 +197,11 @@ public class AccountSelectionCoordinator
         if (rpMode == RpMode.ACTIVE) {
             ViewStub consentStub = contentView.findViewById(R.id.user_data_sharing_consent_stub);
             // With `FedCmPermissionUiWithContainer` enabled, the data sharing consent text is
-            // shown next to an icon in a container.
+            // shown next to an icon in a container. The identity provider's links are shown in the
+            // container too, so `FedCmIdpLinks` also enables it.
             consentStub.setLayoutResource(
                     ChromeFeatureList.sFedCmPermissionUiWithContainer.isEnabled()
+                                    || ChromeFeatureList.sFedCmIdpLinks.isEnabled()
                             ? R.layout.account_selection_active_mode_data_sharing_consent_container
                             : R.layout.account_selection_active_mode_data_sharing_consent_item);
             consentStub.inflate();

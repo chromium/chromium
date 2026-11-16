@@ -54,9 +54,9 @@ public class AccountSelectionIntegrationTestBase {
                     /* brandIconBitmap= */ Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
-                    /* accountManagementUrl= */ GURL.emptyGURL(),
-                    /* privacyPolicyUrl= */ GURL.emptyGURL(),
-                    /* termsOfServiceUrl= */ GURL.emptyGURL(),
+                    /* accountManagementUrl= */ JUnitTestGURLs.BLUE_1,
+                    /* privacyPolicyUrl= */ JUnitTestGURLs.BLUE_2,
+                    /* termsOfServiceUrl= */ JUnitTestGURLs.BLUE_3,
                     /* showUseDifferentAccountButton= */ false);
     protected static final IdentityProviderMetadata IDP_METADATA_WITH_ADD_ACCOUNT =
             new IdentityProviderMetadata(

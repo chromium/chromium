@@ -32,6 +32,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** Properties defined here reflect the state of the AccountSelection-components. */
@@ -164,6 +165,14 @@ class AccountSelectionProperties {
             public final GURL mPrivacyPolicyUrl;
             public final Consumer<Context> mTermsOfServiceClickCallback;
             public final Consumer<Context> mPrivacyPolicyClickCallback;
+            // The identity provider's account management page, privacy policy and terms of
+            // service, shown as links below the disclosure text in the active mode container UI.
+            // Each is empty if it isn't shown.
+            public final GURL mIdpAccountManagementUrl;
+            public final GURL mIdpPrivacyPolicyUrl;
+            public final GURL mIdpTermsOfServiceUrl;
+            // Called with the URL of the identity provider's link that the user clicks.
+            public final BiConsumer<Context, GURL> mIdpLinkClickCallback;
             public final @Nullable Callback<View> mSetFocusViewCallback;
             public final @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
 
@@ -173,6 +182,10 @@ class AccountSelectionProperties {
                     GURL privacyPolicyUrl,
                     Consumer<Context> termsOfServiceClickCallback,
                     Consumer<Context> privacyPolicyClickCallback,
+                    GURL idpAccountManagementUrl,
+                    GURL idpPrivacyPolicyUrl,
+                    GURL idpTermsOfServiceUrl,
+                    BiConsumer<Context, GURL> idpLinkClickCallback,
                     @Nullable Callback<View> setFocusViewCallback,
                     @IdentityRequestDialogDisclosureField int[] disclosureFields) {
                 mIdpForDisplay = idpForDisplay;
@@ -180,6 +193,10 @@ class AccountSelectionProperties {
                 mPrivacyPolicyUrl = privacyPolicyUrl;
                 mTermsOfServiceClickCallback = termsOfServiceClickCallback;
                 mPrivacyPolicyClickCallback = privacyPolicyClickCallback;
+                mIdpAccountManagementUrl = idpAccountManagementUrl;
+                mIdpPrivacyPolicyUrl = idpPrivacyPolicyUrl;
+                mIdpTermsOfServiceUrl = idpTermsOfServiceUrl;
+                mIdpLinkClickCallback = idpLinkClickCallback;
                 mSetFocusViewCallback = setFocusViewCallback;
                 mDisclosureFields = disclosureFields;
             }

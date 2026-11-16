@@ -61,7 +61,8 @@ found in the LICENSE file.
             android:visibility="gone"/>
 
         <!-- Inflated by AccountSelectionCoordinator#setupContentView, with the
-             container layout if FedCmPermissionUiWithContainer is enabled. -->
+             container layout if FedCmPermissionUiWithContainer or FedCmIdpLinks
+             is enabled. -->
         <ViewStub
             android:id="@+id/user_data_sharing_consent_stub"
             android:layout_width="match_parent"

@@ -67,6 +67,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -378,6 +379,102 @@ class AccountSelectionViewBinder {
     }
 
     /**
+     * Shows the identity provider's links in a row below the data sharing consent text, or hides
+     * the row if it has none. Only the active mode container layout has this row.
+     */
+    private static void bindIdpLinks(
+            View view, DataSharingConsentProperties.Properties properties) {
+        View idpLinksRow = view.findViewById(R.id.idp_links_row);
+        if (idpLinksRow == null) return;
+
+        SpannableString idpLinksText = getIdpLinksText(view.getContext(), properties);
+        idpLinksRow.setVisibility(idpLinksText != null ? View.VISIBLE : View.GONE);
+        // With the links row below it, only the top corners of the consent text's row are rounded.
+        view.findViewById(R.id.user_data_sharing_consent_row)
+                .setBackgroundResource(
+                        idpLinksText != null
+                                ? R.drawable
+                                        .account_selection_active_mode_consent_container_top_background
+                                : R.drawable
+                                        .account_selection_active_mode_consent_container_background);
+        if (idpLinksText == null) return;
+
+        TextView idpLinks = idpLinksRow.findViewById(R.id.idp_links);
+        idpLinks.setText(idpLinksText);
+        idpLinks.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Returns the text with links to whichever of the identity provider's account management page,
+     * privacy policy and terms of service it has, or null if it has none.
+     */
+    private static @Nullable SpannableString getIdpLinksText(
+            Context context, DataSharingConsentProperties.Properties properties) {
+        SpanApplier.SpanInfo accountManagementSpan =
+                createIdpLink(
+                        context,
+                        "link_idp_account",
+                        properties.mIdpAccountManagementUrl,
+                        properties.mIdpLinkClickCallback);
+        SpanApplier.SpanInfo privacyPolicySpan =
+                createIdpLink(
+                        context,
+                        "link_idp_privacy_policy",
+                        properties.mIdpPrivacyPolicyUrl,
+                        properties.mIdpLinkClickCallback);
+        SpanApplier.SpanInfo termsOfServiceSpan =
+                createIdpLink(
+                        context,
+                        "link_idp_terms_of_service",
+                        properties.mIdpTermsOfServiceUrl,
+                        properties.mIdpLinkClickCallback);
+
+        @StringRes int textId;
+        if (accountManagementSpan != null) {
+            if (privacyPolicySpan != null && termsOfServiceSpan != null) {
+                textId = R.string.account_selection_idp_links;
+            } else if (privacyPolicySpan != null) {
+                textId = R.string.account_selection_idp_links_no_tos;
+            } else if (termsOfServiceSpan != null) {
+                textId = R.string.account_selection_idp_links_no_pp;
+            } else {
+                textId = R.string.account_selection_idp_links_no_pp_or_tos;
+            }
+        } else if (privacyPolicySpan != null && termsOfServiceSpan != null) {
+            textId = R.string.account_selection_idp_links_no_account_management;
+        } else if (privacyPolicySpan != null) {
+            textId = R.string.account_selection_idp_links_no_account_management_or_tos;
+        } else if (termsOfServiceSpan != null) {
+            textId = R.string.account_selection_idp_links_no_account_management_or_pp;
+        } else {
+            return null;
+        }
+
+        List<SpanApplier.SpanInfo> spans = new ArrayList<>();
+        for (SpanApplier.SpanInfo span :
+                new SpanApplier.SpanInfo[] {
+                    accountManagementSpan, privacyPolicySpan, termsOfServiceSpan
+                }) {
+            if (span != null) {
+                spans.add(span);
+            }
+        }
+        return SpanApplier.applySpans(
+                context.getString(textId, properties.mIdpForDisplay),
+                spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    /** Returns a link for `url` that calls `clickCallback` with it, or null if `url` is empty. */
+    private static SpanApplier.@Nullable SpanInfo createIdpLink(
+            Context context, String tag, GURL url, BiConsumer<Context, GURL> clickCallback) {
+        return createLink(
+                context,
+                tag,
+                url,
+                (Context clickContext) -> clickCallback.accept(clickContext, url));
+    }
+
+    /**
      * Called whenever a user data sharing consent is bound to this view.
      *
      * @param model The model containing the data for the view.
@@ -458,6 +555,7 @@ class AccountSelectionViewBinder {
             TextView textView = view.findViewById(R.id.user_data_sharing_consent);
             textView.setText(span);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
+            bindIdpLinks(view, properties);
             if (properties.mSetFocusViewCallback != null) {
                 properties.mSetFocusViewCallback.onResult(textView);
             }

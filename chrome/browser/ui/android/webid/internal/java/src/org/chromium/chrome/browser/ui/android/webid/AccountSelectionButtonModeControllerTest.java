@@ -14,21 +14,29 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
+import android.content.Intent;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -37,6 +45,7 @@ import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -398,6 +407,79 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mModel.get(ItemProperties.CONTINUE_BUTTON)
                         .get(ContinueButtonProperties.PROPERTIES)
                         .mAccount);
+    }
+
+    /**
+     * Tests that with `FedCmIdpLinks` enabled, the request permission dialog has the identity
+     * provider's links.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testRequestPermissionDialogHasIdpLinks() {
+        DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
+        assertEquals(mTestIdpAccountManagementUrl, properties.mIdpAccountManagementUrl);
+        assertEquals(mTestIdpPrivacyPolicyUrl, properties.mIdpPrivacyPolicyUrl);
+        assertEquals(mTestIdpTermsOfServiceUrl, properties.mIdpTermsOfServiceUrl);
+    }
+
+    /**
+     * Tests that without `FedCmIdpLinks`, the request permission dialog doesn't have the identity
+     * provider's links, even though the identity provider has them.
+     */
+    @Test
+    public void testRequestPermissionDialogHasNoIdpLinksWithoutFlag() {
+        DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
+        assertTrue(properties.mIdpAccountManagementUrl.isEmpty());
+        assertTrue(properties.mIdpPrivacyPolicyUrl.isEmpty());
+        assertTrue(properties.mIdpTermsOfServiceUrl.isEmpty());
+    }
+
+    /**
+     * Tests that each of the identity provider's links opens its URL in a Custom Tab, without
+     * recording the RP's link metrics.
+     */
+    @Test
+    // Opening a Custom Tab checks `CCTDontOverrideIntentMimeType`, so it needs a test value.
+    @EnableFeatures({
+        ChromeFeatureList.FED_CM_IDP_LINKS,
+        ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
+    })
+    public void testClickIdpLinks() {
+        DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.SignUp.PrivacyPolicyClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.TermsOfServiceClicked")
+                        .build();
+        for (GURL url :
+                Arrays.asList(
+                        properties.mIdpAccountManagementUrl,
+                        properties.mIdpPrivacyPolicyUrl,
+                        properties.mIdpTermsOfServiceUrl)) {
+            properties.mIdpLinkClickCallback.accept(mContext, url);
+            Intent intent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+            assertEquals(url.getSpec(), intent.getDataString());
+        }
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Shows the request permission dialog for a new account, through the single-account chooser,
+     * and returns the properties of its disclosure text.
+     */
+    private DataSharingConsentProperties.Properties showRequestPermissionDialog() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        clickContinueButton();
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
+        return mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                .get(DataSharingConsentProperties.PROPERTIES);
     }
 
     /** Clicks the continue button the same way the view does. */

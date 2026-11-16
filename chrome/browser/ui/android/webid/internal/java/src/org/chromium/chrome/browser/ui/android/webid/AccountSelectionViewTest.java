@@ -15,12 +15,14 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static java.util.Arrays.asList;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -58,15 +60,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * View tests for the Account Selection component ensure that model changes are reflected in the
  * sheet. This class is parameterized to run all tests for each RP mode, with {@code
- * FedCmPermissionUiWithContainer} disabled and enabled.
+ * FedCmPermissionUiWithContainer} and {@code FedCmIdpLinks} each disabled and enabled.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
@@ -74,16 +79,24 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
-                    {RpMode.PASSIVE, false},
-                    {RpMode.PASSIVE, true},
-                    {RpMode.ACTIVE, false},
-                    {RpMode.ACTIVE, true}
+                    {RpMode.PASSIVE, false, false},
+                    {RpMode.PASSIVE, true, false},
+                    {RpMode.PASSIVE, false, true},
+                    {RpMode.PASSIVE, true, true},
+                    {RpMode.ACTIVE, false, false},
+                    {RpMode.ACTIVE, true, false},
+                    {RpMode.ACTIVE, false, true},
+                    {RpMode.ACTIVE, true, true}
                 });
     }
 
     /** Whether {@code FedCmPermissionUiWithContainer} is enabled. */
     @Parameter(1)
     public boolean mPermissionUiWithContainer;
+
+    /** Whether {@code FedCmIdpLinks} is enabled. */
+    @Parameter(2)
+    public boolean mIdpLinks;
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
@@ -208,6 +221,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     public void setUp() {
         FeatureOverrides.overrideFlag(
                 ChromeFeatureList.FED_CM_PERMISSION_UI_WITH_CONTAINER, mPermissionUiWithContainer);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.FED_CM_IDP_LINKS, mIdpLinks);
         super.setUp();
     }
 
@@ -397,14 +411,17 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         assertEquals("Expected two clickable links", 2, spans.length);
 
         // Only the active mode sheet shows the text next to an icon in a container, and only with
-        // `FedCmPermissionUiWithContainer` enabled.
+        // `FedCmPermissionUiWithContainer` or `FedCmIdpLinks` enabled.
         View container = mContentView.findViewById(R.id.user_data_sharing_consent_container);
-        if (mRpMode == RpMode.ACTIVE && mPermissionUiWithContainer) {
-            assertEquals(container, consent.getParent());
+        if (mRpMode == RpMode.ACTIVE && (mPermissionUiWithContainer || mIdpLinks)) {
+            View row = container.findViewById(R.id.user_data_sharing_consent_row);
+            assertEquals(row, consent.getParent());
             assertEquals(
                     R.drawable.account_selection_active_mode_consent_container_background,
-                    shadowOf(container.getBackground()).getCreatedFromResId());
-            assertTrue(container.findViewById(R.id.user_data_sharing_consent_icon).isShown());
+                    shadowOf(row.getBackground()).getCreatedFromResId());
+            assertTrue(row.findViewById(R.id.user_data_sharing_consent_icon).isShown());
+            // The consent item has no identity provider links, so their row is hidden.
+            assertFalse(container.findViewById(R.id.idp_links_row).isShown());
         } else {
             assertNull(container);
         }
@@ -415,6 +432,135 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         if (container != null) {
             assertFalse(container.isShown());
         }
+    }
+
+    /**
+     * Tests that the active mode container shows the identity provider's links in a second row
+     * below the disclosure text, for whichever of its account management page, privacy policy and
+     * terms of service it has. Other sheets have no such row.
+     */
+    @Test
+    public void testIdpLinksDisplayed() {
+        if (mRpMode == RpMode.ACTIVE && (mPermissionUiWithContainer || mIdpLinks)) {
+            GURL empty = GURL.emptyGURL();
+            checkIdpLinksRow(
+                    mTestIdpAccountManagementUrl,
+                    mTestIdpPrivacyPolicyUrl,
+                    mTestIdpTermsOfServiceUrl,
+                    R.string.account_selection_idp_links);
+            checkIdpLinksRow(
+                    mTestIdpAccountManagementUrl,
+                    mTestIdpPrivacyPolicyUrl,
+                    empty,
+                    R.string.account_selection_idp_links_no_tos);
+            checkIdpLinksRow(
+                    mTestIdpAccountManagementUrl,
+                    empty,
+                    mTestIdpTermsOfServiceUrl,
+                    R.string.account_selection_idp_links_no_pp);
+            checkIdpLinksRow(
+                    mTestIdpAccountManagementUrl,
+                    empty,
+                    empty,
+                    R.string.account_selection_idp_links_no_pp_or_tos);
+            checkIdpLinksRow(
+                    empty,
+                    mTestIdpPrivacyPolicyUrl,
+                    mTestIdpTermsOfServiceUrl,
+                    R.string.account_selection_idp_links_no_account_management);
+            checkIdpLinksRow(
+                    empty,
+                    mTestIdpPrivacyPolicyUrl,
+                    empty,
+                    R.string.account_selection_idp_links_no_account_management_or_tos);
+            checkIdpLinksRow(
+                    empty,
+                    empty,
+                    mTestIdpTermsOfServiceUrl,
+                    R.string.account_selection_idp_links_no_account_management_or_pp);
+
+            // Without any links, the row is hidden, and all the corners of the disclosure text's
+            // row are rounded again.
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    buildDataSharingConsentItem(mTestEtldPlusOne2));
+            assertFalse(mContentView.findViewById(R.id.idp_links_row).isShown());
+            assertEquals(
+                    R.drawable.account_selection_active_mode_consent_container_background,
+                    shadowOf(
+                                    mContentView
+                                            .findViewById(R.id.user_data_sharing_consent_row)
+                                            .getBackground())
+                            .getCreatedFromResId());
+        } else {
+            // Only the active mode container has a row for the identity provider's links.
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    buildDataSharingConsentItem(
+                            mTestEtldPlusOne2,
+                            mTestIdpAccountManagementUrl,
+                            mTestIdpPrivacyPolicyUrl,
+                            mTestIdpTermsOfServiceUrl,
+                            (context, url) -> {}));
+            assertNull(mContentView.findViewById(R.id.idp_links_row));
+        }
+    }
+
+    /**
+     * Shows the disclosure text with the given identity provider links, and checks that their row
+     * has the `expectedTextId` text, with a link to each non-empty URL in order.
+     */
+    private void checkIdpLinksRow(
+            GURL accountManagementUrl,
+            GURL privacyPolicyUrl,
+            GURL termsOfServiceUrl,
+            @StringRes int expectedTextId) {
+        List<GURL> clickedUrls = new ArrayList<>();
+        mModel.set(
+                ItemProperties.DATA_SHARING_CONSENT,
+                buildDataSharingConsentItem(
+                        mTestEtldPlusOne2,
+                        accountManagementUrl,
+                        privacyPolicyUrl,
+                        termsOfServiceUrl,
+                        (context, url) -> clickedUrls.add(url)));
+
+        View row = mContentView.findViewById(R.id.idp_links_row);
+        assertTrue(row.isShown());
+        assertTrue(row.findViewById(R.id.idp_links_icon).isShown());
+        assertEquals(
+                R.drawable.account_selection_active_mode_consent_container_bottom_background,
+                shadowOf(row.getBackground()).getCreatedFromResId());
+        // Only the top corners of the disclosure text's row are rounded.
+        assertEquals(
+                R.drawable.account_selection_active_mode_consent_container_top_background,
+                shadowOf(
+                                mContentView
+                                        .findViewById(R.id.user_data_sharing_consent_row)
+                                        .getBackground())
+                        .getCreatedFromResId());
+
+        TextView idpLinks = row.findViewById(R.id.idp_links);
+        assertEquals(
+                mResources
+                        .getString(expectedTextId, mTestEtldPlusOne2)
+                        .replaceAll(LINK_TAG_REGEX, ""),
+                idpLinks.getText().toString());
+
+        // Clicking each link, in order, passes its URL to the click callback.
+        Spanned text = (Spanned) idpLinks.getText();
+        ClickableSpan[] spans = text.getSpans(0, text.length(), ClickableSpan.class);
+        Arrays.sort(spans, (a, b) -> text.getSpanStart(a) - text.getSpanStart(b));
+        for (ClickableSpan span : spans) {
+            span.onClick(idpLinks);
+        }
+        List<GURL> expectedUrls = new ArrayList<>();
+        for (GURL url : Arrays.asList(accountManagementUrl, privacyPolicyUrl, termsOfServiceUrl)) {
+            if (!url.isEmpty()) {
+                expectedUrls.add(url);
+            }
+        }
+        assertEquals(expectedUrls, clickedUrls);
     }
 
     /** Tests that the brand foreground and the brand icon are used in the "Continue" button. */
@@ -670,6 +816,20 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     }
 
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {
+        return buildDataSharingConsentItem(
+                idpEtldPlusOne,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                (context, url) -> {});
+    }
+
+    private PropertyModel buildDataSharingConsentItem(
+            String idpEtldPlusOne,
+            GURL idpAccountManagementUrl,
+            GURL idpPrivacyPolicyUrl,
+            GURL idpTermsOfServiceUrl,
+            BiConsumer<Context, GURL> idpLinkClickCallback) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties(
                         idpEtldPlusOne,
@@ -677,6 +837,10 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                         new GURL("https://www.two.com/"),
                         context -> {},
                         context -> {},
+                        idpAccountManagementUrl,
+                        idpPrivacyPolicyUrl,
+                        idpTermsOfServiceUrl,
+                        idpLinkClickCallback,
                         /* setFocusViewCallback= */ null,
                         DEFAULT_DISCLOSURE_FIELDS);
 

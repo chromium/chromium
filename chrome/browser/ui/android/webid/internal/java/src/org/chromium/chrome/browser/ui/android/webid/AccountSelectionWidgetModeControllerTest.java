@@ -29,9 +29,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -228,5 +231,27 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             // Reset mediator after dismiss.
             resetMediator();
         }
+    }
+
+    /**
+     * Tests that passive mode never populates the identity provider's links on the disclosure text,
+     * even with `FedCmIdpLinks` enabled.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testDataSharingConsentHasNoIdpLinks() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        DataSharingConsentProperties.Properties properties =
+                mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                        .get(DataSharingConsentProperties.PROPERTIES);
+        assertTrue(properties.mIdpAccountManagementUrl.isEmpty());
+        assertTrue(properties.mIdpPrivacyPolicyUrl.isEmpty());
+        assertTrue(properties.mIdpTermsOfServiceUrl.isEmpty());
     }
 }

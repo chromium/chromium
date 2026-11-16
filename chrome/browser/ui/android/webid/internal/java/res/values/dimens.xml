@@ -46,6 +46,10 @@ found in the LICENSE file.
   <dimen name="account_selection_active_mode_sheet_header_horizontal_margin">24dp</dimen>
   <dimen name="account_selection_active_mode_sheet_icon_padding">8dp</dimen>
   <dimen name="account_selection_active_mode_sheet_icon_size">32dp</dimen>
+  <dimen name="account_selection_active_mode_sheet_idp_links_icon_margin_top">1dp</dimen>
+  <dimen name="account_selection_active_mode_sheet_idp_links_row_margin_top">4dp</dimen>
+  <dimen name="account_selection_active_mode_sheet_idp_links_row_padding_bottom">16dp</dimen>
+  <dimen name="account_selection_active_mode_sheet_idp_links_row_padding_top">12dp</dimen>
   <dimen name="account_selection_active_mode_sheet_item_padding">16dp</dimen>
   <dimen name="account_selection_active_mode_sheet_plus_icon_horizontal_margin">18dp</dimen>
   <dimen name="account_selection_active_mode_sheet_spinner_margin">42dp</dimen>
