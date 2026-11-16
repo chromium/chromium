@@ -394,11 +394,27 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
 }
 
 bool TextCodecUtf8::IsSimdutfEnabled() {
-  if (!simdutf_enabled_.has_value()) {
-    simdutf_enabled_ =
-        base::FeatureList::IsEnabled(features::kSimdutfTextCodecUtf8Decode);
+  // Disable at compile time where third_party/simdutf only compiles its scalar
+  // fallback implementation: fieldtrial_testing_config.json cannot filter by
+  // CPU architecture, and Finch's cpu_architecture filter evaluates the host
+  // browser process rather than mixed-bitness 32-bit Android WebView renderers
+  // (which override BASE_FEATURE defaults via FeatureList shared memory).
+#if defined(SIMDUTF_IS_32BITS) || \
+    (!defined(SIMDUTF_IS_X86_64) && !defined(SIMDUTF_IS_ARM64))
+  constexpr bool kHasSimdutfHardwareSimd = false;
+#else
+  constexpr bool kHasSimdutfHardwareSimd = true;
+#endif
+  static_assert(!kHasSimdutfHardwareSimd || sizeof(void*) == 8);
+  if constexpr (!kHasSimdutfHardwareSimd) {
+    return false;
+  } else {
+    if (!simdutf_enabled_.has_value()) {
+      simdutf_enabled_ =
+          base::FeatureList::IsEnabled(features::kSimdutfTextCodecUtf8Decode);
+    }
+    return *simdutf_enabled_;
   }
-  return *simdutf_enabled_;
 }
 
 std::optional<String> TextCodecUtf8::TryDecodeWithSimdutf(
