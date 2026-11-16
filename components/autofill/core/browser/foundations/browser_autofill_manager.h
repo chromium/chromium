@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -747,12 +748,13 @@ class BrowserAutofillManager : public AutofillManager {
 
   std::u16string last_unlocked_credit_card_cvc_;
 
-  // Contains a list of suggestion generators. This must be declared near the
-  // bottom of the class (after members like `bnpl_manager_` and
-  // `amount_extraction_manager_`) to ensure it is destroyed first, as some
-  // generators take class members from BrowserAutofillManager into their
-  // constructors to set as class members.
-  std::vector<std::unique_ptr<SuggestionGenerator>> suggestion_generators_;
+  // Maps each active `FillingProduct` to its `SuggestionGenerator`. This must
+  // be declared near the bottom of the class (after members like
+  // `bnpl_manager_` and `amount_extraction_manager_`) to ensure it is destroyed
+  // first, as some generators take class members from BrowserAutofillManager
+  // into their constructors to set as class members.
+  base::flat_map<FillingProduct, std::unique_ptr<SuggestionGenerator>>
+      suggestion_generators_;
 
   // Handles general Address on typing feature management, mainly the logic
   // behind its strike database.

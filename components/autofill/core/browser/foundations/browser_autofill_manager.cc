@@ -1318,8 +1318,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
               suggestion_generation_start_time, std::move(scoped_on_after)));
 
-  for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
-       suggestion_generators_) {
+  for (const auto& [product, suggestion_generator] : suggestion_generators_) {
     suggestion_generator->GenerateSuggestions(form, field, form_structure,
                                               autofill_field, client(),
                                               barrier_callback);
@@ -3552,29 +3551,35 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   const FillingProductSet relevant_filling_products =
       GetFillingProductsToSuggest(trigger_source);
 
+  std::vector<std::pair<FillingProduct, std::unique_ptr<SuggestionGenerator>>>
+      generators;
+  generators.reserve(relevant_filling_products.size());
+
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge) {
-    suggestion_generators_.push_back(
-        std::make_unique<AtMemoryNudgeGenerator>());
+    generators.emplace_back(FillingProduct::kNone,
+                            std::make_unique<AtMemoryNudgeGenerator>());
   }
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
-    suggestion_generators_.push_back(
-        std::make_unique<AutofillAiSuggestionGenerator>());
+    generators.emplace_back(FillingProduct::kAutofillAi,
+                            std::make_unique<AutofillAiSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kIban) &&
       client().GetPaymentsAutofillClient() &&
       client().GetPaymentsAutofillClient()->GetIbanManager()) {
-    suggestion_generators_.push_back(
-        std::make_unique<IbanSuggestionGenerator>());
+    generators.emplace_back(FillingProduct::kIban,
+                            std::make_unique<IbanSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kMerchantPromoCode)) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kMerchantPromoCode,
         std::make_unique<MerchantPromoCodeSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kAutocomplete) &&
       client().GetAutocompleteHistoryManager()) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kAutocomplete,
         std::make_unique<AutocompleteSuggestionGenerator>(
             client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
   }
@@ -3586,13 +3591,14 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
             ? client().ClassifyAsPasswordForm(*this, form_id, field.global_id())
             : PasswordFormClassification();
 
-    suggestion_generators_.push_back(
-        std::make_unique<LoyaltyCardSuggestionGenerator>(
-            password_form_classification));
+    generators.emplace_back(FillingProduct::kLoyaltyCard,
+                            std::make_unique<LoyaltyCardSuggestionGenerator>(
+                                password_form_classification));
   }
   if (relevant_filling_products.contains(FillingProduct::kCompose) &&
       client().GetComposeDelegate()) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kCompose,
         std::make_unique<ComposeSuggestionGenerator>(trigger_source));
   }
   if (relevant_filling_products.contains(FillingProduct::kIdentityCredential)) {
@@ -3600,35 +3606,48 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
             client().GetIdentityCredentialDelegate()) {
       if (std::unique_ptr<SuggestionGenerator> suggestion_generator =
               delegate->GetIdentityCredentialSuggestionGenerator()) {
-        suggestion_generators_.push_back(std::move(suggestion_generator));
+        generators.emplace_back(FillingProduct::kIdentityCredential,
+                                std::move(suggestion_generator));
       }
     }
   }
   if (relevant_filling_products.contains(FillingProduct::kPasskey)) {
-    suggestion_generators_.push_back(
-        std::make_unique<PasskeySuggestionGenerator>());
+    generators.emplace_back(FillingProduct::kPasskey,
+                            std::make_unique<PasskeySuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kPassword)) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kPassword,
         std::make_unique<TrustedVaultErrorSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kOneTimePassword) &&
       otp_manager_) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kOneTimePassword,
         std::make_unique<OtpSuggestionGenerator>(*otp_manager_));
   }
   if (relevant_filling_products.contains(FillingProduct::kAddress)) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kAddress,
         std::make_unique<AddressSuggestionGenerator>(trigger_source));
   }
   if (relevant_filling_products.contains(FillingProduct::kCreditCard)) {
-    suggestion_generators_.push_back(
+    generators.emplace_back(
+        FillingProduct::kCreditCard,
         std::make_unique<CreditCardSuggestionGenerator>(
             four_digit_combinations_in_dom_, &GetAmountExtractionManager(),
             GetPaymentsBnplManager(), &metrics_->credit_card_form_event_logger,
             metrics_->signin_state_for_metrics,
             /*exclude_virtual_cards=*/false));
   }
+
+  // This step is supposed to only allow fast lookup of generators by product.
+  // It should not perform any filtering.
+  const size_t num_generators = generators.size();
+  suggestion_generators_ =
+      base::flat_map<FillingProduct, std::unique_ptr<SuggestionGenerator>>(
+          std::move(generators));
+  CHECK_EQ(suggestion_generators_.size(), num_generators);
 }
 
 base::WeakPtr<BrowserAutofillManager>
