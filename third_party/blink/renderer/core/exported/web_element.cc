@@ -623,6 +623,15 @@ SkBitmap WebElement::ImageContents() {
   return image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
 }
 
+bool WebElement::IsCanvasOriginClean() const {
+  if (IsNull()) {
+    return false;
+  }
+  const auto* canvas =
+      blink::DynamicTo<HTMLCanvasElement>(ConstUnwrap<Element>());
+  return canvas && canvas->OriginClean();
+}
+
 std::vector<uint8_t> WebElement::CopyOfImageData() {
   Image* image = GetImage();
   if (!image || !image->HasData())

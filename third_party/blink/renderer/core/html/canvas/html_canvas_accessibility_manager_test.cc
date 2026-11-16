@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/paint/paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -16,14 +17,25 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -45,6 +57,15 @@ class HTMLCanvasAccessibilityManagerTest : public PageTestBase {
         canvas_element_->GetAccessibilityManagerForTesting();
     ASSERT_TRUE(manager);
     manager->FlushUmaIfNeeded();
+  }
+
+  // Flushes pending accessibility updates and verifies the cache starts clean.
+  AXObjectCache& FlushAXObjectCache() {
+    AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
+    CHECK_NE(cache, nullptr);
+    cache->UpdateAXForAllDocuments();
+    CHECK(!cache->IsDirty());
+    return *cache;
   }
 
  protected:
@@ -410,10 +431,46 @@ class HTMLCanvasAccessibilityManagerOCRTest
     ASSERT_TRUE(manager_->NeedsA11ySupport());
   }
 
+  void TearDown() override {
+    resource_provider_.reset();
+    sii_provider_.reset();
+    if (canvas_element_) {
+      canvas_element_->UnregisterPlaceholderCanvas();
+    }
+    HTMLCanvasAccessibilityManagerTest::TearDown();
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  }
+
+  // Lazily registers `canvas_element_` as an OffscreenCanvas placeholder and
+  // delivers a software-composited frame with the given `origin_clean` flag.
+  void DeliverOffscreenFrame(bool origin_clean) {
+    if (!resource_provider_) {
+      canvas_element_->RegisterPlaceholderCanvas(
+          canvas_element_->GetDomNodeId());
+      sii_provider_ = TestWebGraphicsSharedImageInterfaceProvider::Create();
+      resource_provider_ =
+          CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+              gfx::Size(300, 200), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+              PredefinedColorSpaceToGfxColorSpace(PredefinedColorSpace::kSRGB),
+              gfx::HDRMetadata(), sii_provider_.get());
+      CHECK_NE(resource_provider_, nullptr);
+    }
+    scoped_refptr<ExportedCanvasResource> frame =
+        resource_provider_->DoExternalOverdrawAndProduceResource(
+            [](cc::PaintCanvas& paint_canvas) {
+              paint_canvas.clear(SkColors::kWhite);
+            });
+    CHECK_NE(frame, nullptr);
+    frame->SetOriginClean(origin_clean);
+    canvas_element_->SetOffscreenCanvasResource(std::move(frame));
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AXContext> ax_context_;
   Persistent<HTMLCanvasAccessibilityManager> manager_;
+  std::unique_ptr<TestWebGraphicsSharedImageInterfaceProvider> sii_provider_;
+  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
 };
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerFromEmptyTextRuns) {
@@ -571,14 +628,24 @@ TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRNeededSignalPropagation) {
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
        TaintedCanvasDoesNotScheduleOrRequestOCR) {
+  AXObjectCache& cache = FlushAXObjectCache();
   EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
 
-  // Tainting the canvas and finalizing a frame cancels the pending OCR timer
-  // and does not request OCR.
+  // Transitioning from clean to origin-tainted cancels the pending OCR timer
+  // and marks the canvas element dirty once so AXCanvasAnnotator can drop any
+  // cached OCR state.
+  canvas_element_->SetOriginTainted();
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+  EXPECT_TRUE(cache.IsDirty());
+
+  // Subsequent frames on an already-tainted canvas must neither schedule OCR
+  // nor redundantly re-dirty the accessibility tree on every frame.
+  FlushAXObjectCache();
   canvas_element_->SetOriginTainted();
   canvas_element_->PostFinalizeFrame(FlushReason::kOther);
   EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
-  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+  EXPECT_FALSE(cache.IsDirty());
 
   FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
   EXPECT_FALSE(canvas_element_->HasRequestedOCR());
@@ -600,6 +667,128 @@ TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
   manager_->UpdateAnnotation();
   EXPECT_EQ(manager_->CanvasAnnotation(), "Label");
   EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintedAfterOCRRequestedClearsRequestAndMarksDirty) {
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  WebAXObject web_ax_object = WebAXObject::FromWebNode(canvas_element_.Get());
+  ASSERT_FALSE(web_ax_object.IsNull());
+  AXObjectCache& cache = FlushAXObjectCache();
+  ASSERT_TRUE(web_ax_object.HasRequestedOCR());
+
+  // Tainting before serialization consumes the request clears HasRequestedOCR
+  // and marks the element dirty so stale OCR state can be flushed.
+  canvas_element_->SetOriginTainted();
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+  EXPECT_FALSE(web_ax_object.HasRequestedOCR());
+  EXPECT_TRUE(cache.IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       HeuristicExitClearsOCRRequestAndSubsequentTaintMarksDirty) {
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  ASSERT_TRUE(canvas_element_->HasRequestedOCR());
+
+  // Adding an aria-label transitions out of kNeedsA11ySupport and clears the
+  // pending OCR request.
+  canvas_element_->setAttribute(html_names::kAriaLabelAttr,
+                                AtomicString("Chart"));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(manager_->NeedsA11ySupport());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+
+  // Tainting after exiting kNeedsA11ySupport still marks the element dirty so
+  // cached pre-taint OCR text is purged.
+  AXObjectCache& cache = FlushAXObjectCache();
+  canvas_element_->SetOriginTainted();
+  EXPECT_TRUE(cache.IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintedOffscreenCanvasFrameCancelsOCRAndMarksDirtyOnce) {
+  // Deliver an origin-clean OffscreenCanvas frame and let the OCR timer fire.
+  DeliverOffscreenFrame(/*origin_clean=*/true);
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  ASSERT_TRUE(canvas_element_->HasRequestedOCR());
+  AXObjectCache& cache = FlushAXObjectCache();
+
+  // Delivering a tainted OffscreenCanvas frame clears the pending OCR request
+  // and marks the placeholder dirty once even though SetOriginTainted() is not
+  // invoked on HTMLCanvasElement.
+  DeliverOffscreenFrame(/*origin_clean=*/false);
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+  EXPECT_TRUE(cache.IsDirty());
+
+  // Subsequent tainted OffscreenCanvas frames do not redundantly re-dirty the
+  // accessibility cache.
+  FlushAXObjectCache();
+  DeliverOffscreenFrame(/*origin_clean=*/false);
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(cache.IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintedBeforeUnignoredPostTaskDrainsMarksDirty) {
+  // Hide the canvas via CSS visibility and drain the posted
+  // NotifyCanvasIgnoredStateChanged(true) task.
+  canvas_element_->setAttribute(html_names::kStyleAttr,
+                                AtomicString("visibility: hidden"));
+  UpdateAllLifecyclePhasesForTest();
+  FlushAXObjectCache();
+  FastForwardBy(base::TimeDelta());
+  ASSERT_EQ(manager_->GetIsIgnored(), true);
+
+  // Restore visibility and serialize the AX tree. AXObject becomes unignored
+  // synchronously while NotifyCanvasIgnoredStateChanged(false) remains queued,
+  // leaving `manager_->GetIsIgnored()` temporarily true.
+  canvas_element_->setAttribute(html_names::kStyleAttr,
+                                AtomicString("visibility: visible"));
+  UpdateAllLifecyclePhasesForTest();
+  AXObjectCache& cache = FlushAXObjectCache();
+  ASSERT_EQ(manager_->GetIsIgnored(), true);
+
+  // Tainting before the queued unignored notification runs still marks the
+  // element dirty immediately.
+  canvas_element_->SetOriginTainted();
+  EXPECT_TRUE(cache.IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintingWhenCanvasReadingDisabledDoesNotMarkDirty) {
+  GetDocument().GetSettings()->SetDisableReadingFromCanvas(true);
+  AXObjectCache& cache = FlushAXObjectCache();
+
+  // OriginClean() is already false when canvas readback is disabled by
+  // settings, so SetOriginTainted() is not a clean-to-tainted transition.
+  canvas_element_->SetOriginTainted();
+  EXPECT_FALSE(cache.IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       ClearingTaintedCanvasReenablesOCR) {
+  // Attach a 2D context so resetting width clears the canvas and resets its
+  // origin-clean flag per the HTML specification.
+  CanvasContextCreationAttributesCore attributes;
+  ASSERT_NE(canvas_element_->GetCanvasRenderingContext(
+                GetDocument().GetExecutionContext(), "2d", attributes),
+            nullptr);
+
+  canvas_element_->SetOriginTainted();
+  ASSERT_FALSE(manager_->IsOCRTimerActiveForTesting());
+
+  // Resetting width clears the 2D canvas and transitions it back to
+  // origin-clean, allowing subsequent draws to schedule and request OCR again.
+  canvas_element_->setWidth(canvas_element_->width(),
+                            IGNORE_EXCEPTION_FOR_TESTING);
+  AXObjectCache& cache = FlushAXObjectCache();
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  EXPECT_TRUE(canvas_element_->HasRequestedOCR());
+  EXPECT_TRUE(cache.IsDirty());
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerTest,
@@ -874,6 +1063,16 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
 
   canvas_element_->PostFinalizeFrame(FlushReason::kOther);
   EXPECT_FALSE(cache->IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest,
+       TaintedCanvasDoesNotMarkDirtyInBasicMode) {
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXObjectCache& cache = FlushAXObjectCache();
+
+  canvas_element_->SetOriginTainted();
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(cache.IsDirty());
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerCaptureTest,

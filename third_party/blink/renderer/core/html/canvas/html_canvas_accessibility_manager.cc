@@ -139,6 +139,24 @@ void HTMLCanvasAccessibilityManager::OnUpdate() {
   SetHeuristicResult(ComputeHeuristicResult(*canvas_element_, *is_ignored_));
 }
 
+void HTMLCanvasAccessibilityManager::OnOriginTainted() {
+  ocr_timer_.Stop();
+  ClearOCRDeadline();
+  has_requested_ocr_ = false;
+  // In advanced mode, mark the canvas element dirty so AXCanvasAnnotator drops
+  // cached or in-flight OCR state even if ARIA attributes or fallback content
+  // caused the canvas to exit kNeedsA11ySupport after an earlier OCR, or if a
+  // posted NotifyCanvasIgnoredStateChanged(false) task has not yet updated
+  // `is_ignored_`.
+  if (features::GetCanvasAccessibilityMode() ==
+      features::CanvasAccessibilityMode::kAdvanced) {
+    if (AXObjectCache* cache =
+            canvas_element_->GetDocument().ExistingAXObjectCache()) {
+      cache->MarkElementDirty(canvas_element_);
+    }
+  }
+}
+
 bool HTMLCanvasAccessibilityManager::ShouldCaptureRenderedText() const {
   // Do not capture text runs or update annotations when the canvas
   // accessibility feature is disabled.
@@ -169,6 +187,7 @@ void HTMLCanvasAccessibilityManager::SetHeuristicResult(
     // captured text runs.
     ocr_timer_.Stop();
     ClearOCRDeadline();
+    has_requested_ocr_ = false;
     ClearRenderedText();
     canvas_annotation_ = String();
     return;

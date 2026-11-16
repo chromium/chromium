@@ -663,4 +663,19 @@ TEST_F(WebElementTest, CanvasImageContentsOriginClean) {
   EXPECT_TRUE(TestElement().ImageContents().drawsNothing());
 }
 
+TEST_F(WebElementTest, IsCanvasOriginClean) {
+  EXPECT_FALSE(WebElement().IsCanvasOriginClean());
+
+  InsertHTML("<div id=testElement></div>");
+  EXPECT_FALSE(TestElement().IsCanvasOriginClean());
+
+  InsertHTML("<canvas id=testElement width=50 height=40></canvas>");
+  EXPECT_TRUE(TestElement().IsCanvasOriginClean());
+
+  auto* canvas = To<HTMLCanvasElement>(GetElementById("testElement"));
+  ASSERT_NE(canvas, nullptr);
+  canvas->SetOriginTainted();
+  EXPECT_FALSE(TestElement().IsCanvasOriginClean());
+}
+
 }  // namespace blink

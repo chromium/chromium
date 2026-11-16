@@ -107,6 +107,11 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
 
   void OnUpdate();
 
+  // Called when the canvas transitions from origin-clean to tainted. Cancels
+  // any pending OCR request and, in advanced mode, marks the canvas element
+  // dirty in AXObjectCache.
+  void OnOriginTainted();
+
   bool ShouldCaptureRenderedText() const;
 
   void RecordRenderedText(const String& text,

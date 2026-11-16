@@ -1641,6 +1641,17 @@ bool HTMLCanvasElement::OriginClean() const {
   return origin_clean_;
 }
 
+void HTMLCanvasElement::SetOriginTainted() {
+  const bool was_origin_clean = OriginClean();
+  origin_clean_ = false;
+  // Notify the accessibility manager only on the clean-to-tainted transition so
+  // repeated draws on an already-tainted canvas do not re-dirty the AX tree on
+  // every frame.
+  if (was_origin_clean && accessibility_manager_) {
+    accessibility_manager_->OnOriginTainted();
+  }
+}
+
 bool HTMLCanvasElement::ShouldAccelerate2dContext() const {
   return ShouldAccelerate();
 }
@@ -2090,14 +2101,23 @@ ScriptPromise<ImageBitmap> HTMLCanvasElement::CreateImageBitmap(
 
 void HTMLCanvasElement::SetOffscreenCanvasResource(
     scoped_refptr<ExportedCanvasResource> image) {
+  const bool was_origin_clean = OriginClean();
   OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(std::move(image));
   SetSize(OffscreenCanvasFrame()->Size());
   NotifyOutOfBandFrame();
   NotifyListenersCanvasChanged();
 
-  if (accessibility_manager_ &&
-      accessibility_manager_->ShouldCaptureRenderedText()) {
-    accessibility_manager_->UpdateAnnotation();
+  if (accessibility_manager_) {
+    // OffscreenCanvas taint state is carried per-frame on the exported resource
+    // without calling HTMLCanvasElement::SetOriginTainted(), so notify the
+    // manager whenever an incoming frame transitions the placeholder to
+    // tainted.
+    if (was_origin_clean && !OriginClean()) {
+      accessibility_manager_->OnOriginTainted();
+    }
+    if (accessibility_manager_->ShouldCaptureRenderedText()) {
+      accessibility_manager_->UpdateAnnotation();
+    }
   }
 }
 

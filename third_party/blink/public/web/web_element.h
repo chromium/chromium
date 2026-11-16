@@ -210,6 +210,10 @@ class BLINK_EXPORT WebElement : public WebNode {
   // document cannot be rendered.
   SkBitmap ImageContents();
 
+  // Returns true if this element is a <canvas> element whose content is
+  // origin-clean.
+  bool IsCanvasOriginClean() const;
+
   // Returns a copy of original image data of this element or an empty vector
   // if there isn't any.
   std::vector<uint8_t> CopyOfImageData();

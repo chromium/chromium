@@ -181,7 +181,7 @@ class CORE_EXPORT HTMLCanvasElement final
   }
 
   bool OriginClean() const override;
-  void SetOriginTainted() override { origin_clean_ = false; }
+  void SetOriginTainted() override;
 
   unsigned IncrementFramesSinceLastCommit() {
     return ++frames_since_last_commit_;
