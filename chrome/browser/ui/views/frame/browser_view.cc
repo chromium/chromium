@@ -131,7 +131,6 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
@@ -3084,6 +3083,12 @@ void BrowserView::DidFinishNavigation(
   }
 }
 
+void BrowserView::DidStopLoading() {
+  if (content::WebContents* contents = GetActiveWebContents()) {
+    UpdateAccessibleURLForRootView(contents->GetURL());
+  }
+}
+
 void BrowserView::TouchModeChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (ui::TouchUiController::Get()->touch_ui()) {
@@ -3637,21 +3642,6 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
   if (change.type != SplitTabChange::Type::kVisualsChanged) {
     UpdateTabModalDialogHost();
   }
-}
-
-void BrowserView::OnTabChangedAt(tabs::TabInterface* tab,
-                                 TabChangeType change_type) {
-  content::WebContents* contents = tab->GetContents();
-
-  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
-    return;
-  }
-
-  if (contents != GetActiveWebContents()) {
-    return;
-  }
-
-  UpdateAccessibleURLForRootView(contents->GetURL());
 }
 
 void BrowserView::OnTabBlockedStateChanged(tabs::TabInterface* tab) {

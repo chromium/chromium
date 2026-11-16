@@ -660,8 +660,6 @@ class BrowserView : public BrowserWindow,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
   void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
   void TabStripEmpty() override;
@@ -727,6 +725,7 @@ class BrowserView : public BrowserWindow,
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidStopLoading() override;
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;
