@@ -1,0 +1,8 @@
+Tests that inserting a nested shadow host or a slot into an expanded shadow root with dirty slot assignment does not crash, while protocol commands return up-to-date distributedNodes.
+Case 1 (nested shadow host): inserted children count=1, inner slot distributedNodes=0
+Case 2 (direct slot insertion): initial distributedNodes=0
+Case 2 (after lifecycle update): distributedNodesUpdated count=1
+Case 3 (requestChildNodes): slot[name=req] distributedNodes=2
+Case 4 (describeNode connected): slot[name=desc] distributedNodes=2
+Case 5 (describeNode detached): slot[name=det] distributedNodes=1
+

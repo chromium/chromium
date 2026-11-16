@@ -472,6 +472,7 @@ class CORE_EXPORT InspectorDOMAgent final
   Member<InspectorHistory> history_;
   Member<DOMEditor> dom_editor_;
   bool suppress_attribute_modified_event_;
+  bool suppress_slot_assignment_recalc_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Integer include_whitespace_;
   InspectorAgentState::Boolean capture_node_stack_traces_;
