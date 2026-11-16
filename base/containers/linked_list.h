@@ -247,13 +247,6 @@ class UnsafeLinkedList : public internal::LinkedListBaseT<UnsafeLinkNode<T>> {
   ~UnsafeLinkedList() = default;
 };
 
-// TODO(https://crbug.com/571500505): eliminate this once all instances are
-// renamed.
-template <typename T>
-using LinkNode = UnsafeLinkNode<T>;
-template <typename T>
-using LinkedList = UnsafeLinkedList<T>;
-
 // Linked list node for use in a SafeLinkedList<T>.
 //
 // Use this if you want to ensure that "dead" nodes are never left in a list,
