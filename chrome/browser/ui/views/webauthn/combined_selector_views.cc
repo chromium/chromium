@@ -15,7 +15,9 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
@@ -45,9 +47,9 @@
 namespace {
 
 // This value is used to group all `CombinedSelectorRadioButton` which are under
-// the same `CombinedSelectorRowView`. The grouping is used for traversal and
-// selection. The value is selected voluntarily in order not to conflict
-// grouping from any parent views.
+// the same `CombinedSelectorListView` (specifically, their common `wrapper` view).
+// The grouping is used for traversal and selection. The value is selected
+// voluntarily in order not to conflict grouping from any parent views.
 constexpr static int kGroupId = 1327;
 
 // Calculates the texts to be displayed for a given mechanism.
@@ -119,11 +121,11 @@ void CombinedSelectorRadioButton::GetRadioButtonsInList(int group,
   if (!row_view) {
     return;
   }
-  auto* list_view = row_view->parent();
-  if (!list_view) {
+  auto* wrapper_view = row_view->parent();
+  if (!wrapper_view) {
     return;
   }
-  list_view->GetViewsInGroup(group, views);
+  wrapper_view->GetViewsInGroup(group, views);
 }
 
 bool CombinedSelectorRadioButton::SkipDefaultKeyEventProcessing(
@@ -141,7 +143,7 @@ BEGIN_METADATA(CombinedSelectorRadioButton)
 END_METADATA
 
 CombinedSelectorTextColumnView::CombinedSelectorTextColumnView(
-    const std::vector<std::u16string_view> texts) {
+    const std::vector<std::u16string_view>& texts) {
   AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter,
             1.0f, views::TableLayout::ColumnSize::kFixed, 0, 0);
   AddRows(texts.size(), views::TableLayout::kFixedSize);
@@ -159,18 +161,14 @@ END_METADATA
 
 CombinedSelectorRowView::CombinedSelectorRowView(
     const ui::ImageModel& icon,
-    const std::vector<std::u16string_view> texts,
+    const std::vector<std::u16string_view>& texts,
     RadioStatus radio_status,
     bool enabled,
     CombinedSelectorRadioButton::Delegate* radio_delegate,
-    int index)
+    int index,
+    int set_size)
     : radio_status_(radio_status), enabled_(enabled) {
   SetEnabled(enabled);
-
-  GetViewAccessibility().SetRole(radio_status != RadioStatus::kNone
-                                     ? ax::mojom::Role::kRadioButton
-                                     : ax::mojom::Role::kButton);
-  GetViewAccessibility().SetName(base::JoinString(texts, u"\n"));
   const int horizontal_padding = radio_status == RadioStatus::kNone ? 0 : 16;
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, horizontal_padding)));
 
@@ -200,12 +198,14 @@ CombinedSelectorRowView::CombinedSelectorRowView(
 
   AddChildView(std::make_unique<views::ImageView>(icon));
   AddChildView(std::make_unique<CombinedSelectorTextColumnView>(texts));
-  MaybeAddRadioButton(radio_delegate, index);
+  MaybeAddRadioButton(texts, radio_delegate, index, set_size);
 }
 
 void CombinedSelectorRowView::MaybeAddRadioButton(
+    const std::vector<std::u16string_view>& texts,
     CombinedSelectorRadioButton::Delegate* delegate,
-    int index) {
+    int index,
+    int set_size) {
   if (radio_status_ == RadioStatus::kNone) {
     return;
   }
@@ -213,7 +213,11 @@ void CombinedSelectorRowView::MaybeAddRadioButton(
       std::make_unique<CombinedSelectorRadioButton>(delegate, index);
   radio_button->SetChecked(radio_status_ == RadioStatus::kSelected);
   radio_button->SetEnabled(enabled_);
-  radio_button->GetViewAccessibility().SetName(*this);
+  radio_button->GetViewAccessibility().SetName(base::JoinString(texts, u"\n"));
+  if (set_size > 0) {
+    radio_button->GetViewAccessibility().SetPosInSet(index + 1);
+    radio_button->GetViewAccessibility().SetSetSize(set_size);
+  }
   radio_button_ = AddChildView(std::move(radio_button));
 }
 
@@ -276,17 +280,22 @@ CombinedSelectorListView::CombinedSelectorListView(
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
     auto texts = GetTextsForMechanism(mechanism);
     auto* row = wrapper->AddChildView(std::make_unique<CombinedSelectorRowView>(
-        image_model, std::move(texts), model->GetSelectionStatus(i),
-        !model->dialog_model()->ui_disabled_, delegate, i));
+        image_model, texts, model->GetSelectionStatus(i),
+        !model->dialog_model()->ui_disabled_, delegate, i,
+        /*set_size=*/static_cast<int>(num_mechanisms)));
     if (model->GetSelectionStatus(i) ==
         CombinedSelectorSheetModel::SelectionStatus::kSelected) {
       selected_view_ = row;
     }
-
-    SetOwnedGroup(kGroupId);
   }
 
+  wrapper->SetOwnedGroup(kGroupId);
+
   if (num_mechanisms > 1) {
+    wrapper->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+    wrapper->GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);
+    wrapper->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ACCOUNT_CHOOSER_RADIO_GROUP_ACCESSIBILITY_LABEL));
     wrapper->AddChildView(std::make_unique<views::Separator>());
   }
 

@@ -44,7 +44,7 @@ class CombinedSelectorTextColumnView : public views::TableLayoutView {
   METADATA_HEADER(CombinedSelectorTextColumnView, views::TableLayoutView)
  public:
   explicit CombinedSelectorTextColumnView(
-      const std::vector<std::u16string_view> texts);
+      const std::vector<std::u16string_view>& texts);
 };
 
 // `CombinedSelectorRowView` renders the given icon with the text in the
@@ -63,17 +63,21 @@ class CombinedSelectorRowView : public views::TableLayoutView {
 
   CombinedSelectorRowView(
       const ui::ImageModel& icon,
-      const std::vector<std::u16string_view> texts,
+      const std::vector<std::u16string_view>& texts,
       RadioStatus radio_status,
       bool enabled = true,
       CombinedSelectorRadioButton::Delegate* radio_delegate = nullptr,
-      int index = 0);
+      int index = 0,
+      int set_size = 0);
 
   bool is_selected() const { return radio_status_ == RadioStatus::kSelected; }
 
  private:
-  void MaybeAddRadioButton(CombinedSelectorRadioButton::Delegate* delegate,
-                           int index);
+  void MaybeAddRadioButton(
+      const std::vector<std::u16string_view>& texts,
+      CombinedSelectorRadioButton::Delegate* delegate,
+      int index,
+      int set_size);
 
   // views::TableLayoutView:
   void RequestFocus() override;
