@@ -31,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/media_player_id.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -160,6 +161,15 @@ class MediaWaiter : public content::WebContentsObserver {
   base::test::TestFuture<void> audio_started_playing_future_;
   base::test::TestFuture<void> audio_stopped_playing_future_;
 };
+
+// Makes the video in /media/fullscreen.html fullscreen. Fullscreen requests
+// from unfocused views are rejected, and browser tests that run in parallel
+// can't rely on OS-level window activation, so simulate view focus first.
+[[nodiscard]] ::testing::AssertionResult MakeVideoFullscreen(
+    content::WebContents* contents) {
+  contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
+  return content::ExecJs(contents, "makeFullscreen('small_video')");
+}
 
 }  // namespace
 
@@ -559,8 +569,7 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
 
   auto* fullscreen_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   FullscreenEventsWaiter fullscreen_waiter(fullscreen_contents);
-  EXPECT_TRUE(
-      content::ExecJs(fullscreen_contents, "makeFullscreen('small_video')"));
+  EXPECT_TRUE(MakeVideoFullscreen(fullscreen_contents));
   ASSERT_TRUE(fullscreen_waiter.WaitAndClear(true));
   EXPECT_TRUE(
       data_store_.TrackingPlayingFullScreenVideoSingleMonitorForTesting());
@@ -597,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   FullscreenEventsWaiter waiter(contents);
   EXPECT_TRUE(content::NavigateToURL(
       contents, embedded_test_server()->GetURL("/media/fullscreen.html")));
-  EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
+  EXPECT_TRUE(MakeVideoFullscreen(contents));
   ASSERT_TRUE(waiter.WaitAndClear(true));
   tick_clock_.Advance(kInterval);
   EXPECT_TRUE(content::ExecJs(contents, "exitFullscreen()"));
@@ -713,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
                     ui::PAGE_TRANSITION_LINK));
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   FullscreenEventsWaiter waiter(contents);
-  EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
+  EXPECT_TRUE(MakeVideoFullscreen(contents));
   ASSERT_TRUE(waiter.WaitAndClear(true));
   tick_clock_.Advance(kInterval * 2);
   auto expected_source_id =
@@ -771,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(
       contents, embedded_test_server()->GetURL("/media/fullscreen.html")));
   FullscreenEventsWaiter waiter(contents);
-  EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
+  EXPECT_TRUE(MakeVideoFullscreen(contents));
   ASSERT_TRUE(waiter.WaitAndClear(true));
   tick_clock_.Advance(kInterval);
   auto expected_source_id =
