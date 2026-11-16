@@ -2250,7 +2250,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/ds_store/src':
-    Var('chromium_git') + '/external/github.com/dmgbuild/ds_store.git' + '@' + '2d2733d8b5415ffdddc3d459836ee9c853f664c2',
+    Var('chromium_git') + '/external/github.com/dmgbuild/ds_store.git' + '@' + 'e94c714c6d1cd25e17eae5597e405eec5ba184b9',
 
   'src/third_party/dragonbox/src':
     Var('chromium_git') + '/external/github.com/jk-jeon/dragonbox.git' + '@' + 'beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44',
