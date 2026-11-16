@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/default_chrome_apps_migrator.h"
 
+#include <utility>
+
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -57,11 +59,10 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
     return;
 
   EnsurePolicyValueIsList(policies, key::kWebAppInstallForceList);
-  base::ListValue& web_app_policy_value =
-      policies
-          ->GetMutableValue(key::kWebAppInstallForceList,
-                            base::Value::Type::LIST)
-          ->GetList();
+  PolicyMap::Entry* web_app_entry =
+      policies->GetMutable(key::kWebAppInstallForceList);
+  base::ListValue web_app_policy_value =
+      web_app_entry->value(base::Value::Type::LIST)->GetList().Clone();
   for (const std::string& chrome_app_id : chrome_app_ids) {
     base::DictValue web_app;
     web_app.Set("url", chrome_app_to_web_app_.at(chrome_app_id));
@@ -70,6 +71,7 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
     web_app.Set("uninstall_and_replace", std::move(uninstall_list));
     web_app_policy_value.Append(std::move(web_app));
   }
+  web_app_entry->set_value(base::Value(std::move(web_app_policy_value)));
 
   MigratePinningPolicy(policies);
 }
@@ -133,18 +135,28 @@ void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
 
 void DefaultChromeAppsMigrator::MigratePinningPolicy(
     PolicyMap* policies) const {
-  base::Value* pinned_apps_value = policies->GetMutableValue(
-      key::kPinnedLauncherApps, base::Value::Type::LIST);
-  if (!pinned_apps_value)
+  PolicyMap::Entry* pinned_apps_entry =
+      policies->GetMutable(key::kPinnedLauncherApps);
+  if (!pinned_apps_entry) {
     return;
-  for (auto& list_entry : pinned_apps_value->GetList()) {
-    if (!list_entry.is_string())
+  }
+  const base::Value* pinned_apps_value =
+      pinned_apps_entry->value(base::Value::Type::LIST);
+  if (!pinned_apps_value) {
+    return;
+  }
+  base::ListValue updated_pinned_apps = pinned_apps_value->GetList().Clone();
+  for (auto& list_entry : updated_pinned_apps) {
+    if (!list_entry.is_string()) {
       continue;
+    }
     const std::string pinned_app = list_entry.GetString();
     auto it = chrome_app_to_web_app_.find(pinned_app);
-    if (it != chrome_app_to_web_app_.end())
+    if (it != chrome_app_to_web_app_.end()) {
       list_entry = base::Value(it->second);
+    }
   }
+  pinned_apps_entry->set_value(base::Value(std::move(updated_pinned_apps)));
 }
 
 }  // namespace policy

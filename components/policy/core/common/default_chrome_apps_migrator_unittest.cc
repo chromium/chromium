@@ -33,6 +33,18 @@ base::DictValue CreateWebAppDict(std::string url,
   return web_app;
 }
 
+void AppendToListPolicy(PolicyMap* map,
+                        const std::string& policy_name,
+                        base::Value item) {
+  PolicyMap::Entry* entry = map->GetMutable(policy_name);
+  ASSERT_TRUE(entry);
+  const base::Value* value = entry->value(base::Value::Type::LIST);
+  ASSERT_TRUE(value);
+  base::ListValue list = value->GetList().Clone();
+  list.Append(std::move(item));
+  entry->set_value(base::Value(std::move(list)));
+}
+
 }  // namespace
 
 class DefaultChromeAppsMigratorTest : public testing::Test {
@@ -79,22 +91,14 @@ TEST_F(DefaultChromeAppsMigratorTest, ChromeAppWithUpdateUrl) {
   PolicyMap expected_map(policy_map_.Clone());
 
   // Add force installed Chrome App that should be migrated.
-  base::ListValue& forcelist_value =
-      policy_map_
-          .GetMutableValue(key::kExtensionInstallForcelist,
-                           base::Value::Type::LIST)
-          ->GetList();
-  forcelist_value.Append(std::string(kAppId1) + ";https://example.com");
+  AppendToListPolicy(
+      &policy_map_, key::kExtensionInstallForcelist,
+      base::Value(std::string(kAppId1) + ";https://example.com"));
 
   // Corresponding web app should be force installed after migration.
   base::DictValue web_app = CreateWebAppDict(kWebAppUrl1, kAppId1);
-
-  base::ListValue& web_app_list =
-      expected_map
-          .GetMutableValue(key::kWebAppInstallForceList,
-                           base::Value::Type::LIST)
-          ->GetList();
-  web_app_list.Append(std::move(web_app));
+  AppendToListPolicy(&expected_map, key::kWebAppInstallForceList,
+                     base::Value(std::move(web_app)));
 
   migrator_.Migrate(&policy_map_);
 
@@ -105,35 +109,26 @@ TEST_F(DefaultChromeAppsMigratorTest, ChromeAppsAndExtensions) {
   PolicyMap expected_map(policy_map_.Clone());
 
   // Add two force installed Chrome Apps and two extensions.
-  base::ListValue& forcelist_value =
-      policy_map_
-          .GetMutableValue(key::kExtensionInstallForcelist,
-                           base::Value::Type::LIST)
-          ->GetList();
-  forcelist_value.Append("extension1");
-  forcelist_value.Append(kAppId1);
-  forcelist_value.Append("extension2");
-  forcelist_value.Append(kAppId2);
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value("extension1"));
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value(kAppId1));
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value("extension2"));
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value(kAppId2));
 
   // Only extensions should be left now.
-  base::ListValue& expected_forcelist =
-      expected_map
-          .GetMutableValue(key::kExtensionInstallForcelist,
-                           base::Value::Type::LIST)
-          ->GetList();
-  expected_forcelist.Append("extension1");
-  expected_forcelist.Append("extension2");
+  AppendToListPolicy(&expected_map, key::kExtensionInstallForcelist,
+                     base::Value("extension1"));
+  AppendToListPolicy(&expected_map, key::kExtensionInstallForcelist,
+                     base::Value("extension2"));
 
   // Corresponding web apps should be force installed after migration.
-  base::DictValue first_app = CreateWebAppDict(kWebAppUrl1, kAppId1);
-  base::DictValue second_app = CreateWebAppDict(kWebAppUrl2, kAppId2);
-  base::ListValue& web_app_list =
-      expected_map
-          .GetMutableValue(key::kWebAppInstallForceList,
-                           base::Value::Type::LIST)
-          ->GetList();
-  web_app_list.Append(std::move(first_app));
-  web_app_list.Append(std::move(second_app));
+  AppendToListPolicy(&expected_map, key::kWebAppInstallForceList,
+                     base::Value(CreateWebAppDict(kWebAppUrl1, kAppId1)));
+  AppendToListPolicy(&expected_map, key::kWebAppInstallForceList,
+                     base::Value(CreateWebAppDict(kWebAppUrl2, kAppId2)));
 
   migrator_.Migrate(&policy_map_);
 
@@ -147,12 +142,8 @@ TEST_F(DefaultChromeAppsMigratorTest, WebAppPolicyWrongType) {
   PolicyMap expected_map(policy_map_.Clone());
 
   // Add force installed Chrome App.
-  base::ListValue& forcelist_value =
-      policy_map_
-          .GetMutableValue(key::kExtensionInstallForcelist,
-                           base::Value::Type::LIST)
-          ->GetList();
-  forcelist_value.Append(kAppId1);
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value(kAppId1));
 
   // Set WebAppInstallForceList to non-list type.
   base::Value web_app_value(base::Value::Type::DICT);
@@ -178,35 +169,20 @@ TEST_F(DefaultChromeAppsMigratorTest, PinnedApp) {
   PolicyMap expected_map(policy_map_.Clone());
 
   // Add force installed Chrome App that should be migrated.
-  base::ListValue& forcelist_value =
-      policy_map_
-          .GetMutableValue(key::kExtensionInstallForcelist,
-                           base::Value::Type::LIST)
-          ->GetList();
-  forcelist_value.Append(kAppId1);
+  AppendToListPolicy(&policy_map_, key::kExtensionInstallForcelist,
+                     base::Value(kAppId1));
 
   // Make the Chrome App pinned.
-  base::ListValue& pinned_apps_value =
-      policy_map_
-          .GetMutableValue(key::kPinnedLauncherApps, base::Value::Type::LIST)
-          ->GetList();
-  pinned_apps_value.Append(kAppId1);
+  AppendToListPolicy(&policy_map_, key::kPinnedLauncherApps,
+                     base::Value(kAppId1));
 
   // Corresponding web app should be force installed after migration.
-  base::DictValue web_app = CreateWebAppDict(kWebAppUrl1, kAppId1);
-  base::ListValue& web_app_list =
-      expected_map
-          .GetMutableValue(key::kWebAppInstallForceList,
-                           base::Value::Type::LIST)
-          ->GetList();
-  web_app_list.Append(std::move(web_app));
+  AppendToListPolicy(&expected_map, key::kWebAppInstallForceList,
+                     base::Value(CreateWebAppDict(kWebAppUrl1, kAppId1)));
 
   // The corresponding Web App should be pinned.
-  base::ListValue& pinned_expected_value =
-      expected_map
-          .GetMutableValue(key::kPinnedLauncherApps, base::Value::Type::LIST)
-          ->GetList();
-  pinned_expected_value.Append(kWebAppUrl1);
+  AppendToListPolicy(&expected_map, key::kPinnedLauncherApps,
+                     base::Value(kWebAppUrl1));
 
   migrator_.Migrate(&policy_map_);
 

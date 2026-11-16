@@ -181,11 +181,12 @@ void SecurityTokenSamlTest::SetClientCertAutoSelectPolicy() {
           .Clone();
   policy::PolicyMap::Entry* const existing_entry =
       policy_map.GetMutable(policy::key::kAutoSelectCertificateForUrls);
-  if (existing_entry) {
+  if (existing_entry && existing_entry->value(base::Value::Type::LIST)) {
     // Append to the existing policy.
-    existing_entry->value(base::Value::Type::LIST)
-        ->GetList()
-        .Append(policy_item_value);
+    base::ListValue policy_value =
+        existing_entry->value(base::Value::Type::LIST)->GetList().Clone();
+    policy_value.Append(policy_item_value);
+    existing_entry->set_value(base::Value(std::move(policy_value)));
   } else {
     // Set the new policy value.
     base::ListValue policy_value;

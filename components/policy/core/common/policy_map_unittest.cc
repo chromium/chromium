@@ -14,6 +14,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -1393,16 +1396,6 @@ TEST_F(PolicyMapTest, BlockedEntry) {
   EXPECT_EQ(*policies.GetValueUnsafe("b"), *entry_b.value_unsafe());
   EXPECT_EQ(policies.GetValueUnsafe("c"), nullptr);
 
-  EXPECT_EQ(*policies.GetMutableValue("a", base::Value::Type::STRING),
-            *entry_a.value(base::Value::Type::STRING));
-  EXPECT_EQ(*policies.GetMutableValue("b", base::Value::Type::STRING),
-            *entry_b.value(base::Value::Type::STRING));
-  EXPECT_EQ(policies.GetMutableValue("c", base::Value::Type::STRING), nullptr);
-
-  EXPECT_EQ(*policies.GetMutableValueUnsafe("a"), *entry_a.value_unsafe());
-  EXPECT_EQ(*policies.GetMutableValueUnsafe("b"), *entry_b.value_unsafe());
-  EXPECT_EQ(policies.GetMutableValueUnsafe("c"), nullptr);
-
   EXPECT_TRUE(policies.GetUntrusted("a")->Equals(entry_a));
   EXPECT_TRUE(policies.GetUntrusted("b")->Equals(entry_b));
   EXPECT_TRUE(policies.GetUntrusted("c")->Equals(entry_c_blocked));
@@ -1448,13 +1441,6 @@ TEST_F(PolicyMapTest, InvalidEntry) {
 
   EXPECT_EQ(*policies.GetValueUnsafe("a"), *entry_a.value_unsafe());
   EXPECT_EQ(policies.GetValueUnsafe("b"), nullptr);
-
-  EXPECT_EQ(*policies.GetMutableValue("a", base::Value::Type::STRING),
-            *entry_a.value(base::Value::Type::STRING));
-  EXPECT_EQ(policies.GetMutableValue("b", base::Value::Type::STRING), nullptr);
-
-  EXPECT_EQ(*policies.GetMutableValueUnsafe("a"), *entry_a.value_unsafe());
-  EXPECT_EQ(policies.GetMutableValueUnsafe("b"), nullptr);
 
   EXPECT_TRUE(policies.GetUntrusted("a")->Equals(entry_a));
   EXPECT_TRUE(policies.GetUntrusted("b")->Equals(entry_b_invalid));
@@ -2215,5 +2201,104 @@ INSTANTIATE_TEST_SUITE_P(PolicyMapPriorityTestInstance,
                                           testing::Values(false, true),
                                           testing::Values(false, true)));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PolicyMapTest, SharedValueCloneAndSet) {
+  PolicyMap original;
+  base::DictValue dict;
+  dict.Set("ext_a", std::string(4096, 'x'));
+  original.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, base::Value(std::move(dict)), nullptr);
+  original.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, base::Value(std::string(2048, 'y')),
+               nullptr);
+
+  PolicyMap cloned = original.Clone();
+  EXPECT_EQ(original.GetValue(kTestPolicyName1, base::Value::Type::DICT),
+            cloned.GetValue(kTestPolicyName1, base::Value::Type::DICT));
+  EXPECT_EQ(original.GetValue(kTestPolicyName2, base::Value::Type::STRING),
+            cloned.GetValue(kTestPolicyName2, base::Value::Type::STRING));
+
+  // Replacing one entry via set_value leaves the original untouched.
+  PolicyMap::Entry* cloned_entry = cloned.GetMutable(kTestPolicyName1);
+  ASSERT_TRUE(cloned_entry);
+  base::DictValue updated_dict =
+      cloned_entry->value(base::Value::Type::DICT)->GetDict().Clone();
+  updated_dict.Set("ext_b", "added");
+  cloned_entry->set_value(base::Value(std::move(updated_dict)));
+
+  EXPECT_NE(original.GetValue(kTestPolicyName1, base::Value::Type::DICT),
+            cloned.GetValue(kTestPolicyName1, base::Value::Type::DICT));
+  EXPECT_FALSE(original.GetValue(kTestPolicyName1, base::Value::Type::DICT)
+                   ->GetDict()
+                   .contains("ext_b"));
+  EXPECT_TRUE(cloned.GetValue(kTestPolicyName1, base::Value::Type::DICT)
+                  ->GetDict()
+                  .contains("ext_b"));
+  // Unmodified entry remains shared.
+  EXPECT_EQ(original.GetValue(kTestPolicyName2, base::Value::Type::STRING),
+            cloned.GetValue(kTestPolicyName2, base::Value::Type::STRING));
+
+  // Replacing with a scalar value leaves the original untouched.
+  cloned.GetMutable(kTestPolicyName2)->set_value(base::Value("replaced"));
+  EXPECT_EQ(std::string(2048, 'y'),
+            original.GetValue(kTestPolicyName2, base::Value::Type::STRING)
+                ->GetString());
+  EXPECT_EQ("replaced",
+            cloned.GetValue(kTestPolicyName2, base::Value::Type::STRING)
+                ->GetString());
+}
+
+TEST_F(PolicyMapTest, SharedValueCrossSequenceSafety) {
+  base::test::TaskEnvironment task_environment;
+  auto bg_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+
+  base::test::TestFuture<PolicyMap> build_future;
+  bg_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce([]() {
+        PolicyMap map;
+        base::DictValue dict;
+        dict.Set("key", std::string(1024, 'b'));
+        map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                POLICY_SOURCE_CLOUD, base::Value(std::move(dict)), nullptr);
+        return map;
+      }),
+      build_future.GetCallback());
+  PolicyMap main_map = build_future.Take();
+
+  PolicyMap bg_clone = main_map.Clone();
+  EXPECT_EQ(main_map.GetValue(kTestPolicyName1, base::Value::Type::DICT),
+            bg_clone.GetValue(kTestPolicyName1, base::Value::Type::DICT));
+
+  // Clone a second copy to destroy on the background sequence while main_map
+  // still holds a reference.
+  PolicyMap bg_destroy_clone = main_map.Clone();
+  EXPECT_EQ(
+      main_map.GetValue(kTestPolicyName1, base::Value::Type::DICT),
+      bg_destroy_clone.GetValue(kTestPolicyName1, base::Value::Type::DICT));
+
+  base::test::TestFuture<PolicyMap> update_future;
+  bg_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](PolicyMap map, PolicyMap to_destroy) {
+            PolicyMap::Entry* entry = map.GetMutable(kTestPolicyName1);
+            base::DictValue dict =
+                entry->value(base::Value::Type::DICT)->GetDict().Clone();
+            dict.Set("bg", 42);
+            entry->set_value(base::Value(std::move(dict)));
+            return map;
+          },
+          std::move(bg_clone), std::move(bg_destroy_clone)),
+      update_future.GetCallback());
+  PolicyMap returned_bg_clone = update_future.Take();
+
+  EXPECT_FALSE(main_map.GetValue(kTestPolicyName1, base::Value::Type::DICT)
+                   ->GetDict()
+                   .contains("bg"));
+  EXPECT_EQ(
+      42, returned_bg_clone.GetValue(kTestPolicyName1, base::Value::Type::DICT)
+              ->GetDict()
+              .FindInt("bg"));
+}
 
 }  // namespace policy

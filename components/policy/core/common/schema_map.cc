@@ -68,12 +68,23 @@ void SchemaMap::FilterBundle(PolicyBundle& bundle,
       const Schema policy_schema = schema->GetProperty(policy_name);
 
       const bool has_value = entry.value_unsafe();
-      const bool is_valid =
-          has_value &&
-          policy_schema.Normalize(entry.value_unsafe(), SCHEMA_ALLOW_UNKNOWN,
-                                  /* out_error_path=*/nullptr,
-                                  /* out_error=*/nullptr,
-                                  /* out_changed=*/nullptr);
+      bool is_valid = false;
+      if (has_value) {
+        if (policy_schema.Validate(*entry.value_unsafe(), SCHEMA_STRICT,
+                                   /*out_error_path=*/nullptr,
+                                   /*out_error=*/nullptr)) {
+          is_valid = true;
+        } else {
+          base::Value normalized = entry.value_unsafe()->Clone();
+          is_valid = policy_schema.Normalize(&normalized, SCHEMA_ALLOW_UNKNOWN,
+                                             /*out_error_path=*/nullptr,
+                                             /*out_error=*/nullptr,
+                                             /*out_changed=*/nullptr);
+          if (is_valid) {
+            entry.set_value(std::move(normalized));
+          }
+        }
+      }
       if (drop_invalid_component_policies && (!has_value || !is_valid)) {
         it_map = policy_map.EraseIt(it_map);
         continue;

@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/affiliation.h"
@@ -117,13 +116,11 @@ bool AllowAllPolicies(PolicyMap::const_reference unused) {
   return true;
 }
 
-PolicyMap::ConflictType GetValueConflictType(const PolicyMap::Entry& a,
-                                             const PolicyMap::Entry& b) {
-  const bool same_value = (!a.value_unsafe() && !b.value_unsafe()) ||
-                          (a.value_unsafe() && b.value_unsafe() &&
-                           *a.value_unsafe() == *b.value_unsafe());
-  return same_value ? PolicyMap::ConflictType::Supersede
-                    : PolicyMap::ConflictType::Override;
+scoped_refptr<const base::RefCountedData<base::Value>> MakeRefCountedValue(
+    std::optional<base::Value> value) {
+  return value ? base::MakeRefCounted<base::RefCountedData<base::Value>>(
+                     std::move(*value))
+               : nullptr;
 }
 
 }  // namespace
@@ -141,7 +138,7 @@ PolicyMap::Entry::Entry(
       source(source),
       external_data_fetcher(std::move(external_data_fetcher)),
       details(details),
-      value_(std::move(value)) {}
+      value_(MakeRefCountedValue(std::move(value))) {}
 
 PolicyMap::Entry::~Entry() = default;
 
@@ -149,13 +146,12 @@ PolicyMap::Entry::Entry(Entry&&) noexcept = default;
 PolicyMap::Entry& PolicyMap::Entry::operator=(Entry&&) noexcept = default;
 
 PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
-  Entry copy(
-      level, scope, source,
-      value_ ? std::make_optional<base::Value>(value_->Clone()) : std::nullopt,
-      external_data_fetcher
-          ? std::make_unique<ExternalDataFetcher>(*external_data_fetcher)
-          : nullptr,
-      details);
+  Entry copy(level, scope, source, std::nullopt,
+             external_data_fetcher
+                 ? std::make_unique<ExternalDataFetcher>(*external_data_fetcher)
+                 : nullptr,
+             details);
+  copy.value_ = value_;
   copy.ignored_ = ignored_;
   copy.message_ids_ = message_ids_;
   copy.is_default_value_ = is_default_value_;
@@ -172,21 +168,25 @@ const base::Value* PolicyMap::Entry::value(base::Value::Type value_type) const {
   return value && value->type() == value_type ? value : nullptr;
 }
 
-base::Value* PolicyMap::Entry::value(base::Value::Type value_type) {
-  base::Value* value = value_unsafe();
-  return value && value->type() == value_type ? value : nullptr;
-}
-
 const base::Value* PolicyMap::Entry::value_unsafe() const {
-  return base::OptionalToPtr(value_);
-}
-
-base::Value* PolicyMap::Entry::value_unsafe() {
-  return base::OptionalToPtr(value_);
+  return value_ ? &value_->data : nullptr;
 }
 
 void PolicyMap::Entry::set_value(std::optional<base::Value> val) {
-  value_ = std::move(val);
+  value_ = MakeRefCountedValue(std::move(val));
+}
+
+bool PolicyMap::Entry::ValueEquals(const PolicyMap::Entry& other) const {
+  return value_ == other.value_ ||
+         (value_ && other.value_ && value_->data == other.value_->data);
+}
+
+// static
+PolicyMap::ConflictType PolicyMap::Entry::GetValueConflictType(
+    const PolicyMap::Entry& a,
+    const PolicyMap::Entry& b) {
+  return a.ValueEquals(b) ? PolicyMap::ConflictType::Supersede
+                          : PolicyMap::ConflictType::Override;
 }
 
 bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
@@ -201,9 +201,7 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
       source == other.source &&  // Necessary for PolicyUIHandler observers.
                                  // They have to update when sources change.
       message_ids_ == other.message_ids_ &&
-      is_default_value_ == other.is_default_value_ &&
-      ((!value_ && !other.value_unsafe()) ||
-       (value_ && other.value_unsafe() && *value_ == *other.value_unsafe())) &&
+      is_default_value_ == other.is_default_value_ && ValueEquals(other) &&
       ExternalDataFetcher::Equals(external_data_fetcher.get(),
                                   other.external_data_fetcher.get());
   return equals;
@@ -363,19 +361,8 @@ const base::Value* PolicyMap::GetValue(const std::string& policy,
   return entry ? entry->value(value_type) : nullptr;
 }
 
-base::Value* PolicyMap::GetMutableValue(const std::string& policy,
-                                        base::Value::Type value_type) {
-  auto* entry = GetMutable(policy);
-  return entry ? entry->value(value_type) : nullptr;
-}
-
 const base::Value* PolicyMap::GetValueUnsafe(const std::string& policy) const {
   auto* entry = Get(policy);
-  return entry ? entry->value_unsafe() : nullptr;
-}
-
-base::Value* PolicyMap::GetMutableValueUnsafe(const std::string& policy) {
-  auto* entry = GetMutable(policy);
   return entry ? entry->value_unsafe() : nullptr;
 }
 
@@ -526,10 +513,7 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
 
   const bool is_scope_conflict =
       higher_policy.scope != conflicting_policy.scope;
-  bool are_values_equal =
-      (!policy->value_unsafe() && !other_policy_copy.value_unsafe()) ||
-      (policy->value_unsafe() && other_policy_copy.value_unsafe() &&
-       *policy->value_unsafe() == *other_policy_copy.value_unsafe());
+  const bool are_values_equal = policy->ValueEquals(other_policy_copy);
   if (higher_policy.UsesLocalStateAndProfilePrefs() && is_scope_conflict) {
     higher_policy.AddMessage(
         MessageType::kInfo,

@@ -17,6 +17,8 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_details.h"
@@ -79,12 +81,10 @@ class POLICY_EXPORT PolicyMap {
     // Retrieves the stored value if its type matches the desired type,
     // otherwise returns |nullptr|.
     const base::Value* value(base::Value::Type value_type) const;
-    base::Value* value(base::Value::Type value_type);
 
     // Retrieves the stored value without performing type checking. Use the
-    // type-checking versions above where possible.
+    // type-checking version above where possible.
     const base::Value* value_unsafe() const;
-    base::Value* value_unsafe();
 
     void set_value(std::optional<base::Value> val);
 
@@ -153,7 +153,17 @@ class POLICY_EXPORT PolicyMap {
                                         L10nLookupFunction lookup) const;
 
    private:
-    std::optional<base::Value> value_;
+    friend class PolicyMap;
+
+    bool ValueEquals(const Entry& other) const;
+
+    static ConflictType GetValueConflictType(const Entry& a, const Entry& b);
+
+    // Immutable ref-counted value so `Entry::DeepCopy` and `PolicyMap::Clone`
+    // can share `Value` trees across layers and sequences without copying.
+    // Sharing these `Value`s saves up to ~6MB of RAM and reduces jank
+    // significantly.
+    scoped_refptr<const base::RefCountedData<base::Value>> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
 
@@ -208,15 +218,12 @@ class POLICY_EXPORT PolicyMap {
   // |PolicyMap|.
   const base::Value* GetValue(const std::string& policy,
                               base::Value::Type value_type) const;
-  base::Value* GetMutableValue(const std::string& policy,
-                               base::Value::Type value_type);
 
-  // Returns a weak reference to the value currently stored for key |policy|
-  // without performing type checking, otherwise returns |nullptr| if not found.
-  // Ownership is retained by the |PolicyMap|. Use the type-checking versions
+  // Returns a weak reference to the value currently stored for key `policy`
+  // without performing type checking, otherwise returns `nullptr` if not found.
+  // Ownership is retained by the `PolicyMap`. Use the type-checking version
   // above where possible.
   const base::Value* GetValueUnsafe(const std::string& policy) const;
-  base::Value* GetMutableValueUnsafe(const std::string& policy);
 
   // Returns true if the policy has a non-null value set.
   bool IsPolicySet(const std::string& policy) const;

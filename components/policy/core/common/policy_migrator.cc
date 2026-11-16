@@ -34,7 +34,11 @@ void PolicyMigrator::CopyPolicyIfUnset(PolicyMap& source,
           << "Legacy policy '" << migration.old_name << "' has been copied to '"
           << migration.new_name << "'.";
       auto new_entry = entry->DeepCopy();
-      migration.transform.Run(new_entry.value_unsafe());
+      if (new_entry.value_unsafe()) {
+        base::Value value = new_entry.value_unsafe()->Clone();
+        migration.transform.Run(&value);
+        new_entry.set_value(std::move(value));
+      }
       new_entry.AddMessage(PolicyMap::MessageType::kWarning,
                            IDS_POLICY_MIGRATED_NEW_POLICY,
                            {base::UTF8ToUTF16(migration.old_name)});

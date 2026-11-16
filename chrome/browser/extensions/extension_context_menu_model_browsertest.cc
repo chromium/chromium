@@ -474,13 +474,14 @@ void ExtensionContextMenuModelTest::ForcePinExtension(
           .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                        /*component_id=*/std::string()))
           .Clone();
-  auto* existing_entry = policy_map.GetMutableValue(
-      policy::key::kExtensionSettings, base::Value::Type::DICT);
+  auto* existing_entry = policy_map.GetMutable(policy::key::kExtensionSettings);
 
-  if (existing_entry) {
+  if (existing_entry && existing_entry->value(base::Value::Type::DICT)) {
     // Append to the existing policy.
-    existing_entry->GetDict().Set(policy_item_key,
-                                  std::move(policy_item_value));
+    base::DictValue policy_value =
+        existing_entry->value(base::Value::Type::DICT)->GetDict().Clone();
+    policy_value.Set(policy_item_key, std::move(policy_item_value));
+    existing_entry->set_value(base::Value(std::move(policy_value)));
   } else {
     // Set the new policy value.
     base::DictValue policy_value;
