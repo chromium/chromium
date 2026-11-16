@@ -61,7 +61,6 @@ class EmptyEmbedderDelegate;
 class GlicExperimentalTriggeringManager;
 class GlicGeminiEnterpriseManager;
 class GlicInstanceObserver;
-class GlicMetrics;
 class GlicProviderSpec;
 class GlicSkillsManagerImpl;
 class GlicUiEmbedder;
@@ -149,7 +148,6 @@ class GlicInstanceImpl : public GlicInstance,
       Profile* profile,
       InstanceId instance_id,
       base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
-      GlicMetrics* metrics,
       ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceImpl() override;
 

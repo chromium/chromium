@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
-#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
@@ -93,13 +92,11 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
     std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager,
     GlicPinnedTabManager* pinned_tab_manager,
-    Profile* profile,
-    GlicMetrics* metrics)
+    Profile* profile)
     : focused_browser_manager_(std::move(focused_browser_manager)),
       focused_tab_manager_(std::move(focused_tab_manager)),
       pinned_tab_manager_(pinned_tab_manager),
-      profile_(profile),
-      metrics_(metrics) {}
+      profile_(profile) {}
 
 GlicSharingManagerImpl::~GlicSharingManagerImpl() = default;
 

@@ -40,38 +40,6 @@ enum class EntryPointStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointStatus)
 
-// LINT.IfChange(GlicInputModesUsed)
-enum class InputModesUsed {
-  kNone = 0,
-  kOnlyText = 1,
-  kOnlyAudio = 2,
-  kTextAndAudio = 3,
-
-  kMaxValue = kTextAndAudio,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
-
-// Events related to requests to the Glic API from the web client.
-// LINT.IfChange(GlicRequestEvent)
-enum class GlicRequestEvent {
-  kRequestReceived = 0,
-  kRequestSent = 1,
-  kRequestHandlerException = 2,
-  // Deprecated: kRequestReceivedWhileHidden = 3,
-  kRequestReceivedWhileInactive = 4,
-  kMaxValue = kRequestReceivedWhileInactive,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
-
-// LINT.IfChange(GlicTabPinnedForSharingResult)
-enum class GlicTabPinnedForSharingResult {
-  kPinTabForSharingFailedTooManyTabs = 0,
-  kPinTabForSharingFailedNotValidForSharing = 1,
-  kPinTabForSharingSucceeded = 2,
-  kMaxValue = kPinTabForSharingSucceeded,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTabPinnedForSharingResult)
-
 // LINT.IfChange(GlicOptInFlowSource)
 enum class OptInFlow {
   kGlicFre = 0,
@@ -138,10 +106,6 @@ class GlicMetrics {
   // records open metrics (see the implementation).
   void OnGlicWindowStartedOpening(bool attached,
                                   mojom::InvocationSource source);
-
-  // Called when a tab is pinned for sharing with glic. `result` indicates
-  // whether the pinning succeeded or why it failed.
-  void OnTabPinnedForSharing(GlicTabPinnedForSharingResult result);
 
   // Called when a response is received with closed captions showing.
   void LogClosedCaptionsShown();

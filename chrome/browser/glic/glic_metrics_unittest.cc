@@ -389,34 +389,6 @@ TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsTrue) {
                                         true, 1);
 }
 
-TEST_F(GlicMetricsTest, OnTabPinSharedSuccessful) {
-  metrics()->OnTabPinnedForSharing(
-      GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded);
-
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.TabPinnedForSharing",
-      GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded, 1);
-}
-
-TEST_F(GlicMetricsTest, OnTabPinSharedUnsuccessfulTooMany) {
-  metrics()->OnTabPinnedForSharing(
-      GlicTabPinnedForSharingResult::kPinTabForSharingFailedTooManyTabs);
-
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.TabPinnedForSharing",
-      GlicTabPinnedForSharingResult::kPinTabForSharingFailedTooManyTabs, 1);
-}
-
-TEST_F(GlicMetricsTest, OnTabPinSharedUnsuccessfulNotValid) {
-  metrics()->OnTabPinnedForSharing(
-      GlicTabPinnedForSharingResult::kPinTabForSharingFailedNotValidForSharing);
-
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.TabPinnedForSharing",
-      GlicTabPinnedForSharingResult::kPinTabForSharingFailedNotValidForSharing,
-      1);
-}
-
 TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_UnknownMode) {
   // Unknown is the default mode.
   metrics()->LogGetContextFromFocusedTabError(

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
@@ -18,7 +17,6 @@
 
 namespace glic {
 
-class GlicMetrics;
 class GlicStablePinningDelegatingSharingManager;
 
 // Implements GlicSharingManagerInternal and provides additional functionality
@@ -31,8 +29,7 @@ class GlicSharingManagerImpl : public GlicSharingManagerInternal,
       std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
       std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager,
       GlicPinnedTabManager* pinned_tab_manager,
-      Profile* profile,
-      GlicMetrics* metrics);
+      Profile* profile);
   ~GlicSharingManagerImpl() override;
 
   GlicSharingManagerImpl(const GlicSharingManagerImpl&) = delete;
@@ -152,9 +149,6 @@ class GlicSharingManagerImpl : public GlicSharingManagerInternal,
 
   // The profile for which to manage sharing.
   raw_ptr<Profile> profile_;
-
-  // Enables providing sharing-related input to metrics.
-  raw_ptr<GlicMetrics> metrics_;
 
   base::WeakPtrFactory<GlicSharingManagerImpl> weak_ptr_factory_{this};
 };

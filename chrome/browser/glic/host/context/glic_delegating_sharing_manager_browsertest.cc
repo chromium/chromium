@@ -508,7 +508,7 @@ class GlicStablePinningDelegatingSharingManagerBrowserTest
     return std::make_unique<GlicSharingManagerImpl>(
         std::make_unique<GlicEmptyFocusedTabManager>(),
         std::make_unique<GlicEmptyFocusedBrowserManager>(), pinned_tab_manager,
-        GetProfile(), /*metrics=*/nullptr);
+        GetProfile());
   }
 
  private:
@@ -575,8 +575,7 @@ IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
   SpyFocusedBrowserManager* spy1 = focused_browser_manager1.get();
   auto manager1 = std::make_unique<GlicSharingManagerImpl>(
       std::make_unique<GlicEmptyFocusedTabManager>(),
-      std::move(focused_browser_manager1), &pinned_mgr, GetProfile(),
-      /*metrics=*/nullptr);
+      std::move(focused_browser_manager1), &pinned_mgr, GetProfile());
 
   GlicStablePinningDelegatingSharingManager stable_manager(manager1.get());
 
@@ -589,8 +588,7 @@ IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
   SpyFocusedBrowserManager* spy2 = focused_browser_manager2.get();
   auto manager2 = std::make_unique<GlicSharingManagerImpl>(
       std::make_unique<GlicEmptyFocusedTabManager>(),
-      std::move(focused_browser_manager2), &pinned_mgr, GetProfile(),
-      /*metrics=*/nullptr);
+      std::move(focused_browser_manager2), &pinned_mgr, GetProfile());
 
   // Set delegate. Should propagate cached "true" state.
   stable_manager.SetDelegate(manager2.get());

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "components/sessions/core/session_id.h"
@@ -123,9 +124,8 @@ class GlicPinnedTabManagerBrowserTest : public GlicBrowserTest {
   void SetUpOnMainThread() override {
     GlicBrowserTest::SetUpOnMainThread();
 
-    auto* metrics = service()->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        GetProfile(), /*window_controller=*/nullptr, metrics);
+        GetProfile(), /*glic_instance=*/nullptr);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
     // TODO(mcrouse): Add tests for invalid candidates once testing harness for
@@ -417,6 +417,42 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 
   // Verify the tab is unpinned.
   EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       TabPinnedForSharingMetrics) {
+  base::HistogramTester histogram_tester;
+  tabs::TabInterface* tab1 = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/sentient-toaster-manual"));
+
+  pinned_tab_manager_->SetMaxPinnedTabs(1);
+
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab1->GetHandle()},
+                                           GlicPinTrigger::kUnknown));
+  EXPECT_FALSE(pinned_tab_manager_->PinTabs({tab2->GetHandle()},
+                                            GlicPinTrigger::kUnknown));
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.Sharing.TabPinnedForSharing",
+      GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Sharing.TabPinnedForSharing",
+      GlicTabPinnedForSharingResult::kPinTabForSharingFailedTooManyTabs, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Sharing.TabPinnedForSharing",
+      GlicTabPinnedForSharingResult::kPinTabForSharingFailedNotValidForSharing,
+      0);
+
+  // Increase max pinned tabs so invalid tab check is reached.
+  pinned_tab_manager_->SetMaxPinnedTabs(2);
+  EXPECT_FALSE(pinned_tab_manager_->PinTabs({tabs::TabHandle::Null()},
+                                            GlicPinTrigger::kUnknown));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Sharing.TabPinnedForSharing",
+      GlicTabPinnedForSharingResult::kPinTabForSharingFailedNotValidForSharing,
+      1);
 }
 
 }  // namespace glic

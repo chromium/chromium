@@ -461,10 +461,6 @@ void GlicMetrics::OnPinningPrefChanged() {
   }
 }
 
-void GlicMetrics::OnTabPinnedForSharing(GlicTabPinnedForSharingResult result) {
-  base::UmaHistogramEnumeration("Glic.Sharing.TabPinnedForSharing", result);
-}
-
 void GlicMetrics::RecordStartupEnablement() {
   base::TimeTicks startup_time =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();

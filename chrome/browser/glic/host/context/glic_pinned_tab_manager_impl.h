@@ -20,14 +20,12 @@
 class Profile;
 
 namespace glic {
-class GlicMetrics;
 
 // Manages a collection of tabs that have been selected to be shared.
 class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
  public:
   explicit GlicPinnedTabManagerImpl(Profile* profile,
-                                    GlicInstance* glic_instance,
-                                    GlicMetrics* metrics);
+                                    GlicInstance* glic_instance);
   ~GlicPinnedTabManagerImpl() override;
 
   // GlicPinnedTabManagerInterface implementation.
@@ -158,9 +156,6 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
   raw_ptr<Profile> profile_;
 
   raw_ptr<GlicInstance> glic_instance_;
-
-  // Enables providing pin-related input to metrics.
-  raw_ptr<GlicMetrics> metrics_;
 
   // Using a vector lets us store the pinned tabs in the order that they are
   // pinned. Searching for a pinned tab is currently linear.

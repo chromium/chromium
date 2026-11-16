@@ -21,12 +21,10 @@ namespace glic {
 
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
-    GlicInstance* glic_instance,
-    GlicMetrics* metrics)
+    GlicInstance* glic_instance)
     : GlicSharingManagerCoordinator(
           profile,
           glic_instance,
-          metrics,
 #if !BUILDFLAG(IS_ANDROID)
           new GlicFocusedBrowserManagerImpl(glic_instance, profile),
           new GlicFocusedBrowserManagerImpl(glic_instance, profile)
@@ -39,7 +37,6 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
     GlicInstance* glic_instance,
-    GlicMetrics* metrics,
 #if !BUILDFLAG(IS_ANDROID)
     GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
     GlicFocusedBrowserManager* live_mode_focused_browser_manager
@@ -48,9 +45,7 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
 #endif
     )
     : pinned_tab_manager_(
-          std::make_unique<GlicPinnedTabManagerImpl>(profile,
-                                                     glic_instance,
-                                                     metrics)),
+          std::make_unique<GlicPinnedTabManagerImpl>(profile, glic_instance)),
 #if !BUILDFLAG(IS_ANDROID)
       detached_mode_sharing_manager_(
           std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
@@ -59,15 +54,13 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
           base::WrapUnique<GlicFocusedBrowserManager>(
               detached_mode_focused_browser_manager),
           pinned_tab_manager_.get(),
-          profile,
-          metrics),
+          profile),
       live_mode_sharing_manager_(std::make_unique<GlicFocusedTabManager>(
                                      live_mode_focused_browser_manager),
                                  base::WrapUnique<GlicFocusedBrowserManager>(
                                      live_mode_focused_browser_manager),
                                  pinned_tab_manager_.get(),
-                                 profile,
-                                 metrics),
+                                 profile),
 #endif
       attached_mode_sharing_manager_(
           std::make_unique<GlicActivePinnedFocusedTabManager>(
@@ -75,8 +68,7 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
               &sharing_manager_),
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
           pinned_tab_manager_.get(),
-          profile,
-          metrics),
+          profile),
       sharing_manager_(&attached_mode_sharing_manager_) {
 }
 

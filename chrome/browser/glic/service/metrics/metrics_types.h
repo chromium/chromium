@@ -424,6 +424,25 @@ enum class GlicTurnShowingOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnShowingOutcome)
 
+// LINT.IfChange(GlicInputModesUsed)
+enum class InputModesUsed {
+  kNone = 0,
+  kOnlyText = 1,
+  kOnlyAudio = 2,
+  kTextAndAudio = 3,
+  kMaxValue = kTextAndAudio,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
+
+// LINT.IfChange(GlicTabPinnedForSharingResult)
+enum class GlicTabPinnedForSharingResult {
+  kPinTabForSharingFailedTooManyTabs = 0,
+  kPinTabForSharingFailedNotValidForSharing = 1,
+  kPinTabForSharingSucceeded = 2,
+  kMaxValue = kPinTabForSharingSucceeded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTabPinnedForSharingResult)
+
 std::string GetDaisyChainSourceString(DaisyChainSource source);
 
 ResponseSegmentation GetResponseSegmentation(bool attached,

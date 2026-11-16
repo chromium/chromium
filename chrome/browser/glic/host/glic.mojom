@@ -1120,12 +1120,15 @@ struct CreateTabOptions {
   int32? window_id;
 };
 
+// LINT.IfChange(GlicRequestEvent)
 enum GlicRequestEvent {
   kRequestReceived = 0,
   kResponseSent = 1,
   kRequestHandlerException = 2,
   kRequestReceivedWhileInactive = 4,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 
 // @generate glic_api
 // A device that can receive tabs sent via Send Tab to Self.

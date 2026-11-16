@@ -5148,10 +5148,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   glic::GlicHistogramTester histogram_tester;
   ContinueJsTest();
   histogram_tester.ExpectBucketCount("Glic.Api.RequestCounts.CreateTab",
-                                     GlicRequestEvent::kRequestReceived, 1);
+                                     mojom::GlicRequestEvent::kRequestReceived,
+                                     1);
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
-      GlicRequestEvent::kRequestReceivedWhileInactive, 1);
+      mojom::GlicRequestEvent::kRequestReceivedWhileInactive, 1);
 }
 
 class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {
