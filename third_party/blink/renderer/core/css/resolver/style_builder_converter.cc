@@ -2275,6 +2275,17 @@ float StyleBuilderConverter::ConvertAlpha(StyleResolverState& state,
   return ClampTo<float>(ConvertNumberOrPercentage(state, value), 0, 1);
 }
 
+float StyleBuilderConverter::ConvertOpacity(StyleResolverState& state,
+                                            const CSSValue& value) {
+  if (const auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier->GetValueID(), CSSValueID::kAuto);
+    // TODO(crbug.com/579833788): auto on highlight pseudos should compute to
+    // itself.
+    return 1;
+  }
+  return ConvertNumberOrPercentage(state, value);
+}
+
 ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
     StyleResolverState& state,
     const CSSValue& value) {

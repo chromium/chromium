@@ -151,6 +151,8 @@ blink_core_sources("animation") {
     "css_number_interpolation_type.h",
     "css_offset_rotate_interpolation_type.cc",
     "css_offset_rotate_interpolation_type.h",
+    "css_opacity_interpolation_type.cc",
+    "css_opacity_interpolation_type.h",
     "css_overlay_interpolation_type.cc",
     "css_overlay_interpolation_type.h",
     "css_paint_interpolation_type.cc",

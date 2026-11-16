@@ -1797,6 +1797,16 @@
     "expires": "Jun 1, 2025"
   },
   {
+    "prefix": "highlight-opacity-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-color/parsing/opacity-invalid.html"
+    ],
+    "args": ["--disable-blink-features=CSSCustomHighlightExtensions"],
+    "owners": ["kbabbitt@microsoft.com"],
+    "expires": "May 12, 2027"
+  },
+  {
     "prefix": "http-cache-default-backend",
     "platforms": [
       "Linux",

@@ -4857,8 +4857,7 @@
     },
     {
       name: "opacity",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      parse_helper: "ConsumeAlphaValue",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
       tracks_animated_source: true,
@@ -4866,8 +4865,12 @@
       field_template: "primitive",
       default_value: "1.0",
       type_name: "float",
+      converter: "ConvertOpacity",
       computed_style_custom_functions: ["setter"],
-      typedom_types: ["Number", "Percentage"],
+      runtime_enabled_keywords: {
+        CSSCustomHighlightExtensions: ["auto"],
+      },
+      typedom_types: ["Keyword", "Number", "Percentage"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,

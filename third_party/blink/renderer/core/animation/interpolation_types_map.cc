@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/animation/css_length_pair_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_offset_rotate_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_opacity_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_overlay_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_paint_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_path_interpolation_type.h"
@@ -237,7 +238,6 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kFillOpacity:
       case CSSPropertyID::kFloodOpacity:
       case CSSPropertyID::kMathDepth:
-      case CSSPropertyID::kOpacity:
       case CSSPropertyID::kOrder:
       case CSSPropertyID::kOrphans:
       case CSSPropertyID::kReadingOrder:
@@ -250,6 +250,10 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
             MakeGarbageCollected<CSSNumberInterpolationType>(property));
+        break;
+      case CSSPropertyID::kOpacity:
+        applicable_types->push_back(
+            MakeGarbageCollected<CSSOpacityInterpolationType>(property));
         break;
       case CSSPropertyID::kZoom:
         if (RuntimeEnabledFeatures::CSSZoomAnimationEnabled()) {
