@@ -22,7 +22,8 @@ class Profile;
 // Creates a new window with a particular profile.
 - (instancetype)initWithProfile:(Profile*)aProfile;
 
-// Does not create a new window but uses an existing one.
+// Does not create a new window but uses an existing one. The designated
+// initializer.
 - (instancetype)initWithBrowser:(BrowserWindowInterface*)aBrowser;
 
 // Sets and gets the index of the currently selected tab. 1-based because
@@ -39,30 +40,32 @@ class Profile;
 // Sets and gets the currently selected tab.
 @property(strong) TabAppleScript* activeTab;
 
-// Tab manipulation functions.
-// The tabs inside the window.
-// Returns |TabAppleScript*| of all the tabs contained
-// within this particular folder.
+// ----- Tabs -----
+
+// The tabs inside the window. Returns `TabAppleScript*` of all the tabs
+// contained within this particular window.
 @property(readonly) NSArray<TabAppleScript*>* tabs;
 
 // Insert a tab at the end.
 - (void)insertInTabs:(TabAppleScript*)aTab;
 
 // Insert a tab at some position in the list.
-// Called by AppleScript which takes care of bounds checking, make sure of it
-// before calling directly.
+//
+// Called by AppleScript which takes care of bounds checking; caller must do so
+// otherwise.
 - (void)insertInTabs:(TabAppleScript*)aTab atIndex:(int)index;
 
-// Remove a window from the list.
-// Called by AppleScript which takes care of bounds checking, make sure of it
-// before calling directly.
+// Remove a tab from the list.
+//
+// Called by AppleScript which takes care of bounds checking; caller must do so
+// otherwise.
 - (void)removeFromTabsAtIndex:(int)index;
 
 // The index of the window, windows are ordered front to back.
 @property(copy) NSNumber* orderedIndex;
 
-// For standard window functions like zoomable, bounds etc, we dont handle it
-// but instead pass it onto the NSWindow associated with the window.
+// Methods to catch all other standard window properties to be forwarded to the
+// underlying window.
 - (id)valueForUndefinedKey:(NSString*)key;
 - (void)setValue:(id)value forUndefinedKey:(NSString*)key;
 

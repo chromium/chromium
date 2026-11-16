@@ -36,13 +36,6 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, DefaultCreation) {
   EXPECT_NSEQ(AppleScript::kNormalWindowMode, mode);
 }
 
-// Create a window with a |NULL profile|.
-IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithNoProfile) {
-  WindowAppleScript* window =
-      [[WindowAppleScript alloc] initWithProfile:nullptr];
-  EXPECT_FALSE(window);
-}
-
 // Create a window with a particular profile.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithProfile) {
   Profile* lastProfile = AppController.sharedController.lastProfile;
@@ -52,14 +45,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithProfile) {
   EXPECT_TRUE(window.uniqueID);
 }
 
-// Create a window with no |Browser*|.
-IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithNoBrowser) {
-  WindowAppleScript* window =
-      [[WindowAppleScript alloc] initWithBrowser:nullptr];
-  EXPECT_FALSE(window);
-}
-
-// Create a window with |Browser*| already present.
+// Create a window with `Browser*` already present.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithBrowser) {
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithBrowser:browser()];

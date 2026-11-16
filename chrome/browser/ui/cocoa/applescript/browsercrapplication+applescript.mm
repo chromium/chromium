@@ -50,7 +50,6 @@ using bookmarks::BookmarkModel;
 
     WindowAppleScript* aWindow =
         [[WindowAppleScript alloc] initWithBrowser:browser_it->second];
-    [aWindow setContainer:self property:AppleScript::kWindowsProperty];
     [result addObject:aWindow];
   }
 
@@ -58,22 +57,22 @@ using bookmarks::BookmarkModel;
 }
 
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow {
-  // This method gets called when a new window is created so
-  // the container and property are set here.
-  [aWindow setContainer:self property:AppleScript::kWindowsProperty];
+  // AppleScript has already created the window object, so no work needs to be
+  // done.
 }
 
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow
                            atIndex:(int)index {
-  // This method gets called when a new window is created so
-  // the container and property are set here.
-  [aWindow setContainer:self property:AppleScript::kWindowsProperty];
+  // AppleScript has already created the window object, so move it to the
+  // correct index.
+  //
   // Note: AppleScript is 1-based.
   index--;
   aWindow.orderedIndex = @(index);
 }
 
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index {
+  // Closing a window is executed as a command; is this ever actually called?
   [self.appleScriptWindows[index] handlesCloseScriptCommand:nil];
 }
 

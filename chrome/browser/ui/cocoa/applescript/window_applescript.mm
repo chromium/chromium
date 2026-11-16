@@ -4,6 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
 
+#import <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
+
 #include <memory>
 
 #import "base/apple/foundation_util.h"
@@ -81,44 +84,34 @@
   }
   // Set the mode to nil, to ensure that it is not set once more.
   [command.evaluatedArguments[@"KeyDictionary"] setValue:nil forKey:@"mode"];
+
   return [self initWithProfile:profile];
 }
 
 - (instancetype)initWithProfile:(Profile*)aProfile {
-  if (!aProfile) {
+  CHECK(aProfile);
+
+  // Since AppleScript requests can arrive at any time, including during browser
+  // shutdown or profile deletion, we have to check whether it's okay to spawn a
+  // new browser for the specified profile or not.
+  if (GetBrowserWindowCreationStatusForProfile(*aProfile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
     self = nil;
     return nil;
   }
 
-  if ((self = [super init])) {
-    // Since AppleScript requests can arrive at any time, including during
-    // browser shutdown or profile deletion, we have to check whether it's okay
-    // to spawn a new browser for the specified profile or not.
-    if (GetBrowserWindowCreationStatusForProfile(*aProfile) !=
-        BrowserWindowInterface::CreationStatus::kOk) {
-      self = nil;
-      return nil;
-    }
+  BrowserWindowInterface* browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(aProfile, /*from_user_gesture=*/false));
+  // TODO(crbug.com/452431839): Make a new NewTabTypes enum value for new tabs
+  // made with AppleScript requests.
+  chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
+  browser->GetWindow()->Show();
 
-    BrowserWindowInterface* browser = CreateBrowserWindow(
-        BrowserWindowCreateParams(aProfile, /*from_user_gesture=*/false));
-    // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
-    // for new tabs made with AppleScript requests.
-    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
-    browser->GetWindow()->Show();
-
-    _browser = browser->GetWeakPtr();
-    self.uniqueID =
-        [NSString stringWithFormat:@"%d", _browser->GetSessionID().id()];
-  }
-  return self;
+  return [self initWithBrowser:browser];
 }
 
 - (instancetype)initWithBrowser:(BrowserWindowInterface*)browser {
-  if (!browser) {
-    self = nil;
-    return nil;
-  }
+  CHECK(browser);
 
   if ((self = [super init])) {
     // It is safe to be weak, if a window goes away (eg user closing a window)
@@ -127,6 +120,7 @@
     _browser = browser->GetWeakPtr();
     self.uniqueID =
         [NSString stringWithFormat:@"%d", _browser->GetSessionID().id()];
+    [self setContainer:NSApp property:AppleScript::kWindowsProperty];
   }
   return self;
 }
