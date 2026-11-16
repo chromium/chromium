@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui;
 
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.JniTypeToken;
@@ -49,7 +51,9 @@ public class ExclusiveAccessManager
     @JniType("::ExclusiveAccessManagerAndroid")
     interface NativeExclusiveAccessManagerAndroid extends JniTypeToken {}
 
-    private static final String LATEST_FULLSCREEN_OPTIONS = "latest_fullscreen_options";
+    @VisibleForTesting
+    public static final String LATEST_FULLSCREEN_OPTIONS = "latest_fullscreen_options";
+
     private @Nullable JniUniquePtr<NativeExclusiveAccessManagerAndroid>
             mExclusiveAccessManagerAndroidNativePointer;
     private final FullscreenManager mFullscreenManager;
@@ -125,11 +129,20 @@ public class ExclusiveAccessManager
         }
 
         if (mPendingFullscreen) {
-            Tab tab = mTabModelSelector.getCurrentTab();
-            // There always should be an active tab and fullscreen options  available if
-            // mPendingFullscreen is on
-            assert tab != null;
+            // Fullscreen options are always available if mPendingFullscreen is on.
             assert mLatestFullscreenOptions != null;
+            Tab tab = mTabModelSelector.getCurrentTab();
+            if (tab == null) {
+                // The current tab can be missing when the Activity adds it to the tab model
+                // asynchronously, e.g. an off-the-record Custom Tab defers tab creation until
+                // its cookies are restored. Fullscreen is not re-entered in that case. Drop the
+                // options as nothing was entered: keeping them would de-duplicate the next
+                // identical request in enterFullscreenModeForTab() and save them again in
+                // saveFullscreenState().
+                mLatestFullscreenOptions = null;
+                mPendingFullscreen = false;
+                return;
+            }
             final @Nullable WebContents webContents = tab.getWebContents();
             // Right now we only allow non native pages to go fullscreen via this API. This is
             // caused by the native side which always requires WebContents to be present. This
