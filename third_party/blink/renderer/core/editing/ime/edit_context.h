@@ -206,6 +206,9 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+  // Extends the current selection range and replaces the characters from the
+  // buffer with `text`.
+  void ExtendSelectionAndReplace(int before, int after, const WebString& text);
   // Delete `before` characters preceding the current `selection_start_` and
   // `after` characters following the current `selection_end_`.
   void DeleteSurroundingText(int before, int after);
@@ -236,6 +239,11 @@ class CORE_EXPORT EditContext final : public EventTarget,
  private:
   InputMethodController& GetInputMethodController() const;
 
+  bool CommitTextInternal(const WebString& text,
+                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
+                          const WebRange& replacement_range,
+                          int relative_caret_position);
+
   // Called when `control_bounds_` or `selection_bounds_` change. If this is
   // the active EditContext, schedules a main frame so that
   // WidgetBase::UpdateTextInputState() runs (from DidBeginMainFrame()) and
@@ -254,6 +262,10 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Fires compositionend event to JS whenever composition is terminated by the
   // user.
   void DispatchCompositionEndEvent(const String& text);
+
+  // Dispatches a 'beforeinput' event for an IME edit that is about to be
+  // applied. Returns false if the edit must not be applied.
+  bool DispatchBeforeInputEventForInsertion(const String& text);
 
   // The textformatupdate event is fired when the input method desires a
   // specific region to be styled in a certain fashion, limited to the style

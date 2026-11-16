@@ -2859,6 +2859,12 @@
       status: "test"
     },
     {
+      // Dispatch beforeinput for IME operations with an EditContext.
+      // See https://crbug.com/41489598
+      name: "EditContextBeforeInputForIme",
+      status: "stable",
+    },
+    {
       // Schedule a main frame when EditContext.updateControlBounds() or
       // updateSelectionBounds() changes the bounds of the active EditContext,
       // so the new bounds are sent to the browser in TextInputStateChanged even

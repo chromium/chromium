@@ -1080,6 +1080,259 @@ test(function () {
   assert_array_equals(editContext1.attachedElements(), [test], "editContext1 should remain attached to test");
   assert_array_equals(editContext2.attachedElements(), [test2], "editContext2 should be attached to test2");
 }, 'Throws when textformatupdate handler attaches target editContext to another element');
+
+test(function() {
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(`textupdate:${e.text}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("a");
+  assert_equals(editContext.text, "a");
+  assert_array_equals(events, ["beforeinput:insertText:a", "textupdate:a"]);
+  test.remove();
+}, 'beforeinput is dispatched when committing text');
+
+test(function() {
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    e.preventDefault();
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(`textupdate:${e.text}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("a");
+  assert_equals(editContext.text, "", "Canceled commit should not be applied");
+  assert_array_equals(events, ["beforeinput:insertText:a"]);
+  test.remove();
+}, 'Canceling beforeinput prevents committing text');
+
+test(function() {
+  const editContext = new EditContext();
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  const test = iframe.contentDocument.body;
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    iframe.remove();
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(`textupdate:${e.text}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("a");
+  assert_equals(editContext.text, "",
+      "Commit should not be applied after the frame is detached");
+  assert_array_equals(events, ["beforeinput:insertText:a"]);
+  iframe.remove();
+}, 'Detaching the frame during beforeinput prevents committing text');
+
+test(function() {
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    test.editContext = null;
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(`textupdate:${e.text}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("a");
+  assert_equals(editContext.text, "",
+      "Commit should not be applied after the EditContext is deactivated");
+  assert_array_equals(events, ["beforeinput:insertText:a"]);
+  test.remove();
+}, 'Deactivating EditContext during beforeinput prevents committing text');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "abcd", selectionStart: 4, selectionEnd: 4});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    editContext.updateSelection(0, 0);
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("X");
+  assert_equals(editContext.text, "Xabcd");
+  assert_equals(editContext.selectionStart, 1);
+  assert_equals(editContext.selectionEnd, 1);
+  assert_array_equals(events,
+      ["beforeinput:insertText:X", "textupdate:X:0-0"]);
+  test.remove();
+}, 'beforeinput handler can move the insertion point with updateSelection');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "abcd", selectionStart: 0, selectionEnd: 0});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    editContext.updateText(2, 4, "");
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("X");
+  assert_equals(editContext.text, "Xab");
+  assert_equals(editContext.selectionStart, 1);
+  assert_equals(editContext.selectionEnd, 1);
+  assert_array_equals(events,
+      ["beforeinput:insertText:X", "textupdate:X:0-0"]);
+  test.remove();
+}, 'beforeinput handler can change the text with updateText before the commit');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "abcd", selectionStart: 4, selectionEnd: 4});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  let selectionDuringBeforeInput = null;
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    selectionDuringBeforeInput =
+        [editContext.selectionStart, editContext.selectionEnd];
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.replaceText(1, 3, "X");
+  assert_array_equals(selectionDuringBeforeInput, [1, 3],
+      "The replacement range should be the selection during beforeinput");
+  assert_equals(editContext.text, "aXd");
+  assert_equals(editContext.selectionStart, 2);
+  assert_equals(editContext.selectionEnd, 2);
+  assert_array_equals(events,
+      ["beforeinput:insertText:X", "textupdate:X:1-3"]);
+  test.remove();
+}, 'Committing with a replacement range selects the range before beforeinput');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "abcd", selectionStart: 4, selectionEnd: 4});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+    e.preventDefault();
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.replaceText(1, 3, "X");
+  assert_equals(editContext.text, "abcd",
+      "Canceled commit should not be applied");
+  assert_equals(editContext.selectionStart, 1,
+      "The replacement range should remain selected");
+  assert_equals(editContext.selectionEnd, 3,
+      "The replacement range should remain selected");
+  assert_array_equals(events, ["beforeinput:insertText:X"]);
+  test.remove();
+}, 'Canceling beforeinput when committing with a replacement range leaves the range selected');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "ab", selectionStart: 0, selectionEnd: 0});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.replaceText(1, 10, "X");
+  assert_equals(editContext.text, "aX");
+  assert_equals(editContext.selectionStart, 2);
+  assert_equals(editContext.selectionEnd, 2);
+  assert_array_equals(events,
+      ["beforeinput:insertText:X", "textupdate:X:1-2"]);
+  test.remove();
+}, 'Replacement range is clamped to the text length');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "ab", selectionStart: 2, selectionEnd: 2});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("");
+  assert_equals(editContext.text, "ab");
+  assert_array_equals(events, [],
+      "No beforeinput should be dispatched for a no-op commit");
+  test.remove();
+}, 'Empty commit into a collapsed selection does not dispatch beforeinput');
+
+test(function() {
+  const editContext = new EditContext(
+      {text: "ab", selectionStart: 0, selectionEnd: 1});
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  const events = [];
+  test.addEventListener("beforeinput", e => {
+    events.push(`beforeinput:${e.inputType}:${e.data}`);
+  });
+  editContext.addEventListener("textupdate", e => {
+    events.push(
+        `textupdate:${e.text}:${e.updateRangeStart}-${e.updateRangeEnd}`);
+  });
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("");
+  assert_equals(editContext.text, "b");
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  assert_array_equals(events, ["beforeinput:insertText:", "textupdate::0-1"]);
+  test.remove();
+}, 'Empty commit replacing a selection dispatches beforeinput');
 </script>
 </body>
 </html>

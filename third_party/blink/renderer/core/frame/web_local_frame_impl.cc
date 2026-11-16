@@ -1901,9 +1901,7 @@ void WebLocalFrameImpl::ExtendSelectionAndReplace(
   // EditContext and WebPlugin do not support atomic replacement.
   if (EditContext* edit_context =
           GetFrame()->GetInputMethodController().GetActiveEditContext()) {
-    edit_context->ExtendSelectionAndDelete(before, after);
-    edit_context->CommitText(replacement_text, std::vector<ui::ImeTextSpan>(),
-                             blink::WebRange(), 0);
+    edit_context->ExtendSelectionAndReplace(before, after, replacement_text);
     return;
   }
 

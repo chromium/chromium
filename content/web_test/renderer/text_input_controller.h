@@ -39,6 +39,7 @@ class TextInputController {
   friend class TextInputControllerBindings;
 
   void InsertText(const std::string& text);
+  void ReplaceText(int start, int end, const std::string& text);
   void UnmarkText();
   void UnmarkAndUnselectText();
   void DoCommand(const std::string& text);

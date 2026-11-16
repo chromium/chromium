@@ -51,6 +51,7 @@ class TextInputControllerBindings
       v8::Isolate* isolate) override;
 
   void InsertText(const std::string& text);
+  void ReplaceText(int start, int end, const std::string& text);
   void UnmarkText();
   void UnmarkAndUnselectText();
   void DoCommand(const std::string& text);
@@ -108,6 +109,7 @@ TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
   return gin::Wrappable<TextInputControllerBindings>::GetObjectTemplateBuilder(
              isolate)
       .SetMethod<&TextInputControllerBindings::InsertText>("insertText")
+      .SetMethod<&TextInputControllerBindings::ReplaceText>("replaceText")
       .SetMethod<&TextInputControllerBindings::UnmarkText>("unmarkText")
       .SetMethod<&TextInputControllerBindings::UnmarkAndUnselectText>(
           "unmarkAndUnselectText")
@@ -135,6 +137,14 @@ TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
 void TextInputControllerBindings::InsertText(const std::string& text) {
   if (controller_)
     controller_->InsertText(text);
+}
+
+void TextInputControllerBindings::ReplaceText(int start,
+                                              int end,
+                                              const std::string& text) {
+  if (controller_) {
+    controller_->ReplaceText(start, end, text);
+  }
 }
 
 void TextInputControllerBindings::UnmarkText() {
@@ -227,6 +237,16 @@ void TextInputController::InsertText(const std::string& text) {
     controller->CommitText(blink::WebString::FromUtf8(text),
                            std::vector<ui::ImeTextSpan>(), blink::WebRange(),
                            0);
+  }
+}
+
+void TextInputController::ReplaceText(int start,
+                                      int end,
+                                      const std::string& text) {
+  if (auto* controller = GetInputMethodController()) {
+    controller->CommitText(blink::WebString::FromUtf8(text),
+                           std::vector<ui::ImeTextSpan>(),
+                           blink::WebRange(start, end - start), 0);
   }
 }
 

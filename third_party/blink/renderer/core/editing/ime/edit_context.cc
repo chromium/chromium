@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_underline_thickness.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/ime_code_point_utils.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
@@ -117,6 +118,27 @@ bool EditContext::DispatchCompositionStartEvent(const String& text) {
       event_type_names::kCompositionstart, DomWindow(), text);
   DispatchEvent(*event);
   return DomWindow();
+}
+
+bool EditContext::DispatchBeforeInputEventForInsertion(const String& text) {
+  if (text.empty() && selection_start_ == selection_end_) {
+    return true;
+  }
+
+  Node* target = EventTargetNodeForDocument(DomWindow()->document());
+  if (DispatchBeforeInputInsertText(target, text) !=
+      DispatchEventResult::kNotCanceled) {
+    return false;
+  }
+
+  // The 'beforeinput' event handler may have detached the frame or
+  // deactivated this EditContext.
+  if (!DomWindow() || !DomWindow()->GetFrame() ||
+      GetInputMethodController().GetActiveEditContext() != this) {
+    return false;
+  }
+
+  return true;
 }
 
 void EditContext::DispatchCharacterBoundsUpdateEvent(uint32_t range_start,
@@ -739,6 +761,38 @@ bool EditContext::CommitText(const WebString& text,
               replacement_range.EndOffset(), "relative_caret_position",
               relative_caret_position, "text", text.Utf8());
 
+  if (!RuntimeEnabledFeatures::EditContextBeforeInputForImeEnabled() ||
+      has_composition_) {
+    return CommitTextInternal(text, ime_text_spans, replacement_range,
+                              relative_caret_position);
+  }
+
+  // Outside of a composition, committed text is inserted the way a keystroke
+  // is, so the commit follows a similar path: the selection is first set to
+  // the explicit replacement range (if one); 'beforeinput' is then dispatched;
+  // the text is finally inserted at the post-handler selection. This lets a
+  // 'beforeinput' handler redirect the insertion with updateSelection() or
+  // updateText().
+  if (!replacement_range.IsEmpty()) {
+    SetSelection(std::max(0, std::min(replacement_range.StartOffset(),
+                                      static_cast<int>(text_.length()))),
+                 std::max(0, std::min(replacement_range.EndOffset(),
+                                      static_cast<int>(text_.length()))));
+  }
+
+  if (!DispatchBeforeInputEventForInsertion(text)) {
+    return false;
+  }
+
+  EnsureSelectionWithinTextBounds();
+  return InsertText(text);
+}
+
+bool EditContext::CommitTextInternal(
+    const WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const WebRange& replacement_range,
+    int relative_caret_position) {
   // Fire textupdate and textformatupdate events to JS.
   // ime_text_spans can have multiple format updates so loop through and fire
   // events accordingly.
@@ -818,6 +872,16 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
                OrderedSelectionStart() - before);
   DispatchTextUpdateEvent(g_empty_string, update_range_start, update_range_end,
                           selection_start_, selection_end_);
+}
+
+void EditContext::ExtendSelectionAndReplace(int before,
+                                            int after,
+                                            const WebString& text) {
+  TRACE_EVENT("ime", "EditContext::ExtendSelectionAndReplace", "before", before,
+              "after", after, "text", text.Utf8());
+
+  ExtendSelectionAndDelete(before, after);
+  CommitTextInternal(text, std::vector<ui::ImeTextSpan>(), WebRange(), 0);
 }
 
 void EditContext::DeleteSurroundingText(int before, int after) {
