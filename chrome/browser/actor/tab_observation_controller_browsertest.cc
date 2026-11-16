@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,9 +33,14 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace actor {
@@ -282,6 +288,109 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   EXPECT_TRUE(window->active());
   EXPECT_EQ(window->activated_tab_id(), headless_id);
   EXPECT_THAT(window->tab_ids(), testing::ElementsAre(headless_id));
+}
+
+// Draws real pixels, so screenshots show the page. Without this, browser
+// tests skip GL drawing and every screenshot is a solid color.
+class TabObservationControllerPixelBrowserTest
+    : public TabObservationControllerBrowserTest {
+ public:
+  void SetUp() override {
+    EnablePixelOutput();
+    TabObservationControllerBrowserTest::SetUp();
+  }
+};
+
+// A headless page's screenshot shows the page and covers its viewport.
+IN_PROC_BROWSER_TEST_F(TabObservationControllerPixelBrowserTest,
+                       HeadlessScreenshotShowsPage) {
+  TaskId task_id = CreateTask();
+  ScopedHeadlessActorSurface headless =
+      actor_service()->CreateHeadlessActorSurface();
+  content::WebContents* contents =
+      headless.actor_surface_handle().Get()->GetWebContents();
+  // Green left half, magenta right half.
+  ASSERT_TRUE(content::NavigateToURL(
+      contents,
+      GURL("data:text/html,<style>div{position:fixed;top:0;width:50vw;"
+           "height:100vh}</style>"
+           "<div style='left:0;background:rgb(0,255,0)'></div>"
+           "<div style='right:0;background:rgb(255,0,255)'></div>")));
+  base::test::TestFuture<mojom::ActionResultPtr> add_result;
+  actor_service()->GetTask(task_id)->AddActorSurface(
+      headless.actor_surface_handle(), /*stop_task_on_detach=*/true,
+      add_result.GetCallback());
+  ExpectOkResult(add_result);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
+  controller.Start();
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  const auto& observation = result->tab_observations[0];
+  ASSERT_EQ(observation.screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+
+  const base::span<const uint8_t> bytes =
+      base::as_byte_span(observation.screenshot());
+  const SkBitmap bitmap = observation.screenshot_mime_type() == "image/png"
+                              ? gfx::PNGCodec::Decode(bytes)
+                              : gfx::JPEGCodec::Decode(bytes);
+  ASSERT_FALSE(bitmap.isNull());
+  EXPECT_EQ(gfx::Size(bitmap.width(), bitmap.height()),
+            gfx::Size(content::EvalJs(contents, "innerWidth").ExtractInt(),
+                      content::EvalJs(contents, "innerHeight").ExtractInt()));
+
+  auto expect_near = [](SkColor actual, SkColor expected) {
+    constexpr int kTolerance = 24;
+    EXPECT_NEAR(SkColorGetR(actual), SkColorGetR(expected), kTolerance);
+    EXPECT_NEAR(SkColorGetG(actual), SkColorGetG(expected), kTolerance);
+    EXPECT_NEAR(SkColorGetB(actual), SkColorGetB(expected), kTolerance);
+  };
+  const int y = bitmap.height() / 2;
+  expect_near(bitmap.getColor(bitmap.width() / 4, y), SkColorSetRGB(0, 255, 0));
+  expect_near(bitmap.getColor(3 * bitmap.width() / 4, y),
+              SkColorSetRGB(255, 0, 255));
+}
+
+// A headless page keeps running as if visible, like a page in a tab.
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       HeadlessPageRendersLikeVisiblePage) {
+  ScopedHeadlessActorSurface headless =
+      actor_service()->CreateHeadlessActorSurface();
+  content::WebContents* contents =
+      headless.actor_surface_handle().Get()->GetWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      contents, embedded_test_server()->GetURL("/title1.html")));
+
+  EXPECT_EQ("visible", content::EvalJs(contents, "document.visibilityState"));
+  EXPECT_EQ(true, content::EvalJs(contents, R"JS(
+      new Promise(resolve => requestAnimationFrame(() => resolve(true))))JS"));
+}
+
+// Input reaches a headless page.
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       HeadlessPageReceivesClick) {
+  ScopedHeadlessActorSurface headless =
+      actor_service()->CreateHeadlessActorSurface();
+  content::WebContents* contents =
+      headless.actor_surface_handle().Get()->GetWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      contents, GURL("data:text/html,<body style='margin:0;height:100vh' "
+                     "onclick='window.clicked=true'>")));
+  content::WaitForHitTestData(contents->GetPrimaryMainFrame());
+  content::SimulateMouseClick(contents, 0, blink::WebMouseEvent::Button::kLeft);
+  EXPECT_EQ(true, content::EvalJs(contents, R"JS(
+      new Promise(resolve => {
+        const check = () => window.clicked ? resolve(true)
+                                           : setTimeout(check, 50);
+        check();
+      }))JS"));
 }
 
 // Without screenshots, a headless page yields a complete observation with its
