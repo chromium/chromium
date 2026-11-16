@@ -33,8 +33,15 @@ component("tab_groups") {
   ]
 
   if (is_android) {
-    sources += [ "android/tab_groups_feature_map.cc" ]
-    deps += [ ":tab_groups_jni_headers" ]
+    sources += [
+      "android/tab_group_id_jni_conversion.cc",
+      "android/tab_group_id_jni_conversion.h",
+      "android/tab_groups_feature_map.cc",
+    ]
+    deps += [
+      ":tab_groups_jni_headers",
+      "//third_party/jni_zero",
+    ]
   }
 }
 
@@ -45,19 +52,28 @@ if (is_android) {
   }
 
   generate_jni("tab_groups_jni_headers") {
-    sources = [ "android/java/src/org/chromium/components/tab_groups/TabGroupsFeatureMap.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/tab_groups/TabGroupId.java",
+      "android/java/src/org/chromium/components/tab_groups/TabGroupsFeatureMap.java",
+      "android/java/src/org/chromium/components/tab_groups/TokenId.java",
+    ]
   }
 
   android_library("tab_groups_java") {
     resources_package = "org.chromium.components.tab_groups"
     sources = [
       "android/java/src/org/chromium/components/tab_groups/TabGroupColorPickerUtils.java",
+      "android/java/src/org/chromium/components/tab_groups/TabGroupId.java",
       "android/java/src/org/chromium/components/tab_groups/TabGroupsFeatureMap.java",
+      "android/java/src/org/chromium/components/tab_groups/TokenId.java",
     ]
     deps = [
       ":java_resources",
       "//base:features_java",
+      "//base:token_java",
+      "//build/android:build_java",
       "//components/browser_ui/styles/android:java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:material_design_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
@@ -78,5 +94,33 @@ if (is_android) {
       "android/java/res/values/dimens.xml",
     ]
     deps = [ "//components/strings:components_strings_grd" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    sources += [ "android/tab_group_id_jni_conversion_unittest.cc" ]
+    deps += [
+      ":tab_groups",
+      "//base",
+      "//testing/gtest",
+      "//third_party/jni_zero",
+    ]
+  }
+}
+
+if (is_android) {
+  robolectric_library("junit") {
+    sources = [ "android/junit/src/org/chromium/components/tab_groups/TokenIdUnitTest.java" ]
+    deps = [
+      ":tab_groups_java",
+      "//base:base_junit_test_support",
+      "//base:token_java",
+      "//third_party/junit",
+    ]
   }
 }
