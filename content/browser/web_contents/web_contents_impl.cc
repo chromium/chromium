@@ -13036,7 +13036,6 @@ void WebContentsImpl::ScheduleColorRelatedStateChanges() {
 }
 
 void WebContentsImpl::HandleColorRelatedStateChanges() {
-  TRACE_EVENT("content", "WebContentsImpl::HandleColorRelatedStateChanges");
   scheduled_color_related_state_change_.Cancel();
 
   // This can be reached re-entrantly during ~WebContentsImpl, after the

@@ -18,8 +18,6 @@ import androidx.annotation.WorkerThread;
 
 import com.google.android.material.color.DynamicColors;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -444,9 +442,8 @@ public class ProcessInitializationHandler {
                     public void onProfileDestroyed(Profile profile) {}
                 });
 
-        // When the NTB WebUI is enabled this already ran from native PreProfileInit, in which case
-        // it is a no-op.
-        pushInitialOsThemeSettings();
+        boolean initialNightMode = GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
+        OsSettingsProviderAndroidBridge.setPreferredColorScheme(initialNightMode);
         GlobalNightModeStateProviderHolder.getInstance()
                 .addObserver(
                         () -> {
@@ -455,6 +452,9 @@ public class ProcessInitializationHandler {
                                             .isInNightMode();
                             OsSettingsProviderAndroidBridge.setPreferredColorScheme(isDark);
                         });
+        if (DynamicColors.isDynamicColorAvailable()) {
+            OsSettingsProviderAndroidBridge.registerSystemAccentColorObserver();
+        }
 
         if (DeviceInfo.isAutomotive()) {
             DrivingRestrictionsManager.initialize();
@@ -473,19 +473,6 @@ public class ProcessInitializationHandler {
 
         if (GlicEnabling.isEnabledByFlags()) {
             ActorForegroundServiceManager.initialize();
-        }
-    }
-
-    /**
-     * Pushes the initial night mode and system accent color to the native OS settings provider.
-     * Idempotent: repeated calls with unchanged values don't notify native observers.
-     */
-    @CalledByNative
-    static void pushInitialOsThemeSettings() {
-        OsSettingsProviderAndroidBridge.setPreferredColorScheme(
-                GlobalNightModeStateProviderHolder.getInstance().isInNightMode());
-        if (DynamicColors.isDynamicColorAvailable()) {
-            OsSettingsProviderAndroidBridge.registerSystemAccentColorObserver();
         }
     }
 
