@@ -594,10 +594,13 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
 
   auto StopTabStripAnimations() {
     return Do([this]() {
+      auto* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser());
       if (auto* const tab_strip =
-              BrowserView::GetBrowserViewForBrowser(browser())
-                  ->horizontal_tab_strip_for_testing()) {
+              browser_view->horizontal_tab_strip_for_testing()) {
         tab_strip->StopAnimating();
+        tab_strip->InvalidateLayout();
+        views::test::RunScheduledLayout(browser_view);
       }
     });
   }
@@ -723,16 +726,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       CheckHelpBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_BODY));
 }
 
-// TODO(crbug.com/585041396): Flaky on Linux (context menu item never shows).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive \
-  DISABLED_TutorialFlowCompletesWhenNonFirstTabIsActive
-#else
-#define MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive \
-  TutorialFlowCompletesWhenNonFirstTabIsActive
-#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       MAYBE_TutorialFlowCompletesWhenNonFirstTabIsActive) {
+                       TutorialFlowCompletesWhenNonFirstTabIsActive) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
@@ -808,15 +803,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           /*baseline_cl=*/kScreenshotBaselineCL)));
 }
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Step2HelpBubbleAnchoredToContextMenuItem \
-  DISABLED_Step2HelpBubbleAnchoredToContextMenuItem
-#else
-#define MAYBE_Step2HelpBubbleAnchoredToContextMenuItem \
-  Step2HelpBubbleAnchoredToContextMenuItem
-#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       MAYBE_Step2HelpBubbleAnchoredToContextMenuItem) {
+                       Step2HelpBubbleAnchoredToContextMenuItem) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   gfx::Rect menu_item_bounds;
