@@ -4497,8 +4497,11 @@ TEST_F(GlicEnablingGeicPolicyTest,
 // profile, even with their features enabled.
 TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutoOpenGlicForPdf, features::kGlicSelectionPrompt,
-      features::kGlicCaptureRegion,  features::kGlicExperimentalTriggering,
+      features::kAutoOpenGlicForPdf,
+      features::kGlicSelectionPrompt,
+      features::kGlicCaptureRegion,
+      features::kGlicExperimentalTriggering,
+      features::kGlicTextSelectionContextMenu,
 #if BUILDFLAG(ENABLE_PDF)
       features::kPdfGlicSummarize,
 #endif
@@ -4513,6 +4516,7 @@ TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   EXPECT_FALSE(GlicEnabling::IsPdfSummarizeEnabled(profile()));
   EXPECT_FALSE(GlicEnabling::IsAutoOpenForPdfEnabled(profile()));
   EXPECT_FALSE(GlicEnabling::IsInlineCueEnabledForProfile(profile()));
+  EXPECT_FALSE(GlicEnabling::IsTextSelectionContextMenuEnabled(profile()));
   EXPECT_FALSE(GetGlicProviderSpec(profile()).SupportsFeature(
       GlicFeature::kCaptureRegion));
 
@@ -4521,6 +4525,41 @@ TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   EXPECT_EQ(service->enabling().GetExperimentalTriggeringState(),
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   EXPECT_FALSE(service->enabling().ShouldShowExperimentalTriggeringToggle());
+}
+
+// Text selection context menu entry point stays off for Gemini Enterprise,
+// even when enabled by feature flags.
+TEST_F(GlicEnablingGeicPolicyTest, TextSelectionContextMenuDisabledForGeic) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicTextSelectionContextMenu},
+        /*disabled_features=*/{features::kGlicContextMenu});
+    ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+    EXPECT_FALSE(GlicEnabling::IsTextSelectionContextMenuEnabled(profile()));
+    // With kGlicContextMenu disabled, text selection context menu does not
+    // enable the item for GEiC.
+    EXPECT_FALSE(
+        GlicEnabling::IsContextualMenuItemEnabled(profile(), u"selected text"));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicTextSelectionContextMenu,
+                              features::kGlicContextMenu},
+        /*disabled_features=*/{});
+    ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+    // Even with kGlicContextMenu enabled, the text selection specific entry
+    // point stays disabled for GEiC.
+    EXPECT_FALSE(GlicEnabling::IsTextSelectionContextMenuEnabled(profile()));
+    // The general context menu item respects kGlicContextMenu.
+    EXPECT_TRUE(
+        GlicEnabling::IsContextualMenuItemEnabled(profile(), u"selected text"));
+    EXPECT_TRUE(GlicEnabling::IsContextualMenuItemEnabled(profile(), u""));
+    EXPECT_TRUE(GlicEnabling::IsContextualMenuItemEnabled(profile(), u"   "));
+  }
 }
 
 // Contextual cueing and zero state suggestions stay off for a Gemini Enterprise

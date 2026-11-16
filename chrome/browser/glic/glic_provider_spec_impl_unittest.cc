@@ -229,6 +229,12 @@ TEST(GlicProviderSpecImplTest,
                                  features::kGlicMarketingAutoOpen);
 }
 
+TEST(GlicProviderSpecImplTest,
+     GeminiTextSelectionContextMenuFollowsGlicTextSelectionContextMenu) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kTextSelectionContextMenu,
+                                 features::kGlicTextSelectionContextMenu);
+}
+
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
@@ -237,6 +243,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kAutoOpenGlicForPdf,
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,
+      features::kGlicTextSelectionContextMenu,
       ::features::kSkillsEnabled,
       ::features::kSkillsWebViewV2Enabled,
       features::kIndigoOpenGlic,
@@ -333,6 +340,26 @@ TEST(GlicProviderSpecImplTest, SelectionInlineCueFeatureParams) {
   EXPECT_TRUE(geic_params.auto_send_prompt);
   EXPECT_EQ(geic_params.cta, GlicSelectionInlineCueFeatureParams::kCtaExplain);
   EXPECT_TRUE(geic_params.default_blocked_sites.empty());
+}
+
+TEST(GlicProviderSpecImplTest, TextSelectionContextMenuFeatureParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicTextSelectionContextMenu,
+      {{features::kGlicTextSelectionContextMenuMessageFirstFreParam, "true"},
+       {features::kGlicTextSelectionContextMenuAutoSubmitParam, "true"}});
+
+  GlicTextSelectionContextMenuFeatureParams gemini_params =
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})
+          ->GetTextSelectionContextMenuFeatureParams();
+  EXPECT_TRUE(gemini_params.message_first_fre);
+  EXPECT_TRUE(gemini_params.auto_submit);
+
+  GlicTextSelectionContextMenuFeatureParams geic_params =
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+          ->GetTextSelectionContextMenuFeatureParams();
+  EXPECT_FALSE(geic_params.message_first_fre);
+  EXPECT_FALSE(geic_params.auto_submit);
 }
 
 }  // namespace

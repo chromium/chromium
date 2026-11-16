@@ -439,6 +439,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   static bool IsContextualMenuItemEnabled(Profile* profile,
                                           const std::u16string& selection_text);
 
+  // Whether the text selection contextual menu item is enabled for the profile.
+  static bool IsTextSelectionContextMenuEnabled(Profile* profile);
+
   // Whether the inline cue is enabled.
   static bool IsInlineCueEnabledForProfile(Profile* profile);
 

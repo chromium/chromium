@@ -95,18 +95,6 @@ const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
 
 BASE_FEATURE(kGlicContextMenuBelowSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicTextSelectionContextMenu,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-const base::FeatureParam<bool> kGlicTextSelectionContextMenuMessageFirstFre{
-    &kGlicTextSelectionContextMenu, "message_first_fre", false};
-const base::FeatureParam<bool> kGlicTextSelectionContextMenuAutoSubmit{
-    &kGlicTextSelectionContextMenu, "auto_submit", false};
-
 BASE_FEATURE(kGlicTieredRolloutV2, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers{
     &kGlicTieredRolloutV2, "glic-tiered-rollout-v2-eligible-tiers", ""};

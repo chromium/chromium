@@ -59,8 +59,10 @@ enum class GlicFeature {
   // Personal Context eligibility (Ambient Autofill, @memory and their notices).
   // Read by `PersonalContextEligibilityServiceFactory`.
   kPersonalContext,
+  // The context menu item shown for text selections.
+  kTextSelectionContextMenu,
 
-  kMaxValue = kPersonalContext,
+  kMaxValue = kTextSelectionContextMenu,
 };
 
 }  // namespace glic

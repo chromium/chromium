@@ -230,6 +230,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kAiOverlay:
       case GlicFeature::kPersonalContext:
         return true;
+      case GlicFeature::kTextSelectionContextMenu:
+        return base::FeatureList::IsEnabled(
+            features::kGlicTextSelectionContextMenu);
       case GlicFeature::kSkills:
 #if BUILDFLAG(IS_ANDROID)
         // Android only supports the WebView V2 UI, which relies on <webview>
@@ -282,6 +285,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       const override {
     return features::PopulateMarketingAutoOpenFeatureParams(
         features::kGlicMarketingAutoOpen);
+  }
+  GlicTextSelectionContextMenuFeatureParams
+  GetTextSelectionContextMenuFeatureParams() const override {
+    return features::PopulateTextSelectionContextMenuFeatureParams(
+        features::kGlicTextSelectionContextMenu);
   }
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
@@ -364,6 +372,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kAiOverlay:
       case GlicFeature::kDynamicChromeTools:
       case GlicFeature::kPersonalContext:
+      case GlicFeature::kTextSelectionContextMenu:
         return false;
     }
     NOTREACHED();
@@ -385,6 +394,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   GlicIndigoFeatureParams GetIndigoFeatureParams() const override { return {}; }
   GlicMarketingAutoOpenFeatureParams GetMarketingAutoOpenFeatureParams()
       const override {
+    return {};
+  }
+  GlicTextSelectionContextMenuFeatureParams
+  GetTextSelectionContextMenuFeatureParams() const override {
     return {};
   }
   // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.

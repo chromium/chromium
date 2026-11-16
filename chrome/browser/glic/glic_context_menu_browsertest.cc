@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -769,6 +770,75 @@ IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
                                        u"line1 line2 line3  line4"));
 }
 
+class GlicTextSelectionContextMenuGeicBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicTextSelectionContextMenuGeicBrowserTest()
+      : provider_override_(GlicProvider::kGeminiEnterprise) {
+    feature_list_.InitWithFeatures(
+        {features::kGlicTextSelectionContextMenu, features::kGlicContextMenu},
+        {});
+  }
+
+ protected:
+  ScopedGlicProviderOverride provider_override_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuGeicBrowserTest,
+                       GlicItemUsesPageLabelForTextSelectionInGeic) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"   valid text   ";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  ASSERT_TRUE(glic_index.has_value());
+  EXPECT_EQ(
+      glic_index->first->GetLabelAt(glic_index->second),
+      l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL));
+}
+
+class GlicTextSelectionContextMenuGeicWithoutContextMenuBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicTextSelectionContextMenuGeicWithoutContextMenuBrowserTest()
+      : provider_override_(GlicProvider::kGeminiEnterprise) {
+    feature_list_.InitWithFeatures({features::kGlicTextSelectionContextMenu},
+                                   {features::kGlicContextMenu});
+  }
+
+ protected:
+  ScopedGlicProviderOverride provider_override_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicTextSelectionContextMenuGeicWithoutContextMenuBrowserTest,
+    GlicItemAbsentForTextSelectionInGeic) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"   valid text   ";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
 class GlicTextSelectionContextMenuAutoSubmitBrowserTest
     : public GlicContextMenuBrowserTestBase {
  public:
@@ -776,7 +846,7 @@ class GlicTextSelectionContextMenuAutoSubmitBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicTextSelectionContextMenu,
-          {{features::kGlicTextSelectionContextMenuAutoSubmit.name, "true"}}}},
+          {{features::kGlicTextSelectionContextMenuAutoSubmitParam, "true"}}}},
         // kGlicContextMenu is disabled so the item can only come from the
         // text selection entry point, which shows it on its own (see
         // GlicEnabling::IsContextualMenuItemEnabled()).

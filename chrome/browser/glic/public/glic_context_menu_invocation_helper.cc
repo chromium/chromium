@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/glic_enums.mojom.h"
@@ -52,7 +53,7 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
     std::u16string_view trimmed_selection =
         base::TrimWhitespace(selection_text, base::TRIM_ALL);
     bool is_page_eligible = false;
-    if (base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
+    if (glic::GlicEnabling::IsTextSelectionContextMenuEnabled(profile) &&
         !trimmed_selection.empty()) {
 #if !BUILDFLAG(IS_ANDROID)
       tabs::PageContextEligibilityHelper* helper =
@@ -73,15 +74,17 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
             : mojom::InvocationSource::kWebContentsContextMenuTextSelection);
 
     if (is_page_eligible) {
+      const auto selection_params =
+          glic::GetGlicProviderSpec(profile)
+              .GetTextSelectionContextMenuFeatureParams();
       options.additional_context = glic::AdditionalTabContext(
           CreateTextSelectionContext(tab->GetContents(),
                                      std::u16string(trimmed_selection),
                                      SelectionTextLength::kFull),
           rfh_id, glic::PolicyCheck::kClipboard);
-      options.fre_override =
-          features::kGlicTextSelectionContextMenuMessageFirstFre.Get()
-              ? glic::mojom::FreOverride::kTrustFirstInline
-              : glic::mojom::FreOverride::kTrustFirstClick;
+      options.fre_override = selection_params.message_first_fre
+                                 ? glic::mojom::FreOverride::kTrustFirstInline
+                                 : glic::mojom::FreOverride::kTrustFirstClick;
 
 #if !BUILDFLAG(IS_ANDROID)
       if (auto* observer = GlicSelectionObserver::From(tab)) {
@@ -90,7 +93,7 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       }
 #endif
 
-      if (features::kGlicTextSelectionContextMenuAutoSubmit.Get()) {
+      if (selection_params.auto_submit) {
         // The selection itself is sent as additional context, so the prompt
         // only provides the accompanying user message.
         options.prompts.push_back(l10n_util::GetStringUTF8(

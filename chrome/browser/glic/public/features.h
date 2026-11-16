@@ -60,13 +60,6 @@ extern const base::FeatureParam<bool> kGlicContextMenuWithOnboarding;
 
 BASE_DECLARE_FEATURE(kGlicContextMenuBelowSearch);
 
-BASE_DECLARE_FEATURE(kGlicTextSelectionContextMenu);
-extern const base::FeatureParam<bool>
-    kGlicTextSelectionContextMenuMessageFirstFre;
-// Whether the selected text is auto-submitted with a default prompt instead of
-// only being attached to the input area for the user to submit manually.
-extern const base::FeatureParam<bool> kGlicTextSelectionContextMenuAutoSubmit;
-
 BASE_DECLARE_FEATURE(kGlicTieredRolloutV2);
 extern const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers;
 const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers();

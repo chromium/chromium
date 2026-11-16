@@ -20,6 +20,7 @@ struct GlicMarketingAutoOpenFeatureParams;
 struct GlicPdfAutoOpenFeatureParams;
 struct GlicPdfSummarizeFeatureParams;
 struct GlicSelectionInlineCueFeatureParams;
+struct GlicTextSelectionContextMenuFeatureParams;
 }  // namespace glic
 
 namespace features {
@@ -61,6 +62,16 @@ inline constexpr char kGlicSelectionDefaultBlockedSitesParam[] =
     "GlicSelectionDefaultBlockedSites";
 glic::GlicSelectionInlineCueFeatureParams
 PopulateSelectionInlineCueFeatureParams(const base::Feature& feature);
+
+// The contextual menu entry shown for text selections. See
+// GlicFeature::kTextSelectionContextMenu.
+BASE_DECLARE_FEATURE(kGlicTextSelectionContextMenu);
+inline constexpr char kGlicTextSelectionContextMenuMessageFirstFreParam[] =
+    "message_first_fre";
+inline constexpr char kGlicTextSelectionContextMenuAutoSubmitParam[] =
+    "auto_submit";
+glic::GlicTextSelectionContextMenuFeatureParams
+PopulateTextSelectionContextMenuFeatureParams(const base::Feature& feature);
 
 // Capturing a page region via the region selection overlay. See
 // GlicFeature::kCaptureRegion.

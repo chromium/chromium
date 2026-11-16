@@ -73,6 +73,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -5963,7 +5964,7 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
                          &params_.selection_text);
     const bool is_page_eligible = IsPageContextEligible(source_web_contents_);
     const bool show_text_selection_menu_item =
-        base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
+        glic::GlicEnabling::IsTextSelectionContextMenuEnabled(GetProfile()) &&
         !params_.selection_text.empty() && is_page_eligible;
 
     const std::string arm = features::kGlicContextMenuArm.Get();
@@ -5976,7 +5977,9 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
       // The auto-submit arm sends the page along with the selection, so the
       // label mentions both.
       const int label_id =
-          features::kGlicTextSelectionContextMenuAutoSubmit.Get()
+          glic::GetGlicProviderSpec(GetProfile())
+                  .GetTextSelectionContextMenuFeatureParams()
+                  .auto_submit
               ? IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT_PAGE_AND_SELECTION
               : IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT;
       label = l10n_util::GetStringFUTF16(label_id, printable_selection_text);

@@ -1477,11 +1477,18 @@ bool GlicEnabling::IsPdfSummarizeEnabled(Profile* profile) {
 }
 
 // static
+bool GlicEnabling::IsTextSelectionContextMenuEnabled(Profile* profile) {
+  return IsEnabledForProfile(profile) &&
+         GetGlicProviderSpec(profile).SupportsFeature(
+             GlicFeature::kTextSelectionContextMenu);
+}
+
+// static
 bool GlicEnabling::IsContextualMenuItemEnabled(
     Profile* profile,
     const std::u16string& selection_text) {
   const bool text_selection_menu_enabled =
-      base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
+      IsTextSelectionContextMenuEnabled(profile) &&
       !base::TrimWhitespace(std::u16string_view(selection_text), base::TRIM_ALL)
            .empty();
   const bool enabled =

@@ -72,6 +72,25 @@ PopulateSelectionInlineCueFeatureParams(const base::Feature& feature) {
   return params;
 }
 
+BASE_FEATURE(kGlicTextSelectionContextMenu,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+glic::GlicTextSelectionContextMenuFeatureParams
+PopulateTextSelectionContextMenuFeatureParams(const base::Feature& feature) {
+  glic::GlicTextSelectionContextMenuFeatureParams params;
+  params.message_first_fre = base::GetFieldTrialParamByFeatureAsBool(
+      feature, kGlicTextSelectionContextMenuMessageFirstFreParam,
+      params.message_first_fre);
+  params.auto_submit = base::GetFieldTrialParamByFeatureAsBool(
+      feature, kGlicTextSelectionContextMenuAutoSubmitParam,
+      params.auto_submit);
+  return params;
+}
+
 BASE_FEATURE(kGlicCaptureRegion,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT

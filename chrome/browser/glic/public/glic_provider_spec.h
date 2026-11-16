@@ -103,6 +103,13 @@ struct GlicMarketingAutoOpenFeatureParams {
   int max_impressions = 1;
 };
 
+struct GlicTextSelectionContextMenuFeatureParams {
+  bool message_first_fre = false;
+  // Whether the selected text is auto-submitted with a default prompt instead
+  // of only being attached to the input area for the user to submit manually.
+  bool auto_submit = false;
+};
+
 class GlicFreStore;
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
@@ -200,6 +207,8 @@ class GlicProviderSpec {
   virtual GlicIndigoFeatureParams GetIndigoFeatureParams() const = 0;
   virtual GlicMarketingAutoOpenFeatureParams GetMarketingAutoOpenFeatureParams()
       const = 0;
+  virtual GlicTextSelectionContextMenuFeatureParams
+  GetTextSelectionContextMenuFeatureParams() const = 0;
   // Whether this provider's guest supports server-side rendering.
   virtual bool SupportsSsr() const = 0;
   // Whether this provider's NoWebview guest loads the Glic API bundle from

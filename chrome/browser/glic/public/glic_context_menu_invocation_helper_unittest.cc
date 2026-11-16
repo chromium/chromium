@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -326,7 +327,7 @@ TEST_F(GlicContextMenuInvocationHelperUnittest,
       {{features::kGlic, {}},
        {features::kGlicContextMenu, {}},
        {features::kGlicTextSelectionContextMenu,
-        {{features::kGlicTextSelectionContextMenuMessageFirstFre.name,
+        {{features::kGlicTextSelectionContextMenuMessageFirstFreParam,
           "true"}}}},
       {});
 
@@ -357,7 +358,7 @@ class GlicContextMenuInvocationHelperTextSelectionAutoSubmitUnittest
         {{features::kGlic, {}},
          {features::kGlicContextMenu, {}},
          {features::kGlicTextSelectionContextMenu,
-          {{features::kGlicTextSelectionContextMenuAutoSubmit.name, "true"}}}},
+          {{features::kGlicTextSelectionContextMenuAutoSubmitParam, "true"}}}},
         {});
   }
 };
@@ -400,9 +401,9 @@ class GlicContextMenuInvocationHelperTextSelectionAutoSubmitMessageFirstUnittest
         {{features::kGlic, {}},
          {features::kGlicContextMenu, {}},
          {features::kGlicTextSelectionContextMenu,
-          {{features::kGlicTextSelectionContextMenuMessageFirstFre.name,
+          {{features::kGlicTextSelectionContextMenuMessageFirstFreParam,
             "true"},
-           {features::kGlicTextSelectionContextMenuAutoSubmit.name, "true"}}}},
+           {features::kGlicTextSelectionContextMenuAutoSubmitParam, "true"}}}},
         {});
   }
 };
