@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
+
 #include "base/callback_list.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_test_util.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -480,6 +481,42 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
                   WaitForShow(AccountChooserView::kTopViewId),
                   DestroyAccountChooserController(),
                   WaitForHide(AccountChooserView::kTopViewId));
+}
+
+// Regression test for crbug.com/581891688. Closing the add-account popup can
+// synchronously destroy the controller (e.g. when the tab owning it is closed
+// from a window visibility observer); the controller must not touch itself
+// afterwards.
+// Steps:
+// 1. Call GetAccount with no accounts, which opens the add-account popup.
+// 2. Arrange for the controller to be destroyed while the popup is closing.
+// 3. Add an account, which makes the controller close the popup.
+// 4. Verify the controller is gone and the flow was cancelled.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       ControllerDestroyedWhileClosingAddAccountPopup) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  content::WaiterHelper waiter;
+  base::CallbackListSubscription popup_closed_subscription;
+  RunTestSequence(
+      CreateAccountChooserController(),
+      GetAccount(GetOnNoAccountChosenCallback(waiter)), VerifyPopupOpened(),
+      Do([this, &popup_closed_subscription]() {
+        BrowserWindowInterface* const popup_browser =
+            ui_test_utils::FindMatchingBrowsers(
+                [](BrowserWindowInterface* browser) {
+                  return browser->GetType() ==
+                         BrowserWindowInterface::Type::TYPE_POPUP;
+                })
+                .front();
+        popup_closed_subscription = popup_browser->RegisterBrowserDidClose(
+            base::BindLambdaForTesting([this](BrowserWindowInterface*) {
+              account_chooser_controller_.reset();
+            }));
+      }),
+      MakeAccountAvailable(account),
+      Check([this]() { return !account_chooser_controller_; },
+            "Expect controller destroyed while closing the popup."),
+      VerifyPopupClosed(), Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
 }
 
 }  // namespace

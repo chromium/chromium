@@ -154,11 +154,21 @@ void AccountChooserController::OnAddAccountPopupDestroyed() {
 
 void AccountChooserController::Show() {
   ProfileInfo profile_info = GetProfileInfo();
+  // Closing the add-account popup may synchronously destroy `this` (see the
+  // comment on `weak_ptr_factory_`); bail out if that happened.
+  base::WeakPtr<AccountChooserController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (profile_info.accounts.empty()) {
     CloseDialogs();
+    if (!weak_this) {
+      return;
+    }
     ShowAddAccountDialog();
   } else {
     CloseAddAccountPopup();
+    if (!weak_this) {
+      return;
+    }
     ShowAccountChooserDialog(std::move(profile_info));
   }
 }
@@ -222,7 +232,12 @@ void AccountChooserController::OnAddAccountButtonClicked() {
 void AccountChooserController::OnFlowCancelled() {
   if (on_account_chosen_callback_) {
     scoped_identity_manager_observation_.Reset();
+    base::WeakPtr<AccountChooserController> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     CloseDialogs();
+    if (!weak_this) {
+      return;
+    }
     std::move(on_account_chosen_callback_).Run(std::nullopt);
   }
 }
@@ -236,7 +251,12 @@ void AccountChooserController::OnSaveButtonClicked() {
   if (on_account_chosen_callback_) {
     CHECK(selected_account_.has_value());
     scoped_identity_manager_observation_.Reset();
+    base::WeakPtr<AccountChooserController> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     CloseDialogs();
+    if (!weak_this) {
+      return;
+    }
     std::move(on_account_chosen_callback_).Run(selected_account_);
   }
 }
@@ -329,7 +349,12 @@ void AccountChooserController::CloseAddAccountPopup() {
 }
 
 void AccountChooserController::CloseDialogs() {
+  base::WeakPtr<AccountChooserController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   CloseAddAccountPopup();
+  if (!weak_this) {
+    return;
+  }
   CloseWidget();
 }
 

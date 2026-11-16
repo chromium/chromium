@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -126,6 +127,13 @@ class AccountChooserController : public signin::IdentityManager::Observer,
   raw_ptr<content::WebContents> add_account_popup_;
   std::unique_ptr<AddAccountPopupObserver> add_account_popup_observer_;
   bool add_account_popup_programatically_closed_ = false;
+
+  // Closing the add-account popup window (`CloseAddAccountPopup()`) runs
+  // window and visibility observers synchronously, and any of them may close
+  // the tab that owns `this` (through SaveToDriveFlow) and thereby destroy it
+  // in place. Callers must take a WeakPtr before closing the popup and
+  // re-check it before touching any member afterwards.
+  base::WeakPtrFactory<AccountChooserController> weak_ptr_factory_{this};
 };
 }  // namespace save_to_drive
 
