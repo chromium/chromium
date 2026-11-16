@@ -237,6 +237,11 @@ void LoadScrollJankTestPage(net::EmbeddedTestServer* testServer) {
   // `Memory.PhysFootprint` measurements across iterations.
   config.additional_args.push_back(
       "--disable-features=GwpAsanMalloc,GwpAsanPartitionAlloc");
+  // Always show the static Google logo. Every run is a fresh install, so the
+  // NTP otherwise fetches that day's doodle, and animated doodles add ~2 MB to
+  // the startup and tab memory metrics on doodle days.
+  config.additional_args.push_back(
+      "-google-doodle-url=https://www.google.com/?deb=0nodoodle");
   return config;
 }
 
