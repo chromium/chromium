@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/check_op.h"
@@ -12,7 +14,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -37,9 +41,11 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
@@ -406,14 +412,175 @@ class JSCallStackReportingBrowserTest : public BaseReportingBrowserTest {
   JSCallStackReportingBrowserTest& operator=(
       const JSCallStackReportingBrowserTest&) = delete;
 
-  ~JSCallStackReportingBrowserTest() override = default;
+  ~JSCallStackReportingBrowserTest() override {
+    if (server()->Started()) {
+      EXPECT_TRUE(server()->ShutdownAndWaitUntilComplete());
+    }
+  }
 
   std::string GetDocumentPolicyHeader() const {
     return "Document-Policy: include-js-call-stacks-in-crash-reports";
   }
 
+  void RunExternalScriptStackTest(
+      const GURL& script_url,
+      bool use_cors,
+      bool expect_external_frame,
+      const std::optional<GURL>& redirect_url = std::nullopt) {
+    static constexpr char kExternalScriptBody[] =
+        "function externalSecret() {"
+        " console.log('external-secret-started');"
+        " while (true) {}"
+        "}";
+
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    GURL main_url = server()->GetURL(
+        kReportingHost,
+        base::StringPrintf("/set-header?%s&%s", GetAppropriateReportingHeader(),
+                           GetDocumentPolicyHeader()));
+    ASSERT_TRUE(NavigateToURL(contents, main_url));
+    content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+    ASSERT_TRUE(frame);
+
+    base::test::TestFuture<net::test_server::HttpRequest> caller_script_request;
+    expectation_handler_.OnRequest("/visible-caller-script.js")
+        .RespondWith("text/javascript",
+                     "function visibleCaller() { externalSecret(); }")
+        .SetValue(caller_script_request);
+
+    content::WebContentsConsoleObserver caller_load_observer(contents);
+    caller_load_observer.SetPattern("visible-caller-script-loaded");
+    content::ExecuteScriptAsync(
+        frame, base::StringPrintf(
+                   R"(
+              const callerScript = document.createElement('script');
+              callerScript.onload = () =>
+                  console.log('visible-caller-script-loaded');
+              callerScript.src = '%s';
+              document.head.appendChild(callerScript);
+            )",
+                   server()
+                       ->GetURL(kReportingHost, "/visible-caller-script.js")
+                       .spec()
+                       .c_str()));
+    ASSERT_TRUE(caller_script_request.Wait());
+    ASSERT_TRUE(caller_load_observer.Wait());
+    ASSERT_TRUE(content::EvalJs(frame, "typeof visibleCaller === 'function'")
+                    .ExtractBool());
+
+    base::test::TestFuture<net::test_server::HttpRequest>
+        external_script_request;
+    base::test::TestFuture<net::test_server::HttpRequest>
+        redirected_script_request;
+    if (redirect_url) {
+      expectation_handler_.OnRequest(script_url.path())
+          .RespondWith(net::HTTP_FOUND, "text/javascript", "")
+          .AddCustomHeader("Location", redirect_url->spec())
+          .SetValue(external_script_request);
+    }
+
+    const std::string_view final_script_path =
+        redirect_url ? redirect_url->path() : script_url.path();
+    auto& final_script_request =
+        redirect_url ? redirected_script_request : external_script_request;
+    if (use_cors) {
+      expectation_handler_.OnRequest(final_script_path)
+          .RespondWith("text/javascript", kExternalScriptBody)
+          .AddCustomHeader("Access-Control-Allow-Origin", "*")
+          .SetValue(final_script_request);
+    } else {
+      expectation_handler_.OnRequest(final_script_path)
+          .RespondWith("text/javascript", kExternalScriptBody)
+          .SetValue(final_script_request);
+    }
+
+    content::WebContentsConsoleObserver load_observer(contents);
+    load_observer.SetPattern("external-script-loaded");
+    content::ExecuteScriptAsync(
+        frame, base::StringPrintf(
+                   R"(
+                     const script = document.createElement('script');
+                     script.onload = () =>
+                         console.log('external-script-loaded');
+                     %s
+                     script.src = '%s';
+                     document.head.appendChild(script);
+                   )",
+                   use_cors ? "script.crossOrigin = 'anonymous';" : "",
+                   script_url.spec().c_str()));
+
+    ASSERT_TRUE(external_script_request.Wait());
+    if (redirect_url) {
+      ASSERT_TRUE(redirected_script_request.Wait());
+    }
+    ASSERT_TRUE(load_observer.Wait());
+
+    content::WebContentsConsoleObserver hang_observer(contents);
+    hang_observer.SetPattern("external-secret-started");
+    content::ExecuteScriptAsync(frame, "visibleCaller();");
+    ASSERT_TRUE(hang_observer.Wait());
+
+    content::RenderProcessHost* process = frame->GetProcess();
+    content::SimulateUnresponsiveRenderer(contents,
+                                          frame->GetRenderWidgetHost());
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return process->GetUnresponsiveDocumentToken() == frame->GetFrameToken();
+    })) << "Timed out waiting for the renderer to collect the JavaScript stack";
+
+    const std::string captured_stack =
+        process->GetUnresponsiveDocumentJavascriptCallStack();
+    ASSERT_FALSE(captured_stack.empty());
+    EXPECT_NE(std::string::npos, captured_stack.find("visibleCaller"));
+    EXPECT_NE(std::string::npos,
+              captured_stack.find("/visible-caller-script.js"));
+    if (expect_external_frame) {
+      EXPECT_NE(std::string::npos, captured_stack.find("externalSecret"));
+      EXPECT_NE(std::string::npos, captured_stack.find(script_url.path()));
+    } else {
+      EXPECT_EQ(std::string::npos, captured_stack.find("externalSecret"));
+      EXPECT_EQ(std::string::npos, captured_stack.find(script_url.path()));
+      if (redirect_url) {
+        if (redirect_url->host() != main_url.host()) {
+          EXPECT_EQ(std::string::npos,
+                    captured_stack.find(redirect_url->host()));
+        }
+        EXPECT_EQ(std::string::npos, captured_stack.find(redirect_url->path()));
+      }
+      EXPECT_NE(std::string::npos, captured_stack.find("<redacted>"));
+    }
+
+    content::RenderProcessHostWatcher process_watcher(
+        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    ASSERT_TRUE(process->Shutdown(content::RESULT_CODE_HUNG));
+    process_watcher.Wait();
+    ASSERT_TRUE(contents->IsCrashed());
+
+    upload_response()->WaitForRequest();
+    base::ListValue reports =
+        ParseReportUpload(upload_response()->http_request()->content);
+    upload_response()->Send("HTTP/1.1 200 OK\r\n");
+    upload_response()->Send("\r\n");
+    upload_response()->Done();
+
+    ASSERT_FALSE(reports.empty());
+    const base::DictValue& report = reports.begin()->GetDict();
+    const std::string* report_url = report.FindString("url");
+    const base::DictValue* body = report.FindDict("body");
+    ASSERT_TRUE(report_url);
+    EXPECT_EQ(main_url.spec(), *report_url);
+    ASSERT_TRUE(body);
+    const std::string* reason = body->FindString("reason");
+    const std::string* report_stack = body->FindString("stack");
+    ASSERT_TRUE(reason);
+    EXPECT_EQ("unresponsive", *reason);
+    ASSERT_TRUE(report_stack);
+    EXPECT_EQ(captured_stack, *report_stack);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::test_server::ExpectationHandler expectation_handler_{server()};
 };
 
 class HistogramReportingBrowserTest : public BaseReportingBrowserTest {
@@ -2270,6 +2437,70 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   } else {
     EXPECT_EQ(call_stack, nullptr);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       DISABLED_ON_ASAN(SameOriginExternalScriptStack)) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "JavaScript stack collection feature is disabled";
+  }
+
+  RunExternalScriptStackTest(
+      server()->GetURL(kReportingHost, "/external-script.js"),
+      /*use_cors=*/false,
+      /*expect_external_frame=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    JSCallStackReportingBrowserTest,
+    DISABLED_ON_ASAN(NonCorsCrossOriginExternalScriptStack)) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "JavaScript stack collection feature is disabled";
+  }
+
+  RunExternalScriptStackTest(
+      server()->GetURL(kCrossOriginHost, "/external-script.js"),
+      /*use_cors=*/false,
+      /*expect_external_frame=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       DISABLED_ON_ASAN(CorsCrossOriginExternalScriptStack)) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "JavaScript stack collection feature is disabled";
+  }
+
+  RunExternalScriptStackTest(
+      server()->GetURL(kCrossOriginHost, "/external-script.js"),
+      /*use_cors=*/true,
+      /*expect_external_frame=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       DISABLED_ON_ASAN(RedirectedExternalScriptStack)) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "JavaScript stack collection feature is disabled";
+  }
+
+  RunExternalScriptStackTest(
+      server()->GetURL(kReportingHost, "/external-script.js"),
+      /*use_cors=*/false,
+      /*expect_external_frame=*/false,
+      server()->GetURL(kCrossOriginHost, "/redirected-script.js"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    JSCallStackReportingBrowserTest,
+    DISABLED_ON_ASAN(CrossOriginRedirectToSameOriginExternalScriptStack)) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "JavaScript stack collection feature is disabled";
+  }
+
+  RunExternalScriptStackTest(
+      server()->GetURL(kCrossOriginHost, "/external-script.js"),
+      /*use_cors=*/false,
+      /*expect_external_frame=*/false,
+      server()->GetURL(kReportingHost, "/redirected-script.js"));
 }
 
 IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,

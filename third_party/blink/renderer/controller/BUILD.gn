@@ -274,6 +274,7 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer/platform/testing/main_thread_isolate_unittest.cc",
     "//third_party/blink/renderer/platform/testing/task_environment_unittest.cc",
     "crash_memory_metrics_reporter_impl_test.cc",
+    "javascript_call_stack_collector_test.cc",
     "performance_manager/renderer_resource_coordinator_impl_test.cc",
     "performance_manager/v8_detailed_memory_reporter_impl_test.cc",
     "performance_manager/v8_worker_memory_reporter_test.cc",

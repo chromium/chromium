@@ -27,12 +27,16 @@ namespace blink {
 
 namespace {
 
-// Determines whether a script frame should be included in the call stack.
-// frames whose URL protocol matches an extension scheme are excluded.
-// Returns true to include the frame (i.e. not redacted) and false to exclude
-// it.
+// Returns false to redact frames from scripts whose error details are hidden
+// from the page, such as cross-origin scripts loaded without CORS, and frames
+// from extension scripts.
 bool IsScriptFrameAllowed(v8::Isolate* isolate,
-                          v8::Local<v8::String> script_name) {
+                          v8::Local<v8::String> script_name,
+                          bool is_shared_cross_origin) {
+  if (!is_shared_cross_origin) {
+    return false;
+  }
+
   String script_url =
       ToCoreStringWithUndefinedOrNullCheck(isolate, script_name);
   if (script_url.empty()) {
@@ -46,9 +50,8 @@ bool IsScriptFrameAllowed(v8::Isolate* isolate,
   return !CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii());
 }
 
-// Gathers and formats the call stack in a format that's
-// consistent with Error.stack If extension frames are detected,
-// we replace them with <redacted> to protect privacy.
+// Gathers the call stack in a format consistent with Error.stack, replacing
+// disallowed frames with <redacted> to protect privacy.
 // The function respects the stack trace limit set in the isolate.
 void CollectFilteredCallStack(v8::Isolate* isolate, StringBuilder& builder) {
   std::ostringstream oss;
@@ -126,6 +129,13 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
 }
 
 }  // namespace
+
+String JavaScriptCallStackCollector::CollectJavaScriptCallStackForTesting(
+    v8::Isolate* isolate) {
+  StringBuilder builder;
+  CollectFilteredCallStack(isolate, builder);
+  return builder.ToString();
+}
 
 void JavaScriptCallStackCollector::InterruptIsolateAndCollectCallStack(
     v8::Isolate* isolate) {

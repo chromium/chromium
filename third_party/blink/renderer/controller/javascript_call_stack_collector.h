@@ -13,8 +13,6 @@
 
 namespace blink {
 
-inline constexpr char kExtensionFrameOmittedMessage[] =
-    "Stack omitted due to extension script frames.";
 inline constexpr char kStackFramePrefix[] = "\n    at ";
 inline constexpr char kWebsiteOwnerNotOptedInMessage[] =
     "Website owner has not opted in for JS call stacks in crash reports.";
@@ -37,6 +35,8 @@ class CONTROLLER_EXPORT JavaScriptCallStackCollector {
   void HandleCallStackCollected(
       const String& call_stack,
       const std::optional<LocalFrameToken> frame_token);
+
+  static String CollectJavaScriptCallStackForTesting(v8::Isolate* isolate);
 
  private:
   CollectJavaScriptCallStackCallback result_callback_;
