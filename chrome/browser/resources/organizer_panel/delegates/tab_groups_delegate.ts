@@ -19,6 +19,8 @@ import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import type {BrowserProxy, TabGroup} from '../tab_groups.mojom-webui.js';
 import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 
+import {removeListeners} from './tab_delegate_utils.js';
+
 export class TabGroupsDelegate implements
     OrganizerListSectionDelegate<TabGroup> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
@@ -27,6 +29,7 @@ export class TabGroupsDelegate implements
   private tabGroups_: TabGroup[] = [];
 
   init(sectionClient: OrganizerListSectionClient) {
+    assert(this.listenerIds_.length === 0);
     this.client_ = sectionClient;
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_.push(
@@ -39,6 +42,11 @@ export class TabGroupsDelegate implements
         callbackRouter.tabGroupUpdated.addListener((tabGroup: TabGroup) => {
           this.onTabGroupUpdated_(tabGroup);
         }));
+  }
+
+  destroy() {
+    removeListeners(this.browserProxy_.callbackRouter, this.listenerIds_);
+    this.client_ = undefined;
   }
 
   getId(): string {

@@ -43,3 +43,12 @@ export function getSplitViewPrefixIcon(
     },
   };
 }
+
+export function removeListeners(
+    callbackRouter: {removeListener(id: number): unknown},
+    listenerIds: number[]): void {
+  for (const id of listenerIds) {
+    callbackRouter.removeListener(id);
+  }
+  listenerIds.length = 0;
+}

@@ -305,4 +305,28 @@ suite('TabGroupsDelegateTest', () => {
         assertEquals(undefined, items[1]!.ariaDescription);
         assertEquals('More options', items[1]!.hoveredActionButton?.ariaLabel);
       });
+
+  test('destroy removes listeners and supports re-init', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    remotePage.tabGroupAdded(sampleGroups[0]!);
+    await microtasksFinished();
+    assertEquals(1, client.items.length);
+
+    delegate.destroy();
+    remotePage.tabGroupAdded(sampleGroups[1]!);
+    remotePage.tabGroupUpdated({...sampleGroups[0]!, title: 'Updated'});
+    remotePage.tabGroupRemoved(sampleGroups[0]!.id);
+    await microtasksFinished();
+    assertEquals(1, client.items.length);
+    assertEquals('Sample Group 1', client.items[0]!.title[0]);
+
+    const newClient = new TestClient();
+    delegate.init(newClient);
+    remotePage.tabGroupAdded(sampleGroups[1]!);
+    await microtasksFinished();
+    assertEquals(2, newClient.items.length);
+    assertEquals(1, client.items.length);
+  });
 });

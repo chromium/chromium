@@ -805,4 +805,35 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals(['Tab group', '3 tabs'], items[0]!.ariaLabel);
     assertDeepEquals(['4m ago'], items[0]!.ariaDescription);
   });
+
+  test('destroy removes listeners and supports re-init', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    remotePage.tabsChanged(mockProfileData);
+    await microtasksFinished();
+    assertEquals(3, client.items.length);
+
+    delegate.destroy();
+    remotePage.tabsChanged({
+      ...mockProfileData,
+      recentlyClosedTabs: [googleTab],
+    });
+    remotePage.tabsRemoved({
+      tabIds: [gmailTab.tabId],
+      recentlyClosedTabs: [gmailTab],
+    });
+    await microtasksFinished();
+    assertEquals(3, client.items.length);
+
+    const newClient = new TestClient();
+    delegate.init(newClient);
+    remotePage.tabsChanged({
+      ...mockProfileData,
+      recentlyClosedTabs: [googleTab],
+    });
+    await microtasksFinished();
+    assertEquals(1, newClient.items.length);
+    assertEquals(3, client.items.length);
+  });
 });

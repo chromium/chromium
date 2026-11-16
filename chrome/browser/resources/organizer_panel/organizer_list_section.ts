@@ -100,6 +100,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private accessor filteredSearchQuery_: string = '';
   override accessor hidden: boolean = false;
 
+  private activeDelegate_: OrganizerListSectionDelegate<unknown>|null = null;
   private searchOptions_:
       SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
         distance: 200,
@@ -144,10 +145,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
             (sectionsState: Record<string, SectionState>) => {
               this.onSectionsStateChanged_(sectionsState);
             });
+    this.syncDelegate_();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    ++this.loadGeneration_;
     assert(this.reducedMotionQuery_ !== null);
     this.reducedMotionQuery_.removeEventListener(
         'change', this.onReducedMotionChange_);
@@ -156,14 +159,17 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.browserProxy_.callbackRouter.removeListener(
         this.sectionStateChangedListenerId_);
     this.sectionStateChangedListenerId_ = null;
+    this.destroyActiveDelegate_();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('delegate')) {
-      this.delegate?.init(this);
-      this.loadSection_();
+      if (!this.delegate) {
+        this.items = [];
+      }
+      this.syncDelegate_();
     }
 
     if (changedProperties.has('searchQuery') ||
@@ -175,6 +181,23 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
     this.hidden = !this.delegate || this.hasNoSearchResults_() ||
         (this.delegate.shouldHide?.() ?? false);
+  }
+
+  private destroyActiveDelegate_() {
+    this.activeDelegate_?.destroy?.();
+    this.activeDelegate_ = null;
+  }
+
+  private syncDelegate_() {
+    if (!this.isConnected || this.activeDelegate_ === this.delegate) {
+      return;
+    }
+    this.destroyActiveDelegate_();
+    if (this.delegate) {
+      this.activeDelegate_ = this.delegate;
+      this.delegate.init(this);
+    }
+    this.loadSection_();
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {

@@ -15,7 +15,7 @@ import type {OrganizerListSectionItemDescriptionPart} from '../organizer_list_se
 import type {BrowserProxy, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
-import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, removeListeners, tokenToString} from './tab_delegate_utils.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
@@ -42,6 +42,7 @@ export class RecentTabsDelegate implements
   private items_: RecentlyClosedItem[] = [];
 
   init(sectionClient: OrganizerListSectionClient) {
+    assert(this.listenerIds_.length === 0);
     this.client_ = sectionClient;
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_.push(
@@ -52,6 +53,11 @@ export class RecentTabsDelegate implements
             (tabsRemovedInfo: TabsRemovedInfo) => {
               this.onTabsRemoved_(tabsRemovedInfo);
             }));
+  }
+
+  destroy() {
+    removeListeners(this.browserProxy_.callbackRouter, this.listenerIds_);
+    this.client_ = undefined;
   }
 
   getId(): string {

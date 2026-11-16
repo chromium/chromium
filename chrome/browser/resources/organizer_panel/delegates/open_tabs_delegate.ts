@@ -16,7 +16,7 @@ import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdat
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 import {TabAlertState} from '../tabs.mojom-webui.js';
 
-import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, removeListeners, tokenToString} from './tab_delegate_utils.js';
 
 // Trailing icon shown for tabs that are playing or muting audio.
 const AUDIO_ICON = 'organizer-panel:volume-up';
@@ -93,6 +93,7 @@ export class OpenTabsDelegate implements
   private tabGroupsMap_: Map<string, TabGroup> = new Map();
 
   init(sectionClient: OrganizerListSectionClient) {
+    assert(this.listenerIds_.length === 0);
     this.client_ = sectionClient;
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_.push(
@@ -107,6 +108,11 @@ export class OpenTabsDelegate implements
             (tabsRemovedInfo: TabsRemovedInfo) => {
               this.onTabsRemoved_(tabsRemovedInfo);
             }));
+  }
+
+  destroy() {
+    removeListeners(this.browserProxy_.callbackRouter, this.listenerIds_);
+    this.client_ = undefined;
   }
 
   getId(): string {

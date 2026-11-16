@@ -1234,4 +1234,80 @@ suite('OrganizerListSectionTest', () => {
     await microtasksFinished();
     assertTrue(itemsContainer.noAnimation);
   });
+
+  test('defers delegate init until connected to DOM', async () => {
+    const detachedSection = document.createElement('organizer-list-section');
+    const delegate =
+        new TestSectionDelegate('Detached', [{title: ['Initial Tab']}]);
+    detachedSection.delegate = delegate;
+    await microtasksFinished();
+
+    assertEquals(0, delegate.getInitCount());
+    assertEquals(0, delegate.getDestroyCount());
+
+    document.body.appendChild(detachedSection);
+    await detachedSection.waitForLoadComplete();
+    assertEquals(1, delegate.getInitCount());
+    assertEquals(1, detachedSection.items.length);
+  });
+
+  test('destroys and reloads delegate across lifecycle', async () => {
+    const firstDelegate =
+        new TestSectionDelegate('First', [{title: ['First Tab']}]);
+    const secondDelegate =
+        new TestSectionDelegate('Second', [{title: ['Second Tab']}]);
+
+    listSection.delegate = firstDelegate;
+    await listSection.waitForLoadComplete();
+    assertEquals(1, firstDelegate.getInitCount());
+    assertEquals(0, firstDelegate.getDestroyCount());
+    assertEquals(1, listSection.items.length);
+
+    // Replacing the delegate destroys the previous one.
+    listSection.delegate = secondDelegate;
+    await listSection.waitForLoadComplete();
+    assertEquals(1, firstDelegate.getDestroyCount());
+    assertEquals(1, secondDelegate.getInitCount());
+    assertEquals(0, secondDelegate.getDestroyCount());
+
+    // Disconnecting destroys the active delegate, and reconnecting re-inits
+    // and reloads updated items.
+    listSection.remove();
+    assertEquals(1, secondDelegate.getDestroyCount());
+    secondDelegate.setItems([{title: ['Updated 1']}, {title: ['Updated 2']}]);
+
+    document.body.appendChild(listSection);
+    await listSection.waitForLoadComplete();
+    assertEquals(2, secondDelegate.getInitCount());
+    assertEquals(2, listSection.items.length);
+
+    // Clearing the delegate destroys the active delegate and clears items.
+    listSection.delegate = null;
+    await listSection.waitForLoadComplete();
+    assertEquals(2, secondDelegate.getDestroyCount());
+    assertEquals(0, listSection.items.length);
+  });
+
+  test('ignores in-flight load results after disconnect', async () => {
+    let resolveItems!: (items: Array<OrganizerListSectionItem<unknown>>) =>
+        void;
+    class DelayedSectionDelegate extends TestSectionDelegate {
+      override getItems() {
+        return new Promise<Array<OrganizerListSectionItem<unknown>>>(
+            resolve => {
+              resolveItems = resolve;
+            });
+      }
+    }
+
+    const delegate = new DelayedSectionDelegate('Delayed');
+    listSection.delegate = delegate;
+    await microtasksFinished();
+
+    listSection.remove();
+    resolveItems([{title: ['Stale Tab']}]);
+    await listSection.waitForLoadComplete();
+
+    assertEquals(0, listSection.items.length);
+  });
 });

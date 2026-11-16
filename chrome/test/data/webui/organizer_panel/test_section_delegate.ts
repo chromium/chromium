@@ -27,6 +27,9 @@ export class TestSectionDelegate implements
   private lastContextMenuCoordinates_?: {x: number, y: number};
   private contextMenuClickCount_: number = 0;
 
+  private initCount_: number = 0;
+  private destroyCount_: number = 0;
+
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
       zeroState?: TemplateResult, id: string = 'open-tabs',
@@ -44,7 +47,21 @@ export class TestSectionDelegate implements
     }
   }
 
-  init(_sectionClient: OrganizerListSectionClient) {}
+  init(_sectionClient: OrganizerListSectionClient) {
+    this.initCount_++;
+  }
+
+  destroy() {
+    this.destroyCount_++;
+  }
+
+  getInitCount(): number {
+    return this.initCount_;
+  }
+
+  getDestroyCount(): number {
+    return this.destroyCount_;
+  }
 
   getId(): string {
     return this.id_;
@@ -60,6 +77,10 @@ export class TestSectionDelegate implements
 
   getItems(): Promise<Array<OrganizerListSectionItem<unknown>>> {
     return Promise.resolve(this.items_);
+  }
+
+  setItems(items: Array<OrganizerListSectionItem<unknown>>) {
+    this.items_ = items;
   }
 
   onItemClick(item: OrganizerListSectionItem<unknown>) {

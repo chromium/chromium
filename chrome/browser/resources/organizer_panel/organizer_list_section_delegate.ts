@@ -26,6 +26,9 @@ export interface OrganizerListSectionDelegate<T> {
   // Hooks up the section element to receive updates from this section's model.
   init(sectionClient: OrganizerListSectionClient): void;
 
+  // Optional: Cleans up listeners or resources registered in `init()`.
+  destroy?(): void;
+
   // Returns the unique identifier for this section.
   getId(): string;
 

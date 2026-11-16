@@ -878,4 +878,35 @@ suite('OpenTabsDelegateTest', () => {
         assertDeepEquals(
             [{text: 'Audio muted', matchable: false}], items[0]!.description);
       });
+
+  test('destroy removes listeners and supports re-init', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    remotePage.tabsChanged(createProfileData([googleTab]));
+    await microtasksFinished();
+    assertEquals(1, client.items.length);
+
+    delegate.destroy();
+    remotePage.tabsChanged(createProfileData([googleTab, youtubeTab]));
+    remotePage.tabUpdated({
+      inActiveWindow: true,
+      inHostWindow: true,
+      tab: {...googleTab, title: 'Updated'},
+    });
+    remotePage.tabsRemoved({
+      tabIds: [googleTab.tabId],
+      recentlyClosedTabs: [],
+    });
+    await microtasksFinished();
+    assertEquals(1, client.items.length);
+    assertDeepEquals([googleTab.title], client.items[0]!.title);
+
+    const newClient = new TestClient();
+    delegate.init(newClient);
+    remotePage.tabsChanged(createProfileData([googleTab, youtubeTab]));
+    await microtasksFinished();
+    assertEquals(2, newClient.items.length);
+    assertEquals(1, client.items.length);
+  });
 });
