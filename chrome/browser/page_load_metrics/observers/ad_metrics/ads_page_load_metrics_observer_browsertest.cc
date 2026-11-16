@@ -2852,17 +2852,11 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
-// TODO(crbug.com/40826975): Flaky on multiple platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TwoRAFFramesTriggerCpuUpdates \
-  DISABLED_TwoRAFFramesTriggerCpuUpdates
-#else
-#define MAYBE_TwoRAFFramesTriggerCpuUpdates TwoRAFFramesTriggerCpuUpdates
-#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_TwoRAFFramesTriggerCpuUpdates) {
+                       TwoRAFFramesTriggerCpuUpdates) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddMinimumAggregateCpuTimeExpectation(base::Milliseconds(300));
 
   // Navigate to the page and set up the waiter.
   content::DOMMessageQueue message_queue(web_contents());
@@ -2873,9 +2867,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       browser(),
       embedded_test_server()->GetURL("/ads_observer/two_raf_frames.html")));
 
-  // Wait for both RAF calls to finish
+  // Wait for both RAF calls to finish and for the CPU timing update to arrive.
   WaitForRAF(&message_queue);
   WaitForRAF(&message_queue);
+  waiter->Wait();
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
