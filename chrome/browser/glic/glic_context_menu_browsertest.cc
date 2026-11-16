@@ -769,6 +769,49 @@ IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
                                        u"line1 line2 line3  line4"));
 }
 
+class GlicTextSelectionContextMenuAutoSubmitBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicTextSelectionContextMenuAutoSubmitBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlicTextSelectionContextMenu,
+          {{features::kGlicTextSelectionContextMenuAutoSubmit.name, "true"}}}},
+        // kGlicContextMenu is disabled so the item can only come from the
+        // text selection entry point, which shows it on its own (see
+        // GlicEnabling::IsContextualMenuItemEnabled()).
+        /*disabled_features=*/{features::kGlicContextMenu});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the auto-submit arm labels the item with both the page and the
+// selected text.
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuAutoSubmitBrowserTest,
+                       UsesPageAndSelectionLabel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"valid text";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  ASSERT_TRUE(glic_index.has_value());
+  EXPECT_EQ(glic_index->first->GetLabelAt(glic_index->second),
+            l10n_util::GetStringFUTF16(
+                IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT_PAGE_AND_SELECTION,
+                u"valid text"));
+}
+
 class GlicContextMenuBelowSearchBrowserTest
     : public GlicContextMenuBrowserTestBase {
  public:
