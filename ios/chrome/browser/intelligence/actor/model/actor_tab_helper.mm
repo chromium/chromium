@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 
+#import <UIKit/UIKit.h>
+
 #import <utility>
 
 #import "base/functional/bind.h"
@@ -84,9 +86,14 @@ void ActorTabHelper::SetControlState(
       control_state == actor::ActorControlState::kActorControlled;
   if (previous_active != new_active && web_state_ &&
       ActorDisablesInputDuringActuation()) {
+    if (!new_active && web_state_->IsRealized() &&
+        !web_state_->IsBeingDestroyed()) {
+      // Resign first responder before lifting suppression so the keyboard stays
+      // hidden until a new user gesture.
+      [web_state_->GetView() endEditing:YES];
+    }
     // Suppress the software keyboard and input accessory views while actuating
-    // to prevent viewport shifts and keyboard occlusion, and restore them when
-    // actuation ends.
+    // to prevent viewport shifts and keyboard occlusion.
     web_state_->GetWebViewProxy().shouldSuppressInputViews = new_active;
   }
 

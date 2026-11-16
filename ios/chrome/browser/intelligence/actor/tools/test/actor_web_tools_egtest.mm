@@ -20,6 +20,21 @@
 #import "ios/web/public/test/element_selector.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Verifies that the software keyboard stays hidden over
+// `kWaitForUIElementTimeout`.
+void AssertKeyboardStaysHidden() {
+  const bool keyboard_shown = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^{
+        return [EarlGrey isKeyboardShownWithError:nil];
+      });
+  GREYAssertFalse(keyboard_shown,
+                  @"Keyboard should remain hidden after actuation ends.");
+}
+
+}  // namespace
+
 @interface ActorWebToolsTestCase : ActorToolsBaseTestCase
 @end
 
@@ -33,8 +48,8 @@
 #pragma mark - ClickTool Tests
 
 // Tests that the software keyboard is dismissed when actuation begins, remains
-// suppressed while the actor clicks into an `<input>`, and reappears once
-// actuation ends.
+// suppressed while the actor clicks into an `<input>`, stays hidden after
+// actuation ends, and appears normally when the user taps an `<input>` again.
 - (void)testClickTool_suppressesKeyboardDuringActuation {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/multi_field_form.html")];
   [ChromeEarlGrey
@@ -67,7 +82,13 @@
   // Stop all tasks so actuation ends and the tab returns to `kInactive`.
   [ActorAppInterface stopAllTasks];
 
-  // Verify that the keyboard reappears.
+  // Verify that the keyboard stays hidden after actuation ends.
+  AssertKeyboardStaysHidden();
+
+  // Verify that input view suppression was lifted so tapping the input again
+  // brings up the keyboard normally.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("otherstuff")];
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
@@ -449,6 +470,42 @@
                          @"Hello World", @"Input value did not match");
 
   [ChromeEarlGrey waitForJavaScriptCondition:@"window.formSubmitted === true"];
+}
+
+// Tests that `TypeTool` keeps the software keyboard hidden during and after
+// typing into an `<input>`, and shows it again when the user taps the input.
+- (void)testTypeTool_doesNotShowKeyboardDuringOrAfterActuation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/multi_field_form.html")];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithElementID:"username"]];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::TypeAction* typeAction = action.mutable_type();
+  typeAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  typeAction->set_text("Hello World");
+  typeAction->set_mode(optimization_guide::proto::TypeAction::APPEND);
+  [self setCoordinatesOnTarget:typeAction->mutable_target()
+                  withSelector:"#username"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  base::Value value = [ChromeEarlGrey
+      evaluateJavaScript:@"document.getElementById('username').value"];
+  GREYAssertTrue(value.is_string(), @"Expected string input value.");
+  GREYAssertEqualObjects(base::SysUTF8ToNSString(value.GetString()),
+                         @"Hello World", @"Input value did not match");
+  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
+                  @"Keyboard should remain hidden while actuating.");
+
+  // End actuation and verify the keyboard stays hidden, then appears when the
+  // user taps the input.
+  [ActorAppInterface stopAllTasks];
+  AssertKeyboardStaysHidden();
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("username")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 #pragma mark - ScrollTool Tests

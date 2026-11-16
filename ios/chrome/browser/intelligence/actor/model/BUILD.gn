@@ -95,6 +95,7 @@ source_set("tab_helper") {
     "//ui/base",
     "//url",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {

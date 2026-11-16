@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 #import <optional>
 #import <sstream>
@@ -93,8 +95,8 @@ class FakeLegacyActorTabHelperObserver : public ActorTabHelperObserver {
   bool last_actuating_value_ = false;
 };
 
-// A FakeWebState subclass that records the last value passed to
-// `SetKeepRenderProcessAlive`, which the base fake ignores.
+// A `FakeWebState` subclass that records `SetKeepRenderProcessAlive` and
+// `IsBeingDestroyed` state for `ActorTabHelperTest`.
 class KeepAliveFakeWebState : public web::FakeWebState {
  public:
   void SetKeepRenderProcessAlive(bool keep_alive) override {
@@ -102,8 +104,14 @@ class KeepAliveFakeWebState : public web::FakeWebState {
   }
   bool keep_render_process_alive() const { return keep_render_process_alive_; }
 
+  bool IsBeingDestroyed() const override { return is_being_destroyed_; }
+  void SetIsBeingDestroyed(bool is_being_destroyed) {
+    is_being_destroyed_ = is_being_destroyed;
+  }
+
  private:
   bool keep_render_process_alive_ = false;
+  bool is_being_destroyed_ = false;
 };
 
 class ActorTabHelperTest : public PlatformTest {
@@ -141,6 +149,7 @@ void ActorTabHelperTest::SetUp() {
 void ActorTabHelperTest::TearDown() {
   tab_helper_ = nullptr;
   if (web_state_) {
+    web_state_->SetView(nil);
     web_state_->SetWebViewProxy(nil);
   }
   PlatformTest::TearDown();
@@ -422,30 +431,84 @@ TEST_F(ActorTabHelperTest, WebStateDestroyedBeforeReapplyTaskRuns) {
 }
 
 // Tests that setting control state updates `shouldSuppressInputViews` on the
-// web view proxy when `ActorDisablesInputDuringActuation()` is enabled.
+// web view proxy, and calls `endEditing:YES` on the web state's view before
+// lifting suppression when actuation ends.
 TEST_F(ActorTabHelperTest,
        SetControlStateSuppressesInputViewsWhenFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kActorTools);
 
-  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  UIView* mock_view = OCMStrictClassMock([UIView class]);
+  web_state_->SetView(mock_view);
+
+  id<CRWWebViewProxy> mock_web_view_proxy =
+      OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
   web_state_->SetWebViewProxy(mock_web_view_proxy);
 
   OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
-  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
 
   // Duplicate call should be a no-op and not re-trigger the proxy setter.
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
-  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
 
+  __block bool end_editing_called = false;
+  __block bool end_editing_called_before_unsuppressing = false;
+  OCMExpect([mock_view endEditing:YES]).andDo(^(NSInvocation* /*invocation*/) {
+    end_editing_called = true;
+  });
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO])
+      .andDo(^(NSInvocation* /*invocation*/) {
+        end_editing_called_before_unsuppressing = end_editing_called;
+      });
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_TRUE(end_editing_called_before_unsuppressing);
+}
+
+// Tests that leaving `kActorControlled` skips `endEditing:` when the `WebState`
+// is unrealized or already being destroyed, while still resetting
+// `shouldSuppressInputViews` on the proxy.
+TEST_F(ActorTabHelperTest,
+       SetControlStateSkipsEndEditingWhenUnrealizedOrBeingDestroyed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  UIView* mock_view = OCMStrictClassMock([UIView class]);
+  web_state_->SetView(mock_view);
+
+  id<CRWWebViewProxy> mock_web_view_proxy =
+      OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  // Unrealized `WebState`: should not call `endEditing:` on the view.
+  web_state_->SetIsRealized(false);
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
   OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO]);
   tab_helper_->SetControlState(ActorControlState::kInactive);
-  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+
+  // Realized `WebState` mid-destruction (e.g., `ActorTask::WebStateDestroyed`
+  // running before `ActorTabHelper::WebStateDestroyed`): should not call
+  // `endEditing:` on the view.
+  web_state_->SetIsRealized(true);
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  web_state_->SetIsBeingDestroyed(true);
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO]);
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
 }
 
 // Tests that setting control state does not update `shouldSuppressInputViews`
-// on the web view proxy when `kActorToolsDisableInputDuringActuationParam` is
+// or call `endEditing:` when `kActorToolsDisableInputDuringActuationParam` is
 // disabled.
 TEST_F(ActorTabHelperTest,
        SetControlStateDoesNotSuppressInputViewsWhenFeatureDisabled) {
@@ -453,14 +516,20 @@ TEST_F(ActorTabHelperTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kActorTools, {{kActorToolsDisableInputDuringActuationParam, "false"}});
 
-  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  UIView* mock_view = OCMStrictClassMock([UIView class]);
+  web_state_->SetView(mock_view);
+
+  id<CRWWebViewProxy> mock_web_view_proxy =
+      OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
   web_state_->SetWebViewProxy(mock_web_view_proxy);
 
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
-  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
 
   tab_helper_->SetControlState(ActorControlState::kInactive);
-  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
 }
 
 // Tests that destroying `ActorTabHelper` while in `kActorControlled` resets
