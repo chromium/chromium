@@ -170,7 +170,7 @@ class CORE_EXPORT CSSAnimations final {
            pending_update_.IsEmpty();
   }
   bool HasTimelines() const { return !timeline_data_.IsEmpty(); }
-  void Cancel();
+  void Cancel(const Document&);
 
   void Trace(Visitor*) const;
 

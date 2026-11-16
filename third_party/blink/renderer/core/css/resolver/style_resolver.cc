@@ -2803,6 +2803,9 @@ bool StyleResolver::ApplyAnimatedStyle(
     return false;
   }
 
+  StyleEngine::InApplyAnimatedStyleScope in_apply_animated_style_scope(
+      GetDocument().GetStyleEngine());
+
   if (HasTimelines(state)) {
     CSSAnimations::CalculateTimelineUpdate(
         state.AnimationUpdate(), *animating_element, state.StyleBuilder());

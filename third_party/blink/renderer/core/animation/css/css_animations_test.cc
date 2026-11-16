@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/gtest_util.h"
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -4793,6 +4795,153 @@ TEST_P(CSSAnimationsTest, ColorAnimationUsesIndependentInheritedFastPath) {
       GetElementById("child")->GetComputedStyle();
   EXPECT_EQ(animator_style->VisitedDependentColor(GetCSSPropertyColor()),
             child_style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+class CSSAnimationsDeathTest : public RenderingTest {
+ public:
+  CSSAnimationsDeathTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+};
+
+TEST_F(CSSAnimationsDeathTest, CancelForbiddenDuringApplyAnimatedStyle) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        scroll-timeline-name: --t1, --t2;
+        animation: anim 1s linear;
+      }
+    </style>
+    <div id="host">
+      <div id="slotted" slot="s">
+        <div id="target"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<slot name="s"></slot>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* slotted = GetElementById("slotted");
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target->GetElementAnimations());
+  ASSERT_TRUE(target->GetElementAnimations()->CssAnimations().HasTimelines());
+
+  // Dirtying slot assignment before resolving animated style causes flat-tree
+  // timeline lookup in ForEachTimeline to trigger
+  // SlotAssignment::RecalcAssignment and detach #slotted/#target, calling
+  // CSSAnimations::Cancel() mid-iteration.
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        slotted->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+        GetDocument().GetStyleResolver().ResolveStyle(target,
+                                                      StyleRecalcContext());
+      },
+      "InApplyAnimatedStyle");
+}
+
+TEST_F(CSSAnimationsDeathTest, CancelForbiddenDuringApplyAnimationUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scope {
+        timeline-scope: --t;
+      }
+      #first {
+        scroll-timeline-name: --t;
+      }
+    </style>
+    <div id="scope">
+      <div id="host">
+        <div id="first" slot="s"></div>
+        <div id="second" slot="s"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<slot name="s"></slot>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* first = GetElementById("first");
+  Element* second = GetElementById("second");
+  ASSERT_TRUE(first->GetElementAnimations());
+  ASSERT_TRUE(first->GetElementAnimations()->CssAnimations().HasTimelines());
+
+  // Applying a pending timeline attachment compares flat-tree positions in
+  // DeferredTimeline::AttachTimeline; if a dirty slot assignment detaches
+  // slotted elements there, CSSAnimations::Cancel() must CHECK rather than
+  // clearing pending updates and attached timelines mid-application.
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        PostStyleUpdateScope post_style_update_scope(GetDocument());
+        second->setAttribute(html_names::kStyleAttr,
+                             AtomicString("scroll-timeline-name: --t"));
+        GetDocument().GetStyleResolver().ResolveStyle(second,
+                                                      StyleRecalcContext());
+        first->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+        second->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+        post_style_update_scope.Apply();
+      },
+      "InApplyAnimationUpdate");
+}
+
+TEST_F(CSSAnimationsDeathTest,
+       CancelForbiddenDuringCrossDocumentApplyAnimationUpdate) {
+  SetBodyInnerHTML(R"HTML(<iframe></iframe>)HTML");
+  SetChildFrameHTML(R"HTML(
+    <style>
+      #scope {
+        timeline-scope: --t;
+      }
+      #first {
+        scroll-timeline-name: --t;
+      }
+    </style>
+    <div id="scope">
+      <div id="host">
+        <div id="first" slot="s"></div>
+        <div id="second" slot="s"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* host = ChildDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<slot name="s"></slot>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* first = ChildDocument().getElementById(AtomicString("first"));
+  Element* second = ChildDocument().getElementById(AtomicString("second"));
+  ASSERT_TRUE(first->GetElementAnimations());
+  ASSERT_TRUE(first->GetElementAnimations()->CssAnimations().HasTimelines());
+
+  // PostStyleUpdateScope::current_ is process-wide, so an outer document's
+  // PostStyleUpdateScope can apply pending updates belonging to a child
+  // document. Verify the child document's StyleEngine also forbids Cancel().
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        PostStyleUpdateScope outer_scope(GetDocument());
+        second->setAttribute(html_names::kStyleAttr,
+                             AtomicString("scroll-timeline-name: --t"));
+        ChildDocument().GetStyleResolver().ResolveStyle(second,
+                                                        StyleRecalcContext());
+        first->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+        second->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+        outer_scope.Apply();
+      },
+      "InApplyAnimationUpdate");
 }
 
 }  // namespace blink
