@@ -98,16 +98,16 @@ void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
     Animation::NativePaintWorkletReasons properties,
     bool force_update) {
   // Usually kInStyleRecalc or kInLayout, but sometimes SMIL can cause updates
-  // post-style/layout. See crbug.com/523313381.
-  if ((element.GetDocument().Lifecycle().GetState() <
-       DocumentLifecycle::kInStyleRecalc) ||
-      (element.GetDocument().Lifecycle().GetState() >=
-       DocumentLifecycle::kInPrePaint)) {
+  // post-style/layout, and on FinishedParsing. See crbug.com/523313381.
+  if (element.GetDocument().Lifecycle().GetState() >=
+          DocumentLifecycle::kInPrePaint &&
+      element.GetDocument().Lifecycle().GetState() <=
+          DocumentLifecycle::kInPaint) {
     LOG(ERROR) << "Lifecycle phase: "
                << static_cast<int>(
                       element.GetDocument().Lifecycle().GetState());
     DCHECK(false) << "RecalcCompositedStatusForKeyframeChange must not be "
-                  << "called outside of style/layout.";
+                  << "called during pre-paint/paint.";
     base::debug::DumpWithoutCrashing();
   }
 
