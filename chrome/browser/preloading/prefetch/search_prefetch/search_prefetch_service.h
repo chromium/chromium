@@ -28,7 +28,6 @@
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
-struct OmniboxLog;
 class PrefRegistrySimple;
 class Profile;
 class AutocompleteResult;
@@ -210,11 +209,6 @@ class SearchPrefetchService : public KeyedService,
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor,
       content::WebContents* web_contents);
-
-  // If the navigation URL matches with a prefetch that can be served, this
-  // function marks that prefetch as clicked to prevent deletion when omnibox
-  // closes.
-  void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   // Fires all timers.
   void FireAllExpiryTimerForTesting();

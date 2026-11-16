@@ -422,16 +422,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   }
 
   if (web_contents) {
-    {
-      TRACE_EVENT(
-          "omnibox",
-          "OnSuggestionSelected.SearchPrefetchService.OnOmniboxOpenedUrl");
-      if (auto* search_prefetch_service =
-              SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-        search_prefetch_service->OnURLOpenedFromOmnibox(&log);
-      }
-    }
-
     // Record the value if prerender for search suggestion was not started.
     // Other values (kHitFinished, kUnused, kCancelled) are recorded in
     // PrerenderManager.

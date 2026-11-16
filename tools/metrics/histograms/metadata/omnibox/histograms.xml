@@ -4578,23 +4578,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
-    name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
-    enum="Boolean" expires_after="2023-05-02">
-  <owner>ryansturm@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records whether a &quot;search what you type&quot; omnibox navigation was
-    also a {HistoryOrSuggest} type. Recorded when the user navigates to a search
-    via typing the full query into the omnibox.
-  </summary>
-  <token key="HistoryOrSuggest">
-    <variant name="History" summary="history"/>
-    <variant name="HistoryOrSuggest" summary="history or suggest"/>
-    <variant name="Suggest" summary="suggest"/>
-  </token>
-</histogram>
-
-<histogram
     name="Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache.ResourceResponseReceived"
     enum="Boolean" expires_after="2027-02-14">
   <owner>gjc@google.com</owner>

@@ -11,8 +11,6 @@
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -135,10 +133,6 @@ gfx::Image SearchboxOmniboxClient::GetFaviconForPageUrl(
 }
 
 void SearchboxOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  if (auto* search_prefetch_service =
-          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    search_prefetch_service->OnURLOpenedFromOmnibox(log);
-  }
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(*log);
 }

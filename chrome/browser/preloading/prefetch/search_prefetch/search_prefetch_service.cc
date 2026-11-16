@@ -38,7 +38,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -437,40 +436,6 @@ bool SearchPrefetchService::MaybePrefetchURL(
                      base::Unretained(this), canonical_search_url));
   prefetches_.emplace(canonical_search_url, std::move(entry));
   return true;
-}
-
-void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  if (!log) {
-    return;
-  }
-
-  auto& match = log->result->match_at(log->selection.line);
-  if (match.type == omnibox::AutocompleteMatchType::kSearchWhatYouTyped) {
-    bool has_search_suggest = false;
-    bool has_history_search = false;
-    for (auto& duplicate_match : match.duplicate_matches) {
-      if (duplicate_match.type ==
-              omnibox::AutocompleteMatchType::kSearchSuggest ||
-          AutocompleteMatch::IsSpecializedSearchType(duplicate_match.type)) {
-        has_search_suggest = true;
-      }
-      if (duplicate_match.type ==
-          omnibox::AutocompleteMatchType::kSearchHistory) {
-        has_history_search = true;
-      }
-    }
-
-    base::UmaHistogramBoolean(
-        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.Suggest",
-        has_search_suggest);
-    base::UmaHistogramBoolean(
-        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.History",
-        has_history_search);
-    base::UmaHistogramBoolean(
-        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested."
-        "HistoryOrSuggest",
-        has_history_search || has_search_suggest);
-  }
 }
 
 void SearchPrefetchService::OnPrerenderedRequestUsed(

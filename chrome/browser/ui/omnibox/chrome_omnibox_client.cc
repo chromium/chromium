@@ -881,11 +881,6 @@ void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // PrerenderManager.
   content::WebContents* web_contents = location_bar_->GetWebContents();
   if (web_contents) {
-    if (SearchPrefetchService* search_prefetch_service =
-            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnURLOpenedFromOmnibox(log);
-    }
-
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
     if (!prerender_manager ||
         !prerender_manager->HasSearchResultPagePrerendered()) {
