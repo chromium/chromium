@@ -34,10 +34,6 @@ std::u16string_view ContentAutofillClient::GetPageTitle() const {
   return web_contents()->GetTitle();
 }
 
-bool ContentAutofillClient::DocumentUsedWebOTP() {
-  return GetWebContents().GetPrimaryMainFrame()->DocumentUsedWebOTP();
-}
-
 PasswordManagerAutofillHelperDelegate*
 ContentAutofillClient::GetPasswordManagerAutofillHelper() {
   return password_manager_autofill_helper_.get();

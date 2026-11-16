@@ -19,6 +19,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
@@ -327,7 +329,9 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
 }
 
 bool OtpManagerLegacyImpl::IsOtpDeliveryBlocked() {
-  return owner_->client().DocumentUsedWebOTP();
+  AutofillManager* manager =
+      owner_->client().GetAutofillManagerForPrimaryMainFrame();
+  return manager && manager->driver().DocumentUsedWebOtp();
 }
 
 }  // namespace autofill

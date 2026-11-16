@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/form_cache_query_util.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
@@ -822,7 +823,9 @@ const AutofillField* OtpManagerImpl::GetTargetOtpField() const {
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
-  return owner_->client().DocumentUsedWebOTP();
+  AutofillManager* manager =
+      owner_->client().GetAutofillManagerForPrimaryMainFrame();
+  return manager && manager->driver().DocumentUsedWebOtp();
 }
 
 bool OtpManagerImpl::IsOtpFieldDetected() const {

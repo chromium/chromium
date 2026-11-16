@@ -551,10 +551,6 @@ one_time_tokens::GmailOtpBackend* AutofillClient::GetGmailOtpBackend() const {
   return nullptr;
 }
 
-bool AutofillClient::DocumentUsedWebOTP() {
-  return false;
-}
-
 PasswordManagerAutofillHelperDelegate*
 AutofillClient::GetPasswordManagerAutofillHelper() {
   return nullptr;

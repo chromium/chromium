@@ -106,6 +106,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   bool IsPolicyControlledFeatureAutofillEnabled() const override;
   bool IsPolicyControlledFeatureManualTextEnabled() const override;
   bool CanShowAutofillUi() const override;
+  bool DocumentUsedWebOtp() const override;
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,

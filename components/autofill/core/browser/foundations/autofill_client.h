@@ -1097,11 +1097,6 @@ class AutofillClient {
   // May return null on platforms where no GmailOtpBackend is supported.
   virtual one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const;
 
-  // Returns true if the primary main frame's document used the WebOTP API. This
-  // exists only for the main frame because only the main frame has the
-  // permission to call the WeOTP API.
-  virtual bool DocumentUsedWebOTP();
-
   // Returns the helper for Password Manager integrations.
   virtual PasswordManagerAutofillHelperDelegate*
   GetPasswordManagerAutofillHelper();

@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -264,8 +265,11 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
                        content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                        /*world_id=*/1));
     // As the WebOTP is asynchronous, wait until the use has been propagated.
-    ASSERT_TRUE(base::test::RunUntil(
-        [&] { return autofill_client().DocumentUsedWebOTP(); }));
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      AutofillManager* manager =
+          autofill_client().GetAutofillManagerForPrimaryMainFrame();
+      return manager && manager->driver().DocumentUsedWebOtp();
+    }));
     // From this point on, Autofill should not suggest OTPs anymore.
   }
 

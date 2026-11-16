@@ -18,7 +18,11 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_gateway.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
@@ -41,6 +45,8 @@ using one_time_tokens::OneTimeTokenType;
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::HasSubstr;
+using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::Test;
 
 class RecordingLogReceiver : public LogReceiver {
@@ -63,36 +69,50 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
               (override));
 };
 
+class MockAutofillDriver : public TestAutofillDriver {
+ public:
+  using TestAutofillDriver::TestAutofillDriver;
+  MOCK_METHOD(bool, DocumentUsedWebOtp, (), (const, override));
+};
+
 class SecurityGatewayTestAutofillClient : public TestAutofillClient {
  public:
-  bool DocumentUsedWebOTP() override { return document_used_web_otp_; }
+  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override {
+    TestAutofillDriver* driver = GetAutofillDriverFactory().driver();
+    return driver ? &driver->GetAutofillManager() : nullptr;
+  }
 
   test::AutofillTestingPrefService* GetPrefs() override {
     return return_null_prefs_ ? nullptr : TestAutofillClient::GetPrefs();
   }
 
-  void set_document_used_web_otp(bool used) { document_used_web_otp_ = used; }
   void set_return_null_prefs(bool return_null_prefs) {
     return_null_prefs_ = return_null_prefs;
   }
 
  private:
-  bool document_used_web_otp_ = false;
   bool return_null_prefs_ = false;
 };
 
-class OtpSecurityGatewayTest : public Test {
+class OtpSecurityGatewayTest : public Test,
+                               public WithTestAutofillClientDriverManager<
+                                   SecurityGatewayTestAutofillClient,
+                                   NiceMock<MockAutofillDriver>,
+                                   MockAutofillManager> {
  public:
   void SetUp() override {
-    client_.log_router().RegisterReceiver(&log_receiver_);
+    InitAutofillClient();
+    CreateAutofillDriver();
+    autofill_client().log_router().RegisterReceiver(&log_receiver_);
     auto delegate = std::make_unique<MockOtpPhishGuardDelegate>();
     phish_guard_delegate_ = delegate.get();
-    client_.set_otp_phish_guard_delegate(std::move(delegate));
+    autofill_client().set_otp_phish_guard_delegate(std::move(delegate));
   }
 
   void TearDown() override {
     phish_guard_delegate_ = nullptr;
-    client_.log_router().UnregisterReceiver(&log_receiver_);
+    autofill_client().log_router().UnregisterReceiver(&log_receiver_);
+    DestroyAutofillClient();
   }
 
  protected:
@@ -119,7 +139,6 @@ class OtpSecurityGatewayTest : public Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  SecurityGatewayTestAutofillClient client_;
   RecordingLogReceiver log_receiver_;
   raw_ptr<MockOtpPhishGuardDelegate> phish_guard_delegate_ = nullptr;
 };
@@ -128,7 +147,7 @@ class OtpSecurityGatewayTest : public Test {
 // `verified_origin` and `verified_frame`, and records PhishGuard histograms.
 TEST_F(OtpSecurityGatewayTest, ValidateDelivery_AllowsSafeSmsAndRecordsMetric) {
   base::HistogramTester histogram_tester;
-  OtpSecurityGateway gateway(client_);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -162,7 +181,7 @@ TEST_F(OtpSecurityGatewayTest, ValidateDelivery_AllowsSafeSmsAndRecordsMetric) {
 // PhishGuard on repeat validations for the same frame.
 TEST_F(OtpSecurityGatewayTest,
        ValidateDelivery_RequeriesPhishGuardPerCandidateAndBlocksPhishing) {
-  OtpSecurityGateway gateway(client_);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -199,8 +218,8 @@ TEST_F(OtpSecurityGatewayTest,
 TEST_F(OtpSecurityGatewayTest,
        ValidateDelivery_AllowsWhenPhishGuardDelegateMissing) {
   phish_guard_delegate_ = nullptr;
-  client_.set_otp_phish_guard_delegate(nullptr);
-  OtpSecurityGateway gateway(client_);
+  autofill_client().set_otp_phish_guard_delegate(nullptr);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -218,13 +237,13 @@ TEST_F(OtpSecurityGatewayTest,
 // suppresses delivery if WebOTP becomes used while PhishGuard is in flight.
 TEST_F(OtpSecurityGatewayTest,
        ValidateDelivery_SmsEnforcesWebOtpBeforeAndAfterPhishGuard) {
-  OtpSecurityGateway gateway(client_);
+  OtpSecurityGateway gateway(autofill_client());
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
   OtpTarget target = MakeTarget(origin, frame);
 
   // Case 1: WebOTP already used before `ValidateDelivery` -> skips PhishGuard.
-  client_.set_document_used_web_otp(true);
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck).Times(0);
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
@@ -237,7 +256,7 @@ TEST_F(OtpSecurityGatewayTest,
             OtpDeliveryPolicy::SkipReason::kWebOtpBlocked);
 
   // Case 2: WebOTP becomes used while PhishGuard check is in flight.
-  client_.set_document_used_web_otp(false);
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(false));
   base::OnceCallback<void(bool)> phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
       .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
@@ -250,7 +269,7 @@ TEST_F(OtpSecurityGatewayTest,
                            inflight_blocked.GetCallback());
   ASSERT_TRUE(phish_guard_cb);
 
-  client_.set_document_used_web_otp(true);
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
   std::move(phish_guard_cb).Run(/*is_phishing=*/false);
 
   ASSERT_TRUE(inflight_blocked.Wait());
@@ -264,8 +283,8 @@ TEST_F(OtpSecurityGatewayTest,
 TEST_F(
     OtpSecurityGatewayTest,
     ValidateDelivery_GmailAllowsSafeBlocksPhishingAndFailsClosedOnNullPrefs) {
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
-  OtpSecurityGateway gateway(client_);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -300,7 +319,7 @@ TEST_F(
                 .reason = OtpDeliveryPolicy::SkipReason::kPhishingVerdict,
             }));
 
-  client_.set_return_null_prefs(true);
+  autofill_client().set_return_null_prefs(true);
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck).Times(0);
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       null_prefs_future;
@@ -317,14 +336,14 @@ TEST_F(
 // delivery if the user opts out while PhishGuard is in flight.
 TEST_F(OtpSecurityGatewayTest,
        ValidateDelivery_GmailEnforcesConsentBeforeAndAfterPhishGuard) {
-  OtpSecurityGateway gateway(client_);
+  OtpSecurityGateway gateway(autofill_client());
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
   OtpTarget target = MakeTarget(origin, frame);
   OtpCandidate candidate = MakeGmailCandidate(origin, frame);
 
   // Case 1: User has not opted in -> skips PhishGuard.
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), false);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck).Times(0);
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
@@ -336,7 +355,7 @@ TEST_F(OtpSecurityGatewayTest,
             OtpDeliveryPolicy::SkipReason::kUserNotOptedIn);
 
   // Case 2: User opts out while PhishGuard is in flight.
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
   base::OnceCallback<void(bool)> phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
       .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
@@ -348,7 +367,7 @@ TEST_F(OtpSecurityGatewayTest,
   gateway.ValidateDelivery(target, candidate, opted_out_inflight.GetCallback());
   ASSERT_TRUE(phish_guard_cb);
 
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), false);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   std::move(phish_guard_cb).Run(/*is_phishing=*/false);
 
   ASSERT_TRUE(opted_out_inflight.Wait());
@@ -364,8 +383,8 @@ TEST_F(OtpSecurityGatewayTest,
 TEST_F(
     OtpSecurityGatewayTest,
     ValidateDelivery_GmailRejectsMismatchedOrOpaqueOriginsWithoutPhishGuard) {
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
-  OtpSecurityGateway gateway(client_);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -426,7 +445,7 @@ TEST_F(
 // safely cancels completion without invoking `ValidationCallback`.
 TEST_F(OtpSecurityGatewayTest,
        ValidateDelivery_GatewayDestroyedWhilePhishGuardInFlightCancelsCleanly) {
-  auto gateway = std::make_unique<OtpSecurityGateway>(client_);
+  auto gateway = std::make_unique<OtpSecurityGateway>(autofill_client());
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
 
@@ -452,8 +471,8 @@ TEST_F(OtpSecurityGatewayTest,
 // are met without invoking PhishGuard.
 TEST_F(OtpSecurityGatewayTest,
        EvaluateProactiveTrigger_DefaultContextFailsClosedAndValidAllows) {
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
-  OtpSecurityGateway gateway(client_);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -478,7 +497,7 @@ TEST_F(OtpSecurityGatewayTest,
   EXPECT_TRUE(gateway.EvaluateProactiveTrigger(target, candidate, valid_context)
                   .allowed);
 
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), false);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   const OtpDeliveryPolicy::Decision opted_out_decision =
       gateway.EvaluateProactiveTrigger(target, candidate, valid_context);
   EXPECT_FALSE(opted_out_decision.allowed);
@@ -490,8 +509,8 @@ TEST_F(OtpSecurityGatewayTest,
 // in `EvaluateProactiveTrigger`.
 TEST_F(OtpSecurityGatewayTest,
        EvaluateProactiveTrigger_EnforcesPlatformFocusAndKeyboardRules) {
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
-  OtpSecurityGateway gateway(client_);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
@@ -548,8 +567,8 @@ TEST_F(OtpSecurityGatewayTest,
 // blocking without invoking PhishGuard.
 TEST_F(OtpSecurityGatewayTest,
        EvaluateReactiveAndProactive_EnforcesLiveConsentOriginFrameAndWebOtp) {
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
-  OtpSecurityGateway gateway(client_);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpSecurityGateway gateway(autofill_client());
 
   const LocalFrameToken frame_a = test::MakeLocalFrameToken();
   const LocalFrameToken frame_b = test::MakeLocalFrameToken();
@@ -630,7 +649,7 @@ TEST_F(OtpSecurityGatewayTest,
       }));
 
   // Opt-out blocks reactive serving of a previously verified Gmail candidate.
-  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), false);
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   EXPECT_EQ(gateway.EvaluateReactiveServing(target_a, gmail_candidate),
             (OtpDeliveryPolicy::Decision{
                 .allowed = false,
@@ -639,7 +658,7 @@ TEST_F(OtpSecurityGatewayTest,
 
   // WebOTP usage blocks reactive serving of a previously verified SMS
   // candidate (and takes precedence over SMS origin mismatch).
-  client_.set_document_used_web_otp(true);
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
   EXPECT_EQ(gateway.EvaluateReactiveServing(MakeTarget(other_origin, frame_a),
                                             bound_sms_candidate),
             (OtpDeliveryPolicy::Decision{

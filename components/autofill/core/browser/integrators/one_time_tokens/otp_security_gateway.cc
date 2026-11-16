@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -63,6 +65,11 @@ void LogSuppressedDecision(LogManager* log_manager,
                       << OtpDeliveryPolicy::SkipReasonToStringView(reason);
 }
 
+bool DocumentUsedWebOtp(AutofillClient& client) {
+  AutofillManager* manager = client.GetAutofillManagerForPrimaryMainFrame();
+  return manager && manager->driver().DocumentUsedWebOtp();
+}
+
 }  // namespace
 
 OtpSecurityGateway::OtpSecurityGateway(AutofillClient& client)
@@ -103,7 +110,7 @@ OtpDeliveryPolicy::Decision OtpSecurityGateway::EvaluateProactiveTrigger(
   // `OneTimeTokensPhishGuardVerdict`). `EffectiveVerdictForVerifiedCandidate`
   // supplies `kNotPhishing` only when `candidate.verified_frame ==
   // target.frame`, failing closed with `kPhishing` otherwise.
-  const bool web_otp_used = client_->DocumentUsedWebOTP();
+  const bool web_otp_used = DocumentUsedWebOtp(*client_);
   OtpDeliveryPolicy::Decision decision =
       (!web_otp_used && HasMismatchedBoundSmsOrigin(target, candidate))
           ? OtpDeliveryPolicy::Decision{
@@ -171,7 +178,7 @@ OtpDeliveryPolicy::Decision OtpSecurityGateway::EvaluateVerificationPolicy(
     const OtpTarget& target,
     const OtpCandidate& candidate,
     OneTimeTokensPhishGuardVerdict verdict) const {
-  const bool web_otp_used = client_->DocumentUsedWebOTP();
+  const bool web_otp_used = DocumentUsedWebOtp(*client_);
   OtpDeliveryPolicy::Decision decision =
       (!web_otp_used && HasMismatchedBoundSmsOrigin(target, candidate))
           ? OtpDeliveryPolicy::Decision{

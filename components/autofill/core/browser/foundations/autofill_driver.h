@@ -215,6 +215,10 @@ class AutofillDriver {
   // frame.
   virtual bool CanShowAutofillUi() const = 0;
 
+  // Returns true if the document associated with this driver used the WebOTP
+  // API.
+  virtual bool DocumentUsedWebOtp() const = 0;
+
   class AutofillDriverRouterAndFormForestPassKey {
     friend class AutofillDriverRouter;
     friend class internal::FormForest;

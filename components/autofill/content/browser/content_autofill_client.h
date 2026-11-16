@@ -49,7 +49,6 @@ class ContentAutofillClient
   GetContentCredentialManager() = 0;
 
   // Implementation of AutofillClient:
-  bool DocumentUsedWebOTP() final;
   PasswordManagerAutofillHelperDelegate* GetPasswordManagerAutofillHelper()
       override;
   AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
