@@ -519,17 +519,21 @@ PermissionRequest::GetGeolocationPromptType() const {
 
 void PermissionRequest::PermissionGranted(const PromptOptions& prompt_options,
                                           bool is_one_time) {
+  const PermissionDecision overall_decision =
+      is_one_time ? PermissionDecision::kAllowThisTime
+                  : PermissionDecision::kAllow;
+  CHECK(!final_decision_.has_value());
+  final_decision_ = overall_decision;
   std::move(permission_decided_callback_)
-      .Run(PermissionPromptDecision{.overall_decision =
-                                        is_one_time
-                                            ? PermissionDecision::kAllowThisTime
-                                            : PermissionDecision::kAllow,
+      .Run(PermissionPromptDecision{.overall_decision = overall_decision,
                                     .prompt_options = prompt_options,
                                     .is_final = true},
            /*request_data=*/*data_);
 }
 
 void PermissionRequest::PermissionDenied() {
+  CHECK(!final_decision_.has_value());
+  final_decision_ = PermissionDecision::kDeny;
   std::move(permission_decided_callback_)
       .Run(PermissionPromptDecision{.overall_decision =
                                         PermissionDecision::kDeny,
@@ -539,13 +543,31 @@ void PermissionRequest::PermissionDenied() {
 }
 
 void PermissionRequest::Cancelled(bool is_final_decision) {
-  if (permission_decided_callback_) {
-    permission_decided_callback_.Run(
+  PermissionDecidedCallback callback;
+  if (is_final_decision) {
+    if (!final_decision_.has_value()) {
+      final_decision_ = PermissionDecision::kNone;
+    }
+    callback = std::move(permission_decided_callback_);
+  } else {
+    callback = permission_decided_callback_;
+  }
+  if (callback) {
+    std::move(callback).Run(
         PermissionPromptDecision{.overall_decision = PermissionDecision::kNone,
                                  .prompt_options = std::monostate(),
                                  .is_final = is_final_decision},
         /*request_data=*/*data_);
   }
+}
+
+bool PermissionRequest::IsPermissionGranted() const {
+  return final_decision_ == PermissionDecision::kAllow ||
+         final_decision_ == PermissionDecision::kAllowThisTime;
+}
+
+bool PermissionRequest::IsDecisionFinalized() const {
+  return final_decision_.has_value();
 }
 
 PermissionRequestGestureType PermissionRequest::GetGestureType() const {

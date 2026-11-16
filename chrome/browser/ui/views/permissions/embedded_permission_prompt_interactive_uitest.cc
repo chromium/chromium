@@ -204,20 +204,20 @@ class EmbeddedPermissionPromptInteractiveTest
 #if !BUILDFLAG(IS_CHROMEOS)
   auto CheckMediaPreviewViewType(
       std::optional<MediaCoordinator::ViewType> expected_view_type) {
-    return InAnyContext(CheckView(
-        EmbeddedPermissionPromptBaseView::kMainViewId,
-        [expected_view_type](views::View* view) {
-          auto* prompt_view =
-              static_cast<EmbeddedPermissionPromptBaseView*>(view);
-          const auto& media_previews =
-              prompt_view->GetMediaPreviewsForTesting();
-          if (!expected_view_type.has_value()) {
-            return !media_previews.has_value();
-          }
-          return media_previews.has_value() &&
-                 media_previews->GetViewTypeForTesting() ==
-                     expected_view_type.value();
-        }));
+    return InAnyContext(
+        CheckView(EmbeddedPermissionPromptBaseView::kMainViewId,
+                  [expected_view_type](views::View* view) {
+                    auto* prompt_view =
+                        static_cast<EmbeddedPermissionPromptBaseView*>(view);
+                    const auto& media_previews =
+                        prompt_view->GetMediaPreviewsForTesting();
+                    if (!expected_view_type.has_value()) {
+                      return !media_previews.has_value();
+                    }
+                    return media_previews.has_value() &&
+                           media_previews->GetViewTypeForTesting() ==
+                               expected_view_type.value();
+                  }));
   }
 #endif
 
@@ -459,8 +459,7 @@ class EmbeddedPermissionPromptInteractiveTest
                             CONTENT_SETTING_ASK);
         }),
         NavigateWebContents(kWebContentsElementId, GURL("about:blank")),
-        NavigateWebContents(kWebContentsElementId, GetURL()),
-        Do([&, this]() {
+        NavigateWebContents(kWebContentsElementId, GetURL()), Do([&, this]() {
           SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                             camera_setting);
           SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC, mic_setting);
@@ -1609,6 +1608,33 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   TestPolicy(policies, "geolocation",
              EmbeddedPermissionPromptPolicyView::kMainViewId,
              u"Your administrator doesn't allow location for this site");
+}
+
+// Regression test for https://crbug.com/585118316: when
+// DefaultGeolocationSetting is set to AskGeolocation (CONTENT_SETTING_ASK),
+// allowing the embedded prompt must close the prompt cleanly instead of
+// re-showing the Ask view and crashing on a second click.
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyAsk) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_ASK),
+               nullptr);
+  UpdateProviderPolicy(policies);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      NavigateWebContents(kWebContentsElementId, GURL("about:blank")),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(
+          WaitForShow(EmbeddedPermissionPromptAskView::kAllowThisTimeId)),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowThisTimeId));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,

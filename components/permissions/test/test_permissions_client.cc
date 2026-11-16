@@ -106,6 +106,20 @@ void TestPermissionsClient::SetCanRequestDevicePermission(
   can_request_device_permission_ = can_request_device_permission;
 }
 
+bool TestPermissionsClient::IsSystemDenied(ContentSettingsType type) const {
+  return false;
+}
+
+bool TestPermissionsClient::CanPromptSystemPermission(
+    ContentSettingsType type) const {
+  return can_prompt_system_permission_;
+}
+
+void TestPermissionsClient::SetCanPromptSystemPermission(
+    bool can_prompt_system_permission) {
+  can_prompt_system_permission_ = can_prompt_system_permission;
+}
+
 bool TestPermissionsClient::IsPrivilegedInternalWebUI(
     content::WebContents* web_contents,
     const GURL& requester,

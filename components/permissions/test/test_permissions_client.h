@@ -47,6 +47,11 @@ class TestPermissionsClient : public PermissionsClient {
   bool CanRequestDevicePermission(ContentSettingsType type) const override;
   void SetHasDevicePermission(bool has_device_permission);
   void SetCanRequestDevicePermission(bool can_request_device_permission);
+  bool IsSystemDenied(ContentSettingsType type) const override;
+  bool CanPromptSystemPermission(ContentSettingsType type) const override;
+  void SetCanPromptSystemPermission(bool can_prompt_system_permission);
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
   bool IsPrivilegedInternalWebUI(content::WebContents* web_contents,
                                  const GURL& requester,
@@ -69,6 +74,7 @@ class TestPermissionsClient : public PermissionsClient {
   OriginKeyedPermissionActionService origin_keyed_permission_action_service_;
   bool has_device_permission_ = true;
   bool can_request_device_permission_ = false;
+  bool can_prompt_system_permission_ = false;
   bool is_privileged_internal_web_ui_ = false;
 };
 

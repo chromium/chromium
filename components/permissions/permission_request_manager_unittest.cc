@@ -25,9 +25,13 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
@@ -3611,4 +3615,145 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionRequestManagerEnforceGestureTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+// Regression tests for https://crbug.com/585118316: when an embedded permission
+// request is accepted while the underlying content setting in
+// HostContentSettingsMap remains CONTENT_SETTING_ASK (e.g. shadowed by a
+// managed policy or extension), the embedded prompt flow must finalize instead
+// of recreating Variant::kAsk for the already-decided PermissionRequest.
+TEST_F(PermissionRequestManagerTest,
+       EmbeddedPromptAcceptFinalizesWhenContentSettingRemainsAsk) {
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoReset<bool> enable_android_permissions =
+      EnableAllAndroidPermissionsForTesting();
+#endif
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  const GURL origin(MockPermissionRequest::kDefaultOrigin);
+  auto request = std::make_unique<MockPermissionRequest>(
+      origin, RequestType::kGeolocation,
+      /*embedded_permission_element_initiated=*/true,
+      request_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->show_count(), 1);
+  ASSERT_NE(manager_->GetEmbeddedPromptFlowModel(), nullptr);
+  EXPECT_EQ(manager_->GetEmbeddedPromptFlowModel()->prompt_variant(),
+            EmbeddedPermissionPromptFlowModel::Variant::kAsk);
+
+  Accept();
+
+  // Since we used a MockPermissionRequest, the geolocation setting should still
+  // be undecided.
+  const ContentSettingsType geolocation_type =
+      content_settings::GeolocationContentSettingsType();
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          geolocation_type);
+  ASSERT_TRUE(permission_info->delegate().IsUndecided(
+      client_.GetSettingsMap(browser_context())
+          ->GetPermissionSetting(origin, origin, geolocation_type)));
+
+  EXPECT_TRUE(request_state.granted);
+  EXPECT_TRUE(request_state.finished);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_EQ(prompt_factory_->show_count(), 1);
+}
+
+// Regression test for https://crbug.com/585118316: when an embedded permission
+// request is accepted one-time from the PreviouslyDenied screen while the
+// underlying content setting in HostContentSettingsMap remains
+// CONTENT_SETTING_BLOCK, the embedded prompt flow must finalize instead of
+// recreating Variant::kPreviouslyDenied for the already-decided
+// PermissionRequest.
+TEST_F(PermissionRequestManagerTest,
+       EmbeddedPromptAcceptThisTimeFinalizesWhenContentSettingRemainsBlocked) {
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoReset<bool> enable_android_permissions =
+      EnableAllAndroidPermissionsForTesting();
+#endif
+  const GURL origin(MockPermissionRequest::kDefaultOrigin);
+  client_.GetSettingsMap(browser_context())
+      ->SetContentSettingDefaultScope(origin, origin,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_BLOCK);
+
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      origin, RequestType::kCameraStream,
+      /*embedded_permission_element_initiated=*/true,
+      request_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->show_count(), 1);
+  ASSERT_NE(manager_->GetEmbeddedPromptFlowModel(), nullptr);
+  EXPECT_EQ(manager_->GetEmbeddedPromptFlowModel()->prompt_variant(),
+            EmbeddedPermissionPromptFlowModel::Variant::kPreviouslyDenied);
+
+  AcceptThisTime();
+
+  EXPECT_TRUE(request_state.granted);
+  EXPECT_TRUE(request_state.finished);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_EQ(prompt_factory_->show_count(), 1);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Regression test for https://crbug.com/585118316: when an embedded permission
+// request is accepted while the underlying content setting in
+// HostContentSettingsMap remains CONTENT_SETTING_ASK and an OS-level permission
+// prompt is still required, the embedded prompt flow must advance to
+// Variant::kOsPrompt and then finalize cleanly once the OS prompt resolves
+// rather than looping back to Variant::kAsk.
+TEST_F(PermissionRequestManagerTest,
+       EmbeddedPromptAdvancesToOsPromptWhenContentSettingRemainsAsk) {
+  client_.SetCanPromptSystemPermission(true);
+
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kCameraStream,
+      /*embedded_permission_element_initiated=*/true,
+      request_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->show_count(), 1);
+  ASSERT_NE(manager_->GetEmbeddedPromptFlowModel(), nullptr);
+  EXPECT_EQ(manager_->GetEmbeddedPromptFlowModel()->prompt_variant(),
+            EmbeddedPermissionPromptFlowModel::Variant::kAsk);
+
+  // Accepting the site-level prompt should advance to Variant::kOsPrompt even
+  // though HostContentSettingsMap still reports CONTENT_SETTING_ASK.
+  Accept();
+
+  EXPECT_TRUE(request_state.granted);
+  EXPECT_FALSE(request_state.finished);
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->show_count(), 2);
+  ASSERT_NE(manager_->GetEmbeddedPromptFlowModel(), nullptr);
+  EXPECT_EQ(manager_->GetEmbeddedPromptFlowModel()->prompt_variant(),
+            EmbeddedPermissionPromptFlowModel::Variant::kOsPrompt);
+
+  // Once the OS permission prompt resolves, the flow should finalize cleanly
+  // rather than looping back to Variant::kAsk.
+  client_.SetCanPromptSystemPermission(false);
+  manager_->AdvanceOrFinalizeEmbeddedPromptFlow();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(request_state.finished);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_EQ(prompt_factory_->show_count(), 2);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace permissions

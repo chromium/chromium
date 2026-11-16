@@ -999,6 +999,14 @@ bool PermissionRequestManager::RecreateView() {
                                                               this);
     }
     CalculateCurrentVariantForEmbeddedPrompt();
+    if (!CanContinueEmbeddedPromptFlow()) {
+      for (const std::unique_ptr<PermissionRequest>& request : requests_) {
+        CancelRequestIncludingDuplicates(request.get(),
+                                         /*is_final_decision=*/false);
+      }
+      FinalizeCurrentRequests();
+      return false;
+    }
   }
   view_ = view_factory_.Run(web_contents(), this);
   if (!view_) {
@@ -1039,6 +1047,27 @@ void PermissionRequestManager::CalculateCurrentVariantForEmbeddedPrompt() {
   embedded_prompt_flow_model_->CalculateCurrentVariant(requests_);
 }
 
+bool PermissionRequestManager::CanContinueEmbeddedPromptFlow() const {
+  CHECK(embedded_prompt_flow_model_);
+  using Variant = EmbeddedPermissionPromptFlowModel::Variant;
+  const Variant variant = embedded_prompt_flow_model_->prompt_variant();
+  if (variant == Variant::kUninitialized) {
+    return false;
+  }
+  // Site-level decision prompts (`kAsk`, `kPreviouslyDenied`,
+  // `kPreviouslyGranted`) invoke `PermissionGranted()` / `PermissionDenied()`,
+  // which consume each request's `permission_decided_callback_`. Never advance
+  // to a site-level prompt if any active request has already been decided.
+  const bool is_site_decision_variant = variant == Variant::kAsk ||
+                                        variant == Variant::kPreviouslyDenied ||
+                                        variant == Variant::kPreviouslyGranted;
+  if (is_site_decision_variant &&
+      std::ranges::any_of(requests_, &PermissionRequest::IsDecisionFinalized)) {
+    return false;
+  }
+  return true;
+}
+
 void PermissionRequestManager::AdvanceOrFinalizeEmbeddedPromptFlow() {
   CHECK(embedded_prompt_flow_model_);
 
@@ -1046,7 +1075,7 @@ void PermissionRequestManager::AdvanceOrFinalizeEmbeddedPromptFlow() {
   using Variant = EmbeddedPermissionPromptFlowModel::Variant;
   const Variant variant = embedded_prompt_flow_model_->prompt_variant();
   if (variant != Variant::kPreviouslyGranted &&
-      variant != Variant::kUninitialized) {
+      CanContinueEmbeddedPromptFlow()) {
     if (view_) {
       DeletePrompt();
     }
@@ -1057,7 +1086,8 @@ void PermissionRequestManager::AdvanceOrFinalizeEmbeddedPromptFlow() {
   // Make sure all request callbacks run. If a request was already accepted,
   // this won't do anything for that request.
   for (const std::unique_ptr<PermissionRequest>& request : requests_) {
-    request->Cancelled(/*is_final_decision=*/false);
+    CancelRequestIncludingDuplicates(request.get(),
+                                     /*is_final_decision=*/false);
   }
   FinalizeCurrentRequests();
 }

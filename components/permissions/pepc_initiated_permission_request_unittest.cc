@@ -11,9 +11,12 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -165,6 +168,7 @@ class PEPCInitiatedPermissionRequestTest
 
   void PermissionServiceCallbackPEPC(
       blink::mojom::EmbeddedPermissionControlResult result) {
+    last_pepc_result_ = result;
     permission_request_callback_loop_->Quit();
   }
 
@@ -186,8 +190,17 @@ class PEPCInitiatedPermissionRequestTest
 
   const GURL& origin() { return origin_; }
 
+  TestPermissionsClient* client() { return &client_; }
+
+  std::optional<blink::mojom::EmbeddedPermissionControlResult>
+  last_pepc_result() const {
+    return last_pepc_result_;
+  }
+
  private:
   GURL origin_;
+  std::optional<blink::mojom::EmbeddedPermissionControlResult>
+      last_pepc_result_;
   mojo::Remote<blink::mojom::PermissionService> service_remote_;
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   std::unique_ptr<base::RunLoop> permission_request_callback_loop_;
@@ -395,6 +408,50 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedOnInsecureOrigin) {
 
   // PEPC requests are not allowed from insecure origins.
   EXPECT_EQ(prompt_factory()->request_count(), 0);
+}
+
+// Regression test for https://crbug.com/585118316: when a managed default
+// policy forces CONTENT_SETTING_ASK (ignoring user-defined content setting
+// exceptions), accepting a PEPC prompt must finalize the embedded prompt flow
+// instead of re-showing Variant::kAsk for the same PermissionRequest.
+TEST_F(PEPCInitiatedPermissionRequestTest,
+       PEPCRequestWithManagedDefaultAskPolicyFinalizesOnAccept) {
+  client()->prefs()->SetManagedPref(prefs::kManagedDefaultGeolocationSetting,
+                                    base::Value(CONTENT_SETTING_ASK));
+
+  auto* manager = PermissionRequestManager::FromWebContents(web_contents());
+
+  permission_service()->RequestPageEmbeddedPermission(
+      CreatePermissionDescriptorPtrs(ContentSettingsType::GEOLOCATION),
+      CreateGeolocationEmbeddedPermissionRequestDescriptorPtr(),
+      base::BindOnce(
+          &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
+          base::Unretained(this)));
+
+  prompt_factory()->WaitForPermissionBubble();
+  ASSERT_TRUE(prompt_factory()->is_visible());
+  EXPECT_EQ(prompt_factory()->show_count(), 1);
+  ASSERT_NE(manager->GetEmbeddedPromptFlowModel(), nullptr);
+  EXPECT_EQ(manager->GetEmbeddedPromptFlowModel()->prompt_variant(),
+            EmbeddedPermissionPromptFlowModel::Variant::kAsk);
+
+  PromptOptions prompt_options =
+      manager->Requests().front()->GetContentSettingsType() ==
+              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          ? PromptOptions(GeolocationPromptOptions{
+                .selected_accuracy = GeolocationAccuracy::kPrecise})
+          : PromptOptions(std::monostate());
+  manager->Accept(prompt_options);
+
+  WaitForPermissionServiceCallback();
+  EXPECT_EQ(last_pepc_result(),
+            blink::mojom::EmbeddedPermissionControlResult::kGranted);
+  EXPECT_FALSE(prompt_factory()->is_visible());
+  EXPECT_FALSE(manager->IsRequestInProgress());
+  EXPECT_EQ(prompt_factory()->show_count(), 1);
+  // Managed default ASK policy continues to shadow user exceptions.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetContentSetting(ContentSettingsType::GEOLOCATION));
 }
 
 class PEPCInitiatedPermissionRequestTestWithAutolocate

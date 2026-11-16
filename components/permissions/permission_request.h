@@ -212,6 +212,16 @@ class PermissionRequest {
   // be able to distinguish between an active refusal or an implicit refusal.
   void Cancelled(bool is_final_decision = true);
 
+  // Returns true if `PermissionGranted()` has already been called on this
+  // request.
+  bool IsPermissionGranted() const;
+
+  // Returns true if a final decision (`PermissionGranted()`,
+  // `PermissionDenied()`, or `Cancelled(/*is_final_decision=*/true)`) has
+  // already been made on this request, consuming
+  // `permission_decided_callback_`.
+  bool IsDecisionFinalized() const;
+
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular
   // request types.
@@ -268,6 +278,10 @@ class PermissionRequest {
 
   // Called once a decision is made about the permission.
   PermissionDecidedCallback permission_decided_callback_;
+
+  // Set once a final decision (`PermissionGranted()`, `PermissionDenied()`, or
+  // `Cancelled(/*is_final_decision=*/true)`) is made.
+  std::optional<PermissionDecision> final_decision_;
 
   // Called when the request is finished to perform bookkeeping tasks.
   base::OnceClosure request_finished_callback_;

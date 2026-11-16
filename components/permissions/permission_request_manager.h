@@ -514,6 +514,10 @@ class PermissionRequestManager
 
   void PreIgnoreQuietPromptInternal();
 
+  // Returns true if the embedded permission prompt flow can continue to show
+  // the current prompt variant for `requests_`.
+  bool CanContinueEmbeddedPromptFlow() const;
+
   // Returns true if there is a request in progress that is for exclusive
   // access.
   bool IsCurrentRequestExclusiveAccess() const;

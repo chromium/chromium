@@ -112,13 +112,22 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
   auto* permission_info =
       content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
 
+  // Once a request has been granted in the current prompt flow, treat its
+  // site-level permission as allowed even if a higher-priority provider (e.g. a
+  // policy or extension forcing `CONTENT_SETTING_ASK`) shadows the stored user
+  // grant in `HostContentSettingsMap`. This allows the flow to advance to
+  // OS-level permission screens if needed, or finalize instead of re-prompting
+  // for a site-level decision whose callback was already consumed.
+  const bool is_site_permission_allowed =
+      request->IsPermissionGranted() ||
+      permission_info->delegate().IsAnyPermissionAllowed(setting);
+
 #if BUILDFLAG(IS_ANDROID)
   if (!HasSystemPermission(type, web_contents_) &&
       !CanRequestSystemPermission(type, web_contents_)) {
     return Variant::kOsSystemSettings;
   }
-  if (permission_info->delegate().IsAnyPermissionAllowed(setting) &&
-      !HasSystemPermission(type, web_contents_) &&
+  if (is_site_permission_allowed && !HasSystemPermission(type, web_contents_) &&
       CanRequestSystemPermission(type, web_contents_)) {
     return Variant::kOsPrompt;
   }
@@ -126,7 +135,7 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
   if (PermissionsClient::Get()->IsSystemDenied(type)) {
     return Variant::kOsSystemSettings;
   }
-  if (permission_info->delegate().IsAnyPermissionAllowed(setting) &&
+  if (is_site_permission_allowed &&
       PermissionsClient::Get()->CanPromptSystemPermission(type)) {
     return Variant::kOsPrompt;
   }
@@ -137,14 +146,14 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kAdministratorGranted;
   }
 
+  if (is_site_permission_allowed) {
+    return Variant::kPreviouslyGranted;
+  }
   if (permission_info->delegate().IsUndecided(setting)) {
     return Variant::kAsk;
-  } else if (permission_info->delegate().IsAnyPermissionAllowed(setting)) {
-    return Variant::kPreviouslyGranted;
-  } else {
-    DCHECK(permission_info->delegate().IsBlocked(setting));
-    return Variant::kPreviouslyDenied;
   }
+  DCHECK(permission_info->delegate().IsBlocked(setting));
+  return Variant::kPreviouslyDenied;
 }
 
 void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant(
