@@ -4,14 +4,13 @@
 
 #include "ash/wm/layer_tree_synchronizer.h"
 
-#include <array>
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/numerics/angle_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -345,18 +344,13 @@ bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
          !CheckCornerContainment(arc.GetMidPointOnArc(), containing_rect);
 }
 
-using Corners = base::flat_set<gfx::RRectF::Corner>;
+using Corners = base::EnumSet<gfx::RRectF::Corner>;
 
 // Returns the set of corners of rect that need to have their radius match the
 // corner radius of containing_rect.
 Corners FindCornersToOverrideRadius(const gfx::RRectF& rect,
                                     const gfx::RRectF& containing_rect,
                                     bool consider_curvature) {
-  static constexpr uint8_t kNumberOfCorners = 4;
-  static constexpr std::array<Corner, kNumberOfCorners> kCorners{
-      Corner::kUpperLeft, Corner::kUpperRight, Corner::kLowerRight,
-      Corner::kLowerLeft};
-
   Corners corners;
 
   if (!containing_rect.HasRoundedCorners() ||
@@ -364,11 +358,10 @@ Corners FindCornersToOverrideRadius(const gfx::RRectF& rect,
     return corners;
   }
 
-  corners.reserve(kNumberOfCorners);
-  for (auto corner : kCorners) {
+  for (Corner corner : Corners::All()) {
     if (ShouldOverrideCornerRadius(rect, containing_rect, corner,
                                    consider_curvature)) {
-      corners.insert(corner);
+      corners.Put(corner);
     }
   }
 
@@ -469,18 +462,18 @@ bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
 
       gfx::RoundedCornersF radii = layer->rounded_corner_radii();
       radii.Set(
-          corners_to_update.contains(Corner::kUpperLeft)
+          corners_to_update.Has(Corner::kUpperLeft)
               ? reference_bounds_in_local.GetCornerRadii(Corner::kUpperLeft).x()
               : radii.upper_left(),
-          corners_to_update.contains(Corner::kUpperRight)
+          corners_to_update.Has(Corner::kUpperRight)
               ? reference_bounds_in_local.GetCornerRadii(Corner::kUpperRight)
                     .x()
               : radii.upper_right(),
-          corners_to_update.contains(Corner::kLowerRight)
+          corners_to_update.Has(Corner::kLowerRight)
               ? reference_bounds_in_local.GetCornerRadii(Corner::kLowerRight)
                     .x()
               : radii.lower_right(),
-          corners_to_update.contains(Corner::kLowerLeft)
+          corners_to_update.Has(Corner::kLowerLeft)
               ? reference_bounds_in_local.GetCornerRadii(Corner::kLowerLeft).x()
               : radii.lower_left());
 

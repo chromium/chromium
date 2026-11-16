@@ -122,9 +122,11 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF {
   // SkRRect::Corner.
   enum class Corner {
     kUpperLeft = SkRRect::kUpperLeft_Corner,
+    kMinValue = kUpperLeft,
     kUpperRight = SkRRect::kUpperRight_Corner,
     kLowerRight = SkRRect::kLowerRight_Corner,
     kLowerLeft = SkRRect::kLowerLeft_Corner,
+    kMaxValue = kLowerLeft,
   };
   // GetCornerRadii may be called for any type of RRect (kRect, kOval, etc.),
   // and it will return "correct" values. If GetType() is kOval or less, all
