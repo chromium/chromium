@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -49,11 +48,6 @@ namespace {
 bool IsStateless() {
   return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
          base::FeatureList::IsEnabled(kAutofillPaymentsSheetStateless);
-}
-
-// Returns true if the payments bottom sheet is stateless.
-bool IsV3() {
-  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
 }
 
 // Status of the form fill context for the payments bottom sheet.
@@ -267,13 +261,7 @@ enum class FillContextStatus {
   // Last resort safety exit: On the unlikely event that the provider was
   // set incorrectly (for example if local predictions and server
   // predictions are different), simply exit and open the keyboard.
-  if (IsStateless()) {
-    if (_fillContextStatus != FillContextStatus::kValid) {
-      [self disableBottomSheetAndRefocus:YES];
-      [self logExitReason:kBadProvider];
-      return;
-    }
-  } else if (!IsV3() && crossProvider.type != SuggestionProviderTypeAutofill) {
+  if (IsStateless() && _fillContextStatus != FillContextStatus::kValid) {
     [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
@@ -312,22 +300,20 @@ enum class FillContextStatus {
            base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
                IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  // Attach the extra contextual information to the suggestion when using the
-  // Stateless sheet.
-  if (IsStateless() || IsV3()) {
-    AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
-    // At this point we know that there is a valid active webstate so there must
-    // be an autofill tab helper. Also, the bottom sheet can only be triggered
-    // when this helper exists.
-    CHECK(autofillTabHelper);
+  // Attach the Autofill suggestion provider and form activity params directly
+  // to the suggestion so the controller can route it without relying on cached
+  // provider state.
+  AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
+  // At this point we know that there is a valid active webstate so there must
+  // be an autofill tab helper. Also, the bottom sheet can only be triggered
+  // when this helper exists.
+  CHECK(autofillTabHelper);
 
-    // Attach
-    id<FormSuggestionProvider> autofillProvider =
-        autofillTabHelper->GetSuggestionProvider();
-    suggestion = [FormSuggestion copy:suggestion
-                         andSetParams:_params
-                             provider:autofillProvider];
-  }
+  id<FormSuggestionProvider> autofillProvider =
+      autofillTabHelper->GetSuggestionProvider();
+  suggestion = [FormSuggestion copy:suggestion
+                       andSetParams:_params
+                           provider:autofillProvider];
   [crossProvider didSelectSuggestion:suggestion
                              atIndex:index
                               params:_params
@@ -484,18 +470,9 @@ enum class FillContextStatus {
   id<FormInputSuggestionsProvider> provider =
       tabHelper->GetAccessoryViewProvider();
 
-  autofill::FormActivityParams params = _params;
-  if (!base::FeatureList::IsEnabled(
-          kAutofillPaymentsBottomSheetRequiresUserGesture)) {
-    // Setting this to true only when we are retrieving suggestions for the
-    // bottom sheet. We are not using the results from this call, it is just to
-    // set the provider so the bottom sheet can fill the fields later.
-    params.has_user_gesture = true;
-  } else {
-    // This is enforced earlier. Verify the invariant here to avoid getting
-    // unexpected behavior, especially silent fill failures, later on.
-    CHECK(params.has_user_gesture, base::NotFatalUntil::M160);
-  }
+  // This is enforced earlier. Verify the invariant here to avoid getting
+  // unexpected behavior, especially silent fill failures, later on.
+  CHECK(_params.has_user_gesture);
 
   FormSuggestionsReadyCompletion completion = nil;
   if (IsStateless()) {
@@ -509,7 +486,7 @@ enum class FillContextStatus {
     };
   }
 
-  [provider retrieveSuggestionsForForm:params
+  [provider retrieveSuggestionsForForm:_params
                               webState:activeWebState
               accessoryViewUpdateBlock:completion];
 }

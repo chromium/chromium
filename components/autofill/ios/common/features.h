@@ -47,7 +47,7 @@ BASE_DECLARE_FEATURE(kAutofillIgnoreTabIndexForFocusabilityIos);
 
 // Detaches the listeners for the payments suggestion bottom sheet when the
 // listeners are invalidated (i.e. the field type is no longer a credit card
-// field). This can be used in combination with kAutofillPaymentsSheetV3Ios.
+// field).
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetDetachInvalidatedListenersIos);
 
 // Enables the stateless version of the payments suggestion bottom sheet that
@@ -59,11 +59,6 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetStateless);
 // bugs that we've seen in production on other transaction sheets (e.g. some
 // fields becoming unresponsive).
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
-
-// Enables the 3rd version of the payments suggestion bottom sheet that can
-// directly pick the Autofill suggestions provider instead of intermediating via
-// the FormSuggestionController.
-BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
 
 // Rejects form submission events if they lack user gesture.
 BASE_DECLARE_FEATURE(kAutofillRejectFormSubmissionsWithoutUserGesture);

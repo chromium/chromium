@@ -21,6 +21,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
@@ -115,6 +116,51 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
   _showPaymentsBottomSheetCalled = YES;
 }
+@end
+
+// Fake implementation of `FormSuggestionProvider` returning fixed suggestions.
+@interface FakeFormSuggestionProvider : NSObject <FormSuggestionProvider>
+@property(nonatomic, copy) NSArray<FormSuggestion*>* suggestions;
+@end
+
+@implementation FakeFormSuggestionProvider
+
+- (SuggestionProviderType)type {
+  return SuggestionProviderTypeAutofill;
+}
+
+- (autofill::FillingProduct)mainFillingProduct {
+  return autofill::FillingProduct::kCreditCard;
+}
+
+- (void)checkIfSuggestionsAvailableForForm:
+            (FormSuggestionProviderQuery*)formQuery
+                            hasUserGesture:(BOOL)hasUserGesture
+                                  webState:(web::WebState*)webState
+                         completionHandler:
+                             (SuggestionsAvailableCompletion)completion {
+  completion(self.suggestions.count > 0);
+}
+
+- (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
+                          webState:(web::WebState*)webState
+                 completionHandler:(SuggestionsReadyCompletion)completion {
+  completion(self.suggestions, self);
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                       form:(NSString*)formName
+             formRendererID:(autofill::FormRendererId)formRendererID
+            fieldIdentifier:(NSString*)fieldIdentifier
+            fieldRendererID:(autofill::FieldRendererId)fieldRendererID
+                    frameID:(NSString*)frameID
+          completionHandler:(SuggestionHandledCompletion)completion {
+  if (completion) {
+    completion();
+  }
+}
+
 @end
 
 // Test fixture to test AutofillBottomSheetTabHelper class.
@@ -786,8 +832,7 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 TEST_F(AutofillBottomSheetTabHelperTest,
        DidStartNavigationCancelsPendingCallbacks) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kStatelessFormSuggestionController, kAutofillPaymentsSheetV3Ios}, {});
+  feature_list.InitAndEnableFeature(kStatelessFormSuggestionController);
 
   FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
 
@@ -854,8 +899,7 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 // and clears registered renderer IDs.
 TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kStatelessFormSuggestionController, kAutofillPaymentsSheetV3Ios}, {});
+  feature_list.InitAndEnableFeature(kStatelessFormSuggestionController);
 
   FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
 
@@ -910,14 +954,9 @@ TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
 }
 
 // Tests that receiving a payments form message without a user gesture does not
-// trigger the payments bottom sheet and records kNoUserGesture when the feature
-// is enabled.
+// trigger the payments bottom sheet and records kNoUserGesture.
 TEST_F(AutofillBottomSheetTabHelperTest,
        PaymentsBottomSheet_NoUserGesture_DoesNotShowAndLogsMetric) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kAutofillPaymentsBottomSheetRequiresUserGesture);
-
   base::HistogramTester histogram_tester;
   web::WebFrame* frame = nullptr;
   autofill::AutofillManager* manager = nullptr;
@@ -947,13 +986,9 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 
 // Tests that receiving a payments form message when the user is not
 // interacting does not trigger the payments bottom sheet and records
-// kUserNotInteracting when the feature is enabled.
+// kUserNotInteracting.
 TEST_F(AutofillBottomSheetTabHelperTest,
        PaymentsBottomSheet_UserNotInteracting_DoesNotShowAndLogsMetric) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kAutofillPaymentsBottomSheetRequiresUserGesture);
-
   base::HistogramTester histogram_tester;
   web::WebFrame* frame = nullptr;
   autofill::AutofillManager* manager = nullptr;
@@ -981,51 +1016,20 @@ TEST_F(AutofillBottomSheetTabHelperTest,
       PaymentsBottomSheetUserGestureStatus::kUserNotInteracting, 1);
 }
 
-// Tests that receiving a payments form message triggers the payments bottom
-// sheet even without a user gesture when the user gesture requirement feature
-// is disabled.
-TEST_F(AutofillBottomSheetTabHelperTest,
-       PaymentsBottomSheet_FeatureDisabled_ShowsBottomSheet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kAutofillPaymentsBottomSheetRequiresUserGesture,
-                             kAutofillPaymentsSheetV3Ios});
-
-  base::HistogramTester histogram_tester;
-  web::WebFrame* frame = nullptr;
-  autofill::AutofillManager* manager = nullptr;
-  autofill::FormGlobalId form_id;
-  const autofill::FieldRendererId cc_renderer_id(1);
-  const autofill::FieldRendererId exp_renderer_id(2);
-  SetupPaymentsForm(cc_renderer_id, exp_renderer_id, frame, manager, form_id);
-  helper_->UpdateListenersForPaymentsForm(*manager, form_id,
-                                          /*only_new=*/false);
-
-  FakeAutofillCommandsForBottomSheet* commands_handler =
-      [[FakeAutofillCommandsForBottomSheet alloc] init];
-  helper_->SetAutofillBottomSheetHandler(
-      (id<AutofillCommands>)commands_handler);
-
-  web::ScriptMessage form_message = ScriptMessageForForm(
-      ValidPaymentsFormMessageBody(frame->GetFrameId(), cc_renderer_id,
-                                   /*has_user_gesture=*/false),
-      /*is_user_interacting=*/false);
-  helper_->OnFormMessageReceived(form_message);
-
-  EXPECT_TRUE(commands_handler.showPaymentsBottomSheetCalled);
-  histogram_tester.ExpectTotalCount(
-      kPaymentsBottomSheetUserGestureStatusHistogram, 0);
-}
-
 // Tests that receiving a payments form message with valid user gesture and user
 // interaction triggers the payments bottom sheet and records kValidGesture.
 TEST_F(AutofillBottomSheetTabHelperTest,
        PaymentsBottomSheet_ValidUserGesture_ShowsBottomSheetAndLogsMetric) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kAutofillPaymentsBottomSheetRequiresUserGesture},
-      /*disabled_features=*/{kAutofillPaymentsSheetV3Ios});
+  FakeFormSuggestionProvider* provider =
+      [[FakeFormSuggestionProvider alloc] init];
+  provider.suggestions = @[ [FormSuggestion
+      suggestionWithValue:@"Visa **** 1234"
+       displayDescription:@"Card description"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO] ];
+  FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[ provider ]);
 
   base::HistogramTester histogram_tester;
   web::WebFrame* frame = nullptr;

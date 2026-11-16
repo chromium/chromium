@@ -126,12 +126,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
-      [self isRunningTest:@selector
-            (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
-    config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
-  }
   if ([self isRunningTest:
                 @selector(
                     testPaymentsBottomSheetNotShownAfterFieldTypeChanges)]) {
@@ -359,43 +353,9 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
 
-// Tests that the Payments Bottom Sheet V3 can fill the credit card information.
-- (void)testOpenPaymentsBottomSheetUseCreditCardOnV3 {
-  [self loadPaymentsPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
-
-  // Verify that the credit card is visible to the user.
-  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
-      assertWithMatcher:grey_notNil()];
-
-  // Make sure the user is seeing 1 card on the bottom sheet.
-  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
-                  @"Wrong number of stored credit cards.");
-
-  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
-
-  // No histogram logged because there is only 1 credential shown to the user.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
-      @"Unexpected histogram error for touch to fill credit card selected");
-
-  // Verify that the acceptance of the card suggestion at index 0 was correctly
-  // recorded.
-  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
-
-  // Verify that the page is filled properly.
-  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
-}
-
 // Tests that the sheet isn't displayed when there are no credit card
-// suggestions for the credit card form, on V3.
-- (void)testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3 {
+// suggestions for the credit card form.
+- (void)testAttemptToOpenPaymentsBottomSheetWithoutCreditCard {
   [self loadPaymentsPage];
 
   // Clear the credit cards after the listeners are attached to be able to test
