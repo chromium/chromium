@@ -11671,25 +11671,6 @@
             ]
         }
     ],
-    "IOSOneTimeDefaultBrowserNotification": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "reactivation_order": ""
-                    },
-                    "enable_features": [
-                        "IOSOneTimeDefaultBrowserNotification",
-                        "IOSReactivationNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSPasskeyM3": [
         {
             "platforms": [

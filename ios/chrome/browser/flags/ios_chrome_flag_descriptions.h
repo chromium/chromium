@@ -1159,12 +1159,6 @@ inline constexpr char kIOSOneTapMiniMapRestrictionsName[] =
 inline constexpr char kIOSOneTapMiniMapRestrictionsDescription[] =
     "Different restrictions to block false positive for one tap Mini Map.";
 
-inline constexpr char kIOSOneTimeDefaultBrowserNotificationName[] =
-    "One-time default browser notification";
-inline constexpr char kIOSOneTimeDefaultBrowserNotificationDescription[] =
-    "Enables a one-time notification to prompt the user to set the app as the "
-    "default browser.";
-
 inline constexpr char kIOSPasskeyConditionalLoginWithShimName[] =
     "Conditional Passkey Login with JS Shim";
 inline constexpr char kIOSPasskeyConditionalLoginWithShimDescription[] =

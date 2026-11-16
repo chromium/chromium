@@ -399,9 +399,6 @@ bool IsIOSExpandedTipsEnabled() {
   return base::FeatureList::IsEnabled(kIOSExpandedTips);
 }
 
-BASE_FEATURE(kIOSOneTimeDefaultBrowserNotification,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";
 const char kFullscreenTransitionDefaultSpeed[] =
     "MediumFullscreenTransitionSpeed";
