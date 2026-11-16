@@ -38,6 +38,7 @@
 
 namespace blink {
 
+class Document;
 class EditorInternalCommand;
 class Event;
 class LocalFrame;
@@ -71,6 +72,7 @@ class CORE_EXPORT EditorCommand {
 
  private:
   LocalFrame& GetFrame() const;
+  bool IsCurrentDocument() const;
 
   FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
                            DeleteSoftLineBackwardTargetRanges);
@@ -89,6 +91,7 @@ class CORE_EXPORT EditorCommand {
   const EditorInternalCommand* command_ = nullptr;
   const EditorCommandSource source_;
   LocalFrame* const frame_ = nullptr;
+  Document* const document_ = nullptr;
 };
 
 }  // namespace blink

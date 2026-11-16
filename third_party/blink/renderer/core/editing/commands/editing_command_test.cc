@@ -4,8 +4,14 @@
 
 #include <array>
 
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_type.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
@@ -13,9 +19,22 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -303,6 +322,227 @@ TEST_F(EditingCommandTest, RemoveFormatInPlaintextOnly) {
                   mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled())
       << "removeFormat should be enabled in richly editable";
+}
+
+namespace {
+
+void CommitHtmlNavigation(LocalFrame& frame,
+                          const KURL& url,
+                          const char* html) {
+  auto params = WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
+  params->body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  frame.Loader().CommitNavigation(std::move(params), /*extra_data=*/nullptr);
+  Document* doc = frame.GetDocument();
+  if (!doc->documentElement()) {
+    doc->AppendChild(MakeGarbageCollected<HTMLHtmlElement>(*doc));
+  }
+  doc->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUtf8(html));
+}
+
+class CallbackEventListener final : public NativeEventListener {
+ public:
+  explicit CallbackEventListener(base::RepeatingClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void Invoke(ExecutionContext*, Event*) override { callback_.Run(); }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+class ContextDestroyObserver final
+    : public GarbageCollected<ContextDestroyObserver>,
+      public ExecutionContextLifecycleObserver {
+ public:
+  ContextDestroyObserver(ExecutionContext* context, base::OnceClosure callback)
+      : ExecutionContextLifecycleObserver(context),
+        callback_(std::move(callback)) {}
+
+  void ContextDestroyed() override {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ExecutionContextLifecycleObserver::Trace(visitor);
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+class EditingCommandSubframeTest : public SimTest {
+ public:
+  void TearDown() override {
+    if (subframe_ && subframe_->IsLoading()) {
+      subframe_->Loader().StopAllLoaders(/*abort_client=*/true);
+    }
+    observer_ = nullptr;
+    subframe_ = nullptr;
+    SimTest::TearDown();
+  }
+
+  void SetUpSubframeWithUseRebuildCallback(base::OnceClosure on_use_rebuilt) {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+
+    main_resource.Complete(
+        "<!doctype html><body>"
+        "<svg width='9' height='9'><defs><rect id='r1' width='2' height='2'/>"
+        "<rect id='r2' width='2' height='2'/></defs>"
+        "<use id='target_use' href='#r1'/></svg>"
+        "<iframe id='subframe'></iframe></body>");
+    Compositor().BeginFrame();
+
+    subframe_ = To<LocalFrame>(
+        To<HTMLIFrameElement>(GetElementById("subframe"))->ContentFrame());
+    ASSERT_TRUE(subframe_);
+
+    Element* use = GetElementById("target_use");
+    ShadowRoot* root = use->UserAgentShadowRoot();
+    ASSERT_TRUE(root);
+    auto* nested_frame = MakeGarbageCollected<HTMLIFrameElement>(GetDocument());
+    root->AppendChild(nested_frame);
+    auto* nested_window = To<LocalDOMWindow>(nested_frame->contentWindow());
+    ASSERT_TRUE(nested_window);
+    observer_ = MakeGarbageCollected<ContextDestroyObserver>(
+        nested_window, std::move(on_use_rebuilt));
+    Compositor().BeginFrame();
+  }
+
+  void ScheduleUseRebuild() {
+    GetElementById("target_use")
+        ->setAttribute(svg_names::kHrefAttr, AtomicString("#r2"));
+  }
+
+  LocalFrame& Subframe() const { return *subframe_; }
+
+ private:
+  Persistent<LocalFrame> subframe_;
+  Persistent<ContextDestroyObserver> observer_;
+};
+
+}  // namespace
+
+TEST_F(EditingCommandSubframeTest,
+       InsertHtmlNoOpWhenFrameNavigatesDuringLayout) {
+  bool did_navigate = false;
+  SetUpSubframeWithUseRebuildCallback(base::BindLambdaForTesting([&]() {
+    did_navigate = true;
+    CommitHtmlNavigation(Subframe(), KURL("https://example.com/next.html"),
+                         "<body contenteditable>next</body>");
+    Document* next_doc = Subframe().GetDocument();
+    Subframe().Selection().SetSelection(
+        SelectionInDomTree::Builder()
+            .SelectAllChildren(*next_doc->body())
+            .Build(),
+        SetSelectionOptions::Builder().SetDoNotSetFocus(true).Build());
+  }));
+
+  Document& initial_doc = *Subframe().GetDocument();
+  initial_doc.setDesignMode("on");
+  initial_doc.body()->SetInnerHTMLWithoutTrustedTypes("initial");
+  Subframe().Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .SelectAllChildren(*initial_doc.body())
+          .Build(),
+      SetSelectionOptions());
+  Compositor().BeginFrame();
+
+  const EditorCommand command = Subframe().GetEditor().CreateCommand(
+      "InsertHTML", EditorCommandSource::kDom);
+  ScheduleUseRebuild();
+  EXPECT_FALSE(command.Execute("<b id='inserted'>inserted</b>"));
+  EXPECT_TRUE(did_navigate);
+  Document* next_doc = Subframe().GetDocument();
+  ASSERT_NE(&initial_doc, next_doc);
+  EXPECT_EQ(KURL("https://example.com/next.html"), next_doc->Url());
+  EXPECT_EQ(nullptr, next_doc->getElementById(AtomicString("inserted")));
+  EXPECT_EQ("next", next_doc->body()->GetInnerHTMLString());
+}
+
+TEST_F(EditingCommandSubframeTest,
+       QueryCommandValueEmptyWhenFrameNavigatesDuringLayout) {
+  SetUpSubframeWithUseRebuildCallback(base::BindLambdaForTesting([&]() {
+    CommitHtmlNavigation(
+        Subframe(), KURL("https://example.com/next.html"),
+        "<body contenteditable style='color: rgb(1, 2, 3)'>styled</body>");
+    Document* next_doc = Subframe().GetDocument();
+    Subframe().Selection().SetSelection(
+        SelectionInDomTree::Builder()
+            .SelectAllChildren(*next_doc->body())
+            .Build(),
+        SetSelectionOptions::Builder().SetDoNotSetFocus(true).Build());
+  }));
+
+  Document& initial_doc = *Subframe().GetDocument();
+  initial_doc.setDesignMode("on");
+  initial_doc.body()->SetInnerHTMLWithoutTrustedTypes("initial");
+  Subframe().Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .SelectAllChildren(*initial_doc.body())
+          .Build(),
+      SetSelectionOptions());
+  Compositor().BeginFrame();
+
+  const EditorCommand command = Subframe().GetEditor().CreateCommand(
+      "ForeColor", EditorCommandSource::kDom);
+  ScheduleUseRebuild();
+  EXPECT_EQ(String(), command.Value());
+  EXPECT_EQ(KURL("https://example.com/next.html"),
+            Subframe().GetDocument()->Url());
+}
+
+TEST_F(EditingCommandSubframeTest,
+       FindStringNoOpWhenFrameNavigatesDuringLayout) {
+  SetUpSubframeWithUseRebuildCallback(base::BindLambdaForTesting([&]() {
+    CommitHtmlNavigation(Subframe(), KURL("https://example.com/next.html"),
+                         "<body>sample-text</body>");
+  }));
+
+  const EditorCommand command = Subframe().GetEditor().CreateCommand(
+      "FindString", EditorCommandSource::kDom);
+  ScheduleUseRebuild();
+  EXPECT_FALSE(command.Execute("sample-text"));
+  EXPECT_EQ(KURL("https://example.com/next.html"),
+            Subframe().GetDocument()->Url());
+}
+
+TEST_F(EditingCommandTest, ExecuteNoOpWhenBeforeInputNavigatesToNewDocument) {
+  NavigateTo(KURL("https://example.com/"));
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div id='ed' contenteditable>^initial|</div>"),
+      SetSelectionOptions());
+  Element* div = GetElementById("ed");
+  div->Focus();
+
+  Document& initial_doc = GetDocument();
+  div->addEventListener(event_type_names::kBeforeinput,
+                        MakeGarbageCollected<CallbackEventListener>(
+                            base::BindLambdaForTesting([&]() {
+                              CommitHtmlNavigation(
+                                  GetFrame(),
+                                  KURL("https://example.com/next.html"),
+                                  "<body contenteditable>next</body>");
+                              Document* next_doc = GetFrame().GetDocument();
+                              next_doc->body()->Focus();
+                              GetFrame().Selection().SetSelection(
+                                  SelectionInDomTree::Builder()
+                                      .SelectAllChildren(*next_doc->body())
+                                      .Build(),
+                                  SetSelectionOptions());
+                            })));
+
+  EXPECT_FALSE(GetFrame().GetEditor().ExecuteCommand("InsertText", "inserted"));
+  ASSERT_NE(&initial_doc, &GetDocument());
+  EXPECT_EQ(KURL("https://example.com/next.html"), GetDocument().Url());
+  EXPECT_EQ("next", GetDocument().body()->GetInnerHTMLString());
 }
 
 }  // namespace blink
