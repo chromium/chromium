@@ -44,6 +44,12 @@ constexpr int32_t kOtherFakeWebStateID = 456;
 // Message carried by the confirmation yield actions under test.
 NSString* const kConfirmationMessage = @"Please confirm this purchase.";
 
+// Test task title and chat message constants.
+NSString* const kTestTaskTitle = @"Test Task";
+NSString* const kTestChatMessage = @"Start task";
+NSString* const kTestSessionID = @"session_id";
+NSString* const kTestConversationID = @"conversation_id";
+
 // Mirrors `kConfirmationUserResponse` in `gemini_actuation_handler.mm`.
 // TODO(crbug.com/571050191): Use the localized resource if the string gets
 // localized.
@@ -87,6 +93,28 @@ class GeminiActuationHandlerTest : public PlatformTest {
                                  ->browser_id()];
   }
 
+  // Simulates intercepting an outgoing user chat message on `handler`.
+  GeminiChatMessageResponse* SendChatMessage(GeminiActuationHandler* handler) {
+    GeminiChatMessageRequest* request =
+        [[GeminiChatMessageRequest alloc] initWithText:kTestChatMessage
+                                             sessionID:kTestSessionID
+                                        conversationID:kTestConversationID];
+    base::test::TestFuture<GeminiChatMessageResponse*> future;
+    base::test::TestFuture<GeminiChatMessageResponse*>* future_ptr = &future;
+    [handler handleChatMessageRequest:request
+                           completion:^(GeminiChatMessageResponse* response) {
+                             future_ptr->SetValue(response);
+                           }];
+    EXPECT_TRUE(future.IsReady());
+    return future.Get();
+  }
+
+  // Simulates confirming the Start Task card and creating a task on `handler`.
+  actor::ActorTaskId CreateTask(GeminiActuationHandler* handler) {
+    SendChatMessage(handler);
+    return [handler createTaskWithTitle:kTestTaskTitle];
+  }
+
   void (^GetCompletionBlock(base::test::TestFuture<GeminiActuationResponse*>&
                                 future))(GeminiActuationResponse*) {
     base::test::TestFuture<GeminiActuationResponse*>* future_ptr = &future;
@@ -99,7 +127,7 @@ class GeminiActuationHandlerTest : public PlatformTest {
   // task untouched.
   void TestYieldReasonRejected(GeminiYieldReason reason) {
     GeminiActuationHandler* handler = CreateHandler();
-    actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+    actor::ActorTaskId task_id = CreateTask(handler);
 
     GeminiYieldAction* yield_action =
         [[GeminiYieldAction alloc] initWithReason:reason];
@@ -187,10 +215,10 @@ TEST_F(GeminiActuationHandlerTest, Initialization) {
   EXPECT_NE(nil, handler);
 }
 
-// Tests that createTaskWithTitle returns a valid task ID.
+// Tests that `createTaskWithTitle:` returns a valid task ID.
 TEST_F(GeminiActuationHandlerTest, CreateTask) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   EXPECT_FALSE(task_id.is_null());
 }
 
@@ -202,18 +230,7 @@ TEST_F(GeminiActuationHandlerTest,
   GeminiActuationHandler* handler = CreateHandler();
 
   // Send a chat message while `fake_web_state_` (`kFakeWebStateID`) is active.
-  GeminiChatMessageRequest* chat_request =
-      [[GeminiChatMessageRequest alloc] initWithText:@"Start task"
-                                           sessionID:@"session_id"
-                                      conversationID:@"conversation_id"];
-  base::test::TestFuture<GeminiChatMessageResponse*> chat_future;
-  base::test::TestFuture<GeminiChatMessageResponse*>* chat_future_ptr =
-      &chat_future;
-  [handler handleChatMessageRequest:chat_request
-                         completion:^(GeminiChatMessageResponse* response) {
-                           chat_future_ptr->SetValue(response);
-                         }];
-  ASSERT_TRUE(chat_future.IsReady());
+  SendChatMessage(handler);
 
   // Insert and activate a second tab before the server creates the task.
   auto other_web_state = std::make_unique<web::FakeWebState>(
@@ -225,7 +242,7 @@ TEST_F(GeminiActuationHandlerTest,
   ASSERT_EQ(other_web_state_ptr,
             browser_->GetWebStateList()->GetActiveWebState());
 
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:kTestTaskTitle];
   ASSERT_FALSE(task_id.is_null());
 
   EXPECT_EQ(
@@ -238,43 +255,21 @@ TEST_F(GeminiActuationHandlerTest,
           web::WebStateID::FromSerializedValue(kOtherFakeWebStateID), task_id));
 }
 
-// Test that chat messages are not consumed when there is no task.
+// Tests that chat messages are not consumed when there is no task.
 TEST_F(GeminiActuationHandlerTest, HandleChatMessageRequest_NoTask) {
   GeminiActuationHandler* handler = CreateHandler();
-  GeminiChatMessageRequest* request =
-      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
-                                           sessionID:@"session_id"
-                                      conversationID:@"conversation_id"];
-  base::test::TestFuture<GeminiChatMessageResponse*> future;
-  base::test::TestFuture<GeminiChatMessageResponse*>* future_ptr = &future;
-  [handler handleChatMessageRequest:request
-                         completion:^(GeminiChatMessageResponse* response) {
-                           future_ptr->SetValue(response);
-                         }];
-  ASSERT_TRUE(future.IsReady());
-  GeminiChatMessageResponse* response = future.Get();
+  GeminiChatMessageResponse* response = SendChatMessage(handler);
   ASSERT_NE(nil, response);
   EXPECT_FALSE(response.shouldConsume);
 }
 
-// Test that chat messages are not consumed while a task is active but has no
+// Tests that chat messages are not consumed while a task is active but has no
 // pending clarification request.
 TEST_F(GeminiActuationHandlerTest, HandleChatMessageRequest_ActiveTask) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   ASSERT_FALSE(task_id.is_null());
-  GeminiChatMessageRequest* request =
-      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
-                                           sessionID:@"session_id"
-                                      conversationID:@"conversation_id"];
-  base::test::TestFuture<GeminiChatMessageResponse*> future;
-  base::test::TestFuture<GeminiChatMessageResponse*>* future_ptr = &future;
-  [handler handleChatMessageRequest:request
-                         completion:^(GeminiChatMessageResponse* response) {
-                           future_ptr->SetValue(response);
-                         }];
-  ASSERT_TRUE(future.IsReady());
-  GeminiChatMessageResponse* response = future.Get();
+  GeminiChatMessageResponse* response = SendChatMessage(handler);
   ASSERT_NE(nil, response);
   EXPECT_FALSE(response.shouldConsume);
 }
@@ -288,7 +283,7 @@ TEST_F(GeminiActuationHandlerTest,
   // Activate the fake web state (index 0).
   browser_->GetWebStateList()->ActivateWebStateAt(0);
 
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   // Create a ClickAction proto without a tab_id.
   optimization_guide::proto::Action action;
@@ -339,7 +334,7 @@ TEST_F(GeminiActuationHandlerTest,
 
   GeminiActuationHandler* handler = CreateHandler();
 
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   auto* navigate = action.mutable_navigate();
@@ -380,7 +375,7 @@ TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_InjectsWindowId) {
   GeminiActuationHandler* handler = CreateHandler();
 
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   // Create a CreateTab proto without a window_id.
   optimization_guide::proto::Action action;
@@ -506,7 +501,7 @@ TEST_F(GeminiActuationHandlerTest,
 // actuated tab has been closed.
 TEST_F(GeminiActuationHandlerTest, DispatchGeminiActuationRequest_TabWentAway) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   // Close the controlled tab.
   fake_web_state_ = nullptr;
@@ -533,7 +528,7 @@ TEST_F(GeminiActuationHandlerTest, DispatchGeminiActuationRequest_TabWentAway) {
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_InvalidProto) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   NSData* invalid_data = [@"invalid" dataUsingEncoding:NSUTF8StringEncoding];
   GeminiActuationRequest* request =
@@ -567,7 +562,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_BothProtosAndYield_Fails) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
       initWithReason:GeminiYieldReason::kConfirmation];
@@ -594,7 +589,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_NeitherProtosNorYield_Fails) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   GeminiActuationRequest* neither_request =
       [[GeminiActuationRequest alloc] initWithActionProtos:nil
@@ -616,7 +611,7 @@ TEST_F(GeminiActuationHandlerTest,
 // observations when given empty protos.
 TEST_F(GeminiActuationHandlerTest, DispatchGeminiActuationRequest_EmptyProtos) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[]
@@ -648,7 +643,7 @@ TEST_F(GeminiActuationHandlerTest, DispatchGeminiActuationRequest_EmptyProtos) {
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_MultipleProtos) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   NSData* data = SerializeProtoToNSData(action);
@@ -682,7 +677,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
@@ -706,7 +701,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_NoMessage) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   FakeActorTaskInterventionDelegate* delegate =
@@ -725,7 +720,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_NoDelegate) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   [handler
@@ -745,7 +740,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_TabClosed) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
@@ -769,7 +764,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_Stopped_Cancels) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   DispatchConfirmationRequest(handler, task_id, kConfirmationMessage, future);
@@ -787,7 +782,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_Stopped_FollowUp) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   actor_service_->SetTaskInterventionDelegate(task_id, delegate);
@@ -832,7 +827,7 @@ TEST_F(GeminiActuationHandlerTest,
   @autoreleasepool {
     GeminiActuationHandler* handler = CreateHandler();
     weak_handler = handler;
-    actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+    actor::ActorTaskId task_id = CreateTask(handler);
     delegate = DispatchConfirmationRequest(handler, task_id,
                                            kConfirmationMessage, future);
   }
@@ -848,7 +843,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_Disconnect_Cancels) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   DispatchConfirmationRequest(handler, task_id, kConfirmationMessage, future);
@@ -865,7 +860,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_ConcurrentRequest) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future1;
   FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
@@ -898,7 +893,7 @@ TEST_F(
     GeminiActuationHandlerTest,
     DispatchGeminiActuationRequest_Yield_Confirmation_ConcurrentConfirmation) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   base::test::TestFuture<GeminiActuationResponse*> future1;
   FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
@@ -942,7 +937,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_InterruptRejected) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   // `ActorTask` holds the delegate weakly, so the test keeps it alive.
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
@@ -975,7 +970,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Stop_TaskComplete) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
       initWithReason:GeminiYieldReason::kTaskComplete];
@@ -1009,7 +1004,7 @@ TEST_F(GeminiActuationHandlerTest,
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Stop_IrrelevantUserInput) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
       initWithReason:GeminiYieldReason::kIrrelevantUserInput];
@@ -1048,7 +1043,7 @@ TEST_F(GeminiActuationHandlerTest,
 // Tests that `disconnect` ends in-flight requests with `kTaskWentAway`.
 TEST_F(GeminiActuationHandlerTest, Disconnect_CancelsInFlightRequest) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
@@ -1079,7 +1074,7 @@ TEST_F(GeminiActuationHandlerTest, Disconnect_CancelsInFlightRequest) {
 // `kTaskWentAway`.
 TEST_F(GeminiActuationHandlerTest, ExternalStop_CancelsInFlightRequest) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
@@ -1107,7 +1102,7 @@ TEST_F(GeminiActuationHandlerTest, ExternalStop_CancelsInFlightRequest) {
 // external stop gets `kTaskWentAway`.
 TEST_F(GeminiActuationHandlerTest, ExternalStop_FollowUp) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
@@ -1148,7 +1143,7 @@ TEST_F(GeminiActuationHandlerTest, ExternalStop_FollowUp) {
 // the first one.
 TEST_F(GeminiActuationHandlerTest, ConcurrentActions_Rejected) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
@@ -1193,7 +1188,7 @@ TEST_F(GeminiActuationHandlerTest, Actions_HandlerDeallocated) {
   @autoreleasepool {
     GeminiActuationHandler* handler = CreateHandler();
     weak_handler = handler;
-    actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+    actor::ActorTaskId task_id = CreateTask(handler);
     GeminiActuationRequest* request =
         [[GeminiActuationRequest alloc] initWithActionProtos:@[]
                                                   taskUpdate:@"Action"
@@ -1213,7 +1208,7 @@ TEST_F(GeminiActuationHandlerTest, Actions_HandlerDeallocated) {
 // Tests that a request sent after a completed act is accepted.
 TEST_F(GeminiActuationHandlerTest, FollowUpAfterCompletedAct_Accepted) {
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[]
                                                 taskUpdate:@"Update"
@@ -1246,7 +1241,7 @@ TEST_F(GeminiActuationHandlerTest,
   fake_web_state_->SetCurrentURL(GURL("https://safe.com"));
 
   GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  actor::ActorTaskId task_id = CreateTask(handler);
   ASSERT_FALSE(task_id.is_null());
 
   optimization_guide::proto::Action action;
