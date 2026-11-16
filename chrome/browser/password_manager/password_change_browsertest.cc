@@ -508,16 +508,8 @@ class PasswordChangeBrowserTest : public base::test::WithFeatureOverride,
   base::WeakPtrFactory<PasswordChangeBrowserTest> weak_ptr_factory_{this};
 };
 
-// Flaky: crbug.com/456247817
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ChangePasswordFormIsFilledAutomatically \
-  DISABLED_ChangePasswordFormIsFilledAutomatically
-#else
-#define MAYBE_ChangePasswordFormIsFilledAutomatically \
-  ChangePasswordFormIsFilledAutomatically
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
-                       MAYBE_ChangePasswordFormIsFilledAutomatically) {
+                       ChangePasswordFormIsFilledAutomatically) {
   SetPrivacyNoticeAcceptedPref();
   PasswordChangeDelegateImpl* delegate = OfferUiAndStartFlow(CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"pa$$word",
@@ -529,6 +521,10 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeBrowserTest,
   SetWebContents(web_contents);
   PasswordsNavigationObserver observer(web_contents);
   EXPECT_TRUE(observer.Wait());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeUIDelegate::State::kChangingPassword;
+  }));
 
   std::string generated_password =
       base::UTF16ToUTF8(delegate->GetGeneratedPassword().secure_value());
