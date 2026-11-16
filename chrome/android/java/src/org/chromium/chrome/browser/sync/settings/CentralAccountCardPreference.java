@@ -18,7 +18,6 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.services.AiTierPillDrawable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
@@ -121,24 +120,17 @@ public class CentralAccountCardPreference extends Preference
             PreferenceViewHolder holder, Pair<String, String> primaryAndSecondaryText) {
         TextView pill = (TextView) holder.findViewById(R.id.central_account_ai_tier_pill);
         String pillName = mPrimaryAccount.getAiTierPillName();
-        boolean showsPill = false;
-        if (pillName.isEmpty()) {
-            pill.setVisibility(View.GONE);
-            pill.setBackground(null);
-        } else {
+        final boolean showsPill = !pillName.isEmpty();
+        if (showsPill) {
             pill.setText(pillName);
-            // Rebinding the same view keeps the drawable, which only redraws when its size
-            // changes.
-            if (!(pill.getBackground() instanceof AiTierPillDrawable)) {
-                // Builds without branding draw a plain pill, as they draw a plain ring.
-                pill.setBackground(
-                        new AiTierPillDrawable(
-                                getContext(),
-                                mProfileDataCache.getSubscriptionTierBrandingDelegate()));
+            // Each view gets its own background, since a drawable can't be shared by views shown at
+            // the same time (e.g. the old and new views of a change animation). Rebinding the same
+            // view keeps it, so it's only redrawn when its size changes.
+            if (pill.getBackground() == null) {
+                pill.setBackground(mProfileDataCache.createAiTierPillDrawable());
             }
-            pill.setVisibility(View.VISIBLE);
-            showsPill = true;
         }
+        pill.setVisibility(showsPill ? View.VISIBLE : View.GONE);
 
         // Like the New Tab Page's identity disc, screen readers hear about the membership whenever
         // the ring is shown, even without a pill (e.g. for tiers without a name).

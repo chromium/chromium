@@ -271,11 +271,14 @@ public class ProfileDataCache
     }
 
     /**
-     * Returns the branding used to draw the AI tier ring, and the AI tier pill shown next to it, or
-     * null in builds without branding (which draw both without it) or for caches without the ring.
+     * Creates the background of the AI tier pill shown next to the AI tier ring. Like the ring, the
+     * pill is plain in builds without branding.
+     *
+     * <p>Must only be called on caches created with {@link #createWithAiTierRing}.
      */
-    public @Nullable SubscriptionTierBrandingDelegate getSubscriptionTierBrandingDelegate() {
-        return mBrandingDelegate;
+    public Drawable createAiTierPillDrawable() {
+        assert mAiTierRingEnabled : "Only caches with the AI tier ring draw the AI tier pill";
+        return new AiTierPillDrawable(mContext, mBrandingDelegate);
     }
 
     /**

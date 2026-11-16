@@ -111,7 +111,6 @@ public class CentralAccountCardPreferenceRenderTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 NightModeTestUtils::tearDownNightModeForBlankUiTestActivity);
-        LocalizationUtils.setRtlForTesting(false);
     }
 
     @Test
