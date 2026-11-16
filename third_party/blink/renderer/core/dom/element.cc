@@ -5632,23 +5632,37 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   // As an optimization, we can skip most UpdatePseudoElement() calls
   // (and similar) if the ComputedStyle doesn't have any pseudo-element styles
   // and there are no existing pseudo-elements to be updated.
+  const ComputedStyle* style = GetComputedStyle();
+  const bool has_pseudos = RareData() && RareData()->HasAnyPseudos();
   const bool need_to_check_pseudos =
       child_change.TraversePseudoElements(*this) &&
-      ((RareData() && RareData()->HasAnyPseudos()) ||
-       (GetComputedStyle() && GetComputedStyle()->HasAnyPseudoElementStyles()));
+      (has_pseudos || (style && style->HasAnyPseudoElementStyles()));
 
   if (child_change.TraversePseudoElements(*this)) {
-    // Backdrop handling depends on feature flags.
-    // TODO: When the OverlayProperty feature flag is removed,
-    // this can probably be moved inside the if.
-    UpdateBackdropPseudoElement(child_change, child_recalc_context);
+    // The pseudo-elements below are generated based on conditions other than
+    // having matched pseudo-element rules, so HasAnyPseudoElementStyles()
+    // (i.e. need_to_check_pseudos) can not be used to skip updating them.
+    // Instead, check the necessary condition for generating each of them (see
+    // CanGeneratePseudoElement()), unless there are existing pseudo-elements
+    // which may need to be updated or removed.
 
-    // ::marker ignores the ComputedStyle bits and checks IsDisplayListItem().
-    UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+    // ::backdrop is generated for elements rendered in the top layer or
+    // registered overscroll areas (see CanGeneratePseudoElement()).
+    if (has_pseudos || IsInTopLayer() || IsValidOverscrollArea()) {
+      UpdateBackdropPseudoElement(child_change, child_recalc_context);
+    }
 
-    // Scroll markers have special rules for the document element.
-    UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
-                        layout_sibling_recalc_context);
+    // ::marker is generated for list items.
+    if (has_pseudos || (style && style->IsDisplayListItem())) {
+      UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+    }
+
+    // ::scroll-marker-group is generated based on the scroll-marker-group
+    // property.
+    if (has_pseudos || (style && style->HasScrollMarkerGroupBefore())) {
+      UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
+                          layout_sibling_recalc_context);
+    }
 
     if (need_to_check_pseudos) {
       UpdatePseudoElement(kPseudoIdScrollButtonBlockStart, child_change,
@@ -5688,24 +5702,35 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraversePseudoElements(*this)) {
-    // Scroll markers have special rules for the document element.
-    UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
-                        layout_sibling_recalc_context);
+    // See the comment above for why the checks below differ from
+    // need_to_check_pseudos.
 
-    // ::overscroll-area-parent ignores the ComputedStyle bits and checks
-    // IsValidOverscrollArea().
-    bool had_overscroll_area_parent =
-        GetPseudoElement(kPseudoIdOverscrollAreaParent);
-    if (UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
-                            child_recalc_context) &&
-        !had_overscroll_area_parent) {
-      // The container attaches area parents before its other children.
-      GetOverscrollContainer()->SetNeedsReattachLayoutTree();
+    // ::scroll-marker-group is generated based on the scroll-marker-group
+    // property.
+    if (has_pseudos || (style && style->HasScrollMarkerGroupAfter())) {
+      UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
+                          layout_sibling_recalc_context);
     }
 
-    // View transitions ignore the ComputedStyle bits and check
-    // ViewTransitionUtils::GetTransition(*this).
-    UpdateTransitionPseudoElements(child_change, child_recalc_context);
+    // ::overscroll-area-parent is generated for registered overscroll areas
+    // (see OverscrollAreaTracker), which is tracked independently of the style.
+    if (has_pseudos || IsValidOverscrollArea()) {
+      bool had_overscroll_area_parent =
+          GetPseudoElement(kPseudoIdOverscrollAreaParent);
+      if (UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
+                              child_recalc_context) &&
+          !had_overscroll_area_parent) {
+        // The container attaches area parents before its other children.
+        GetOverscrollContainer()->SetNeedsReattachLayoutTree();
+      }
+    }
+
+    // View transition pseudo-elements are generated for elements with an
+    // active ViewTransition, which requires the document to have a
+    // ViewTransitionSupplement.
+    if (has_pseudos || GetDocument().GetViewTransitionsIfExists()) {
+      UpdateTransitionPseudoElements(child_change, child_recalc_context);
+    }
 
     if (RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled() &&
         IsDocumentElement()) {
@@ -10614,6 +10639,9 @@ String Element::TextFromChildren() {
 }
 
 const AtomicString& Element::ShadowPseudoId() const {
+  if (!IsInShadowTree()) {
+    return g_null_atom;
+  }
   if (ShadowRoot* root = ContainingShadowRoot()) {
     if (root->IsUserAgent()) {
       return FastGetAttribute(html_names::kPseudoAttr);

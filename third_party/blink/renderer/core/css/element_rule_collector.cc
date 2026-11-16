@@ -840,27 +840,29 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       style_recalc_context_.style_scope_frame, matching_ua_rules_,
       matching_rules_from_no_style_sheet_, style_recalc_context_, mode_);
   Element& element = *context.context.element;
-  const AtomicString pseudo_id = element.ShadowPseudoId();
-  if (!pseudo_id.empty()) {
-    DCHECK(element.IsStyledElement());
-    for (const auto bundle : match_request.AllRuleSets()) {
-      if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->UAShadowPseudoElementRules(pseudo_id),
-              match_request, bundle.rule_set, bundle.style_sheet_index, checker,
-              context) &&
-          stop_at_first_match) {
-        return true;
+  if (element.IsInShadowTree()) {
+    const AtomicString pseudo_id = element.ShadowPseudoId();
+    if (!pseudo_id.empty()) {
+      DCHECK(element.IsStyledElement());
+      for (const auto bundle : match_request.AllRuleSets()) {
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->UAShadowPseudoElementRules(pseudo_id),
+                match_request, bundle.rule_set, bundle.style_sheet_index,
+                checker, context) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
     }
-  }
 
-  if (element.IsVTTElement()) {
-    for (const auto bundle : match_request.AllRuleSets()) {
-      if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->CuePseudoRules(), match_request, bundle.rule_set,
-              bundle.style_sheet_index, checker, context) &&
-          stop_at_first_match) {
-        return true;
+    if (element.IsVTTElement()) {
+      for (const auto bundle : match_request.AllRuleSets()) {
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->CuePseudoRules(), match_request,
+                bundle.rule_set, bundle.style_sheet_index, checker, context) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
     }
   }

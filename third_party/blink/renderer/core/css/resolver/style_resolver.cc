@@ -946,7 +946,12 @@ void MatchElementScopeRules(const Element& element,
                             ElementRuleCollector& collector,
                             StyleRuleUsageTracker* tracker) {
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
-  UAShadowPseudoResult spr = UAShadowPseudoCascading(element);
+  // UA shadow pseudo-element cascading and ::part() rules only apply to
+  // elements inside shadow trees.
+  const bool in_shadow_tree = element.IsInShadowTree();
+  const bool cascade_style_attribute_in_parent_scope =
+      in_shadow_tree &&
+      UAShadowPseudoCascading(element).cascade_style_attribute_in_parent_scope;
 
   collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   if (element_scope_resolver) {
@@ -956,11 +961,13 @@ void MatchElementScopeRules(const Element& element,
     element_scope_resolver->CollectMatchingElementScopeRules(
         element.GetTreeScope().RootNode(), collector,
         /*part_shadow_host*/ nullptr);
-    MatchHostPartRules(element, collector, tracker);
+    if (in_shadow_tree) {
+      MatchHostPartRules(element, collector, tracker);
+    }
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
-  if (!spr.cascade_style_attribute_in_parent_scope) {
+  if (!cascade_style_attribute_in_parent_scope) {
     MatchStyleAttribute(element, collector, tracker);
   }
 }
@@ -1093,11 +1100,19 @@ void StyleResolver::MatchAuthorRules(const Element& element,
                                      ElementRuleCollector& collector) {
   const Element& originating_element =
       UltimateOriginatingElementOrSelf(element);
+  // Pseudo-elements are in the same tree scope as their originating element.
+  const bool in_shadow_tree = originating_element.IsInShadowTree();
   MatchHostRules(originating_element, collector, tracker_);
-  MatchSlottedRules(originating_element, collector, tracker_);
+  // ::slotted() rules can only match slotted elements (children of shadow
+  // hosts), or UA shadow pseudo-elements (see MatchSlottedRulesForUAHost()).
+  if (in_shadow_tree || IsShadowHost(originating_element.parentElement())) {
+    MatchSlottedRules(originating_element, collector, tracker_);
+  }
   MatchElementScopeRules(element, collector, tracker_);
-  MatchOuterScopeRules(originating_element, collector, tracker_);
-  MatchVTTRules(element, collector, tracker_);
+  if (in_shadow_tree) {
+    MatchOuterScopeRules(originating_element, collector, tracker_);
+    MatchVTTRules(element, collector, tracker_);
+  }
   MatchPositionTryRules(collector);
 }
 
@@ -3106,14 +3121,17 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // This can be overridden by matched properties, so we don't want to do
     // it when we have a cache hit; both this fixup and any overriding of it
     // have already been applied in the cached data.
-    if (!IsForPseudoElement(element, style_request) && element.AssignedSlot()) {
+    if (!IsForPseudoElement(element, style_request)) {
       if (Element* parent = element.parentElement()) {
-        if (!RuntimeEnabledFeatures::
-                InheritUserModifyWithoutContenteditableEnabled() ||
-            !element.FastHasAttribute(html_names::kContenteditableAttr)) {
-          if (const ComputedStyle* shadow_host_style =
-                  parent->GetComputedStyle()) {
-            state.StyleBuilder().SetUserModify(shadow_host_style->UserModify());
+        if (IsShadowHost(*parent) && element.AssignedSlot()) {
+          if (!RuntimeEnabledFeatures::
+                  InheritUserModifyWithoutContenteditableEnabled() ||
+              !element.FastHasAttribute(html_names::kContenteditableAttr)) {
+            if (const ComputedStyle* shadow_host_style =
+                    parent->GetComputedStyle()) {
+              state.StyleBuilder().SetUserModify(
+                  shadow_host_style->UserModify());
+            }
           }
         }
       }

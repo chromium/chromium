@@ -394,7 +394,7 @@ static bool IsOutermostSVGElement(const Element* element) {
 }
 
 static bool IsAtMediaUAShadowBoundary(const Element* element) {
-  if (!element) {
+  if (!element || !element->IsInShadowTree()) {
     return false;
   }
   if (ContainerNode* parent = element->parentNode()) {
@@ -413,11 +413,11 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 // to manually stop text-decorations to apply to text inside media controls.
 static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
-  return builder.IsAtomicInlineDisplayType() ||
+  return builder.IsAtomicInlineDisplayType() || builder.IsFloating() ||
+         builder.HasOutOfFlowPosition() ||
+         builder.Display() == EDisplay::kRubyText ||
          IsA<HTMLCanvasElement>(element) ||
-         IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
-         builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
-         builder.Display() == EDisplay::kRubyText;
+         IsAtMediaUAShadowBoundary(element) || IsOutermostSVGElement(element);
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
@@ -1644,23 +1644,25 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     return {ElementType::kIsNotElement};
   }
 
-  // Some UA shadow elements have special handling of background and
-  // text-overflow, as well as special slider container style.
-  // (It is possible that we could loosen this check a bit.)
-  if (!element.ShadowPseudoId().IsNull()) {
-    return {ElementType::kIsNotElement};
+  if (element.IsInShadowTree()) {
+    // Some UA shadow elements have special handling of background and
+    // text-overflow, as well as special slider container style.
+    // (It is possible that we could loosen this check a bit.)
+    if (!element.ShadowPseudoId().IsNull()) {
+      return {ElementType::kIsNotElement};
+    }
+
+    // UA media shadow boundaries have special rules around blockification
+    // and text decorations.
+    if (IsAtMediaUAShadowBoundary(&element)) {
+      return {ElementType::kIsNotElement};
+    }
   }
 
   // If the layout parent style inlinifies children, we need to do a tree walk
   // to find out if our (non-replaced) parent is a field set of media element
   // (see ShouldBeInlinified()).
   if (layout_parent_style.InlinifiesChildren()) {
-    return {ElementType::kIsNotElement};
-  }
-
-  // UA media shadow boundaries have special rules around blockification
-  // and text decorations.
-  if (IsAtMediaUAShadowBoundary(&element)) {
     return {ElementType::kIsNotElement};
   }
 
