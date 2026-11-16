@@ -1191,7 +1191,9 @@ void WebRtcEventLogManager::ClearCacheForBrowserContextInternal(
 void WebRtcEventLogManager::OnClearCacheForBrowserContextDoneInternal(
     base::OnceClosure reply) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK_GT(num_user_blocking_tasks_, 0u, base::NotFatalUntil::M161);
+  // TODO(crbug.com/584552050): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(num_user_blocking_tasks_, 0u);
   if (--num_user_blocking_tasks_ == 0) {
     task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
   }
