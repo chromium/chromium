@@ -123,6 +123,8 @@ if (is_android) {
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
+      "java/src/org/chromium/chrome/browser/history/CriticalActionsProperties.java",
+      "java/src/org/chromium/chrome/browser/history/CriticalActionsViewBinder.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetContent.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinator.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetMediator.java",
@@ -177,6 +179,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.history"
 
     sources = [
+      "java/src/org/chromium/chrome/browser/history/CriticalActionsViewBinderTest.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorAnchorUnitTest.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorUnitTest.java",
