@@ -43,7 +43,13 @@ class TaskQueue(object):
                 # TODO(crbug.com/1190269) - we can't use more than 56
                 # cores on Windows or Python3 may hang.
                 self._pool_size = min(self._pool_size, 56)
-            self._pool = multiprocessing.Pool(
+            # Python 3.14 changed the default start method on Linux from
+            # "fork" to "forkserver", which is much slower here because each
+            # worker must re-import modules.
+            mp_context = multiprocessing.get_context(
+                'fork' if sys.platform == 'linux' else None
+            )
+            self._pool = mp_context.Pool(
                 self._pool_size, package_initializer().init
             )
         self._requested_tasks = []  # List of _Task

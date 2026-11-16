@@ -6,7 +6,6 @@
 
 """Renders one or more template files using the Jinja template engine."""
 
-import codecs
 import argparse
 import os
 import sys
@@ -69,11 +68,13 @@ def _ProcessFile(processor, input_filename, output_filename):
     # If |output| is same with the file content, we skip update and
     # ninja's restat will avoid rebuilding things that depend on it.
     if os.path.isfile(output_filename):
-        with codecs.open(output_filename, 'r', 'utf-8') as f:
+        with open(output_filename, encoding='utf-8', newline='') as f:
             if f.read() == output:
                 return
 
-    with codecs.open(output_filename, 'w', 'utf-8') as output_file:
+    with open(
+        output_filename, 'w', encoding='utf-8', newline=''
+    ) as output_file:
         output_file.write(output)
 
 
@@ -120,7 +121,7 @@ def main():
     parser.add_argument(
         '--includes',
         default='',
-        help="GN-list of files that get {% include %}'ed.",
+        help="GN-list of files that get {%% include %%}'ed.",
     )
     parser.add_argument(
         '--output',

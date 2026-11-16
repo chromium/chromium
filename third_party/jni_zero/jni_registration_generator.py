@@ -72,7 +72,12 @@ def _LoadJniObjs(paths,
   else:
     func = functools.partial(_ParseHelper, package_prefix,
                              package_prefix_filter, enable_safe_pointers)
-    with multiprocessing.Pool() as pool:
+    # Python 3.14 changed the default start method on Linux from "fork" to
+    # "forkserver", which is much slower here because each worker must
+    # re-import modules.
+    mp_context = multiprocessing.get_context('fork' if sys.platform ==
+                                             'linux' else None)
+    with mp_context.Pool() as pool:
       errors = []
       for res in pool.imap_unordered(func, paths, chunksize=64):
         if isinstance(res, Exception):

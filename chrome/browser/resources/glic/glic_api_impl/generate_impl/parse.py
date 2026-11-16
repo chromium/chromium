@@ -7,7 +7,6 @@ This is a generic parser that outputs raw comments and structural info
 (camelCase).
 """
 
-import codecs
 import os
 import sys
 import json
@@ -207,7 +206,7 @@ def _ConvertModule(mojom_node, filename: str) -> dict:
 
 
 def ParseAst(mojom_abspath: str) -> dict:
-    with codecs.open(mojom_abspath, encoding='utf-8') as f:
+    with open(mojom_abspath, encoding='utf-8') as f:
         tree = parser.Parse(f.read(), mojom_abspath, with_comments=True)
         return _ConvertModule(tree, mojom_abspath)
 

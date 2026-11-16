@@ -31,7 +31,8 @@ from mojom.parse import conditional_features
 _ENABLE_MULTIPROCESSING = True
 
 # https://docs.python.org/3/library/multiprocessing.html#:~:text=bpo-33725
-if __name__ == '__main__' and sys.platform == 'darwin':
+# Python 3.14 also changed the default on Linux from "fork" to "forkserver".
+if __name__ == '__main__' and sys.platform in ('darwin', 'linux'):
   multiprocessing.set_start_method('fork')
 _MULTIPROCESSING_USES_FORK = multiprocessing.get_start_method() == 'fork'
 
