@@ -170,6 +170,18 @@ const char kImmediateTimeoutWhileWaitingForUi[] =
 // the bubble).
 constexpr base::TimeDelta kAmbientChipOnlyTimeout = base::Milliseconds(31415);
 
+// Enum for the WebAuthentication.Ambient.RequestedCredentialTypes histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientRequestedCredentialTypes {
+  // LINT.IfChange(AmbientRequestedCredentialTypes)
+  kPasskeysOnly = 0,
+  kPasswordsOnly = 1,
+  kPasskeysAndPasswords = 2,
+  kMaxValue = kPasskeysAndPasswords,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientRequestedCredentialTypes)
+};
+
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -1576,6 +1588,19 @@ void AuthenticatorCommonImpl::GetCredential(
   }
   blink::mojom::PublicKeyCredentialRequestOptions* public_key_options =
       options->public_key.get();
+  if (options->mediation == Mediation::AMBIENT &&
+      (public_key_options || options->password)) {
+    AmbientRequestedCredentialTypes requested_types;
+    if (public_key_options && options->password) {
+      requested_types = AmbientRequestedCredentialTypes::kPasskeysAndPasswords;
+    } else if (public_key_options) {
+      requested_types = AmbientRequestedCredentialTypes::kPasskeysOnly;
+    } else {
+      requested_types = AmbientRequestedCredentialTypes::kPasswordsOnly;
+    }
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.Ambient.RequestedCredentialTypes", requested_types);
+  }
   callback = base::BindOnce(
       &AuthenticatorCommonImpl::GetMetricsWrappedGetCredentialCallback,
       weak_factory_.GetWeakPtr(), std::move(callback));

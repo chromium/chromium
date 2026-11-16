@@ -22,10 +22,13 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/layout/layout_provider.h"
@@ -90,6 +93,8 @@ AmbientSigninController::~AmbientSigninController() {
 }
 
 void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
+  const bool record_metrics = !std::exchange(is_restarting_, false);
+
   if (!model_) {
     model_ = model;
     model_->observers.AddObserver(this);
@@ -108,12 +113,49 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
     }
   }
 
-  CHECK(!credential_indices_.empty());
+  if (credential_indices_.empty()) {
+    if (record_metrics) {
+      webauthn::metrics::RecordAmbientDisplayOutcome(
+          webauthn::metrics::AmbientDisplayOutcome::kNoCredentials);
+    }
+    return;
+  }
+
+  if (!render_frame_host().GetPage().IsPrimary()) {
+    if (record_metrics) {
+      webauthn::metrics::RecordAmbientDisplayOutcome(
+          webauthn::metrics::AmbientDisplayOutcome::kNotPrimaryPage);
+    }
+    return;
+  }
 
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
+  if (!web_contents ||
+      !permissions::PermissionRequestManager::FromWebContents(web_contents)) {
+    if (record_metrics) {
+      webauthn::metrics::RecordAmbientDisplayOutcome(
+          webauthn::metrics::AmbientDisplayOutcome::
+              kNoPermissionRequestManager);
+    }
     return;
+  }
+
+  auto* permission_controller =
+      AmbientLoginPermissionController::GetOrCreateForPage(
+          render_frame_host().GetPage());
+  if (permission_controller->state() !=
+      AmbientLoginPermissionController::State::kIdle) {
+    if (record_metrics) {
+      webauthn::metrics::RecordAmbientDisplayOutcome(
+          webauthn::metrics::AmbientDisplayOutcome::kAnotherRequestPending);
+    }
+    return;
+  }
+
+  if (record_metrics) {
+    webauthn::metrics::RecordAmbientDisplayOutcome(
+        webauthn::metrics::AmbientDisplayOutcome::kShown);
   }
 
   std::vector<ambient_signin::PasskeyOrPasswordCredential> credentials;
@@ -142,22 +184,42 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   const int dismissal_count = site_dict.FindInt(kDismissalCountKey).value_or(0);
   const std::optional<base::Time> last_dismissed =
       base::ValueToTime(site_dict.Find(kLastDismissedKey));
-  const bool bubble_starts_open =
-      !model_->ambient_chip_only &&
-      (dismissal_count < kMaxDismissalsBeforeCooldown ||
-       !last_dismissed.has_value() ||
-       base::Time::Now() - *last_dismissed >= kCooldownDuration);
+  const bool in_cooldown =
+      dismissal_count >= kMaxDismissalsBeforeCooldown &&
+      last_dismissed.has_value() &&
+      base::Time::Now() - *last_dismissed < kCooldownDuration;
+  const bool bubble_starts_open = !model_->ambient_chip_only && !in_cooldown;
 
-  auto* permission_controller =
-      AmbientLoginPermissionController::GetOrCreateForPage(
-          render_frame_host().GetPage());
+  if (record_metrics) {
+    if (bubble_starts_open) {
+      webauthn::metrics::RecordAmbientInitialUiMode(
+          webauthn::metrics::AmbientInitialUiMode::kBubble);
+    } else if (model_->ambient_chip_only) {
+      webauthn::metrics::RecordAmbientInitialUiMode(
+          webauthn::metrics::AmbientInitialUiMode::kChipOnlyRequestedBySite);
+    } else {
+      webauthn::metrics::RecordAmbientInitialUiMode(
+          webauthn::metrics::AmbientInitialUiMode::kChipOnlyCooldownActive);
+    }
+  }
+
+  request_active_ = record_metrics;
+  request_started_as_bubble_ = bubble_starts_open;
+  bubble_shown_ = false;
+  bubble_dismissed_ = false;
+  credential_selected_ = false;
+
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       render_frame_host().GetLastCommittedOrigin().GetURL(),
       std::move(credentials),
       base::BindOnce(&AmbientSigninController::OnMechanismSelected,
                      GetWeakPtr()),
       AmbientLoginPermissionRequest::Options{
+          .permission_decided_callback = base::BindRepeating(
+              &AmbientSigninController::OnPermissionDecided, GetWeakPtr()),
           .bubble_starts_open = bubble_starts_open,
+          .bubble_shown_callback = base::BindOnce(
+              &AmbientSigninController::OnBubbleShown, GetWeakPtr()),
           .bubble_dismissed_callback = base::BindOnce(
               &AmbientSigninController::OnBubbleDismissed, GetWeakPtr())});
   permission_controller->RequestPermission(&render_frame_host(),
@@ -168,8 +230,25 @@ AmbientSigninController::AmbientSigninController(
     RenderFrameHost* render_frame_host)
     : content::DocumentUserData<AmbientSigninController>(render_frame_host) {}
 
-void AmbientSigninController::OnMechanismSelected(size_t index) {
+void AmbientSigninController::OnMechanismSelected(size_t index,
+                                                  bool from_expanded_list) {
   CHECK(index < credential_indices_.size());
+  if (!bubble_shown_) {
+    OnBubbleShown();
+  }
+  if (request_active_) {
+    webauthn::metrics::RecordAmbientCredentialSelectionMethod(
+        from_expanded_list
+            ? (index == 0
+                   ? webauthn::metrics::AmbientCredentialSelectionMethod::
+                         kExpandedDefaultCredentialClicked
+                   : webauthn::metrics::AmbientCredentialSelectionMethod::
+                         kExpandedNonDefaultCredentialClicked)
+            : webauthn::metrics::AmbientCredentialSelectionMethod::
+                  kSignInButtonClicked);
+  }
+  credential_selected_ = true;
+  FinalizeRequestMetrics();
   // Reset any dismissal count and cooldown for the site.
   SetPromptData(GetTopLevelUrl(render_frame_host()),
                 render_frame_host().GetBrowserContext(), base::Value());
@@ -178,7 +257,20 @@ void AmbientSigninController::OnMechanismSelected(size_t index) {
   }
 }
 
+void AmbientSigninController::OnBubbleShown() {
+  if (!request_active_ || bubble_shown_) {
+    return;
+  }
+  bubble_shown_ = true;
+  webauthn::metrics::RecordAmbientBubbleCredentialCount(
+      credential_indices_.size());
+}
+
 void AmbientSigninController::OnBubbleDismissed() {
+  if (!bubble_shown_) {
+    OnBubbleShown();
+  }
+  bubble_dismissed_ = true;
   const GURL top_level_url = GetTopLevelUrl(render_frame_host());
   content::BrowserContext* browser_context =
       render_frame_host().GetBrowserContext();
@@ -192,7 +284,42 @@ void AmbientSigninController::OnBubbleDismissed() {
                 base::Value(std::move(site_dict)), std::move(constraints));
 }
 
+void AmbientSigninController::OnPermissionDecided(
+    const permissions::PermissionPromptDecision& decision,
+    const permissions::PermissionRequestData& request_data) {
+  FinalizeRequestMetrics();
+}
+
+void AmbientSigninController::FinalizeRequestMetrics() {
+  if (!request_active_) {
+    return;
+  }
+  request_active_ = false;
+
+  if (!request_started_as_bubble_) {
+    webauthn::metrics::RecordAmbientChipOnlyOutcome(
+        bubble_shown_
+            ? webauthn::metrics::AmbientChipOnlyOutcome::kBubbleActivated
+            : webauthn::metrics::AmbientChipOnlyOutcome::kIgnored);
+  }
+
+  if (bubble_shown_) {
+    webauthn::metrics::AmbientBubbleResolution resolution;
+    if (credential_selected_) {
+      resolution =
+          webauthn::metrics::AmbientBubbleResolution::kCredentialSelected;
+    } else if (bubble_dismissed_) {
+      resolution = webauthn::metrics::AmbientBubbleResolution::kDismissed;
+    } else {
+      resolution = webauthn::metrics::AmbientBubbleResolution::kIgnored;
+    }
+    webauthn::metrics::RecordAmbientBubbleResolution(request_started_as_bubble_,
+                                                     resolution);
+  }
+}
+
 void AmbientSigninController::Close() {
+  FinalizeRequestMetrics();
   if (auto* permission_controller =
           AmbientLoginPermissionController::GetForPage(
               render_frame_host().GetPage())) {
@@ -203,7 +330,12 @@ void AmbientSigninController::Close() {
   }
 }
 
+void AmbientSigninController::OnStartOver() {
+  is_restarting_ = true;
+}
+
 void AmbientSigninController::OnRequestComplete() {
+  is_restarting_ = false;
   if (model_) {
     model_->observers.RemoveObserver(this);
     model_ = nullptr;
@@ -214,6 +346,7 @@ void AmbientSigninController::OnRequestComplete() {
 void AmbientSigninController::OnModelDestroyed(
     AuthenticatorRequestDialogModel* model) {
   CHECK(model == model_);
+  is_restarting_ = false;
   model_->observers.RemoveObserver(this);
   model_ = nullptr;
   Close();

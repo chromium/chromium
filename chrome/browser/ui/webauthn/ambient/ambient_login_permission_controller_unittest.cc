@@ -82,7 +82,7 @@ TEST_F(AmbientLoginPermissionControllerTest, InitialStateIsIdle) {
 
 TEST_F(AmbientLoginPermissionControllerTest, RequestPermission) {
   base::RunLoop run_loop;
-  base::MockRepeatingCallback<void(size_t)> credential_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> credential_selected_callback;
   EXPECT_CALL(credential_selected_callback, Run).Times(0);
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
@@ -116,7 +116,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
             controller());
 
   base::RunLoop run_loop;
-  base::MockRepeatingCallback<void(size_t)> credential_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> credential_selected_callback;
   EXPECT_CALL(credential_selected_callback, Run).Times(0);
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
@@ -145,7 +145,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
 TEST_F(AmbientLoginPermissionControllerTest,
        SecondRequestFailsWhileFirstIsOutstanding) {
   base::RunLoop first_finished_loop;
-  base::MockRepeatingCallback<void(size_t)> first_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> first_selected_callback;
   EXPECT_CALL(first_selected_callback, Run).Times(0);
 
   auto request1 = std::make_unique<AmbientLoginPermissionRequest>(
@@ -160,7 +160,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   EXPECT_EQ(controller()->state(),
             AmbientLoginPermissionController::State::kRequestAdded);
 
-  base::MockRepeatingCallback<void(size_t)> second_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> second_selected_callback;
   EXPECT_CALL(second_selected_callback, Run).Times(0);
   base::MockRepeatingCallback<void(const permissions::PermissionPromptDecision&,
                                    const permissions::PermissionRequestData&)>
@@ -200,7 +200,7 @@ TEST_F(AmbientLoginPermissionControllerTest, RequestPermissionWithCredentials) {
        CredentialType::kPasskey},
       {u"bob@example.com", u"Google Password Manager",
        CredentialType::kPassword}};
-  base::MockRepeatingCallback<void(size_t)> credential_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> credential_selected_callback;
   EXPECT_CALL(credential_selected_callback, Run).Times(0);
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
@@ -227,7 +227,7 @@ TEST_F(AmbientLoginPermissionControllerTest, RequestPermissionWithCredentials) {
 TEST_F(AmbientLoginPermissionControllerTest,
        ResetWhenRequestPendingDoesNotCrash) {
   base::RunLoop run_loop;
-  base::MockRepeatingCallback<void(size_t)> credential_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> credential_selected_callback;
   EXPECT_CALL(credential_selected_callback, Run).Times(0);
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
@@ -250,7 +250,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
 
 TEST_F(AmbientLoginPermissionControllerTest, ResetWhenTabHiddenDoesNotCrash) {
   base::RunLoop run_loop;
-  base::MockRepeatingCallback<void(size_t)> credential_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> credential_selected_callback;
   EXPECT_CALL(credential_selected_callback, Run).Times(0);
 
   std::unique_ptr<AmbientLoginPermissionRequest> request =
@@ -282,7 +282,7 @@ TEST_F(AmbientLoginPermissionControllerTest, ResetWhenTabHiddenDoesNotCrash) {
 TEST_F(AmbientLoginPermissionControllerTest,
        ResetDoesNotDismissUnrelatedActivePrompt) {
   base::RunLoop ambient_finished_loop;
-  base::MockRepeatingCallback<void(size_t)> ambient_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> ambient_selected_callback;
   EXPECT_CALL(ambient_selected_callback, Run).Times(0);
 
   auto ambient_request = std::make_unique<AmbientLoginPermissionRequest>(
@@ -332,8 +332,8 @@ TEST_F(AmbientLoginPermissionControllerTest,
 TEST_F(AmbientLoginPermissionControllerTest,
        FinishedControllerDoesNotDismissSubsequentControllerPrompt) {
   base::RunLoop first_finished_loop;
-  base::MockRepeatingCallback<void(size_t)> first_selected_callback;
-  EXPECT_CALL(first_selected_callback, Run(0u));
+  base::MockRepeatingCallback<void(size_t, bool)> first_selected_callback;
+  EXPECT_CALL(first_selected_callback, Run(0u, false));
 
   std::unique_ptr<AmbientLoginPermissionRequest> request1 =
       std::make_unique<AmbientLoginPermissionRequest>(
@@ -355,7 +355,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   // Directly add `request2` to `PermissionRequestManager` (as another page's
   // `AmbientLoginPermissionController` in the same `WebContents` would) while
   // `controller()` is idle.
-  base::MockRepeatingCallback<void(size_t)> second_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> second_selected_callback;
   EXPECT_CALL(second_selected_callback, Run).Times(0);
 
   std::unique_ptr<AmbientLoginPermissionRequest> request2 =
@@ -374,10 +374,10 @@ TEST_F(AmbientLoginPermissionControllerTest,
 
 TEST_F(AmbientLoginPermissionControllerTest,
        ResetWhilePendingFollowedByNewRequestFromSameOriginShowsSecondRequest) {
-  base::MockRepeatingCallback<void(size_t index)> request1_selected_callback;
-  base::MockRepeatingCallback<void(size_t index)> request2_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> request1_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> request2_selected_callback;
   EXPECT_CALL(request1_selected_callback, Run).Times(0);
-  EXPECT_CALL(request2_selected_callback, Run(0u));
+  EXPECT_CALL(request2_selected_callback, Run(0u, false));
 
   std::unique_ptr<AmbientLoginPermissionRequest> request1 =
       std::make_unique<AmbientLoginPermissionRequest>(
@@ -431,8 +431,8 @@ TEST_F(AmbientLoginPermissionControllerTest,
   permission_request_manager()->set_auto_response_for_test(
       permissions::PermissionRequestManager::DISMISS);
 
-  base::MockRepeatingCallback<void(size_t)> request1_selected_callback;
-  base::MockRepeatingCallback<void(size_t)> request2_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> request1_selected_callback;
+  base::MockRepeatingCallback<void(size_t, bool)> request2_selected_callback;
   EXPECT_CALL(request1_selected_callback, Run).Times(0);
   EXPECT_CALL(request2_selected_callback, Run).Times(0);
 

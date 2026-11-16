@@ -1285,6 +1285,7 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
 
 // Tests that the ambient UI permission request is shown and can be accepted.
 IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUISingleCredential) {
+  base::HistogramTester histograms;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -1321,6 +1322,22 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUISingleCredential) {
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");
+
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.RequestedCredentialTypes", 0 /*PasskeysOnly*/,
+      1);
+  histograms.ExpectUniqueSample("WebAuthentication.Ambient.DisplayOutcome",
+                                0 /*Shown*/, 1);
+  histograms.ExpectUniqueSample("WebAuthentication.Ambient.InitialUiMode",
+                                0 /*Bubble*/, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.BubbleCredentialCount", 1, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown",
+      0 /*CredentialSelected*/, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.CredentialSelectionMethod",
+      0 /*SignInButtonClicked*/, 1);
 }
 
 // Tests that closing the ambient UI bubble keeps the request pending and the
