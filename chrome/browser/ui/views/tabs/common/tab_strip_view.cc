@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -224,7 +225,7 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
 
 TabStripView::TabStripView(RootTabCollectionNode* collection_node)
     : orientation_(collection_node->orientation()),
-      collection_node_(collection_node),
+      collection_node_(CHECK_DEREF(collection_node)),
       are_separators_hidden_(ShouldHideSeparators()),
       target_views_tracker_(
           std::make_unique<TargetViewsTracker>(orientation_)) {
@@ -273,10 +274,6 @@ TabStripView::TabStripView(RootTabCollectionNode* collection_node)
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabStripView::RemoveScrollViewContents, base::Unretained(this)));
 
-  callback_subscriptions_.emplace_back(
-      collection_node_->RegisterWillDestroyCallback(base::BindOnce(
-          &TabStripView::ResetCollectionNode, base::Unretained(this))));
-
   if (tab_scroll_button_container_) {
     callback_subscriptions_.emplace_back(
         tab_scroll_button_container_->AddVisibleChangedCallback(
@@ -308,10 +305,6 @@ TabStripView::~TabStripView() {
   if (tab_scroll_button_container_) {
     tab_scroll_button_container_->SetScrollView(nullptr);
   }
-}
-
-const TabStripCollectionController* TabStripView::GetController() const {
-  return collection_node_ ? collection_node_->GetController() : nullptr;
 }
 
 void TabStripView::Layout(PassKey) {
@@ -351,10 +344,6 @@ void TabStripView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void TabStripView::OnMouseExited(const ui::MouseEvent& event) {
-  if (!collection_node_) {
-    return;
-  }
-
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(nullptr,
@@ -364,10 +353,6 @@ void TabStripView::OnMouseExited(const ui::MouseEvent& event) {
 
 void TabStripView::OnWidgetActivationChanged(views::Widget* widget,
                                              bool active) {
-  if (!collection_node_) {
-    return;
-  }
-
   if (active &&
       ui::AXPlatform::GetInstance().active_assistive_tech() ==
           ui::AssistiveTech::kJaws &&
@@ -401,17 +386,11 @@ void TabStripView::OnWidgetVisibilityChanged(views::Widget* widget,
   if (visible && is_first_window_presentation_) {
     is_first_window_presentation_ = false;
     // Only scroll-in the active tab for the first window presentation.
-    if (collection_node_) {
-      OnActiveTabChanged(collection_node_->GetController()->GetActiveTab());
-    }
+    OnActiveTabChanged(collection_node_->GetController()->GetActiveTab());
   }
 }
 
 void TabStripView::OnChildrenAdded(const tabs::TabCollectionNodes& handles) {
-  if (!collection_node_) {
-    return;
-  }
-
   UpdateSeparatorVisibility();
 
   const tabs::TabInterface* active_tab =
@@ -436,17 +415,13 @@ void TabStripView::OnChildrenAdded(const tabs::TabCollectionNodes& handles) {
 }
 
 void TabStripView::OnChildrenRemoved() {
-  if (!collection_node_) {
-    return;
-  }
-
   UpdateSeparatorVisibility();
 }
 
 void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   CHECK(moved_node);
 
-  if (!collection_node_ || is_first_window_presentation_ ||
+  if (is_first_window_presentation_ ||
       collection_node_->GetController()->GetDragHandler().IsDragging()) {
     return;
   }
@@ -493,7 +468,7 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
 }
 
 void TabStripView::OnActiveTabChanged(const tabs::TabInterface* active_tab) {
-  if (!collection_node_ || !active_tab || is_first_window_presentation_) {
+  if (!active_tab || is_first_window_presentation_) {
     return;
   }
 
@@ -523,7 +498,7 @@ void TabStripView::OnActiveTabChanged(const tabs::TabInterface* active_tab) {
 
 void TabStripView::ScrollToFitTabs(const tabs::TabInterface* active_tab,
                                    const tabs::TabInterface* new_tab) {
-  if (!collection_node_ || (!active_tab && !new_tab)) {
+  if (!active_tab && !new_tab) {
     return;
   }
 
@@ -778,7 +753,6 @@ void TabStripView::RemoveScrollViewContents(views::View* view) {
 void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetUseContentsPreferredSize(true);
   scroll_view->SetBackgroundColor(std::nullopt);
-  CHECK(collection_node_);
   if (orientation_ == TabStripOrientation::kVertical) {
     scroll_view->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
@@ -844,18 +818,9 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
           &TabStripView::OnContentsScrolled, base::Unretained(this))));
 }
 
-void TabStripView::ResetCollectionNode() {
-  collection_node_ = nullptr;
-  if (tab_scroll_button_container_) {
-    tab_scroll_button_container_->SetScrollView(nullptr);
-  }
-  pref_change_registrar_.Reset();
-}
-
 PrefService* TabStripView::GetPrefs() const {
   BrowserView* browser_view =
-      collection_node_ ? collection_node_->GetController()->GetBrowserView()
-                       : nullptr;
+      collection_node_->GetController()->GetBrowserView();
   if (!browser_view || !browser_view->browser()) {
     return nullptr;
   }
@@ -871,8 +836,7 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
   // Guard against views being removed from the tree between frames. Dragging a
   // view out of the visible bounds will also trigger a scroll naturally.
   if (!target_views_tracker_ || target_views_tracker_->empty() ||
-      (collection_node_ &&
-       collection_node_->GetController()->GetDragHandler().IsDragging())) {
+      collection_node_->GetController()->GetDragHandler().IsDragging()) {
     EnableOverflowVisuals(scroll_view);
     return;
   }
@@ -1168,10 +1132,6 @@ void TabStripView::OnContentsScrolled() {
 }
 
 void TabStripView::HideHoverCardOnScroll() {
-  if (!collection_node_) {
-    return;
-  }
-
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController();
       hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
@@ -1184,14 +1144,13 @@ void TabStripView::OnScrollButtonsVisibilityChanged() {
   // Only scroll to the active tab if a scroll request isn't already pending
   // (e.g. from adding or activating a tab) to avoid overwriting any tracked
   // secondary target view.
-  if (collection_node_ && tab_scroll_button_container_->GetVisible() &&
+  if (tab_scroll_button_container_->GetVisible() &&
       target_views_tracker_->empty()) {
     ScrollToFitTabs(collection_node_->GetController()->GetActiveTab(), nullptr);
   }
 }
 
 bool TabStripView::ShouldHideSeparators() const {
-  CHECK(collection_node_);
   return orientation_ == TabStripOrientation::kHorizontal &&
          features::IsTabStripDeclutterEnabled() &&
          collection_node_->GetController()->GetTabCount() >=

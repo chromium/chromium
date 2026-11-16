@@ -366,9 +366,8 @@ std::optional<int>
 TabStripViewLayout::GetClosingModeUnpinnedContainerOverrideWidth(
     const TabStripView* tab_strip_view) const {
   const TabStripCollectionController* controller =
-      tab_strip_view && tab_strip_view->collection_node_
-          ? tab_strip_view->collection_node_->GetController()
-          : nullptr;
+      tab_strip_view ? tab_strip_view->collection_node_->GetController()
+                     : nullptr;
   if (controller && controller->tab_closing_helper()) {
     return controller->tab_closing_helper()
         ->override_available_width_for_tabs();

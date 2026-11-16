@@ -7,7 +7,9 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -146,13 +148,12 @@ std::unique_ptr<TabView::LayoutManager> CreateTabViewLayout(
 
 class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
  public:
-  explicit TabStyleViewDelegateImpl(const TabView* tab_view)
-      : tab_view_(tab_view) {
-    CHECK(tab_view_);
-  }
+  TabStyleViewDelegateImpl(const TabView& tab_view,
+                           const TabStripCollectionController& controller)
+      : tab_view_(tab_view), controller_(controller) {}
   ~TabStyleViewDelegateImpl() override = default;
 
-  const views::View* GetView() const override { return tab_view_; }
+  const views::View* GetView() const override { return &tab_view_.get(); }
 
   bool IsActive() const override { return tab_view_->IsActive(); }
 
@@ -172,11 +173,10 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   std::optional<SkColor> GetGroupColor() const override {
-    const auto* controller = tab_view_->collection_node()
-                                 ? tab_view_->collection_node()->GetController()
-                                 : nullptr;
-    return controller ? controller->GetGroupColor(tab_view_->GetTabInterface())
-                      : std::nullopt;
+    const tabs::TabInterface* const tab_interface =
+        tab_view_->GetTabInterface();
+    return tab_interface ? controller_->GetGroupColor(tab_interface)
+                         : std::nullopt;
   }
 
   bool IsInFocusedGroup() const override {
@@ -184,10 +184,7 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (!group.has_value()) {
       return false;
     }
-    const auto* controller = tab_view_->collection_node()
-                                 ? tab_view_->collection_node()->GetController()
-                                 : nullptr;
-    return controller && controller->GetFocusedGroup() == group;
+    return controller_->GetFocusedGroup() == group;
   }
 
   bool IsGroupCollapsed() const override {
@@ -195,10 +192,7 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (!group.has_value()) {
       return false;
     }
-    const auto* controller = tab_view_->collection_node()
-                                 ? tab_view_->collection_node()->GetController()
-                                 : nullptr;
-    return controller && controller->IsGroupCollapsed(group.value());
+    return controller_->IsGroupCollapsed(group.value());
   }
 
   bool IsSplit() const override { return tab_view_->split(); }
@@ -220,7 +214,8 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (children.size() < 2) {
       return true;
     }
-    return tab_view_ == children[base::i18n::IsRTL() ? children.size() - 1 : 0];
+    return &tab_view_.get() ==
+           children[base::i18n::IsRTL() ? children.size() - 1 : 0];
   }
 
   bool IsRightSplitTab() const override {
@@ -236,17 +231,16 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (children.size() < 2) {
       return true;
     }
-    return tab_view_ == children[base::i18n::IsRTL() ? 0 : children.size() - 1];
+    return &tab_view_.get() ==
+           children[base::i18n::IsRTL() ? 0 : children.size() - 1];
   }
 
   const TabStyleViewDelegate* GetAdjacentTab(bool leading) const override {
-    const auto* controller = tab_view_->collection_node()
-                                 ? tab_view_->collection_node()->GetController()
-                                 : nullptr;
+    const tabs::TabInterface* const tab_interface =
+        tab_view_->GetTabInterface();
     const TabCollectionNode* adjacent_node =
-        controller
-            ? controller->GetAdjacentTab(tab_view_->GetTabInterface(), leading)
-            : nullptr;
+        tab_interface ? controller_->GetAdjacentTab(tab_interface, leading)
+                      : nullptr;
     const TabView* adjacent_view =
         adjacent_node ? views::AsViewClass<TabView>(adjacent_node->view())
                       : nullptr;
@@ -266,29 +260,21 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   GlowHoverController* GetHoverControllerForTesting() override {
-    return const_cast<TabView*>(tab_view_.get())
+    return const_cast<TabView*>(&tab_view_.get())
         ->GetHoverControllerForTesting();  // IN-TEST
   }
 
   BrowserFrameView* GetBrowserFrameView() const override {
-    const auto* controller = GetController();
-    return controller ? controller->GetBrowserFrameView() : nullptr;
+    return controller_->GetBrowserFrameView();
   }
 
   BrowserWindowInterface* GetBrowserWindowInterface() const override {
-    const auto* controller = GetController();
-    return controller ? controller->GetBrowserWindowInterface() : nullptr;
+    return controller_->GetBrowserWindowInterface();
   }
 
-  int GetTabCount() const override {
-    const auto* controller = GetController();
-    return controller ? controller->GetTabCount() : 0;
-  }
+  int GetTabCount() const override { return controller_->GetTabCount(); }
 
-  bool IsGlassFrame() const override {
-    const auto* controller = GetController();
-    return controller ? controller->IsGlassFrame() : false;
-  }
+  bool IsGlassFrame() const override { return controller_->IsGlassFrame(); }
 
   bool IsPinned() const override { return tab_view_->pinned_; }
 
@@ -297,20 +283,12 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   int GetStrokeThickness() const override {
-    const auto* controller = GetController();
-    return controller ? controller->GetStrokeThickness() : 0;
+    return controller_->GetStrokeThickness();
   }
 
  private:
-  const TabStripCollectionController* GetController() const {
-    if (tab_view_->collection_node()) {
-      return tab_view_->collection_node()->GetController();
-    }
-    const TabStripView* tab_strip_view = GetTabStripView(tab_view_.get());
-    return tab_strip_view ? tab_strip_view->GetController() : nullptr;
-  }
-
-  const raw_ptr<const TabView> tab_view_;
+  const raw_ref<const TabView> tab_view_;
+  const raw_ref<const TabStripCollectionController> controller_;
 };
 
 TabView::TabView(TabCollectionNode* collection_node)
@@ -318,7 +296,9 @@ TabView::TabView(TabCollectionNode* collection_node)
       collection_node_(collection_node),
       orientation_(collection_node->orientation()),
       tab_styling_(TabStyleViews::Create(
-          std::make_unique<TabStyleViewDelegateImpl>(this),
+          std::make_unique<TabStyleViewDelegateImpl>(
+              *this,
+              CHECK_DEREF(collection_node->GetController())),
           orientation_)),
       // Title must be below the favicon in the z-order as the title should be
       // drawn under the favicon during the title animation for horizontal tabs.
