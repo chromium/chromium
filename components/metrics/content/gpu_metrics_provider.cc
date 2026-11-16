@@ -16,13 +16,24 @@ GPUMetricsProvider::GPUMetricsProvider() = default;
 
 GPUMetricsProvider::~GPUMetricsProvider() = default;
 
-void GPUMetricsProvider::ProvideSystemProfileMetrics(
+void GPUMetricsProvider::ProvideSystemProfileMetricsFromCache(
+    const SystemProfileProto& cached_system_profile,
     SystemProfileProto* system_profile_proto) {
+  if (cached_system_profile.hardware().has_gpu()) {
+    *system_profile_proto->mutable_hardware()->mutable_gpu() =
+        cached_system_profile.hardware().gpu();
+  }
+}
+
+void GPUMetricsProvider::ProvideSystemProfileMetricsNormal(
+    SystemProfileProto* system_profile_proto) {
+  const gpu::GPUInfo& gpu_info = GetGPUInfo();
+  if (!gpu_info.IsInitialized()) {
+    return;
+  }
+
   SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
-
-  const gpu::GPUInfo& gpu_info =
-      content::GpuDataManager::GetInstance()->GetGPUInfo();
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   SystemProfileProto::Hardware::Graphics* gpu = hardware->mutable_gpu();
   gpu->set_vendor_id(active_gpu.vendor_id);
@@ -35,8 +46,7 @@ void GPUMetricsProvider::ProvideSystemProfileMetrics(
 void GPUMetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
 #if BUILDFLAG(IS_ANDROID)
-  const gpu::GPUInfo& gpu_info =
-      content::GpuDataManager::GetInstance()->GetGPUInfo();
+  const gpu::GPUInfo& gpu_info = GetGPUInfo();
 
   // It's intentional that GPU.HardwareSupportsVulkan isn't logged for the
   // previous session. The value is unlikely to change between sessions but
@@ -47,6 +57,10 @@ void GPUMetricsProvider::ProvideCurrentSessionData(
                           gpu_info.hardware_supports_vulkan);
   }
 #endif
+}
+
+gpu::GPUInfo GPUMetricsProvider::GetGPUInfo() const {
+  return content::GpuDataManager::GetInstance()->GetGPUInfo();
 }
 
 }  // namespace metrics

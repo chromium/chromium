@@ -77,11 +77,6 @@ bool EnvironmentRecorder::LoadEnvironmentFromPrefs(
   return true;
 }
 
-void EnvironmentRecorder::ClearEnvironmentFromPrefs() {
-  local_state_->ClearPref(prefs::kStabilitySavedSystemProfile);
-  local_state_->ClearPref(prefs::kStabilitySavedSystemProfileHash);
-}
-
 int64_t EnvironmentRecorder::GetLastBuildtime() {
   return local_state_->GetInt64(prefs::kStabilityStatsBuildTime);
 }
