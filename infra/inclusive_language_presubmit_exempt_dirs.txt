@@ -444,7 +444,7 @@ third_party/fdlibm
 third_party/federated_compute/chromium/fcp/protos/federatedcompute
 third_party/federated_compute/third_party/protodatastore-cpp/src
 third_party/federated_compute/third_party/tensorflow-federated/src/tensorflow_federated/cc/core/impl/aggregation/core
-third_party/fusejs/dist
+third_party/fusejs/src/dist
 third_party/google-closure-library
 third_party/google-closure-library/closure-deps
 third_party/google-closure-library/closure-deps/lib
