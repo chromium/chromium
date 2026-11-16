@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -27,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +43,12 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
@@ -59,6 +65,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -82,6 +89,43 @@ std::u16string GetRatingAccessibleName(double rating, int rating_count) {
   return base::i18n::MessageFormatter::FormatWithNumberedArgs(
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
       rating, rating_count);
+}
+
+// Returns the vertical space available for the dialog between its top edge and
+// the bottom of `work_area`.
+int GetAvailableDialogHeight(gfx::NativeWindow parent_window,
+                             const gfx::Rect& work_area) {
+  if (!parent_window) {
+    return work_area.height();
+  }
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+          parent_window);
+  web_modal::WebContentsModalDialogHost* dialog_host =
+      browser ? browser->GetWebContentsModalDialogHostForWindow() : nullptr;
+  if (!dialog_host) {
+    return work_area.height();
+  }
+
+  // `GetDialogPosition()` returns the dialog's top-left offset relative to the
+  // host view.
+  const int dialog_offset_y = dialog_host->GetDialogPosition(gfx::Size()).y();
+  if (constrained_window::SupportsGlobalScreenCoordinates()) {
+    // When global screen coordinates are supported, convert the host-relative
+    // offset into screen coordinates so it can be compared directly against
+    // `work_area.bottom()`.
+    if (views::Widget* host_widget =
+            views::Widget::GetWidgetForNativeView(dialog_host->GetHostView())) {
+      const int dialog_top_y =
+          host_widget->GetClientAreaBoundsInScreen().y() + dialog_offset_y;
+      return work_area.bottom() - dialog_top_y;
+    }
+  }
+  // On platforms without global screen coordinates (e.g. Ozone/Wayland),
+  // window bounds are local to the root window while `work_area` may have a
+  // non-zero origin on multi-monitor setups, so subtract the widget-local
+  // offset from `work_area.height()`.
+  return work_area.height() - dialog_offset_y;
 }
 
 void ShowExtensionInstallDialogImpl(
@@ -368,6 +412,15 @@ void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
 void ExtensionInstallDialogView::AddedToWidget() {
   auto title_container = CreateTitleContainer();
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
+
+  if (scroll_view_ && GetDialogClientView()) {
+    // `AddedToWidget()` is called on children before their parent
+    // `DialogClientView` initializes its button row in
+    // `ViewHierarchyChanged()`. Wait for `OnViewAddedToWidget()` on
+    // `DialogClientView` so `UpdateScrollViewMaxHeight()` includes the button
+    // row height.
+    dialog_client_view_observation_.Observe(GetDialogClientView());
+  }
 
   picture_in_picture_input_protector_ =
       std::make_unique<PictureInPictureInputProtector>(
@@ -752,15 +805,68 @@ void ExtensionInstallDialogView::ContentsChanged(
   }
 }
 
+void ExtensionInstallDialogView::UpdateScrollViewMaxHeight() {
+  if (!scroll_view_ || !GetWidget() || !GetWidget()->non_client_view()) {
+    return;
+  }
+
+  const views::LayoutProvider* provider = views::LayoutProvider::Get();
+  const int modal_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+  const int min_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+
+  gfx::NativeWindow parent_window =
+      show_params_ ? show_params_->GetParentWindow() : gfx::NativeWindow();
+  display::Screen* screen = display::Screen::Get();
+  const gfx::Rect work_area =
+      (parent_window
+           ? screen->GetDisplayNearestWindow(parent_window)
+           : screen->GetDisplayNearestView(GetWidget()->GetNativeView()))
+          .work_area();
+  if (work_area.IsEmpty()) {
+    scroll_view_->ClipHeightTo(0, modal_max_height);
+    return;
+  }
+
+  const int available_dialog_height =
+      GetAvailableDialogHeight(parent_window, work_area);
+
+  const int content_width = fixed_width() - margins().width();
+  const int non_scroll_height =
+      GetWidget()->non_client_view()->GetPreferredSize().height() -
+      scroll_view_->GetPreferredSize(views::SizeBounds(content_width, {}))
+          .height();
+
+  const int max_scroll_height =
+      std::clamp(available_dialog_height - non_scroll_height, min_max_height,
+                 modal_max_height);
+  scroll_view_->ClipHeightTo(0, max_scroll_height);
+}
+
+void ExtensionInstallDialogView::OnViewAddedToWidget(
+    views::View* observed_view) {
+  if (observed_view == GetDialogClientView()) {
+    dialog_client_view_observation_.Reset();
+    UpdateScrollViewMaxHeight();
+  }
+}
+
 void ExtensionInstallDialogView::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   if (GetWidget() && !GetWidget()->IsClosed()) {
+    UpdateScrollViewMaxHeight();
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
   }
 }
 
 void ExtensionInstallDialogView::OnViewIsDeleting(views::View* observed_view) {
-  permissions_view_observation_.Reset();
+  if (permissions_view_observation_.IsObservingSource(observed_view)) {
+    permissions_view_observation_.Reset();
+  }
+  if (dialog_client_view_observation_.IsObservingSource(observed_view)) {
+    dialog_client_view_observation_.Reset();
+  }
 }
 
 void ExtensionInstallDialogView::EnableInstallButton() {

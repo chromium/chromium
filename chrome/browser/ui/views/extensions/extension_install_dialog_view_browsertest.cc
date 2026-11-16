@@ -423,9 +423,9 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest,
   CloseAndWait(dialog->GetWidget());
 }
 
-// Tests that expanding permission details past the 448dp modal maximum scroll
-// height caps the scroll view and outer widget height and shows a vertical
-// scrollbar, then shrinks back down when collapsed.
+// Tests that expanding permission details past the modal maximum scroll height
+// caps the scroll view and outer widget height and shows a vertical scrollbar,
+// then shrinks back down when collapsed.
 IN_PROC_BROWSER_TEST_F(
     ScrollbarTest,
     ExpandDetailsBeyondModalMaxHeightCapsHeightAndShowsScrollbar) {
@@ -433,24 +433,31 @@ IN_PROC_BROWSER_TEST_F(
   ExpandableContainerView* expandable = FindExpandableContainerView(dialog);
   ASSERT_TRUE(expandable);
 
-  const int modal_max_height = views::LayoutProvider::Get()->GetDistanceMetric(
+  const views::LayoutProvider* provider = views::LayoutProvider::Get();
+  const int legacy_max_height = provider->GetDistanceMetric(
+      views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+  const int modal_max_height = provider->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
+  const int max_scroll_height = dialog->scroll_view()->GetMaxHeight();
+  EXPECT_GE(max_scroll_height, legacy_max_height);
+  EXPECT_LE(max_scroll_height, modal_max_height);
 
   const int initial_widget_height =
       dialog->GetWidget()->GetWindowBoundsInScreen().height();
   const int initial_scroll_height = dialog->scroll_view()->height();
-  ASSERT_LT(initial_scroll_height, modal_max_height);
+  ASSERT_LT(initial_scroll_height, max_scroll_height);
   EXPECT_FALSE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
 
-  // Expand "Show all" past 448dp: scroll view caps at 448dp with a visible
-  // vertical scrollbar, and outer widget grows only up to the cap.
+  // Expand "Show all" past `max_scroll_height`: scroll view caps at
+  // `max_scroll_height` with a visible vertical scrollbar, and outer widget
+  // grows only up to the cap.
   ASSERT_TRUE(ToggleDetailsAndWaitForLayout(dialog, expandable));
   const int expanded_widget_height =
       dialog->GetWidget()->GetWindowBoundsInScreen().height();
-  EXPECT_EQ(dialog->scroll_view()->height(), modal_max_height);
-  EXPECT_GT(dialog->scroll_view()->contents()->height(), modal_max_height);
+  EXPECT_EQ(dialog->scroll_view()->height(), max_scroll_height);
+  EXPECT_GT(dialog->scroll_view()->contents()->height(), max_scroll_height);
   EXPECT_EQ(expanded_widget_height - initial_widget_height,
-            modal_max_height - initial_scroll_height);
+            max_scroll_height - initial_scroll_height);
   EXPECT_TRUE(dialog->scroll_view()->vertical_scroll_bar()->GetVisible());
 
   // Collapse "Show less": outer widget shrinks back and scrollbar hides.

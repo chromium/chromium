@@ -118,11 +118,18 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
       bool requires_justification,
       bool has_site_access_options);
 
+  // Caps `scroll_view_` maximum height so that the dialog fits within the
+  // display work area, clamped between
+  // `DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT` and
+  // `DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT`.
+  void UpdateScrollViewMaxHeight();
+
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
 
   // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* observed_view) override;
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
@@ -173,6 +180,8 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
 
   base::ScopedObservation<views::View, views::ViewObserver>
       permissions_view_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      dialog_client_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_
