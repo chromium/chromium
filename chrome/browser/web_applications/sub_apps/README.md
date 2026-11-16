@@ -22,9 +22,9 @@ their own origin.
   - **Security Validation:** `CreateIfAllowed()` verifies that the frame is a
     primary main frame (`IsInPrimaryMainFrame()`), meets Isolated Context
     requirements (`content::HasIsolatedContextCapability()`), and permits
-    `PermissionsPolicyFeature::kSubApps`. Each operation also verifies that the
-    calling frame belongs to an installed non-sub-app
-    (`!WebAppFilter::IsIsolatedSubApp()`).
+    `PermissionsPolicyFeature::kSubApps`.
+  - **Calls from sub-apps:** Sub-app windows can call the API too. They act as
+    their parent app, so new sub-apps become siblings (no nesting).
   - **`Add()`:** Fetches and validates `WebAppInstallInfo` in parallel for each
     candidate sub-app via
     `WebAppCommandScheduler::FetchInstallInfoFromInstallUrl()`

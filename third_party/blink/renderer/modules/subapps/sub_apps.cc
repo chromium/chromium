@@ -89,7 +89,7 @@ v8::Local<v8::Value> MojoResultCodeToDOMException(
       return V8ThrowDOMException::CreateOrDie(
           isolate, DOMExceptionCode::kNotSupportedError,
           "The API was called in a wrong context. Possibly, the current app "
-          "was removed, or it is a sub app");
+          "or its parent app was removed.");
 
     case SubAppsServiceResultCode::kUserDeclined:
       return V8ThrowDOMException::CreateOrDie(

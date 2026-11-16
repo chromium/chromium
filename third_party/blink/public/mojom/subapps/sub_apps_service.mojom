@@ -56,18 +56,19 @@ struct SubAppsServiceRemoveResult {
 // effectively adding the Spreadsheet app to the launcher surface.
 // NOTE: This Mojo interface is per-frame, there is one logical instance per
 // frame, and it's main-frame only. It is only valid for already-installed apps.
+// Calls from a sub-app act on behalf of its parent app.
 interface SubAppsService {
   // Installs one or more sub-apps of an already-installed app corresponding to
   // this instance of SubAppsService.
   Add(array<string> install_paths)
       => result<array<SubAppsServiceAddResult>, SubAppsServiceResultCode>;
 
-  // List all sub-apps installed by the app making the API call.
+  // List all sub-apps of the calling app (or of its parent, for a sub-app).
   List()
       => result<array<SubAppsServiceListResultEntry>, SubAppsServiceResultCode>;
 
-  // Uninstalls the sub-apps represented by the given argument previously
-  // installed via the `Add` method by the same app making the current API call.
+  // Uninstalls the given sub-apps of the calling app (or of its parent, for a
+  // sub-app).
   Remove(array<string> manifest_ids)
       => result<array<SubAppsServiceRemoveResult>, SubAppsServiceResultCode>;
 };

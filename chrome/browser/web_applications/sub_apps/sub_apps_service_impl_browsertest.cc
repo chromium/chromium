@@ -9,9 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -579,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
       sub_app_id, WebAppFilter::OpensInDedicatedWindow()));
 }
 
-// Add call should fail if calling app is already a sub app.
+// Add from a sub-app window installs a sibling sub-app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, SubAppParentIsIwaParent) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
 
@@ -597,13 +601,33 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, SubAppParentIsIwaParent) {
   content::RenderFrameHost* sub_app_1_frame = OpenApp(sub_app_1_id);
   remote_.reset();
   BindRemote(sub_app_1_frame);
-  auto actual = CallAdd({kSubAppPath2});
-  ASSERT_FALSE(actual.has_value());
-  EXPECT_EQ(actual.error(), SubAppsServiceResultCode::kWrongContext);
+  ExpectCallAdd({{kSubAppPath2, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath2});
 
-  // Assert that there is only 1 sub app.
-  auto all_sub_apps = GetAllSubAppIds(parent_app_id_);
-  EXPECT_EQ(1ul, all_sub_apps.size());
+  EXPECT_THAT(
+      GetAllSubAppIds(parent_app_id_),
+      testing::UnorderedElementsAre(
+          sub_app_1_id, GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame)));
+  EXPECT_TRUE(GetAllSubAppIds(sub_app_1_id).empty());
+}
+
+// A sub-app can't add the parent app or itself.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       AddFromSubAppWindowRejectsParentAndSelf) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath});
+  webapps::AppId sub_app_1_id =
+      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
+
+  content::RenderFrameHost* sub_app_1_frame = OpenApp(sub_app_1_id);
+  remote_.reset();
+  BindRemote(sub_app_1_frame);
+  ExpectCallAdd({{"/", SubAppsServiceAddResultType::kRecursiveInstall},
+                 {kSubAppPath, SubAppsServiceAddResultType::kAlreadyInstalled}},
+                {"/", kSubAppPath});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
 /******** Tests for the Add API call - adding multiple/zero sub-apps. ********/
@@ -1118,6 +1142,31 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(expected_result, result.value());
 }
 
+// List from a sub-app window returns the parent's sub-apps.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListFromSubAppWindow) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceAddResultType::kSuccess},
+                 {kSubAppPath2, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath, kSubAppPath2});
+
+  content::RenderFrameHost* sub_app_1_frame =
+      OpenApp(GenerateSubAppIdFromPath(kSubAppPath, iwa_frame));
+  remote_.reset();
+  BindRemote(sub_app_1_frame);
+
+  auto result = CallList();
+  ASSERT_TRUE(result.has_value());
+  auto actual = base::ToVector(result.value(), [](const auto& entry) {
+    return std::pair(entry->manifest_id, entry->app_name);
+  });
+  EXPECT_THAT(
+      actual,
+      testing::UnorderedElementsAre(
+          std::pair<std::string, std::string>(kSubAppPath, kSubAppName),
+          std::pair<std::string, std::string>(kSubAppPath2, kSubAppName2)));
+}
+
 // List call returns failure if the parent app isn't installed.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        ListFailParentAppNotInstalled) {
@@ -1223,6 +1272,85 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
   EXPECT_FALSE(
       provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(UninstallNotificationShown());
+}
+
+// Remove from a sub-app window removes a sibling sub-app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFromSubAppWindow) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceAddResultType::kSuccess},
+                 {kSubAppPath2, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath, kSubAppPath2});
+
+  webapps::AppId sub_app_1_id =
+      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
+  webapps::AppId sub_app_2_id =
+      GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame);
+
+  content::RenderFrameHost* sub_app_1_frame = OpenApp(sub_app_1_id);
+  remote_.reset();
+  BindRemote(sub_app_1_frame);
+
+  auto remove_actual = CallRemove({kSubAppPath2});
+  ASSERT_TRUE(remove_actual.has_value());
+  EXPECT_EQ(SingleRemoveResultMojo(kSubAppPath2,
+                                   SubAppsServiceRemoveResultType::kSuccess),
+            remove_actual.value());
+  EXPECT_THAT(GetAllSubAppIds(parent_app_id_),
+              testing::ElementsAre(sub_app_1_id));
+  EXPECT_FALSE(
+      provider().registrar_unsafe().GetInstallState(sub_app_2_id).has_value());
+  EXPECT_TRUE(UninstallNotificationShown());
+}
+
+// A sub-app can remove itself and the notification is still shown.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemoveFromSubAppWindowSelf) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath});
+  webapps::AppId sub_app_1_id =
+      GenerateSubAppIdFromPath(kSubAppPath, iwa_frame);
+
+  content::RenderFrameHost* sub_app_1_frame = OpenApp(sub_app_1_id);
+  remote_.reset();
+  BindRemote(sub_app_1_frame);
+
+  // The window closes, so wait for the uninstall instead of the mojo reply.
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({sub_app_1_id});
+  remote_->Remove({kSubAppPath}, base::DoNothing());
+  EXPECT_EQ(sub_app_1_id, uninstall_observer.Wait());
+
+  EXPECT_TRUE(GetAllSubAppIds(parent_app_id_).empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return UninstallNotificationShown(); }));
+}
+
+// A sub-app can't remove the parent app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemoveFromSubAppWindowFailsForParent) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceAddResultType::kSuccess}},
+                {kSubAppPath});
+
+  content::RenderFrameHost* sub_app_1_frame =
+      OpenApp(GenerateSubAppIdFromPath(kSubAppPath, iwa_frame));
+  remote_.reset();
+  BindRemote(sub_app_1_frame);
+
+  auto remove_actual = CallRemove({"/"});
+  ASSERT_TRUE(remove_actual.has_value());
+  EXPECT_EQ(
+      SingleRemoveResultMojo("/", SubAppsServiceRemoveResultType::kNotFound),
+      remove_actual.value());
+  EXPECT_TRUE(provider()
+                  .registrar_unsafe()
+                  .GetInstallState(parent_app_id_)
+                  .has_value());
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 // Remove works with a list of apps.
