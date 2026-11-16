@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -82,7 +83,7 @@ public class OfflinePageTabObserver
     private final TabModelSelectorTabModelObserver mTabModelObserver;
 
     /** Map of observed tabs. */
-    private final Map<Integer, TabState> mObservedTabs = new HashMap<>();
+    private final SparseArray<TabState> mObservedTabs = new SparseArray<>();
 
     private boolean mIsObservingNetworkChanges;
 
@@ -251,6 +252,7 @@ public class OfflinePageTabObserver
 
     /**
      * Removes the observer for a tab with the specified tabId.
+     *
      * @param tab tab that was observed.
      */
     void stopObservingTab(Tab tab) {
@@ -263,12 +265,12 @@ public class OfflinePageTabObserver
             offlinePageTabData.setIsTabShowingOfflinePage(false);
             offlinePageTabData.setIsTabShowingTrustedOfflinePage(false);
 
-            mObservedTabs.remove(tab.getId());
+            mObservedTabs.delete(tab.getId());
             tab.removeObserver(this);
         }
 
         // If there are not longer any tabs being observed, stop listening for network changes.
-        if (mObservedTabs.isEmpty() && isObservingNetworkChanges()) {
+        if (mObservedTabs.size() == 0 && isObservingNetworkChanges()) {
             stopObservingNetworkChanges();
             mIsObservingNetworkChanges = false;
         }
@@ -276,8 +278,9 @@ public class OfflinePageTabObserver
 
     private void destroy() {
         mTabModelObserver.destroy();
-        if (!mObservedTabs.isEmpty()) {
-            for (Integer tabId : mObservedTabs.keySet()) {
+        if (mObservedTabs.size() != 0) {
+            for (int i = 0; i < mObservedTabs.size(); i++) {
+                int tabId = mObservedTabs.keyAt(i);
                 Tab tab = mTabModelSelector.getTabById(tabId);
                 if (tab == null) continue;
                 tab.removeObserver(this);
@@ -306,7 +309,8 @@ public class OfflinePageTabObserver
         // visible. Making it visible after that would not trigger the snackbar, even though
         // connection state changed. See http://crbug.com/41278137
         if (!OfflinePageUtils.isConnected()) {
-            for (TabState tabState : mObservedTabs.values()) {
+            for (int i = 0; i < mObservedTabs.size(); i++) {
+                TabState tabState = mObservedTabs.valueAt(i);
                 tabState.wasSnackbarSeen = false;
             }
         }
@@ -314,7 +318,7 @@ public class OfflinePageTabObserver
 
     @VisibleForTesting
     boolean isObservingTab(Tab tab) {
-        return mObservedTabs.containsKey(tab.getId());
+        return mObservedTabs.indexOfKey(tab.getId()) >= 0;
     }
 
     private @Nullable TabState getObservedTabState(Tab tab) {
@@ -382,6 +386,7 @@ public class OfflinePageTabObserver
 
     /**
      * Gets a snackbar controller that we can use to show our snackbar.
+     *
      * @param tabModelSelector used to retrieve a tab by ID
      */
     private static SnackbarController createReloadSnackbarController(
