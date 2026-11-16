@@ -22,6 +22,7 @@ check_raw_ptr_in_container:
   excluded_pointer_types:
     # Win32 handles, see base/win/windows_types.h and
     # base/win/win_handle_types_list.inc.
+    - "EVT_HANDLE"
     - "HANDLE"
     - "HBITMAP"
     - "HBRUSH"
@@ -47,7 +48,9 @@ check_raw_ptr_in_container:
     - "LSA_HANDLE"
     # Vulkan non-dispatchable handles, pointers only on 64-bit platforms.
     - "VkDescriptorSet"
+    - "VkDeviceMemory"
     - "VkFramebuffer"
+    - "VkImage"
     - "VkImageView"
     - "VkSemaphore"
     # PDFium handles, see third_party/pdfium/public/fpdfview.h.
