@@ -79,7 +79,6 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   void OnContextLost() override;
 
   void EnsureResourceReadyForDraw();
-  bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;

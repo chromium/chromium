@@ -304,37 +304,31 @@ bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
          raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
-    PaintImage::ContentId content_id) {
-  // We have the only ref to the resource which implies there are no active
-  // readers.
-  if (resource_->HasOneRef()) {
-    return false;
-  }
-
-  // Its possible to have deferred work in skia which uses this resource. Try
-  // flushing once to see if that releases the read refs. We can avoid a copy
-  // by queuing this work before writing to this resource.
-  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-
-  return !resource_->HasOneRef();
-}
-
 void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
   DCHECK(resource_);
 
-  // Determine if a new resource is needed.
-  if (ShouldReplaceTargetBuffer(cached_content_id_)) {
-    cached_content_id_ = PaintImage::kInvalidContentId;
-
-    resource_ = image_pool_->GetImage();
-
-    // As the image might have just been created, we need to ensure that it is
-    // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
-    // requirements (note: as an optimization we could avoid doing this if the
-    // resource was recycled as in that case there are no security implications).
-    is_cleared_ = false;
+  // We have the only ref to `resource_`, which implies there are no active
+  // readers and it can be reused in place without re-clearing.
+  if (resource_->HasOneRef()) {
+    return;
   }
+
+  // It is possible to have deferred work in Skia which uses this resource. Try
+  // flushing once to see if that releases the read refs. We can avoid a copy
+  // by queuing this work before writing to this resource.
+  FlushForImageListener::Get()->NotifyFlushForImage(cached_content_id_);
+  if (resource_->HasOneRef()) {
+    return;
+  }
+
+  cached_content_id_ = PaintImage::kInvalidContentId;
+  resource_ = image_pool_->GetImage();
+
+  // As the image might have just been created, we need to ensure that it is
+  // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
+  // requirements (note: as an optimization we could avoid doing this if the
+  // resource was recycled as in that case there are no security implications).
+  is_cleared_ = false;
 }
 
 scoped_refptr<StaticBitmapImage>
