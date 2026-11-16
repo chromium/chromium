@@ -1749,7 +1749,12 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
     return false;
   }
 
-  SetSize(preferred_size);
+  // `popup_bounds` may differ from `preferred_size` (e.g. it may be shrunk to
+  // the space available on the chosen side and widened for a scroll bar). Size
+  // the view to the final bounds: the root view only lays it out again when
+  // the widget bounds change, which is not the case when the suggestions are
+  // updated in place.
+  SetSize(popup_bounds.size());
 
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);

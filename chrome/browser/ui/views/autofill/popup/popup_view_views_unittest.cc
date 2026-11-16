@@ -3058,6 +3058,25 @@ TEST_F(PopupPositioningTest, SmallWebContentsBottomElementLargePopupAbove) {
   EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
 }
 
+// Tests that the popup view keeps filling its widget when the suggestions are
+// updated without changing the widget bounds, also if the final popup size
+// differs from its preferred size (shrunk to fit above the element and widened
+// for the scroll bar). Regression test for crbug.com/542593589.
+TEST_F(PopupPositioningTest, ViewFillsWidgetAfterSuggestionsUpdate) {
+  ResizeWebContents({300, 300});
+  SetElementBounds(Bottom(CenterX(kDefaultElementRect, 50)));
+  const std::vector<SuggestionType> suggestions(
+      20, SuggestionType::kAutocompleteEntry);
+  CreateAndShowView(suggestions);
+  const gfx::Rect widget_bounds = widget().GetWindowBoundsInScreen();
+  EXPECT_EQ(view().bounds(), widget().GetRootView()->GetContentsBounds());
+
+  UpdateSuggestions(suggestions);
+
+  ASSERT_EQ(widget().GetWindowBoundsInScreen(), widget_bounds);
+  EXPECT_EQ(view().bounds(), widget().GetRootView()->GetContentsBounds());
+}
+
 // Tests that a popup in a small extension popup can vertically exceed the
 // extension popup's `WebContents` bounds into the containing window below it.
 TEST_F(PopupPositioningTest,
