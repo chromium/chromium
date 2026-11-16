@@ -15,11 +15,13 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
@@ -46,6 +48,8 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_util.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
+#include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -77,6 +81,7 @@ using ::testing::DoAll;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::MockFunction;
@@ -166,6 +171,51 @@ MATCHER_P(AutofilledWithProfile, profile, "") {
 Matcher<FormFieldData> HasFieldId(const FieldGlobalId& id) {
   return Property("FormFieldData::global_id", &FormFieldData::global_id, id);
 }
+
+// Simulates the renderer filling `form`: Copies the fields in `filled_fields`
+// (as passed to `AutofillDriver::ApplyFormAction()`) into the fields of `form`
+// with the same IDs.
+void CopyFilledFieldsInto(base::span<const FormFieldData> filled_fields,
+                          FormData& form) {
+  for (FormFieldData& field : test_api(form).fields()) {
+    if (auto it = std::ranges::find(filled_fields, field.global_id(),
+                                    &FormFieldData::global_id);
+        it != filled_fields.end()) {
+      field = *it;
+    }
+  }
+}
+
+// Returns an action for `MockAutofillDriver::ApplyFormAction()` that
+// simulates the renderer filling `form` (see `CopyFilledFieldsInto()`), then
+// runs `after_fill()` and reports all fields as filled. `after_fill()` must not
+// modify the form cache because `ApplyFormAction()` never does so
+// synchronously. `form` must outlive the action.
+template <typename AfterFill = void (*)()>
+auto FillInto(FormData& form, AfterFill after_fill = [] {}) {
+  return [&form, after_fill = std::move(after_fill)](
+             mojom::FormActionType, mojom::ActionPersistence,
+             base::span<const FormFieldData> data, const FillId&, bool,
+             const url::Origin&,
+             const absl::flat_hash_map<FieldGlobalId, FieldType>&) mutable {
+    CopyFilledFieldsInto(data, form);
+    after_fill();
+    return base::ToVector(data, &FormFieldData::global_id);
+  };
+}
+
+// Collects the chrome://autofill-internals log entries as JSON strings.
+class CollectingLogReceiver : public LogReceiver {
+ public:
+  void LogEntry(const base::DictValue& entry) override {
+    entries_.push_back(base::WriteJson(entry).value_or(""));
+  }
+
+  const std::vector<std::string>& entries() const { return entries_; }
+
+ private:
+  std::vector<std::string> entries_;
+};
 
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
@@ -3737,6 +3787,38 @@ TEST_F(FormFillerTest, PaymentsSwappingFromEmptyFieldClearsMissingCardValues) {
   EXPECT_FALSE(form.fields()[2].is_autofilled_according_to_renderer());
   EXPECT_EQ(form.fields()[3].value(), u"");
   EXPECT_FALSE(form.fields()[3].is_autofilled_according_to_renderer());
+}
+
+// Tests that the chrome://autofill-internals log of `FillOrPreviewForm` reports
+// the state of the fields before filling, i.e., before the post-fill
+// bookkeeping updates the cache.
+TEST_F(FormFillerTest, FillOrPreviewForm_LogsPreFillState) {
+  CollectingLogReceiver log_receiver;
+  autofill_client().log_router().RegisterReceiver(&log_receiver);
+
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST, .value = u"OldFirst"},
+                           {.role = NAME_LAST, .value = u""}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  autofill_client().log_router().UnregisterReceiver(&log_receiver);
+
+  // Neither field was autofilled before filling and `field(1)` was empty.
+  EXPECT_THAT(log_receiver.entries(),
+              Contains(HasSubstr("Field 0 Fillable - has value: 1->1; "
+                                 "autofilled: 0->1.")));
+  EXPECT_THAT(log_receiver.entries(),
+              Contains(HasSubstr("Field 1 Fillable - has value: 0->1; "
+                                 "autofilled: 0->1.")));
 }
 
 }  // namespace autofill

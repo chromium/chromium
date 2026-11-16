@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -39,6 +40,11 @@ class FormAutofillHistory {
  public:
   // This holds the field attributes that should be reset during an undo.
   struct FieldFillingEntry {
+    // Captures the pre-fill state of `field` so that an Undo operation can
+    // restore it later. `ignore_is_autofilled` is initialized to false;
+    // `AddFormFillingEntry()` sets it.
+    explicit FieldFillingEntry(const AutofillField& field);
+
     FieldFillingEntry(
         std::u16string field_value,
         bool field_is_autofilled_according_to_renderer,
@@ -93,6 +99,9 @@ class FormAutofillHistory {
 
   using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
 
+  // Maps fields to their state captured before a filling operation.
+  using PreFillFieldStates = base::flat_map<FieldGlobalId, FieldFillingEntry>;
+
   FormAutofillHistory();
 
   FormAutofillHistory(FormAutofillHistory&) = delete;
@@ -101,13 +110,14 @@ class FormAutofillHistory {
 
   ~FormAutofillHistory();
 
-  // Adds a new history entry in the beginning of the list.
-  // `filled_fields` contains the state of the fields that were filled BEFORE
-  // the filling operation happened. `emptied_field_ids` contains the IDs of
-  // fields in `filled_fields` whose values were intentionally cleared by the
-  // filling operation (e.g. during payments suggestion swapping).
+  // Adds a new history entry in the beginning of the list (or, if
+  // `is_refill`, merges into the front entry). `filled_fields` maps the fields
+  // that the filling operation filled to their states BEFORE the operation.
+  // `emptied_field_ids` contains the IDs of fields in `filled_fields` whose
+  // values were intentionally cleared by the filling operation (e.g. during
+  // payments suggestion swapping).
   void AddFormFillingEntry(
-      base::span<const AutofillField* const> filled_fields,
+      PreFillFieldStates filled_fields,
       const base::flat_set<FieldGlobalId>& emptied_field_ids,
       FillingProduct filling_product,
       bool is_refill);

@@ -292,10 +292,14 @@ class FormFiller {
 
   // Appends `TriggerFillFieldLogEvent` and `FillFieldLogEvents` to the relevant
   // fields in the `form` if there was a filling operation.
+  // `pre_fill_field_states` contains the field states captured prior to
+  // filling; fields absent from `pre_fill_field_states` (i.e., fields added to
+  // `form` after the snapshot was taken) are skipped.
   void AppendFillLogEvents(
       FormStructure& form,
       AutofillField& trigger_field,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
+      const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
       const FillingPayload& filling_payload,

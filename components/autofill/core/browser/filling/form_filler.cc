@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -804,7 +803,8 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
   if (field && action_persistence == mojom::ActionPersistence::kFill) {
     if (ShouldRecordFillingHistory(filling_product)) {
       form_autofill_history_.AddFormFillingEntry(
-          std::to_array<const AutofillField*>({field}),
+          /*filled_fields=*/{{field->global_id(),
+                              FormAutofillHistory::FieldFillingEntry(*field)}},
           /*emptied_field_ids=*/{}, filling_product, /*is_refill=*/false);
     }
     field->AddFieldModifier(FieldModifier::kAutofill);
@@ -910,6 +910,25 @@ void FormFiller::FillOrPreviewForm(
   std::erase_if(result_fields, [&skip_reasons](const FormFieldData& field) {
     return !skip_reasons[field.global_id()].empty();
   });
+
+  LogFillingInternal(action_persistence, form, refill_options, filling_product,
+                     filling_content, skip_reasons);
+
+  // Snapshot pre-fill field states before `ApplyFormAction()`, as cached
+  // `AutofillField`s may be updated with post-fill values before post-fill
+  // bookkeeping runs. Only fills need the snapshot (for the fill log events
+  // and the undo history).
+  FormAutofillHistory::PreFillFieldStates pre_fill_field_states;
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    pre_fill_field_states =
+        base::MakeFlatMap<FieldGlobalId,
+                          FormAutofillHistory::FieldFillingEntry>(
+            form.fields(), {}, [](const std::unique_ptr<AutofillField>& field) {
+              return std::pair(field->global_id(),
+                               FormAutofillHistory::FieldFillingEntry(*field));
+            });
+  }
+
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
@@ -927,7 +946,7 @@ void FormFiller::FillOrPreviewForm(
     form.set_last_filling_timestamp(base::TimeTicks::Now());
 
     AppendFillLogEvents(form, trigger_field, safe_filled_field_ids,
-                        skip_reasons, filling_payload,
+                        pre_fill_field_states, skip_reasons, filling_payload,
                         refill_options.is_refill());
 
     // Save filling history to support undoing it later if needed.
@@ -939,8 +958,14 @@ void FormFiller::FillOrPreviewForm(
         }
       }
       form_autofill_history_.AddFormFillingEntry(
-          safe_filled_fields, emptied_field_ids, filling_product,
-          refill_options.is_refill());
+          base::MakeFlatMap<FieldGlobalId,
+                            FormAutofillHistory::FieldFillingEntry>(
+              safe_filled_field_ids, {},
+              [&](FieldGlobalId field_id) {
+                return std::pair(field_id,
+                                 std::move(pre_fill_field_states.at(field_id)));
+              }),
+          emptied_field_ids, filling_product, refill_options.is_refill());
     }
 
     // If the operation was a persistent fill and not a preview, update the
@@ -949,9 +974,6 @@ void FormFiller::FillOrPreviewForm(
                       filled_field_types, filling_product,
                       augmented_filling_payload);
   }
-
-  LogFillingInternal(action_persistence, form, refill_options, filling_product,
-                     filling_content, skip_reasons);
 
   manager_->OnDidFillOrPreviewForm(
       action_persistence, form, trigger_field, safe_filled_fields, skip_reasons,
@@ -1355,6 +1377,7 @@ void FormFiller::AppendFillLogEvents(
     FormStructure& form,
     AutofillField& trigger_field,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
+    const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
@@ -1375,10 +1398,20 @@ void FormFiller::AppendFillLogEvents(
 
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     const FieldGlobalId field_id = field->global_id();
-    const bool has_value_before = !field->value().empty();
+    const FormAutofillHistory::FieldFillingEntry* pre_fill_state =
+        base::FindOrNull(pre_fill_field_states, field_id);
+    if (!pre_fill_state) {
+      // `field` was added to `form` after the pre-fill snapshot was taken, so
+      // it was not part of this filling operation.
+      continue;
+    }
+    // `skip_reasons` was built from the same fields as `pre_fill_field_states`.
+    const DenseSet<FieldFillingSkipReason>& field_skip_reasons =
+        CHECK_DEREF(base::FindOrNull(skip_reasons, field_id));
+    const bool has_value_before = !pre_fill_state->value.empty();
     const FieldFillingSkipReason skip_reason =
-        skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
-                                          : *skip_reasons.at(field_id).begin();
+        field_skip_reasons.empty() ? FieldFillingSkipReason::kNotSkipped
+                                   : *field_skip_reasons.begin();
     if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
       field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
@@ -1393,7 +1426,7 @@ void FormFiller::AppendFillLogEvents(
       });
     } else {
       const bool skipped_because_of_security_policy =
-          skip_reasons.at(field_id).size() == 1 &&
+          field_skip_reasons.size() == 1 &&
           skip_reason == FieldFillingSkipReason::kIframeSecurityPolicy;
       field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
