@@ -79,12 +79,15 @@ ChromeFeatureListCreator* StartupData::chrome_feature_list_creator() {
 
 void StartupData::RecordCoreSystemProfile() {
   metrics::SystemProfileProto system_profile;
+  // This is a fallback system profile for UMA, so include the UMA session
+  // identifiers.
   metrics::MetricsLog::RecordCoreSystemProfile(
       metrics::GetVersionString(),
       metrics::AsProtobufChannel(chrome::GetChannel()),
       chrome::IsExtendedStableChannel(),
       chrome_feature_list_creator()->actual_locale(),
-      metrics::GetAppPackageName(), &system_profile);
+      metrics::GetAppPackageName(), &system_profile,
+      metrics::MetricsLog::SessionIdentifiers::kInclude);
 
   {
     // ========================================================================

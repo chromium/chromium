@@ -110,4 +110,18 @@ TEST_F(ChromeModelQualityLogsUploaderServiceTest,
                    .has_cloned_from_client_id());
 }
 
+TEST_F(ChromeModelQualityLogsUploaderServiceTest,
+       SetSystemMetadata_SessionIdentifiersAreStripped) {
+  TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+
+  ChromeModelQualityLogsUploaderService service = MakeUploaderService();
+  proto::LoggingMetadata metadata;
+  // Simulate a system profile copied from UMA.
+  metadata.mutable_system_profile()->set_session_hash(123);
+  metadata.mutable_system_profile()->set_fg_bg_id(1);
+  service.SetSystemMetadata(&metadata);
+  EXPECT_FALSE(metadata.system_profile().has_session_hash());
+  EXPECT_FALSE(metadata.system_profile().has_fg_bg_id());
+}
+
 }  // namespace optimization_guide

@@ -285,7 +285,8 @@ MetricsLog::MetricsLog(const std::string& client_id,
   // simulate field trial assignments for the client.
   DCHECK_EQ(client_id.size(), 36ull);
   system_profile->set_client_uuid(client_id);
-  RecordCoreSystemProfile(client_, system_profile);
+  RecordCoreSystemProfile(client_, system_profile,
+                          SessionIdentifiers::kInclude);
 }
 
 MetricsLog::~MetricsLog() = default;
@@ -366,12 +367,15 @@ void MetricsLog::RecordUserAction(const std::string& key,
 }
 
 // static
-void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
-                                         SystemProfileProto* system_profile) {
-  RecordCoreSystemProfile(
-      client->GetVersionString(), client->GetChannel(),
-      client->IsExtendedStableChannel(), client->GetApplicationLocale(),
-      client->GetAppPackageNameIfLoggable(), system_profile);
+void MetricsLog::RecordCoreSystemProfile(
+    MetricsServiceClient* client,
+    SystemProfileProto* system_profile,
+    SessionIdentifiers session_identifiers) {
+  RecordCoreSystemProfile(client->GetVersionString(), client->GetChannel(),
+                          client->IsExtendedStableChannel(),
+                          client->GetApplicationLocale(),
+                          client->GetAppPackageNameIfLoggable(), system_profile,
+                          session_identifiers);
 
   std::string brand_code;
   if (client->GetBrand(&brand_code)) {
@@ -404,7 +408,8 @@ void MetricsLog::RecordCoreSystemProfile(
     bool is_extended_stable_channel,
     const std::string& application_locale,
     const std::string& package_name,
-    SystemProfileProto* system_profile) {
+    SystemProfileProto* system_profile,
+    SessionIdentifiers session_identifiers) {
   system_profile->set_build_timestamp(metrics::MetricsLog::GetBuildTime());
   system_profile->set_app_version(version);
   system_profile->set_channel(channel);
@@ -418,11 +423,14 @@ void MetricsLog::RecordCoreSystemProfile(
   system_profile->set_is_instrumented_build(true);
 #endif
 
-  system_profile->set_session_hash(GetSessionHash());
-
+  // Any field recorded here must also be cleared in ClearSessionIdentifiers().
+  // This is enforced by MetricsLogTest.ClearSessionIdentifiersMatchesExclude.
+  if (session_identifiers == SessionIdentifiers::kInclude) {
+    system_profile->set_session_hash(GetSessionHash());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  system_profile->set_fg_bg_id(g_fg_bg_id_counter);
+    system_profile->set_fg_bg_id(g_fg_bg_id_counter);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  }
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
@@ -529,6 +537,12 @@ void MetricsLog::WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
   }
 }
 
+// static
+void MetricsLog::ClearSessionIdentifiers(SystemProfileProto* system_profile) {
+  system_profile->clear_session_hash();
+  system_profile->clear_fg_bg_id();
+}
+
 const SystemProfileProto& MetricsLog::RecordEnvironment(
     DelegatingProvider* delegating_provider) {
   // If |has_environment_| is true, then the system profile in |uma_proto_| has
@@ -550,7 +564,8 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
 
     uma_proto_.clear_system_profile();
     MetricsLog::RecordCoreSystemProfile(client_,
-                                        uma_proto_.mutable_system_profile());
+                                        uma_proto_.mutable_system_profile(),
+                                        SessionIdentifiers::kInclude);
 
     uma_proto_.mutable_system_profile()->set_client_uuid(client_uuid);
     // Ensure that the re-filled system profile keeps the same `fg_bg_id` as

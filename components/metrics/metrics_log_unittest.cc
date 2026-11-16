@@ -224,6 +224,44 @@ TEST_F(MetricsLogTest, SessionHash) {
             log2.uma_proto()->system_profile().session_hash());
 }
 
+// Verifies that RecordCoreSystemProfile() only records the UMA session
+// identifiers when explicitly requested.
+TEST_F(MetricsLogTest, RecordCoreSystemProfileSessionIdentifiers) {
+  SystemProfileProto excluded;
+  MetricsLog::RecordCoreSystemProfile(&client_, &excluded);
+  EXPECT_FALSE(excluded.has_session_hash());
+  EXPECT_FALSE(excluded.has_fg_bg_id());
+
+  SystemProfileProto included;
+  MetricsLog::RecordCoreSystemProfile(&client_, &included,
+                                      MetricsLog::SessionIdentifiers::kInclude);
+  EXPECT_TRUE(included.has_session_hash());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(included.has_fg_bg_id());
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  // The included session hash should match the one in UMA logs.
+  MetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  EXPECT_EQ(included.session_hash(),
+            log.uma_proto()->system_profile().session_hash());
+}
+
+// Verifies that ClearSessionIdentifiers() clears every field that
+// RecordCoreSystemProfile() records only with SessionIdentifiers::kInclude. If
+// this fails, a new session identifier was added to RecordCoreSystemProfile()
+// without also being cleared in ClearSessionIdentifiers().
+TEST_F(MetricsLogTest, ClearSessionIdentifiersMatchesExclude) {
+  SystemProfileProto excluded;
+  MetricsLog::RecordCoreSystemProfile(&client_, &excluded);
+
+  SystemProfileProto cleared;
+  MetricsLog::RecordCoreSystemProfile(&client_, &cleared,
+                                      MetricsLog::SessionIdentifiers::kInclude);
+  MetricsLog::ClearSessionIdentifiers(&cleared);
+
+  EXPECT_EQ(excluded.SerializeAsString(), cleared.SerializeAsString());
+}
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(MetricsLogTest, FgBgId) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);

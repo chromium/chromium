@@ -116,6 +116,10 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
               system_profile.ParsePartialFromString(*serialized_system_profile);
               uma_proto->mutable_system_profile()->MergeFrom(system_profile);
             }
+            // `uma_proto` is created as a UMA log, so it includes UMA-only
+            // session identifiers. Remove them for privacy reasons.
+            metrics::MetricsLog::ClearSessionIdentifiers(
+                uma_proto->mutable_system_profile());
             // Serialize the log on a worker thread instead of on the main
             // thread.
             base::ThreadPool::PostTask(

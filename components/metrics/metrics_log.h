@@ -130,9 +130,22 @@ class MetricsLog {
   // always incrementing for use in measuring time durations.
   static int64_t GetCurrentTime();
 
+  // Whether RecordCoreSystemProfile() should record process-wide session
+  // identifiers (`session_hash` and, on Android and iOS, `fg_bg_id`). These are
+  // meant for UMA only, and must not be included in system profiles uploaded
+  // to other services (e.g. UKM), since they would make those uploads joinable
+  // with UMA logs. System profiles copied from UMA must have them removed with
+  // ClearSessionIdentifiers() before being uploaded elsewhere.
+  enum class SessionIdentifiers {
+    kExclude,
+    kInclude,
+  };
+
   // Records core profile settings into the SystemProfileProto.
-  static void RecordCoreSystemProfile(MetricsServiceClient* client,
-                                      SystemProfileProto* system_profile);
+  static void RecordCoreSystemProfile(
+      MetricsServiceClient* client,
+      SystemProfileProto* system_profile,
+      SessionIdentifiers session_identifiers = SessionIdentifiers::kExclude);
 
   // Records core profile settings into the SystemProfileProto without a client.
   static void RecordCoreSystemProfile(
@@ -141,7 +154,15 @@ class MetricsLog {
       bool is_extended_stable_channel,
       const std::string& application_locale,
       const std::string& package_name,
-      SystemProfileProto* system_profile);
+      SystemProfileProto* system_profile,
+      SessionIdentifiers session_identifiers = SessionIdentifiers::kExclude);
+
+  // Clears the UMA session identifiers that RecordCoreSystemProfile() records
+  // with SessionIdentifiers::kInclude. Call this on any system profile that is
+  // copied from a UMA log (e.g. the persistent system profile) before it is
+  // uploaded to a non-UMA service, or attached to a log from a different
+  // session.
+  static void ClearSessionIdentifiers(SystemProfileProto* system_profile);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Increments the global foreground/background ID. Must be called on the main

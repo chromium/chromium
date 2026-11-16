@@ -1052,6 +1052,9 @@ TEST_F(UkmServiceTest, SystemProfileTest) {
   Report proto_report = GetPersistedReport();
   EXPECT_EQ(metrics::TestMetricsServiceClient::kBrandForTesting,
             proto_report.system_profile().brand_code());
+  // UMA-specific session identifiers must not be included in UKM reports.
+  EXPECT_FALSE(proto_report.system_profile().has_session_hash());
+  EXPECT_FALSE(proto_report.system_profile().has_fg_bg_id());
 }
 
 TEST_F(UkmServiceTest, RecordingEnabledWithoutConsentRestructure) {

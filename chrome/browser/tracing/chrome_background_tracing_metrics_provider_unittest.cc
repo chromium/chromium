@@ -90,6 +90,10 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   metrics::ChromeUserMetricsExtension uma_proto;
   uma_proto.set_client_id(100);
   uma_proto.set_session_id(15);
+  // Simulate the UMA session identifiers set on the log by the uploading
+  // session.
+  uma_proto.mutable_system_profile()->set_session_hash(123);
+  uma_proto.mutable_system_profile()->set_fg_bg_id(1);
 
   base::RunLoop run_loop;
   provider.ProvideIndependentMetrics(
@@ -103,6 +107,8 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
 
   EXPECT_EQ(100u, uma_proto.client_id());
   EXPECT_EQ(15, uma_proto.session_id());
+  EXPECT_FALSE(uma_proto.system_profile().has_session_hash());
+  EXPECT_FALSE(uma_proto.system_profile().has_fg_bg_id());
   ASSERT_EQ(1, uma_proto.trace_log_size());
   EXPECT_EQ(metrics::TraceLog::COMPRESSION_TYPE_ZLIB,
             uma_proto.trace_log(0).compression_type());

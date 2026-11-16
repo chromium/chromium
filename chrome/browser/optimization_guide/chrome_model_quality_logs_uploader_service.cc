@@ -121,11 +121,14 @@ void ChromeModelQualityLogsUploaderService::SetSystemMetadata(
         g_browser_process->GetApplicationLocale(), metrics::GetAppPackageName(),
         logging_metadata->mutable_system_profile());
   }
-  // Remove identifiers for privacy reasons.
+  // Remove identifiers for privacy reasons. The persistent system profile is
+  // copied from UMA, so it also includes the UMA session identifiers.
   logging_metadata->mutable_system_profile()->clear_client_uuid();
   logging_metadata->mutable_system_profile()
       ->mutable_cloned_install_info()
       ->clear_cloned_from_client_id();
+  metrics::MetricsLog::ClearSessionIdentifiers(
+      logging_metadata->mutable_system_profile());
 
   auto* variations_service = g_browser_process->variations_service();
   if (variations_service) {
