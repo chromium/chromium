@@ -1215,4 +1215,36 @@ TEST_F(FidoHidDeviceTest, GetAssertionMultiBatchMessageError) {
             std::get<0>(assertion_future.Get()));
 }
 
+TEST_F(FidoHidDeviceTest, MessageTooLarge) {
+  testing::Sequence sequence;
+  std::unique_ptr<MockFidoHidConnection> mock_connection =
+      CreateHidConnectionWithHidInitExpectations(
+          kChannelId, fake_hid_manager_.get(), sequence);
+
+  mock_connection->ExpectHidWriteWithCommand(sequence,
+                                             FidoHidDeviceCommand::kMsg);
+  mock_connection->ExpectReadAndReplyWith(
+      sequence,
+      CreateMockResponseWithChannelId(mock_connection->connection_channel_id(),
+                                      kU2fMockResponseMessage));
+
+  FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
+  hid_manager_->GetDevices(enumerate_future.GetCallback());
+  ASSERT_TRUE(enumerate_future.Wait());
+  std::unique_ptr<FidoHidDevice> device = enumerate_future.TakeSingleDevice();
+
+  TestDeviceFuture init_future;
+  device->DeviceTransact(GetMockDeviceRequest(), init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+  ASSERT_EQ(FidoDevice::State::kReady, device->state_for_testing());
+
+  TestDeviceFuture oversized_future;
+  device->DeviceTransact(std::vector<uint8_t>(kHidMaxMessageSize + 1, 0x41),
+                         oversized_future.GetCallback());
+  EXPECT_EQ(FidoDevice::State::kMsgError, device->state_for_testing());
+  EXPECT_FALSE(oversized_future.IsReady());
+  EXPECT_TRUE(oversized_future.Wait());
+  EXPECT_FALSE(oversized_future.Get());
+}
+
 }  // namespace device

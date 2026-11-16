@@ -135,17 +135,21 @@ void FidoHidDevice::Transition(std::optional<State> next_state) {
         break;
       }
 
+      auto maybe_message = FidoHidMessage::Create(
+          channel_id_, pending_transactions_.front().command_type,
+          output_report_size_, pending_transactions_.front().command);
+      if (!maybe_message) {
+        FIDO_LOG(ERROR) << "Failed to construct HID message";
+        Transition(State::kMsgError);
+        break;
+      }
+
       state_ = State::kBusy;
       busy_state_ = BusyState::kWriting;
       ArmTimeout();
 
       // Write message to the device.
       current_token_ = pending_transactions_.front().token;
-      auto maybe_message(FidoHidMessage::Create(
-          channel_id_, pending_transactions_.front().command_type,
-          output_report_size_,
-          std::move(pending_transactions_.front().command)));
-      DCHECK(maybe_message);
       WriteMessage(std::move(*maybe_message));
       break;
     }
