@@ -2530,7 +2530,6 @@ crbug.com/488071544 external/wpt/webrtc/RTCDataChannel-GC.html?rest [ Failure Sk
 crbug.com/488071544 external/wpt/webrtc/RTCIceTransport.html?rest [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html?interop-2026 [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html?rest [ Failure Skip Timeout ]
-crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html?rest [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCRtpReceiver-getStats.https.html?interop-2026 [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCRtpReceiver-getStats.https.html?rest [ Failure Skip Timeout ]

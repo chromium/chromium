@@ -28,6 +28,16 @@ BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
 // behavior covers stats updates. See https://crbug.com/556516037
 BASE_FEATURE(kWebRtcGenerateRemoteTrackIds, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When setRemoteDescription(offer) is applied in "have-local-offer", an
+// implicit rollback to "stable" happens before "have-remote-offer". If enabled,
+// pendingRemoteDescription is kept null while the injected "stable"
+// signalingstatechange event is fired, as required by the spec.
+// Kill switch.
+// TODO(crbug.com/488071544): Remove after the new behavior has been stable on
+// the Stable channel for a few milestones without regressions.
+BASE_FEATURE(kWebRtcImplicitRollbackClearsPendingRemoteDescription,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This features enables the restriction that frames sent to an
 // RTCRtpScriptTransformer's writable must come from the transformer's readable
 // and must be written in the same order in which they are read. This feature

@@ -42,6 +42,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -116,6 +117,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
@@ -2779,7 +2781,20 @@ void RTCPeerConnection::DidModifyTransceivers(
   if (signaling_state_ == webrtc::PeerConnectionInterface::kHaveLocalOffer &&
       signaling_state == webrtc::PeerConnectionInterface::kHaveRemoteOffer) {
     // Inject missing kStable in case of implicit rollback.
-    ChangeSignalingState(webrtc::PeerConnectionInterface::kStable, true);
+    if (base::FeatureList::IsEnabled(
+            kWebRtcImplicitRollbackClearsPendingRemoteDescription)) {
+      // The new remote offer has already been stored by
+      // DidChangeSessionDescriptions(), but it must not be visible until the
+      // transition to kHaveRemoteOffer. Keep pendingRemoteDescription null
+      // while firing the event for the injected kStable state.
+      RTCSessionDescription* new_pending_remote_description =
+          pending_remote_description_.Get();
+      pending_remote_description_ = nullptr;
+      ChangeSignalingState(webrtc::PeerConnectionInterface::kStable, true);
+      pending_remote_description_ = new_pending_remote_description;
+    } else {
+      ChangeSignalingState(webrtc::PeerConnectionInterface::kStable, true);
+    }
   }
   ChangeSignalingState(signaling_state, true);
 
