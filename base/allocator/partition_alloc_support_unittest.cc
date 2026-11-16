@@ -87,6 +87,24 @@ class ScopedInstallDanglingRawPtrChecks {
   partition_alloc::DanglingRawPtrReleasedFn* old_dereferenced_fn_;
 };
 
+// Installs a release-exemption function returning `exempt`, and restores the
+// previous one when going out of scope.
+class ScopedReleaseExemption {
+ public:
+  explicit ScopedReleaseExemption(bool exempt)
+      : old_fn_(GetDanglingRawPtrReleaseExemptFn()) {
+    if (exempt) {
+      SetDanglingRawPtrReleaseExemptFn([] { return true; });
+    } else {
+      SetDanglingRawPtrReleaseExemptFn([] { return false; });
+    }
+  }
+  ~ScopedReleaseExemption() { SetDanglingRawPtrReleaseExemptFn(old_fn_); }
+
+ private:
+  DanglingRawPtrReleaseExemptFn* const old_fn_;
+};
+
 }  // namespace
 
 TEST(PartitionAllocDanglingPtrChecks, Basic) {
@@ -218,6 +236,29 @@ TEST(PartitionAllocDanglingPtrChecks, CrossTaskNoFreeConsideredCrossTask) {
       .type = "cross_task",
   });
   partition_alloc::GetDanglingRawPtrReleasedFn()(42);
+}
+
+TEST(PartitionAllocDanglingPtrChecks, ReleaseExempt) {
+  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+  ScopedReleaseExemption scoped_exemption(/*exempt=*/true);
+  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+  partition_alloc::GetDanglingRawPtrReleasedFn()(42);
+}
+
+TEST(PartitionAllocDanglingPtrChecks, ReleaseNotExemptReported) {
+  EXPECT_DEATH(
+      {
+        ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+        ScopedReleaseExemption outer_exemption(/*exempt=*/false);
+        {
+          ScopedReleaseExemption inner_exemption(/*exempt=*/true);
+          partition_alloc::GetDanglingRawPtrDetectedFn()(41);
+          partition_alloc::GetDanglingRawPtrReleasedFn()(41);
+        }
+        partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+        partition_alloc::GetDanglingRawPtrReleasedFn()(42);
+      },
+      HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."));
 }
 
 TEST(PartitionAllocDanglingPtrChecks,

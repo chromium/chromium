@@ -640,6 +640,15 @@ bool operator==(const debug::TaskTrace& lhs, const debug::TaskTrace& rhs) {
   return addresses_lhs == addresses_rhs;
 }
 
+// See `SetDanglingRawPtrReleaseExemptFn()`.
+std::atomic<DanglingRawPtrReleaseExemptFn*> g_release_exempt_fn = nullptr;
+
+bool IsReleaseExempt() {
+  DanglingRawPtrReleaseExemptFn* fn =
+      g_release_exempt_fn.load(std::memory_order_acquire);
+  return fn && fn();
+}
+
 template <features::DanglingPtrMode dangling_pointer_mode,
           features::DanglingPtrType dangling_pointer_type>
 void DanglingRawPtrReleased(uintptr_t id) {
@@ -647,10 +656,17 @@ void DanglingRawPtrReleased(uintptr_t id) {
   // allowed. In particular, symbolizing and printing the StackTraces may
   // allocate memory.
 
-  debug::StackTrace stack_trace_release(kDanglingPtrStackTraceSize);
-  debug::TaskTrace task_trace_release;
+  // Consume the free record even when skipping the report below, so exempt
+  // releases don't leave stale entries in the free-info buffer.
   std::optional<DanglingPointerFreeInfo> free_info =
       TakeDanglingPointerFreeInfo(id);
+
+  if (IsReleaseExempt()) {
+    return;
+  }
+
+  debug::StackTrace stack_trace_release(kDanglingPtrStackTraceSize);
+  debug::TaskTrace task_trace_release;
 
   if constexpr (dangling_pointer_type ==
                 features::DanglingPtrType::kCrossTask) {
@@ -823,8 +839,21 @@ void InstallDanglingRawPtrChecks() {
 // is a dangling pointer, we should crash at some point. Consider providing an
 // API to periodically check the buffer.
 
+void SetDanglingRawPtrReleaseExemptFn(
+    DanglingRawPtrReleaseExemptFn* is_release_exempt) {
+  g_release_exempt_fn.store(is_release_exempt, std::memory_order_release);
+}
+
+DanglingRawPtrReleaseExemptFn* GetDanglingRawPtrReleaseExemptFn() {
+  return g_release_exempt_fn.load(std::memory_order_acquire);
+}
+
 #else   // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 void InstallDanglingRawPtrChecks() {}
+void SetDanglingRawPtrReleaseExemptFn(DanglingRawPtrReleaseExemptFn*) {}
+DanglingRawPtrReleaseExemptFn* GetDanglingRawPtrReleaseExemptFn() {
+  return nullptr;
+}
 #endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 void UnretainedDanglingRawPtrDetectedDumpWithoutCrashing(uintptr_t id) {

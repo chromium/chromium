@@ -55,6 +55,21 @@ BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials();
 BASE_EXPORT void InstallDanglingRawPtrChecks();
 BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 
+// Sets a process-wide callback returning whether a dangling raw_ptr release on
+// the current thread should be skipped without reporting. Called on every
+// dangling release from any thread, so it must be thread-safe and return false
+// on threads where the exemption does not apply (e.g. threads without an
+// Oilpan heap).
+//
+// Used by Oilpan during GC finalization (weak callbacks, pre-finalizers, and
+// destructors of dead objects), where a dead object may free a native
+// allocation before another dead object destroys its raw_ptr to it.
+using DanglingRawPtrReleaseExemptFn = bool();
+BASE_EXPORT void SetDanglingRawPtrReleaseExemptFn(
+    DanglingRawPtrReleaseExemptFn* is_release_exempt);
+// Used by tests to save and restore the previous handler.
+BASE_EXPORT DanglingRawPtrReleaseExemptFn* GetDanglingRawPtrReleaseExemptFn();
+
 // Once called, makes `free()` do nothing. This is done to reduce
 // shutdown hangs on CrOS.
 // Does nothing if Dangling Pointer Detector (`docs/dangling_ptr.md`)
