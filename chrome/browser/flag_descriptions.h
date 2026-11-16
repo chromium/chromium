@@ -4442,10 +4442,6 @@ inline constexpr char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
-inline constexpr char kUnoPhase2FollowUpName[] = "Uno phase 2 follow-up";
-inline constexpr char kUnoPhase2FollowUpDescription[] =
-    "UI tweaks for signin surfaces";
-
 inline constexpr char kResetShortcutCustomizationsName[] =
     "Reset all shortcut customizations";
 inline constexpr char kResetShortcutCustomizationsDescription[] =
