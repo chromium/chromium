@@ -4974,7 +4974,9 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       async () => {
         const rootStyle = document.documentElement.style;
         const darkTokens: Array<[string, string]> = [
-          ['--color-sys-surface', 'rgb(31, 31, 31)'],
+          ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
+          ['--color-new-tab-page-most-visited-foreground', 'rgb(227, 227, 227)'],
+          ['--color-new-tab-page-add-shortcut-foreground', 'rgb(227, 227, 227)'],
           ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
           ['--color-sys-on-surface-subtle', 'rgb(196, 199, 197)'],
           ['--color-sys-neutral-outline', 'rgb(68, 71, 70)'],
@@ -4993,7 +4995,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           await microtasksFinished();
 
           assertEquals(
-              'rgb(31, 31, 31)',
+              'rgb(60, 60, 60)',
               window.getComputedStyle(omnibox.$.inputWrapper).backgroundColor);
           assertEquals(
               'rgb(227, 227, 227)',
@@ -5001,7 +5003,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
 
           const omniboxStyle = window.getComputedStyle(omnibox);
           assertEquals(
-              'rgb(31, 31, 31)',
+              'rgb(60, 60, 60)',
               omniboxStyle.getPropertyValue('--color-searchbox-background')
                   .trim());
           assertEquals(
@@ -5012,7 +5014,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               'omnibox-everywhere-profile-icon')!;
           assertTrue(!!profileIcon);
           assertEquals(
-              'rgb(31, 31, 31)',
+              'rgb(60, 60, 60)',
               window.getComputedStyle(profileIcon)
                   .getPropertyValue('--profile-icon-background')
                   .trim());
@@ -5021,7 +5023,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               '#mostVisitedContainer')!;
           assertTrue(!!mvtContainer);
           assertEquals(
-              'rgb(31, 31, 31)',
+              'rgb(60, 60, 60)',
               window.getComputedStyle(mvtContainer).backgroundColor);
 
           const mvt =
@@ -5056,7 +5058,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
                    '--color-search-animated-glow-background',
                ]) {
             assertEquals(
-                'rgb(31, 31, 31)',
+                'rgb(60, 60, 60)',
                 composeboxStyle.getPropertyValue(prop).trim());
           }
           assertEquals(

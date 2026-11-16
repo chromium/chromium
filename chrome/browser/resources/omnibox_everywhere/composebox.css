@@ -43,7 +43,7 @@
   --color-composebox-aim-chip-hover-background: var(
       --color-omnibox-action-icon-hover);
   --color-composebox-aim-chip-hover-text: var(--color-sys-on-surface);
-  --color-composebox-background: var(--color-sys-surface);
+  --color-composebox-background: var(--color-new-tab-page-background);
   --color-composebox-border: var(--color-searchbox-border);
   --color-composebox-cancel-button-light: var(--color-sys-on-surface-subtle);
   --color-composebox-document-chip-icon: var(--color-sys-on-surface-subtle);
@@ -51,14 +51,14 @@
   --color-composebox-file-carousel-remove-button: var(
       --color-omnibox-results-button-ink-drop-row-hovered);
   --color-composebox-file-carousel-remove-gradient-start: var(
-      --color-sys-surface-container-high);
+      --color-omnibox-composebox-chip-background);
   --color-composebox-file-carousel-remove-gradient-end: color-mix(
       in srgb,
       var(--color-composebox-file-carousel-remove-gradient-start),
       transparent 100%);
   --color-composebox-file-carousel-url: var(--color-sys-on-surface-subtle);
   --color-composebox-file-chip-background: var(
-      --color-sys-surface-container-high);
+      --color-omnibox-composebox-chip-background);
   --color-composebox-file-chip-favicon-background: var(
       --color-omnibox-composebox-favicon-background);
   --color-composebox-file-chip-spinner: var(
@@ -70,12 +70,13 @@
   --color-composebox-type-ahead: var(
       --color-searchbox-placeholder,
       var(--color-sys-on-surface-subtle));
-  --color-composebox-type-ahead-chip: var(--color-sys-surface-container-high);
+  --color-composebox-type-ahead-chip: var(
+      --color-omnibox-composebox-chip-background);
   --color-composebox-font-light: var(--color-sys-on-surface);
   --color-composebox-font: var(--color-composebox-font-light);
   --color-composebox-input-icon: var(--color-composebox-type-ahead);
   --color-composebox-pdf-chip-icon: var(--color-sys-on-surface-subtle);
-  --color-search-animated-glow-background: var(--color-sys-surface);
+  --color-search-animated-glow-background: var(--color-new-tab-page-background);
   --color-searchbox-results-foreground: var(--color-composebox-font-light);
   --color-searchbox-results-icon: var(--color-composebox-input-icon);
   --color-composebox-submit-button-background: var(--color-sys-primary);

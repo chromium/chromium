@@ -21,6 +21,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -83,6 +85,8 @@ TEST_F(OmniboxEverywhereHotkeyBubbleViewTest, ShowAndClose) {
   OmniboxEverywhereHotkeyBubbleView* delegate =
       OmniboxEverywhereHotkeyBubbleView::GetCurrentForTesting();
   ASSERT_NE(delegate, nullptr);
+  EXPECT_EQ(delegate->background_color(),
+            ui::ColorVariant(ui::kColorBubbleBackground));
 
   // Bubble bounds must align client contents with anchor rect.
   const gfx::Rect bubble_bounds = delegate->GetBubbleBounds();

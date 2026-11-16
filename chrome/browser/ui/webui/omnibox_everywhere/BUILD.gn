@@ -44,6 +44,7 @@ if (is_win || is_mac) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",
+      "//ui/color:color_headers",
       "//ui/display",
       "//ui/views",
       "//ui/views:test_support",

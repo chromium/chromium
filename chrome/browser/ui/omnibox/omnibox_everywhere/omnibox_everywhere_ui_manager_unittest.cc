@@ -2720,6 +2720,14 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
   ASSERT_TRUE(disclosure_widget);
+  EXPECT_EQ(
+      widget->GetColorProvider()->GetColor(kColorNewTabPageBackground),
+      disclosure_widget->GetColorProvider()->GetColor(
+          ui::kColorDialogBackground));
+  EXPECT_EQ(
+      widget->GetColorProvider()->GetColor(kColorNewTabPageBackground),
+      disclosure_widget->GetColorProvider()->GetColor(
+          ui::kColorBubbleBackground));
 
   // Simulating deactivation while screenshare disclosure dialog is open
   // should NOT destroy or hide the widget.
@@ -3780,6 +3788,16 @@ TEST_F(OmniboxEverywhereUIManagerTest,
     EXPECT_FALSE(key.user_color.has_value());
     EXPECT_FALSE(key.scheme_variant.has_value());
     EXPECT_EQ(nullptr, key.custom_theme.get());
+    const ui::ColorProvider* cp = w->GetColorProvider();
+    EXPECT_EQ(cp->GetColor(kColorNewTabPageBackground),
+              cp->GetColor(ui::kColorMenuBackground));
+    EXPECT_EQ(cp->GetColor(kColorNewTabPageBackground),
+              cp->GetColor(ui::kColorDialogBackground));
+    EXPECT_EQ(cp->GetColor(kColorNewTabPageBackground),
+              cp->GetColor(ui::kColorBubbleBackground));
+    EXPECT_EQ(SK_AlphaOPAQUE,
+              SkColorGetA(cp->GetColor(
+                  kColorOmniboxComposeboxContextEntrypointBackground)));
   };
 
   theme_service->SetUserColorAndBrowserColorVariant(
@@ -3812,6 +3830,11 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_NE(
       baseline_surface,
       ui_manager->widget()->GetColorProvider()->GetColor(ui::kColorSysSurface));
+  EXPECT_EQ(
+      ui_manager->widget()->GetColorProvider()->GetColor(
+          kColorOmniboxResultsBackground),
+      ui_manager->widget()->GetColorProvider()->GetColor(
+          ui::kColorMenuBackground));
 
   ui_manager->Shutdown();
 }

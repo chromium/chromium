@@ -123,6 +123,7 @@ suite('FreModalTest', () => {
   test('resolves dark mode surface and text tokens', () => {
     const rootStyle = document.documentElement.style;
     const darkTokens: Array<[string, string]> = [
+      ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
       ['--color-sys-surface', 'rgb(31, 31, 31)'],
       ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
       ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
@@ -132,7 +133,7 @@ suite('FreModalTest', () => {
     try {
       const q = (sel: string) =>
           window.getComputedStyle(freModal.shadowRoot.querySelector(sel)!);
-      assertEquals('rgb(31, 31, 31)', q('.fre-card').backgroundColor);
+      assertEquals('rgb(60, 60, 60)', q('.fre-card').backgroundColor);
       assertEquals('rgb(31, 31, 31)', q('.second-container').backgroundColor);
       assertEquals('rgb(42, 42, 42)', q('.list-item').backgroundColor);
       assertEquals('rgb(227, 227, 227)', q('.title').color);

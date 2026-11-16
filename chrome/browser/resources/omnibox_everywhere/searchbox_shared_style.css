@@ -93,7 +93,7 @@
       --color-omnibox-answer-icon-g-m3-background);
   --color-searchbox-answer-icon-foreground: var(
       --color-omnibox-answer-icon-g-m3-foreground);
-  --color-searchbox-background: var(--color-sys-surface);
+  --color-searchbox-background: var(--color-new-tab-page-background);
   --color-searchbox-border: var(--color-sys-neutral-outline);
   --color-searchbox-dropdown-divider: var(--color-sys-divider);
   --color-searchbox-foreground: var(--color-sys-on-surface);
@@ -108,7 +108,7 @@
       --color-omnibox-results-button-icon);
   --color-searchbox-results-action-chip-icon-selected: var(
       --color-omnibox-results-button-icon-selected);
-  --color-searchbox-results-background: var(--color-sys-surface);
+  --color-searchbox-results-background: var(--color-new-tab-page-background);
   --color-searchbox-results-background-hovered: var(
       --color-omnibox-results-background-hover-overlay,
       var(--color-omnibox-results-background-hovered));
@@ -148,9 +148,9 @@
       --color-omnibox-results-background-hovered);
 
   --color-composebox-context-entrypoint-background: var(
-      --color-sys-surface-container-high);
+      --color-omnibox-composebox-context-entrypoint-background);
   --color-composebox-context-entrypoint-hover-background: var(
-      --color-sys-state-hover-on-subtle);
+      --color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text: var(--color-sys-on-surface);
   --color-composebox-context-entrypoint-text-disabled: var(
       --color-omnibox-foreground-disabled);
@@ -159,8 +159,7 @@
       --color-sys-on-surface);
 
   --color-new-tab-page-realbox-next-icon-hover: var(
-      --color-omnibox-action-icon-hover,
-      var(--color-sys-state-hover-on-subtle));
+      --color-omnibox-action-icon-hover);
   --omnibox-everywhere-top-actions-top: 16px;
 }
 
@@ -177,9 +176,7 @@
 #screenshotMenu {
   --cr-menu-border-radius: 16px;
   --cr-menu-shadow: var(--cr-elevation-3);
-  --cr-menu-background-color: var(
-      --color-sys-surface-container-high,
-      var(--color-sys-surface));
+  --cr-menu-background-color: var(--color-new-tab-page-background);
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color: var(
       --color-composebox-context-entrypoint-hover-background);

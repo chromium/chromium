@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
@@ -58,7 +60,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_recipe.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -211,6 +217,31 @@ class OmniboxEverywhereContentsWrapper
   }
 };
 
+// Supplies baseline color mixer overrides for the Omnibox Everywhere widget and
+// child surfaces (menus, bubbles, and modal dialogs). Remaps
+// `ui::kColorMenuBackground`, `ui::kColorDialogBackground`, and
+// `ui::kColorBubbleBackground` to `kColorNewTabPageBackground` so native views
+// menus (Lens screenshot menu, '+' context menu, three-dot overflow menu),
+// bubbles (FRE hotkey bubble), and dialogs (screenshot disclosure) share the
+// exact same dark mode surface shade (#3C3C3C / `kColorSysBase`) as the Omnibox
+// Everywhere WebUI card. Also pre-composites
+// `kColorOmniboxComposeboxContextEntrypointBackground` as an opaque color over
+// `kColorNewTabPageBackground` so the AI Mode button masks its interior glow.
+class OmniboxEverywhereColorMixerSupplier
+    : public ui::ColorProviderKey::InitializerSupplier {
+ public:
+  void AddColorMixers(ui::ColorProvider* provider,
+                      const ui::ColorProviderKey& key) const override {
+    ui::ColorMixer& mixer = provider->AddMixer();
+    mixer[ui::kColorMenuBackground] = {kColorNewTabPageBackground};
+    mixer[ui::kColorDialogBackground] = {kColorNewTabPageBackground};
+    mixer[ui::kColorBubbleBackground] = {kColorNewTabPageBackground};
+    mixer[kColorOmniboxComposeboxContextEntrypointBackground] =
+        ui::GetResultingPaintColor({ui::kColorSysStateHoverOnSubtle},
+                                   {kColorNewTabPageBackground});
+  }
+};
+
 // Top-level widget hosting the Omnibox Everywhere WebUI. Because this widget
 // has no parent BrowserWidget, a plain views::Widget only queries
 // ui::NativeTheme (the OS theme) and ignores the active Profile's ThemeService.
@@ -261,6 +292,8 @@ class OmniboxEverywhereWidget : public views::Widget,
     // tinting.
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kBaseline;
     key.user_color = std::nullopt;
+    static base::NoDestructor<OmniboxEverywhereColorMixerSupplier> supplier;
+    key.app_controller = supplier.get();
     return key;
   }
 

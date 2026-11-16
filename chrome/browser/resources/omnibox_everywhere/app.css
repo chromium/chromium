@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --color-searchbox-background: var(--color-sys-surface);
+  --color-searchbox-background: var(--color-new-tab-page-background);
   --loomnibox-content-width: 680px;
   --most-visited-container-inset: 0px;
   display: block;
@@ -62,9 +62,10 @@ omnibox-everywhere-composebox {
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: 100%;
 
-  --color-composebox-background: var(--color-sys-surface);
+  --color-composebox-background: var(--color-new-tab-page-background);
   --color-composebox-type-ahead: var(--color-sys-on-surface-subtle);
-  --color-composebox-type-ahead-chip: var(--color-sys-surface-container-high);
+  --color-composebox-type-ahead-chip: var(
+      --color-omnibox-composebox-chip-background);
   --color-composebox-font-light: var(--color-sys-on-surface);
   --color-searchbox-placeholder: var(--color-composebox-type-ahead);
   display: block;
@@ -110,14 +111,14 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   --color-composebox-submit-button-background: var(--color-sys-primary);
   --color-composebox-submit-button-icon: var(--color-sys-on-primary);
   --color-composebox-voice-search-font: var(--color-sys-on-surface);
-  --color-search-animated-glow-background: var(--color-sys-surface);
-  --cr-composebox-background-color: var(--color-sys-surface);
+  --color-search-animated-glow-background: var(--color-new-tab-page-background);
+  --cr-composebox-background-color: var(--color-new-tab-page-background);
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-height: 36px;
   --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-submit-icon-size: 24px;
   --cr-composebox-submit-width: 48px;
-  background: var(--color-sys-surface);
+  background: var(--color-new-tab-page-background);
   border: none;
   border-radius: 16px;
   bottom: auto;
@@ -264,7 +265,10 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 
 cr-most-visited {
   -webkit-app-region: drag;
-  --add-shortcut-foreground-color: var(--color-sys-on-surface);
+  --add-shortcut-background-color: var(
+      --color-new-tab-page-add-shortcut-background);
+  --add-shortcut-foreground-color: var(
+      --color-new-tab-page-add-shortcut-foreground);
   --most-visited-focus-shadow: 0 0 0 2px var(--color-sys-primary, #1a73e8);
   /* --most-visited-gap is the per-gap width between adjacent tiles inside
    * cr-most-visited (width: max-content). Pin it to the compact 5-tile-in-
@@ -281,10 +285,12 @@ cr-most-visited {
   --most-visited-icon-size: 48px;
   --most-visited-managed-icon-left: 44px;
   --most-visited-managed-icon-top: 32px;
-  --most-visited-text-color: var(--color-sys-on-surface);
+  --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
   --most-visited-tile-size: 68px;
-  --tile-background-color: var(--color-sys-surface-variant);
-  --tile-hover-color: var(--color-sys-state-hover-on-subtle);
+  --tile-background-color: var(
+      --color-new-tab-page-most-visited-tile-background);
+  --tile-hover-color: var(
+      --color-new-tab-page-add-shortcut-background-hovered);
   align-items: center;
   display: flex;
   justify-content: center;

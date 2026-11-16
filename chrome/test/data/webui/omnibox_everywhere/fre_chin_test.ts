@@ -219,7 +219,7 @@ suite('FreChinTest', () => {
   test('resolves dark mode surface and text tokens', async () => {
     const rootStyle = document.documentElement.style;
     const darkTokens: Array<[string, string]> = [
-      ['--color-sys-surface', 'rgb(31, 31, 31)'],
+      ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
       ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
       ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
     ];
@@ -228,7 +228,7 @@ suite('FreChinTest', () => {
     try {
       const q = (sel: string) =>
           window.getComputedStyle(freChin.shadowRoot.querySelector(sel)!);
-      assertEquals('rgb(31, 31, 31)', q('.chin-container').backgroundColor);
+      assertEquals('rgb(60, 60, 60)', q('.chin-container').backgroundColor);
       assertEquals('rgb(42, 42, 42)', q('.dropdown-trigger').backgroundColor);
       assertEquals('rgb(227, 227, 227)', q('.to-search-label').color);
 

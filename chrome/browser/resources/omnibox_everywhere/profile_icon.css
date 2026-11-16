@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --profile-icon-background: var(--color-sys-surface);
+  --profile-icon-background: var(--color-new-tab-page-background);
   display: inline-block;
   inset-inline-end: 16px;
   pointer-events: auto;
@@ -88,7 +88,7 @@
 }
 
 #profileMenu {
-  --cr-menu-background-color: var(--color-sys-surface-container-high, #eef4fc);
+  --cr-menu-background-color: var(--color-new-tab-page-background);
   --cr-menu-border-radius: 20px;
   --cr-menu-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
   --cr-action-menu-padding: 0;
@@ -107,7 +107,7 @@
 }
 
 .profile-card {
-  background-color: var(--color-sys-surface-container-high, #eef4fc);
+  background-color: var(--color-new-tab-page-background);
   border-radius: 20px;
   box-sizing: border-box;
   display: flex;
