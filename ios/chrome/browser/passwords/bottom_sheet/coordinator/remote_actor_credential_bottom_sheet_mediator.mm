@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 #import <optional>
 #import <utility>
@@ -15,6 +17,8 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -36,6 +40,16 @@
 namespace {
 
 using password_manager::RemoteActorCredentialSharingResult;
+
+// Time to wait before finishing the flow in the success confirmation state.
+// Matches the autofill save bottom sheets.
+constexpr base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
+
+// Time to wait before finishing the flow in the success confirmation state when
+// VoiceOver is running. Longer than `kConfirmationDismissDelay` to give
+// VoiceOver enough time to read the announcement.
+constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
+    base::Seconds(5);
 
 }  // namespace
 
@@ -81,6 +95,10 @@ using password_manager::RemoteActorCredentialSharingResult;
   // Whether the controller found no saved passwords for the request. The
   // result is held back until the user leaves the bottom sheet.
   BOOL _noPasswordsFound;
+
+  // Timer delaying the end of a successful flow so the confirmation checkmark
+  // is visible before the bottom sheet is dismissed.
+  base::OneShotTimer _confirmationTimer;
 }
 
 - (instancetype)
@@ -132,6 +150,10 @@ using password_manager::RemoteActorCredentialSharingResult;
 }
 
 - (void)disconnect {
+  if (_confirmationTimer.IsRunning()) {
+    [self finishWithSuccess];
+  }
+
   if (_credentialSelectedCallback) {
     std::move(_credentialSelectedCallback)
         .Run(base::unexpected(
@@ -203,6 +225,9 @@ using password_manager::RemoteActorCredentialSharingResult;
             RemoteActorCredentialSharingResult::kUserCancelledDialog));
     return;
   }
+  // Dismissing the sheet while the confirmation is shown is reported as a
+  // cancellation.
+  _confirmationTimer.Stop();
   // Leaving the no saved passwords sheet reports why the flow couldn't
   // continue rather than a user cancellation.
   RemoteActorCredentialSharingResult result =
@@ -261,8 +286,35 @@ using password_manager::RemoteActorCredentialSharingResult;
     [_consumer showNoSavedPasswords];
     return;
   }
+  // The checkmark replaces the spinner, which also ends the loading state.
+  if (result == RemoteActorCredentialSharingResult::kSuccess) {
+    [self showConfirmation];
+    return;
+  }
   [_consumer setLoading:NO];
   [self.delegate mediator:self didFinishWithResult:result];
+}
+
+// Shows the success checkmark and finishes the flow once it has been visible
+// long enough.
+- (void)showConfirmation {
+  [_consumer showConfirmationState];
+
+  __weak __typeof(self) weakSelf = self;
+  _confirmationTimer.Start(FROM_HERE,
+                           UIAccessibilityIsVoiceOverRunning()
+                               ? kConfirmationDismissDelayIfVoiceOverRunning
+                               : kConfirmationDismissDelay,
+                           base::BindOnce(^{
+                             [weakSelf finishWithSuccess];
+                           }));
+}
+
+// Notifies the delegate that the credential was shared successfully.
+- (void)finishWithSuccess {
+  _confirmationTimer.Stop();
+  [self.delegate mediator:self
+      didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess];
 }
 
 // Fetches the favicon for `_origin` and forwards the attributes to the

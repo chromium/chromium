@@ -18,9 +18,11 @@
 #import "base/test/test_future.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -70,6 +72,20 @@ struct MediatorDependencies {
   raw_ptr<syncer::SyncService> sync_service = nullptr;
   raw_ptr<password_manager::PasswordStoreInterface> account_store = nullptr;
   raw_ptr<password_manager::PasswordManagerClient> client = nullptr;
+  raw_ptr<password_manager::RemoteActorCredentialSharingService>
+      sharing_service = nullptr;
+};
+
+// Sharing service that hands each share's completion callback to the test.
+class FakeRemoteActorCredentialSharingService
+    : public password_manager::RemoteActorCredentialSharingService {
+ public:
+  void SharePassword(const ShareParameters& params,
+                     SharePasswordCallback callback) override {
+    share_callback = std::move(callback);
+  }
+
+  SharePasswordCallback share_callback;
 };
 
 }  // namespace
@@ -111,7 +127,7 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
                         syncService:dependencies.sync_service
                profilePasswordStore:nullptr
                accountPasswordStore:dependencies.account_store
-                     sharingService:nullptr
+                     sharingService:dependencies.sharing_service
               passwordManagerClient:dependencies.client
                       faviconLoader:&favicon_loader_
                             request:request];
@@ -120,10 +136,12 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
   }
 
   // Returns a mediator for a signed-in user with account storage active, whose
-  // sharing controller queries the empty account store and so finds no saved
-  // passwords.
+  // sharing controller queries the account store and shares the selected
+  // credential through `sharing_service`, if any.
   RemoteActorCredentialBottomSheetMediator*
-  CreateMediatorWithSignedInSyncingUser() {
+  CreateMediatorWithSignedInSyncingUser(
+      password_manager::RemoteActorCredentialSharingService* sharing_service =
+          nullptr) {
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
         "user@gmail.com", signin::ConsentLevel::kSignin);
     return CreateMediator(
@@ -131,7 +149,41 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
                       .identity_manager = identity_test_env_.identity_manager(),
                       .sync_service = &sync_service_,
                       .account_store = account_store_.get(),
-                      .client = &password_manager_client_});
+                      .client = &password_manager_client_,
+                      .sharing_service = sharing_service});
+  }
+
+  // Starts a mediator with a saved credential, selects it and completes the
+  // share successfully, expecting the loading state and then the checkmark.
+  void ShareCredentialAndWaitForConfirmation() {
+    base::test::TestFuture<void> added_future;
+    account_store_->AddLogin(password_manager::FromPasswordForm(
+                                 *CreateTestForm(kUsername1, kPassword1)),
+                             added_future.GetCallback());
+    ASSERT_TRUE(added_future.Wait());
+    mediator_ = CreateMediatorWithSignedInSyncingUser(&sharing_service_);
+
+    OCMExpect([consumer_ setDomain:[OCMArg any]]);
+    mediator_.consumer = consumer_;
+
+    base::test::TestFuture<void> suggestions_future;
+    base::RepeatingClosure suggestions_callback =
+        suggestions_future.GetRepeatingCallback();
+    OCMExpect([consumer_ setSuggestions:[OCMArg any]]).andDo(^(NSInvocation*) {
+      suggestions_callback.Run();
+    });
+    OCMExpect([consumer_ setFaviconAttributes:[OCMArg any]]);
+    [mediator_ start];
+    ASSERT_TRUE(suggestions_future.Wait());
+
+    OCMExpect([consumer_ setLoading:YES]);
+    [mediator_ didSelectCredentialAtIndex:0];
+    ASSERT_TRUE(sharing_service_.share_callback);
+    EXPECT_OCMOCK_VERIFY(consumer_);
+
+    OCMExpect([consumer_ showConfirmationState]);
+    std::move(sharing_service_.share_callback).Run(/*success=*/true);
+    EXPECT_OCMOCK_VERIFY(consumer_);
   }
 
   // Starts `mediator_` and waits until it shows the no saved passwords state.
@@ -165,7 +217,8 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
                                       callback:selection_future_.GetCallback()];
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   // Signed in with everything synced by default, so account storage is active.
   syncer::TestSyncService sync_service_;
@@ -173,6 +226,7 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
       base::MakeRefCounted<password_manager::TestPasswordStore>(
           password_manager::IsAccountStore(true));
   password_manager::StubPasswordManagerClient password_manager_client_;
+  FakeRemoteActorCredentialSharingService sharing_service_;
   TestFaviconLoader favicon_loader_;
   id<RemoteActorCredentialBottomSheetConsumer> consumer_;
   id<RemoteActorCredentialBottomSheetMediatorDelegate> delegate_;
@@ -196,6 +250,45 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 
   [mediator_ start];
   EXPECT_TRUE(finished_future.Wait());
+}
+
+// Tests that a successful share shows the checkmark in place of the spinner and
+// only notifies the delegate once the checkmark has been shown.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSharingSuccessShowsConfirmationBeforeFinishing) {
+  ASSERT_NO_FATAL_FAILURE(ShareCredentialAndWaitForConfirmation());
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess]);
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Tests that leaving the sheet while the checkmark is shown reports a
+// cancellation, and that the pending success is not reported afterwards.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDidCancelDuringConfirmationReportsCancellation) {
+  ASSERT_NO_FATAL_FAILURE(ShareCredentialAndWaitForConfirmation());
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::
+                                    kUserCancelledDialog]);
+  [mediator_ didCancel];
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  // The delegate is not notified a second time.
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Tests that disconnecting while the checkmark is shown reports the success
+// instead of a cancellation.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDisconnectDuringConfirmationReportsSuccess) {
+  ASSERT_NO_FATAL_FAILURE(ShareCredentialAndWaitForConfirmation());
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess]);
+  [mediator_ disconnect];
 }
 
 // Tests that receiving the final sharing result stops the loading state.
