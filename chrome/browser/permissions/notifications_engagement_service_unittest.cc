@@ -5,7 +5,9 @@
 #include <array>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -434,8 +436,35 @@ TEST_F(NotificationsEngagementServiceTest,
       8);
 }
 
-// Disabled, due to http://go/crb/1407635.
-TEST_F(NotificationsEngagementServiceTest, DISABLED_GetBucketLabel) {
+// Tests that `NotificationsEngagementService::GetBucketLabel()` and
+// `NotificationsEngagementService::ParsePeriodBeginFromBucketLabel()`
+// correctly compute and round-trip bucket labels across various timestamps.
+//
+// Scenario: Given timestamps with various time offsets and dates (`date1`,
+// `date2`, `date3`, and `date4`), verify that
+// `NotificationsEngagementService::GetBucketLabel()` produces the expected
+// UTC midnight bucket labels, and that round-tripping through
+// `NotificationsEngagementService::ParsePeriodBeginFromBucketLabel()` and
+// back to `NotificationsEngagementService::GetBucketLabel()` returns the
+// identical label.
+//
+// Preconditions:
+// - `base::test::ScopedLibcTimezoneOverride` and
+//   `base::test::ScopedRestoreDefaultTimezone` are instantiated with `"UTC"` to
+//   guarantee deterministic local time conversion in
+//   `NotificationsEngagementService::GetBucketLabel()` regardless of the host
+//   machine's local timezone.
+//
+// Expectations:
+// - `NotificationsEngagementService::GetBucketLabel()` matches the
+//   stringified `ToTimeT()` value of midnight UTC on the expected date.
+// - `NotificationsEngagementService::ParsePeriodBeginFromBucketLabel()`
+//   returns a valid `base::Time` whose bucket label matches the original
+//   bucket label.
+TEST_F(NotificationsEngagementServiceTest, GetBucketLabel) {
+  base::test::ScopedLibcTimezoneOverride libc_timezone_override("UTC");
+  base::test::ScopedRestoreDefaultTimezone icu_timezone_override("UTC");
+
   base::Time date1, date2, date3, date4;
   base::Time expected_date1, expected_date2, expected_date3, expected_date4;
 
