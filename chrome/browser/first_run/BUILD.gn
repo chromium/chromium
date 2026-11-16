@@ -70,11 +70,7 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/first_run_prefs.cc",
-      "android/first_run_utils.cc",
-    ]
-    deps += [ "//chrome/android:chrome_jni_headers" ]
+    sources += [ "android/first_run_prefs.cc" ]
   } else {
     sources += [
       "bookmark_importer.cc",

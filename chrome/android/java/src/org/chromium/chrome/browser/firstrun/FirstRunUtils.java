@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.firstrun;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
@@ -16,6 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -98,13 +98,13 @@ public class FirstRunUtils {
      * @return Whether EULA has been accepted by the user.
      */
     public static boolean isFirstRunEulaAccepted() {
-        return FirstRunUtilsJni.get().getFirstRunEulaAccepted();
+        return LocalStatePrefs.get().getBoolean(Pref.EULA_ACCEPTED);
     }
 
     /** Sets the preference that signals when the user has accepted the EULA. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setEulaAccepted() {
-        FirstRunUtilsJni.get().setEulaAccepted();
+        LocalStatePrefs.get().setBoolean(Pref.EULA_ACCEPTED, true);
     }
 
     /**
@@ -114,7 +114,7 @@ public class FirstRunUtils {
         if (sCctTosDialogEnabledForTesting != TriState.NOT_SET) {
             return sCctTosDialogEnabledForTesting == TriState.TRUE;
         }
-        return FirstRunUtilsJni.get().getCctTosDialogEnabled();
+        return LocalStatePrefs.get().getInteger(Pref.TOS_DIALOG_BEHAVIOR) != TosDialogBehavior.SKIP;
     }
 
     public static void setCctTosDialogEnabledForTesting(boolean isEnabled) {
@@ -172,14 +172,5 @@ public class FirstRunUtils {
             default:
                 return List.of();
         }
-    }
-
-    @NativeMethods
-    public interface Natives {
-        boolean getFirstRunEulaAccepted();
-
-        void setEulaAccepted();
-
-        boolean getCctTosDialogEnabled();
     }
 }

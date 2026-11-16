@@ -50,6 +50,7 @@ android_library("pref_service_java") {
 # target for each pref file.
 java_cpp_strings("java_pref_names_srcjar") {
   sources = [
+    "//chrome/browser/first_run/android/first_run_prefs.cc",
     "//chrome/browser/new_tab_page/prefs/ntp_pref_names.h",
     "//chrome/browser/ttc/core/prefs.h",
     "//chrome/browser/ui/safety_hub/safety_hub_prefs.h",
@@ -81,6 +82,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/unified_consent/pref_names.cc",
     "//components/universal_optout/prefs.h",
     "//components/web_distiller/core/pref_names.h",
+    "//components/web_resource/web_resource_pref_names.cc",
   ]
 
   class_name = "org.chromium.chrome.browser.preferences.Pref"

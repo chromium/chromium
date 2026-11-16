@@ -92,7 +92,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -167,7 +166,6 @@ public class SigninFirstRunFragmentTest {
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
-    @Mock public FirstRunUtils.Natives mFirstRunUtils;
     @Mock private PolicyLoadListener mPolicyLoadListenerMock;
     @Mock private OneshotSupplierImpl<Boolean> mChildAccountStatusListenerMock;
     @Mock private SigninManager mSigninManagerMock;
@@ -205,7 +203,6 @@ public class SigninFirstRunFragmentTest {
         mFakeEnterpriseInfo.initialize(
                 new OwnedState(/* isDeviceOwned= */ false, /* isProfileOwned= */ false));
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
-        FirstRunUtilsJni.setInstanceForTesting(mFirstRunUtils);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1566,7 +1563,7 @@ public class SigninFirstRunFragmentTest {
                 .when(mPolicyLoadListenerMock)
                 .onAvailable(any());
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         launchActivityWithFragment();
 
         callbackHelper.waitForOnly();
@@ -1686,7 +1683,7 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(true);
         mFakeEnterpriseInfo.initialize(
                 new OwnedState(/* isDeviceOwned= */ true, /* isProfileOwned= */ false));
-        when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         launchActivityWithFragment();
 
         // Detach the current fragment. Needs to be done before the PolicyLoadListener

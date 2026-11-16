@@ -43,9 +43,9 @@ browser profile?**
 
 Most Chrome for Android preferences should be associated with a specific
 profile. If your preference should instead be associated with [local state][5]
-(for example, if it is related to the First Run Experience), then you should not
-use PrefService and should instead create your own feature-specific JNI bridge
-to access the correct PrefService instance (see [`first_run_utils.cc`][6]).
+(for example, if it is related to the First Run Experience), use
+[`LocalStatePrefs.get()`][6] (with preference key constants exposed to Java by
+way of [`java_pref_names_srcjar`][4]).
 
 **Can I move a pref from SharedPreferences to PrefService?**
 
@@ -72,5 +72,5 @@ Rationale:
 [3]: https://chromium.googlesource.com/chromium/src/+/main/services/preferences/README.md
 [4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/preferences/BUILD.gn;drc=4ae1b7be67cd9b470ebcc90f2747a9f31f155b00;l=28
 [5]: https://www.chromium.org/developers/design-documents/preferences#TOC-Introduction
-[6]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/first_run/android/first_run_utils.cc
+[6]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/android/java/src/org/chromium/chrome/browser/prefs/LocalStatePrefs.java
 [7]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/android/preferences/shared_preferences_migrator_android.h
