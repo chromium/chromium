@@ -170,6 +170,8 @@ std::vector<std::string> GenerateUpgradeProps(
                          serial_number.c_str()),
       base::StringPrintf("%s.skip_tts_cache=%d", prefix.c_str(),
                          upgrade_params.skip_tts_cache),
+      base::StringPrintf("%s.arc.lmk.perceptible_min_state_update=1",
+                         prefix.c_str()),
   };
   // Conditionally sets more properties based on |upgrade_params|. Strip
   // newlines so values cannot inject extra lines when joined by '\n'.
@@ -190,11 +192,6 @@ std::vector<std::string> GenerateUpgradeProps(
           "%s.preferred_languages=%s", prefix.c_str(),
           base::JoinString(preferred_languages, ",").c_str()));
     }
-  }
-
-  if (upgrade_params.enable_lmk_perceptible_min_state_update) {
-    result.push_back(base::StringPrintf(
-        "%s.arc.lmk.perceptible_min_state_update=1", prefix.c_str()));
   }
 
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT &&

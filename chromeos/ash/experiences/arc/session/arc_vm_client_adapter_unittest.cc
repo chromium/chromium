@@ -2759,20 +2759,9 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedInDisabled) {
   EXPECT_FALSE(request.mini_instance_request().arc_signed_in());
 }
 
-TEST_F(ArcVmClientAdapterTest, ArcLmkPerceptibleMinStateUpdateDisabled) {
+TEST_F(ArcVmClientAdapterTest, LmkPerceptibleMinStateUpdate) {
   StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.enable_lmk_perceptible_min_state_update = false;
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_FALSE(boot_notification_server()->received_data().contains(
-      "ro.boot.arc.lmk.perceptible_min_state_update"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcLmkPerceptibleMinStateUpdateEnabled) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.enable_lmk_perceptible_min_state_update = true;
-  UpgradeArcWithParams(true, std::move(upgrade_params));
+  UpgradeArcWithParams(true, GetPopulatedUpgradeParams());
   EXPECT_TRUE(boot_notification_server()->received_data().contains(
       "ro.boot.arc.lmk.perceptible_min_state_update=1"));
 }

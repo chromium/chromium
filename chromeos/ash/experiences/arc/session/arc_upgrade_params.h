@@ -94,10 +94,6 @@ struct UpgradeParams {
 
   // Flag to enable ARC Nearby Share support.
   bool enable_arc_nearby_share = true;
-
-  // Flag to enable update for minimum Android process state to be considered to
-  // be killed under perceptible memory pressure
-  bool enable_lmk_perceptible_min_state_update = false;
 };
 
 }  // namespace arc

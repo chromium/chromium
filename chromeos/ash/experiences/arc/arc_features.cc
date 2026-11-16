@@ -288,11 +288,4 @@ BASE_FEATURE_PARAM(int,
                    &kVmMemorySize,
                    "ram_percentage",
                    100);
-
-// Controls the feature to update the minimum Android process state to be
-// considered to be killed under perceptible memory pressure. This is to prevent
-// top Android apps from being killed that result in bad user experience.
-BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
-             "ArcLmkPerceptibleMinStateUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace arc

@@ -61,7 +61,6 @@ BASE_DECLARE_FEATURE(kVmMemorySize);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizeShiftMiB);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizeMaxMiB);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizePercentage);
-BASE_DECLARE_FEATURE(kLmkPerceptibleMinStateUpdate);
 }  // namespace arc
 
 #endif  // CHROMEOS_ASH_EXPERIENCES_ARC_ARC_FEATURES_H_

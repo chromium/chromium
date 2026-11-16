@@ -6,9 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 
 namespace arc {
 namespace {
@@ -39,9 +37,7 @@ UpgradeParams::UpgradeParams()
       skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableTtsCache)),
       skip_dexopt_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcDisableDexOptCache)),
-      enable_lmk_perceptible_min_state_update(
-          base::FeatureList::IsEnabled(kLmkPerceptibleMinStateUpdate)) {}
+          ash::switches::kArcDisableDexOptCache)) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;
