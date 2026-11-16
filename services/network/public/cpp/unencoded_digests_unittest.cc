@@ -5,11 +5,15 @@
 #include "services/network/public/cpp/unencoded_digests.h"
 
 #include "base/base64.h"
+#include "base/test/task_environment.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom.h"
 #include "services/network/public/mojom/unencoded_digest.mojom.h"
+#include "services/network/test/mock_devtools_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -225,6 +229,58 @@ TEST_F(UnencodedDigestParserTest, MultipleDigests) {
     EXPECT_EQ(CreateTestMetadata(test.alg[0]), result->digests[0]);
     EXPECT_EQ(CreateTestMetadata(test.alg[1]), result->digests[1]);
   }
+}
+
+TEST_F(UnencodedDigestParserTest, ReportIssuesNullSafety) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const GURL kUrl("https://example.com/");
+
+  mojom::UnencodedDigestsPtr digests_with_issues =
+      mojom::UnencodedDigests::New();
+  digests_with_issues->issues.push_back(
+      mojom::UnencodedDigestIssue::kMalformedDictionary);
+
+  // Null `digests` with a non-null observer and non-empty request ID must
+  // return early without dereferencing `digests` or notifying the observer.
+  {
+    testing::StrictMock<MockDevToolsObserver> observer;
+    EXPECT_CALL(observer, OnUnencodedDigestError).Times(0);
+    ReportUnencodedDigestIssuesToDevtools(nullptr, &observer, "devtools-id",
+                                          kUrl);
+  }
+
+  // Null `devtools_observer` with non-empty issues and non-empty request ID.
+  ReportUnencodedDigestIssuesToDevtools(digests_with_issues, nullptr,
+                                        "devtools-id", kUrl);
+
+  // Empty `devtools_request_id` with non-empty issues and a non-null observer
+  // must return early without notifying the observer.
+  {
+    testing::StrictMock<MockDevToolsObserver> observer;
+    EXPECT_CALL(observer, OnUnencodedDigestError).Times(0);
+    ReportUnencodedDigestIssuesToDevtools(digests_with_issues, &observer, "",
+                                          kUrl);
+  }
+}
+
+TEST_F(UnencodedDigestParserTest, ReportIssuesToDevtools) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const GURL kUrl("https://example.com/");
+
+  mojom::UnencodedDigestsPtr digests = mojom::UnencodedDigests::New();
+  digests->issues.push_back(mojom::UnencodedDigestIssue::kMalformedDictionary);
+  digests->issues.push_back(mojom::UnencodedDigestIssue::kUnknownAlgorithm);
+
+  testing::StrictMock<MockDevToolsObserver> observer;
+  EXPECT_CALL(observer, OnUnencodedDigestError(
+                            "devtools-id", kUrl,
+                            mojom::UnencodedDigestIssue::kMalformedDictionary));
+  EXPECT_CALL(observer, OnUnencodedDigestError(
+                            "devtools-id", kUrl,
+                            mojom::UnencodedDigestIssue::kUnknownAlgorithm));
+
+  ReportUnencodedDigestIssuesToDevtools(digests, &observer, "devtools-id",
+                                        kUrl);
 }
 
 }  // namespace network

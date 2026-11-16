@@ -95,7 +95,7 @@ void ReportUnencodedDigestIssuesToDevtools(
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
     const std::string& devtools_request_id,
     const GURL& request_url) {
-  if (!devtools_observer || devtools_request_id.empty()) {
+  if (!digests || !devtools_observer || devtools_request_id.empty()) {
     return;
   }
 
