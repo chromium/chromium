@@ -119,6 +119,8 @@ DefaultSearchManager::DefaultSearchManager(
           base::BindRepeating(&DefaultSearchManager::OnOverridesPrefChanged,
                               base::Unretained(this)));
     }
+    TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
+        *pref_service_);
   }
   LoadPrepopulatedFallbackSearch();
   if (search_engine_choice_service->IsDsePropagationAllowedForGuest()) {

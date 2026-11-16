@@ -973,3 +973,38 @@ TEST_F(DefaultSearchManagerTest, EncryptionResetSetsUnacknowledgedResetPref) {
               base::Time());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+TEST_F(DefaultSearchManagerTest, RecordsSearchProviderOverrideStatusOnInit) {
+  {
+    base::HistogramTester histogram_tester;
+    auto manager = create_manager();
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        0, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                                base::ListValue());
+    auto manager = create_manager();
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        1, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetUserPref(
+        prefs::kSearchProviderOverrides,
+        base::ListValue().Append(
+            base::DictValue()
+                .Set("name", "foo")
+                .Set("keyword", "fook")
+                .Set("search_url", "http://foo.com/s?q={searchTerms}")
+                .Set("favicon_url", "http://foi.com/favicon.ico")
+                .Set("encoding", "UTF-8")
+                .Set("id", 1001)));
+    auto manager = create_manager();
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        2, 1);
+  }
+}

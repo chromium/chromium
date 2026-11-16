@@ -45,6 +45,10 @@ inline constexpr size_t kMaxRowPrepopulatedEngines = 5;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+// Records `Search.SearchProviderOverrideStatus2` reflecting the state of
+// `prefs::kSearchProviderOverrides` in `prefs`.
+void RecordSearchProviderOverrideStatus(const PrefService& prefs);
+
 // Returns the current version of the prepopulate data, so callers can know when
 // they need to re-merge. If the prepopulate data comes from the preferences
 // file then it returns the version specified there.

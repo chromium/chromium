@@ -717,12 +717,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/search_promotion/search_promotion_manager.h:SearchPromotionPehEligibility) -->
 
+<!-- LINT.IfChange(SearchProviderOverrideStatus) -->
+
 <enum name="SearchProviderOverrideStatus">
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
   <int value="2" label="kPrefHasValidUrls"/>
   <int value="3" label="kIgnoredPref"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/search_engines/template_url_prepopulate_data.cc:SearchProviderOverrideStatus) -->
 
 <enum name="SearchReferralParam">
   <int value="0" label="PC"/>

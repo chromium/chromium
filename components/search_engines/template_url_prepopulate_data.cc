@@ -42,8 +42,28 @@ inline std::unique_ptr<TemplateURLData> PrepopulatedEngineToTemplateURLData(
   return TemplateURLDataFromPrepopulatedEngine(*engine);
 }
 
+std::vector<std::unique_ptr<TemplateURLData>>
+GetOverriddenTemplateURLDataNoMetrics(const PrefService& prefs) {
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
+
+  const base::ListValue& list = prefs.GetList(prefs::kSearchProviderOverrides);
+
+  for (const base::Value& engine : list) {
+    if (engine.is_dict()) {
+      auto t_url = TemplateURLDataFromOverrideDictionary(engine.GetDict());
+      if (t_url) {
+        t_urls.push_back(std::move(t_url));
+      }
+    }
+  }
+
+  return t_urls;
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(SearchProviderOverrideStatus)
 enum class SearchProviderOverrideStatus {
   // No preferences are available for `prefs::kSearchProviderOverrides`.
   kNoPref = 0,
@@ -62,6 +82,7 @@ enum class SearchProviderOverrideStatus {
 
   kMaxValue = kIgnoredPref
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchProviderOverrideStatus)
 
 std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
     PrefService& prefs) {
@@ -70,17 +91,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
   const bool ignore_overrides =
       base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides);
   if (!ignore_overrides) {
-    const base::ListValue& list =
-        prefs.GetList(prefs::kSearchProviderOverrides);
-
-    for (const base::Value& engine : list) {
-      if (engine.is_dict()) {
-        auto t_url = TemplateURLDataFromOverrideDictionary(engine.GetDict());
-        if (t_url) {
-          t_urls.push_back(std::move(t_url));
-        }
-      }
-    }
+    t_urls = GetOverriddenTemplateURLDataNoMetrics(prefs);
   }
 
   const bool has_pref = prefs.HasPrefPath(prefs::kSearchProviderOverrides);
@@ -170,6 +181,16 @@ constexpr const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInDataImpl(
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kSearchProviderOverrides);
   registry->RegisterIntegerPref(prefs::kSearchProviderOverridesVersion, -1);
+}
+
+void RecordSearchProviderOverrideStatus(const PrefService& prefs) {
+  SearchProviderOverrideStatus status = SearchProviderOverrideStatus::kNoPref;
+  if (prefs.HasPrefPath(prefs::kSearchProviderOverrides)) {
+    status = GetOverriddenTemplateURLDataNoMetrics(prefs).empty()
+                 ? SearchProviderOverrideStatus::kEmptyPref
+                 : SearchProviderOverrideStatus::kPrefHasValidUrls;
+  }
+  base::UmaHistogramEnumeration("Search.SearchProviderOverrideStatus2", status);
 }
 
 int GetDataVersion(PrefService* prefs) {

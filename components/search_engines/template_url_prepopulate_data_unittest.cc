@@ -1896,3 +1896,56 @@ TEST_P(TemplateURLPrepopulateDataListTest,
        DISABLED_ManualEeaEngineListIsRandomPerCountry) {
   RunEeaEngineListIsRandomTest(20000, 0.01);
 }
+
+TEST_F(TemplateURLPrepopulateDataTest, RecordSearchProviderOverrideStatus) {
+  {
+    base::HistogramTester histogram_tester;
+    TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
+        *pref_service());
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        0, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                                base::ListValue());
+    TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
+        *pref_service());
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        1, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetUserPref(
+        prefs::kSearchProviderOverrides,
+        base::ListValue().Append(base::DictValue()
+                                     .Set("name", "foo")
+                                     .Set("keyword", "fook")
+                                     .Set("favicon_url", "http://foi.com/f.ico")
+                                     .Set("id", 1001)));
+    TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
+        *pref_service());
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        1, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetUserPref(
+        prefs::kSearchProviderOverrides,
+        base::ListValue().Append(
+            base::DictValue()
+                .Set("name", "foo")
+                .Set("keyword", "fook")
+                .Set("search_url", "http://foo.com/s?q={searchTerms}")
+                .Set("favicon_url", "http://foi.com/favicon.ico")
+                .Set("encoding", "UTF-8")
+                .Set("id", 1001)));
+    TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
+        *pref_service());
+    histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus2",
+                                        2, 1);
+  }
+}

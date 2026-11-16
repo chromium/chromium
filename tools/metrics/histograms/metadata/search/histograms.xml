@@ -2175,6 +2175,20 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.SearchProviderOverrideStatus2"
+    enum="SearchProviderOverrideStatus" expires_after="2027-05-09">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    The status of the `search_provider_overrides` preference used by Chrome
+    distribution channels to configure search engine overrides, indicating
+    whether the preference is unset, empty/invalid, or contains at least one
+    valid search engine definition (regardless of whether overrides are
+    ignored). Recorded once per `DefaultSearchManager` initialization for
+    profiles with a backing `PrefService`.
+  </summary>
+</histogram>
+
 <histogram name="Search.Session.ProviderState" enum="Boolean"
     expires_after="2027-05-02">
   <owner>musalmaan@chromium.org</owner>
