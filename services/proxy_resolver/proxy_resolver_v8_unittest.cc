@@ -581,6 +581,52 @@ TEST_F(ProxyResolverV8Test, NoWebAssembly) {
   EXPECT_EQ(0U, bindings()->errors.size());
 }
 
+// Regression test for https://crbug.com/568902808. An attacker who can corrupt
+// memory inside the V8 sandbox can give a V8 object in one resolver's context a
+// copy of another resolver's binding callback data. Destroying the other
+// resolver must not leave that copy referring to freed memory.
+TEST_F(ProxyResolverV8Test, AliasedCallbackDataAfterResolverDestroyed) {
+  MockJSBindings bindings_a;
+  std::unique_ptr<ProxyResolverV8> resolver_a;
+  ASSERT_THAT(
+      ProxyResolverV8::Create(
+          net::PacFileData::FromUTF8("function FindProxyForURL(url, host) {\n"
+                                     "  return 'DIRECT';\n"
+                                     "}\n"),
+          &bindings_a, &resolver_a),
+      IsOk());
+
+  MockJSBindings bindings_b;
+  bindings_b.dns_resolve_result = "192.168.1.1";
+  std::unique_ptr<ProxyResolverV8> resolver_b;
+  ASSERT_THAT(ProxyResolverV8::Create(
+                  net::PacFileData::FromUTF8(
+                      "function FindProxyForURL(url, host) {\n"
+                      "  var result = aliasedDnsResolve('aliased');\n"
+                      "  return result === null ? 'DIRECT' : 'PROXY ' +\n"
+                      "      result + ':80';\n"
+                      "}\n"),
+                  &bindings_b, &resolver_b),
+              IsOk());
+  resolver_b->InstallAliasedDnsResolveForTesting(*resolver_a,
+                                                 "aliasedDnsResolve");
+
+  // Destroy resolver A, and collect its V8 objects.
+  resolver_a.reset();
+  ProxyResolverV8::CollectGarbageForTesting();
+
+  // The aliased binding must neither crash nor reach either resolver's
+  // bindings.
+  net::ProxyInfo proxy_info;
+  EXPECT_THAT(resolver_b->GetProxyForURL(GURL("http://www.google.com"),
+                                         &proxy_info, &bindings_b),
+              IsOk());
+  EXPECT_TRUE(proxy_info.is_direct());
+  EXPECT_THAT(bindings_a.dns_resolves, IsEmpty());
+  EXPECT_THAT(bindings_b.dns_resolves, IsEmpty());
+  EXPECT_THAT(bindings_b.errors, IsEmpty());
+}
+
 // Thread-safe JSBindings where dnsResolve("block") blocks until `unblock` is
 // signalled. Records all calls, so a test can detect calls made on the wrong
 // thread.

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
@@ -70,6 +71,16 @@ class ProxyResolverV8 {
   // resolver.
   static size_t GetTotalHeapSize();
   static size_t GetUsedHeapSize();
+
+  // Simulates an attacker who can corrupt memory inside the V8 sandbox
+  // creating a new V8 object in this resolver's context that holds a copy of
+  // `source`'s binding callback data: installs a global function `name` that
+  // behaves like dnsResolve(), but is bound to that copy.
+  void InstallAliasedDnsResolveForTesting(const ProxyResolverV8& source,
+                                          std::string_view name);
+
+  // Runs full garbage collections on the isolate shared by all resolvers.
+  static void CollectGarbageForTesting();
 
  private:
   // Context holds the Javascript state for the PAC script.
