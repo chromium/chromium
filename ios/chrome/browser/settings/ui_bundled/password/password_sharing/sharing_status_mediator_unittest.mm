@@ -39,7 +39,7 @@ namespace {
 
 constexpr NSString* kWebsite = @"example.com";
 const CGFloat kProfileImageSize = 60.0;
-const GURL kGURL = GURL("www.example.com");
+constexpr char kURL[] = "www.example.com";
 
 NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
   NSMutableArray<RecipientInfoForIOSDisplay*>* recipients =
@@ -148,7 +148,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -169,7 +169,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -186,7 +186,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -206,7 +206,7 @@ TEST_F(SharingStatusMediatorTest,
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -225,7 +225,7 @@ TEST_F(SharingStatusMediatorTest,
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -243,8 +243,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooterForWebsite) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL
-          changePasswordURL:kGURL];
+                        URL:GURL(kURL)
+          changePasswordURL:GURL(kURL)];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -260,7 +260,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooterForAndroidApp) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
@@ -278,9 +278,9 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutGURL) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL
+                        URL:GURL(kURL)
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
-  EXPECT_EQ(kGURL, consumer.URL);
+  EXPECT_EQ(GURL(kURL), consumer.URL);
 }
