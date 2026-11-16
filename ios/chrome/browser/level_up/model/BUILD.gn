@@ -65,6 +65,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/snackbar",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {

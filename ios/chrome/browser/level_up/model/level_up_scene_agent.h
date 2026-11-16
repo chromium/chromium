@@ -10,7 +10,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 // Manager for the "Level Up" feature.
-// Listens to user actions and marks tasks as completed.
+// Listens to user actions and marks tasks as completed. When several windows
+// are active, only the agent of the window the user touched last handles each
+// action, so that stats are counted once and the completion snackbar shows in
+// that window.
 @interface LevelUpSceneAgent : ObservingSceneAgent
 
 // Starts listening to user actions.

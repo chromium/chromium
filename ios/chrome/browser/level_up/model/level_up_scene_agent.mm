@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/level_up/model/level_up_scene_agent.h"
 
+#import <UIKit/UIKit.h>
+
 #import <map>
 #import <string>
 
@@ -33,6 +35,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// The listening scene agent whose window the user touched most recently.
+__weak LevelUpSceneAgent* g_last_touched_agent = nil;
+
+}  // namespace
+
+@interface LevelUpSceneAgent () <UIGestureRecognizerDelegate>
+@end
+
 @implementation LevelUpSceneAgent {
   // The callback registered with `base::AddActionCallback`.
   base::ActionCallback _actionCallback;
@@ -42,6 +54,8 @@
   std::map<std::string, TaskType> _actionToTaskMap;
   // Map from user action to stat type for fast lookup.
   std::map<std::string, LevelUpTaskStatType> _actionToStatMap;
+  // Gesture recognizer that detects when the user touches the window.
+  UIGestureRecognizer* _gestureRecognizer;
 }
 
 - (void)setSceneState:(SceneState*)sceneState {
@@ -97,6 +111,7 @@
         [weakSelf onUserAction:action];
       });
   base::AddActionCallback(_actionCallback);
+  [self addGestureRecognizerToWindow];
 }
 
 - (void)stopListening {
@@ -105,6 +120,10 @@
   }
   base::RemoveActionCallback(_actionCallback);
   _actionCallback.Reset();
+  [self removeGestureRecognizerFromWindow];
+  if (g_last_touched_agent == self) {
+    g_last_touched_agent = nil;
+  }
   _levelUpService = nullptr;
   _actionToTaskMap.clear();
   _actionToStatMap.clear();
@@ -116,6 +135,9 @@
 
 - (void)onUserAction:(const std::string&)action {
   if (!_levelUpService || !_levelUpService->IsOptedIn()) {
+    return;
+  }
+  if (![self shouldHandleUserActions]) {
     return;
   }
 
@@ -177,6 +199,27 @@
 
 #pragma mark - Private
 
+// Returns whether this `LevelUpSceneAgent` handles user actions.
+- (BOOL)shouldHandleUserActions {
+  LevelUpSceneAgent* lastTouchedLevelUpSceneAgent = g_last_touched_agent;
+  return !lastTouchedLevelUpSceneAgent || lastTouchedLevelUpSceneAgent == self;
+}
+
+// Adds `_gestureRecognizer` to the scene's window, so that touching the window
+// makes this `LevelUpSceneAgent` the one that handles user actions.
+- (void)addGestureRecognizerToWindow {
+  _gestureRecognizer = [[UIGestureRecognizer alloc] initWithTarget:nil
+                                                            action:nil];
+  _gestureRecognizer.delegate = self;
+  [self.sceneState.window addGestureRecognizer:_gestureRecognizer];
+}
+
+// Removes `_gestureRecognizer` from the scene's window.
+- (void)removeGestureRecognizerFromWindow {
+  [_gestureRecognizer.view removeGestureRecognizer:_gestureRecognizer];
+  _gestureRecognizer = nil;
+}
+
 // Returns the current active browser for the associated scene.
 - (Browser*)currentBrowser {
   return self.sceneState.browserProviderInterface.currentBrowser;
@@ -206,6 +249,14 @@
   id<LevelUpCommands> levelUpHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LevelUpCommands);
   [levelUpHandler showLevelUp];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  g_last_touched_agent = self;
+  return NO;
 }
 
 @end
