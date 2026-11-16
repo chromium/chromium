@@ -167,10 +167,10 @@ class OmniboxWebUiInteractiveTestBase
       }
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
           browser_view->GetLocationBar()->GetOmniboxPopupView());
-      if (!popup_view || !popup_view->presenter()) {
+      if (!popup_view || !popup_view->popup_host()) {
         return nullptr;
       }
-      return popup_view->presenter()->GetWebUIContent();
+      return popup_view->popup_host()->GetWebUIContent();
     });
   }
 

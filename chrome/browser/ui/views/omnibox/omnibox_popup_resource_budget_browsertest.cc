@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -128,7 +129,7 @@ PopupResources CountPopupResources(Profile* profile) {
       continue;
     }
     const OmniboxPopupPresenterBase* presenters[] = {
-        location_bar->GetOmniboxPopupView()->presenter(),
+        location_bar->GetOmniboxPopupPresenterForTesting(),
         location_bar->GetOmniboxPopupAimPresenter()};
     for (const OmniboxPopupPresenterBase* presenter : presenters) {
       // Widgets close asynchronously after hide; ignore ones on their way out.
@@ -204,7 +205,7 @@ std::vector<OmniboxPopupPresenterBase*> GetPopupPresenters(Profile* profile) {
       continue;
     }
     OmniboxPopupPresenterBase* window_presenters[] = {
-        location_bar->GetOmniboxPopupView()->presenter(),
+        location_bar->GetOmniboxPopupPresenterForTesting(),
         location_bar->GetOmniboxPopupAimPresenter()};
     for (OmniboxPopupPresenterBase* presenter : window_presenters) {
       if (presenter) {
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
   ASSERT_TRUE(location_bar);
   WaitForPopupContentsToBeCreated(browser()->GetProfile());
   content::WebContents* contents = location_bar->GetOmniboxPopupView()
-                                       ->presenter()
+                                       ->popup_host()
                                        ->GetWebUIContent()
                                        ->GetWrappedWebContents();
   ExpectPopupLoadsOnlyApp(contents, "omnibox-popup-app",
@@ -440,7 +441,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
   ASSERT_TRUE(location_bar);
   WaitForPopupContentsToBeCreated(browser()->GetProfile());
   content::WebContents* contents = location_bar->GetOmniboxPopupView()
-                                       ->presenter()
+                                       ->popup_host()
                                        ->GetWebUIContent()
                                        ->GetWrappedWebContents();
   ExpectPopupLoadsOnlyApp(contents, "omnibox-full-app",
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetInBrowserTestsTest,
   LocationBarView* location_bar = GetLocationBarView(browser());
   ASSERT_TRUE(location_bar);
   OmniboxPopupPresenterBase* presenter =
-      location_bar->GetOmniboxPopupView()->presenter();
+      location_bar->GetOmniboxPopupPresenterForTesting();
   ASSERT_TRUE(presenter);
   EXPECT_FALSE(presenter->GetWebUIContent());
   EXPECT_TRUE(presenter->GetOrCreateWebUIContent(
@@ -631,9 +632,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetShareAcrossWindowsBrowserTest,
   // instead of creating new ones.
   LocationBarView* location_bar = GetLocationBarView(last_browser);
   ASSERT_TRUE(location_bar);
-  EXPECT_TRUE(
-      location_bar->GetOmniboxPopupView()->presenter()->GetOrCreateWebUIContent(
-          OmniboxPopupPresenterBase::CreationReason::kShow));
+  EXPECT_TRUE(location_bar->GetOmniboxPopupPresenterForTesting()
+                  ->GetOrCreateWebUIContent(
+                      OmniboxPopupPresenterBase::CreationReason::kShow));
   EXPECT_TRUE(
       location_bar->GetOmniboxPopupAimPresenter()->GetOrCreateWebUIContent(
           OmniboxPopupPresenterBase::CreationReason::kShow));

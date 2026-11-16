@@ -27,6 +27,7 @@
 
 class BrowserWindowInterface;
 class OmniboxController;
+class OmniboxPopupPresenterBase;
 class OmniboxPopupView;
 class OmniboxPopupViewWebUI;
 class PermissionDashboardController;
@@ -179,6 +180,13 @@ class WebUILocationBar : public LocationBar,
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
 
+  // Returns the presenter that shows the omnibox popup's WebUI in a widget, or
+  // null before the popup view is created.
+  // TODO(crbug.com/585197660): Remove; tests should use the popup host.
+  OmniboxPopupPresenterBase* GetOmniboxPopupPresenterForTesting() {
+    return omnibox_popup_presenter_;
+  }
+
  private:
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
 
@@ -257,6 +265,12 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
+  // Non-owning pointer to the presenter owned by `omnibox_popup_view_`.
+  // Declared after `omnibox_popup_view_` so it is destroyed first in reverse
+  // member order.
+  // TODO(crbug.com/585197660): Remove, going through `omnibox_popup_view_`'s
+  // popup host instead.
+  raw_ptr<OmniboxPopupPresenterBase> omnibox_popup_presenter_ = nullptr;
   const bool using_full_popup_;
   // The presenter controlling the showing of the AI mode popup. Null until the
   // profile is eligible for it.

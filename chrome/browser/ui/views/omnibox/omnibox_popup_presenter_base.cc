@@ -998,6 +998,11 @@ void OmniboxPopupPresenterBase::UnregisterBlocker() {
 
 void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
 
+std::optional<OmniboxPopupHost::FocusStateToRestore>
+OmniboxPopupPresenterBase::TakeFocusStateToRestoreAfterModalDialog() {
+  return std::nullopt;
+}
+
 void OmniboxPopupPresenterBase::SetPermissionPromptShowing(bool showing) {
   is_prompt_showing_ = showing;
 }
@@ -1058,4 +1063,15 @@ bool OmniboxPopupPresenterBase::IsPermissionPromptPreventingClose() const {
 
 bool OmniboxPopupPresenterBase::IsClosePrevented() const {
   return has_active_blockers() || IsPermissionPromptPreventingClose();
+}
+
+void OmniboxPopupPresenterBase::ResetContentHeightForTabSwitch() {
+  if (config_.height_workarounds) {
+    // Reset cached height to 1 on tab switch. This forces
+    // `OmniboxPopupFullPresenter::SynchronizePopupBounds` to fall back to
+    // `default_height` (the single location bar height) and drop
+    // elevation to 0, preventing a transient blank white dropdown box from
+    // painting while WebUI updates matches for the new tab.
+    OnContentHeightChanged(1);
+  }
 }

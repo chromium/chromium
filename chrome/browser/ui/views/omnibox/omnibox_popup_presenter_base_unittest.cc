@@ -75,6 +75,7 @@ class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
   }
+  void DeactivateAndKillFocus() override {}
 };
 
 // Presenter whose popup paints its own drop shadow in the page, so the Views
@@ -144,6 +145,7 @@ class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
   }
+  void DeactivateAndKillFocus() override {}
 };
 
 class DummyOmniboxPopupPresenterDelegate
@@ -548,6 +550,30 @@ TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightClampedBelowShadowMargin) {
   presenter->OnContentHeightChanged(1);
 
   EXPECT_EQ(GetContentHeight(presenter.get()), 1);
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest,
+       ResetContentHeightForTabSwitchWithHeightWorkarounds) {
+  auto presenter = std::make_unique<TestOmniboxPopupPresenter>(
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
+  presenter->OnContentHeightChanged(400);
+
+  presenter->ResetContentHeightForTabSwitch();
+
+  EXPECT_EQ(GetContentHeight(presenter.get()), 1);
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest,
+       ResetContentHeightForTabSwitchWithoutHeightWorkarounds) {
+  OmniboxPopupContentConfig config = TestConfig();
+  config.height_workarounds = false;
+  auto presenter = std::make_unique<TestOmniboxPopupPresenter>(
+      nullptr, dummy_delegate_, controller_.get(), config);
+  presenter->OnContentHeightChanged(400);
+
+  presenter->ResetContentHeightForTabSwitch();
+
+  EXPECT_EQ(GetContentHeight(presenter.get()), 400);
 }
 
 // When ash hides the popup on switching users, and the omnibox closes the popup

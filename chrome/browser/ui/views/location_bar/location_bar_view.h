@@ -60,6 +60,7 @@ class OmniboxContextMenu;
 enum class OmniboxPart;
 class OmniboxPopupAimPresenter;
 class OmniboxPopupFileSelector;
+class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
 class OmniboxPopupView;
 class OmniboxViewViews;
@@ -320,6 +321,12 @@ class LocationBarView
 
   SkColor GetBackgroundColorForTesting() const { return background_color_; }
 
+  // Returns the presenter that shows the omnibox popup's WebUI in a widget, or
+  // null if the popup isn't shown by one (e.g. a native popup, or the WebUI
+  // omnibox hosted in the location bar).
+  // TODO(crbug.com/585197660): Remove; tests should use the popup host.
+  OmniboxPopupPresenterBase* GetOmniboxPopupPresenterForTesting();
+
   OmniboxPopupUI* GetOmniboxPopupUI();
 
  private:
@@ -561,6 +568,12 @@ class LocationBarView
 
   // The view holding the regular results popup.
   std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
+  // Non-owning pointer to the presenter owned by `omnibox_popup_view_`, if any.
+  // Declared after `omnibox_popup_view_` so it is destroyed first in reverse
+  // member order.
+  // TODO(crbug.com/585197660): Remove with
+  // GetOmniboxPopupPresenterForTesting().
+  raw_ptr<OmniboxPopupPresenterBase> omnibox_popup_presenter_ = nullptr;
   // The presenter controlling the showing of the AI mode popup. Null until the
   // profile is eligible for it.
   std::unique_ptr<OmniboxPopupAimPresenter> omnibox_popup_aim_presenter_;

@@ -18,12 +18,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -1279,15 +1283,16 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
   views::Widget* GetPopupWidget() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     auto* location_bar = browser_view->toolbar()->location_bar();
-    auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar->GetOmniboxPopupView());
-    if (!popup_view || !popup_view->presenter()) {
+    OmniboxPopupHost* host = location_bar->GetOmniboxPopupView()->popup_host();
+    if (!host) {
       return nullptr;
     }
-    popup_view->presenter()->Show();
+    // Creates the content and its widget.
+    host->Show();
     location_bar->GetOmniboxController()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kClassic);
-    return popup_view->presenter()->GetWidget();
+    OmniboxPopupWebUIBaseContent* content = host->GetWebUIContent();
+    return content ? content->GetWidget() : nullptr;
   }
 
   void SetBrowserBounds(const gfx::Rect& bounds) {
@@ -1298,15 +1303,20 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     browser_waiter.Wait();
   }
 
+  // Calls the presenter as the page's searchbox handler does. Only the
+  // composebox handler, which the classic popup doesn't bind, reaches it.
   void SimulateFrontendMojoMessage(bool is_showing,
                                    const gfx::Size& prompt_size) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* location_bar = browser_view->toolbar()->location_bar();
-    auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar->GetOmniboxPopupView());
-    if (popup_view && popup_view->presenter()) {
-      popup_view->presenter()->OnEmbeddedPermissionDialogChanged(is_showing,
-                                                                 prompt_size);
+    LocationBarView* location_bar_view =
+        browser_view->toolbar()->location_bar_view();
+    OmniboxPopupPresenterBase* presenter =
+        location_bar_view
+            ? location_bar_view->GetOmniboxPopupPresenterForTesting()
+            : static_cast<WebUILocationBar*>(browser_view->GetLocationBar())
+                  ->GetOmniboxPopupPresenterForTesting();
+    if (presenter) {
+      presenter->OnEmbeddedPermissionDialogChanged(is_showing, prompt_size);
     }
   }
 

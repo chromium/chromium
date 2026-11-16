@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -1431,15 +1432,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupOnDemandCreationBrowserTest,
 
   auto* popup_view = location_bar()->GetOmniboxPopupView();
   ASSERT_TRUE(popup_view);
-  ASSERT_TRUE(popup_view->presenter());
+  ASSERT_TRUE(popup_view->popup_host());
 
   // The context menu is anchored to the classic popup's widget, which exists
   // only while the popup is shown, as it is when a user right-clicks it.
   location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
       OmniboxPopupState::kClassic);
-  popup_view->presenter()->Show();
+  popup_view->popup_host()->Show();
   OmniboxPopupWebUIBaseContent* classic_content =
-      popup_view->presenter()->GetWebUIContent();
+      popup_view->popup_host()->GetWebUIContent();
   ASSERT_TRUE(classic_content);
   ASSERT_TRUE(classic_content->GetWidget());
   ASSERT_FALSE(aim_presenter->GetWebUIContent());

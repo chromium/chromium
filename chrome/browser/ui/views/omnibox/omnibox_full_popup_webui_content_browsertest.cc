@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/chrome_features.h"
@@ -49,9 +48,9 @@ class OmniboxFullPopupWebUIContentBrowserTest : public InProcessBrowserTest {
         location_bar_view()->GetOmniboxPopupView());
   }
   OmniboxFullPopupWebUIContent* content() {
-    return popup_view()->presenter()
+    return popup_view()->popup_host()
                ? static_cast<OmniboxFullPopupWebUIContent*>(
-                     popup_view()->presenter()->GetWebUIContent())
+                     popup_view()->popup_host()->GetWebUIContent())
                : nullptr;
   }
 
@@ -90,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFullPopupWebUIContentBrowserTest,
                        PendingRequestDroppedOnHide) {
   RequestContextMenu();
 
-  popup_view()->presenter()->Hide();
+  popup_view()->popup_host()->Hide();
 
   EXPECT_FALSE(HasPendingContextMenuRequest());
 }

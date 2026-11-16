@@ -40,6 +40,7 @@ class OmniboxPopupAimPresenter
   void Show() override;
   void Hide() override;
   std::string_view GetPopupMetricPrefix() const override;
+  void DeactivateAndKillFocus() override {}
   OmniboxPopupState GetSharedPopupKind() const override;
   bool ShouldDestroyWidgetOnHide() const override;
   // Triggered when a file selection dialog opened by this popup is closed,

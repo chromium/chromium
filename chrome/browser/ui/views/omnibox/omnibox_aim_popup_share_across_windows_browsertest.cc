@@ -16,14 +16,15 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -192,7 +193,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupShareAcrossWindowsBrowserTest,
       [&]() { return GetAimPresenter(browser())->CanReleaseWebUIContents(); }));
 
   OmniboxPopupPresenterBase* other_classic_presenter =
-      GetLocationBar(other_browser)->GetOmniboxPopupView()->presenter();
+      BrowserView::GetBrowserViewForBrowser(other_browser)
+          ->toolbar()
+          ->location_bar_view()
+          ->GetOmniboxPopupPresenterForTesting();
   other_classic_presenter->GetOrCreateWebUIContent(
       OmniboxPopupPresenterBase::CreationReason::kShow);
 

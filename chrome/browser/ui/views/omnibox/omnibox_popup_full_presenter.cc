@@ -325,6 +325,10 @@ std::string_view OmniboxPopupFullPresenter::GetPopupMetricPrefix() const {
   return OmniboxPopupPresenterBase::kFullWebUIPopupMetricPrefix;
 }
 
+void OmniboxPopupFullPresenter::DeactivateAndKillFocus() {
+  DeactivatePopupAndKillFocus(FocusAfterBlur::kNone);
+}
+
 std::unique_ptr<RoundedOmniboxResultsFrame>
 OmniboxPopupFullPresenter::CreateResultsFrame(
     std::unique_ptr<views::View> contents,

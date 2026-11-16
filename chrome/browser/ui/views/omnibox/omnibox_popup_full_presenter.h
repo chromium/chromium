@@ -87,12 +87,16 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // focus back from the WebUI input field.
   void RequestFocus() override;
   std::string_view GetPopupMetricPrefix() const override;
+  // Calls `DeactivatePopupAndKillFocus(FocusAfterBlur::kNone)`.
+  void DeactivateAndKillFocus() override;
 
   bool ShouldReceiveFocus() const override;
 
   // Called when a native file dialog opened from the popup's "+" menu is shown
   // and closed. See `OnModalDialogShown()`. Selecting files opens AI Mode with
-  // them, so the omnibox isn't refocused then.
+  // them, so the omnibox isn't refocused then. Unlike deactivation blockers,
+  // these are called regardless of `omnibox::kOmniboxKeepOpenOnFileSelection`.
+  // TODO(b/582886941): Merge deactivation blockers with these.
   //
   // Other modal dialogs are detected through
   // `OnWidgetWindowModalVisibilityChanged()`. That can't tell whether a file
@@ -103,23 +107,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void OnFileDialogOpened() override;
   void OnFileDialogClosed(bool file_selected) override;
 
-  // The text and selection the omnibox had when a modal dialog blurred it, and
-  // whether it showed the full URL rather than the elided one.
-  struct FocusStateToRestore {
-    std::u16string text;
-    gfx::Range selection;
-    bool show_full_url = false;
-  };
-
-  // Called when the omnibox is refocused. Returns the focus state the omnibox
-  // had when a modal dialog blurred it, so that the caller restores it. Only
-  // the first call after the dialog closes returns it. Returns nullopt if there
-  // is none, or if the omnibox text has changed since.
-  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog();
-
-  // Called when the active tab changes. Forgets any state recorded for a modal
-  // dialog, which belongs to the previous tab's omnibox.
-  void OnTabChanged();
+  using FocusStateToRestore = OmniboxPopupHost::FocusStateToRestore;
+  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog()
+      override;
+  void OnTabChanged() override;
 
  protected:
   // OmniboxPopupPresenterBase:

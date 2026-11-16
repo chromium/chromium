@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -54,34 +55,17 @@
 
 namespace {
 
-// Returns the presenter of the omnibox popup that opened the file dialog, in
-// the browser window that `web_contents` belongs to: the AI Mode popup's if
-// `was_ai_mode_open`, or the omnibox popup's otherwise. Returns null if there
-// is none, such as for Omnibox Everywhere.
-OmniboxPopupPresenterBase* GetOmniboxPopupPresenter(
-    content::WebContents* web_contents,
-    bool was_ai_mode_open) {
+// Returns the location bar of the browser window that `web_contents` belongs
+// to, or null if there is none (such as for Omnibox Everywhere).
+LocationBar* GetLocationBar(content::WebContents* web_contents) {
   if (!web_contents ||
       OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
     return nullptr;
   }
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
-  if (!browser_window) {
-    return nullptr;
-  }
-  LocationBar* location_bar =
-      BrowserWindow::FromBrowser(browser_window)->GetLocationBar();
-  if (!location_bar) {
-    return nullptr;
-  }
-  if (was_ai_mode_open) {
-    auto* presenter_delegate = location_bar->GetPresenterDelegate();
-    return presenter_delegate
-               ? presenter_delegate->GetOmniboxPopupAimPresenter()
-               : nullptr;
-  }
-  auto* popup_view = location_bar->GetOmniboxPopupView();
-  return popup_view ? popup_view->presenter() : nullptr;
+  return browser_window
+             ? BrowserWindow::FromBrowser(browser_window)->GetLocationBar()
+             : nullptr;
 }
 
 }  // namespace
@@ -125,12 +109,19 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   if (file_chooser_opened_callback_) {
     file_chooser_opened_callback_.Run();
   }
-  if (auto* presenter =
-          GetOmniboxPopupPresenter(web_contents, was_ai_mode_open)) {
-    if (!was_ai_mode_open) {
-      presenter->OnFileDialogOpened();
+  if (LocationBar* location_bar = GetLocationBar(web_contents)) {
+    if (was_ai_mode_open) {
+      if (auto* delegate = location_bar->GetPresenterDelegate()) {
+        if (auto* presenter = delegate->GetOmniboxPopupAimPresenter()) {
+          deactivation_blocker_ = presenter->CreateDeactivationBlocker();
+        }
+      }
+    } else if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
+      if (OmniboxPopupHost* popup_host = popup_view->popup_host()) {
+        popup_host->OnFileDialogOpened();
+        deactivation_blocker_ = popup_host->CreateDeactivationBlocker();
+      }
     }
-    deactivation_blocker_ = presenter->CreateDeactivationBlocker();
   }
 
   file_dialog_ = ui::SelectFileDialog::Create(
@@ -432,18 +423,23 @@ void OmniboxPopupFileSelector::NotifyFileSelectionClosed(bool file_selected) {
   if (file_chooser_closed_callback_) {
     file_chooser_closed_callback_.Run();
   }
-  auto* presenter =
-      GetOmniboxPopupPresenter(web_contents_.get(), was_ai_mode_open_);
-  if (!presenter) {
+  LocationBar* location_bar = GetLocationBar(web_contents_.get());
+  if (!location_bar) {
     return;
   }
   if (was_ai_mode_open_) {
-    presenter->OnFileSelectionClosed();
-  } else {
-    // The full popup's presenter blurs the omnibox while a dialog opened from
-    // the popup is shown, and refocuses it once the dialog closes. See
-    // `OmniboxPopupFullPresenter::OnFileDialogOpened()`.
-    presenter->OnFileDialogClosed(file_selected);
+    if (auto* delegate = location_bar->GetPresenterDelegate()) {
+      if (auto* presenter = delegate->GetOmniboxPopupAimPresenter()) {
+        presenter->OnFileSelectionClosed();
+      }
+    }
+  } else if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
+    if (OmniboxPopupHost* popup_host = popup_view->popup_host()) {
+      // Blurs the omnibox while a dialog opened from the popup is shown, and
+      // refocuses it once the dialog closes. See
+      // `OmniboxPopupFullPresenter::OnFileDialogOpened()`.
+      popup_host->OnFileDialogClosed(file_selected);
+    }
   }
 }
 

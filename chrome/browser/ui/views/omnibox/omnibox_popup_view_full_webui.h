@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -23,23 +23,16 @@ class NavigationHandle;
 class LocationBar;
 class OmniboxController;
 class OmniboxView;
-class OmniboxPopupPresenterDelegate;
 class OmniboxPopupHandler;
 
 class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
                                   public content::WebContentsObserver {
  public:
+  // `on_ready_callback` runs when the WebUI's page handler first connects.
   OmniboxPopupViewFullWebUI(
       OmniboxView* omnibox_view,
       OmniboxController* controller,
       LocationBar* location_bar,
-      OmniboxPopupPresenterDelegate& presenter_delegate,
-      base::RepeatingClosure on_ready_callback = base::RepeatingClosure());
-  OmniboxPopupViewFullWebUI(
-      OmniboxView* omnibox_view,
-      OmniboxController* controller,
-      LocationBar* location_bar,
-      OmniboxPopupPresenterDelegate& presenter_delegate,
       std::unique_ptr<OmniboxPopupHost> popup_host,
       base::RepeatingClosure on_ready_callback = base::RepeatingClosure());
   OmniboxPopupViewFullWebUI(const OmniboxPopupViewFullWebUI&) = delete;
@@ -98,14 +91,6 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   }
 
  private:
-  OmniboxPopupViewFullWebUI(
-      OmniboxView* omnibox_view,
-      OmniboxController* controller,
-      LocationBar* location_bar,
-      OmniboxPopupPresenterDelegate& presenter_delegate,
-      std::unique_ptr<OmniboxPopupFullPresenter> presenter,
-      base::RepeatingClosure on_ready_callback);
-
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
   OmniboxPopupHandler* GetPopupHandler();
 
@@ -118,7 +103,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   void SyncNativeStateToWebUIImpl(
       omnibox_popup::mojom::MatchesUpdate matches_update,
       bool show_full_url,
-      std::optional<OmniboxPopupFullPresenter::FocusStateToRestore>
+      std::optional<OmniboxPopupHost::FocusStateToRestore>
           focus_state_to_restore);
 
   // Caches the last text string sent to the WebUI to avoid redundant IPCs.

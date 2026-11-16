@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -62,7 +61,7 @@ class OmniboxPopupPresenterMoveBrowserTest : public InProcessBrowserTest {
 
   static OmniboxPopupPresenterBase* GetPresenter(
       BrowserWindowInterface* browser) {
-    return GetLocationBar(browser)->GetOmniboxPopupView()->presenter();
+    return GetLocationBar(browser)->GetOmniboxPopupPresenterForTesting();
   }
 
   // Runs an omnibox query in `browser` whose synchronous matches open the
