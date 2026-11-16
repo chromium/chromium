@@ -25,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.ChecksSdkIntAtLeast;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
@@ -224,6 +225,61 @@ public abstract class FullscreenHtmlApiHandlerBase
                     assert false : "Unexpected message for ID: " + msg.what;
                     break;
             }
+        }
+    }
+
+    // Activity#requestFullscreenMode() wraps its callback in a binder object that it sends to
+    // system_server. That object keeps the callback reachable until system_server releases it,
+    // which can be long after the Activity is destroyed. The callbacks below therefore hold the
+    // handler, and through it the Activity, only weakly.
+
+    /** Records whether entering the Activity fullscreen mode changed the windowing mode. */
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static class EnterActivityFullscreenCallback
+            implements OutcomeReceiver<@Nullable Void, Throwable> {
+        private final WeakReference<FullscreenHtmlApiHandlerBase> mHandler;
+
+        EnterActivityFullscreenCallback(FullscreenHtmlApiHandlerBase handler) {
+            mHandler = new WeakReference<>(handler);
+        }
+
+        @Override
+        public void onResult(@Nullable Void unused) {
+            FullscreenHtmlApiHandlerBase handler = mHandler.get();
+            if (handler == null) return;
+            // Mark that the Window mode was changed during the fullscreen transition. It needs to
+            // be reverted on exit.
+            handler.mDisplayEdgeToEdgeFullscreenToBeExited = true;
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            FullscreenHtmlApiHandlerBase handler = mHandler.get();
+            if (handler == null) return;
+            // There is nothing to be done in case of failed transition to fullscreen mode. It can
+            // happen when in split screen or already in fullscreen mode.
+            handler.mDisplayEdgeToEdgeFullscreenToBeExited = false;
+        }
+    }
+
+    /** Moves the task back to where it was before a fullscreen request on another display. */
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static class ReturnToStartPositionCallback
+            implements OutcomeReceiver<@Nullable Void, Throwable> {
+        private final WeakReference<FullscreenHtmlApiHandlerBase> mHandler;
+        private final Pair<Long, @Nullable Rect> mStartPosition;
+
+        ReturnToStartPositionCallback(
+                FullscreenHtmlApiHandlerBase handler, Pair<Long, @Nullable Rect> startPosition) {
+            mHandler = new WeakReference<>(handler);
+            mStartPosition = startPosition;
+        }
+
+        @Override
+        public void onResult(@Nullable Void unused) {
+            FullscreenHtmlApiHandlerBase handler = mHandler.get();
+            if (handler == null) return;
+            handler.tryToMoveTaskTo(mStartPosition.first, mStartPosition.second);
         }
     }
 
@@ -599,24 +655,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (!shouldSkipEnterFullscreenRequest(options)) {
             if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    OutcomeReceiver<@Nullable Void, Throwable> resultCb =
-                            new OutcomeReceiver<>() {
-                                @Override
-                                public void onResult(@Nullable Void unused) {
-                                    // Mark that the Window mode was changed during the fullscreen
-                                    // transition. It needs to be reverted on exit.
-                                    mDisplayEdgeToEdgeFullscreenToBeExited = true;
-                                }
-
-                                @Override
-                                public void onError(Throwable error) {
-                                    // There is nothing to be done in case of failed transition to
-                                    // fullscreen mode. It can happen when in split screen or
-                                    // already in fullscreen mode.
-                                    mDisplayEdgeToEdgeFullscreenToBeExited = false;
-                                }
-                            };
-                    maybeEnterActivityFullscreenMode(resultCb);
+                    maybeEnterActivityFullscreenMode(new EnterActivityFullscreenCallback(this));
                 }
             }
             mPersistentModeSupplier.set(true);
@@ -706,8 +745,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             // window is not focused, as the last action was performed on another display. To allow
             // fullscreen exit in that scenario, we are moving window to the front.
             ensureTaskMovedToFront();
-            maybeExitActivityFullscreenMode(
-                    _ -> tryToMoveTaskTo(homeAttrs.first, homeAttrs.second));
+            maybeExitActivityFullscreenMode(new ReturnToStartPositionCallback(this, homeAttrs));
         }
     }
 
