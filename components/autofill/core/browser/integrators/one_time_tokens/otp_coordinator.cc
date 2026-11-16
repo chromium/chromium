@@ -397,7 +397,6 @@ void OtpCoordinator::OnOtpFormSubmitted(const FormData& form) {
       OnOtpFilled(target, base::UTF16ToUTF8(value));
     }
   }
-  StopListeningForForm(form.global_id());
 }
 
 void OtpCoordinator::OnSourceCandidateAvailable(

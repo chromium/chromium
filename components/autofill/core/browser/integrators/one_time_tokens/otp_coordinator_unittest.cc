@@ -626,21 +626,15 @@ TEST_F(OtpCoordinatorTest,
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
       HasValue("222222"));
 
-  // Submitting with a different typed value (e.g. a typo) drops the form's
-  // delivery and records the typed value, without consuming the offered code
-  // "222222". Re-listening on `site1_target` re-delivers "222222".
+  // Submitting with a different typed value (e.g. a typo) records the typed
+  // value without consuming the offered code "222222". The submitted form stays
+  // in the DOM, so its delivery is kept and "222222" remains available.
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site1_target, "999888"));
   EXPECT_THAT(
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
-      IsEmpty());
-  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
-
-  coordinator_->StartListeningForOtp(site1_target);
-  phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(
-      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
       HasValue("222222"));
+  EXPECT_EQ(gmail_service_->num_callbacks(), 2u);
 
   // Submitting with the offered value "222222" consumes "222222", so
   // re-listening on `site1_target` keeps "222222" suppressed until its
@@ -709,20 +703,47 @@ TEST_F(OtpCoordinatorTest,
                   site2_targets[1]),
               HasValue("333333"));
 
+  // Submitting consumes "333333" but keeps the submitted form's delivery until
+  // the form is removed.
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site2_targets[1], "333333"));
   EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
                   site2_targets[1]),
               IsEmpty());
+  EXPECT_EQ(test_api_coordinator().deliveries().size(), 2u);
 
   const OtpTarget site2_after_submit_target =
       AddOtpForm(/*fields=*/1, GURL("https://sub.example.test"))[0];
   coordinator_->StopListeningForForm(site1_target.form);
   EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+  coordinator_->StopListeningForForm(site2_targets[1].form);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
   coordinator_->StopListeningForForm(site2_after_submit_target.form);
   EXPECT_EQ(gmail_service_->num_callbacks(), 0u);
   coordinator_->StartListeningForOtp(site2_after_submit_target);
   EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+}
+
+// Tests that submitting an OTP form that stays in the DOM unchanged (e.g. a
+// single-page app rejecting an incorrect code via XHR) keeps the form's
+// delivery and the Gmail subscription for its origin, so that a resent OTP is
+// delivered without the form being re-classified.
+TEST_F(OtpCoordinatorTest, KeepsListeningForSubmittedFormThatRemainsInTheDom) {
+  const OtpTarget target = AddOtpForm()[0];
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+
+  coordinator_->OnOtpFormSubmitted(BuildFormWithFieldValue(target, "000000"));
+  ASSERT_EQ(test_api_coordinator().deliveries().size(), 1u);
+  ASSERT_EQ(gmail_service_->num_callbacks(), 1u);
+
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  SendGmailOtp("123456", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("123456"));
 }
 
 TEST_F(OtpCoordinatorTest,
