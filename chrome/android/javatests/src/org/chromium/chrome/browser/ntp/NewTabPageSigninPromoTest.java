@@ -51,7 +51,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -211,8 +210,6 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    // TODO(crbug.com/483105856): Test is flaky on desktop bots.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testSigninPromoLoadingState() {
         openNewTabPage();
         // An account with an unknown hosted domain emulates a long sign-in. This way the loading
@@ -264,8 +261,6 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    // TODO(crbug.com/483438567): Test is flaky on desktop bots.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testSeamlessSigninFlow_WithFinalSnackbarUndoSignin() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         openNewTabPage();
