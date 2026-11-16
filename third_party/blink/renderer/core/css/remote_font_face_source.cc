@@ -364,7 +364,9 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
   histograms_.RecordFallbackTime();
 
   CustomFontData* custom_font_data =
-      ift_font_ ? ift_font_->CreateCustomFontData()
+      ift_font_ ? ift_font_->CreateCustomFontData(*custom_font_data_,
+                                                  font_description,
+                                                  font_selection_capabilities)
                 : MakeGarbageCollected<CustomFontData>();
   return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(

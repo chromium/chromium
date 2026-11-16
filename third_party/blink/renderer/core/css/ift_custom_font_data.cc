@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/ift_custom_font_data.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
@@ -112,21 +114,46 @@ void IftFont::Trace(Visitor* visitor) const {
   visitor->Trace(patch_loaders_);
 }
 
-IftCustomFontData* IftFont::CreateCustomFontData() const {
-  return MakeGarbageCollected<IftCustomFontData>(this);
+IftCustomFontData* IftFont::CreateCustomFontData(
+    const FontCustomPlatformData& font_platform_data,
+    const FontDescription& font_description,
+    const FontSelectionCapabilities& font_selection_capabilities) const {
+  // Resolve variation axis coordinates without clamping or filtering against
+  // the base font's `fvar` table, which in an unpatched IFT font may omit
+  // pinned axes or have narrowed `[min, max]` ranges until patches are applied.
+  // Coordinates for axes the font does not have never match a patch; see
+  // https://www.w3.org/TR/IFT/#abstract-opdef-check-entry-intersection.
+  //
+  // TODO(wmedrano): Clamp out-of-bounds CSS coordinates (e.g. `wght: 950`,
+  // `slnt: -14`) to the full font / patch-map axis bounds so finite outer patch
+  // segments still match, and include `fvar` defaults for omitted axes
+  // (`font-optical-sizing: none` or custom axes) when needed.
+  return MakeGarbageCollected<IftCustomFontData>(
+      this,
+      font_platform_data.ResolveVariationAxes(
+          font_description, font_selection_capabilities,
+          FontCustomPlatformData::VariationAxisMode::kIgnoreTypefaceAxes));
 }
 
-bool IftFont::RequireSubset(const StringView& text) const {
+bool IftFont::RequireSubset(
+    const StringView& text,
+    base::span<const FontVariationAxis> variation_axes) const {
   if (state_ == State::kFailed) {
     return false;
+  }
+  if (text.empty()) {
+    return true;
   }
   scratch_subset_->Clear();
   for (UChar32 code_point : text) {
     scratch_subset_->AddCodepoint(static_cast<uint32_t>(code_point));
   }
-  // If no patches intersect (either because the subset is already supported or
-  // because the font has no patches for it), the font is ready to shape with
-  // and any missing glyphs will fall back on `.notdef`.
+  for (const FontVariationAxis& axis : variation_axes) {
+    scratch_subset_->AddDesignSpace(axis.Tag(), axis.Value(), axis.Value());
+  }
+  // If there are no patches either the font already supports the subset, or the
+  // font can never support the subset. In the no support case, it is up to the
+  // shaper to handle fallbacks.
   if (!patcher_->RenderedFontRequiresPatches(*scratch_subset_)) {
     return true;
   }
@@ -285,8 +312,10 @@ void IftFont::OnPatchLoaded(PatchLoader* loader,
   }
 }
 
-IftCustomFontData::IftCustomFontData(const IftFont* ift_font)
-    : ift_font_(ift_font) {
+IftCustomFontData::IftCustomFontData(
+    const IftFont* ift_font,
+    Vector<FontVariationAxis, 5> variation_axes)
+    : ift_font_(ift_font), variation_axes_(std::move(variation_axes)) {
   CHECK(ift_font_);
 }
 
@@ -298,7 +327,7 @@ void IftCustomFontData::Trace(Visitor* visitor) const {
 }
 
 bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
-  return ift_font_->RequireSubset(text);
+  return ift_font_->RequireSubset(text, variation_axes_);
 }
 
 }  // namespace blink
