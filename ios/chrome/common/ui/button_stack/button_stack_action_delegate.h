@@ -19,7 +19,14 @@
 // Called when the tertiary action button is tapped.
 - (void)didTapTertiaryActionButton;
 
-// Called when the `ButtonStackViewController` is dismissed.
+// Called when the `ButtonStackViewController` disappears because it is popped,
+// or because it or one of its ancestors (e.g. its navigation controller) is
+// being dismissed. It is not called when an ancestor is popped (e.g. when the
+// `ButtonStackViewController` is a child of a popped view controller); that
+// ancestor is responsible for handling it. This is also called for
+// programmatic dismissals, so clear the `actionDelegate` before dismissing to
+// avoid re-entrancy if needed. It is not called if the view controller is
+// already offscreen when removed.
 - (void)didDismissButtonStackViewController;
 
 @end

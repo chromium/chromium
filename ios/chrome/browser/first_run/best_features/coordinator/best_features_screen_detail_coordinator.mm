@@ -165,7 +165,7 @@
 }
 
 - (void)didDismissButtonStackViewController {
-  NOTREACHED();
+  // No-op.
 }
 
 #pragma mark - Private

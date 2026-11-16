@@ -204,7 +204,7 @@ enum class DefaultBrowserSettingsPageUsage {
 }
 
 - (void)didDismissButtonStackViewController {
-  NOTREACHED();
+  // No-op.
 }
 
 @end

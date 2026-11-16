@@ -106,7 +106,7 @@
 }
 
 - (void)didDismissButtonStackViewController {
-  NOTREACHED();
+  // No-op.
 }
 
 #pragma mark - ConfirmationAlertActionHandler
