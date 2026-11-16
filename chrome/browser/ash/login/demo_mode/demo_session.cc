@@ -24,7 +24,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_compare.h"
+#include "base/i18n/tag_converters.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -245,9 +247,12 @@ void TriggerLaunchDemoModeApp(const AccountId& account_id) {
 std::vector<CountryCodeAndFullNamePair> GetSortedCountryCodeAndNamePairList(
     const std::string& application_locale) {
   std::vector<CountryCodeAndFullNamePair> result;
+  const base::i18n::LanguageTag display_locale =
+      base::i18n::GetLanguageTagFromString(application_locale)
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   for (const std::string country : demo_mode::kSupportedCountries) {
     result.push_back({country, l10n_util::GetDisplayNameForCountry(
-                                   country, application_locale)});
+                                   country, display_locale)});
   }
   UErrorCode error_code = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(

@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
@@ -127,7 +128,9 @@ std::u16string FormatTypedValue(
   switch (typed_value.value_case()) {
     case personal_context::proto::TypedValue::kCountryCode: {
       std::u16string country_name = l10n_util::GetDisplayNameForCountry(
-          typed_value.country_code(), app_locale);
+          typed_value.country_code(),
+          base::i18n::GetLanguageTagFromString(app_locale)
+              .value_or(base::i18n::GetKnownLanguageTag("und")));
       if (!country_name.empty() &&
           !base::EqualsCaseInsensitiveASCII(country_name,
                                             typed_value.country_code()) &&

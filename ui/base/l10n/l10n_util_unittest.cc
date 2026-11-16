@@ -657,7 +657,7 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   result = l10n_util::GetDisplayNameForLocale("mo-MD", "en", false);
   EXPECT_EQ(l10n_util::GetDisplayNameForLocale("ro-MD", "en", false), result);
 
-  result = l10n_util::GetDisplayNameForCountry("BR", "en");
+  result = l10n_util::GetDisplayNameForCountry("BR", GetKnownLanguageTag("en"));
   EXPECT_EQ(u"Brazil", result);
 
   result = l10n_util::GetDisplayNameForLocale("xx-XX", "en", false);
@@ -706,18 +706,21 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
 #define MAYBE_GetDisplayNameForCountry GetDisplayNameForCountry
 #endif
 TEST_F(L10nUtilTest, MAYBE_GetDisplayNameForCountry) {
-  std::u16string result = l10n_util::GetDisplayNameForCountry("BR", "en");
+  std::u16string result =
+      l10n_util::GetDisplayNameForCountry("BR", GetKnownLanguageTag("en"));
   EXPECT_EQ(u"Brazil", result);
 
-  result = l10n_util::GetDisplayNameForCountry("419", "en");
+  result =
+      l10n_util::GetDisplayNameForCountry("419", GetKnownLanguageTag("en"));
   EXPECT_EQ(u"Latin America", result);
 
-  result = l10n_util::GetDisplayNameForCountry("XX", "en");
+  result = l10n_util::GetDisplayNameForCountry("XX", GetKnownLanguageTag("en"));
   EXPECT_EQ(u"XX", result);
 }
 
 TEST_F(L10nUtilTest, GetDisplayNameForCountryEmptyCode) {
-  std::u16string result = l10n_util::GetDisplayNameForCountry("", "en");
+  std::u16string result =
+      l10n_util::GetDisplayNameForCountry("", GetKnownLanguageTag("en"));
   EXPECT_EQ(u"", result);
 }
 

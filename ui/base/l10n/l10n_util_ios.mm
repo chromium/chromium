@@ -94,14 +94,16 @@ std::u16string GetDisplayNameForLocale(
       base::SysUTF8ToNSString(display_locale.tag_string())));
 }
 
-std::u16string GetDisplayNameForCountry(std::string_view country_code,
-                                        std::string_view display_locale) {
-  if (display_locale.empty()) {
+std::u16string GetDisplayNameForCountry(
+    std::string_view country_code,
+    const base::i18n::LanguageTag& display_locale) {
+  if (display_locale == base::i18n::GetKnownLanguageTag("und")) {
     return std::u16string();
   }
 
   NSString* ns_country_code = base::SysUTF8ToNSString(country_code);
-  NSString* ns_display_locale = base::SysUTF8ToNSString(display_locale);
+  NSString* ns_display_locale =
+      base::SysUTF8ToNSString(display_locale.tag_string());
 
   NSLocale* ns_locale = LocaleCache::LocaleForIdentifier(ns_display_locale);
   NSString* localized_country_name =

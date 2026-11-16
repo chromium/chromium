@@ -17,6 +17,8 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -76,8 +78,11 @@ AutofillCountry::AutofillCountry(std::string_view country_code,
       country_data_map->GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
-  if (locale)
-    name_ = l10n_util::GetDisplayNameForCountry(country_code_, *locale);
+  if (locale) {
+    name_ = l10n_util::GetDisplayNameForCountry(
+        country_code_, base::i18n::GetLanguageTagFromString(*locale).value_or(
+                           base::i18n::GetKnownLanguageTag("und")));
+  }
 }
 
 AutofillCountry::~AutofillCountry() = default;

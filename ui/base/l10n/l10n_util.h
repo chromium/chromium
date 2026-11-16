@@ -92,10 +92,12 @@ std::u16string GetDisplayNameForLocale(
     bool disallow_default = false);
 
 // Returns the display name of the `country_code` in `display_locale`.
-// Returns an empty string if `country_code` is empty.
+// Returns an empty string if `country_code` is empty or invalid, or if
+// `display_locale` is "und".
 COMPONENT_EXPORT(UI_BASE)
-std::u16string GetDisplayNameForCountry(std::string_view country_code,
-                                        std::string_view display_locale);
+std::u16string GetDisplayNameForCountry(
+    std::string_view country_code,
+    const base::i18n::LanguageTag& display_locale);
 
 //
 // Mac Note: See l10n_util_mac.h for some NSString versions and other support.

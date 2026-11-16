@@ -301,8 +301,8 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
 
 #if !BUILDFLAG(IS_IOS)
 std::u16string GetDisplayNameForCountry(std::string_view country_code,
-                                        std::string_view display_locale) {
-  if (display_locale.empty()) {
+                                        const LanguageTag& display_locale) {
+  if (display_locale == GetKnownLanguageTag("und")) {
     return std::u16string();
   }
   std::optional<LanguageTag> und_with_country =
@@ -312,9 +312,7 @@ std::u16string GetDisplayNameForCountry(std::string_view country_code,
   }
 
   icu::Locale icu_display_locale =
-      IcuLocaleConverter::GetInstance().FromLanguageTag(
-          GetLanguageTagFromString(display_locale)
-              .value_or(GetKnownLanguageTag("en-US")));
+      IcuLocaleConverter::GetInstance().FromLanguageTag(display_locale);
   icu::UnicodeString display_country;
   IcuLocaleConverter::GetInstance()
       .FromLanguageTag(*und_with_country)

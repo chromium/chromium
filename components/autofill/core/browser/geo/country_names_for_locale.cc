@@ -73,7 +73,7 @@ std::unique_ptr<icu::Collator> CreateCollator(const icu::Locale& locale) {
 // empty map, to account for the very rare cases when the collator fails to
 // initialize.
 std::map<std::string, std::string> GetLocalizedNames(
-    std::string_view locale,
+    const base::i18n::LanguageTag& locale,
     const icu::Collator* collator) {
   if (!collator)
     return std::map<std::string, std::string>();
@@ -106,8 +106,7 @@ CountryNamesForLocale::CountryNamesForLocale(
     const base::i18n::LanguageTag& locale)
     : locale_(locale),
       collator_(CreateCollator(GetLocaleString(locale_).c_str())),
-      localized_names_(
-          GetLocalizedNames(GetLocaleString(locale_), collator_.get())) {}
+      localized_names_(GetLocalizedNames(locale_, collator_.get())) {}
 
 CountryNamesForLocale::CountryNamesForLocale(CountryNamesForLocale&&) = default;
 

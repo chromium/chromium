@@ -10,6 +10,8 @@
 #include "base/android/jni_string.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -48,9 +50,12 @@ std::vector<DropdownKeyValueAndroid> BuildSupportedCountries(
   std::vector<std::string> country_codes = GetRegionCodes();
   std::vector<DropdownKeyValueAndroid> display_countries;
   display_countries.reserve(country_codes.size());
+  const base::i18n::LanguageTag display_locale =
+      base::i18n::GetLanguageTagFromString(locale).value_or(
+          base::i18n::GetKnownLanguageTag("und"));
   for (std::string& country_code : country_codes) {
     std::u16string country_name =
-        l10n_util::GetDisplayNameForCountry(country_code, locale);
+        l10n_util::GetDisplayNameForCountry(country_code, display_locale);
     // Don't display a country code for which a name is not known yet.
     if (country_name != base::UTF8ToUTF16(country_code)) {
       display_countries.emplace_back(std::move(country_code),

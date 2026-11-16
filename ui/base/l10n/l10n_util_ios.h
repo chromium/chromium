@@ -35,8 +35,9 @@ std::u16string GetDisplayNameForLocale(
 
 // Get localized country name using NSLocale Foundation API.
 COMPONENT_EXPORT(UI_BASE)
-std::u16string GetDisplayNameForCountry(std::string_view country_code,
-                                        std::string_view display_locale);
+std::u16string GetDisplayNameForCountry(
+    std::string_view country_code,
+    const base::i18n::LanguageTag& display_locale);
 
 }  // namespace l10n_util
 
