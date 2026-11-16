@@ -509,7 +509,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         edgeToEdgeManager,
                         getAppHeaderCoordinator(),
                         this::getBrowserServicesThemeColorProvider,
-                        getClientPackageNameProvider().get());
+                        getClientPackageNameProvider().get(),
+                        getSavedInstanceState(),
+                        getPersistentInstanceState());
         return mBaseCustomTabRootUiCoordinator;
     }
 
@@ -1671,6 +1673,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     private CipherFactory getCipherFactory() {
+        return mCipherFactory;
+    }
+
+    public CipherFactory getCipherFactoryForTesting() {
         return mCipherFactory;
     }
 

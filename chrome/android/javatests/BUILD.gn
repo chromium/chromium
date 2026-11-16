@@ -773,6 +773,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoMetricTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityRenderTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityRestoreSavedStateTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivitySecurityIndicatorTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTypeTestUtils.java",

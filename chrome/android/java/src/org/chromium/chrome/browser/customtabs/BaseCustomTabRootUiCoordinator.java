@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -209,6 +211,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param desktopWindowStateManager Provides information about desktop windowing state.
      * @param webAppThemeColorProvider Provides current theme of a web app.
      * @param clientPackageName If provided, the client package name of the embedder
+     * @param savedInstanceState The saved instance state of the Activity, used to restore state
+     *     after the Activity is recreated, e.g. fullscreen after a move to another display.
+     * @param persistentState The persisted state of the Activity.
      */
     public BaseCustomTabRootUiCoordinator(
             AppCompatActivity activity,
@@ -253,7 +258,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             EdgeToEdgeManager edgeToEdgeManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable Supplier<BrowserServicesThemeColorProvider> webAppThemeColorProvider,
-            @Nullable String clientPackageName) {
+            @Nullable String clientPackageName,
+            @Nullable Bundle savedInstanceState,
+            @Nullable PersistableBundle persistentState) {
         super(
                 activity,
                 null,
@@ -294,8 +301,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 ephemeralTabCoordinatorSupplier,
                 false,
                 backPressManager,
-                null,
-                null,
+                savedInstanceState,
+                persistentState,
                 ObservableSuppliers.createNonNull(Color.TRANSPARENT),
                 edgeToEdgeManager,
                 /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.alwaysFalse(),

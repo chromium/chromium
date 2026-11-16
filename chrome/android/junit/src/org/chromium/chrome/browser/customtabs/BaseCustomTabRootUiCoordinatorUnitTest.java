@@ -17,6 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -94,6 +96,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -256,6 +259,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     private BaseCustomTabRootUiCoordinator createCoordinator(@ActivityType int activityType) {
+        return createCoordinator(activityType, /* savedInstanceState= */ null);
+    }
+
+    private BaseCustomTabRootUiCoordinator createCoordinator(
+            @ActivityType int activityType, @Nullable Bundle savedInstanceState) {
         return new BaseCustomTabRootUiCoordinator(
                 mActivity,
                 mShareDelegateSupplier,
@@ -298,7 +306,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 mEdgeToEdgeManager,
                 mDesktopWindowStateManager,
                 mBrowserServicesColorProviderSupplier,
-                null) {
+                null,
+                savedInstanceState,
+                /* persistentState= */ null) {
             {
                 mMessageDispatcher = mManagedMessageDispatcher;
                 mAppMenuCoordinator =
@@ -312,6 +322,34 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 return mGoogleBottomBarCoordinator;
             }
         };
+    }
+
+    @Test
+    public void testSavedFullscreenOptionsArePendingAfterRecreation() {
+        Bundle savedInstanceState = new Bundle();
+        savedInstanceState.putParcelable(
+                ExclusiveAccessManager.LATEST_FULLSCREEN_OPTIONS,
+                new FullscreenOptions(
+                        /* showNavigationBar= */ false,
+                        /* showStatusBar= */ false,
+                        /* displayId= */ 1));
+
+        BaseCustomTabRootUiCoordinator coordinator =
+                createCoordinator(ActivityType.CUSTOM_TAB, savedInstanceState);
+
+        ExclusiveAccessManager exclusiveAccessManager = coordinator.getExclusiveAccessManager();
+        assertNotNull(exclusiveAccessManager);
+        assertTrue(
+                "Saved fullscreen should be pending re-entry",
+                exclusiveAccessManager.isFullscreenForTabOrPending(null));
+    }
+
+    @Test
+    public void testNoSavedState_noPendingFullscreen() {
+        ExclusiveAccessManager exclusiveAccessManager =
+                mBaseCustomTabRootUiCoordinator.getExclusiveAccessManager();
+        assertNotNull(exclusiveAccessManager);
+        assertFalse(exclusiveAccessManager.isFullscreenForTabOrPending(null));
     }
 
     @Test
