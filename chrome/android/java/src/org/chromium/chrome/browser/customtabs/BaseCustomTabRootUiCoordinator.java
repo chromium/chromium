@@ -673,7 +673,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         () -> assumeNonNull(mTabModelSelectorSupplier.get()).getCurrentTab(),
                         mActivityLifecycleDispatcher,
                         mFullscreenManager,
-                        () -> assumeNonNull(mMinimizeDelegateSupplier.get()).isMinimized(),
+                        () -> {
+                            var minimizeDelegate = mMinimizeDelegateSupplier.get();
+                            return minimizeDelegate != null && minimizeDelegate.isMinimized();
+                        },
                         DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
 
         // Drag drop of files such as an image should not replace the tab contents for CCT, but

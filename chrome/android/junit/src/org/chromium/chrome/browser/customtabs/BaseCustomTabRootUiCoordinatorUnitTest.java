@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -63,8 +66,13 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarTestUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -74,6 +82,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -540,6 +549,92 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                     "DesktopSiteSettingsIphController should not be created for activityType="
                             + activityType,
                     coordinator.getDesktopSiteSettingsIphControllerForTesting());
+        }
+    }
+
+    @Test
+    public void testPartialCustomTabConfigurationChange_MinimizeDelegateNullAndNonNull() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        try {
+            mActivity.setContentView(R.layout.custom_tabs_handle_view);
+            FrameLayout coordinatorLayout = new FrameLayout(mActivity);
+            coordinatorLayout.setId(R.id.coordinator);
+            FrameLayout compositorViewHolder = new FrameLayout(mActivity);
+            compositorViewHolder.setId(R.id.compositor_view_holder);
+            coordinatorLayout.addView(compositorViewHolder);
+            mActivity.addContentView(
+                    coordinatorLayout,
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+
+            CustomTabToolbar toolbar = CustomTabToolbarTestUtils.inflateToolbar(mActivity);
+            View toolbarCoordinator = new View(mActivity);
+            toolbarCoordinator.setLayoutParams(
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator =
+                    Mockito.mock(CustomTabToolbarButtonsCoordinator.class);
+
+            when(mBrowserServicesIntentDataProvider.isPartialCustomTab()).thenReturn(true);
+            when(mBrowserServicesIntentDataProvider.getInitialActivityHeight()).thenReturn(500);
+            when(mMinimizeDelegateSupplier.get()).thenReturn(null);
+
+            BaseCustomTabRootUiCoordinator coordinator = createCoordinator(ActivityType.CUSTOM_TAB);
+            coordinator.onPreInflationStartup();
+
+            PartialCustomTabDisplayManager displayManager =
+                    (PartialCustomTabDisplayManager)
+                            coordinator.getCustomTabSizeStrategyForTesting();
+            assertNotNull(displayManager);
+            displayManager.onToolbarInitialized(
+                    toolbarCoordinator,
+                    toolbar,
+                    /* toolbarCornerRadius= */ 5,
+                    toolbarButtonsCoordinator);
+            Assert.assertEquals(
+                    PartialCustomTabType.FULL_SIZE, displayManager.getActiveStrategyType());
+
+            // 1. Null CustomTabMinimizeDelegate: switching strategy invokes mIsEnteringPip and must
+            // not throw NullPointerException.
+            verify(mMinimizeDelegateSupplier, never()).get();
+            MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+            displayManager.onConfigurationChanged(mActivity.getResources().getConfiguration());
+            Assert.assertEquals(
+                    PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+            verify(mMinimizeDelegateSupplier, Mockito.times(2)).get();
+
+            // 2. Non-null CustomTabMinimizeDelegate with isMinimized() == false.
+            CustomTabMinimizeDelegate minimizeDelegate =
+                    Mockito.mock(CustomTabMinimizeDelegate.class);
+            when(mMinimizeDelegateSupplier.get()).thenReturn(minimizeDelegate);
+            when(minimizeDelegate.isMinimized()).thenReturn(false);
+            MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+            displayManager.onConfigurationChanged(mActivity.getResources().getConfiguration());
+            Assert.assertEquals(
+                    PartialCustomTabType.FULL_SIZE, displayManager.getActiveStrategyType());
+            verify(minimizeDelegate, Mockito.times(2)).isMinimized();
+
+            // Reset back to BOTTOM_SHEET while isMinimized() == false, then test isMinimized() ==
+            // true transitioning to FULL_SIZE.
+            MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+            displayManager.onConfigurationChanged(mActivity.getResources().getConfiguration());
+            Assert.assertEquals(
+                    PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+            verify(minimizeDelegate, Mockito.times(4)).isMinimized();
+
+            // 3. Non-null CustomTabMinimizeDelegate with isMinimized() == true.
+            when(minimizeDelegate.isMinimized()).thenReturn(true);
+            MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+            displayManager.onConfigurationChanged(mActivity.getResources().getConfiguration());
+            Assert.assertEquals(
+                    PartialCustomTabType.FULL_SIZE, displayManager.getActiveStrategyType());
+            verify(minimizeDelegate, Mockito.times(6)).isMinimized();
+        } finally {
+            MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
         }
     }
 }
