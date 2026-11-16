@@ -5,6 +5,7 @@
 #ifndef NET_TEST_EMBEDDED_TEST_SERVER_EXPECTATION_HANDLER_H_
 #define NET_TEST_EMBEDDED_TEST_SERVER_EXPECTATION_HANDLER_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -62,47 +63,60 @@ class ExpectationHandler {
   struct UrlResponseConfig;
   // Helper method to apply a configuration and create a response
   std::unique_ptr<HttpResponse> ApplyConfig(const HttpRequest& request,
-                                            raw_ptr<UrlResponseConfig> config);
+                                            raw_ptr<UrlResponseConfig> config)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  std::map<std::string_view, std::unique_ptr<UrlResponseConfig>> url_responses_
-      GUARDED_BY(lock_);
+  std::map<std::string, std::unique_ptr<UrlResponseConfig>, std::less<>>
+      url_responses_ GUARDED_BY(lock_);
   raw_ref<EmbeddedTestServer> embedded_test_server_;
   base::Lock lock_;
 };
 
 // ResponseBuilder provides a fluent interface for configuring responses.
 // It is created by ExpectationHandler::OnRequest() and allows chaining
-// method calls to configure the response.
+// method calls to configure the response, publishing the expectation when the
+// temporary builder is destroyed at the end of the full-expression.
 class ExpectationHandler::ResponseBuilder {
  public:
   ResponseBuilder(ExpectationHandler& handler,
                   std::string_view path,
                   bool is_prefix);
 
+  ResponseBuilder(const ResponseBuilder&) = delete;
+  ResponseBuilder& operator=(const ResponseBuilder&) = delete;
+
   ~ResponseBuilder();
 
   // Sets the content type and content for the HTTP response. The content_type
   // parameter specifies the MIME type (like "text/html") and content contains
-  // the response body. Returns a reference to this ResponseBuilder to allow
-  // method chaining.
-  ResponseBuilder& RespondWith(
+  // the response body. Returns an rvalue reference to this ResponseBuilder to
+  // allow method chaining on the temporary returned by OnRequest().
+  ResponseBuilder&& RespondWith(
       std::string_view content_type = std::string_view("text/html"),
-      std::string_view content = "");
+      std::string_view content = "") &&;
 
-  ResponseBuilder& RespondWith(
+  ResponseBuilder&& RespondWith(
       const HttpStatusCode status_code,
       std::string_view content_type = std::string_view("text/html"),
-      std::string_view content = "");
+      std::string_view content = "") &&;
+
+  // Appends a custom HTTP header to the response. Multiple calls preserve order
+  // and allow repeated header names. Must not duplicate built-in headers
+  // emitted by BasicHttpResponse ("Content-Type", "Content-Length", or
+  // "Connection"); use `RespondWith()` to set content type and body.
+  // `RespondWith()` must be called before `AddCustomHeader()`.
+  ResponseBuilder&& AddCustomHeader(std::string_view header_name,
+                                    std::string_view header_value) &&;
 
   // Associates a TestFuture with this response.
   // When a request for this URL is received, the TestFuture will be
   // fulfilled with the HttpRequest object.
-  ResponseBuilder& SetValue(base::test::TestFuture<HttpRequest>& future);
+  ResponseBuilder&& SetValue(base::test::TestFuture<HttpRequest>& future) &&;
 
  private:
   raw_ref<ExpectationHandler> handler_;
-  std::string_view path_;
-  raw_ptr<UrlResponseConfig> config_;
+  std::string path_;
+  std::unique_ptr<UrlResponseConfig> config_;
 };
 
 }  // namespace net::test_server

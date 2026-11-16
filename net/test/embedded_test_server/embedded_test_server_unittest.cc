@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/types/expected.h"
@@ -41,6 +42,7 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/stream_socket.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -240,6 +242,38 @@ class EmbeddedTestServerTest
   }
 
  protected:
+  struct CompletedRequest {
+    // `delegate` must outlive `request`.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request;
+  };
+
+  std::unique_ptr<URLRequest> CreateRequest(const GURL& url,
+                                            URLRequest::Delegate* delegate) {
+    return context_->CreateRequest(url, DEFAULT_PRIORITY, delegate,
+                                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   net::handles::kInvalidNetworkHandle);
+  }
+
+  std::unique_ptr<CompletedRequest> RunRequest(std::string_view relative_url) {
+    auto result = std::make_unique<CompletedRequest>();
+    result->request =
+        CreateRequest(server_->GetURL(relative_url), &result->delegate);
+    result->request->Start();
+    result->delegate.RunUntilComplete();
+    return result;
+  }
+
+  base::ScopedClosureRunner ShutDownServerOnScopeExit() {
+    return base::ScopedClosureRunner(base::BindOnce(
+        [](EmbeddedTestServer* server) {
+          if (server->Started()) {
+            EXPECT_TRUE(server->ShutdownAndWaitUntilComplete());
+          }
+        },
+        server_.get()));
+  }
+
   std::string request_relative_url_;
   GURL request_absolute_url_;
   std::unique_ptr<URLRequestContext> context_;
@@ -959,6 +993,129 @@ TEST_P(EmbeddedTestServerTest, LargePost) {
   request->set_upload(std::move(stream));
   request->Start();
   delegate.RunUntilComplete();
+}
+
+TEST_P(EmbeddedTestServerTest, ExpectationHandlerCustomHeaders) {
+  ExpectationHandler handler(server_.get());
+  base::ScopedClosureRunner shutdown_server = ShutDownServerOnScopeExit();
+
+  {
+    std::string path = "/headers.js";
+    std::string cors_header_name = "Access-Control-Allow-Origin";
+    std::string cors_header_value = "https://example.test";
+    handler.OnRequest(path)
+        .RespondWith("application/javascript",
+                     std::string("console.log('ok');"))
+        .AddCustomHeader(cors_header_name, cors_header_value)
+        .AddCustomHeader("Cache-Control", "no-store")
+        .AddCustomHeader("Set-Cookie", "a=1")
+        .AddCustomHeader("Set-Cookie", "b=2")
+        .AddCustomHeader("X-Multi", "first")
+        .AddCustomHeader("X-Multi", "second");
+    path.assign(path.size(), 'z');
+    cors_header_name.assign(cors_header_name.size(), 'x');
+    cors_header_value.assign(cors_header_value.size(), 'y');
+  }
+
+  ASSERT_TRUE(StartServerAndSetUpContext());
+
+  for (int attempt = 0; attempt < 2; ++attempt) {
+    SCOPED_TRACE(attempt);
+    std::unique_ptr<CompletedRequest> result = RunRequest("/headers.js");
+    EXPECT_EQ(net::OK, result->delegate.request_status());
+    EXPECT_EQ("console.log('ok');", result->delegate.data_received());
+
+    const HttpResponseHeaders* headers = result->request->response_headers();
+    ASSERT_TRUE(headers);
+    EXPECT_EQ(HTTP_OK, headers->response_code());
+    EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+              "application/javascript");
+    EXPECT_EQ(headers->GetNormalizedHeader("Access-Control-Allow-Origin"),
+              "https://example.test");
+    EXPECT_EQ(headers->GetNormalizedHeader("Cache-Control"), "no-store");
+    EXPECT_EQ(headers->GetNormalizedHeader("X-Multi"), "first, second");
+
+    std::vector<std::string> set_cookie_values;
+    size_t iter = 0;
+    while (std::optional<std::string_view> value =
+               headers->EnumerateHeader(&iter, "Set-Cookie")) {
+      set_cookie_values.emplace_back(*value);
+    }
+    EXPECT_THAT(set_cookie_values, testing::ElementsAre("a=1", "b=2"));
+  }
+
+  handler.OnRequest("/post-server-start")
+      .RespondWith(HTTP_NO_CONTENT, "", "")
+      .AddCustomHeader("X-Post-Server-Start", "ready");
+  std::unique_ptr<CompletedRequest> post_server_start =
+      RunRequest("/post-server-start");
+  EXPECT_EQ(net::OK, post_server_start->delegate.request_status());
+  EXPECT_EQ("", post_server_start->delegate.data_received());
+  ASSERT_TRUE(post_server_start->request->response_headers());
+  EXPECT_EQ(HTTP_NO_CONTENT,
+            post_server_start->request->response_headers()->response_code());
+  EXPECT_EQ(post_server_start->request->response_headers()->GetNormalizedHeader(
+                "X-Post-Server-Start"),
+            "ready");
+}
+
+TEST_P(EmbeddedTestServerTest, ExpectationHandlerCustomHeaderRedirect) {
+  ExpectationHandler handler(server_.get());
+  base::ScopedClosureRunner shutdown_server = ShutDownServerOnScopeExit();
+  ASSERT_TRUE(StartServerAndSetUpContext());
+
+  const GURL target_url = server_->GetURL("/target.js");
+  handler.OnRequest("/redirect.js")
+      .RespondWith(HTTP_FOUND)
+      .AddCustomHeader("Location", target_url.spec());
+  handler.OnRequest("/target.js")
+      .RespondWith("application/javascript", "const redirected = true;")
+      .AddCustomHeader("Access-Control-Allow-Origin", "*");
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      CreateRequest(server_->GetURL("/redirect.js"), &delegate);
+  request->Start();
+  delegate.RunUntilRedirect();
+
+  EXPECT_EQ(1, delegate.received_redirect_count());
+  EXPECT_EQ(HTTP_FOUND, delegate.redirect_info().status_code);
+  EXPECT_EQ(target_url, delegate.redirect_info().new_url);
+  const HttpResponseHeaders* redirect_headers = request->response_headers();
+  ASSERT_TRUE(redirect_headers);
+  EXPECT_EQ(HTTP_FOUND, redirect_headers->response_code());
+  std::string location;
+  EXPECT_TRUE(redirect_headers->IsRedirect(&location));
+  EXPECT_EQ(target_url.spec(), location);
+
+  request->FollowDeferredRedirect(/*removed_headers=*/std::nullopt,
+                                  /*modified_headers=*/std::nullopt);
+  delegate.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, delegate.request_status());
+  EXPECT_EQ("const redirected = true;", delegate.data_received());
+  const HttpResponseHeaders* final_headers = request->response_headers();
+  ASSERT_TRUE(final_headers);
+  EXPECT_EQ(HTTP_OK, final_headers->response_code());
+  EXPECT_EQ(final_headers->GetNormalizedHeader("Access-Control-Allow-Origin"),
+            "*");
+}
+
+TEST_P(EmbeddedTestServerTest, ExpectationHandlerSetValueOnlyFallsThrough) {
+  ExpectationHandler handler(server_.get());
+  base::ScopedClosureRunner shutdown_server = ShutDownServerOnScopeExit();
+  ASSERT_TRUE(StartServerAndSetUpContext());
+
+  base::test::TestFuture<HttpRequest> request_future;
+  handler.OnRequest("/echo").SetValue(request_future);
+
+  std::unique_ptr<CompletedRequest> result = RunRequest("/echo");
+  ASSERT_TRUE(request_future.Wait());
+  EXPECT_EQ("/echo", request_future.Get().relative_url);
+  EXPECT_EQ(net::OK, result->delegate.request_status());
+  EXPECT_EQ("Echo", result->delegate.data_received());
+  ASSERT_TRUE(result->request->response_headers());
+  EXPECT_EQ(HTTP_OK, result->request->response_headers()->response_code());
 }
 
 INSTANTIATE_TEST_SUITE_P(EmbeddedTestServerTestInstantiation,

@@ -4,12 +4,14 @@
 
 #include "net/test/embedded_test_server/expectation_handler.h"
 
-#include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -23,10 +25,12 @@ struct ExpectationHandler::UrlResponseConfig {
 
   // Whether the URL Path is a prefix match
   bool is_prefix = false;
-  HttpStatusCode status_code;
+  bool has_response = false;
+  HttpStatusCode status_code = HTTP_OK;
   // Content type of the response (e.g., "text/html")
-  std::string_view content_type;
-  std::string_view content;
+  std::string content_type;
+  std::string content;
+  base::StringPairs custom_headers;
   base::OnceCallback<void(HttpRequest)> value_setting_callback;
 };
 
@@ -78,14 +82,18 @@ std::unique_ptr<HttpResponse> ExpectationHandler::ApplyConfig(
   if (config->value_setting_callback) {
     std::move(config->value_setting_callback).Run(request);
   }
-  if (!config->content_type.empty()) {
-    auto response = std::make_unique<BasicHttpResponse>();
-    response->set_code(config->status_code);
-    response->set_content_type(config->content_type);
-    response->set_content(config->content);
-    return response;
+  if (!config->has_response) {
+    CHECK(config->custom_headers.empty());
+    return nullptr;
   }
-  return nullptr;
+  auto response = std::make_unique<BasicHttpResponse>();
+  response->set_code(config->status_code);
+  response->set_content_type(config->content_type);
+  response->set_content(config->content);
+  for (const auto& [header_name, header_value] : config->custom_headers) {
+    response->AddCustomHeader(header_name, header_value);
+  }
+  return response;
 }
 
 // ResponseBuilder implementation
@@ -93,44 +101,54 @@ ExpectationHandler::ResponseBuilder::ResponseBuilder(
     ExpectationHandler& handler,
     std::string_view path,
     bool is_prefix)
-    : handler_(handler), path_(path) {
-  base::AutoLock auto_lock(handler_->lock_);
-  auto new_config = std::make_unique<ExpectationHandler::UrlResponseConfig>();
-  new_config->is_prefix = is_prefix;
-  config_ = new_config.get();
-
-  handler_->url_responses_[path_] = std::move(new_config);
+    : handler_(handler),
+      path_(path),
+      config_(std::make_unique<UrlResponseConfig>()) {
+  config_->is_prefix = is_prefix;
 }
 
-ExpectationHandler::ResponseBuilder::~ResponseBuilder() = default;
+ExpectationHandler::ResponseBuilder::~ResponseBuilder() {
+  base::AutoLock auto_lock(handler_->lock_);
+  handler_->url_responses_[std::move(path_)] = std::move(config_);
+}
 
-ExpectationHandler::ResponseBuilder&
+ExpectationHandler::ResponseBuilder&&
 ExpectationHandler::ResponseBuilder::RespondWith(
     const HttpStatusCode status_code,
     std::string_view content_type,
-    std::string_view content) {
-  base::AutoLock auto_lock(handler_->lock_);
-
-  if (config_) {
-    config_->status_code = status_code;
-    config_->content_type = content_type;
-    config_->content = content;
-  }
-
-  return *this;
+    std::string_view content) && {
+  config_->has_response = true;
+  config_->status_code = status_code;
+  config_->content_type = std::string(content_type);
+  config_->content = std::string(content);
+  return std::move(*this);
 }
 
-ExpectationHandler::ResponseBuilder&
+ExpectationHandler::ResponseBuilder&&
 ExpectationHandler::ResponseBuilder::RespondWith(std::string_view content_type,
-                                                 std::string_view content) {
-  return RespondWith(HTTP_OK, content_type, content);
+                                                 std::string_view content) && {
+  return std::move(*this).RespondWith(HTTP_OK, content_type, content);
 }
 
-ExpectationHandler::ResponseBuilder&
+ExpectationHandler::ResponseBuilder&&
+ExpectationHandler::ResponseBuilder::AddCustomHeader(
+    std::string_view header_name,
+    std::string_view header_value) && {
+  CHECK(config_->has_response)
+      << "RespondWith() must be called before AddCustomHeader() for path: "
+      << path_;
+  CHECK(!base::EqualsCaseInsensitiveASCII(header_name, "Content-Type") &&
+        !base::EqualsCaseInsensitiveASCII(header_name, "Content-Length") &&
+        !base::EqualsCaseInsensitiveASCII(header_name, "Connection"))
+      << "Do not set built-in header via AddCustomHeader(): " << header_name;
+  config_->custom_headers.emplace_back(header_name, header_value);
+  return std::move(*this);
+}
+
+ExpectationHandler::ResponseBuilder&&
 ExpectationHandler::ResponseBuilder::SetValue(
-    base::test::TestFuture<HttpRequest>& future) {
-  base::AutoLock auto_lock(handler_->lock_);
+    base::test::TestFuture<HttpRequest>& future) && {
   config_->value_setting_callback = future.GetSequenceBoundCallback();
-  return *this;
+  return std::move(*this);
 }
 }  // namespace net::test_server
