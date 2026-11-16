@@ -28,6 +28,17 @@ bool FramebustBlockedMessageDelegate::ShowMessage(
     scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     HostContentSettingsMap* settings_map,
     OutcomeCallback intervention_callback) {
+  messages::MessageDispatcherBridge* message_dispatcher_bridge =
+      messages::MessageDispatcherBridge::Get();
+
+  // A framebust can be blocked before the //chrome-level initialization of the
+  // messages infrastructure runs (e.g. during startup or in a speculative
+  // Custom Tab). No window has a message dispatcher in that state, so do not
+  // show the message. crbug.com/40828937
+  if (!message_dispatcher_bridge->IsMessagesEnabledForEmbedder()) {
+    return false;
+  }
+
   if (message_ != nullptr) {  // update description only
     blocked_url_ = blocked_url;
     initiator_origin_ = initiator_origin;
@@ -55,12 +66,6 @@ bool FramebustBlockedMessageDelegate::ShowMessage(
   message->SetTitle(l10n_util::GetStringUTF16(IDS_REDIRECT_BLOCKED_TITLE));
   message->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
       blocked_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-
-  messages::MessageDispatcherBridge* message_dispatcher_bridge =
-      messages::MessageDispatcherBridge::Get();
-  // TODO(crbug.com/583243551): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(message_dispatcher_bridge->IsMessagesEnabledForEmbedder());
 
   message->SetSecondaryIconResourceId(
       message_dispatcher_bridge->MapToJavaDrawableId(IDR_ANDROID_SETTINGS));

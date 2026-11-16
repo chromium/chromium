@@ -226,4 +226,24 @@ TEST_F(FramebustBlockedMessageDelegateTest, ClearOnReload) {
   NavigateAndCommit(GURL(kPageUrl));
 }
 
+// Tests that no message is shown when the messages infrastructure is not
+// initialized for the embedder.
+TEST_F(FramebustBlockedMessageDelegateTest, MessagesNotEnabledForEmbedder) {
+  message_dispatcher_bridge().SetMessagesEnabledForEmbedder(false);
+  EXPECT_CALL(message_dispatcher_bridge(), EnqueueMessage).Times(0);
+
+  bool callback_run = false;
+  bool result = GetDelegate()->ShowMessage(
+      GURL("a.test"), url::Origin::Create(GURL("a.test")),
+      main_rfh()->GetCurrentInitiatorNavigationState(), settings_map(),
+      base::BindLambdaForTesting(
+          [&](FramebustBlockedMessageDelegate::InterventionOutcome outcome) {
+            callback_run = true;
+          }));
+
+  EXPECT_FALSE(result);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(callback_run);
+}
+
 }  // namespace blocked_content
