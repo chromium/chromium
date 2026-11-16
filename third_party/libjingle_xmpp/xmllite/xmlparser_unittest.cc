@@ -266,11 +266,20 @@ TEST(XmlParserTest, TestError) {
     EXPECT_EQ("ERROR (19) ", handler.Str());
   }
   {
-    // XmlParser requires version 1.0
+    // XmlParser requires version 1.0. Expat 2.8.5 and later already reject
+    // versions other than 1.x with XML_ERROR_XML_DECL; the system Expat may
+    // be older.
     XmlParserTestHandler handler;
     XmlParser::ParseXml(&handler,
         "<?xml version=\"2.0\"?><test/>");
+#if XML_MAJOR_VERSION > 2 ||                               \
+    (XML_MAJOR_VERSION == 2 &&                             \
+     (XML_MINOR_VERSION > 8 ||                             \
+      (XML_MINOR_VERSION == 8 && XML_MICRO_VERSION >= 5)))
+    EXPECT_EQ("ERROR (30) ", handler.Str());
+#else
     EXPECT_EQ("ERROR (2) ", handler.Str());
+#endif
   }
   {
     // XmlParser requires standalone documents
