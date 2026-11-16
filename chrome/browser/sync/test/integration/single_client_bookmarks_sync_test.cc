@@ -1579,7 +1579,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   // bookmarks actually don't change. The only change is the version of the
   // entity.
   ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
 
   // Check that the bookmark was committed again.
   const std::vector<sync_pb::SyncEntity> server_bookmarks_after =
@@ -2101,7 +2102,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   ASSERT_TRUE(BookmarkFaviconLoadedChecker(0, GURL(kBookmarkPageUrl)).Wait());
   ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{title, GURL(kBookmarkPageUrl)}},
                   /*cryptographer=*/nullptr)
@@ -2143,7 +2145,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   // Last commit should initiate favicon loading.
   ASSERT_TRUE(BookmarkFaviconLoadedChecker(kSingleProfileIndex, url).Wait());
   ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
   const std::vector<sync_pb::SyncEntity> server_bookmarks =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
   ASSERT_EQ(1u, server_bookmarks.size());
