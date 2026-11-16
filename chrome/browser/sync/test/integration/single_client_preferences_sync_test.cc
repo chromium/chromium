@@ -172,12 +172,15 @@ INSTANTIATE_TEST_SUITE_P(,
 IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
 
-  const bool kDefaultValue =
-      GetPrefs(/*index=*/0)->GetBoolean(prefs::kHomePageIsNewTabPage);
-  ChangeBooleanPref(0, prefs::kHomePageIsNewTabPage);
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_THAT(GetPrefs(/*index=*/0)->GetBoolean(prefs::kHomePageIsNewTabPage),
-              Ne(kDefaultValue));
+  const bool new_value =
+      !GetPrefs(/*index=*/0)->GetBoolean(prefs::kEnableDoNotTrack);
+  ChangeBooleanPref(0, prefs::kEnableDoNotTrack);
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::DataType::PREFERENCES, prefs::kEnableDoNotTrack,
+                  ConvertPrefValueToValueInSpecifics(base::Value(new_value)))
+                  .Wait());
+  EXPECT_EQ(GetPrefs(/*index=*/0)->GetBoolean(prefs::kEnableDoNotTrack),
+            new_value);
 }
 
 // Regression test to verify that pagination during GetUpdates() contributes
