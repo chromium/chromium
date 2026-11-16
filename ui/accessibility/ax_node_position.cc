@@ -56,8 +56,8 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     return CreateNullPosition();
   }
 
-  // TODO(crbug.com/527726308): Add an Android-only CHECK that `offset_type` is
-  // not `std::nullopt` once all Android callers provide it.
+  // TODO(crbug.com/527726308): Consider adding an Android-only CHECK that
+  // `offset_type` is not `std::nullopt` once all Android callers provide it.
   const ax::mojom::OffsetType resolved_offset_type = offset_type.value_or(
       IsTextPositionAnchor(node) ? ax::mojom::OffsetType::kText
                                  : ax::mojom::OffsetType::kChild);
@@ -75,8 +75,9 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     return CreateTextPosition(node, text_offset, affinity);
   }
 
-  DCHECK_LE(child_index_or_text_offset,
-            static_cast<int>(node.GetChildCountCrossingTreeBoundary()))
+  const int child_count =
+      static_cast<int>(node.GetChildCountCrossingTreeBoundary());
+  DCHECK_LE(child_index_or_text_offset, child_count)
       << "\n* Trying to create a tree position with a child index that is too "
          "large. Maybe a text position should have been created instead?\n"
       << "\n* Anchor node: " << node << "\n* IsLeaf(): " << node.IsLeaf()
@@ -84,10 +85,22 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
       << "\n* IsLeafNodeForTreePosition(): " << IsLeafNodeForTreePosition(node)
       << "\n* Tree: " << node.tree()->ToString();
 
-  // TODO(crbug.com/527726308): Map leaf tree positions
-  // (`IsLeafNodeForTreePosition(node)`) to start/end of anchor so
-  // `AXPosition`'s leaf invariant holds when `OffsetType::kChild` is passed on
-  // a leaf node.
+  // `IsTextPositionAnchor(node)` returns `true` whenever
+  // `IsLeafNodeForTreePosition(node)` is `true`, so callers omitting
+  // `offset_type` (`std::nullopt`) always resolve to `OffsetType::kText` above
+  // and are unaffected. This branch is only reached when the caller explicitly
+  // passes `OffsetType::kChild`. On leaf nodes, `AXPosition::IsValid()`
+  // requires a tree position's `child_index()` to be either `BEFORE_TEXT`
+  // (start of anchor) or `AnchorChildCount()` (end of anchor, when
+  // `child_count > 0`).
+  if (IsLeafNodeForTreePosition(node)) {
+    CHECK(offset_type == ax::mojom::OffsetType::kChild);
+    if (child_count > 0 && child_index_or_text_offset >= child_count) {
+      return CreateTreePositionAtEndOfAnchor(node);
+    }
+    return CreateTreePositionAtStartOfAnchor(node);
+  }
+
   return CreateTreePosition(node, child_index_or_text_offset);
 }
 
