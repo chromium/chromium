@@ -1,0 +1,48 @@
+caption: Control user-installed extension behavior in Isolated Mode
+default: 0
+desc: |-
+  Specifies the behavior for user-installed extensions in Isolated Mode. This applies to all extensions that are not force-installed by policy, including extensions that are installed by policy but can be disabled by the user.
+
+  If set to 0 or left unset, user-installed extensions are enabled by default in Isolated Mode and can be disabled by the user.
+
+  If set to 1, user-installed extensions are disabled by default in Isolated Mode and can be enabled by the user.
+
+  If set to 2, user-installed extensions are blocked in Isolated Mode and cannot be enabled by the user.
+
+  When set to 0 or 1, if a user has explicitly enabled or disabled an extension in Isolated Mode, the user's choice takes precedence over the policy default.
+
+  Extensions that set <ph name="INCOGNITO_MANIFEST_KEY">"incognito"</ph> to <ph name="INCOGNITO_NOT_ALLOWED_VALUE">"not_allowed"</ph> in their manifest cannot run in Isolated Mode regardless of this policy.
+
+  This policy only takes effect when <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME">IsolatedModeSettings</ph> is enabled.
+
+  This policy requires a <ph name="CHROME_ENTERPRISE_PREMIUM_NAME">Chrome Enterprise Premium</ph> license to take effect.
+example_value: 1
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+items:
+- caption: User-installed extensions are enabled by default in Isolated Mode, and can be disabled
+  name: EnabledByDefault
+  value: 0
+- caption: User-installed extensions are disabled by default in Isolated Mode, and can be enabled
+  name: DisabledByDefault
+  value: 1
+- caption: User-installed extensions are blocked in Isolated Mode
+  name: Blocked
+  value: 2
+owners:
+- janzarzycki@google.com
+- file://components/enterprise/isolated_mode/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+tags: []
+type: int-enum

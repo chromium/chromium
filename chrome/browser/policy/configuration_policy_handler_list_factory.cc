@@ -254,6 +254,7 @@
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -3538,6 +3539,17 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kExtensionUnpublishedAvailability,
       extensions::pref_names::kExtensionUnpublishedAvailability,
       /*min=*/0, /*max=*/1, /*clamp=*/false));
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kIsolatedModeUserInstalledExtensionsSettings,
+      extensions::pref_names::kIsolatedModeUserInstalledExtensionsSettings,
+      /*min=*/
+      std::to_underlying(
+          extensions::IsolatedModeUserInstalledExtensionsSetting::
+              kEnabledByDefault),
+      /*max=*/
+      std::to_underlying(
+          extensions::IsolatedModeUserInstalledExtensionsSetting::kMaxValue),
+      /*clamp=*/false));
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::ExtensionRequestPolicyHandler>());

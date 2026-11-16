@@ -141,6 +141,13 @@ inline constexpr char
     kExtensionForceInstallWithSearchOrNewTabOverridesEnabled[] =
         "extensions.force_install_with_search_or_new_tab_overrides_enabled";
 
+// Integer pref that specifies the behavior for user-installed extensions in
+// Enterprise Isolated Mode. Controlled by the
+// IsolatedModeUserInstalledExtensionsSettings policy. Values are defined by the
+// `IsolatedModeUserInstalledExtensionsSetting` enum.
+inline constexpr char kIsolatedModeUserInstalledExtensionsSettings[] =
+    "extensions.isolated_mode_user_installed_extensions_settings";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // The time at which the extension was installed, used to record the time to

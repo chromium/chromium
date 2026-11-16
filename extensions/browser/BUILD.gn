@@ -449,6 +449,7 @@ source_set("browser_sources") {
     "install_tracker.h",
     "install_verifier.cc",
     "install_verifier.h",
+    "isolated_mode_extension_settings.h",
     "json_file_sanitizer.cc",
     "json_file_sanitizer.h",
     "l10n_file_util.cc",

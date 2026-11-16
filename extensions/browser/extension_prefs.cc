@@ -50,6 +50,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/user_script_manager.h"
@@ -2363,6 +2364,10 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
       /*default_value=*/false);
+  registry->RegisterIntegerPref(
+      pref_names::kIsolatedModeUserInstalledExtensionsSettings,
+      std::to_underlying(
+          IsolatedModeUserInstalledExtensionsSetting::kEnabledByDefault));
 }
 
 template <class ExtensionIdContainer>

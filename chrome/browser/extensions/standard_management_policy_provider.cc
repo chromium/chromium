@@ -346,8 +346,8 @@ bool StandardManagementPolicyProvider::MustRemainIsolatedModeEnabled(
   }
 
   // TODO(crbug.com/576672136): Return false when the
-  // IsolatedModeExtensionForcedInstalledSettings policy allows users to disable
-  // force-installed extensions in Isolated Mode.
+  // IsolatedModeForceInstalledExtensionsSettings policy allows users to
+  // disable force-installed extensions in Isolated Mode.
   return settings_->GetInstallationMode(extension) ==
          ManagedInstallationMode::kForced;
 }
