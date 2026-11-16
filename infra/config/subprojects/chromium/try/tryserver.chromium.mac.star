@@ -270,8 +270,7 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
-        # Temporarily removed for PAO-EM25 (SFO36) power shutdown (b/577217410).
-        # "ci/Mac Retina Release (AMD)",
+        "ci/Mac Retina Release (AMD)",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -1010,8 +1009,7 @@ shared_gpu.try_.mac_optional_builder(
     mirrors = [
         "ci/GPU FYI Mac Builder",
         "ci/Mac FYI Release (Intel)",
-        # Temporarily removed for PAO-EM25 (SFO36) power shutdown (b/577217410).
-        # "ci/Mac FYI Retina Release (AMD)",
+        "ci/Mac FYI Retina Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
     alerts_enabled = False,
