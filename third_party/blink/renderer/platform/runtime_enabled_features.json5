@@ -2891,6 +2891,13 @@
       status: "stable",
     },
     {
+      // Merge a pasted single-item list into an empty list item that is
+      // itself the editable root instead of nesting the list inside it.
+      // crbug.com/41103797
+      name: "EditingPasteListIntoRootListItem",
+      status: "stable",
+    },
+    {
       name: "EditingUseDomPositionApi",
       status: "test",
     },

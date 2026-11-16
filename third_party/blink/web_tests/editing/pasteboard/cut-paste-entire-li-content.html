@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  '<ul><li contenteditable>^abc|</li></ul>',
+  selection => {
+    selection.document.execCommand('cut');
+    selection.document.execCommand('paste');
+  },
+  '<ul><li contenteditable>abc|</li></ul>',
+  'Cutting all contents of a list item that is the editable root and ' +
+  'pasting them back into the empty item must not nest a list inside ' +
+  'it.'),
+  'Cut + paste of entire LI content does not nest the list');
+
+test(() => assert_selection(
+  '<div contenteditable><ul><li>^abc|</li></ul></div>',
+  selection => {
+    selection.document.execCommand('cut');
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable><ul><li>abc|</li></ul></div>',
+  'Cutting all contents of a list item and pasting them back into the ' +
+  'empty item must not nest a list inside it.'),
+  'Cut + paste of entire LI content in an editable div does not nest');
+
+// The merge only applies to a pasted list with a single item: a multi-item
+// list has nowhere else to go, since the destination item is the editable
+// root and cannot gain siblings.
+test(() => assert_selection(
+  '<ul><li contenteditable>^abc|</li></ul>',
+  selection => {
+    selection.document.execCommand(
+        'insertHTML', false, '<ul><li>one</li><li>two</li></ul>');
+  },
+  '<ul><li contenteditable><ul><li>one</li><li>two|</li></ul></li></ul>',
+  'A pasted multi-item list still nests inside the root list item.'),
+  'Pasting a multi-item list into a root list item is unchanged');
+</script>

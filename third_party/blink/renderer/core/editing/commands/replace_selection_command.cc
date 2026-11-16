@@ -1356,6 +1356,38 @@ ElementToSplitToAvoidPastingIntoInlineElementsWithStyle(
       containing_block));
 }
 
+// Returns the sole list item within |node|, which is either a list item or a
+// chain of single-child lists ending in exactly one list item. Returns null
+// if |node| contains no list item or more than one.
+static HTMLElement* SoleListItemOf(Node* node) {
+  while (IsHtmlListElement(node)) {
+    auto* list = DynamicTo<ContainerNode>(node);
+    node = (list && list->HasOneChild()) ? node->firstChild() : nullptr;
+  }
+  return IsListItemTag(node) ? To<HTMLElement>(node) : nullptr;
+}
+
+// A list item that is itself the editable root cannot gain sibling items in
+// its parent list, so a pasted single-item list must merge into such an empty
+// item instead of nesting inside it. crbug.com/41103797.
+static HTMLElement* SoleListItemToMergeIntoRootListItem(Node* inserted,
+                                                        Element* block_start) {
+  if (!RuntimeEnabledFeatures::EditingPasteListIntoRootListItemEnabled()) {
+    return nullptr;
+  }
+  if (!IsListItemTag(block_start) || !block_start->parentNode() ||
+      IsEditable(*block_start->parentNode())) {
+    return nullptr;
+  }
+  if (block_start->firstChild() &&
+      !(block_start->firstChild() == block_start->lastChild() &&
+        IsA<HTMLBRElement>(block_start->firstChild()))) {
+    return nullptr;
+  }
+  HTMLElement* item = SoleListItemOf(inserted);
+  return item && item->firstChild() ? item : nullptr;
+}
+
 void ReplaceSelectionCommand::SetUpStyle(const VisibleSelection& selection) {
   // We can skip matching the style if the selection is plain text.
   // TODO(editing-dev): Use IsEditablePosition instead of using UsedUserModify
@@ -1732,6 +1764,17 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   // 5) Add spaces for smart replace.
   // 6) Select the replacement if requested, and match style if requested.
 
+  Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
+
+  if (HTMLElement* sole_item = SoleListItemToMergeIntoRootListItem(
+          fragment.FirstChild(), block_start)) {
+    while (fragment.FirstChild() != sole_item) {
+      fragment.RemoveNodePreservingChildren(
+          To<ContainerNode>(fragment.FirstChild()));
+    }
+    fragment.RemoveNodePreservingChildren(sole_item);
+  }
+
   InsertedNodes inserted_nodes;
   inserted_nodes.SetRefNode(fragment.FirstChild());
   DCHECK(inserted_nodes.RefNode());
@@ -1739,7 +1782,6 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   fragment.RemoveNode(inserted_nodes.RefNode());
 
-  Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
   if ((IsHtmlListElement(inserted_nodes.RefNode()) ||
        IsListItemTag(inserted_nodes.RefNode()) ||
        (IsHtmlListElement(inserted_nodes.RefNode()->firstChild()))) &&
