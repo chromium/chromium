@@ -25,10 +25,6 @@ class FakeOpenTabsUIDelegate : public OpenTabsUIDelegate {
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
       ForeignSessionFilter filter) override;
 
-  bool GetAllRawForeignSessions(
-      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions)
-      override;
-
   base::flat_map<std::string, base::Time>
   GetAllForeignSessionLastModifiedTimes() const override;
 

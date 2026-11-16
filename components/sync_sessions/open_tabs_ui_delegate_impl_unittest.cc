@@ -246,11 +246,15 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
+// Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
+// returns named foreign sessions with zero tabs or only non-syncable tabs,
+// ordered from most recent to least recent.
 TEST_F(OpenTabsUIDelegateImplTest,
-       GetAllRawForeignSessionsReturnsZeroTabAndNonSyncableSessions) {
+       GetAllForeignSessionsWithFilterAllReturnsZeroTabAndNonSyncableSessions) {
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> empty_sessions;
-  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&empty_sessions));
-  EXPECT_TRUE(empty_sessions.empty());
+  EXPECT_FALSE(delegate_.GetAllForeignSessions(
+      &empty_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(empty_sessions, IsEmpty());
 
   const base::Time kTime0 = base::Time::Now();
   ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(GURL("chrome://newtab")))
@@ -292,19 +296,22 @@ TEST_F(OpenTabsUIDelegateImplTest,
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &presentable_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
-  ASSERT_EQ(presentable_sessions.size(), 1u);
-  EXPECT_EQ(presentable_sessions[0]->GetSessionTag(), kSessionTag3);
+  EXPECT_THAT(presentable_sessions, ElementsAre(HasSessionTag(kSessionTag3)));
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
-  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
-  ASSERT_EQ(raw_sessions.size(), 3u);
-  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag2);
-  EXPECT_EQ(raw_sessions[1]->GetSessionTag(), kSessionTag3);
-  EXPECT_EQ(raw_sessions[2]->GetSessionTag(), kSessionTag1);
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(all_sessions, ElementsAre(HasSessionTag(kSessionTag2),
+                                        HasSessionTag(kSessionTag3),
+                                        HasSessionTag(kSessionTag1)));
 }
 
-TEST_F(OpenTabsUIDelegateImplTest,
-       GetAllRawForeignSessionsIncludesEmptyWindowAndExcludesLocalAndDeleted) {
+// Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
+// includes foreign sessions with empty windows and excludes local, recent
+// local, and deleted sessions.
+TEST_F(
+    OpenTabsUIDelegateImplTest,
+    GetAllForeignSessionsWithFilterAllIncludesEmptyWindowAndExcludesLocalAndDeleted) {
   session_tracker_.InitLocalSession("local_tag", "Local Device",
                                     syncer::DeviceInfo::DeviceType::kLinux,
                                     syncer::DeviceInfo::FormFactor::kDesktop);
@@ -326,32 +333,39 @@ TEST_F(OpenTabsUIDelegateImplTest,
   EXPECT_FALSE(delegate_.GetAllForeignSessions(
       &presentable_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
-  EXPECT_TRUE(presentable_sessions.empty());
+  EXPECT_THAT(presentable_sessions, IsEmpty());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
-  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
-  ASSERT_EQ(raw_sessions.size(), 1u);
-  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag1);
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(all_sessions, ElementsAre(HasSessionTag(kSessionTag1)));
 
   session_tracker_.DeleteForeignSession(kSessionTag1);
-  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&raw_sessions));
-  EXPECT_TRUE(raw_sessions.empty());
+  EXPECT_FALSE(delegate_.GetAllForeignSessions(
+      &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(all_sessions, IsEmpty());
 }
 
+// Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
+// excludes unnamed (headerless) foreign sessions, including orphan tab-only
+// sessions that have not received a header.
 TEST_F(OpenTabsUIDelegateImplTest,
-       GetAllRawForeignSessionsExcludesUnnamedSessions) {
-  // Headerless/unnamed session (empty session name).
-  session_tracker_.GetSession(kSessionTag1);
+       GetAllForeignSessionsWithFilterAllExcludesUnnamedSessions) {
+  // Headerless/unnamed orphan tab-only session (empty session name).
+  session_tracker_.GetTab(kSessionTag1, kTabId1)
+      ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
+                                  CreateNavigationForTest());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
-  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&raw_sessions));
-  EXPECT_TRUE(raw_sessions.empty());
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  EXPECT_FALSE(delegate_.GetAllForeignSessions(
+      &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(all_sessions, IsEmpty());
 
   // Named 0-tab session alongside the unnamed session.
   session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
-  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
-  ASSERT_EQ(raw_sessions.size(), 1u);
-  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag2);
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(
+      &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
+  EXPECT_THAT(all_sessions, ElementsAre(HasSessionTag(kSessionTag2)));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -444,50 +458,6 @@ TEST_F(OpenTabsUIDelegateImplTest,
                             &SyncedSession::GetSessionTag, kSessionTag1))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-// Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
-// returns all tracked foreign sessions with header data ordered by recency,
-// including zero-tab (non-presentable) sessions and sessions marked
-// `SessionVisibility::kHidden`, while excluding tab-only sessions that have
-// not received a header (empty session name).
-TEST_F(OpenTabsUIDelegateImplTest,
-       GetAllForeignSessionsWithFilterAllIncludesZeroTabAndHiddenSessions) {
-  const base::Time kTime0 = base::Time::Now();
-
-  // `kSessionTag1`: header-only foreign session with zero windows/tabs.
-  session_tracker_.GetSession(kSessionTag1)->SetSessionName("device1");
-  session_tracker_.GetSession(kSessionTag1)
-      ->SetModifiedTime(kTime0 - base::Seconds(2));
-
-  // `kSessionTag2`: presentable foreign session marked hidden in prefs.
-  session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
-  session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
-  session_tracker_.GetTab(kSessionTag2, kTabId2)
-      ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
-                                  CreateNavigationForTest());
-  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
-  session_tracker_.GetSession(kSessionTag2)
-      ->SetModifiedTime(kTime0 - base::Seconds(1));
-  session_sync_prefs_.SetSessionVisibility(kSessionTag2,
-                                           SessionVisibility::kHidden);
-
-  // `kSessionTag3`: orphan tab-only foreign session without a header (empty
-  // session name).
-  session_tracker_.GetTab(kSessionTag3, kTabId3)
-      ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
-                                  CreateNavigationForTest());
-
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(delegate_.GetAllForeignSessions(
-      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
-  EXPECT_THAT(sessions, IsEmpty());
-#endif
-  EXPECT_TRUE(delegate_.GetAllForeignSessions(
-      &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
-  EXPECT_THAT(sessions, ElementsAre(HasSessionTag(kSessionTag2),
-                                    HasSessionTag(kSessionTag1)));
-}
 
 }  // namespace
 }  // namespace sync_sessions

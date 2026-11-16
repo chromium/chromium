@@ -574,7 +574,10 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildOtherDeviceTabs(
                            : nullptr;
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
-  if (!open_tabs || !open_tabs->GetAllRawForeignSessions(&sessions)) {
+  if (!open_tabs ||
+      !open_tabs->GetAllForeignSessions(
+          &sessions,
+          sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::kAll)) {
     return items;
   }
 

@@ -45,13 +45,6 @@ class OpenTabsUIDelegate {
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
       ForeignSessionFilter filter) = 0;
 
-  // Same as `GetAllForeignSessions(sessions, ForeignSessionFilter::kAll)`.
-  // TODO(crbug.com/570417844): Remove this method once callers are migrated to
-  // `GetAllForeignSessions()`.
-  virtual bool GetAllRawForeignSessions(
-      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
-          sessions) = 0;
-
   // Returns the timestamp of each foreign session, keyed by its session tag.
   virtual base::flat_map<std::string, base::Time>
   GetAllForeignSessionLastModifiedTimes() const = 0;

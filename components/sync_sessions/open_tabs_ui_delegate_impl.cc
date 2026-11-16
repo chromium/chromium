@@ -50,11 +50,6 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
   return !sessions->empty();
 }
 
-bool OpenTabsUIDelegateImpl::GetAllRawForeignSessions(
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  return GetAllForeignSessions(sessions, ForeignSessionFilter::kAll);
-}
-
 base::flat_map<std::string, base::Time>
 OpenTabsUIDelegateImpl::GetAllForeignSessionLastModifiedTimes() const {
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions =
