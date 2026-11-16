@@ -21,7 +21,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 
@@ -100,7 +100,7 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.showDialog();
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
         Assert.assertNotNull(mCoordinator.getDialogModelForTesting());
     }
 
@@ -120,7 +120,7 @@ public class WebSigninLoadingDialogTest {
                             /* initialTabURL= */ new GURL("about:blank"));
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class WebSigninLoadingDialogTest {
                             /* initialTabURL= */ new GURL("about:blank"));
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
         // Verify that the timer was NOT started.
         verify(mMockShowDialogTimer, never()).startTimer(anyLong(), any());
     }
@@ -178,7 +178,7 @@ public class WebSigninLoadingDialogTest {
                             /* initialTabURL= */ new GURL("about:blank"));
                     mCoordinator.showDialog();
                 });
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
 
         onView(withId(R.id.cancel_button)).perform(click());
 
@@ -218,7 +218,7 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.showDialog();
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -346,7 +346,7 @@ public class WebSigninLoadingDialogTest {
                             /* initialTabURL= */ new GURL("about:blank"));
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -597,7 +597,7 @@ public class WebSigninLoadingDialogTest {
                             /* initialTabURL= */ new GURL("about:blank"));
                 });
 
-        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.web_signin_loading_dialog));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

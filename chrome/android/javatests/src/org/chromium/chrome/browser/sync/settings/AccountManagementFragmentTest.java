@@ -17,7 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.View;
 
@@ -136,7 +136,7 @@ public class AccountManagementFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsTestRule.startSettingsActivity();
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         mRenderTestRule.render(view, "account_management_fragment_view");
     }
 
@@ -148,7 +148,7 @@ public class AccountManagementFragmentTest {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT2);
         mSettingsTestRule.startSettingsActivity();
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         mRenderTestRule.render(view, "account_management_fragment_signed_in_account_on_top");
     }
 
@@ -175,7 +175,7 @@ public class AccountManagementFragmentTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(mSettingsTestRule.getFragment()::update);
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         onView(
                         allOf(
                                 isDescendantOfA(withId(R.id.preferences_detail)),
@@ -206,7 +206,7 @@ public class AccountManagementFragmentTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(mSettingsTestRule.getFragment()::update);
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
         onView(
                         allOf(
@@ -233,7 +233,7 @@ public class AccountManagementFragmentTest {
                             .hasProfileDataForTesting(primarySupervisedAccount.getId());
                 });
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         mRenderTestRule.render(
                 view,
                 "account_management_fragment_for_child_account_with_add_account_for_supervised_"
@@ -260,7 +260,7 @@ public class AccountManagementFragmentTest {
                             .hasProfileDataForTesting(primarySupervisedAccount.getId());
                 });
         View view = mSettingsTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
+        waitForView(is(view));
         mRenderTestRule.render(
                 view,
                 "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_"
@@ -310,7 +310,7 @@ public class AccountManagementFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsTestRule.startSettingsActivity();
 
-        onViewWaiting(allOf(is(mSettingsTestRule.getFragment().getView()), isDisplayed()));
+        waitForView(is(mSettingsTestRule.getFragment().getView()));
         onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
     }

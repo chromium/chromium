@@ -16,7 +16,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithK
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -45,10 +44,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -62,7 +61,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
@@ -88,6 +86,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -439,13 +438,11 @@ public class AccountPickerBottomSheetTest {
     public void testExpandedSheetAfterCollapsedSheet() {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
-        onVisibleView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()))
-                .check(matches(isDisplayed()));
-        onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         onView(SigninMatchers.withFormattedEmailText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
-        onVisibleView(withText(R.string.signin_add_account_to_device))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_add_account_to_device));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
@@ -458,16 +455,13 @@ public class AccountPickerBottomSheetTest {
 
         buildAndShowCollapsedThenExandedBottomSheetForAccount(TestAccounts.ACCOUNT2);
 
-        onVisibleView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()))
-                .check(matches(isDisplayed()));
-        onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
-        onVisibleView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT2.getEmail()))
-                .check(matches(isDisplayed()));
-        onVisibleView(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT2.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT2.getFullName()));
         onView(SigninMatchers.withFormattedEmailText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
-        onVisibleView(withText(R.string.signin_add_account_to_device))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_add_account_to_device));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
@@ -477,13 +471,11 @@ public class AccountPickerBottomSheetTest {
     public void testExpandedSheetAtLaunch() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
-        onVisibleView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()))
-                .check(matches(isDisplayed()));
-        onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         onView(SigninMatchers.withFormattedEmailText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
-        onVisibleView(withText(R.string.signin_add_account_to_device))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_add_account_to_device));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
@@ -628,7 +620,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertTrue(controller.isSheetOpen());
         Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
-        onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
+        waitForView(withText(R.string.signin_account_picker_dismiss_button)).click();
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onSignInCancel();
@@ -661,7 +653,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertTrue(controller.isSheetOpen());
         Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
-        onVisibleView(withText(R.string.cancel)).perform(click());
+        waitForView(withId(R.id.account_picker_dismiss_button), withText(R.string.cancel)).click();
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onSignInCancel();
@@ -813,12 +805,10 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.addAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
-        onViewFullyShownInParent(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        R.id.account_picker_state_expanded)
-                .check(matches(isDisplayed()));
-        onViewFullyShownInParent(withText(newFullName), R.id.account_picker_state_expanded)
-                .check(matches(isDisplayed()));
+        waitForViewFullyShownInParent(
+                SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
+                R.id.account_picker_state_expanded);
+        waitForViewFullyShownInParent(withText(newFullName), R.id.account_picker_state_expanded);
 
         // Check that profile data update when the bottom sheet is expanded won't
         // toggle out any hidden part.
@@ -835,12 +825,10 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.addAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
-        onViewFullyShownInParent(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        R.id.account_picker_state_expanded)
-                .check(matches(isDisplayed()));
-        onViewFullyShownInParent(withText(newFullName), R.id.account_picker_state_expanded)
-                .check(matches(isDisplayed()));
+        waitForViewFullyShownInParent(
+                SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
+                R.id.account_picker_state_expanded);
+        waitForViewFullyShownInParent(withText(newFullName), R.id.account_picker_state_expanded);
 
         // Check that profile data update when the bottom sheet is expanded won't
         // toggle out any hidden part.
@@ -1087,10 +1075,10 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         // Select an account.
-        onViewFullyShownInParent(
+        waitForViewFullyShownInParent(
                         SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
                         R.id.account_picker_state_expanded)
-                .perform(click());
+                .click();
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         // Verify that the user is signed in right away.
@@ -1142,9 +1130,9 @@ public class AccountPickerBottomSheetTest {
 
         int titleId = R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self;
         int subtitleId = R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self;
-        onVisibleView(withText(titleId)).check(matches(isDisplayed()));
-        onVisibleView(withText(subtitleId)).check(matches(isDisplayed()));
-        onVisibleView(withText(R.string.cancel)).check(matches(isDisplayed()));
+        waitForView(withText(titleId));
+        waitForView(withText(subtitleId));
+        waitForView(withText(R.string.cancel));
     }
 
     @Test
@@ -1156,8 +1144,8 @@ public class AccountPickerBottomSheetTest {
 
         int titleId = R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self;
         int subtitleId = R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self;
-        onVisibleView(withText(titleId)).check(matches(isDisplayed()));
-        onVisibleView(withText(subtitleId)).check(matches(isDisplayed()));
+        waitForView(withText(titleId));
+        waitForView(withText(subtitleId));
         checkVisibleViewDoesNotExist(withText(R.string.cancel));
     }
 
@@ -1183,10 +1171,9 @@ public class AccountPickerBottomSheetTest {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
-        onViewFullyShownInParent(
-                        withText(R.string.signin_account_picker_bottom_sheet_title),
-                        R.id.account_picker_state_collapsed)
-                .check(matches(isDisplayed()));
+        waitForViewFullyShownInParent(
+                withText(R.string.signin_account_picker_bottom_sheet_title),
+                R.id.account_picker_state_collapsed);
         onView(
                         allOf(
                                 withId(R.id.account_picker_header_subtitle),
@@ -1205,10 +1192,9 @@ public class AccountPickerBottomSheetTest {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
         buildAndShowCollapsedThenExpandedBottomSheet();
 
-        onViewFullyShownInParent(
-                        withText(R.string.signin_account_picker_bottom_sheet_title),
-                        R.id.account_picker_state_expanded)
-                .check(matches(isDisplayed()));
+        waitForViewFullyShownInParent(
+                withText(R.string.signin_account_picker_bottom_sheet_title),
+                R.id.account_picker_state_expanded);
         onView(
                         allOf(
                                 withId(R.id.account_picker_header_subtitle),
@@ -1249,8 +1235,7 @@ public class AccountPickerBottomSheetTest {
 
         clickContinueButtonAndWaitForErrorSheet();
 
-        onVisibleView(withText(R.string.signin_account_picker_bottom_sheet_error_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_account_picker_bottom_sheet_error_title));
         onView(withText(R.string.signin_account_picker_general_error_subtitle))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_account_picker_general_error_button))
@@ -1282,10 +1267,10 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         // Select and account.
-        onViewFullyShownInParent(
+        waitForViewFullyShownInParent(
                         withText(TestAccounts.ACCOUNT1.getFullName()),
                         R.id.account_picker_state_expanded)
-                .perform(click());
+                .click();
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         // Verify the error view content.
@@ -1322,8 +1307,7 @@ public class AccountPickerBottomSheetTest {
 
         clickContinueButtonAndWaitForErrorSheet();
 
-        onVisibleView(withText(R.string.signin_account_picker_bottom_sheet_error_title))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_account_picker_bottom_sheet_error_title));
         onView(withText(R.string.signin_account_picker_auth_error_subtitle))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.auth_error_card_button)).check(matches(isDisplayed()));
@@ -1585,10 +1569,10 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         // Start sign-in and remove the account before completing the device lock.
-        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        waitForView(withId(R.id.account_picker_add_account_text)).click();
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         mFakeIdentityManager.addOrUpdateExtendedAccountInfo(TestAccounts.ACCOUNT2);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -1656,8 +1640,7 @@ public class AccountPickerBottomSheetTest {
         clickContinueButtonAndClearDeviceLock(bottomSheetView);
 
         // Clicking "Cancel" button should return to initial collapsed sheet.
-        onViewWaiting(allOf(withId(R.id.confirm_management_cancel_button), isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.confirm_management_cancel_button)).click();
 
         waitForBottomSheetView(withId(R.id.account_picker_state_collapsed));
         accountConsistencyHistogram.assertExpected();
@@ -1813,7 +1796,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
         waitForBottomSheetView(withId(R.id.account_picker_state_collapsed));
 
-        onViewWaiting(withId(R.id.account_picker_state_collapsed)).perform(swipeDown());
+        waitForView(withId(R.id.account_picker_state_collapsed)).performViewAction(swipeDown());
 
         Assert.assertFalse(getBottomSheetController().isSheetOpen());
         verify(mAccountPickerDelegateMock).onSignInCancel();
@@ -1996,8 +1979,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private static void checkZeroAccountBottomSheet() {
-        onVisibleView(withText(R.string.signin_add_account_to_device))
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.signin_add_account_to_device));
         checkVisibleViewDoesNotExist(
                 SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
         checkVisibleViewDoesNotExist(
@@ -2014,16 +1996,15 @@ public class AccountPickerBottomSheetTest {
                                 .findViewById(R.id.account_picker_selected_account)
                         ::isShown);
         AccountPickerBottomSheetStrings bottomSheetStrings = getBottomSheetStrings();
-        onVisibleView(withText(bottomSheetStrings.titleString)).check(matches(isDisplayed()));
+        waitForView(withText(bottomSheetStrings.titleString));
         if (subtitle != null) {
-            onVisibleView(withText(subtitle)).check(matches(isDisplayed()));
+            waitForView(withText(subtitle));
         } else {
             checkVisibleViewDoesNotExist(withId(R.id.account_picker_header_subtitle));
         }
-        onVisibleView(SigninMatchers.withFormattedEmailText(accountInfo.getEmail()))
-                .check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(accountInfo.getEmail()));
         if (!TextUtils.isEmpty(accountInfo.getFullName())) {
-            onVisibleView(withText(accountInfo.getFullName())).check(matches(isDisplayed()));
+            waitForView(withText(accountInfo.getFullName()));
         }
         String continueAsText =
                 mActivityTestRule
@@ -2097,7 +2078,7 @@ public class AccountPickerBottomSheetTest {
                         "All values of AccountPickerLaunchMode should be handled.");
         }
 
-        onViewWaiting(allOf(withId(expectedLayoutId), isCompletelyDisplayed()));
+        waitForView(withId(expectedLayoutId), displayingAtLeastOption(100));
     }
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
@@ -2106,25 +2087,27 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowCollapsedThenExandedBottomSheetForAccount(AccountInfo accountInfo) {
         buildAndShowBottomSheetForAccount(AccountPickerLaunchMode.DEFAULT, accountInfo.getId());
-        onViewFullyShownInParent(
+        waitForViewFullyShownInParent(
                         withText(accountInfo.getFullName()), R.id.account_picker_state_collapsed)
-                .perform(click());
+                .click();
     }
 
     private void buildAndShowCollapsedThenExpandedBottomSheet() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
-        onViewFullyShownInParent(
+        waitForViewFullyShownInParent(
                         withText(TestAccounts.ACCOUNT1.getFullName()),
                         R.id.account_picker_state_collapsed)
-                .perform(click());
+                .click();
     }
 
     // Add account and sign-in through the fake add account UI flow.
     private void addAccountAndSignin(AccountInfo accountToAdd) {
-        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        // isDisplayed() disambiguates from the same text in a hidden ViewFlipper child, since
+        // click() re-matches with Espresso.onView(), which also matches GONE views.
+        waitForView(withText(R.string.signin_add_account_to_device), isDisplayed()).click();
         mAccountManagerTestRule.setAddAccountFlowResult(accountToAdd);
         mFakeIdentityManager.addOrUpdateExtendedAccountInfo(accountToAdd);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
     }
 
@@ -2135,13 +2118,14 @@ public class AccountPickerBottomSheetTest {
                 .getBottomSheetController();
     }
 
-    private ViewInteraction onViewFullyShownInParent(Matcher<View> matcher, @IdRes int parentId) {
+    private ViewPresence<View> waitForViewFullyShownInParent(
+            Matcher<View> matcher, @IdRes int parentId) {
         // View interactions must be performed on at least 90% visible views, but sometimes the
         // bottom sheet is not shown at it full height right away, even if animations are disabled.
         // This util method allows to only match fully shown views, and is used to reduce test
         // flakiness.
-        return onViewWaiting(
-                allOf(matcher, isDescendantOfA(withId(parentId)), isCompletelyDisplayed()));
+        return waitForView(
+                allOf(matcher, isDescendantOfA(withId(parentId))), displayingAtLeastOption(100));
     }
 
     // Does not wait for a view to actually be visible, but needs to check for visibility to avoid
@@ -2149,13 +2133,6 @@ public class AccountPickerBottomSheetTest {
     // visible view and hidden view.
     private static void checkVisibleViewDoesNotExist(Matcher<View> matcher) {
         onView(allOf(matcher, withEffectiveVisibility(VISIBLE))).check(doesNotExist());
-    }
-
-    private static ViewInteraction onVisibleView(Matcher<View> matcher) {
-        // Some view elements like PROFILE_DATA1 exist in both visible view and hidden view,
-        // withEffectiveVisibility(VISIBLE) is needed here to get only the visible view of the
-        // matcher.
-        return onViewWaiting(allOf(matcher, isDisplayed()));
     }
 
     private void simulateAuthError() {

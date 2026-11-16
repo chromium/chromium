@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.view.View;
@@ -42,7 +44,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.DeviceManagementErrorDetails;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
-import org.chromium.ui.test.util.ViewUtils;
 
 /** Test suite for IdentityErrorCardPreference */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -288,7 +289,7 @@ public class IdentityErrorCardPreferenceTest {
     }
 
     private View getIdentityErrorCardView() {
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {

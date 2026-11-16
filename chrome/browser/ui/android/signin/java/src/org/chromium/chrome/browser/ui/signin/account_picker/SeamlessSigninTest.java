@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.intent.Intents.intended;
@@ -14,7 +13,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -34,10 +32,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
-import static org.chromium.base.test.util.ForgivingClickAction.forgivingClick;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -304,7 +300,8 @@ public class SeamlessSigninTest {
         createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
 
-        onViewWaiting(withId(R.id.account_picker_state_confirm_management)).perform(swipeDown());
+        waitForView(withId(R.id.account_picker_state_confirm_management))
+                .performViewAction(swipeDown());
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySignInNeverStarted();
@@ -500,7 +497,7 @@ public class SeamlessSigninTest {
         createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
-        onViewWaiting(withId(R.id.account_picker_state_general_error)).perform(swipeDown());
+        waitForView(withId(R.id.account_picker_state_general_error)).performViewAction(swipeDown());
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySigninFailed();
@@ -939,13 +936,13 @@ public class SeamlessSigninTest {
 
     private void waitForNewManagementNotice() {
         waitForBottomSheetView(withId(R.id.disclaimer_title));
-        onViewWaiting(withId(R.id.disclaimer_accept_button));
-        onViewWaiting(withId(R.id.disclaimer_cancel_button));
+        waitForView(withId(R.id.disclaimer_accept_button));
+        waitForView(withId(R.id.disclaimer_cancel_button));
         onView(withId(R.id.account_picker_confirm_management_description)).check(doesNotExist());
     }
 
     private void clickDisclaimerButton(@IdRes int buttonId) {
-        onViewWaiting(withId(buttonId)).perform(forgivingClick());
+        waitForView(withId(buttonId)).click();
     }
 
     private void waitForSignInInProgressSheet() {
@@ -964,27 +961,21 @@ public class SeamlessSigninTest {
     }
 
     private void clickContinueButtonManagementNotice() {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                isDescendantOfA(
-                                        withId(R.id.account_picker_state_confirm_management)),
-                                isDisplayed()))
-                .perform(click());
+        waitForView(
+                        withId(R.id.account_picker_continue_as_button),
+                        isDescendantOfA(withId(R.id.account_picker_state_confirm_management)))
+                .click();
     }
 
     private void clickContinueButtonToTryAgainGeneralError() {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                isDescendantOfA(withId(R.id.account_picker_state_general_error)),
-                                isDisplayed()))
-                .perform(click());
+        waitForView(
+                        withId(R.id.account_picker_continue_as_button),
+                        isDescendantOfA(withId(R.id.account_picker_state_general_error)))
+                .click();
     }
 
     private void clickCancelButtonManagementNotice() {
-        onViewWaiting(allOf(withId(R.id.confirm_management_cancel_button), isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.confirm_management_cancel_button)).click();
     }
 
     private void verifySignInCompleted() {

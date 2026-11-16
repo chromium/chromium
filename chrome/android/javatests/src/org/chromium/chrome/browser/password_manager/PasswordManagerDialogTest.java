@@ -15,8 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 
@@ -86,7 +86,7 @@ public class PasswordManagerDialogTest {
                     mModel = mMediator.getModelForTesting();
                     mCoordinator.showDialog();
                 });
-        onViewWaiting(withId(R.id.positive_button));
+        waitForView(withId(R.id.positive_button));
     }
 
     @Test

@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -380,9 +379,9 @@ public class SigninFirstRunFragmentTest {
                             .findViewById(R.id.signin_fre_selected_account)
                             .isShown();
                 });
-        ViewUtils.waitForVisibleView(withText(R.string.continue_button));
+        waitForView(withText(R.string.continue_button));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_footer));
+        waitForView(withId(R.id.signin_fre_footer));
     }
 
     @Test
@@ -778,12 +777,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         // Wait for the selected account to become visible.
-        onViewWaiting(
-                        allOf(
-                                SigninMatchers.withFormattedEmailText(
-                                        TestAccounts.ACCOUNT1.getEmail()),
-                                isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
 
         // Update account info with a new image (RED).
         mSigninTestRule.updateAccount(
@@ -808,12 +802,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         // Wait for the selected account to become visible.
-        onViewWaiting(
-                        allOf(
-                                SigninMatchers.withFormattedEmailText(
-                                        TestAccounts.ACCOUNT1.getEmail()),
-                                isDisplayed()))
-                .check(matches(isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -860,11 +849,7 @@ public class SigninFirstRunFragmentTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         // Check that the continue button text is updated with the new name.
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.signin_fre_continue_button),
-                                withText(containsString("Updated"))))
-                .check(matches(isDisplayed()));
+        waitForView(withId(R.id.signin_fre_continue_button), withText(containsString("Updated")));
     }
 
     @Test
@@ -1018,9 +1003,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
-        ViewUtils.waitForVisibleView(withText(R.string.continue_button));
-        onView(withId(R.id.signin_fre_continue_button))
-                .check(matches(withText(R.string.continue_button)));
+        waitForView(withId(R.id.signin_fre_continue_button), withText(R.string.continue_button));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
 
         onView(allOf(withId(R.id.title), withText(R.string.fre_welcome)))
@@ -1375,7 +1358,7 @@ public class SigninFirstRunFragmentTest {
         onScrollToView(withText(TestAccounts.ACCOUNT1.getFullName())).perform(click());
         onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock)
@@ -1390,7 +1373,7 @@ public class SigninFirstRunFragmentTest {
 
         onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock)
@@ -1404,13 +1387,13 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
-        onViewWaiting(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).click();
 
         // Canceling the add-account flow on the FRE welcome screen should keep the welcome screen
         // interactive so the user can try again.
         onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock, never()).exitFirstRun();
@@ -1428,7 +1411,7 @@ public class SigninFirstRunFragmentTest {
             launchActivityWithFragment();
             onScrollToView(withText(R.string.signin_add_account_to_device)).perform(click());
             mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-            onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+            waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
 
             // The account is not visible and thus add account button is shown.
             onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
@@ -1721,7 +1704,7 @@ public class SigninFirstRunFragmentTest {
             AccountInfo accountInfo,
             boolean shouldShowSubtitle,
             @FullscreenSigninLoadPoint int slowestLoadPoint) {
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_selected_account));
+        waitForView(withId(R.id.signin_fre_selected_account));
         verify(mFirstRunPageDelegateMock).recordLoadCompletedHistograms(slowestLoadPoint);
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(
@@ -1869,13 +1852,13 @@ public class SigninFirstRunFragmentTest {
         ViewFinder.waitForNoView(withId(R.id.signin_fre_dismiss_button));
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.NATIVE_INITIALIZATION);
-        ViewUtils.waitForVisibleView(withId(R.id.fre_browser_managed_by));
-        ViewUtils.waitForVisibleView(withText(R.string.continue_button));
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_footer));
+        waitForView(withId(R.id.fre_browser_managed_by));
+        waitForView(withText(R.string.continue_button));
+        waitForView(withId(R.id.signin_fre_footer));
     }
 
     private void checkFragmentWhenSigninIsForcedByPolicy(String continueButtonText) {
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_selected_account));
+        waitForView(withId(R.id.signin_fre_selected_account));
         onView(withId(R.id.signin_fre_selected_account_expand_icon)).check(matches(isDisplayed()));
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.NATIVE_INITIALIZATION);
@@ -1916,7 +1899,7 @@ public class SigninFirstRunFragmentTest {
         // Wait for fragment to be added to the activity.
         CriteriaHelper.pollUiThread(() -> mFragment.isResumed());
 
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_icon), isDisplayed()));
+        waitForView(withId(R.id.fre_icon));
     }
 
     /**
@@ -1963,7 +1946,7 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void checkManagementNoticeIsDisplayed() {
-        onViewWaiting(withId(R.id.disclaimer_title)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.disclaimer_title));
         onView(withId(R.id.disclaimer_accept_button)).check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_cancel_button)).check(matches(isDisplayed()));
         // The main FRE view should be replaced by the notice.

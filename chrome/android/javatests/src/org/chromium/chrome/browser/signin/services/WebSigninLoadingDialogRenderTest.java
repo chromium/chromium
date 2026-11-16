@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.signin.services;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 
@@ -85,7 +85,7 @@ public class WebSigninLoadingDialogRenderTest {
                     coordinator.setTabForTesting(mActivityTestRule.getActivityTab());
                     coordinator.showDialog();
                 });
-        onViewWaiting(withId(R.id.web_signin_loading_dialog));
+        waitForView(withId(R.id.web_signin_loading_dialog));
 
         mRenderTestRule.render(
                 assumeNonNull(coordinator.getDialogModelForTesting())

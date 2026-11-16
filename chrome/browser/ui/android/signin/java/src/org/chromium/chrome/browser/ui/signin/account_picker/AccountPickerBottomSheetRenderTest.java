@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.view.View;
@@ -193,12 +192,8 @@ public class AccountPickerBottomSheetRenderTest {
             throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        isDisplayed()));
-        ViewUtils.waitForVisibleView(
-                allOf(withText(TestAccounts.ACCOUNT1.getFullName()), isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
@@ -214,12 +209,8 @@ public class AccountPickerBottomSheetRenderTest {
         mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        isDisplayed()));
-        ViewUtils.waitForVisibleView(
-                allOf(withText(TestAccounts.ACCOUNT1.getFullName()), isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
                 "collapsed_sheet_with_account_for_send_tab_to_self");
@@ -236,12 +227,8 @@ public class AccountPickerBottomSheetRenderTest {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        isDisplayed()));
-        ViewUtils.waitForVisibleView(
-                allOf(withText(TestAccounts.ACCOUNT1.getFullName()), isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
                 "collapsed_sheet_with_account_for_bookmarks");
@@ -268,24 +255,18 @@ public class AccountPickerBottomSheetRenderTest {
 
         buildAndShowCollapsedBottomSheet();
 
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        isDisplayed()));
-        ViewUtils.waitForVisibleView(
-                allOf(withText(TestAccounts.ACCOUNT1.getFullName()), isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         String deviceName =
                 mActivityTestRule.getActivity().getString(R.string.signin_device_type_phone);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withText(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getString(
-                                                R.string
-                                                        .signin_account_picker_bottom_sheet_subtitle_for_web_signin_device_type_bookmarks,
-                                                deviceName)),
-                        isDisplayed()));
+        waitForView(
+                withText(
+                        mActivityTestRule
+                                .getActivity()
+                                .getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_web_signin_device_type_bookmarks,
+                                        deviceName)));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
                 "collapsed_sheet_with_preferred_account_for_web_signin");
@@ -313,24 +294,18 @@ public class AccountPickerBottomSheetRenderTest {
 
         buildAndShowCollapsedBottomSheet();
 
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()),
-                        isDisplayed()));
-        ViewUtils.waitForVisibleView(
-                allOf(withText(TestAccounts.ACCOUNT1.getFullName()), isDisplayed()));
+        waitForView(SigninMatchers.withFormattedEmailText(TestAccounts.ACCOUNT1.getEmail()));
+        waitForView(withText(TestAccounts.ACCOUNT1.getFullName()));
         String deviceName =
                 mActivityTestRule.getActivity().getString(R.string.signin_device_type_phone);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withText(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getString(
-                                                R.string
-                                                        .signin_account_picker_bottom_sheet_subtitle_for_device_type_bookmarks,
-                                                deviceName)),
-                        isDisplayed()));
+        waitForView(
+                withText(
+                        mActivityTestRule
+                                .getActivity()
+                                .getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_device_type_bookmarks,
+                                        deviceName)));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
                 "collapsed_sheet_with_preferred_account_for_ntp_signed_out_icon");
@@ -524,7 +499,7 @@ public class AccountPickerBottomSheetRenderTest {
                 () -> {
                     view.findViewById(R.id.account_picker_selected_account).performClick();
                 });
-        ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_account_list), isDisplayed()));
+        waitForView(withId(R.id.account_picker_account_list));
     }
 
     private void buildAndShowCollapsedBottomSheet() {
@@ -548,7 +523,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     mSigninAccessPoint,
                                     /* selectedAccountId= */ null);
                 });
-        ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
+        waitForView(withId(R.id.account_picker_selected_account));
     }
 
     private BottomSheetController getBottomSheetController() {

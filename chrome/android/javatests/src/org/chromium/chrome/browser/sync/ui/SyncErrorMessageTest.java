@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -18,7 +16,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -483,7 +481,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
 
         Intents.init();
-        onViewWaiting(allOf(withText("Enter"), isDisplayed())).perform(click());
+        waitForView(withText("Enter")).click();
         intended(isSettingsIntentFor(ManageSyncSettings.class));
         Intents.release();
 
@@ -511,7 +509,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
 
         Intents.init();
-        onViewWaiting(allOf(withText("Learn more"), isDisplayed())).perform(click());
+        waitForView(withText("Learn more")).click();
         intended(
                 IntentMatchers.hasData(SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL));
         Intents.release();

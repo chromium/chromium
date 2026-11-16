@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
@@ -115,7 +115,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         // The error card exists.
         onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
@@ -128,7 +128,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
@@ -148,7 +148,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         // No error card exists right now.
         onView(withId(R.id.signin_settings_card)).check(doesNotExist());
@@ -163,7 +163,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         fakeSyncService.setRequiresClientUpgrade(true);
 
         // Error card is showing now.
-        onViewWaiting(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.signin_settings_card));
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -183,7 +183,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         IdentityErrorCardPreference preference =
                 (IdentityErrorCardPreference)
@@ -221,7 +221,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         // The error card exists.
         onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
@@ -258,7 +258,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         // The error card exists.
         onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
@@ -286,7 +286,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         // The error card exists.
         onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
@@ -332,7 +332,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
 
@@ -360,7 +360,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());
@@ -386,7 +386,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());

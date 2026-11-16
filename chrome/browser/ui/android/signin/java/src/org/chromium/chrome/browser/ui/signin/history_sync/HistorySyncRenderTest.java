@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
-
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -56,7 +53,6 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -202,7 +198,7 @@ public class HistorySyncRenderTest {
 
         buildHistorySyncCoordinator(orientation, isFre);
 
-        onViewWaiting(withId(R.id.button_primary));
+        waitForView(withId(R.id.button_primary));
         mRenderTestRule.render(mHistorySyncCoordinator.getView(), "history_sync");
     }
 
@@ -218,7 +214,7 @@ public class HistorySyncRenderTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator(orientation, isFre);
 
-        onViewWaiting(withId(R.id.button_primary));
+        waitForView(withId(R.id.button_primary));
         mRenderTestRule.render(
                 mHistorySyncCoordinator.getView(), "history_sync_with_minor_mode_enabled");
     }
@@ -237,7 +233,7 @@ public class HistorySyncRenderTest {
 
         buildHistorySyncCoordinator(orientation, isFre);
 
-        onViewWaiting(withId(R.id.button_primary));
+        waitForView(withId(R.id.button_primary));
         mRenderTestRule.render(
                 mHistorySyncCoordinator.getView(), "history_sync_alternate_illustration");
     }
@@ -273,6 +269,6 @@ public class HistorySyncRenderTest {
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
+        waitForView(withId(R.id.history_sync_illustration));
     }
 }

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -64,7 +64,6 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests for the standalone history sync consent dialog */
 @RunWith(ContentJUnit4ClassRunner.class)
@@ -459,7 +458,7 @@ public class HistorySyncTest {
                         .accountCapabilities(TestAccounts.MINOR_MODE_REQUIRED)
                         .build());
 
-        onViewWaiting(withId(R.id.button_secondary));
+        waitForView(withId(R.id.button_secondary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -495,7 +494,7 @@ public class HistorySyncTest {
         // History sync opt-in screen should be displayed.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
 
-        ViewUtils.waitForVisibleView(withId(R.id.button_secondary));
+        waitForView(withId(R.id.button_secondary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -547,8 +546,8 @@ public class HistorySyncTest {
                             .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
 
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.button_primary), isDisplayed()));
+        waitForView(withId(R.id.history_sync_title));
+        waitForView(withId(R.id.button_primary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -600,8 +599,8 @@ public class HistorySyncTest {
                             .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
 
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.button_primary), isDisplayed()));
+        waitForView(withId(R.id.history_sync_title));
+        waitForView(withId(R.id.button_primary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -642,7 +641,7 @@ public class HistorySyncTest {
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
 
-        onViewWaiting(withId(R.id.button_primary)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.button_primary));
 
         histogramWatcher.assertExpected();
     }
@@ -679,6 +678,6 @@ public class HistorySyncTest {
                 });
         // Use the illustration to check the history sync view's appearance, since it's visible
         // in portrait mode and landscape mode, even on a small screen.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
+        waitForView(withId(R.id.history_sync_illustration));
     }
 }

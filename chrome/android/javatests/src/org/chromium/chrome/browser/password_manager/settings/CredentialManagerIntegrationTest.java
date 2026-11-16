@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -160,7 +160,7 @@ public class CredentialManagerIntegrationTest {
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/339278945
     public void testUseCredentialManagerFromSafetyCheckForLocal() {
         mSafetyCheckActivityTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.safety_check_passwords_local_title)).perform(click());
+        waitForView(withText(R.string.safety_check_passwords_local_title)).click();
 
         // Verify that success callback was called.
         assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
@@ -180,7 +180,7 @@ public class CredentialManagerIntegrationTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.safety_check_passwords_account_title)
                         .replace("%1$s", mAccount.getEmail());
-        onViewWaiting(withText(checkForAccountText)).perform(click());
+        waitForView(withText(checkForAccountText)).click();
 
         // Verify that success callback was called.
         assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
@@ -225,7 +225,7 @@ public class CredentialManagerIntegrationTest {
         launcher.setCredentialManagerError(new Exception("Simulated GMS Failure"));
 
         mSafetyCheckActivityTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.safety_check_passwords_local_title)).perform(click());
+        waitForView(withText(R.string.safety_check_passwords_local_title)).click();
 
         // Verify that failure callback was called.
         assertNotNull(mFailureCallbackHelper.getOnlyPayloadBlocking());
@@ -250,7 +250,7 @@ public class CredentialManagerIntegrationTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.safety_check_passwords_account_title)
                         .replace("%1$s", mAccount.getEmail());
-        onViewWaiting(withText(checkForAccountText)).perform(click());
+        waitForView(withText(checkForAccountText)).click();
 
         // Verify that failure callback was called.
         assertNotNull(mFailureCallbackHelper.getOnlyPayloadBlocking());

@@ -27,6 +27,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
@@ -105,7 +107,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -291,7 +292,7 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(accessPoint);
 
         // Since the flag is enabled and Account2 is preferred, the promo should show Account2.
-        ViewUtils.waitForVisibleView(
+        waitForView(
                 withText(
                         mActivityTestRule
                                 .getActivity()
@@ -316,7 +317,7 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(accessPoint);
 
         // When the feature is disabled, default to Account1.
-        ViewUtils.waitForVisibleView(
+        waitForView(
                 withText(
                         mActivityTestRule
                                 .getActivity()
@@ -337,9 +338,7 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
-
-        onView(withId(R.id.signin_promo_primary_button)).perform(click());
+        waitForView(withId(R.id.signin_promo_primary_button)).click();
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
@@ -382,7 +381,7 @@ public class SigninPromoCoordinatorTest {
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
+        waitForView(withId(R.id.signin_promo_primary_button));
 
         String expectedPrimaryButtonText =
                 mActivityTestRule
@@ -457,9 +456,7 @@ public class SigninPromoCoordinatorTest {
     public void testSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
-
-        onView(withId(R.id.signin_promo_primary_button)).perform(click());
+        waitForView(withId(R.id.signin_promo_primary_button)).click();
 
         // Extract the config passed to the sign-in flow launcher.
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
@@ -507,10 +504,8 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
-        ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
-
-        onView(withId(R.id.signin_promo_primary_button)).perform(click());
+        waitForView(withText(R.string.sync_promo_title_bookmarks));
+        waitForView(withId(R.id.signin_promo_primary_button)).click();
 
         verify(mOnOpenSettings).run();
         histogramWatcher.assertExpected();
@@ -524,12 +519,11 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
-        ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
+        waitForView(withText(R.string.sync_promo_title_bookmarks));
 
         // Before click: primary button and dismiss button are enabled.
-        onView(withId(R.id.signin_promo_primary_button))
-                .check(matches(allOf(isEnabled(), withText(R.string.open_settings_button))));
+        waitForView(
+                withId(R.id.signin_promo_primary_button), withText(R.string.open_settings_button));
         onView(withId(R.id.signin_promo_dismiss_button))
                 .check(matches(allOf(isDisplayed(), isEnabled())));
 
@@ -569,9 +563,7 @@ public class SigninPromoCoordinatorTest {
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(R.id.account_picker_selected_account));
-
-        onView(withId(R.id.account_picker_selected_account)).perform(click());
+        waitForView(withId(R.id.account_picker_selected_account)).click();
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
@@ -611,7 +603,7 @@ public class SigninPromoCoordinatorTest {
 
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
 
-        ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
+        waitForView(withText(R.string.sync_promo_title_bookmarks));
         onView(withId(R.id.account_picker_selected_account))
                 .check(ViewAssertions.matches(not(isDisplayed())));
         histogramWatcher.assertExpected();
@@ -677,8 +669,7 @@ public class SigninPromoCoordinatorTest {
             ThreadUtils.runOnUiThreadBlocking(() -> mPromoCoordinator.onSigninUndone());
         } else {
             // Dismiss the promo via [x] dismiss button.
-            ViewUtils.waitForVisibleView(withId(dismissButtonId));
-            onView(withId(dismissButtonId)).perform(click());
+            waitForView(withId(dismissButtonId)).click();
         }
 
         verify(mOnPromoStateChange).run();
@@ -809,9 +800,7 @@ public class SigninPromoCoordinatorTest {
     public void testHistorySyncOptIn_RecentTabs() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.RECENT_TABS);
         setUpSignInPromo(SigninAccessPoint.RECENT_TABS);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
-
-        onView(withId(R.id.signin_promo_primary_button)).perform(click());
+        waitForView(withId(R.id.signin_promo_primary_button)).click();
 
         @HistorySyncConfig.OptInMode
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =

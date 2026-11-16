@@ -32,12 +32,12 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertHighlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertPreferenceScreenMatchesIndex;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import static java.util.Map.entry;
 
@@ -408,7 +408,7 @@ public class ManageSyncSettingsTest {
     public void testSignInWithManagedDataTypes() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
 
         Map<Integer, ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment);
         // When one or more sync types are managed, the respective preference should be disabled and
@@ -522,7 +522,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
 
         mSyncTestRule
                 .getSigninTestRule()
@@ -843,7 +843,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -864,7 +864,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
         // Don't capture the card before it shows the ring.
         CriteriaHelper.pollInstrumentationThread(() -> centralAccountCardHasAiTierRing(fragment));
         View view =
@@ -882,7 +882,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -902,7 +902,7 @@ public class ManageSyncSettingsTest {
         signinTestRule.waitForSignin(childAccount);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -922,7 +922,7 @@ public class ManageSyncSettingsTest {
         signinTestRule.waitForSignin(childAccount);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        waitForView(withId(R.id.central_account_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -950,7 +950,7 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferences();
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());
-        ViewUtils.waitForVisibleView(withId(R.id.sign_out_button));
+        waitForView(withId(R.id.sign_out_button));
         render(fragment, "bottom_of_account_sync_settings_page");
     }
 
@@ -962,7 +962,7 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferences();
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());
-        ViewUtils.waitForVisibleView(withId(R.id.sign_out_button));
+        waitForView(withId(R.id.sign_out_button));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1002,7 +1002,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1042,7 +1042,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1082,7 +1082,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1122,9 +1122,9 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         onView(withText(R.string.batch_upload_card_save_button)).perform(click());
-        ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
+        waitForView(withId(R.id.batch_upload_dialog));
 
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1171,9 +1171,9 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         onView(withText(R.string.batch_upload_card_save_button)).perform(click());
-        ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
+        waitForView(withId(R.id.batch_upload_dialog));
 
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1219,9 +1219,9 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
         onView(withText(R.string.batch_upload_card_save_button)).perform(click());
-        ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
+        waitForView(withId(R.id.batch_upload_dialog));
 
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1383,7 +1383,7 @@ public class ManageSyncSettingsTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
 
         // Focus on the first element that can receive focus in the settings page.
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
@@ -1403,7 +1403,7 @@ public class ManageSyncSettingsTest {
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
 
         startManageSyncPreferences();
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
 
         // Focus on the first element that can receive focus in the settings page.
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
@@ -1422,7 +1422,7 @@ public class ManageSyncSettingsTest {
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
 
         startManageSyncPreferences();
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
 
         // Mimic the user tapping on the error card's button.
         onView(withId(R.id.signin_settings_card_button)).perform(click());
@@ -1451,7 +1451,7 @@ public class ManageSyncSettingsTest {
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
 
         startManageSyncPreferences();
-        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        waitForView(withId(R.id.signin_settings_card));
 
         // Mimic the user tapping on the error card's button.
         onView(withId(R.id.signin_settings_card_button)).perform(click());
@@ -1479,7 +1479,7 @@ public class ManageSyncSettingsTest {
         CriteriaHelper.pollUiThread(() -> syncService.isPassphraseRequiredForPreferredDataTypes());
 
         ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        waitForView(is(fragment.getView()));
         IdentityErrorCardPreference preference =
                 (IdentityErrorCardPreference)
                         fragment.findPreference(
@@ -1963,11 +1963,11 @@ public class ManageSyncSettingsTest {
     public void testSettingsInTabThemeChange_signOut() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSyncTestRule.loadUrl("chrome-native://settings/account");
-        onViewWaiting(withText(R.string.account_section_header)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.account_section_header));
 
         recreateActivityForThemeChange();
 
-        onViewWaiting(allOf(withText(R.string.account_section_header), isDisplayed()));
+        waitForView(withText(R.string.account_section_header));
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
