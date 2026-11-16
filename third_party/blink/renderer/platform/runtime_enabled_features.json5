@@ -1882,7 +1882,7 @@
     {
       // https://drafts.csswg.org/css-values-5/#ident
       name: "CSSIdentFunction",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://chromestatus.com/feature/5078177326170112
