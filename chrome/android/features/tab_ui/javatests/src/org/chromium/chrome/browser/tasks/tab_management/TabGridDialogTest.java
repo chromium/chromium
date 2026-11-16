@@ -1932,7 +1932,6 @@ public class TabGridDialogTest {
         if (incognitoInNewWindow) {
             // Closing the last tab of the incognito window closes the window, which destroys the
             // dialog with it. The regular window and its page are left as they were.
-            tabSwitcher.getActivityElement().expectActivityDestroyed();
             tabSwitcher.runTo(TabUiTestHelper::closeFirstTabInDialog).reachLastStop();
             return regularPage;
         } else {

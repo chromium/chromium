@@ -109,8 +109,6 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
      * this Activity.
      */
     public void expectActivityDestroyed() {
-        assert mExitCondition == null
-                : "Already set an exit condition: " + mExitCondition.getDescription();
         replaceExitCondition(new ActivityDestroyedCondition());
     }
 

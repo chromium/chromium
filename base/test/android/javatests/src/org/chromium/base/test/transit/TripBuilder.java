@@ -348,7 +348,10 @@ public class TripBuilder {
         return destination;
     }
 
-    /** Exit |lastStation|. */
+    /**
+     * Exit |lastStation| without entering another Station, expecting its Activity (if any) to be
+     * destroyed.
+     */
     @CheckReturnValue
     public TripBuilder reachLastStopAnd(Station<?> lastStation) {
         assert mOriginStation == null : "Origin already set to " + mOriginStation.getName();
@@ -356,11 +359,18 @@ public class TripBuilder {
                 : "Last stop should not have a destination Station "
                         + mDestinationStation.getName();
         lastStation.assertInPhase(Phase.ACTIVE);
+        ActivityElement<?> activityElement = lastStation.getActivityElement();
+        if (activityElement != null) {
+            activityElement.expectActivityDestroyed();
+        }
         mOriginStation = lastStation;
         return this;
     }
 
-    /** Execute the transition synchronously, exiting the context Station and not entering any. */
+    /**
+     * Execute the transition synchronously, exiting the context Station without entering another
+     * Station and expecting its Activity (if any) to be destroyed.
+     */
     public void reachLastStop() {
         assert mContextStation != null : "Context Station not set";
         reachLastStopAnd(mContextStation).complete();

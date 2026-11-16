@@ -460,7 +460,6 @@ public class PopupMultiwindowPTTest {
         final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
         openPopupAndRefocusOpener(page, page.clickOpenPopup(), popup);
 
-        popup.getActivityElement().expectActivityDestroyed();
         page.clickClosePopup().withContext(popup).reachLastStop();
 
         TransitAsserts.assertFinalDestinations(page);

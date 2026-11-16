@@ -17,12 +17,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.transit.ConditionalState.Phase;
+import org.chromium.base.test.transit.PublicTransitUnitTestRule.AsyncTransition;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for parent and child {@link ConditionalState}s. */
@@ -32,6 +36,8 @@ public class ParentStateUnitTest {
 
     /** Whether the Views of the test Facilities are shown. */
     private final AtomicBoolean mShown = new AtomicBoolean(true);
+
+    private @Nullable ActivityController<Activity> mActivityController;
 
     private static class TestStation extends Station<Activity> {
         TestStation() {
@@ -49,10 +55,18 @@ public class ParentStateUnitTest {
     }
 
     private TestStation hopOn(Facility<?>... facilities) throws Throwable {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivityController = Robolectric.buildActivity(Activity.class).setup();
+        Activity activity = mActivityController.get();
         TestStation station = new TestStation();
         mTransitRule.runTransition(() -> TrafficControl.hopOnAt(activity, station, facilities));
         return station;
+    }
+
+    private void reachLastStopDestroyingActivity(Station<?> station) throws Throwable {
+        AsyncTransition transition =
+                mTransitRule.startTransition(() -> station.noopTo().reachLastStop());
+        Objects.requireNonNull(mActivityController).pause().stop().destroy();
+        transition.join();
     }
 
     @Test
@@ -87,10 +101,32 @@ public class ParentStateUnitTest {
         TestStation station = hopOn(facility);
 
         mShown.set(false);
-        mTransitRule.runTransition(() -> station.noopTo().reachLastStop());
+        reachLastStopDestroyingActivity(station);
 
         assertEquals(Phase.FINISHED, station.getPhase());
         assertEquals(Phase.FINISHED, facility.getPhase());
+    }
+
+    @Test
+    public void testReachLastStop_activityNotDestroyed_throws() throws Throwable {
+        TestStation station = hopOn();
+
+        TravelException e =
+                mTransitRule.runTransitionExpectingThrow(
+                        TravelException.class,
+                        () -> station.noopTo().withTimeout(100).reachLastStop());
+        assertTrue(e.getMessage(), e.getMessage().contains("Activity is DESTROYED: Activity"));
+    }
+
+    @Test
+    public void testReachLastStop_alreadyExpectingActivityDestroyed_isIdempotent()
+            throws Throwable {
+        TestStation station = hopOn();
+        Objects.requireNonNull(station.getActivityElement()).expectActivityDestroyed();
+
+        reachLastStopDestroyingActivity(station);
+
+        assertEquals(Phase.FINISHED, station.getPhase());
     }
 
     @Test
@@ -102,7 +138,7 @@ public class ParentStateUnitTest {
 
         // The finished Facility is no longer a child, so it is not exited again with the Station.
         assertTrue(station.getActiveChildren().isEmpty());
-        mTransitRule.runTransition(() -> station.noopTo().reachLastStop());
+        reachLastStopDestroyingActivity(station);
 
         assertEquals(Phase.FINISHED, station.getPhase());
     }
