@@ -267,10 +267,12 @@ export class
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    if (changedProperties.has('result') ||
+    if (changedProperties.has('input') || changedProperties.has('result') ||
         changedProperties.has('showDropdown')) {
       // Fires `show-suggestion-activity-link`; the wrapper owns the link UI.
-      this.shouldShowSuggestionActivityLink();
+      this.fire(
+          'show-suggestion-activity-link',
+          this.shouldShowSuggestionActivityLink());
     }
   }
 

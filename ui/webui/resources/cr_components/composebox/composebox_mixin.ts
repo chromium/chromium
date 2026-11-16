@@ -1589,7 +1589,6 @@ export const ComposeboxEmbedderMixin =
           // activity, so hide it as soon as the user starts typing.
           const showActivityLink = !this.input && this.result &&
               this.showDropdown && this.result.showAimActivityLink;
-          this.fire('show-suggestion-activity-link', showActivityLink);
           return !!showActivityLink;
         }
 
