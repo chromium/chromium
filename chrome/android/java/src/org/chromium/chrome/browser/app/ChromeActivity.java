@@ -56,6 +56,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.PowerMonitor;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.memory.MemoryPurgeManager;
@@ -1891,6 +1892,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onProvideAssistContent(AssistContent outContent) {
+        if (!ThreadUtils.runningOnUiThread()) {
+            // It is suspected that with some vendor modification, this can be called on the input
+            // connection thread, which in chrome is not the UI thread. If it is the case, then it
+            // should be safe to simply block on the UI thread. See crbug.com/577164526 for details.
+            ThreadUtils.runOnUiThreadBlocking(() -> onProvideAssistContent(outContent));
+            return;
+        }
         Tab tab = getActivityTab();
         // No information is provided in incognito mode and overview mode.
         if (tab != null && !tab.isOffTheRecord() && !isInOverviewMode()) {
