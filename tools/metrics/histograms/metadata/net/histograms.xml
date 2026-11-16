@@ -7972,6 +7972,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.StartupLocalAddressCheck"
+    enum="QuicStartupLocalAddressCheck" expires_after="2027-06-01">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Recorded at most once per QuicSessionPool lifetime when the first
+    default-network UDP socket is configured. Reports whether
+    HttpServerProperties had a persisted local IP address from a previous
+    session where QUIC worked, and if so, whether the new socket's local address
+    matched it (allowing 0-RTT to proceed without waiting for a fresh handshake
+    confirmation).
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.StatelessResetAfterProbingCancelled"
     enum="BooleanReceived" expires_after="2025-07-01">
   <owner>renjietang@chromium.org</owner>

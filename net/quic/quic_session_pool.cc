@@ -1346,18 +1346,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
   }
 
-  socket->GetLocalAddress(&local_address_);
-  if (need_to_check_persisted_supports_quic_) {
-    need_to_check_persisted_supports_quic_ = false;
-    if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
-            local_address_.address())) {
-      has_quic_ever_worked_on_current_network_ = true;
-      // Clear the persisted IP address, in case the network no longer supports
-      // QUIC so the next restart will require confirmation. It will be
-      // re-persisted when the first job completes successfully.
-      http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
-    }
-  }
+  CheckPersistedSupportsQuic(socket);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -1479,20 +1468,40 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
   }
 
-  socket->GetLocalAddress(&local_address_);
-  if (need_to_check_persisted_supports_quic_) {
-    need_to_check_persisted_supports_quic_ = false;
+  CheckPersistedSupportsQuic(socket);
+
+  return OK;
+}
+
+void QuicSessionPool::CheckPersistedSupportsQuic(DatagramClientSocket* socket) {
+  int rv = socket->GetLocalAddress(&local_address_);
+  // GetLocalAddress() can fail in broken environments, but should never fail on
+  // try bots or on developers' machines.
+  if (rv != OK) {
+    LOG(DFATAL) << "GetLocalAddress failed with " << ErrorToString(rv);
+    // Fallthrough to preserve legacy behavior.
+  }
+  if (!need_to_check_persisted_supports_quic_) {
+    return;
+  }
+  need_to_check_persisted_supports_quic_ = false;
+  StartupLocalAddressCheck check_result =
+      StartupLocalAddressCheck::kNoPersistedAddress;
+  if (http_server_properties_->HasLastLocalAddressWhenQuicWorked()) {
     if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
             local_address_.address())) {
+      check_result = StartupLocalAddressCheck::kMatch;
       has_quic_ever_worked_on_current_network_ = true;
       // Clear the persisted IP address, in case the network no longer supports
       // QUIC so the next restart will require confirmation. It will be
       // re-persisted when the first job completes successfully.
       http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+    } else {
+      check_result = StartupLocalAddressCheck::kMismatch;
     }
   }
-
-  return OK;
+  base::UmaHistogramEnumeration("Net.QuicSession.StartupLocalAddressCheck",
+                                check_result);
 }
 
 handles::NetworkHandle QuicSessionPool::FindAlternateNetwork(

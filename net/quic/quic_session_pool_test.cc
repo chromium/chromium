@@ -161,6 +161,9 @@ namespace {
 
 using ::testing::ElementsAre;
 
+constexpr char kStartupLocalAddressCheckHistogram[] =
+    "Net.QuicSession.StartupLocalAddressCheck";
+
 // Run QuicSessionPoolTest instances with all values of version.
 struct TestParams {
   quic::ParsedQuicVersion version;
@@ -1325,6 +1328,105 @@ TEST_P(QuicSessionPoolTest, DontRequireConfirmationFromSameIP) {
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
+}
+
+TEST_P(QuicSessionPoolTest,
+       StartupLocalAddressCheckHistogramNoPersistedAddress) {
+  host_resolver_->rules()->AddRule(kServer2HostName, "127.0.0.2");
+  base::HistogramTester histogram_tester;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kNoPersistedAddress, 1);
+
+  // Creating a second session on the same pool must not emit again.
+  QuicTestPacketMaker client_maker2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kServer2HostName, quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/true);
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(client_maker2, 1));
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = url::SchemeHostPort(
+      url::kHttpsScheme, kServer2HostName, kDefaultServerPort);
+  builder2.url = GURL(kServer2Url);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  histogram_tester.ExpectTotalCount(kStartupLocalAddressCheckHistogram, 1);
+
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMatch) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+  // 192.0.2.33 is MockUDPClientSocket's default local IP, so it matches.
+  http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+      IPAddress(192, 0, 2, 33));
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kMatch, 1);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMismatch) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+  http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+      IPAddress(192, 0, 2, 99));
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kMismatch, 1);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, CachedInitialRtt) {

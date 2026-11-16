@@ -3466,6 +3466,16 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/quic/quic_socket_config_step.h:QuicSocketConfigStep) -->
 
+<!-- LINT.IfChange(QuicStartupLocalAddressCheck) -->
+
+<enum name="QuicStartupLocalAddressCheck">
+  <int value="0" label="No persisted address"/>
+  <int value="1" label="Match"/>
+  <int value="2" label="Mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.h:QuicStartupLocalAddressCheck) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>

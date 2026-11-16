@@ -350,6 +350,17 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       public CertVerifier::Observer,
       public SSLConfigService::Observer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(QuicStartupLocalAddressCheck)
+  enum class StartupLocalAddressCheck {
+    kNoPersistedAddress = 0,
+    kMatch = 1,
+    kMismatch = 2,
+    kMaxValue = kMismatch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicStartupLocalAddressCheck)
+
   QuicSessionPool(
       NetLog* net_log,
       HostResolver* host_resolver,
@@ -917,6 +928,11 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   void CheckQuicSessionKeyMismatch(const QuicSessionKey& session_key,
                                    url::SchemeHostPort destination) const;
+
+  // Updates `local_address_` from `socket`. For the first socket configured
+  // after startup, also checks whether QUIC worked on this local address in a
+  // previous session.
+  void CheckPersistedSupportsQuic(DatagramClientSocket* socket);
 
   // Whether QUIC is known to have ever worked on current network. This is true
   // when QUIC is expected to work in general, rather than whether QUIC was
