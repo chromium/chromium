@@ -269,7 +269,7 @@ std::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
     const std::string html = base::StrCat(
         {"<img src=\"data:image/png;base64,", encoded_data, "\"/>"});
     std::u16string html_in_u16;
-    if (base::UTF8ToUTF16(html.c_str(), html.size(), &html_in_u16)) {
+    if (base::UTF8ToUTF16(html, &html_in_u16)) {
       return html_in_u16;
     }
   }

@@ -191,7 +191,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
     std::u16string query;
     const auto& text = GetQueryString(info);
-    if (text.empty() || !base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
+    if (text.empty() || !base::UTF8ToUTF16(text, &query)) {
       query.clear();
     }
     GetViewAccessibility().SetName(

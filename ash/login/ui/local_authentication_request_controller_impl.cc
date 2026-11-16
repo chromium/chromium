@@ -314,8 +314,7 @@ void LocalAuthenticationWithPinControllerImpl::OnPasswordSubmit(
   CHECK_EQ(state_, LocalAuthenticationWithPinState::kInitialized);
 
   std::string password_utf8;
-  bool conversion_succeeded =
-      base::UTF16ToUTF8(password.data(), password.length(), &password_utf8);
+  bool conversion_succeeded = base::UTF16ToUTF8(password, &password_utf8);
 
   if (!conversion_succeeded) {
     contents_view_->SetErrorTitle(
@@ -346,8 +345,7 @@ void LocalAuthenticationWithPinControllerImpl::OnPinSubmit(
   CHECK_EQ(state_, LocalAuthenticationWithPinState::kInitialized);
 
   std::string pin_utf8;
-  bool conversion_succeeded =
-      base::UTF16ToUTF8(pin.data(), pin.length(), &pin_utf8);
+  bool conversion_succeeded = base::UTF16ToUTF8(pin, &pin_utf8);
 
   if (!conversion_succeeded) {
     contents_view_->SetErrorTitle(
