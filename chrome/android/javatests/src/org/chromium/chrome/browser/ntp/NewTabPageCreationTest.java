@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -32,10 +30,10 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for creating a tab with NewTabPage. */
@@ -92,16 +90,11 @@ public class NewTabPageCreationTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
-    public void testCreateNTPInExistingTab() throws Exception {
-        String testUrl = mActivityTestRule.getTestServer().getURL(TEST_URL);
-        mActivityTestRule.loadUrlInNewTab(testUrl);
+    public void testCreateNTPInExistingTab() {
+        WebPageStation page = mActivityTestRule.startOnTestServerUrl(TEST_URL);
 
-        Tab tab = mActivityTestRule.getActivityTab();
-        assertNull(tab.getNativePage());
-        assertEquals(tab.getUrl().getSpec(), testUrl);
-
-        new TabLoadObserver(tab).fullyLoadUrl(getOriginalNativeNtpUrl());
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        page.loadPageProgrammatically(
+                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newNativeNtpBuilder());
 
         verify(mTestState, never()).didAddTab();
         verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));
