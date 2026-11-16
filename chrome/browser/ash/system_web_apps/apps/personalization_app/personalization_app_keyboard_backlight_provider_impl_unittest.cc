@@ -12,15 +12,18 @@
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id_literal.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -32,7 +35,7 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr AccountId::Literal account_id =
+constexpr AccountId::Literal kAccountId =
     AccountId::Literal::FromUserEmailGaiaId(kFakeTestEmail,
                                             GaiaId::Literal("1111"));
 
@@ -81,10 +84,7 @@ class TestKeyboardBacklightObserver
 class PersonalizationAppKeyboardBacklightProviderImplTest
     : public ChromeAshTestBase {
  public:
-  PersonalizationAppKeyboardBacklightProviderImplTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
-  }
+  PersonalizationAppKeyboardBacklightProviderImplTest() = default;
   PersonalizationAppKeyboardBacklightProviderImplTest(
       const PersonalizationAppKeyboardBacklightProviderImplTest&) = delete;
   PersonalizationAppKeyboardBacklightProviderImplTest& operator=(
@@ -92,19 +92,33 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   ~PersonalizationAppKeyboardBacklightProviderImplTest() override = default;
 
  protected:
-  // testing::Test:
+  // ChromeAshTestBase:
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    init_params.users.clear();
+  }
+
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
     ASSERT_TRUE(profile_manager_.SetUp());
-    ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
-                                            account_id);
-    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
-
-    ash::FakeChromeUserManager* user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_.profile_manager(),
             user_manager::UserManager::Get());
-    user_manager->AddUser(account_id);
+
+    ASSERT_TRUE(
+        ash_test_helper()->user_session_test_environment().AddRegularUser(
+            kAccountId));
+    ash_test_helper()->user_session_test_environment().LogIn(kAccountId);
+    SimulateUserLogin(
+        ash::LoginInfo{.account_id = kAccountId,
+                       .display_email = kFakeTestEmail,
+                       .user_type = user_manager::UserType::kRegular});
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                            kAccountId);
+    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -124,8 +138,14 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   }
 
   void TearDown() override {
-    keyboard_backlight_color_controller_.reset();
+    keyboard_backlight_provider_remote_.reset();
     keyboard_backlight_provider_.reset();
+    keyboard_backlight_color_controller_.reset();
+    web_ui_.set_web_contents(nullptr);
+    web_contents_.reset();
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+    profile_user_manager_controller_.reset();
     ChromeAshTestBase::TearDown();
   }
 
@@ -163,22 +183,22 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   }
 
  private:
-  user_manager::ScopedUserManager scoped_user_manager_;
-  TestingProfileManager profile_manager_;
-  content::TestWebUI web_ui_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile> profile_;
+  content::TestWebUI web_ui_;
+  std::unique_ptr<PersonalizationAppKeyboardBacklightProviderImpl>
+      keyboard_backlight_provider_;
   std::unique_ptr<KeyboardBacklightColorController>
       keyboard_backlight_color_controller_;
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightProvider>
       keyboard_backlight_provider_remote_;
-  std::unique_ptr<PersonalizationAppKeyboardBacklightProviderImpl>
-      keyboard_backlight_provider_;
   TestKeyboardBacklightObserver test_keyboard_backlight_observer_;
 };
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest, SetBacklightColor) {
-  SimulateUserLogin(account_id);
   SetKeyboardBacklightObserver();
   keyboard_backlight_provider_remote()->FlushForTesting();
   keyboard_backlight_provider()->SetBacklightColor(
@@ -192,7 +212,6 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest, SetBacklightColor) {
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
        SetBacklightZoneColor) {
-  SimulateUserLogin(account_id);
   SetKeyboardBacklightObserver();
   set_rgb_capability(rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed);
   keyboard_backlight_provider_remote()->FlushForTesting();
@@ -214,7 +233,6 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
        ObserveWallpaperColor) {
-  SimulateUserLogin(account_id);
   SetKeyboardBacklightObserver();
   keyboard_backlight_provider_remote()->FlushForTesting();
   keyboard_backlight_provider()->OnWallpaperColorsChanged();

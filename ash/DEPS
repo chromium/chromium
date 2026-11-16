@@ -224,6 +224,12 @@ specific_include_rules = {
   "sunfish_unittest\\.cc": [
     "+components/session_manager/core/session_manager.h",
   ],
+  # See the TODO(crbug.com/546860700) comment on capture_mode_controller.cc
+  # above.
+  "unified_keyboard_brightness_slider_controller\\.cc": [
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
   "window_restore_util\\.cc": [
     # The active user's AccountId comes from SessionManager, per the migration
     # away from the historical SessionController.

@@ -13,7 +13,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
@@ -25,6 +24,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_utils.h"
@@ -50,11 +52,15 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
                           IDS_ASH_STATUS_TRAY_BRIGHTNESS,
                           /*is_togglable=*/false),
         model_(model) {
-    if (Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    if (Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported() &&
+        active_session) {
       if (button()) {
         button()->SetBackgroundColor(keyboardBrightnessIconBackgroundColor);
       }
-      AddChildView(CreateKeyboardBacklightColorButton());
+      AddChildView(
+          CreateKeyboardBacklightColorButton(active_session->account_id()));
     }
     model_->AddObserver(this);
     OnKeyboardBrightnessChanged(
@@ -76,7 +82,8 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
   }
 
  private:
-  std::unique_ptr<views::ImageButton> CreateKeyboardBacklightColorButton() {
+  std::unique_ptr<views::ImageButton> CreateKeyboardBacklightColorButton(
+      const AccountId& account_id) {
     auto button = std::make_unique<IconButton>(
         base::BindRepeating(
             &UnifiedKeyboardBrightnessView::OnKeyboardBacklightColorIconPressed,
@@ -86,7 +93,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
 
     personalization_app::mojom::BacklightColor backlight_color =
         Shell::Get()->keyboard_backlight_color_controller()->GetBacklightColor(
-            Shell::Get()->session_controller()->GetActiveAccountId());
+            account_id);
     if (backlight_color ==
         personalization_app::mojom::BacklightColor::kRainbow) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
