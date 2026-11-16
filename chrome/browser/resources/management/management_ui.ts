@@ -312,8 +312,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
    */
   protected showThreatProtectionInfo_(): boolean {
     return !!this.threatProtectionInfo_ &&
-        (this.threatProtectionInfo_.info.length > 0 ||
-         !!this.threatProtectionInfo_.showSecureGatewayDisclosure);
+        this.threatProtectionInfo_.info.length > 0;
   }
 
   // <if expr="is_chromeos">

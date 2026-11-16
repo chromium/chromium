@@ -57,7 +57,6 @@ interface ThreatProtectionPermission {
 export interface ThreatProtectionInfo {
   info: ThreatProtectionPermission[];
   description: string;
-  showSecureGatewayDisclosure?: boolean;
 }
 
 // <if expr="is_chromeos">

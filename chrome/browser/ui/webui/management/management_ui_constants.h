@@ -79,6 +79,8 @@ extern const char kManagementOnPrintEvent[];
 extern const char kManagementOnPrintVisibleData[];
 extern const char kManagementOnPageVisitedEvent[];
 extern const char kManagementOnPageVisitedVisibleData[];
+extern const char kManagementOnSecureGatewayEvent[];
+extern const char kManagementOnSecureGatewayVisibleData[];
 extern const char kManagementOnExtensionTelemetryEvent[];
 extern const char kManagementOnExtensionTelemetryVisibleData[];
 

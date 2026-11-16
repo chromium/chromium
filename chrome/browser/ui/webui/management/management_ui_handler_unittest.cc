@@ -2066,35 +2066,47 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo_SecureGateway) {
   ResetTestConfig();
   ASSERT_TRUE(SetUpProfileAndHandler());
 
-  // Initially secure gateway disclosure is false.
-  auto info = handler_.GetThreatProtectionInfo(profile_);
-  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+  // Initially Threat Protection info is empty.
+  base::DictValue info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_TRUE(info.FindList("info")->empty());
+  EXPECT_FALSE(info.contains("showSecureGatewayDisclosure"));
 
-  // When kProxyProvisioningDomains is set and the feature is enabled by
-  // default, showSecureGatewayDisclosure is true.
   base::ListValue domains;
   domains.Append("example.com");
   profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
                                 std::move(domains));
 
-  info = handler_.GetThreatProtectionInfo(profile_);
-  EXPECT_TRUE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+#if BUILDFLAG(IS_ANDROID)
+  // When `kProxyProvisioningDomains` is set and `kEnableDynamicRouteFetching`
+  // is enabled by default on Android, the Secure Gateway connector is appended
+  // to `info`.
+  base::ListValue expected_info;
+  expected_info.Append(
+      base::DictValue()
+          .Set("title", kManagementOnSecureGatewayEvent)
+          .Set("permission", kManagementOnSecureGatewayVisibleData));
 
-  // When the feature is disabled, showSecureGatewayDisclosure is false even
-  // if kProxyProvisioningDomains is set.
+  info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_EQ(expected_info, *info.FindList("info"));
+
+  // When the feature is disabled, `info` is empty even if
+  // `kProxyProvisioningDomains` is set.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       enterprise_net::kEnableDynamicRouteFetching);
 
   info = handler_.GetThreatProtectionInfo(profile_);
-  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
-}
+  EXPECT_TRUE(info.FindList("info")->empty());
+#else
+  // Secure Gateway disclosure is not yet enabled on Desktop/ChromeOS.
+  info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_TRUE(info.FindList("info")->empty());
 #endif  // BUILDFLAG(IS_ANDROID)
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
