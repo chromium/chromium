@@ -298,7 +298,7 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kVerticalTabStripCollapsedCustomEventId);
 // enabled, you can (temporarily) alias it here. Please put a TODO to eliminate
 // the old name once the feature is shipped.
 
-// TODO(https://crbug.com/579025166): Once the Organizer Panel is shipped, this
+// TODO(https://crbug.com/586517298): Once the Organizer Panel is shipped, this
 // surface won't exist and this can be removed.
 inline constexpr ui::ElementIdentifier kTabSearchBubbleElementId =
     kOrganizerPanelElementId;
