@@ -34,14 +34,12 @@ void BrowserAutofillManagerTestDelegate::OnAutofillManagerStateChanged(
   }
 }
 
-void BrowserAutofillManagerTestDelegate::OnFillOrPreviewForm(
+void BrowserAutofillManagerTestDelegate::OnFillOrPreviewFormSentToRenderer(
     AutofillManager& manager,
     FormGlobalId form_id,
     FieldGlobalId trigger_field_id,
     mojom::ActionPersistence action_persistence,
-    const base::flat_set<FieldGlobalId>& filled_field_ids,
-    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&,
-    const FillingPayload&) {
+    const base::flat_set<FieldGlobalId>& sent_field_ids) {
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill:
       DidFillFormData();

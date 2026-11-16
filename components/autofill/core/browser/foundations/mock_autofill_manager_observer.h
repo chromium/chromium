@@ -154,6 +154,15 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
       (override));
 
   MOCK_METHOD(void,
+              OnFillOrPreviewFormSentToRenderer,
+              (AutofillManager&,
+               FormGlobalId,
+               FieldGlobalId,
+               mojom::ActionPersistence,
+               (const base::flat_set<FieldGlobalId>&)),
+              (override));
+
+  MOCK_METHOD(void,
               OnBeforeFormSubmitted,
               (AutofillManager&, const FormData&),
               (override));

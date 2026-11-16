@@ -3048,6 +3048,15 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       filling_payload);
 }
 
+void BrowserAutofillManager::OnFillOrPreviewFormSentToRenderer(
+    mojom::ActionPersistence action_persistence,
+    FormGlobalId form_id,
+    FieldGlobalId trigger_field_id,
+    const base::flat_set<FieldGlobalId>& sent_field_ids) {
+  NotifyObservers(&Observer::OnFillOrPreviewFormSentToRenderer, form_id,
+                  trigger_field_id, action_persistence, sent_field_ids);
+}
+
 void BrowserAutofillManager::OnDidFillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     std::optional<FieldType> field_type_used) {

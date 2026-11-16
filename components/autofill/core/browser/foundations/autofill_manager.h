@@ -240,19 +240,25 @@ class AutofillManager
     virtual void OnSuggestionsHidden(AutofillManager& manager,
                                      SuggestionHidingReason reason) {}
 
-    // Fired when an autofill of `filling_payload` is previewed or filled.
-    // This is not fired for single-field operations (see
+    // Fired when an autofill of `filling_payload` was previewed or filled from
+    // the browser's perspective: the values were sent to the renderer (see
+    // OnFillOrPreviewFormSentToRenderer()) and, for fills
+    // (`mojom::ActionPersistence::kFill`), the browser updated its cache and
+    // undo history. When OnFillOrPreviewForm() is fired, the renderer may not
+    // have previewed or filled the fields yet. In particular, for previews,
+    // OnFillOrPreviewForm() is fired synchronously right after the values were
+    // sent to the renderer; for fills, OnFillOrPreviewForm() may be fired in a
+    // later task.
+    // OnFillOrPreviewForm() is not fired for single-field operations (see
     // OnFillOrPreviewField()). `filled_field_ids` represents the IDs of the
     // fields that were sent to the renderer to be filled and are still cached:
     // each corresponding `AutofillField` contains the field type information.
     // `trigger_field_id` is the ID of the field that initiated/triggered the
-    // autofill action. For fills (`mojom::ActionPersistence::kFill`), this is
-    // not fired if the form or `trigger_field_id` is no longer cached when
-    // post-fill bookkeeping runs.
+    // autofill action. For fills, OnFillOrPreviewForm() is not fired if the
+    // form or `trigger_field_id` is no longer cached when the post-fill
+    // bookkeeping runs.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidAutofillForm(), which is fired by the renderer.
-    // TODO(crbug.com/40227071): Consider removing `action_persistence` as the
-    // preview signal is only used for testing.
     virtual void OnFillOrPreviewForm(
         AutofillManager& manager,
         FormGlobalId form_id,
@@ -262,6 +268,29 @@ class AutofillManager
         const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
             skip_reasons,
         const FillingPayload& filling_payload) {}
+
+    // Fired when the values of a form fill or preview have been sent to the
+    // renderer. `sent_field_ids` are the IDs of the fields whose values were
+    // sent. When OnFillOrPreviewFormSentToRenderer() is fired, the renderer may
+    // not have filled or previewed the fields yet, and may not fill or preview
+    // some of them at all (e.g., if a field was removed or changed in the
+    // meantime).
+    // OnFillOrPreviewFormSentToRenderer() is fired synchronously when the fill
+    // or preview is initiated: for fills, before the post-fill bookkeeping
+    // (cache update, undo history, OnFillOrPreviewForm()), which may run in a
+    // later task; for previews, right before OnFillOrPreviewForm(). Unlike
+    // OnAfterDidAutofillForm(), which the renderer fires after filling,
+    // OnFillOrPreviewFormSentToRenderer() is therefore ordered consistently
+    // with other browser-side events such as OnSuggestionsHidden(). Observers
+    // must not synchronously modify the form cache.
+    // TODO(crbug.com/40227071): Consider removing `action_persistence` as the
+    // preview signal is only used for testing.
+    virtual void OnFillOrPreviewFormSentToRenderer(
+        AutofillManager& manager,
+        FormGlobalId form_id,
+        FieldGlobalId trigger_field_id,
+        mojom::ActionPersistence action_persistence,
+        const base::flat_set<FieldGlobalId>& sent_field_ids) {}
 
     // Fired when a single field is previewed or filled.
     // This is not fired for multi-field form fills (which trigger

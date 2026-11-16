@@ -293,6 +293,15 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason);
 
+  // Notifies observers that the values of a form fill or preview of `form_id`
+  // have been sent to the renderer. See
+  // `Observer::OnFillOrPreviewFormSentToRenderer()`.
+  void OnFillOrPreviewFormSentToRenderer(
+      mojom::ActionPersistence action_persistence,
+      FormGlobalId form_id,
+      FieldGlobalId trigger_field_id,
+      const base::flat_set<FieldGlobalId>& sent_field_ids);
+
   // Handles post-filling logic of `field_type_used`, like logging field
   // metrics.
   void OnDidFillOrPreviewField(mojom::ActionPersistence action_persistence,

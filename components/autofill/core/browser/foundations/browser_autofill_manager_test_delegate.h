@@ -21,10 +21,14 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
 
   void Observe(AutofillManager& manager);
 
-  // Called when a form is previewed with Autofill suggestions.
+  // Called when a form is previewed with Autofill suggestions, i.e., when the
+  // previewed values were sent to the renderer.
   virtual void DidPreviewFormData() = 0;
 
-  // Called when a form is filled with Autofill suggestions.
+  // Called when a form is filled with Autofill suggestions, i.e., when the
+  // filled values were sent to the renderer. This happens before the
+  // browser-side post-fill bookkeeping (e.g., cache update, undo history,
+  // metrics), which may run in a later task.
   virtual void DidFillFormData() = 0;
 
   // Called when a popup with Autofill suggestions is shown.
@@ -40,15 +44,17 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
 
-  void OnFillOrPreviewForm(
+  // Uses `OnFillOrPreviewFormSentToRenderer()` rather than
+  // `OnFillOrPreviewForm()` because the latter may be fired asynchronously
+  // (see `features::kAutofillPostTaskAfterFillOrPreviewForm`), whereas tests
+  // expect the fill and preview events in the order in which they happened
+  // relative to, e.g., hiding the suggestions.
+  void OnFillOrPreviewFormSentToRenderer(
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
-      const base::flat_set<FieldGlobalId>& filled_field_ids,
-      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-          skip_reasons,
-      const FillingPayload& filling_payload) override;
+      const base::flat_set<FieldGlobalId>& sent_field_ids) override;
 
   void OnSuggestionsShown(AutofillManager& manager,
                           base::span<const Suggestion> suggestions) override;

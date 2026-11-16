@@ -100,6 +100,7 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
 constexpr char kAppLocale[] = "en-US";
@@ -3838,6 +3839,9 @@ class FormFillerPostFillTest : public base::test::WithFeatureOverride,
   FormFillerPostFillTest()
       : base::test::WithFeatureOverride(
             features::kAutofillPostTaskAfterFillOrPreviewForm) {}
+
+  // Returns true if the post-fill bookkeeping of fills runs in a separate task.
+  bool IsPostFillAsync() const { return IsParamFeatureEnabled(); }
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormFillerPostFillTest);
@@ -3920,7 +3924,7 @@ TEST_P(FormFillerPostFillTest, FillOrPreviewForm_PostFillBookkeeping) {
   MockFunction<void()> check;
   {
     InSequence s;
-    if (IsParamFeatureEnabled()) {
+    if (IsPostFillAsync()) {
       EXPECT_CALL(check, Call);
       EXPECT_CALL(observer, OnFillOrPreviewForm);
     } else {
@@ -3944,8 +3948,8 @@ TEST_P(FormFillerPostFillTest, FillOrPreviewForm_PostFillBookkeeping) {
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
 
   EXPECT_EQ(test_api(form_filler()).has_pending_post_fill_tasks(),
-            IsParamFeatureEnabled());
-  if (IsParamFeatureEnabled()) {
+            IsPostFillAsync());
+  if (IsPostFillAsync()) {
     // Before the posted task runs, the cache, undo history and observers have
     // not been updated yet, but `last_filling_timestamp` has been set.
     EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
@@ -4544,6 +4548,90 @@ TEST_F(FormFillerAsyncTest, FillOrPreviewForm_AsyncSecondFillWhilePending) {
 
   EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile1));
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile1));
+}
+
+// Tests that `Observer::OnFillOrPreviewFormSentToRenderer()` is notified
+// synchronously when the values of a fill are sent to the renderer, before the
+// post-fill bookkeeping, including `Observer::OnFillOrPreviewForm()`, which
+// may run in a separate task.
+TEST_P(FormFillerPostFillTest,
+       FillOrPreviewForm_SentToRendererNotifiedBeforeFillBookkeeping) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
+  const FieldGlobalId first_name_id = form.fields()[0].global_id();
+  const FieldGlobalId last_name_id = form.fields()[1].global_id();
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        observer,
+        OnFillOrPreviewFormSentToRenderer(
+            _, form.global_id(), first_name_id, mojom::ActionPersistence::kFill,
+            UnorderedElementsAre(first_name_id, last_name_id)));
+    if (!IsPostFillAsync()) {
+      EXPECT_CALL(observer, OnFillOrPreviewForm);
+    }
+    EXPECT_CALL(check, Call);
+    if (IsPostFillAsync()) {
+      EXPECT_CALL(observer, OnFillOrPreviewForm);
+    }
+  }
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  check.Call();
+  test_api(form_filler()).RunPendingPostFillTasks();
+}
+
+// Tests that for previews, `Observer::OnFillOrPreviewFormSentToRenderer()` is
+// notified synchronously, right before `Observer::OnFillOrPreviewForm()`.
+TEST_P(FormFillerPostFillTest,
+       FillOrPreviewForm_SentToRendererNotifiedBeforePreviewNotification) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
+  const FieldGlobalId first_name_id = form.fields()[0].global_id();
+  const FieldGlobalId last_name_id = form.fields()[1].global_id();
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(observer,
+                OnFillOrPreviewFormSentToRenderer(
+                    _, form.global_id(), first_name_id,
+                    mojom::ActionPersistence::kPreview,
+                    UnorderedElementsAre(first_name_id, last_name_id)));
+    EXPECT_CALL(observer, OnFillOrPreviewForm(
+                              _, form.global_id(), first_name_id,
+                              mojom::ActionPersistence::kPreview, _, _, _));
+    EXPECT_CALL(check, Call);
+  }
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  check.Call();
 }
 
 }  // namespace autofill

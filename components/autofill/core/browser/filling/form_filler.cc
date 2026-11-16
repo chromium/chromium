@@ -1028,6 +1028,16 @@ void FormFiller::FillOrPreviewForm(
           fill_id, /*supports_refill=*/may_refill_in_future,
           trigger_field.origin(), filled_field_types);
 
+  // Notify observers that the values were sent to the renderer. For previews,
+  // the notification happens before `OnDidFillOrPreviewForm()`. For fills, the
+  // notification happens before the post-fill bookkeeping
+  // (`OnAfterFillForm()`), which may run in a later task. Because `form` and
+  // `trigger_field` are still used after the notification, observers must not
+  // synchronously modify the form cache.
+  manager_->OnFillOrPreviewFormSentToRenderer(
+      action_persistence, form.global_id(), trigger_field.global_id(),
+      safe_filled_field_ids);
+
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     // Previews only notify observers, which happens synchronously.
     std::vector<const AutofillField*> safe_previewed_fields =
