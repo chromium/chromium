@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
@@ -278,9 +277,9 @@ static void JNI_DownloadController_CancelDownload(
   }
 }
 
-static void JNI_DownloadController_DownloadUrl(
-    const std::string& url,
-    content::WebContents* web_contents) {
+// static
+void DownloadController::DownloadUrl(const std::string& url,
+                                     content::WebContents* web_contents) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents) {
@@ -300,10 +299,10 @@ static void JNI_DownloadController_DownloadUrl(
   }
 }
 
-static void JNI_DownloadController_DownloadLocalFile(
-    const std::string& url,
-    const std::u16string& suggested_name,
-    content::WebContents* web_contents) {
+// static
+void DownloadController::DownloadLocalFile(const std::string& url,
+                                           const std::u16string& suggested_name,
+                                           content::WebContents* web_contents) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!web_contents) {
     return;
@@ -340,6 +339,19 @@ static void JNI_DownloadController_DownloadLocalFile(
   dl_params->set_content_initiated(false);
   dl_params->set_download_source(download::DownloadSource::TOOLBAR_MENU);
   download_manager->DownloadUrl(std::move(dl_params));
+}
+
+static void JNI_DownloadController_DownloadUrl(
+    const std::string& url,
+    content::WebContents* web_contents) {
+  DownloadController::DownloadUrl(url, web_contents);
+}
+
+static void JNI_DownloadController_DownloadLocalFile(
+    const std::string& url,
+    const std::u16string& suggested_name,
+    content::WebContents* web_contents) {
+  DownloadController::DownloadLocalFile(url, suggested_name, web_contents);
 }
 
 // static

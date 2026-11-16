@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
+#include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +38,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
-#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,8 +102,10 @@ class DownloadControllerTest : public testing::Test {
   DownloadControllerTest& operator=(const DownloadControllerTest&) = delete;
 
   void SetUp() override {
-    profile_.SetDownloadManagerForTesting(
-        std::make_unique<NiceMock<content::MockDownloadManager>>());
+    auto mock_manager =
+        std::make_unique<NiceMock<content::MockDownloadManager>>();
+    mock_download_manager_ = mock_manager.get();
+    profile_.SetDownloadManagerForTesting(std::move(mock_manager));
     SimpleDownloadManagerCoordinatorFactory::GetForKey(profile_.GetProfileKey())
         ->SetSimpleDownloadManager(download_manager(), true);
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
@@ -112,6 +116,7 @@ class DownloadControllerTest : public testing::Test {
   void TearDown() override {
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(nullptr);
+    mock_download_manager_ = nullptr;
   }
 
   TestMockDownloadItem* item() { return &item_; }
@@ -120,6 +125,14 @@ class DownloadControllerTest : public testing::Test {
   content::MockDownloadManager* download_manager() {
     return static_cast<content::MockDownloadManager*>(
         profile_.GetDownloadManager());
+  }
+
+  NiceMock<content::MockDownloadManager>* mock_download_manager() {
+    return mock_download_manager_;
+  }
+
+  content::WebContents* CreateWebContents() {
+    return test_web_contents_factory_.CreateWebContents(&profile_);
   }
 
   DownloadController* controller() { return &controller_; }
@@ -173,6 +186,9 @@ class DownloadControllerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  content::TestWebContentsFactory test_web_contents_factory_;
+  raw_ptr<NiceMock<content::MockDownloadManager>> mock_download_manager_ =
+      nullptr;
   DownloadController controller_;
   TestMockDownloadItem item_;
 };
@@ -264,7 +280,6 @@ TEST_F(DownloadControllerTest,
   StubDownloadInfoGetters();
   EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
 
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   TestingProfile other_profile;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
       scoped_window = ui::WindowAndroid::CreateForTesting();
@@ -411,7 +426,6 @@ class MockClosingWebContentsDelegate : public content::WebContentsDelegate {
 }  // namespace
 
 TEST_F(DownloadControllerTest, CloseTabIfEmpty_DangerousDownload) {
-  content::RenderViewHostTestEnabler rvh_enabler;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   std::unique_ptr<content::WebContents> other_web_contents =
@@ -475,7 +489,6 @@ TEST_F(DownloadControllerTest,
 }
 
 TEST_F(DownloadControllerTest, CloseTabIfEmpty_ClosesSingleTabInMultiWindow) {
-  content::RenderViewHostTestEnabler rvh_enabler;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   ASSERT_TRUE(web_contents->GetController().IsInitialNavigation());
@@ -553,4 +566,60 @@ TEST_F(DownloadControllerTest, CloseTabIfEmpty_ClosesSingleTabInMultiWindow) {
   TabModelList::RemoveTabModel(&headless_tab_model);
   TabModelList::RemoveTabModel(&empty_tab_model);
   TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(DownloadControllerTest, DownloadUrl_DoesNotForcePrompt) {
+  content::WebContents* web_contents = CreateWebContents();
+
+  EXPECT_CALL(*mock_download_manager(), DownloadUrlMock(_))
+      .WillOnce([](download::DownloadUrlParameters* params) {
+        EXPECT_EQ(params->url(), GURL("https://example.com/test.pdf"));
+        EXPECT_EQ(params->download_source(),
+                  download::DownloadSource::TOOLBAR_MENU);
+        EXPECT_FALSE(params->content_initiated());
+        EXPECT_FALSE(params->prompt());
+      });
+
+  DownloadController::DownloadUrl("https://example.com/test.pdf", web_contents);
+}
+
+TEST_F(DownloadControllerTest, DownloadUrl_NullWebContents_NoOp) {
+  EXPECT_CALL(*mock_download_manager(), DownloadUrlMock(_)).Times(0);
+  DownloadController::DownloadUrl("https://example.com/test.pdf", nullptr);
+}
+
+TEST_F(DownloadControllerTest, DownloadLocalFile_DoesNotForcePrompt) {
+  content::WebContents* web_contents = CreateWebContents();
+
+  const std::string content_url = "content://media/external/downloads/1";
+  const std::u16string suggested_name = u"annotated.pdf";
+
+  EXPECT_CALL(*mock_download_manager(), DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        EXPECT_EQ(params->url(), GURL(content_url));
+        EXPECT_EQ(params->suggested_name(), suggested_name);
+        EXPECT_EQ(params->initiator(), std::nullopt);
+        EXPECT_EQ(params->download_source(),
+                  download::DownloadSource::TOOLBAR_MENU);
+        EXPECT_FALSE(params->content_initiated());
+        EXPECT_FALSE(params->prompt());
+      });
+
+  DownloadController::DownloadLocalFile(content_url, suggested_name,
+                                        web_contents);
+}
+
+TEST_F(DownloadControllerTest, DownloadLocalFile_NonLocalSchemeIgnored) {
+  content::WebContents* web_contents = CreateWebContents();
+
+  EXPECT_CALL(*mock_download_manager(), DownloadUrlMock(_)).Times(0);
+
+  DownloadController::DownloadLocalFile("https://example.com/test.pdf",
+                                        u"test.pdf", web_contents);
+}
+
+TEST_F(DownloadControllerTest, DownloadLocalFile_NullWebContents_NoOp) {
+  EXPECT_CALL(*mock_download_manager(), DownloadUrlMock(_)).Times(0);
+  DownloadController::DownloadLocalFile("content://downloads/1", u"test.pdf",
+                                        nullptr);
 }

@@ -68,6 +68,19 @@ class DownloadController : public DownloadControllerBase {
   // thread.
   static void ScheduleRemoveDownloadItem(download::DownloadItem* download);
 
+  // Triggers downloading the given URL using the standard download pipeline,
+  // prompting for file location when download location customization / Save As
+  // is enabled.
+  static void DownloadUrl(const std::string& url,
+                          content::WebContents* web_contents);
+
+  // Triggers downloading a local file (e.g. content:// or file://) through the
+  // regular download flow, prompting for file location when download location
+  // customization / Save As is enabled.
+  static void DownloadLocalFile(const std::string& url,
+                                const std::u16string& suggested_name,
+                                content::WebContents* web_contents);
+
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired, which permission to update.
   using AcquirePermissionCallback =
