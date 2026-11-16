@@ -16,8 +16,10 @@
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
 
 namespace blink {
 
@@ -73,6 +75,11 @@ class PLATFORM_EXPORT RTCRtpSenderPlatform {
   virtual scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
   CreateEncodedAudioFrameInjector(
       webrtc::TargetBitrateCallback bitrate_callback) = 0;
+
+  // Creates the WebRTC-layer Sframe encryptor for this sender and returns a
+  // handle used for key management, or an error if it could not be created.
+  virtual webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+  CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) = 0;
 };
 
 }  // namespace blink

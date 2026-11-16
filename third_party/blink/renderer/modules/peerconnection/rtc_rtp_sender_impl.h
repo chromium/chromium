@@ -26,9 +26,11 @@
 #include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/rtp_sender_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
 
 namespace blink {
 
@@ -170,6 +172,8 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
   CreateEncodedAudioFrameInjector(
       webrtc::TargetBitrateCallback bitrate_callback) override;
+  webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+  CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) override;
 
   // The ReplaceTrack() that takes a blink::RTCVoidRequest is implemented on
   // top of this, which returns the result in a callback instead. Allows doing

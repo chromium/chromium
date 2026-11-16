@@ -48,6 +48,7 @@
 #include "third_party/webrtc/api/rtp_transceiver_direction.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
 #include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
 
 namespace blink {
@@ -153,6 +154,11 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
   CreateEncodedAudioFrameInjector(
       webrtc::TargetBitrateCallback bitrate_callback) override {
     return nullptr;
+  }
+
+  webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+  CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) override {
+    return webrtc::RTCError::UnsupportedOperation();
   }
 
  private:

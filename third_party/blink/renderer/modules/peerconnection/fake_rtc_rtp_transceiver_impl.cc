@@ -30,6 +30,7 @@
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/rtp_transceiver_direction.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
 
 namespace blink {
 
@@ -144,6 +145,12 @@ FakeRTCRtpSenderImpl::CreateEncodedAudioFrameInjector(
     webrtc::TargetBitrateCallback bitrate_callback) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+FakeRTCRtpSenderImpl::CreateSframeEncryptor(
+    const webrtc::SframeEncryptorInit& init) {
+  return webrtc::RTCError::UnsupportedOperation();
 }
 
 FakeRTCRtpReceiverImpl::FakeRTCRtpReceiverImpl(

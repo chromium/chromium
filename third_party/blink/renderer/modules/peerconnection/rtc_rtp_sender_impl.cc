@@ -42,6 +42,7 @@
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/rtp_sender_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
 
 namespace blink {
 
@@ -362,6 +363,17 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
         webrtc_injector.get());
   }
 
+  webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+  CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) {
+    DCHECK(main_task_runner_->BelongsToCurrentThread());
+    auto sframe_encryptor = webrtc_sender_->CreateSframeEncryptorOrError(init);
+    if (!sframe_encryptor.ok()) {
+      return sframe_encryptor.MoveError();
+    }
+    return scoped_refptr<webrtc::SframeEncryptorInterface>(
+        sframe_encryptor.value().get());
+  }
+
   RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer() const {
     return encoded_audio_transformer_.get();
   }
@@ -602,6 +614,12 @@ RTCRtpSenderImpl::CreateEncodedAudioFrameInjector(
     webrtc::TargetBitrateCallback bitrate_callback) {
   return internal_->CreateEncodedAudioFrameInjector(
       std::move(bitrate_callback));
+}
+
+webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
+RTCRtpSenderImpl::CreateSframeEncryptor(
+    const webrtc::SframeEncryptorInit& init) {
+  return internal_->CreateSframeEncryptor(init);
 }
 
 }  // namespace blink

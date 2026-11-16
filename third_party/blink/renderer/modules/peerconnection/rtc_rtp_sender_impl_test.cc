@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -40,7 +41,11 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/sframe/sframe_encryptor_interface.h"
+#include "third_party/webrtc/api/sframe/sframe_types.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
 #include "third_party/webrtc/api/units/timestamp.h"
@@ -184,6 +189,65 @@ TEST_F(RTCRtpSenderImplTest, CreateSenderWithNullTrack) {
   MediaStreamComponent* null_component = nullptr;
   sender_ = CreateSender(null_component);
   EXPECT_FALSE(sender_->Track());
+}
+
+TEST_F(RTCRtpSenderImplTest, CreateSframeEncryptorForwardsConfiguration) {
+  sender_ = CreateSender(/*component=*/nullptr);
+  RTCRtpSenderPlatform& platform_sender = *sender_;
+  constexpr webrtc::SframeEncryptorInit kConfigurations[] = {
+      {.mode = webrtc::SframeMode::kPerFrame,
+       .cipher_suite = webrtc::SframeCipherSuite::kAes128GcmSha256_128},
+      {.mode = webrtc::SframeMode::kPerPacket,
+       .cipher_suite = webrtc::SframeCipherSuite::kAes256CtrHmacSha512_80},
+  };
+  for (const webrtc::SframeEncryptorInit& init : kConfigurations) {
+    EXPECT_CALL(
+        *mock_webrtc_sender_,
+        CreateSframeEncryptorOrError(testing::AllOf(
+            testing::Field(&webrtc::SframeEncryptorInit::mode, init.mode),
+            testing::Field(&webrtc::SframeEncryptorInit::cipher_suite,
+                           init.cipher_suite))))
+        .WillOnce(Return(webrtc::RTCError::InternalError()));
+
+    // A known native error confirms that the request reaches WebRTC.
+    webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>> result =
+        platform_sender.CreateSframeEncryptor(init);
+    ASSERT_FALSE(result.ok());
+    EXPECT_EQ(result.error().type(), webrtc::RTCErrorType::INTERNAL_ERROR);
+  }
+}
+
+TEST_F(RTCRtpSenderImplTest, CreateSframeEncryptorPreservesNativeError) {
+  sender_ = CreateSender(/*component=*/nullptr);
+  RTCRtpSenderPlatform& platform_sender = *sender_;
+  const webrtc::SframeEncryptorInit init{
+      .mode = webrtc::SframeMode::kPerFrame,
+      .cipher_suite = webrtc::SframeCipherSuite::kAes128GcmSha256_128};
+  EXPECT_CALL(*mock_webrtc_sender_, CreateSframeEncryptorOrError(_))
+      .WillOnce(Return(webrtc::RTCError::InvalidState("Sender is stopped")));
+
+  webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>> result =
+      platform_sender.CreateSframeEncryptor(init);
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.error().type(), webrtc::RTCErrorType::INVALID_STATE);
+  EXPECT_STREQ(result.error().message(), "Sender is stopped");
+}
+
+TEST_F(RTCRtpSenderImplTest, CreateSframeEncryptorReturnsNativeEncryptor) {
+  sender_ = CreateSender(/*component=*/nullptr);
+  RTCRtpSenderPlatform& platform_sender = *sender_;
+  const webrtc::SframeEncryptorInit init{
+      .mode = webrtc::SframeMode::kPerFrame,
+      .cipher_suite = webrtc::SframeCipherSuite::kAes128GcmSha256_128};
+  webrtc::scoped_refptr<webrtc::SframeEncryptorInterface> native_encryptor =
+      webrtc::make_ref_counted<FakeSframeEncryptor>();
+  EXPECT_CALL(*mock_webrtc_sender_, CreateSframeEncryptorOrError(_))
+      .WillOnce(Return(native_encryptor));
+
+  webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>> result =
+      platform_sender.CreateSframeEncryptor(init);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(result.value().get(), native_encryptor.get());
 }
 
 TEST_F(RTCRtpSenderImplTest, ReplaceTrackSetsTrack) {

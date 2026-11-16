@@ -59,6 +59,8 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:sctp_transport_interface",
   "//third_party/webrtc/api:set_local_description_observer_interface",
   "//third_party/webrtc/api:set_remote_description_observer_interface",
+  "//third_party/webrtc/api:sframe_encryptor_interface",
+  "//third_party/webrtc/api:sframe_types",
   "//third_party/webrtc/api:simulated_network_api",
   "//third_party/webrtc/api:transport_api",
   "//third_party/webrtc/api:turn_customizer",
