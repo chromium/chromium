@@ -217,49 +217,45 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : info_(info),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  if (context_provider_wrapper_) {
-    raster_context_provider_ = base::WrapRefCounted(
-        context_provider_wrapper_->ContextProvider().RasterContextProvider());
-  }
-
+  CHECK(context_provider_wrapper_);
+  raster_context_provider_ = base::WrapRefCounted(
+      context_provider_wrapper_->ContextProvider().RasterContextProvider());
   if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
   }
 
-  if (context_provider_wrapper_) {
-    if (auto* sii = context_provider_wrapper_->ContextProvider()
-                        .SharedImageInterface()) {
-      // These SharedImages are both read and written by the raster interface
-      // (both occur, for example, when copying canvas resources between
-      // canvases). Additionally, these SharedImages can be put into
-      // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-      // GL textures by WebGL (via
-      // AcceleratedStaticBitmapImage::CopyToTexture()).
-      gpu::SharedImageUsageSet shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-          gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-      // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-      if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-      }
-
-      gpu::ImageInfo image_info(
-          info_.size, info_.format, shared_image_usage_flags, info_.color_space,
-          kTopLeft_GrSurfaceOrigin, info_.alpha_type,
-          /*buffer_usage=*/std::nullopt, /*is_software=*/false);
-
-      std::optional<base::TimeDelta> expiration_time =
-          (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-              ? std::make_optional(kUnusedResourceExpirationTime)
-              : std::nullopt;
-
-      image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
-          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
-          expiration_time);
-      resource_ = image_pool_->GetImage();
+  if (auto* sii = context_provider_wrapper_->ContextProvider()
+                      .SharedImageInterface()) {
+    // These SharedImages are both read and written by the raster interface
+    // (both occur, for example, when copying canvas resources between
+    // canvases). Additionally, these SharedImages can be put into
+    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
+    // GL textures by WebGL (via
+    // AcceleratedStaticBitmapImage::CopyToTexture()).
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
+    if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
     }
+
+    gpu::ImageInfo image_info(
+        info_.size, info_.format, shared_image_usage_flags, info_.color_space,
+        kTopLeft_GrSurfaceOrigin, info_.alpha_type,
+        /*buffer_usage=*/std::nullopt, /*is_software=*/false);
+
+    std::optional<base::TimeDelta> expiration_time =
+        (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
+            ? std::make_optional(kUnusedResourceExpirationTime)
+            : std::nullopt;
+
+    image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
+        image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
+        expiration_time);
+    resource_ = image_pool_->GetImage();
   }
 }
 
