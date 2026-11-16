@@ -184,8 +184,9 @@ interface SkillsPageHandler {
   // Glic WebUI and not used or stored in the browser.
   InvokeSkill(string skill_id, string skill_name, string skill_icon);
 
-  // Sends a prompt to the side panel.
-  SendPrompt(string prompt);
+  // Sends a prompt to the side panel. If `new_conversation` is true, starts a
+  // fresh conversation instead of appending to the current one.
+  SendPrompt(string prompt, bool new_conversation);
 
   // Closes the skills dialog. If `data` is provided, it stores it and opens
   // the full page editor.

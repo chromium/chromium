@@ -96,7 +96,10 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
                std::string_view skill_icon,
                bool auto_submit),
               (override));
-  MOCK_METHOD(void, SendPrompt, (std::string_view prompt), (override));
+  MOCK_METHOD(void,
+              SendPrompt,
+              (std::string_view prompt, bool new_conversation),
+              (override));
 };
 
 class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
@@ -121,7 +124,10 @@ class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
                std::string_view skill_icon,
                bool auto_submit),
               (override));
-  MOCK_METHOD(void, SendPrompt, (std::string_view prompt), (override));
+  MOCK_METHOD(void,
+              SendPrompt,
+              (std::string_view prompt, bool new_conversation),
+              (override));
   MOCK_METHOD(void, OnSkillDeleted, (const std::string& skill_id), (override));
   MOCK_METHOD(void,
               OnSkillDeleted,
@@ -351,9 +357,15 @@ TEST_F(SkillsPageHandlerV2Test, SendPrompt) {
 
   MockSkillsUiTabController mock_tab_controller(mock_tab);
 
-  EXPECT_CALL(mock_tab_controller, SendPrompt("test_prompt")).Times(1);
+  EXPECT_CALL(mock_tab_controller,
+              SendPrompt("test_prompt", /*new_conversation=*/false))
+      .Times(1);
+  EXPECT_CALL(mock_tab_controller,
+              SendPrompt("create_prompt", /*new_conversation=*/true))
+      .Times(1);
 
-  remote_handler_->SendPrompt("test_prompt");
+  remote_handler_->SendPrompt("test_prompt", /*new_conversation=*/false);
+  remote_handler_->SendPrompt("create_prompt", /*new_conversation=*/true);
   remote_handler_.FlushForTesting();
 }
 
@@ -367,9 +379,15 @@ TEST_F(SkillsPageHandlerV2Test, SendPrompt_FromDialog) {
       identity_test_env_.identity_manager(), web_contents(),
       weak_factory.GetWeakPtr());
 
-  EXPECT_CALL(mock_delegate, SendPrompt("test_prompt")).Times(1);
+  EXPECT_CALL(mock_delegate,
+              SendPrompt("test_prompt", /*new_conversation=*/false))
+      .Times(1);
+  EXPECT_CALL(mock_delegate,
+              SendPrompt("create_prompt", /*new_conversation=*/true))
+      .Times(1);
 
-  remote_handler->SendPrompt("test_prompt");
+  remote_handler->SendPrompt("test_prompt", /*new_conversation=*/false);
+  remote_handler->SendPrompt("create_prompt", /*new_conversation=*/true);
   remote_handler.FlushForTesting();
 }
 

@@ -200,6 +200,11 @@ bool SkillsUiTabController::IsShowing() const {
   return dialog_widget_ != nullptr;
 }
 
+void SkillsUiTabController::SetTargetForTesting(
+    std::unique_ptr<glic::Target> target) {
+  target_ = std::move(target);
+}
+
 Profile* SkillsUiTabController::GetProfile() {
   content::WebContents* contents = tab_->GetContents();
   if (!contents) {
@@ -295,16 +300,19 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
   }
 }
 
-void SkillsUiTabController::SendPrompt(std::string_view prompt) {
+void SkillsUiTabController::SendPrompt(std::string_view prompt,
+                                       bool new_conversation) {
   if (auto* service = GetGlicService()) {
     glic::GlicInvokeOptions options(
-        glic::Target(tab_.get(), glic::DefaultConversation()),
+        new_conversation
+            ? glic::Target(tab_.get(), glic::NewConversation())
+            : glic::Target(tab_.get(), glic::DefaultConversation()),
         glic::mojom::InvocationSource::kSkills);
     options.prompts.emplace_back(prompt);
-    if (target_) {
+    if (!new_conversation && target_) {
       options.target = std::move(*target_);
-      target_.reset();
     }
+    target_.reset();
     service->InvokeWithAutoSubmit(
         glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
         std::move(options));

@@ -218,13 +218,14 @@ void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,
   }
 }
 
-void SkillsPageHandlerV2::SendPrompt(const std::string& prompt) {
+void SkillsPageHandlerV2::SendPrompt(const std::string& prompt,
+                                     bool new_conversation) {
   if (delegate_) {
-    delegate_->SendPrompt(prompt);
+    delegate_->SendPrompt(prompt, new_conversation);
     return;
   }
   if (auto* controller = GetHostTabController()) {
-    controller->SendPrompt(prompt);
+    controller->SendPrompt(prompt, new_conversation);
   }
 }
 

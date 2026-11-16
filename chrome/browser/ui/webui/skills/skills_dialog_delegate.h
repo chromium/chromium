@@ -43,7 +43,7 @@ class SkillsDialogDelegate {
                            bool auto_submit) {}
 
   // Sends a prompt to the side panel.
-  virtual void SendPrompt(std::string_view prompt) {}
+  virtual void SendPrompt(std::string_view prompt, bool new_conversation) {}
 
  protected:
   virtual ~SkillsDialogDelegate() = default;

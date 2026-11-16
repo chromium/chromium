@@ -79,7 +79,7 @@ export interface SkillsWebviewBridgeDelegate {
   onCloseDialogAndOpenEditor(data: PendingEditorData): void;
   onHandshakeStarted(): void;
   onHandshakeComplete(): void;
-  onSendPrompt(prompt: string): void;
+  onSendPrompt(prompt: string, newConversation: boolean): void;
   onGetProvidedSkill(skillId: string): void;
 }
 
@@ -397,9 +397,10 @@ export class SkillsWebviewBridge {
     window.open(data.url, '_blank');
   }
 
-  private handleSendPromptMessage(data: {prompt: string}) {
+  private handleSendPromptMessage(
+      data: {prompt: string, newConversation?: boolean}) {
     if (data.prompt) {
-      this.delegate_.onSendPrompt(data.prompt);
+      this.delegate_.onSendPrompt(data.prompt, Boolean(data.newConversation));
     }
   }
 

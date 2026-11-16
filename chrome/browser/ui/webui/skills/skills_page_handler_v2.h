@@ -63,7 +63,7 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler,
   void InvokeSkill(const std::string& skill_id,
                    const std::string& skill_name,
                    const std::string& skill_icon) override;
-  void SendPrompt(const std::string& prompt) override;
+  void SendPrompt(const std::string& prompt, bool new_conversation) override;
   void CloseDialog(::skills::mojom::PendingEditorDataPtr data) override;
   void GetPendingEditorData(GetPendingEditorDataCallback callback) override;
   void SignIn() override;

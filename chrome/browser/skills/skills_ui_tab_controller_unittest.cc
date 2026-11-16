@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -291,10 +293,12 @@ TEST_F(SkillsUiTabControllerTest, SendPrompt_CallsInvokeWithAutoSubmit) {
         EXPECT_EQ(options.prompts[0], "Test Prompt");
         EXPECT_EQ(options.GetInvocationSource(),
                   glic::mojom::InvocationSource::kSkills);
+        EXPECT_TRUE(std::holds_alternative<glic::DefaultConversation>(
+            options.target.conversation));
         return base::WeakPtr<glic::GlicInstance>();
       });
 
-  controller_->SendPrompt("Test Prompt");
+  controller_->SendPrompt("Test Prompt", /*new_conversation=*/false);
 }
 
 class SkillsUiTabControllerV2Test : public SkillsUiTabControllerTest {
@@ -359,10 +363,64 @@ TEST_F(SkillsUiTabControllerV2Test, SendPrompt_CallsInvokeWithAutoSubmit) {
         EXPECT_EQ(options.prompts[0], "Test Prompt");
         EXPECT_EQ(options.GetInvocationSource(),
                   glic::mojom::InvocationSource::kSkills);
+        EXPECT_TRUE(std::holds_alternative<glic::DefaultConversation>(
+            options.target.conversation));
         return base::WeakPtr<glic::GlicInstance>();
       });
 
-  controller_->SendPrompt("Test Prompt");
+  controller_->SendPrompt("Test Prompt", /*new_conversation=*/false);
+}
+
+TEST_F(SkillsUiTabControllerV2Test,
+       SendPrompt_NewConversation_UsesNewConversationTarget) {
+  // Even if a prior dialog left a stale `target_` set on the controller,
+  // `new_conversation = true` must force `glic::NewConversation` rather than
+  // reusing the stale target.
+  controller_->SetTargetForTesting(std::make_unique<glic::Target>(
+      mock_tab_, glic::ConversationId("existing_conversation_id")));
+
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .WillOnce([](glic::InvokeWithAutoSubmitPasskey,
+                   const glic::GlicInvokeOptions& options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        EXPECT_EQ(options.prompts.size(), 1u);
+        EXPECT_EQ(options.prompts[0], "Create a skill");
+        EXPECT_EQ(options.GetInvocationSource(),
+                  glic::mojom::InvocationSource::kSkills);
+        EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+            options.target.conversation));
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  controller_->SendPrompt("Create a skill", /*new_conversation=*/true);
+}
+
+TEST_F(SkillsUiTabControllerV2Test,
+       SendPrompt_ExistingConversation_UsesStoredTargetWhenPresent) {
+  controller_->SetTargetForTesting(std::make_unique<glic::Target>(
+      mock_tab_, glic::ConversationId("dialog_conversation_id")));
+
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .WillOnce([](glic::InvokeWithAutoSubmitPasskey,
+                   const glic::GlicInvokeOptions& options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        const auto* conv =
+            std::get_if<glic::ConversationId>(&options.target.conversation);
+        EXPECT_NE(conv, nullptr);
+        if (conv) {
+          EXPECT_EQ(conv->conversation_id, "dialog_conversation_id");
+        }
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  controller_->SendPrompt("Help me refine this skill",
+                          /*new_conversation=*/false);
 }
 
 }  // namespace skills

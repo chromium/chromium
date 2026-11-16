@@ -72,7 +72,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onCloseDialogAndOpenEditor: (_data: PendingEditorData) => {},
       onHandshakeStarted: () => {},
       onHandshakeComplete: () => {},
-      onSendPrompt: (_prompt: string) => {},
+      onSendPrompt: (_prompt: string, _newConversation: boolean) => {},
       onGetProvidedSkill: (_skillId: string) => {},
       ...overrides,
     };
@@ -978,9 +978,11 @@ suite('SkillsWebviewBridgeTest', () => {
 
   test('HostReceivesSendPromptMessage', () => {
     let receivedPrompt: string|null = null;
+    let receivedNewConversation: boolean|null = null;
     const delegate = createMockDelegate({
-      onSendPrompt: (prompt: string) => {
+      onSendPrompt: (prompt: string, newConversation: boolean) => {
         receivedPrompt = prompt;
+        receivedNewConversation = newConversation;
       },
     });
     bridge = new SkillsWebviewBridge(webview, delegate);
@@ -1013,6 +1015,22 @@ suite('SkillsWebviewBridgeTest', () => {
     window.dispatchEvent(promptEvent);
 
     assertEquals('test prompt content', receivedPrompt);
+    assertFalse(receivedNewConversation!);
+
+    // Send send-prompt message with newConversation set to true.
+    const newConvEvent = new MessageEvent('message', {
+      data: {
+        type: SKILLS_SEND_PROMPT,
+        prompt: 'Create a skill',
+        newConversation: true,
+      },
+      origin: new URL(getSkillsRemoteUrl()).origin,
+      source: window,
+    });
+    window.dispatchEvent(newConvEvent);
+
+    assertEquals('Create a skill', receivedPrompt);
+    assertTrue(receivedNewConversation!);
   });
 
   test('HostReceivesOpenFullPageEditorMessage', () => {

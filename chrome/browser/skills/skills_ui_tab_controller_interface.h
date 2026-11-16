@@ -56,7 +56,7 @@ class SkillsUiTabControllerInterface {
                            bool auto_submit) = 0;
 
   // Sends a prompt to the side panel.
-  virtual void SendPrompt(std::string_view prompt) = 0;
+  virtual void SendPrompt(std::string_view prompt, bool new_conversation) = 0;
 
   // Called when a skill is deleted to show a notification.
   virtual void OnSkillDeleted(const std::string& skill_id) = 0;

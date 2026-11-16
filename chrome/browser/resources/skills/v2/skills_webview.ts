@@ -196,7 +196,8 @@ export class SkillsWebview implements SkillsPageV2Interface {
         this.hideLoading();
         this.recordTotalInitLatencyMetric();
       },
-      onSendPrompt: (prompt: string) => this.handler.sendPrompt(prompt),
+      onSendPrompt: (prompt: string, newConversation: boolean) =>
+          this.handler.sendPrompt(prompt, newConversation),
       onCloseDialogAndOpenEditor: (data: PendingEditorData) =>
           this.handler.closeDialog(data),
       onGetProvidedSkill: async (skillId: string) => {
