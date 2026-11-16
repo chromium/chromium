@@ -51,11 +51,15 @@ RTCVoidRequestImpl::RTCVoidRequestImpl(
       error_callback_(error_callback),
       requester_(requester) {
   DCHECK(requester_);
+  requester_->NoteChainedOperationStarted();
 }
 
 RTCVoidRequestImpl::~RTCVoidRequestImpl() = default;
 
 void RTCVoidRequestImpl::RequestSucceeded() {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   bool should_fire_callback =
       requester_ && requester_->ShouldFireDefaultCallbacks();
   if (should_fire_callback && success_callback_) {
@@ -66,6 +70,9 @@ void RTCVoidRequestImpl::RequestSucceeded() {
 }
 
 void RTCVoidRequestImpl::RequestFailed(const webrtc::RTCError& error) {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   bool should_fire_callback =
       requester_ && requester_->ShouldFireDefaultCallbacks();
   if (should_fire_callback && error_callback_.Get()) {

@@ -48,10 +48,23 @@ class RTCSessionDescriptionRequest
   virtual void RequestSucceeded(RTCSessionDescriptionPlatform*) = 0;
   virtual void RequestFailed(const webrtc::RTCError&) = 0;
 
+  // Whether a failure detected synchronously by the native layer may be
+  // reported on the same task. This is only allowed if the JS-visible
+  // operations chain was empty when the operation was invoked. Otherwise,
+  // the failure must be reported asynchronously, after previously chained
+  // operations have settled.
+  bool allow_synchronous_failure() const { return allow_synchronous_failure_; }
+  void set_allow_synchronous_failure(bool allow) {
+    allow_synchronous_failure_ = allow;
+  }
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
   RTCSessionDescriptionRequest() = default;
+
+ private:
+  bool allow_synchronous_failure_ = true;
 };
 
 }  // namespace blink

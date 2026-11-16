@@ -337,10 +337,12 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   void CreateOfferOnSignalingThread(
       webrtc::CreateSessionDescriptionObserver* observer,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,
+      bool capture_synchronous_failure,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer);
   void CreateAnswerOnSignalingThread(
       webrtc::CreateSessionDescriptionObserver* observer,
-      webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options);
+      webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options,
+      bool capture_synchronous_failure);
   Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator FindSender(
       uintptr_t id);
   Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>>::iterator FindReceiver(

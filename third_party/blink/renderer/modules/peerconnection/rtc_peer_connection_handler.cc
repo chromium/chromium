@@ -952,6 +952,7 @@ RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
           CrossThreadUnretained(this),
           CrossThreadUnretained(description_request.get()),
           std::move(webrtc_options),
+          !request || request->allow_synchronous_failure(),
           CrossThreadUnretained(&transceiver_state_surfacer))),
       "CreateOfferOnSignalingThread");
   if (std::optional<webrtc::RTCError> error =
@@ -974,11 +975,16 @@ RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
 void RTCPeerConnectionHandler::CreateOfferOnSignalingThread(
     webrtc::CreateSessionDescriptionObserver* observer,
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,
+    bool capture_synchronous_failure,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer) {
   auto* request = static_cast<CreateSessionDescriptionRequest*>(observer);
-  request->BeginSynchronousFailureCapture();
+  if (capture_synchronous_failure) {
+    request->BeginSynchronousFailureCapture();
+  }
   native_peer_connection_->CreateOffer(observer, offer_options);
-  request->EndSynchronousFailureCapture();
+  if (capture_synchronous_failure) {
+    request->EndSynchronousFailureCapture();
+  }
   std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       transceivers = native_peer_connection_->GetTransceivers();
   transceiver_state_surfacer->Initialize(
@@ -1005,7 +1011,8 @@ void RTCPeerConnectionHandler::CreateAnswer(
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &RTCPeerConnectionHandler::CreateAnswerOnSignalingThread,
           CrossThreadUnretained(this),
-          CrossThreadUnretained(description_request.get()), webrtc_options)),
+          CrossThreadUnretained(description_request.get()), webrtc_options,
+          !request || request->allow_synchronous_failure())),
       "CreateAnswerOnSignalingThread");
   if (std::optional<webrtc::RTCError> error =
           description_request->TakeSynchronousFailure()) {
@@ -1015,11 +1022,16 @@ void RTCPeerConnectionHandler::CreateAnswer(
 
 void RTCPeerConnectionHandler::CreateAnswerOnSignalingThread(
     webrtc::CreateSessionDescriptionObserver* observer,
-    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options) {
+    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options,
+    bool capture_synchronous_failure) {
   auto* request = static_cast<CreateSessionDescriptionRequest*>(observer);
-  request->BeginSynchronousFailureCapture();
+  if (capture_synchronous_failure) {
+    request->BeginSynchronousFailureCapture();
+  }
   native_peer_connection_->CreateAnswer(observer, answer_options);
-  request->EndSynchronousFailureCapture();
+  if (capture_synchronous_failure) {
+    request->EndSynchronousFailureCapture();
+  }
 }
 
 bool IsOfferOrAnswer(const webrtc::SessionDescriptionInterface* native_desc) {

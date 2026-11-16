@@ -38,6 +38,18 @@ BASE_FEATURE(kWebRtcGenerateRemoteTrackIds, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRtcImplicitRollbackClearsPendingRemoteDescription,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, an operation on the RTCPeerConnection operations chain is
+// considered to be on the chain until its promise (or callback) has settled on
+// the main thread, not just until the signaling thread has finished processing
+// it. In particular, createOffer() and createAnswer() only report failures
+// synchronously (i.e., on the same task) when there are no unsettled chained
+// operations, as required by the spec.
+// Kill switch.
+// TODO(crbug.com/488071544): Remove after the new behavior has been stable on
+// the Stable channel for a few milestones without regressions.
+BASE_FEATURE(kWebRtcOperationsChainTracksUnsettledPromises,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This features enables the restriction that frames sent to an
 // RTCRtpScriptTransformer's writable must come from the transformer's readable
 // and must be written in the same order in which they are read. This feature

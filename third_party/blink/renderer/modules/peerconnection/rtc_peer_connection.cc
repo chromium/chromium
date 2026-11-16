@@ -894,9 +894,13 @@ ScriptPromise<RTCSessionDescriptionInit> RTCPeerConnection::createOffer(
       MakeGarbageCollected<ScriptPromiseResolver<RTCSessionDescriptionInit>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+  // Must be evaluated before creating the request, which adds itself to the
+  // operations chain.
+  const bool allow_synchronous_failure = AllowSynchronousSdpCreationFailure();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestPromiseImpl::Create(this, resolver,
                                                       /*is_offer=*/true);
+  request->set_allow_synchronous_failure(allow_synchronous_failure);
   ++pending_create_offer_count_;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -934,10 +938,12 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::createOffer(
     return ToResolvedUndefinedPromise(script_state);
   }
 
+  const bool allow_synchronous_failure = AllowSynchronousSdpCreationFailure();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestImpl::Create(
           GetExecutionContext(), this, success_callback, error_callback,
           /*is_offer=*/true);
+  request->set_allow_synchronous_failure(allow_synchronous_failure);
   ++pending_create_offer_count_;
 
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers =
@@ -969,9 +975,11 @@ ScriptPromise<RTCSessionDescriptionInit> RTCPeerConnection::createAnswer(
       MakeGarbageCollected<ScriptPromiseResolver<RTCSessionDescriptionInit>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+  const bool allow_synchronous_failure = AllowSynchronousSdpCreationFailure();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestPromiseImpl::Create(this, resolver,
                                                       /*is_offer=*/false);
+  request->set_allow_synchronous_failure(allow_synchronous_failure);
   ++pending_create_answer_count_;
   peer_handler_->CreateAnswer(request,
                               ConvertToRTCAnswerOptionsPlatform(options));
@@ -996,10 +1004,12 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::createAnswer(
     return ToResolvedUndefinedPromise(script_state);
   }
 
+  const bool allow_synchronous_failure = AllowSynchronousSdpCreationFailure();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestImpl::Create(
           GetExecutionContext(), this, success_callback, error_callback,
           /*is_offer=*/false);
+  request->set_allow_synchronous_failure(allow_synchronous_failure);
   ++pending_create_answer_count_;
   peer_handler_->CreateAnswer(request, nullptr);
   return ToResolvedUndefinedPromise(script_state);
@@ -2598,6 +2608,21 @@ void RTCPeerConnection::NoteCreateOfferFailed() {
 void RTCPeerConnection::NoteCreateAnswerFailed() {
   DCHECK_GT(pending_create_answer_count_, 0);
   --pending_create_answer_count_;
+}
+
+void RTCPeerConnection::NoteChainedOperationStarted() {
+  ++unsettled_chained_operations_count_;
+}
+
+void RTCPeerConnection::NoteChainedOperationSettled() {
+  DCHECK_GT(unsettled_chained_operations_count_, 0);
+  --unsettled_chained_operations_count_;
+}
+
+bool RTCPeerConnection::AllowSynchronousSdpCreationFailure() const {
+  return unsettled_chained_operations_count_ == 0 ||
+         !base::FeatureList::IsEnabled(
+             kWebRtcOperationsChainTracksUnsettledPromises);
 }
 
 void RTCPeerConnection::OnStreamAddTrack(MediaStream* stream,

@@ -21,11 +21,15 @@ RTCVoidRequestPromiseImpl::RTCVoidRequestPromiseImpl(
     : requester_(requester), resolver_(resolver) {
   DCHECK(requester_);
   DCHECK(resolver_);
+  requester_->NoteChainedOperationStarted();
 }
 
 RTCVoidRequestPromiseImpl::~RTCVoidRequestPromiseImpl() = default;
 
 void RTCVoidRequestPromiseImpl::RequestSucceeded() {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     resolver_->Resolve();
   } else {
@@ -38,6 +42,9 @@ void RTCVoidRequestPromiseImpl::RequestSucceeded() {
 }
 
 void RTCVoidRequestPromiseImpl::RequestFailed(const webrtc::RTCError& error) {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     RejectPromiseFromRTCError(error, resolver_);
   } else {

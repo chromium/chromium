@@ -266,22 +266,29 @@ WebRtcScalabilityMode ScalabilityModeStringToUMAMode(
 
 class ReplaceTrackRequest : public RTCVoidRequest {
  public:
-  ReplaceTrackRequest(RTCRtpSender* sender,
+  ReplaceTrackRequest(RTCPeerConnection* pc,
+                      RTCRtpSender* sender,
                       MediaStreamTrack* with_track,
                       ScriptPromiseResolver<IDLUndefined>* resolver)
-      : sender_(sender), with_track_(with_track), resolver_(resolver) {}
+      : pc_(pc), sender_(sender), with_track_(with_track), resolver_(resolver) {
+    // replaceTrack() is a chained operation.
+    pc_->NoteChainedOperationStarted();
+  }
   ~ReplaceTrackRequest() override {}
 
   void RequestSucceeded() override {
+    pc_->NoteChainedOperationSettled();
     sender_->SetTrack(with_track_);
     resolver_->Resolve();
   }
 
   void RequestFailed(const webrtc::RTCError& error) override {
+    pc_->NoteChainedOperationSettled();
     RejectPromiseFromRTCError(error, resolver_);
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(pc_);
     visitor->Trace(sender_);
     visitor->Trace(with_track_);
     visitor->Trace(resolver_);
@@ -289,6 +296,7 @@ class ReplaceTrackRequest : public RTCVoidRequest {
   }
 
  private:
+  Member<RTCPeerConnection> pc_;
   Member<RTCRtpSender> sender_;
   Member<MediaStreamTrack> with_track_;
   Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
@@ -794,8 +802,8 @@ ScriptPromise<IDLUndefined> RTCRtpSender::replaceTrack(
     pc_->RegisterTrack(with_track);
     component = with_track->Component();
   }
-  ReplaceTrackRequest* request =
-      MakeGarbageCollected<ReplaceTrackRequest>(this, with_track, resolver);
+  ReplaceTrackRequest* request = MakeGarbageCollected<ReplaceTrackRequest>(
+      pc_, this, with_track, resolver);
   sender_->ReplaceTrack(component, request);
   return promise;
 }

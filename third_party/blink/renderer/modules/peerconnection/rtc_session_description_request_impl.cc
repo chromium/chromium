@@ -67,12 +67,16 @@ RTCSessionDescriptionRequestImpl::RTCSessionDescriptionRequestImpl(
       requester_(requester),
       is_offer_(is_offer) {
   DCHECK(requester_);
+  requester_->NoteChainedOperationStarted();
 }
 
 RTCSessionDescriptionRequestImpl::~RTCSessionDescriptionRequestImpl() = default;
 
 void RTCSessionDescriptionRequestImpl::RequestSucceeded(
     RTCSessionDescriptionPlatform* description_platform) {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   bool should_fire_callback =
       requester_ ? requester_->ShouldFireDefaultCallbacks() : false;
   if (should_fire_callback && success_callback_) {
@@ -95,6 +99,7 @@ void RTCSessionDescriptionRequestImpl::RequestFailed(
   bool should_fire_callback =
       requester_ ? requester_->ShouldFireDefaultCallbacks() : false;
   if (requester_) {
+    requester_->NoteChainedOperationSettled();
     is_offer_ ? requester_->NoteCreateOfferFailed()
               : requester_->NoteCreateAnswerFailed();
   }

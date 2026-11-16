@@ -36,6 +36,7 @@ RTCSessionDescriptionRequestPromiseImpl::
     : requester_(requester), resolver_(resolver), is_offer_(is_offer) {
   DCHECK(requester_);
   DCHECK(resolver_);
+  requester_->NoteChainedOperationStarted();
 }
 
 RTCSessionDescriptionRequestPromiseImpl::
@@ -43,6 +44,9 @@ RTCSessionDescriptionRequestPromiseImpl::
 
 void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
     RTCSessionDescriptionPlatform* platform_session_description) {
+  if (requester_) {
+    requester_->NoteChainedOperationSettled();
+  }
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     auto* description = RTCSessionDescriptionInit::Create();
     description->setType(
@@ -62,6 +66,7 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
 void RTCSessionDescriptionRequestPromiseImpl::RequestFailed(
     const webrtc::RTCError& error) {
   if (requester_) {
+    requester_->NoteChainedOperationSettled();
     is_offer_ ? requester_->NoteCreateOfferFailed()
               : requester_->NoteCreateAnswerFailed();
     if (requester_->ShouldFireDefaultCallbacks()) {
