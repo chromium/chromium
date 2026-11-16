@@ -3914,7 +3914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.DocumentPictureInPicture.CloseReason"
-    enum="DocumentPictureInPictureCloseReason" expires_after="2026-07-26">
+    enum="DocumentPictureInPictureCloseReason" expires_after="2027-11-13">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -3922,6 +3922,9 @@ chromium-metrics-reviews@google.com.
     Records the reason why a document picture-in-picture window is closed (e.g.
     the user clicking on the Back to Tab button). Recorded on destruction of the
     picture-in-picture window.
+
+    Warning: this histogram was expired from 2026-07-26 to 2026-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
