@@ -88,7 +88,9 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           expected_content_security_policies,
       mojo::Remote<blink::mojom::SharedWorkerHost>* host,
-      mojo::PendingReceiver<blink::mojom::SharedWorker>* receiver);
+      mojo::PendingReceiver<blink::mojom::SharedWorker>* receiver,
+      blink::mojom::WorkerMainScriptLoadParamsPtr* main_script_load_params =
+          nullptr);
 
   void Disconnect();
 
@@ -137,6 +139,7 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
     bool pause_on_start;
     mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>
         content_settings;
+    blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
     mojo::PendingRemote<blink::mojom::SharedWorkerHost> host;
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver;
     ukm::SourceId ukm_source_id;

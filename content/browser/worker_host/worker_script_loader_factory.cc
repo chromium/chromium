@@ -22,12 +22,14 @@ namespace content {
 WorkerScriptLoaderFactory::WorkerScriptLoaderFactory(
     ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
+    const blink::StorageKey& worker_storage_key,
     const net::IsolationInfo& isolation_info,
     ServiceWorkerMainResourceHandle* service_worker_handle,
     const BrowserContextGetter& browser_context_getter,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
     : process_id_(process_id),
       worker_token_(worker_token),
+      worker_storage_key_(worker_storage_key),
       isolation_info_(isolation_info),
       browser_context_getter_(browser_context_getter),
       loader_factory_(std::move(loader_factory)) {
@@ -59,9 +61,10 @@ void WorkerScriptLoaderFactory::CreateLoaderAndStart(
 
   // Create a WorkerScriptLoader to load the script.
   auto script_loader = std::make_unique<WorkerScriptLoader>(
-      process_id_, worker_token_, request_id, options, resource_request,
-      isolation_info_, std::move(client), service_worker_handle_,
-      browser_context_getter_, loader_factory_, traffic_annotation);
+      process_id_, worker_token_, worker_storage_key_, request_id, options,
+      resource_request, isolation_info_, std::move(client),
+      service_worker_handle_, browser_context_getter_, loader_factory_,
+      traffic_annotation);
   script_loader_ = script_loader->GetWeakPtr();
   mojo::MakeSelfOwnedReceiver(std::move(script_loader), std::move(receiver));
 }

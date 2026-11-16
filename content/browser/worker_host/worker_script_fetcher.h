@@ -39,6 +39,14 @@ class URLLoaderThrottle;
 namespace content {
 
 class DedicatedWorkerHost;
+
+// Returns true if `policies` sandbox a worker into an opaque origin, i.e. its
+// script response carried `Content-Security-Policy: sandbox` without
+// `allow-same-origin`.
+inline bool IsSandboxedToOpaqueOrigin(const PolicyContainerPolicies& policies) {
+  return (policies.sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
+         network::mojom::WebSandboxFlags::kOrigin;
+}
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class ServiceWorkerContextWrapper;
@@ -209,6 +217,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   static void CreateScriptLoader(
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
+      const blink::StorageKey& worker_storage_key,
       const GURL& initial_request_url,
       RenderFrameHostImpl& ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,

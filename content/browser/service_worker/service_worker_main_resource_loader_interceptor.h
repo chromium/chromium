@@ -22,6 +22,10 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerMainResourceHandle;
@@ -54,6 +58,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       const net::IsolationInfo& isolation_info,
       ChildProcessId process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
+      const blink::StorageKey& worker_storage_key,
       base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
 
   static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
