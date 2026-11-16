@@ -58,6 +58,7 @@
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
+#include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
@@ -199,11 +200,11 @@ GlicKeyedService::GlicKeyedService(
           this,
           enabling_.get(),
           contextual_cueing_service)),
-      activity_manager_(
-          base::FeatureList::IsEnabled(features::kGlicActivityHub)
-              ? std::make_unique<GlicActivityManager>(profile_,
-                                                      *instance_coordinator_)
-              : nullptr),
+      activity_manager_(base::FeatureList::IsEnabled(features::kGlicActivityHub)
+                            ? std::make_unique<GlicActivityManagerImpl>(
+                                  profile_,
+                                  *instance_coordinator_)
+                            : nullptr),
       legacy_activity_manager_(
           base::FeatureList::IsEnabled(features::kGlicActivityHub)
               ? nullptr

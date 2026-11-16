@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
+#include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -484,7 +485,7 @@ class GlicActivityListBubbleActivityHubTest
 
 TEST_F(GlicActivityListBubbleActivityHubTest,
        ActivityHubEnabled_HeterogeneousActivitiesInBubble) {
-  auto* activity_manager = &mock_glic_service_->activity_manager();
+  auto* activity_manager = &mock_glic_service_->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
   activity_manager->OnConversationActivityStateChanged(
       "conv-1", {.state = glic::GlicActivityState::kCompleted,

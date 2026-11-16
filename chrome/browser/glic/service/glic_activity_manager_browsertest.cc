@@ -53,10 +53,6 @@ class GlicActivityManagerBrowserTest : public GlicBrowserTest {
   }
 
  protected:
-  GlicActivityManager& activity_manager() {
-    return service()->activity_manager();
-  }
-
   [[nodiscard]] testing::AssertionResult RegisterConversationInClient(
       GlicInstanceImpl* instance,
       std::string_view conversation_id,

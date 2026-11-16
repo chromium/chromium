@@ -62,6 +62,7 @@ class MockGlicKeyedService : public GlicKeyedService {
     return const_cast<MockGlicInstanceCoordinator&>(mock_coordinator_);
   }
   MockGlicInstanceCoordinator& mock_coordinator() { return mock_coordinator_; }
+  GlicActivityManagerImpl& activity_manager_impl();
 
  private:
   MockGlicInstanceCoordinator mock_coordinator_;

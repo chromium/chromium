@@ -60,10 +60,6 @@ class GlicActivityHubBubbleBrowserTest : public GlicBrowserTest {
   }
 
  protected:
-  GlicActivityManager& activity_manager() {
-    return service()->activity_manager();
-  }
-
   GlicActivityListBubbleController* bubble_controller(
       BrowserWindowInterface* window) {
     auto* controller = GlicActivityListBubbleController::From(window);

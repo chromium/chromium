@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+// clang-format off
+#include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 
+// clang-format on
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -99,9 +101,8 @@ class GlicActivityManagerTest : public testing::Test {
     actor_service_ = static_cast<actor::ActorKeyedServiceFake*>(
         actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_));
 
-    auto* glic_service = GlicKeyedService::Get(profile_);
-    ASSERT_TRUE(glic_service);
-    manager_ = &glic_service->activity_manager();
+    ASSERT_TRUE(mock_glic_service_);
+    manager_ = &mock_glic_service_->activity_manager_impl();
 
     nudge_subscription_ = manager()->RegisterActivityNudgeStateChange(
         base::BindRepeating(&MockTaskNudgeStateChangeSubscriber::OnStateChanged,
@@ -141,7 +142,7 @@ class GlicActivityManagerTest : public testing::Test {
 
   ActorKeyedServiceFake* actor_service() { return actor_service_; }
 
-  GlicActivityManager* manager() { return manager_; }
+  GlicActivityManagerImpl* manager() { return manager_; }
   void OnActorTaskStateUpdate(actor::TaskId task_id) {
     if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
       auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_);
@@ -183,7 +184,7 @@ class GlicActivityManagerTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 #endif
   raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
-  raw_ptr<GlicActivityManager> manager_;
+  raw_ptr<GlicActivityManagerImpl> manager_;
   raw_ptr<MockGlicKeyedService> mock_glic_service_ = nullptr;
   base::CallbackListSubscription nudge_subscription_;
   base::CallbackListSubscription bubble_subscription_;

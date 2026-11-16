@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 
+#include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace glic {
@@ -23,5 +24,10 @@ MockGlicKeyedService::MockGlicKeyedService(
                        actor_keyed_service) {}
 
 MockGlicKeyedService::~MockGlicKeyedService() = default;
+
+GlicActivityManagerImpl& MockGlicKeyedService::activity_manager_impl() {
+  return static_cast<GlicActivityManagerImpl&>(
+      GlicKeyedService::activity_manager());
+}
 
 }  // namespace glic

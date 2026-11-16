@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -415,7 +416,7 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateDefault) {
 }
 
 TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateSingleActiveActivity) {
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   activity_manager->OnConversationActivityStateChanged(
@@ -428,7 +429,7 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateSingleActiveActivity) {
 
 TEST_F(GlicSplitButtonControllerTest,
        SplitButtonUiStateRevertsToChevronOnceViewed) {
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   activity_manager->OnConversationActivityStateChanged(
@@ -446,7 +447,7 @@ TEST_F(GlicSplitButtonControllerTest,
 }
 
 TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateNeedsAttention) {
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   activity_manager->OnConversationActivityStateChanged(
@@ -482,7 +483,7 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateCompleteTasks) {
 }
 
 TEST_F(GlicSplitButtonControllerTest, SecondaryButtonClickTogglesBubble) {
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   activity_manager->OnConversationActivityStateChanged(
@@ -508,7 +509,7 @@ TEST_F(GlicSplitButtonControllerTest, SecondaryButtonClickTogglesBubble) {
 TEST_F(GlicSplitButtonControllerTest,
        SecondaryButtonClickLogsActorMetricOnlyForActorNudges) {
   base::UserActionTester user_actions;
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   // Clicking the split chevron for pure chat activity should not pollute Actor
@@ -540,7 +541,7 @@ TEST_F(GlicSplitButtonControllerTest,
 
 TEST_F(GlicSplitButtonControllerTest,
        PrimaryClickDoesNotToggleBubbleWhenNeedsAttention) {
-  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  auto* activity_manager = &glic_keyed_service()->activity_manager_impl();
   ASSERT_TRUE(activity_manager);
 
   activity_manager->OnConversationActivityStateChanged(
@@ -592,8 +593,10 @@ TEST_F(GlicSplitButtonControllerTest,
 
 TEST_F(GlicSplitButtonControllerTest,
        SplitButtonUiStateResponseReadyShowsTextPill) {
-  glic_keyed_service()->activity_manager().OnConversationActivityStateChanged(
-      "conv-1", {.state = GlicActivityState::kCompleted});
+  glic_keyed_service()
+      ->activity_manager_impl()
+      .OnConversationActivityStateChanged(
+          "conv-1", {.state = GlicActivityState::kCompleted});
 
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
@@ -604,7 +607,7 @@ TEST_F(GlicSplitButtonControllerTest,
 
 TEST_F(GlicSplitButtonControllerTest,
        SplitButtonUiStateBackgroundInstancesShowChevron) {
-  auto& activity_manager = glic_keyed_service()->activity_manager();
+  auto& activity_manager = glic_keyed_service()->activity_manager_impl();
 
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
@@ -630,7 +633,7 @@ TEST_F(GlicSplitButtonControllerTest,
 
 TEST_F(GlicSplitButtonControllerTest,
        ActiveTabChangedClosesOrRefreshesOpenBubble) {
-  auto& activity_manager = glic_keyed_service()->activity_manager();
+  auto& activity_manager = glic_keyed_service()->activity_manager_impl();
   auto& coordinator = glic_keyed_service()->instance_coordinator_mock();
 
   tabs::MockTabInterface tab_1;
