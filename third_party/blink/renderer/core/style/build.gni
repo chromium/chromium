@@ -180,5 +180,6 @@ blink_core_tests_style = [
   "style_name_or_keyword_test.cc",
   "style_name_test.cc",
   "style_pending_image_test.cc",
+  "style_timeline_test.cc",
   "style_variables_test.cc",
 ]
