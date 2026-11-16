@@ -9,7 +9,7 @@
 #include <limits>
 
 #if defined(ARCH_CPU_X86_FAMILY)
-#include <xmmintrin.h>
+#include <pmmintrin.h>
 #endif
 
 #include "base/containers/span.h"
@@ -1062,17 +1062,40 @@ gfx::Vector3dF MathUtil::GetYAxis(const gfx::Transform& transform) {
                         transform.rc(2, 1));
 }
 
+#if defined(ARCH_CPU_X86_FAMILY)
+constexpr unsigned int kSubnormalFloatCsrFlags =
+    _MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON;
+#endif
+
 ScopedSubnormalFloatDisabler::ScopedSubnormalFloatDisabler() {
 #if defined(ARCH_CPU_X86_FAMILY)
   // Turn on "subnormals are zero" and "flush to zero" CSR flags.
   orig_state_ = _mm_getcsr();
-  _mm_setcsr(orig_state_ | 0x8040);
+  _mm_setcsr(orig_state_ | kSubnormalFloatCsrFlags);
 #endif
 }
 
 ScopedSubnormalFloatDisabler::~ScopedSubnormalFloatDisabler() {
 #if defined(ARCH_CPU_X86_FAMILY)
   _mm_setcsr(orig_state_);
+#endif
+}
+
+// static
+bool ScopedSubnormalFloatDisabler::IsUnsupportedOrActiveForTesting() {
+#if defined(ARCH_CPU_X86_FAMILY)
+  return (_mm_getcsr() & kSubnormalFloatCsrFlags) == kSubnormalFloatCsrFlags;
+#else
+  return true;
+#endif
+}
+
+// static
+bool ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting() {
+#if defined(ARCH_CPU_X86_FAMILY)
+  return (_mm_getcsr() & kSubnormalFloatCsrFlags) == 0;
+#else
+  return true;
 #endif
 }
 

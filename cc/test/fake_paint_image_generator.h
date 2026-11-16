@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "cc/paint/paint_image_generator.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
@@ -22,6 +23,8 @@ class FakePaintImageGenerator : public PaintImageGenerator {
       bool allocate_discardable_memory = true,
       std::vector<SkISize> supported_sizes = {},
       const gfx::HDRMetadata& hdr_metadata = {});
+  FakePaintImageGenerator(const SkImageInfo& info,
+                          base::RepeatingClosure decode_callback);
   // YUV decoding mode constructor.
   explicit FakePaintImageGenerator(
       const SkImageInfo& info,
@@ -93,6 +96,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   // fallback.
   bool expect_fallback_to_rgb_ = false;
   bool force_fail_decode_ = false;
+  base::RepeatingClosure decode_callback_;
 };
 
 }  // namespace cc

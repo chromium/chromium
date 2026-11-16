@@ -31,6 +31,7 @@ specific_include_rules = {
         "+base/strings",
         "+components/viz",
         "+cc/layers/texture_layer.h",
+        "+cc/test/fake_paint_image_generator.h",
         "+cc/test/paint_op_matchers.h",
         "+gpu/GLES2/gl2extchromium.h",
         "+gpu/command_buffer/client/client_shared_image.h",

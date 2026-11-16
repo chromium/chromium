@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "cc/base/math_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -19,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -342,6 +346,39 @@ TEST_F(CanvasNon2DResourceProviderTest,
   EXPECT_EQ(provider->GetSnapshotSkImageIdForTesting(), sk_image2->uniqueID());
   EXPECT_NE(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
             snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
+}
+
+TEST_F(CanvasNon2DResourceProviderTest,
+       SubnormalFloatsDisabledDuringSoftwareRaster) {
+  platform_->SetGpuCompositingDisabled(true);
+  const gfx::Size kSize(10, 10);
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider =
+          TestWebGraphicsSharedImageInterfaceProvider::Create();
+  auto provider = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
+      kSize, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+      test_web_shared_image_interface_provider.get());
+  ASSERT_TRUE(provider && provider->IsValid());
+  ASSERT_TRUE(provider->IsSoftware());
+
+  auto generator = sk_make_sp<cc::FakePaintImageGenerator>(
+      SkImageInfo::MakeN32Premul(10, 10), base::BindLambdaForTesting([]() {
+        EXPECT_TRUE(cc::ScopedSubnormalFloatDisabler::
+                        IsUnsupportedOrActiveForTesting());
+      }));
+  PaintImage paint_image = PaintImageBuilder::WithDefault()
+                               .set_id(PaintImage::GetNextId())
+                               .set_paint_image_generator(generator)
+                               .TakePaintImage();
+  ASSERT_TRUE(
+      cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());
+  provider->DoExternalOverdrawAndProduceResource([&](cc::PaintCanvas& canvas) {
+    canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
+  });
+  EXPECT_EQ(generator->frames_decoded().size(), 1u);
+  EXPECT_TRUE(
+      cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());
 }
 
 }  // namespace blink

@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/base/features.h",
+  "+cc/base/math_util.h",
 ]
 
 specific_include_rules = {

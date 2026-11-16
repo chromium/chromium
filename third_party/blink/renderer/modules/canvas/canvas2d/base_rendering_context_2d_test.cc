@@ -13,15 +13,18 @@
 #include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/math_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
+#include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/paint_op_matchers.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/test_context_provider.h"
@@ -67,6 +70,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -141,6 +145,7 @@ class TestRenderingContext2D final
   using BaseRenderingContext2D::ConfigureRecorder;
   using BaseRenderingContext2D::CreateSharedImagePool;
   using BaseRenderingContext2D::CreateSoftwareSurface;
+  using BaseRenderingContext2D::FlushCanvasInternal;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
   using BaseRenderingContext2D::WritePixelsToBacking;
@@ -1035,6 +1040,34 @@ TEST(BaseRenderingContext2DTest, SoftwareSnapshotResetsSkImageIdOnWritePixels) {
   EXPECT_EQ(context->GetSwSnapshotSkImageIdForTesting(), sk_image2->uniqueID());
   EXPECT_NE(snapshot2->PaintImageForCurrentFrame().GetContentIdForFrame(0u),
             snapshot1->PaintImageForCurrentFrame().GetContentIdForFrame(0u));
+}
+
+TEST(BaseRenderingContext2DTest, SubnormalFloatsDisabledDuringSoftwareRaster) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const gfx::Size kSize(10, 10);
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+      scope, CanvasContextCreationAttributesCore(), kSize);
+  context->CreateSoftwareSurface();
+  ASSERT_TRUE(context->HasBacking());
+
+  auto generator = sk_make_sp<cc::FakePaintImageGenerator>(
+      SkImageInfo::MakeN32Premul(10, 10), base::BindLambdaForTesting([]() {
+        EXPECT_TRUE(cc::ScopedSubnormalFloatDisabler::
+                        IsUnsupportedOrActiveForTesting());
+      }));
+  PaintImage paint_image = PaintImageBuilder::WithDefault()
+                               .set_id(PaintImage::GetNextId())
+                               .set_paint_image_generator(generator)
+                               .TakePaintImage();
+  context->GetOrCreatePaintCanvas()->drawImage(paint_image, 0, 0,
+                                               SkSamplingOptions(), nullptr);
+  ASSERT_TRUE(
+      cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());
+  context->FlushCanvasInternal(FlushReason::kOther);
+  EXPECT_EQ(generator->frames_decoded().size(), 1u);
+  EXPECT_TRUE(
+      cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());
 }
 
 }  // namespace

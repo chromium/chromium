@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 #include "base/process/memory.h"
+#include "cc/base/math_util.h"
 #include "cc/raster/playback_image_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -83,8 +84,12 @@ UnacceleratedStaticBitmapImage::CreateFromRaster(
       std::move(settings));
   image_provider.SetAnimatedImageFrameIndexes(animated_image_frame_index_map);
 
-  cc::SkiaPaintCanvas canvas(surface->getCanvas(), &image_provider);
-  draw_callback(canvas);
+  {
+    // Disable subnormal floats for performance and security reasons.
+    cc::ScopedSubnormalFloatDisabler disabler;
+    cc::SkiaPaintCanvas canvas(surface->getCanvas(), &image_provider);
+    draw_callback(canvas);
+  }
   sk_sp<SkImage> sk_image = surface->makeImageSnapshot();
   cc::PaintImage paint_image;
   if (sk_image) {

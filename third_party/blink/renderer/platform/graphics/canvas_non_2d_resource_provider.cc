@@ -20,6 +20,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/base/math_util.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -695,6 +696,8 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
 void CanvasNon2DResourceProvider::FlushRecording(
     cc::PaintRecord last_recording) {
   if (is_software_) {
+    // Disable subnormal floats for performance and security reasons.
+    cc::ScopedSubnormalFloatDisabler disabler;
     if (!skia_canvas_) {
       auto* image_provider = GetOrCreateImageProvider();
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(

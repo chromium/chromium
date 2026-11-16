@@ -610,6 +610,7 @@ _CONFIG = [
             'cc::PathEffect',
             'cc::RecordPaintCanvas',
             'cc::RefCountedBuffer',
+            'cc::ScopedSubnormalFloatDisabler',
             'cc::UsePaintCache',
             # Chromium geometry types.
             'gfx::DecomposedTransform',

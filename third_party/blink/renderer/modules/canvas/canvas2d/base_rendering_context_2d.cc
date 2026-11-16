@@ -37,6 +37,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
+#include "cc/base/math_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
@@ -975,6 +976,8 @@ void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
   // Invalidate the remembered SkImage ID so a 32-bit SkNextID::ImageID()
   // wraparound cannot match an old snapshot ID after modifying `surface_`.
   sw_snapshot_sk_image_id_ = 0u;
+  // Disable subnormal floats for performance and security reasons.
+  cc::ScopedSubnormalFloatDisabler disabler;
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
                                   GetOrCreateCanvasImageProvider());
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =

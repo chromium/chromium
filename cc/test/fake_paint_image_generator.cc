@@ -27,6 +27,13 @@ FakePaintImageGenerator::FakePaintImageGenerator(
 
 FakePaintImageGenerator::FakePaintImageGenerator(
     const SkImageInfo& info,
+    base::RepeatingClosure decode_callback)
+    : FakePaintImageGenerator(info) {
+  decode_callback_ = std::move(decode_callback);
+}
+
+FakePaintImageGenerator::FakePaintImageGenerator(
+    const SkImageInfo& info,
     const SkYUVAPixmapInfo& yuva_pixmap_info,
     std::vector<FrameMetadata> frames,
     bool allocate_discardable_memory,
@@ -75,6 +82,9 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
   CHECK(image_pixmap_.scalePixels(
       dst_pixmap, {SkFilterMode::kLinear, SkMipmapMode::kNearest}));
   decode_infos_.push_back(dst_info);
+  if (decode_callback_) {
+    decode_callback_.Run();
+  }
   return true;
 }
 

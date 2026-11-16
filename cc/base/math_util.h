@@ -351,6 +351,17 @@ class CC_BASE_EXPORT MathUtil {
   }
 };
 
+// Disables subnormal (denormal) floating-point numbers on the current thread
+// for the lifetime of the object (where supported, currently x86/x86_64 via the
+// MXCSR Flush-To-Zero and Denormals-Are-Zero flags) and restores the previous
+// floating-point control state on destruction.
+//
+// Subnormal float operations on x86 often trap to microcode and execute orders
+// of magnitude slower than normal float operations. Disabling them avoids:
+// - severe performance cliffs in float-heavy pixel/filter processing pipelines,
+//   and
+// - timing side channels caused by data-dependent subnormal values during
+//   software rendering.
 class CC_BASE_EXPORT ScopedSubnormalFloatDisabler {
  public:
   ScopedSubnormalFloatDisabler();
@@ -359,6 +370,9 @@ class CC_BASE_EXPORT ScopedSubnormalFloatDisabler {
 
   ScopedSubnormalFloatDisabler& operator=(const ScopedSubnormalFloatDisabler&) =
       delete;
+
+  static bool IsUnsupportedOrActiveForTesting();
+  static bool IsUnsupportedOrInactiveForTesting();
 
 #if defined(ARCH_CPU_X86_FAMILY)
  private:
