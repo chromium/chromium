@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -62,6 +63,8 @@ class AudioRendererSinkTestingPlatformSupport
       const media::AudioSinkParameters& params) override {
     return fake_sink_;
   }
+
+  SinkState GetSinkState() const { return fake_sink_->state(); }
 
  private:
   scoped_refptr<media::FakeAudioRendererSink> fake_sink_ =
@@ -115,20 +118,17 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
     auto platform_track =
         std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
 
-    auto* audio_component = MakeGarbageCollected<MediaStreamComponentImpl>(
+    audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         MakeGarbageCollected<MediaStreamSource>(
             "audio_id", MediaStreamSource::kTypeAudio, "audio_track",
             false /* remote */, std::move(source)),
         std::move(platform_track));
 
     static_cast<blink::MediaStreamAudioSource*>(
-        audio_component->Source()->GetPlatformSource())
-        ->ConnectToInitializedTrack(audio_component);
+        audio_component_->Source()->GetPlatformSource())
+        ->ConnectToInitializedTrack(audio_component_);
 
-    track_renderer_ = base::MakeRefCounted<TrackAudioRenderer>(
-        audio_component, dummy_page_.GetFrame(), String(),
-        base::BindRepeating(&TrackAudioRendererTest::OnRenderError,
-                            base::Unretained(this)));
+    RecreateRenderer();
   }
 
   // Simulates a stream of AudioData being captured, with inline format changes,
@@ -211,7 +211,19 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
     }
   }
 
+  void RecreateRenderer() {
+    track_renderer_ = base::MakeRefCounted<TrackAudioRenderer>(
+        audio_component_, dummy_page_.GetFrame(), String(),
+        base::BindRepeating(&TrackAudioRendererTest::OnRenderError,
+                            base::Unretained(this)));
+  }
+
   test::TaskEnvironment task_environment_;
+  // Must outlive `track_renderer_` because `~TrackAudioRenderer()` calls
+  // `Stop()` on the fake sink owned by `platform_`.
+  ScopedTestingPlatformSupport<AudioRendererSinkTestingPlatformSupport>
+      platform_;
+  Persistent<MediaStreamComponent> audio_component_;
   scoped_refptr<TrackAudioRenderer> track_renderer_;
 
  private:
@@ -233,8 +245,6 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
 
   THREAD_CHECKER(main_thread_checker_);
 
-  ScopedTestingPlatformSupport<AudioRendererSinkTestingPlatformSupport>
-      platform_;
   DummyPageHolder dummy_page_;
 
   int last_channels_ = -1;
@@ -250,6 +260,38 @@ TEST_P(TrackAudioRendererTest, SingleCapture) {
 
   SimulateDataCapture(kFrames);
 
+  SyncAllSequences();
+
+  EXPECT_EQ(track_renderer_->TotalFramesPushedForTesting(), kFrames);
+  EXPECT_EQ(track_renderer_->FramesInAudioShifterForTesting(), kFrames);
+
+  track_renderer_->Stop();
+}
+
+TEST_P(TrackAudioRendererTest, DestroyWithoutExplicitStop) {
+  track_renderer_->Start();
+  track_renderer_->Play();
+
+  SimulateDataCapture(kFrames);
+  SyncAllSequences();
+  EXPECT_EQ(platform_->GetSinkState(), SinkState::kPlaying);
+
+  // Releasing the renderer without an explicit Stop() should still stop the
+  // sink and unregister from the audio track.
+  track_renderer_.reset();
+  EXPECT_EQ(platform_->GetSinkState(), SinkState::kStopped);
+
+  audio_component_->SetEnabled(false);
+  SimulateDataCapture(kFrames);
+  SyncAllSequences();
+
+  // Verify that a new renderer on the same track still receives audio frames.
+  audio_component_->SetEnabled(true);
+  RecreateRenderer();
+  track_renderer_->Start();
+  track_renderer_->Play();
+
+  SimulateDataCapture(kFrames);
   SyncAllSequences();
 
   EXPECT_EQ(track_renderer_->TotalFramesPushedForTesting(), kFrames);
