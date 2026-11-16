@@ -4321,6 +4321,13 @@ class AXPosition {
     if (IsIgnored() || other.IsIgnored())
       return SlowCompareTo(other);
 
+    // Check for ancestor anchors before the normalization below, which can
+    // move a position into another subtree.
+    if (GetAnchor()->IsDescendantOfCrossingTreeBoundary(other.GetAnchor()) ||
+        other.GetAnchor()->IsDescendantOfCrossingTreeBoundary(GetAnchor())) {
+      return SlowCompareTo(other);
+    }
+
     // Normalize any text positions at the end of an anchor to equivalent
     // positions at the start of the next anchor. This will potentially make the
     // two positions not be ancestors of one another, if they originally were.

@@ -11576,6 +11576,34 @@ TEST_F(AXPositionTest, CompareToEmptyObjectAfterParagraphEnd) {
   EXPECT_GT(*start_of_button, *empty_container_position);
 }
 
+TEST_F(AXPositionTest, CompareToStartOfDescendantInEmbeddedObject) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // ++1 kRootWebArea "<embedded_object>B"
+  // ++++2 kGenericContainer "A<embedded_object>"
+  // ++++++3 kStaticText "A"
+  // ++++++4 kGenericContainer (empty)
+  // ++++5 kStaticText "B"
+  Init(TestAXTreeUpdate(
+      {ax::mojom::Role::kRootWebArea,
+       {{ax::mojom::Role::kGenericContainer,
+         {TestAXTreeUpdateNode("A"),
+          TestAXTreeUpdateNode(ax::mojom::Role::kGenericContainer, {})}},
+        TestAXTreeUpdateNode("B")}}));
+  const AXNode& root = *GetTree()->root();
+  const AXNode& empty_container = *root.children()[0]->children()[1];
+
+  auto after_embedded_object =
+      CreateTextPosition(root, 1, ax::mojom::TextAffinity::kDownstream);
+  auto start_of_descendant = CreateTextPosition(
+      empty_container, 0, ax::mojom::TextAffinity::kDownstream);
+
+  // The descendant's start, inside the object, equals the position after it.
+  EXPECT_EQ(0, *after_embedded_object->CompareTo(*start_of_descendant));
+  EXPECT_EQ(0, *start_of_descendant->CompareTo(*after_embedded_object));
+}
+
 TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
