@@ -186,6 +186,7 @@ enum {
   kSafeBrowsingNoProtectionReminderDismissed = 134,
   kSafeBrowsingNoProtectionReminderLastShown = 135,
   kSafeBrowsingNoProtectionReminderCount = 136,
+  kAutofillOffersAndLoyaltyCardsEnabled = 137,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -205,6 +206,10 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillCreditCardEnabled,
          {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone,
+          WriteBehavior::kWriteToBoth}},
+        {autofill::prefs::kAutofillOffersAndLoyaltyCardsEnabled,
+         {syncable_prefs_ids::kAutofillOffersAndLoyaltyCardsEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,
           WriteBehavior::kWriteToBoth}},
         {autofill::prefs::kAutofillHasSeenIban,
          {syncable_prefs_ids::kAutofillHasSeenIban, syncer::PREFERENCES,

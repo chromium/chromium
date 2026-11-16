@@ -408,6 +408,7 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="SafeBrowsingNoProtectionReminderDismissed"/>
   <int value="135" label="SafeBrowsingNoProtectionReminderLastShown"/>
   <int value="136" label="SafeBrowsingNoProtectionReminderCount"/>
+  <int value="137" label="AutofillOffersAndLoyaltyCardsEnabled"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

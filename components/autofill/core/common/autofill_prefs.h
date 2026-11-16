@@ -97,6 +97,10 @@ inline constexpr char kAutofillAtMemoryShortcutPromoImpressionCount[] =
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =
     "autofill.credit_card_enabled";
+// Boolean that is true if Google Wallet offers and loyalty cards are enabled
+// for autofill. Otherwise, filling of offers and loyalty cards is disabled.
+inline constexpr char kAutofillOffersAndLoyaltyCardsEnabled[] =
+    "autofill.offers_and_loyalty_cards_enabled";
 // Boolean that is true if FIDO Authentication is enabled for card unmasking.
 inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
     "autofill.credit_card_fido_auth_enabled";

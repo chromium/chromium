@@ -76,6 +76,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillCreditCardEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
+      kAutofillOffersAndLoyaltyCardsEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
       kAutofillPaymentCvcStorage, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
