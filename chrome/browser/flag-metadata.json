@@ -462,7 +462,7 @@
   {
     "name": "android-device-signals-disclaimer",
     "owners": [ "ssolarewicz@google.com", "cec-growth@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "android-elegant-text-height",
