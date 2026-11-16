@@ -90,23 +90,32 @@ bool AreUserProxyOverrideRulesAllowed(const PrefService* pref_service,
         // BUILDFLAG(IS_ANDROID)
 }
 
+bool IsUserOrExtensionProxyOverrideRules(const PrefService* pref_service) {
+  CHECK(pref_service);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(prefs::kProxyOverrideRules);
+  CHECK(pref);
+
+  return pref->IsExtensionControlled() ||
+         (pref->IsManaged() &&
+          pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
+              policy::POLICY_SCOPE_USER);
+#else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+  return false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+}
+
 bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
                                policy::PolicyService* policy_service) {
   CHECK(pref_service);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
-  if (AreUserProxyOverrideRulesAllowed(pref_service, policy_service)) {
-    return true;
-  }
-
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(prefs::kProxyOverrideRules);
-  CHECK(pref);
-
-  return !(pref->IsExtensionControlled() ||
-           (pref->IsManaged() &&
-            pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
-                policy::POLICY_SCOPE_USER));
+  return AreUserProxyOverrideRulesAllowed(pref_service, policy_service) ||
+         !IsUserOrExtensionProxyOverrideRules(pref_service);
 #else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
   return true;

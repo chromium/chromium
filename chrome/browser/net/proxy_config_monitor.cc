@@ -35,7 +35,8 @@
 
 using content::BrowserThread;
 
-ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
+ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile,
+                                       bool record_affiliation_metrics) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile, base::NotFatalUntil::M161);
 
@@ -64,7 +65,7 @@ ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
             profile->GetPrefs(), g_browser_process->local_state(),
             profile->GetProfilePolicyConnector()->policy_service(),
-            enterprise_proxy_service);
+            enterprise_proxy_service, record_affiliation_metrics);
   }
 
   proxy_config_service_ = ProxyServiceFactory::CreateProxyConfigService(

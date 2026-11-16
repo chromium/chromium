@@ -44,7 +44,8 @@ class ProxyServiceFactory {
       PrefService* profile_prefs,
       PrefService* local_state_prefs,
       policy::PolicyService* policy_service,
-      enterprise_net::EnterpriseProxyService* enterprise_proxy_service);
+      enterprise_net::EnterpriseProxyService* enterprise_proxy_service,
+      bool record_affiliation_metrics = false);
 
   // Creates a PrefProxyConfigTracker that tracks local state only. This tracker
   // should be used for the system request context and the signin screen

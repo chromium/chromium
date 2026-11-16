@@ -18,6 +18,11 @@ namespace enterprise_net {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Returns true if the device has trusted OS/platform management (such as
+// EMM/MDM or Active Directory), independent of feature flags or CBCM
+// enrollment.
+bool IsDevicePlatformManaged();
+
 // Returns true if the browser/device is managed (either via CBCM device
 // affiliation IDs or trusted OS/platform management such as EMM/MDM/AD).
 // Trusted OS/platform management only counts when the

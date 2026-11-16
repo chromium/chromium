@@ -30,6 +30,16 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+#include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/enterprise/net/core/proxy_policy_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 constexpr net::NetworkTrafficAnnotationTag
@@ -325,6 +335,32 @@ bool ShouldAttachDynamicRoutingRules(
           active_config.is_update_in_progress);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+// Classifies whether currently active `kProxyOverrideRules` would be affected
+// by enforcing affiliation on trusted platform-managed devices without CBCM.
+proxy_config::ProxyPlatformAffiliationImpact ComputePlatformAffiliationImpact(
+    const PrefService* pref_service,
+    policy::PolicyService* policy_service) {
+  if (!proxy_config::IsUserOrExtensionProxyOverrideRules(pref_service)) {
+    return proxy_config::ProxyPlatformAffiliationImpact::kUnaffected;
+  }
+
+  const policy::PolicyMap& policies = policy_service->GetPolicies(
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+  if (!policies.GetDeviceAffiliationIds().empty() ||
+      !enterprise_net::IsDevicePlatformManaged()) {
+    return proxy_config::ProxyPlatformAffiliationImpact::kUnaffected;
+  }
+
+  return enterprise_net::IsUnaffiliatedUserProxyPolicyAllowed(policies)
+             ? proxy_config::ProxyPlatformAffiliationImpact::
+                   kAllowedByForAllUsers
+             : proxy_config::ProxyPlatformAffiliationImpact::kWouldBeBlocked;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -455,11 +491,19 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
     PrefService* pref_service,
     scoped_refptr<base::SingleThreadTaskRunner>
         proxy_config_service_task_runner,
-    policy::PolicyService* policy_service)
+    policy::PolicyService* policy_service,
+    bool record_affiliation_metrics)
     : pref_service_(pref_service),
       policy_service_(policy_service),
       proxy_config_service_impl_(nullptr),
-      proxy_config_service_task_runner_(proxy_config_service_task_runner) {
+      proxy_config_service_task_runner_(proxy_config_service_task_runner)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+      ,
+      record_affiliation_metrics_(record_affiliation_metrics)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+{
   pref_config_state_ =
       ReadPrefConfig(pref_service_, &pref_config_, policy_service_);
   active_config_state_ = pref_config_state_;
@@ -487,6 +531,15 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
                             base::Unretained(this)));
     if (policy_service_) {
       policy_service_observation_.Observe(policy_service_);
+      if (record_affiliation_metrics_) {
+        if (!policy_service_->IsInitializationComplete(
+                policy::POLICY_DOMAIN_CHROME)) {
+          policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+          is_observing_policy_service_init_ = true;
+        } else {
+          MaybeRecordProxyOverrideRulesAffiliationMetrics(pref_config_.value());
+        }
+      }
     }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
@@ -499,10 +552,12 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
     scoped_refptr<base::SingleThreadTaskRunner>
         proxy_config_service_task_runner,
     policy::PolicyService* policy_service,
-    enterprise_net::EnterpriseProxyService* enterprise_proxy_service)
+    enterprise_net::EnterpriseProxyService* enterprise_proxy_service,
+    bool record_affiliation_metrics)
     : PrefProxyConfigTrackerImpl(pref_service,
                                  proxy_config_service_task_runner,
-                                 policy_service) {
+                                 policy_service,
+                                 record_affiliation_metrics) {
   if (enterprise_proxy_service) {
     enterprise_proxy_observation_.Observe(enterprise_proxy_service);
     active_dynamic_routing_config_ =
@@ -537,6 +592,10 @@ void PrefProxyConfigTrackerImpl::DetachFromPrefService() {
   proxy_config_service_impl_ = nullptr;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+  if (is_observing_policy_service_init_ && policy_service_) {
+    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_observing_policy_service_init_ = false;
+  }
   // Stop observing policy provider updates for user affiliation changes.
   policy_service_observation_.Reset();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
@@ -771,10 +830,76 @@ void PrefProxyConfigTrackerImpl::OnEnterpriseProxyServiceDestroyed() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+void PrefProxyConfigTrackerImpl::OnPolicyServiceInitialized(
+    policy::PolicyDomain domain) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (domain != policy::POLICY_DOMAIN_CHROME) {
+    return;
+  }
+  if (is_observing_policy_service_init_ && policy_service_) {
+    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_observing_policy_service_init_ = false;
+  }
+  OnProxyPrefChanged();
+}
+
 void PrefProxyConfigTrackerImpl::OnProviderUpdatePropagated(
     policy::ConfigurationPolicyProvider* provider) {
   DCHECK(thread_checker_.CalledOnValidThread());
   OnProxyPrefChanged();
+}
+
+std::optional<PrefProxyConfigTrackerImpl::AffiliationMetricsSource>
+PrefProxyConfigTrackerImpl::GetAffiliationMetricsSource() const {
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(proxy_config::prefs::kProxyOverrideRules);
+  CHECK(pref);
+  // `MANAGED_STORE` strictly shadows `EXTENSION_STORE` in `PrefValueStore`
+  // (`IsExtensionControlled()` returns false while `IsManaged()` is true). Only
+  // the active controlling source is reported so shadowed extension settings
+  // are not counted unless policy is removed and the extension takes control.
+  if (pref->IsManaged()) {
+    return AffiliationMetricsSource::kPolicy;
+  }
+  if (pref->IsExtensionControlled()) {
+    return AffiliationMetricsSource::kExtension;
+  }
+  return std::nullopt;
+}
+
+void PrefProxyConfigTrackerImpl::
+    MaybeRecordProxyOverrideRulesAffiliationMetrics(
+        const net::ProxyConfig& config) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!record_affiliation_metrics_ || !pref_service_ || !policy_service_ ||
+      !policy_service_->IsInitializationComplete(
+          policy::POLICY_DOMAIN_CHROME) ||
+      config.proxy_override_rules().empty()) {
+    return;
+  }
+
+  const std::optional<AffiliationMetricsSource> source =
+      GetAffiliationMetricsSource();
+  if (!source) {
+    return;
+  }
+
+  const proxy_config::ProxyPlatformAffiliationImpact impact =
+      ComputePlatformAffiliationImpact(pref_service_, policy_service_);
+  std::optional<proxy_config::ProxyPlatformAffiliationImpact>& last_recorded =
+      *source == AffiliationMetricsSource::kPolicy
+          ? last_recorded_policy_impact_
+          : last_recorded_extension_impact_;
+  if (last_recorded == impact) {
+    return;
+  }
+
+  last_recorded = impact;
+  const char* histogram_name =
+      *source == AffiliationMetricsSource::kPolicy
+          ? "Enterprise.ProxyOverrideRules.PlatformAffiliationImpact.Policy"
+          : "Enterprise.ProxyOverrideRules.PlatformAffiliationImpact.Extension";
+  base::UmaHistogramEnumeration(histogram_name, impact);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
@@ -862,6 +987,11 @@ void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {
   net::ProxyConfigWithAnnotation new_config;
   ProxyPrefs::ConfigState config_state =
       ReadPrefConfig(pref_service_, &new_config, policy_service_);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  MaybeRecordProxyOverrideRulesAffiliationMetrics(new_config.value());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
   if (pref_config_state_ != config_state ||
       (pref_config_state_ != ProxyPrefs::CONFIG_UNSET &&
        !pref_config_.value().Equals(new_config.value()))) {

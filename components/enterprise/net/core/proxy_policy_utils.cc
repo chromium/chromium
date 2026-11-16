@@ -41,20 +41,14 @@ bool IsAffiliationEnforcedOnPlatformManagedDevices() {
 
 }  // namespace
 
-bool IsDeviceManaged(const policy::PolicyMap& policies) {
-  if (!policies.GetDeviceAffiliationIds().empty()) {
-    return true;
-  }
-
-  // When disabled, `IsDeviceManaged()` reduces to
-  // `!policies.GetDeviceAffiliationIds().empty()`, matching the check prior to
-  // https://crrev.com/c/8618781 in both `CheckUserAffiliatedProxyPolicy()` and
-  // `proxy_config::AreUserProxyOverrideRulesAllowed()`.
-  if (!IsAffiliationEnforcedOnPlatformManagedDevices()) {
-    return false;
-  }
-
-  // Note: On Android, `AndroidManagementStatusProvider` caches the EMM
+bool IsDevicePlatformManaged() {
+  // Note: On Windows and macOS, `DomainEnrollmentStatusProvider` is uncached
+  // (`RequiresCache() == false`) and queries domain enrollment synchronously,
+  // whereas `EnterpriseMDMManagementStatusProvider` (Windows and macOS) and
+  // `AzureActiveDirectory*StatusProvider` (Windows) read from `local_state` and
+  // refresh asynchronously on startup.
+  //
+  // On Android, `AndroidManagementStatusProvider` caches the EMM
   // management state in `local_state` (`kEnterpriseMDMManagementAndroid`) and
   // refreshes it asynchronously via JNI on startup. On the very first cold run
   // before the cache is populated, this may return false until the next policy
@@ -74,6 +68,15 @@ bool IsDeviceManaged(const policy::PolicyMap& policies) {
   return policy::PlatformManagementService::GetInstance()
              ->GetManagementAuthorityTrustworthiness() >=
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
+}
+
+bool IsDeviceManaged(const policy::PolicyMap& policies) {
+  if (!policies.GetDeviceAffiliationIds().empty()) {
+    return true;
+  }
+
+  return IsAffiliationEnforcedOnPlatformManagedDevices() &&
+         IsDevicePlatformManaged();
 }
 
 bool IsUnaffiliatedUserProxyPolicyAllowed(const policy::PolicyMap& policies) {

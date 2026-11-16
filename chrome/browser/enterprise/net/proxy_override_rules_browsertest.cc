@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
@@ -552,6 +553,10 @@ class ProxyOverrideRulesPlatformManagedDeviceNotEnforcedBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ProxyOverrideRulesPlatformManagedDeviceNotEnforcedBrowserTest,
     AppliedWithoutEnableForAllUsers) {
+  constexpr char kPolicyImpactHistogram[] =
+      "Enterprise.ProxyOverrideRules.PlatformAffiliationImpact.Policy";
+  base::HistogramTester histogram_tester;
+
   base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
@@ -563,6 +568,24 @@ IN_PROC_BROWSER_TEST_F(
       "http://%s:%d/simple.html", kDestinationHost, kUnreachablePort));
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Opening an incognito window creates an OTR ProxyConfigMonitor; verify it
+  // does not emit a duplicate sample.
+  CreateIncognitoBrowser();
+#endif
+
+  // Emitted once for the regular profile (not duplicated by Safe Browsing or
+  // Incognito ProxyConfigMonitors).
+  histogram_tester.ExpectUniqueSample(
+      kPolicyImpactHistogram,
+      proxy_config::ProxyPlatformAffiliationImpact::kWouldBeBlocked, 1);
+
+  SetEnableForAllUsers(true);
+  histogram_tester.ExpectBucketCount(
+      kPolicyImpactHistogram,
+      proxy_config::ProxyPlatformAffiliationImpact::kAllowedByForAllUsers, 1);
+  histogram_tester.ExpectTotalCount(kPolicyImpactHistogram, 2);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID)

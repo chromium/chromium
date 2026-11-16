@@ -55,14 +55,15 @@ ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
     PrefService* profile_prefs,
     PrefService* local_state_prefs,
     policy::PolicyService* policy_service,
-    enterprise_net::EnterpriseProxyService* enterprise_proxy_service) {
+    enterprise_net::EnterpriseProxyService* enterprise_proxy_service,
+    bool record_affiliation_metrics) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ash::ProxyConfigServiceImpl>(
       profile_prefs, local_state_prefs, nullptr);
 #else
   return std::make_unique<PrefProxyConfigTrackerImpl>(
       profile_prefs, /*proxy_config_service_task_runner=*/nullptr,
-      policy_service, enterprise_proxy_service);
+      policy_service, enterprise_proxy_service, record_affiliation_metrics);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

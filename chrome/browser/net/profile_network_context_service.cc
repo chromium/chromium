@@ -517,7 +517,9 @@ bool GetHttpCacheBackendResetParam(
 
 ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
     : profile_(profile),
-      proxy_config_monitor_(std::make_unique<ProxyConfigMonitor>(profile)) {
+      proxy_config_monitor_(std::make_unique<ProxyConfigMonitor>(
+          profile,
+          /*record_affiliation_metrics=*/profile->IsRegularProfile())) {
   TRACE_EVENT0("startup", "ProfileNetworkContextService::ctor");
   PrefService* profile_prefs = profile->GetPrefs();
   quic_allowed_.Init(prefs::kQuicAllowed, profile_prefs,

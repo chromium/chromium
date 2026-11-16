@@ -3259,6 +3259,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(ProxyPlatformAffiliationImpact) -->
+
+<enum name="ProxyPlatformAffiliationImpact">
+  <int value="0" label="Unaffected"/>
+  <int value="1"
+      label="Platform-managed device, allowed by ForAllUsers policy"/>
+  <int value="2" label="Platform-managed device, would be blocked on rollout"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/proxy_config/pref_proxy_config_tracker_impl.h:ProxyPlatformAffiliationImpact) -->
+
 <enum name="PsmResult">
   <int value="0" label="Successful Determination"/>
   <int value="1" label="Create RLWE client library Error"/>

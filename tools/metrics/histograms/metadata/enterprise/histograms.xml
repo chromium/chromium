@@ -4672,6 +4672,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.ProxyOverrideRules.PlatformAffiliationImpact.{Source}"
+    enum="ProxyPlatformAffiliationImpact" expires_after="2027-11-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Records the impact of enforcing platform-level device management (such as
+    AD/GPO or MDM without CBCM) on a currently viable ProxyOverrideRules
+    configuration controlled by {Source}. Recorded for regular profiles once
+    PolicyService initialization completes when active ProxyOverrideRules are
+    present, and whenever that source's impact classification changes within the
+    session (so a profile whose classification transitions mid-session can emit
+    to multiple buckets).
+
+    Note: The &quot;Platform-managed device, would be blocked on rollout&quot;
+    bucket is only populated while
+    EnforceProxyAffiliationOnPlatformManagedDevices is disabled (e.g. on desktop
+    prior to rollout). When enforcement is enabled (such as on Android by
+    default or in enabled Finch arms), unaffiliated user-scoped policy and
+    extension rules are rejected before populating ProxyConfig, so no sample is
+    recorded for blocked configurations and a zero count in that bucket does not
+    indicate zero blocked users. Additionally, because local_state-cached
+    PlatformManagementService providers (MDM/Entra/EMM) refresh asynchronously
+    on startup and are not directly observed here, cold-start sessions before
+    the cache is populated may initially record &quot;Unaffected&quot; and only
+    emit &quot;Platform-managed device, would be blocked on rollout&quot; on a
+    subsequent policy or preference refresh.
+  </summary>
+  <token key="Source">
+    <variant name="Extension" summary="an extension"/>
+    <variant name="Policy" summary="the ProxyOverrideRules policy"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
     expires_after="2027-04-18">
   <owner>bfranz@chromium.org</owner>

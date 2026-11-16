@@ -44,7 +44,8 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   // Creates a ProxyConfigMonitor that gets proxy settings from |profile| and
   // watches for changes. The created ProxyConfigMonitor must be destroyed
   // before |profile|.
-  explicit ProxyConfigMonitor(Profile* profile);
+  explicit ProxyConfigMonitor(Profile* profile,
+                              bool record_affiliation_metrics = false);
 
   // Creates a ProxyConfigMonitor that gets proxy settings from the
   // |local_state|, for use with NetworkContexts not

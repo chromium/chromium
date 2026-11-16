@@ -208,6 +208,7 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   // extension, it is always allowed.
   SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/0);
+  EXPECT_FALSE(IsUserOrExtensionProxyOverrideRules(&prefs));
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 
   // Scenario 1: `kProxyOverrideRules` is controlled by an extension.
@@ -217,10 +218,12 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
 
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
+  EXPECT_TRUE(IsUserOrExtensionProxyOverrideRules(&prefs));
   VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
                                 /*expected_restricted=*/true);
 
   prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
+  EXPECT_TRUE(IsUserOrExtensionProxyOverrideRules(&prefs));
   VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
                                 /*expected_restricted=*/true);
 
@@ -231,12 +234,14 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   // If rules are set at the machine scope, they are always allowed.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
+  EXPECT_FALSE(IsUserOrExtensionProxyOverrideRules(&prefs));
   VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
                                 /*expected_restricted=*/false);
 
   // If rules are set at the user scope, they are restricted for unaffiliated
   // users.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
+  EXPECT_TRUE(IsUserOrExtensionProxyOverrideRules(&prefs));
   VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
                                 /*expected_restricted=*/true);
 }

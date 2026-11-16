@@ -55,6 +55,12 @@ PROXY_CONFIG_EXPORT bool AreUserProxyOverrideRulesAllowed(
     const PrefService* pref_service,
     policy::PolicyService* policy_service);
 
+// Returns true if `kProxyOverrideRules` is currently controlled by an extension
+// or by a user-scoped policy (i.e. sources subject to user affiliation checks
+// on desktop and Android). `pref_service` must be non-null.
+PROXY_CONFIG_EXPORT bool IsUserOrExtensionProxyOverrideRules(
+    const PrefService* pref_service);
+
 // Returns whether the currently configured `kProxyOverrideRules` preference
 // value should be applied to `ProxyConfig::ProxyOverrideRule`s. Unlike
 // `AreUserProxyOverrideRulesAllowed()`, this inspects the active preference's

@@ -28,6 +28,8 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+#include <optional>
+
 #include "base/scoped_observation.h"
 #include "components/policy/core/common/policy_service.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
@@ -50,6 +52,27 @@ PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableProxyOverrideRules);
 // Killswitch for preserving explicit proxy rules when system proxy is unset.
 PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(
     kProxyOverrideRulesFixUnsetSystemProxy);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+namespace proxy_config {
+
+// Impact of enforcing platform-level device management on currently viable
+// `ProxyOverrideRules` configurations.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ProxyPlatformAffiliationImpact)
+enum class ProxyPlatformAffiliationImpact {
+  kUnaffected = 0,
+  kAllowedByForAllUsers = 1,
+  kWouldBeBlocked = 2,
+  kMaxValue = kWouldBeBlocked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:ProxyPlatformAffiliationImpact)
+
+}  // namespace proxy_config
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 // A net::ProxyConfigService implementation that applies preference proxy
 // settings (pushed from PrefProxyConfigTrackerImpl) as overrides to the proxy
@@ -122,19 +145,24 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
     ,
+      public policy::PolicyService::Observer,
       public policy::PolicyService::ProviderUpdateObserver
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
 {
  public:
-  // |proxy_config_service_task_runner| is the thread the ProxyConfigService
+  // `proxy_config_service_task_runner` is the thread the `ProxyConfigService`
   // will live on. Use nullptr if it lives on the current thread.
-  // |policy_service| is required to check the affiliation over the user, but
+  // `policy_service` is required to check the affiliation over the user, but
   // can be null if its usage is not applicable to the caller.
+  // `record_affiliation_metrics` should be set to true on at most one tracker
+  // per regular user profile so UMA counts are not duplicated across auxiliary
+  // or off-the-record network contexts.
   PrefProxyConfigTrackerImpl(PrefService* pref_service,
                              scoped_refptr<base::SingleThreadTaskRunner>
                                  proxy_config_service_task_runner,
-                             policy::PolicyService* policy_service = nullptr);
+                             policy::PolicyService* policy_service = nullptr,
+                             bool record_affiliation_metrics = false);
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
   PrefProxyConfigTrackerImpl(
@@ -142,7 +170,8 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
       scoped_refptr<base::SingleThreadTaskRunner>
           proxy_config_service_task_runner,
       policy::PolicyService* policy_service,
-      enterprise_net::EnterpriseProxyService* enterprise_proxy_service);
+      enterprise_net::EnterpriseProxyService* enterprise_proxy_service,
+      bool record_affiliation_metrics = false);
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
   PrefProxyConfigTrackerImpl(const PrefProxyConfigTrackerImpl&) = delete;
@@ -208,6 +237,9 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+  // policy::PolicyService::Observer implementation:
+  void OnPolicyServiceInitialized(policy::PolicyDomain domain) override;
+
   // policy::PolicyService::ProviderUpdateObserver implementation:
   void OnProviderUpdatePropagated(
       policy::ConfigurationPolicyProvider* provider) override;
@@ -260,6 +292,34 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+  enum class AffiliationMetricsSource {
+    kPolicy,
+    kExtension,
+  };
+
+  // Returns the active `kProxyOverrideRules` source (`kPolicy` or
+  // `kExtension`), or `std::nullopt` if controlled by neither.
+  std::optional<AffiliationMetricsSource> GetAffiliationMetricsSource() const;
+
+  // Classifies and records platform-affiliation rollout impact for active
+  // `config` override rules, deduplicating unchanged states across refreshes.
+  void MaybeRecordProxyOverrideRulesAffiliationMetrics(
+      const net::ProxyConfig& config);
+
+  // True only for the primary regular-profile tracker to avoid duplicate UMA
+  // counts from Safe Browsing or Incognito network contexts.
+  const bool record_affiliation_metrics_ = false;
+  // Tracks whether `this` is registered as a `PolicyService::Observer` while
+  // waiting for `POLICY_DOMAIN_CHROME` initialization to complete.
+  bool is_observing_policy_service_init_ = false;
+  // Caches the last emitted impact bucket per controlling source in this
+  // profile session so routine policy/pref refreshes (and fallback between
+  // policy and extension control) only re-emit when a source's classification
+  // changes.
+  std::optional<proxy_config::ProxyPlatformAffiliationImpact>
+      last_recorded_policy_impact_;
+  std::optional<proxy_config::ProxyPlatformAffiliationImpact>
+      last_recorded_extension_impact_;
   base::ScopedObservation<policy::PolicyService,
                           policy::PolicyService::ProviderUpdateObserver>
       policy_service_observation_{this};
