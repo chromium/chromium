@@ -50,11 +50,6 @@
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/exo/shell_surface.h"
-#include "components/exo/shell_surface_util.h"
-#include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/window_properties.h"
-#include "components/exo/wm_helper.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
@@ -62,7 +57,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/aura/window.h"
@@ -89,8 +83,6 @@ constexpr char kSrcPattern[] = "example.com";
 constexpr char kRuleName[] = "rule #1";
 constexpr char kRuleId[] = "testid1";
 constexpr char kLabel[] = "label";
-constexpr char kWindowId[] = "windowId123";
-constexpr mojo::ReceiverId kReceiverId = 1;
 
 const base::TimeDelta kScreenShareResumeDelayForTesting = base::Milliseconds(0);
 
@@ -441,102 +433,6 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, WarningProceededReportedAfterCapture) {
       data_controls::IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
           web_contents->GetLastCommittedURL().spec(),
           DlpRulesManager::Restriction::kScreenshot, kRuleName, kRuleId)));
-}
-
-IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
-  SetupReporting();
-
-  // Create a Lacros-like Exo surface.
-  exo::WMHelper wm_helper;
-  std::unique_ptr<exo::ShellSurface> shell_surface =
-      exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
-  shell_surface->root_surface()->window()->TrackOcclusionState();
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-
-  aura::Window* root_window =
-      browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
-  ScreenshotArea fullscreen = ScreenshotArea::CreateForAllRootWindows();
-  ScreenshotArea window_area = ScreenshotArea::CreateForWindow(window);
-  const gfx::Rect rect = window->GetBoundsInRootWindow();
-  gfx::Rect out_rect(rect);
-  out_rect.Offset(window->GetBoundsInRootWindow().width(),
-                  window->GetBoundsInRootWindow().height());
-  gfx::Rect in_rect(rect);
-  in_rect.Offset(window->GetBoundsInRootWindow().width() / 2,
-                 window->GetBoundsInRootWindow().height() / 2);
-  ScreenshotArea partial_out =
-      ScreenshotArea::CreateForPartialWindow(root_window, out_rect);
-  ScreenshotArea partial_in =
-      ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
-
-  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(window_area, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(
-      /*blocked_count=*/0, /*warned_count=*/0,
-      /*total_count=*/4,
-      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
-      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
-  CheckEvents(DlpRulesManager::Restriction::kScreenshot, kSrcPattern,
-              DlpRulesManager::Level::kBlock, 0u);
-
-  DlpContentManagerAsh* manager =
-      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
-  exo::SetShellApplicationId(window, kWindowId);
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screenshot_restricted_);
-  CheckScreenshotRestriction(fullscreen, false);
-  CheckScreenshotRestriction(window_area, false);
-  CheckScreenshotRestriction(partial_in, false);
-  CheckScreenshotRestriction(partial_out, true);
-  VerifyHistogramCounts(
-      /*blocked_count=*/3, /*warned_count=*/0,
-      /*total_count=*/8,
-      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
-      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
-  CheckEvents(DlpRulesManager::Restriction::kScreenshot, kSrcPattern,
-              DlpRulesManager::Level::kBlock, 3u);
-
-  window->Hide();
-  manager->OnWindowOcclusionChanged(window);
-  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(window_area, /*expected_allowed=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(
-      /*blocked_count=*/4, /*warned_count=*/0,
-      /*total_count=*/12,
-      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
-      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
-  CheckEvents(DlpRulesManager::Restriction::kScreenshot, kSrcPattern,
-              DlpRulesManager::Level::kBlock, 4u);
-
-  window->Show();
-  manager->OnWindowOcclusionChanged(window);
-  CheckScreenshotRestriction(fullscreen, false);
-  CheckScreenshotRestriction(window_area, false);
-  CheckScreenshotRestriction(partial_in, false);
-  CheckScreenshotRestriction(partial_out, true);
-  VerifyHistogramCounts(
-      /*blocked_count=*/7, /*warned_count=*/0,
-      /*total_count=*/16,
-      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
-      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
-  CheckEvents(DlpRulesManager::Restriction::kScreenshot, kSrcPattern,
-              DlpRulesManager::Level::kBlock, 7u);
-
-  manager->OnWindowDestroying(window);
-  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(
-      /*blocked_count=*/7, /*warned_count=*/0,
-      /*total_count=*/19,
-      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
-      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
-  CheckEvents(DlpRulesManager::Restriction::kScreenshot, kSrcPattern,
-              DlpRulesManager::Level::kBlock, 7u);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
@@ -1178,109 +1074,6 @@ class DlpContentManagerAshScreenShareBrowserTest
     }
   }
 };
-
-// Tests that screenshare is correctly paused for visibility changes of
-// Lacros-like windows (Exo surfaces).
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       ScreenShareExoSurface) {
-  SetupReporting();
-
-  // Create a Lacros-like Exo surface.
-  exo::WMHelper wm_helper;
-  std::unique_ptr<exo::ShellSurface> shell_surface =
-      exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
-  shell_surface->root_surface()->window()->TrackOcclusionState();
-
-  DlpContentManagerAsh* manager =
-      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
-  exo::SetShellApplicationId(shell_surface->GetWidget()->GetNativeWindow(),
-                             kWindowId);
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screen_share_restricted_);
-  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
-      state_change_cb;
-  base::MockCallback<base::RepeatingClosure> stop_cb;
-
-  // Run for fullscreen and window share.
-  const auto root_media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_SCREEN,
-      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
-  const auto window_media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_WINDOW,
-      shell_surface->GetWidget()->GetNativeWindow());
-  for (const auto media_id : {root_media_id, window_media_id}) {
-    // Hide the confidential data.
-    shell_surface->GetWidget()->Hide();
-
-    // Setup callbacks to expect a single PAUSE call.
-    EXPECT_CALL(stop_cb, Run()).Times(0);
-    EXPECT_CALL(state_change_cb,
-                Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
-        .Times(1);
-    manager->OnScreenShareStarted(kLabel, {media_id}, application_title_,
-                                  stop_cb.Get(), state_change_cb.Get(),
-                                  base::DoNothing());
-    // Show the confidential data.
-    shell_surface->GetWidget()->Show();
-    manager->OnScreenShareStopped(kLabel, media_id);
-  }
-}
-
-// Tests if screenshare restriction on a Lacros-like windows (Exo surfaces) is
-// working if the restriction is sent to ash before the window gets initialized
-// there.
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       ScreenShareExoSurfaceCachedRestrictions) {
-  SetupReporting();
-
-  // Create a Lacros-like Exo surface.
-  exo::WMHelper wm_helper;
-  std::unique_ptr<exo::ShellSurface> shell_surface =
-      exo::test::ShellSurfaceBuilder({640, 480})
-          .SetNoCommit()
-          .BuildShellSurface();
-  shell_surface->root_surface()->Commit();
-  shell_surface->root_surface()->window()->TrackOcclusionState();
-
-  DlpContentManagerAsh* manager =
-      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screenshot_restricted_);
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      empty_restriction_set_);
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screen_share_restricted_);
-  exo::SetShellApplicationId(shell_surface->GetWidget()->GetNativeWindow(),
-                             kWindowId);
-  shell_surface->root_surface()->Commit();
-  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
-      state_change_cb;
-  base::MockCallback<base::RepeatingClosure> stop_cb;
-
-  // Run for fullscreen and window share.
-  const auto root_media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_SCREEN,
-      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
-  const auto window_media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_WINDOW,
-      shell_surface->GetWidget()->GetNativeWindow());
-  for (const auto media_id : {root_media_id, window_media_id}) {
-    // Hide the confidential data.
-    shell_surface->GetWidget()->Hide();
-
-    // Setup callbacks to expect a single PAUSE call.
-    EXPECT_CALL(stop_cb, Run()).Times(0);
-    EXPECT_CALL(state_change_cb,
-                Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
-        .Times(1);
-    manager->OnScreenShareStarted(kLabel, {media_id}, application_title_,
-                                  stop_cb.Get(), state_change_cb.Get(),
-                                  base::DoNothing());
-    // Show the confidential data.
-    shell_surface->GetWidget()->Show();
-    manager->OnScreenShareStopped(kLabel, media_id);
-  }
-}
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        ScreenShareNotification) {
@@ -2049,45 +1842,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       /*total_count=*/6,
       /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
       /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
-}
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       ScreenShareWarnedFromLacrosDuringAllowed) {
-  SetupReporting();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
-  aura::Window* root_window =
-      browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
-  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_SCREEN, root_window);
-
-  DlpContentManagerAsh* manager =
-      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
-  testing::InSequence s;
-  EXPECT_CALL(state_change_cb_,
-              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
-      .Times(1);
-  EXPECT_CALL(state_change_cb_,
-              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
-      .Times(1);
-
-  manager->OnScreenShareStarted(kLabel, {media_id}, application_title_,
-                                stop_cb_.Get(), state_change_cb_.Get(),
-                                /*source_callback=*/base::DoNothing());
-  exo::SetShellApplicationId(browser()->GetWindow()->GetNativeWindow(),
-                             kWindowId);
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screen_share_warned_);
-  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
-  DismissDialog(/*allow=*/true);
-  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
-
-  // The window contents should already be cached as allowed by the user, so
-  // this should not trigger a new warning. // TODO: this is ignored due to no
-  // change
-  manager->OnWindowRestrictionChanged(kReceiverId, kWindowId,
-                                      screen_share_warned_);
-  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 }
 
 // Starting screen sharing and visiting other tabs should create exactly one

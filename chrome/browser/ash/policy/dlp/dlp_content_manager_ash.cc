@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
-#include "ash/shell.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/policy/dlp/window_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -27,13 +25,10 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/exo/shell_surface_util.h"
-#include "components/exo/surface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -70,30 +65,6 @@ void InterruptVideoRecording() {
     ShowDlpVideoCaptureStoppedNotification();
 }
 
-bool IsAnyChildVisible(aura::Window* window) {
-  if (window->GetOcclusionState() == aura::Window::OcclusionState::VISIBLE)
-    return true;
-  for (aura::Window* child : window->children()) {
-    if (IsAnyChildVisible(child))
-      return true;
-  }
-  return false;
-}
-
-// Retrieves a child representing ExoSurface.
-aura::Window* FindSurface(aura::Window* window) {
-  if (!window)
-    return nullptr;
-  if (exo::Surface::AsSurface(window))
-    return window;
-  for (aura::Window* child : window->children()) {
-    auto* found_window = FindSurface(child);
-    if (found_window)
-      return found_window;
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 static DlpContentManagerAsh* g_dlp_content_manager = nullptr;
@@ -110,9 +81,6 @@ void DlpContentManagerAsh::OnWindowOcclusionChanged(aura::Window* window) {
 }
 
 void DlpContentManagerAsh::OnWindowDestroying(aura::Window* window) {
-  surface_observers_.erase(window);
-  window_observers_.erase(window);
-  confidential_windows_.erase(window);
   MaybeChangeOnScreenRestrictions();
 }
 
@@ -284,85 +252,11 @@ void DlpContentManagerAsh::OnScreenShareStopped(
   RemoveScreenShare(label, media_id);
 }
 
-// TODO(b/308912502): migrate from mojo crosapi to wayland IPC. The current
-// implementation depends on the client keeping the connection for its whole
-// lifetime.
-void DlpContentManagerAsh::OnWindowRestrictionChanged(
-    mojo::ReceiverId receiver_id,
-    const std::string& window_id,
-    const DlpContentRestrictionSet& restrictions) {
-  aura::Window* window = ash::GetShellSurfaceWindow(window_id);
-  if (window) {
-    pending_restrictions_.erase(window_id);
-    confidential_windows_[window] = restrictions;
-    window_observers_[window] =
-        std::make_unique<DlpWindowObserver>(window, this);
-    aura::Window* surface = FindSurface(window);
-    if (surface) {
-      surface_observers_[window] =
-          std::make_unique<DlpWindowObserver>(surface, this);
-    }
-    MaybeChangeOnScreenRestrictions();
-  } else {
-    if (restrictions.IsEmpty()) {
-      pending_restrictions_.erase(window_id);
-      auto iter = pending_restrictions_owner_.find(receiver_id);
-      if (iter != pending_restrictions_owner_.end()) {
-        iter->second.erase(window_id);
-        if (iter->second.empty()) {
-          pending_restrictions_owner_.erase(iter);
-        }
-      }
-    } else {
-      pending_restrictions_.insert({window_id, {receiver_id, restrictions}});
-      auto [iter, is_new] =
-          pending_restrictions_owner_.try_emplace(receiver_id);
-      iter->second.insert(window_id);
-    }
-  }
-}
-
-void DlpContentManagerAsh::OnWindowActivated(
-    wm::ActivationChangeObserver::ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  if (!gained_active) {
-    return;
-  }
-  const std::string* application_id = exo::GetShellApplicationId(gained_active);
-  if (!application_id) {
-    return;
-  }
-  auto iter = pending_restrictions_.find(*application_id);
-  if (iter != pending_restrictions_.end()) {
-    auto [receiver_id, restrictions] =
-        pending_restrictions_.extract(iter).mapped();
-    OnWindowRestrictionChanged(receiver_id, *application_id, restrictions);
-  }
-}
-
-void DlpContentManagerAsh::CleanPendingRestrictions(
-    mojo::ReceiverId receiver_id) {
-  auto iter = pending_restrictions_owner_.find(receiver_id);
-  if (iter == pending_restrictions_owner_.end()) {
-    return;
-  }
-  for (const auto& window_id : iter->second) {
-    pending_restrictions_.erase(window_id);
-  }
-  pending_restrictions_owner_.erase(iter);
-}
-
 DlpContentManagerAsh::VideoCaptureInfo::VideoCaptureInfo(
     const ScreenshotArea& area)
     : area(area) {}
 
-DlpContentManagerAsh::DlpContentManagerAsh() {
-  if (ash::Shell::HasInstance() && ash::Shell::Get()->activation_client()) {
-    window_activation_observation_.Observe(
-        ash::Shell::Get()->activation_client());
-  }
-}
+DlpContentManagerAsh::DlpContentManagerAsh() = default;
 
 DlpContentManagerAsh::~DlpContentManagerAsh() = default;
 
@@ -408,12 +302,6 @@ void DlpContentManagerAsh::MaybeChangeOnScreenRestrictions() {
   for (const auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() == content::Visibility::VISIBLE &&
         entry.first->GetNativeView()) {
-      new_restriction_set.UnionWith(entry.second);
-    }
-  }
-  // Check each visible Lacros window.
-  for (const auto& entry : confidential_windows_) {
-    if (entry.first->IsVisible()) {
       new_restriction_set.UnionWith(entry.second);
     }
   }
@@ -503,22 +391,6 @@ DlpContentManagerAsh::GetConfidentialContentsOnScreen(
       info.confidential_contents.Add(entry.first);
     }
   }
-  for (auto& entry : confidential_windows_) {
-    if (!entry.first->IsVisible() || !IsAnyChildVisible(entry.first))
-      continue;
-    if (entry.first->is_destroying()) {
-      // The window can be in the process of being destroyed during this
-      // check, although it has not yet been removed from
-      // confidential_windows. For example, this happens when we trigger
-      // the check from OnWindowDestroying().
-      continue;
-    }
-    if (entry.second.GetRestrictionLevel(restriction) ==
-        info.restriction_info.level) {
-      info.confidential_contents.Add(
-          entry.first, entry.second.GetRestrictionUrl(restriction));
-    }
-  }
   return info;
 }
 
@@ -548,23 +420,6 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
               entry.second.GetRestrictionLevelAndUrl(restriction);
           info.confidential_contents.ClearAndAdd(entry.first);
         }
-      }
-    }
-    // Check whether the captured window is a confidential Lacros window.
-    auto window_entry = confidential_windows_.find(area.window);
-    if (window_entry != confidential_windows_.end()) {
-      if (window_entry->second.GetRestrictionLevel(restriction) ==
-          info.restriction_info.level) {
-        info.confidential_contents.Add(
-            window_entry->first,
-            window_entry->second.GetRestrictionUrl(restriction));
-      } else if (window_entry->second.GetRestrictionLevel(restriction) >
-                 info.restriction_info.level) {
-        info.restriction_info =
-            window_entry->second.GetRestrictionLevelAndUrl(restriction);
-        info.confidential_contents.ClearAndAdd(
-            window_entry->first,
-            window_entry->second.GetRestrictionUrl(restriction));
       }
     }
     return info;
@@ -615,43 +470,6 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
     }
   }
 
-  // Intersect the captured area with all confidential Lacros windows.
-  for (auto& entry : confidential_windows_) {
-    if (!entry.first->IsVisible() ||
-        entry.first->GetOcclusionState() ==
-            aura::Window::OcclusionState::OCCLUDED ||
-        entry.second.GetRestrictionLevel(restriction) ==
-            DlpRulesManager::Level::kNotSet) {
-      continue;
-    }
-    aura::Window* root_window = entry.first->GetRootWindow();
-    // If no root window, then the Window shouldn't be visible.
-    if (!root_window)
-      continue;
-    // Not allowing if the area intersects with confidential Window,
-    // but the intersection doesn't belong to occluded area.
-    gfx::Rect intersection(*area.rect);
-    aura::Window::ConvertRectToTarget(area.window, root_window, &intersection);
-    intersection.Intersect(entry.first->GetBoundsInRootWindow());
-
-    if (intersection.IsEmpty() ||
-        entry.first->occluded_region_in_root().contains(
-            gfx::RectToSkIRect(intersection)))
-      continue;
-
-    if (entry.second.GetRestrictionLevel(restriction) ==
-        info.restriction_info.level) {
-      info.confidential_contents.Add(
-          entry.first, entry.second.GetRestrictionUrl(restriction));
-    } else if (entry.second.GetRestrictionLevel(restriction) >
-               info.restriction_info.level) {
-      info.restriction_info =
-          entry.second.GetRestrictionLevelAndUrl(restriction);
-      info.confidential_contents.ClearAndAdd(
-          entry.first, entry.second.GetRestrictionUrl(restriction));
-    }
-  }
-
   return info;
 }
 
@@ -686,26 +504,6 @@ DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
         info.restriction_info = entry.second.GetRestrictionLevelAndUrl(
             DlpContentRestriction::kScreenShare);
         info.confidential_contents.ClearAndAdd(entry.first);
-      }
-    }
-    // Check whether the captured window has a confidential Lacros window.
-    for (auto& entry : confidential_windows_) {
-      if (!window->Contains(entry.first))
-        continue;
-      if (entry.second.GetRestrictionLevel(
-              DlpContentRestriction::kScreenShare) ==
-          info.restriction_info.level) {
-        info.confidential_contents.Add(
-            entry.first, entry.second.GetRestrictionUrl(
-                             DlpContentRestriction::kScreenShare));
-      } else if (entry.second.GetRestrictionLevel(
-                     DlpContentRestriction::kScreenShare) >
-                 info.restriction_info.level) {
-        info.restriction_info = entry.second.GetRestrictionLevelAndUrl(
-            DlpContentRestriction::kScreenShare);
-        info.confidential_contents.ClearAndAdd(
-            entry.first, entry.second.GetRestrictionUrl(
-                             DlpContentRestriction::kScreenShare));
       }
     }
   }

@@ -13,22 +13,16 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
-#include "chrome/browser/ash/policy/dlp/window_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
-#include "components/exo/window_properties.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace aura {
 class Window;
@@ -45,8 +39,7 @@ namespace policy {
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
 class DlpContentManagerAsh : public DlpContentManager,
-                             public DlpWindowObserver::Delegate,
-                             public wm::ActivationChangeObserver {
+                             public DlpWindowObserver::Delegate {
  public:
   DlpContentManagerAsh(const DlpContentManagerAsh&) = delete;
   DlpContentManagerAsh& operator=(const DlpContentManagerAsh&) = delete;
@@ -103,19 +96,6 @@ class DlpContentManagerAsh : public DlpContentManager,
       content::MediaStreamUI::SourceCallback source_callback) override;
   void OnScreenShareStopped(const std::string& label,
                             const content::DesktopMediaID& media_id) override;
-
-  // Called when an updated restrictions are received for Lacros window.
-  void OnWindowRestrictionChanged(mojo::ReceiverId receiver_id,
-                                  const std::string& window_id,
-                                  const DlpContentRestrictionSet& restrictions);
-
-  // ActivationChangeObserver:
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
-  // Clean pending restrictions for a receiver.
-  void CleanPendingRestrictions(mojo::ReceiverId receiver_id);
 
  private:
   friend class DlpContentManagerTestHelper;
@@ -191,42 +171,11 @@ class DlpContentManagerAsh : public DlpContentManager,
   base::flat_map<content::WebContents*, std::unique_ptr<DlpWindowObserver>>
       web_contents_window_observers_;
 
-  // Map from currently known Lacros Windows to their restrictions.
-  base::flat_map<aura::Window*, DlpContentRestrictionSet> confidential_windows_;
-
-  // Map of observers for currently known Lacros Windows.
-  base::flat_map<aura::Window*, std::unique_ptr<DlpWindowObserver>>
-      window_observers_;
-  // Map of observers for Lacros surfaces that are being notified for visibility
-  // changes.
-  base::flat_map<aura::Window*, std::unique_ptr<DlpWindowObserver>>
-      surface_observers_;
-
   // Set of restriction applied to the currently visible content.
   DlpContentRestrictionSet on_screen_restrictions_;
 
   // Information about the currently running video capture area if any.
   std::optional<VideoCaptureInfo> running_video_capture_info_;
-
-  // Cache for restrictions, which are sent to ash with a window id before the
-  // id is known to ash. The window is (considered to be) invisible, so the
-  // restrictions are not applied as long as they are in the cache. The id of
-  // the receiver is also saved.
-
-  // Restrictions might be sent from lacros to ash before the window is known to
-  // ash. The pending restrictions are saved here until the window gets active
-  // in wayland / ash.
-  std::map<std::string, std::pair<mojo::ReceiverId, DlpContentRestrictionSet>>
-      pending_restrictions_;
-
-  // Map to save all windows of a receiver with pending restrictions.
-  std::map<mojo::ReceiverId, std::set<std::string>> pending_restrictions_owner_;
-
-  // TODO(crbug.com/498093686): remove when the DlpContentManagerAsh is no
-  // longer outliving the ActivationClient it observes.
-  base::ScopedObservation<::wm::ActivationClient,
-                          wm::ActivationChangeObserver>::LeakedDanglingUntriaged
-      window_activation_observation_{this};
 };
 
 }  // namespace policy
