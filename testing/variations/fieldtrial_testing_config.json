@@ -22108,9 +22108,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_EventsOnly_20261007",
+                    "name": "Enabled_TimerOnly_20261116",
                     "params": {
-                        "CleanupMode": "events_only"
+                        "CleanupMode": "timer_only"
                     },
                     "enable_features": [
                         "WebViewPrewarmDictionaryOnPreconnect"
