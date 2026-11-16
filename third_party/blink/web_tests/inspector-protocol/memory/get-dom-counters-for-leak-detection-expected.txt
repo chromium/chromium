@@ -6,6 +6,7 @@ live_layout_objects=3
 live_resources=0
 live_context_lifecycle_state_observers=1
 live_frames=1
+live_web_frames=1
 live_v8_per_context_data=1
 worker_global_scopes=0
 live_ua_css_resources=0

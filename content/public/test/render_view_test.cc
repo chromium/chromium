@@ -595,6 +595,7 @@ void RenderViewTest::TearDown() {
           EXPECT_EQ(0u,
                     result->number_of_live_context_lifecycle_state_observers);
           EXPECT_EQ(0u, result->number_of_live_frames);
+          EXPECT_EQ(0u, result->number_of_live_web_frames);
           EXPECT_EQ(0u, result->number_of_live_v8_per_context_data);
           EXPECT_EQ(0u, result->number_of_worker_global_scopes);
           EXPECT_EQ(0u, result->number_of_live_resource_fetchers);

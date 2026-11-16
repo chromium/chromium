@@ -14,6 +14,7 @@ struct LeakDetectionResult {
   uint32 number_of_live_resources;
   uint32 number_of_live_context_lifecycle_state_observers;
   uint32 number_of_live_frames;
+  uint32 number_of_live_web_frames;
   uint32 number_of_live_v8_per_context_data;
   uint32 number_of_worker_global_scopes;
   uint32 number_of_live_ua_css_resources;

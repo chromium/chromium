@@ -27,6 +27,7 @@ const int kInitialNumberOfLiveNodes = 4;
 const int kInitialNumberOfLiveLayoutObjects = 3;
 const int kInitialNumberOfLiveResources = 0;
 const int kInitialNumberOfLiveFrames = 1;
+const int kInitialNumberOfLiveWebFrames = 1;
 const int kInitialNumberOfWorkerGlobalScopes = 0;
 const int kInitialNumberOfLiveResourceFetchers = 1;
 // Each Document has a ScriptRunner and a ScriptedAnimationController,
@@ -50,6 +51,7 @@ LeakDetector::LeakDetector() {
   previous_result_->number_of_live_context_lifecycle_state_observers =
       kInitialNumberOfLiveContextLifecycleStateObservers;
   previous_result_->number_of_live_frames = kInitialNumberOfLiveFrames;
+  previous_result_->number_of_live_web_frames = kInitialNumberOfLiveWebFrames;
   previous_result_->number_of_live_v8_per_context_data =
       kInitialNumberOfV8PerContextData;
   previous_result_->number_of_worker_global_scopes =
@@ -134,6 +136,14 @@ void LeakDetector::OnLeakDetectionComplete(
       list.Append(static_cast<int>(previous_result_->number_of_live_frames));
       list.Append(static_cast<int>(result->number_of_live_frames));
       detail.Set("numberOfLiveFrames", std::move(list));
+    }
+    if (previous_result_->number_of_live_web_frames <
+        result->number_of_live_web_frames) {
+      base::ListValue list;
+      list.Append(
+          static_cast<int>(previous_result_->number_of_live_web_frames));
+      list.Append(static_cast<int>(result->number_of_live_web_frames));
+      detail.Set("numberOfLiveWebFrames", std::move(list));
     }
     if (previous_result_->number_of_live_v8_per_context_data <
         result->number_of_live_v8_per_context_data) {

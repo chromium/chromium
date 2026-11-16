@@ -24,7 +24,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -41,8 +40,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8-initialization.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -214,12 +211,6 @@ RenderProcessImpl::RenderProcessImpl()
 }
 
 RenderProcessImpl::~RenderProcessImpl() {
-#ifndef NDEBUG
-  int count = blink::WebFrame::InstanceCount();
-  if (count)
-    DLOG(ERROR) << "WebFrame LEAKED " << count << " TIMES";
-#endif
-
   GetShutDownEvent()->Signal();
 }
 

@@ -108,7 +108,7 @@ struct ContextMenuData;
 struct WebAssociatedURLLoaderOptions;
 struct WebPrintParams;
 
-// Implementation of WebFrame, note that this is a reference counted object.
+// Implementation of WebFrame for local frames.
 class CORE_EXPORT WebLocalFrameImpl final
     : public GarbageCollected<WebLocalFrameImpl>,
       public WebNavigationControl {
