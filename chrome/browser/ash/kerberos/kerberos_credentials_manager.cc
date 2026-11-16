@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/kerberos/kerberos_ticket_expiry_notification.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -301,10 +300,13 @@ KerberosCredentialsManager::Observer::Observer() = default;
 
 KerberosCredentialsManager::Observer::~Observer() = default;
 
-KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
-                                                       Profile* primary_profile)
+KerberosCredentialsManager::KerberosCredentialsManager(
+    PrefService* local_state,
+    Profile* primary_profile,
+    policy::PolicyService* policy_service)
     : local_state_(local_state),
       primary_profile_(primary_profile),
+      policy_service_(CHECK_DEREF(policy_service)),
       kerberos_files_handler_(std::make_unique<KerberosFilesHandler>(
           *local_state,
           base::BindRepeating(&KerberosCredentialsManager::GetKerberosFiles,
@@ -363,8 +365,6 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
                           weak_factory_.GetWeakPtr(), false /* is_retry */));
 
   // Update accounts if policy is already available or start observing.
-  policy_service_ =
-      primary_profile->GetProfilePolicyConnector()->policy_service();
   const bool policy_initialized =
       policy_service_->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME);
   VLOG(1) << "Policy service initialized at startup: " << policy_initialized;

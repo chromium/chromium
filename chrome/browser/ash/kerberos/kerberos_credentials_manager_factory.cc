@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_manager.h"
 
@@ -72,7 +73,9 @@ KerberosCredentialsManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
 
   PrefService* local_state = g_browser_process->local_state();
-  return std::make_unique<KerberosCredentialsManager>(local_state, profile);
+  return std::make_unique<KerberosCredentialsManager>(
+      local_state, profile,
+      profile->GetProfilePolicyConnector()->policy_service());
 }
 
 }  // namespace ash

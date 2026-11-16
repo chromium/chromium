@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -70,8 +71,11 @@ class KerberosCredentialsManager : public KeyedService,
   // Maximum number of managed accounts addition retries per prefs change.
   static constexpr int kMaxFailureCountForManagedAccounts = 10;
 
+  // `policy_service` is the primary profile's policy service. It must outlive
+  // this object.
   KerberosCredentialsManager(PrefService* local_state,
-                             Profile* primary_profile);
+                             Profile* primary_profile,
+                             policy::PolicyService* policy_service);
 
   KerberosCredentialsManager(const KerberosCredentialsManager&) = delete;
   KerberosCredentialsManager& operator=(const KerberosCredentialsManager&) =
@@ -268,7 +272,7 @@ class KerberosCredentialsManager : public KeyedService,
   raw_ptr<Profile> primary_profile_ = nullptr;
 
   // Policy service of the primary profile, not owned.
-  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
+  const raw_ref<policy::PolicyService> policy_service_;
 
   // Called by OnSignalConnected(), puts Kerberos files where GSSAPI finds them.
   std::unique_ptr<KerberosFilesHandler> kerberos_files_handler_;

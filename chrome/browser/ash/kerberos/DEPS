@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 
@@ -28,6 +27,7 @@ specific_include_rules = {
   # Allow including browser_process.h only for KeyedService factory class.
   "kerberos_credentials_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
   ],
   "kerberos_credentials_manager_factory_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
@@ -36,5 +36,6 @@ specific_include_rules = {
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
     "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
   ],
 }

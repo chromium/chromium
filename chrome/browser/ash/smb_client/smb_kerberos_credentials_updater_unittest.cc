@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -76,7 +77,8 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     profile_builder.SetProfileName(kProfileEmail);
     profile_ = profile_builder.Build();
     credentials_manager_ = std::make_unique<KerberosCredentialsManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+        profile_->GetProfilePolicyConnector()->policy_service());
   }
 
   ~SmbKerberosCredentialsUpdaterTest() override {
