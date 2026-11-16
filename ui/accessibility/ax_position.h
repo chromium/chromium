@@ -5143,7 +5143,9 @@ class AXPosition {
     int offset_in_parent = 0;
     for (int i = 0; i < parent_position->child_index(); ++i) {
       AXPositionInstance child = parent_position->CreateChildPositionAt(i);
-      CHECK(!child->IsNullPosition(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/585314230): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!child->IsNullPosition());
       offset_in_parent += child->MaxTextOffsetInParent();
     }
     return offset_in_parent;
