@@ -5,17 +5,14 @@
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 
 #include <memory>
+#include <optional>
 
-#include "base/containers/flat_set.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
@@ -148,33 +145,6 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(app_id1, preinstalled_prefs.LookUpAppIdByInstallUrl(
                          GURL("https://example_url1.com/install")));
   EXPECT_FALSE(preinstalled_prefs.DoesAppIdExist(app_id2));
-}
-
-IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
-                       VerifyAppIdContainsAllUrls) {
-  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
-      profile()->GetPrefs());
-  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
-      test_map;
-  WebApp::ExternalManagementConfig config1;
-  WebApp::ExternalManagementConfig config2;
-  config1.install_urls = {GURL("https://a.com")};
-  config2.install_urls = {GURL("https://c.com")};
-  // Default source test.
-  test_map[WebAppManagement::kDefault] = std::move(config1);
-  preinstalled_prefs.Add("app_id",
-                         {GURL("https://a.com"), GURL("https://b.com")});
-  EXPECT_TRUE(preinstalled_prefs.AppIdContainsAllUrls("app_id", test_map,
-                                                      /*only_default=*/true));
-  // Non-default source test.
-  test_map[WebAppManagement::kPolicy] = std::move(config2);
-  EXPECT_FALSE(preinstalled_prefs.AppIdContainsAllUrls("app_id", test_map,
-                                                       /*only_default=*/false));
-  // Empty test.
-  test_map.erase(WebAppManagement::kDefault);
-  test_map.erase(WebAppManagement::kPolicy);
-  EXPECT_FALSE(preinstalled_prefs.AppIdContainsAllUrls("app_id", test_map,
-                                                       /*only_default=*/false));
 }
 
 }  // namespace web_app

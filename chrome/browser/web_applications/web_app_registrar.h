@@ -155,8 +155,6 @@ class WebAppRegistrar {
   std::vector<webapps::AppId> GetAppsFromSyncAndPendingInstallation() const;
   std::vector<webapps::AppId> GetAppsPendingUninstall() const;
 
-  bool AppsExistWithExternalConfigData() const;
-
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
 

@@ -10,9 +10,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
@@ -172,40 +169,6 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByAppId(
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kUserUninstalledPreinstalledWebAppPref);
   return update->Remove(app_id);
-}
-
-bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
-    const webapps::AppId& app_id,
-    const base::flat_map<WebAppManagement::Type,
-                         WebApp::ExternalManagementConfig>& url_map,
-    const bool only_default) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  if (url_map.empty())
-    return false;
-
-  const base::DictValue& ids_to_urls =
-      pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
-
-  const base::ListValue* current_list = ids_to_urls.FindList(app_id);
-  if (!current_list)
-    return false;
-
-  base::flat_set<std::string> existing_urls;
-  for (const base::Value& url : *current_list) {
-    existing_urls.emplace(url.GetString());
-  }
-
-  for (const auto& it : url_map) {
-    if (only_default && !(it.first == WebAppManagement::kDefault))
-      continue;
-
-    for (const GURL& url_to_insert : it.second.install_urls) {
-      if (!existing_urls.contains(url_to_insert.spec())) {
-        return false;
-      }
-    }
-  }
-  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

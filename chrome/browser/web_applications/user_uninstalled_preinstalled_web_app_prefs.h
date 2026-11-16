@@ -7,9 +7,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -62,11 +59,6 @@ class UserUninstalledPreinstalledWebAppPrefs {
   bool RemoveByInstallUrl(const webapps::AppId& app_id,
                           const GURL& install_url);
   bool RemoveByAppId(const webapps::AppId& app_id);
-  bool AppIdContainsAllUrls(
-      const webapps::AppId& app_id,
-      const base::flat_map<WebAppManagement::Type,
-                           WebApp::ExternalManagementConfig>& url_map,
-      const bool only_default);
 #if BUILDFLAG(IS_CHROMEOS)
   // Clear all apps marked as user uninstalled. Only used for Lacros
   // disablement.

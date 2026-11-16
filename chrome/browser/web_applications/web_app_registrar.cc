@@ -834,15 +834,6 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
   return app_ids;
 }
 
-bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
-  for (const WebApp& web_app : GetApps()) {
-    if (web_app.management_to_external_config_map().size() > 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void WebAppRegistrar::SetProvider(base::PassKey<WebAppProvider>,
                                   WebAppProvider& provider) {
   provider_ = &provider;
