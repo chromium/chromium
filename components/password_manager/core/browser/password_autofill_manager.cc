@@ -315,6 +315,9 @@ void PasswordAutofillManager::DidSelectSuggestion(
 
 void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   ClearPreviewedForm();
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry ||
       suggestion.type == autofill::SuggestionType::kGeneratePasswordEntry ||
@@ -360,6 +363,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 void PasswordAutofillManager::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   using metrics_util::PasswordDropdownSelectedOption;
   switch (suggestion.type) {
     case autofill::SuggestionType::kGeneratePasswordEntry:
@@ -974,7 +980,10 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
   authenticator_.reset();
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordFilling.AuthenticationResult", auth_succeeded);
-  if (!auth_succeeded) {
+  // OS biometric/device reauth is asynchronous, and BFCache navigations keep
+  // `ContentPasswordManagerDriver` (and this manager) alive without calling
+  // `DidNavigateFrame()`. Verify the frame is still active before filling.
+  if (!auth_succeeded || !password_manager_driver_->CanShowAutofillUi()) {
     return;
   }
   std::move(fill_suggestion_callback).Run();
@@ -983,6 +992,12 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
 void PasswordAutofillManager::OnPasswordCredentialSuggestionAccepted(
     base::OnceClosure fill_suggestion_callback) {
   CancelBiometricReauthIfOngoing();
+  // This method can run asynchronously after the user accepts the cross-domain
+  // confirmation popup. Verify the frame is still active before prompting for
+  // OS reauth or filling credentials.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   bool should_reauth = false;
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
   if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
@@ -1080,6 +1095,12 @@ bool PasswordAutofillManager::MaybeTriggerPasswordManualFallback(
     const autofill::TriggeringField& field) {
   if (!IsPasswordsAutofillManuallyTriggered(field.trigger_source)) {
     return false;
+  }
+  // Return `true` to indicate the manual fallback trigger was consumed, while
+  // suppressing `manual_fallback_flow_` (and preventing `ShowSuggestions()`
+  // from falling through to regular suggestions) when the frame is inactive.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return true;
   }
 
   if (base::FeatureList::IsEnabled(

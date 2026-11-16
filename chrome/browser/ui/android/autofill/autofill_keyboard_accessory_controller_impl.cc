@@ -753,9 +753,14 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     return;
   }
 
+  // Showing suggestions can be posted asynchronously after the caller checked
+  // `CanShowAutofillUi()`, and `FindRenderFrameHostByToken()` resolves inactive
+  // (e.g. BFCached) frames via `ForEachRenderFrameHost()`. Enforce
+  // `rfh->IsActive()` before emplacing `popup_hide_helper_` so keyboard
+  // accessory UI from an inactive frame cannot appear over the active page.
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *web_contents_, controller_common_.field_id.frame_token);
-  if (!rfh) {
+  if (!rfh || !rfh->IsActive()) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }

@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
@@ -176,6 +177,13 @@ void PasswordManualFallbackFlow::RunFlow(
     const autofill::FieldGlobalId& field_id,
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
+  // `ContentPasswordManagerDriverFactory::DidFinishNavigation()` keeps BFCached
+  // drivers and their `PasswordManualFallbackFlow` alive without calling
+  // `DidNavigateFrame()`, whereas Autofill popups are `WebContents`-level UI.
+  // Bail out if the originating frame is no longer active.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   field_id_ = field_id;
   bounds_ = bounds;
   text_direction_ = text_direction;
@@ -228,6 +236,9 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
     const autofill::FormGlobalId& form_id,
     const autofill::FieldGlobalId& field_id) {
   CHECK(SupportsSuggestionType(suggestion.type));
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   if (!suggestion.IsAcceptable()) {
     return;
   }
@@ -293,6 +304,12 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     const autofill::FormGlobalId& form_id,
     const autofill::FieldGlobalId& field_id) {
   CHECK(SupportsSuggestionType(suggestion.type));
+  // Ignore stale suggestion acceptances from an inactive (e.g. BFCached) frame
+  // so they cannot fill fields, open `WebContents`-level UI, record acceptance
+  // metrics, or call `HideSuggestions()` on the newly active frame's popup.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   if (!suggestion.IsAcceptable()) {
     return;
   }
@@ -428,6 +445,14 @@ autofill::FieldGlobalId PasswordManualFallbackFlow::GetQueriedFieldId() const {
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
+  // `RunFlowImpl()` can run asynchronously via `on_all_password_data_ready_`
+  // once `SavedPasswordsPresenter` and `FormFetcher` finish reading from the
+  // store. Re-check `CanShowAutofillUi()` in case the frame entered
+  // BackForwardCache while password data was loading, preventing the
+  // `WebContents`-level popup from appearing over the newly active page.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   const PasswordForm* const password_form =
       password_form_cache_->GetPasswordForm(password_manager_driver_,
                                             field_id_.renderer_id);
@@ -458,6 +483,12 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
     base::OnceClosure fill_fields,
     bool is_password_filled_in_non_password_field) {
   CancelBiometricReauthIfOngoing();
+  // This method can run asynchronously after the user accepts the cross-domain
+  // confirmation popup. Verify the frame is still active before prompting for
+  // OS reauth or filling credentials.
+  if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
   bool authentication_required = false;
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
   if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
@@ -507,7 +538,9 @@ void PasswordManualFallbackFlow::OnBiometricReauthCompleted(
   authenticator_.reset();
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordFilling.AuthenticationResult", auth_succeeded);
-  if (!auth_succeeded) {
+  // OS biometric/device authentication completes asynchronously; drop the fill
+  // if the originating frame became inactive while authentication was pending.
+  if (!auth_succeeded || !password_manager_driver_->CanShowAutofillUi()) {
     return;
   }
   std::move(fill_fields).Run();

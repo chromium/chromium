@@ -153,6 +153,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(autofill::PasswordManagerDelegate*,
               GetPasswordManagerDelegate,
               (),
@@ -219,6 +220,7 @@ class MockAffiliationService : public affiliations::FakeAffiliationService {
 class PasswordManualFallbackFlowTest : public Test {
  public:
   PasswordManualFallbackFlowTest() {
+    ON_CALL(driver(), CanShowAutofillUi).WillByDefault(Return(true));
     ON_CALL(password_manager_client(), GetProfilePasswordStore)
         .WillByDefault(Return(&profile_password_store()));
 
@@ -433,6 +435,46 @@ TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
           _));
 
   ProcessPasswordStoreUpdates();
+}
+
+// Test that suggestions are not shown if the driver cannot show Autofill UI
+// (either when invoked synchronously or when deferred password reads complete
+// after the frame becomes inactive), and are shown once active again.
+TEST_F(PasswordManualFallbackFlowTest,
+       CannotShowAutofillUi_NoSuggestionsShown) {
+  InitializeFlow();
+
+  const gfx::RectF bounds(1, 1, 2, 2);
+  // Start the flow while active; `RunFlowImpl()` is deferred until password
+  // store reads complete.
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
+
+  // Simulate the frame becoming inactive (e.g. entering BFCache) before the
+  // deferred store read finishes, as well as a direct `RunFlow()` call while
+  // inactive. Neither should open the `WebContents`-level popup.
+  ON_CALL(driver(), CanShowAutofillUi).WillByDefault(Return(false));
+  EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(0);
+  ProcessPasswordStoreUpdates();
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
+  testing::Mock::VerifyAndClearExpectations(&autofill_client());
+
+  // Once the frame is active again (e.g. restored from BFCache), `RunFlow()`
+  // shows suggestions normally.
+  ON_CALL(driver(), CanShowAutofillUi).WillByDefault(Return(true));
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAutofillSuggestions(
+          AllOf(
+              Field("element_bounds",
+                    &AutofillClient::PopupOpenArgs::element_bounds, bounds),
+              Field("text_direction",
+                    &AutofillClient::PopupOpenArgs::text_direction,
+                    TextDirection::LEFT_TO_RIGHT),
+              Field("trigger_source",
+                    &AutofillClient::PopupOpenArgs::trigger_source,
+                    AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
+          _));
+  flow().RunFlow(MakeFieldGlobalId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Test that the suggestions are shown using the last parameters passed to
@@ -1377,6 +1419,90 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
       form.form_data.global_id(), username_element_global_id);
 }
 
+// Tests that cross-domain confirmation UI, reauth, and filling are blocked when
+// the driver cannot show Autofill UI (both when the frame becomes inactive
+// while the confirmation popup is open and when `DidSelectSuggestion()` or
+// `DidAcceptSuggestion()` is called on an already inactive frame).
+TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
+       CannotShowAutofillUi_BlocksConfirmationAndFilling) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+
+  FieldGlobalId username_element_global_id = MakeFieldGlobalId();
+  FieldGlobalId password_element_global_id = MakeFieldGlobalId();
+
+  PasswordForm form;
+  form.username_element_renderer_id = username_element_global_id.renderer_id;
+  form.password_element_renderer_id = password_element_global_id.renderer_id;
+  EXPECT_CALL(password_form_cache(),
+              GetPasswordForm(_, form.username_element_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  flow().RunFlow(username_element_global_id, gfx::RectF{10, 10, 100, 100},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  base::OnceClosure confirmation_callback;
+  EXPECT_CALL(password_manager_client(), ShowCrossDomainConfirmationPopup)
+      .WillOnce(testing::WithArg<5>([&](base::OnceClosure callback) {
+        confirmation_callback = std::move(callback);
+        return nullptr;
+      }));
+
+  Suggestion suggestion(u"Password", u"label", Suggestion::Icon::kKey,
+                        GetParam());
+  suggestion.labels = {{Suggestion::Text(u"username")}};
+  suggestion.payload = Suggestion::PasswordSuggestionDetails(
+      u"username", u"password", "password_hostname", u"password_hostname",
+      /*is_cross_domain=*/true);
+
+  ShowAndAcceptSuggestion(
+      suggestion,
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}},
+      form.form_data.global_id(), username_element_global_id);
+
+  // If the frame becomes inactive while the cross-domain confirmation popup is
+  // open, running `confirmation_callback` must neither request OS reauth nor
+  // fill into the frame.
+  ON_CALL(driver(), CanShowAutofillUi).WillByDefault(Return(false));
+  EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(driver(), FillSuggestionById).Times(0);
+  EXPECT_CALL(driver(), FillField).Times(0);
+  std::move(confirmation_callback).Run();
+
+  // Selecting or accepting suggestions while already inactive must not preview,
+  // fill, open confirmation UI, record acceptance metrics, or hide another
+  // frame's active popup.
+  testing::Mock::VerifyAndClearExpectations(&autofill_client());
+  base::HistogramTester histograms;
+  EXPECT_CALL(password_manager_client(), ShowCrossDomainConfirmationPopup)
+      .Times(0);
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+  EXPECT_CALL(driver(), PreviewField).Times(0);
+  EXPECT_CALL(driver(), FillField).Times(0);
+
+  Suggestion field_by_field_suggestion(
+      u"username", SuggestionType::kPasswordFieldByFieldFilling);
+  field_by_field_suggestion.payload = Suggestion::PasswordSuggestionDetails(
+      u"username", u"password", "password_hostname", u"password_hostname",
+      /*is_cross_domain=*/false);
+  flow().DidSelectSuggestion(field_by_field_suggestion,
+                             form.form_data.global_id(),
+                             username_element_global_id);
+  flow().DidAcceptSuggestion(
+      field_by_field_suggestion,
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}},
+      form.form_data.global_id(), username_element_global_id);
+  flow().DidAcceptSuggestion(
+      std::move(suggestion),
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}},
+      form.form_data.global_id(), username_element_global_id);
+  histograms.ExpectTotalCount("Autofill.Suggestions.AcceptedType", 0);
+}
+
 INSTANTIATE_TEST_SUITE_P(PasswordManualFallbackFlowTest,
                          PasswordManualFallbackFlowCrossDomainConfirmationTest,
                          Values(SuggestionType::kPasswordEntry,
@@ -1429,6 +1555,45 @@ TEST_P(PasswordManualFallbackFlowReauthTest, FillsPasswordIfAuthSucceeds) {
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
+}
+
+// Tests that password value is not filled if the driver cannot show Autofill UI
+// when authentication completes.
+TEST_P(PasswordManualFallbackFlowReauthTest,
+       NoFillingIfCannotShowAutofillUiAfterAuthSucceeds) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  FieldGlobalId field_id = MakeFieldGlobalId();
+  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce([this](const std::u16string&,
+                       base::OnceCallback<void(bool)> callback) {
+        ON_CALL(driver(), CanShowAutofillUi).WillByDefault(Return(false));
+        std::move(callback).Run(/*auth_succeeded=*/true);
+      });
+
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
+  EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
+
+  EXPECT_CALL(driver(), FillField).Times(0);
+  ShowAndAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(SuggestionType::kFillPassword,
+                                               u"Fill password",
+                                               CreateTestPasswordDetails()),
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0, 0}},
+      MakeFormGlobalId(), field_id);
 }
 
 // Tests that authentication is requested when using fied-by-field filling to

@@ -56,6 +56,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -335,9 +336,17 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
+  // `ChromeAutofillClient::ShowAutofillSuggestions()` posts popup creation
+  // asynchronously on the UI thread, so the originating frame may become
+  // inactive (e.g. enter BackForwardCache) after the caller checked
+  // `CanShowAutofillUi()`. Because `FindRenderFrameHostByToken()` searches all
+  // frames via `ForEachRenderFrameHost()` (including BFCached ones) and
+  // `popup_hide_helper_` is only emplaced below, enforce `rfh->IsActive()` here
+  // as defense-in-depth so a `WebContents`-level popup never renders over a
+  // newly active page.
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *web_contents_, controller_common_.field_id.frame_token);
-  if (!rfh) {
+  if (!rfh || !rfh->IsActive()) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }

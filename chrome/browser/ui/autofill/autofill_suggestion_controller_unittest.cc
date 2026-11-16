@@ -540,6 +540,42 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
 
+// Tests that attempting to show a popup for an inactive (e.g. BFCached) frame
+// immediately hides the popup, while the newly active main frame can still show
+// suggestions.
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideWhenShowingInInactiveFrame) {
+  NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+  // On bots where BackForwardCache is disabled (e.g.
+  // `--disable-back-forward-cache` or low-memory Android), navigating the main
+  // frame destroys `sub_frame()` instead of caching it in an inactive state.
+  if (!sub_frame()) {
+    GTEST_SKIP() << "BackForwardCache is disabled.";
+  }
+  ASSERT_FALSE(sub_frame()->IsActive());
+  AutofillSuggestionControllerForTest& controller =
+      client().suggestion_controller(sub_manager());
+  FocusWebContentsOnMainFrame();
+
+  // Showing suggestions for the BFCached subframe must immediately hide with
+  // `kNoFrameHasFocus` rather than rendering over `https://bar.com/`.
+  EXPECT_CALL(controller, Hide(SuggestionHidingReason::kNoFrameHasFocus));
+  controller.Show(AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+                  {Suggestion(u"Address entry", SuggestionType::kAddressEntry)},
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                  AutoselectFirstSuggestion(false),
+                  AutofillSuggestionsIgnoreFocusLoss(false),
+                  /*search_bar_initial_value=*/{});
+  Mock::VerifyAndClearExpectations(&controller);
+
+  // Suggestions for the active main frame should still be shown normally.
+  AutofillSuggestionControllerForTest& active_controller =
+      client().suggestion_controller(manager());
+  EXPECT_CALL(active_controller, Hide).Times(0);
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  Mock::VerifyAndClearExpectations(&active_controller);
+}
+
 TEST(AutofillSuggestionControllerUtilsTest, CleanUpRedundantSeparators_Empty) {
   std::vector<Suggestion> suggestions;
   CleanUpRedundantSeparators(suggestions);

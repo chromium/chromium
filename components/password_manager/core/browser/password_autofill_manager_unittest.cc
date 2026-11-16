@@ -393,8 +393,8 @@ class PasswordAutofillManagerTest : public testing::Test {
     ON_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
         .WillByDefault(Return(false));
 
-    EXPECT_CALL(*client->mock_driver(), CanShowAutofillUi)
-        .WillRepeatedly(Return(true));
+    ON_CALL(*client->mock_driver(), CanShowAutofillUi)
+        .WillByDefault(Return(true));
 #if !BUILDFLAG(IS_ANDROID)
     ON_CALL(*client, IsActorTaskActive).WillByDefault(Return(false));
 #endif  //! BUILDFLAG(IS_ANDROID)
@@ -1404,6 +1404,55 @@ TEST_P(PasswordAutofillManagerReauthTest, DoesntFillSuggestionIfAuthFailed) {
       SuggestionPosition{.multi_index = {1}});
 }
 
+// Tests that if the originating frame becomes unable to show Autofill UI (e.g.
+// enters BackForwardCache) while biometric reauth is in flight, completing
+// reauth does not fill credentials into the inactive frame.
+TEST_P(PasswordAutofillManagerReauthTest,
+       DoesntFillSuggestionIfCannotShowAutofillUiAfterAuthSucceeds) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(
+          SavePopupOpenArgsAndShowSuggestions(autofill_client, open_args));
+  password_autofill_manager_->ShowSuggestions(kTriggeringField);
+
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_, _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_client,
+      HideSuggestions(autofill::SuggestionHidingReason::kAcceptSuggestion,
+                      std::optional(FillingProduct::kPassword)));
+
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 1 : 0);
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 1);
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce([&client](const std::u16string&,
+                          base::OnceCallback<void(bool)> callback) {
+        EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi)
+            .WillOnce(Return(false));
+        std::move(callback).Run(/*auth_succeeded=*/true);
+      });
+  EXPECT_CALL(client, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
+
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry, test_username_),
+      SuggestionPosition{.multi_index = {1}});
+}
+
 TEST_P(PasswordAutofillManagerReauthTest,
        CancelsOngoingBiometricAuthOnDestroy) {
   TestPasswordManagerClient client;
@@ -2314,6 +2363,26 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->ShowSuggestions(field);
 }
 
+// Tests that manually triggered password suggestions are suppressed (and do
+// not start `PasswordManualFallbackFlow` or fall through to
+// `ContinueShowingSuggestions()`) when the driver cannot show UI.
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_CannotShowAutofillUi_NoManualFallback) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(false));
+  EXPECT_CALL(manual_fallback_flow(), RunFlow).Times(0);
+  EXPECT_CALL(*client.mock_driver(), SetSuggestionAvailability).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  field.bounds = gfx::RectF(1, 1, 2, 2);
+  field.text_direction = base::i18n::LEFT_TO_RIGHT;
+  password_autofill_manager_->ShowSuggestions(field);
+}
+
 TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
   base::test::ScopedFeatureList security_checks_feature_list{
       features::kPasswordManualFallbackSecurityChecks};
@@ -2511,6 +2580,87 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, test_password_, _));
   std::move(confirmation_callback).Run();
+}
+
+// Tests that accepting the cross-domain confirmation popup (for both regular
+// and backup password entries) after the originating frame became inactive does
+// not start reauth or fill credentials, and that `DidSelectSuggestion()` and
+// `DidAcceptSuggestion()` are no-ops when already inactive.
+TEST_F(PasswordAutofillManagerTest,
+       CrossDomainConfirmationPopupAcceptedWhenCannotShowAutofillUi) {
+  fill_data().preferred_login.backup_password_value = kAliceBackupPassword;
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  ON_CALL(client, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+
+  autofill::PasswordFormFillData cross_domain_fill_data =
+      CreateTestFormFillData();
+  cross_domain_fill_data.preferred_login.is_grouped_affiliation = true;
+  cross_domain_fill_data.preferred_login.backup_password_value =
+      kAliceBackupPassword;
+  password_autofill_manager_->OnAddPasswordFillData(cross_domain_fill_data);
+
+  const Suggestion password_suggestion =
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry,
+          cross_domain_fill_data.preferred_login.username_value);
+  const Suggestion cross_domain_backup_suggestion =
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kBackupPasswordEntry, test_username_,
+          Suggestion::PasswordSuggestionDetails(
+              test_username_, test_password_, backup_password_,
+              /*signon_realm=*/"https://grouped.com/",
+              /*is_cross_domain=*/true));
+
+  EXPECT_CALL(client, GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(*client.mock_driver(), FillSuggestion).Times(0);
+
+  for (const Suggestion& suggestion :
+       {password_suggestion, cross_domain_backup_suggestion}) {
+    ON_CALL(*client.mock_driver(), CanShowAutofillUi)
+        .WillByDefault(Return(true));
+    base::OnceClosure confirmation_callback;
+    EXPECT_CALL(client, ShowCrossDomainConfirmationPopup)
+        .WillOnce(testing::WithArg<5>([&](base::OnceClosure callback) {
+          confirmation_callback = std::move(callback);
+          return nullptr;
+        }));
+
+    password_autofill_manager_->DidAcceptSuggestion(
+        suggestion, SuggestionPosition{.multi_index = {0}});
+
+    ON_CALL(*client.mock_driver(), CanShowAutofillUi)
+        .WillByDefault(Return(false));
+    std::move(confirmation_callback).Run();
+  }
+
+  // Selecting or accepting suggestions while `CanShowAutofillUi()` is already
+  // `false` must not preview, open confirmation/generation UI, or hide another
+  // frame's active popup.
+  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
+  EXPECT_CALL(client, ShowCrossDomainConfirmationPopup).Times(0);
+  EXPECT_CALL(client, GeneratePassword).Times(0);
+  EXPECT_CALL(autofill_client, HideSuggestions).Times(0);
+
+  const Suggestion same_domain_backup_suggestion =
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kBackupPasswordEntry, test_username_,
+          Suggestion::PasswordSuggestionDetails(
+              test_username_, test_password_, backup_password_,
+              /*signon_realm=*/"", /*is_cross_domain=*/false));
+  password_autofill_manager_->DidSelectSuggestion(
+      same_domain_backup_suggestion);
+  password_autofill_manager_->DidAcceptSuggestion(
+      password_suggestion, SuggestionPosition{.multi_index = {0}});
+  password_autofill_manager_->DidAcceptSuggestion(
+      cross_domain_backup_suggestion, SuggestionPosition{.multi_index = {0}});
+  password_autofill_manager_->DidAcceptSuggestion(
+      Suggestion(autofill::SuggestionType::kGeneratePasswordEntry),
+      SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(PasswordAutofillManagerTest, EmitUMAIfAtLeastOneGroupedCredential) {

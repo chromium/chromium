@@ -225,12 +225,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
-  // Runs `fill_suggestion_callback` if reauth  was successful
+  // Runs `fill_suggestion_callback` if reauth succeeded and the originating
+  // frame can still show Autofill UI (`CanShowAutofillUi()`).
   void OnBiometricReauthCompleted(base::OnceClosure fill_suggestion_callback,
                                   bool auth_succeded);
 
   // Fills the password credential suggestion by running
-  // `fill_suggestion_callback`. Triggers authentication if needed.
+  // `fill_suggestion_callback` if the originating frame can still show Autofill
+  // UI (`CanShowAutofillUi()`). Triggers authentication if needed.
   void OnPasswordCredentialSuggestionAccepted(
       base::OnceClosure fill_suggestion_callback);
 
