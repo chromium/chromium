@@ -103,6 +103,12 @@ class GlicInvokeMetrics {
   void SetClientLoadStateAtStart(ClientLoadState state) {
     client_load_state_at_start_ = state;
   }
+  // The targeted host's load error reason when the invocation terminates in
+  // ClientLoadState::kError. Attached to InvokeTerminated so that the cause is
+  // recorded even when no ClientLoadError event shares this InvocationId.
+  void SetClientLoadErrorReason(ClientLoadErrorReason reason) {
+    client_load_error_reason_ = reason;
+  }
   // The invocation's relationship to the FRE when it starts. Attached to
   // InvokeStarted (with FreStatusAtStart and WaitsForFre also on
   // InvokeTerminated); absent for invocations rejected before they start.
@@ -155,6 +161,7 @@ class GlicInvokeMetrics {
   std::optional<mojom::FeatureMode> feature_mode_;
   std::optional<EmbedderType> embedder_type_;
   std::optional<ClientLoadState> client_load_state_at_start_;
+  std::optional<ClientLoadErrorReason> client_load_error_reason_;
   std::optional<GlicInvokeFreState> fre_state_at_start_;
   GlicInvokeEntryPath entry_path_ = GlicInvokeEntryPath::kUnknown;
   std::unique_ptr<GlicCuiTracker> cui_tracker_;

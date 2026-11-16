@@ -3958,6 +3958,19 @@
         invocations rejected before they start.
       </summary>
     </metric>
+    <metric name="ClientLoadErrorReason" type="GlicClientLoadErrorReason">
+      <summary>
+        Host::client_load_error_reason() of the targeted instance when the
+        invocation terminated with the host in ClientLoadState::kError; absent
+        otherwise. Carries the load failure cause on InvokeTerminated itself so
+        that invocations that fail on a pre-existing host failure
+        (ClientLoadStateAtStart = LOAD_ERROR), a failure reached while the panel
+        was hidden, or a failure whose ClientLoadError event was not joined on
+        InvocationId still record why the client failed to load. Also populated
+        (as SIGN_IN) on show-only invocations that succeed on the sign-in panel
+        (SignInBehavior::kCompletes).
+      </summary>
+    </metric>
     <metric name="EntryPath" type="GlicInvokeEntryPath">
       <summary>
         Which coordinator entry point produced this invocation; see

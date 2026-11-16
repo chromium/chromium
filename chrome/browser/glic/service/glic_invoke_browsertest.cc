@@ -4131,6 +4131,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 
   GlicHistogramTester histogram_tester;
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+#endif
   base::test::TestFuture<void> success_future;
   base::test::TestFuture<GlicInvokeError> error_future;
 
@@ -4150,6 +4154,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   EXPECT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kSignIn);
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "ClientLoadErrorReason"),
+            static_cast<int>(metrics::structured::events::v2::glic::
+                                 GlicClientLoadErrorReason::SIGN_IN));
+#endif
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
@@ -4407,12 +4416,23 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
   };
 
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-  ASSERT_EQ(invoke(GlicInvokeOptions(glic::Target(*tab),
-                                     mojom::InvocationSource::kOsButton)),
-            std::make_pair(
-                GlicInvokeError::kClientLoadError,
-                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
-                            "LOADING;load_error=OFFLINE")));
+  {
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+    metrics::structured::TestStructuredMetricsRecorder recorder;
+    recorder.Initialize();
+#endif
+    ASSERT_EQ(invoke(GlicInvokeOptions(glic::Target(*tab),
+                                       mojom::InvocationSource::kOsButton)),
+              std::make_pair(
+                  GlicInvokeError::kClientLoadError,
+                  std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                              "LOADING;load_error=OFFLINE")));
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+    EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "ClientLoadErrorReason"),
+              static_cast<int>(metrics::structured::events::v2::glic::
+                                   GlicClientLoadErrorReason::OFFLINE));
+#endif
+  }
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
   ASSERT_EQ(instance->host().GetPrimaryWebUiState(),
@@ -4427,6 +4447,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
             ClientLoadErrorReason::kOffline);
 
   GlicHistogramTester histogram_tester;
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+#endif
   EXPECT_EQ(invoke(GlicInvokeOptions(glic::Target(*tab, instance->id()),
                                      mojom::InvocationSource::kOsButton)),
             std::make_pair(
@@ -4437,6 +4461,14 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
             mojom::WebUiState::kOffline);
   EXPECT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kOffline);
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "ClientLoadStateAtStart"),
+            static_cast<int>(metrics::structured::events::v2::glic::
+                                 GlicClientLoadState::LOAD_ERROR));
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "ClientLoadErrorReason"),
+            static_cast<int>(metrics::structured::events::v2::glic::
+                                 GlicClientLoadErrorReason::OFFLINE));
+#endif
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeError::kClientLoadError, 1);
 }
@@ -4454,6 +4486,10 @@ IN_PROC_BROWSER_TEST_F(
   BrowserWindowInterface* browser =
       tab_list->GetActiveTab()->GetBrowserWindowInterface();
 
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+#endif
   base::test::TestFuture<std::optional<GlicInvokeError>> outcome;
   base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
   GlicInvokeOptions options(mojom::InvocationSource::kExperimentalTriggering);
@@ -4488,6 +4524,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   EXPECT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kOffline);
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "ClientLoadErrorReason"),
+            static_cast<int>(metrics::structured::events::v2::glic::
+                                 GlicClientLoadErrorReason::OFFLINE));
+#endif
 }
 
 // Errors that happen while the WebUI is still hidden (e.g. during warming,

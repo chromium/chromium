@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -150,56 +151,6 @@ void RecordSelectionOverlayMetrics(
 }
 
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
-// Translates the browser-side enum into the structured metrics enum generated
-// from structured.xml. Written as an exhaustive switch with no default so that
-// adding a ClientLoadErrorReason without adding the matching structured.xml
-// variant is a compile error rather than a silently mislabelled metric.
-// LINT.IfChange(ToStructuredReason)
-metrics::structured::events::v2::glic::GlicClientLoadErrorReason
-ToStructuredReason(ClientLoadErrorReason reason) {
-  using Reason =
-      metrics::structured::events::v2::glic::GlicClientLoadErrorReason;
-  switch (reason) {
-    case ClientLoadErrorReason::kUnknown:
-      return Reason::UNKNOWN;
-    case ClientLoadErrorReason::kUnavailable:
-      return Reason::UNAVAILABLE;
-    case ClientLoadErrorReason::kIneligibleAccount:
-      return Reason::INELIGIBLE_ACCOUNT;
-    case ClientLoadErrorReason::kLocationMismatch:
-      return Reason::LOCATION_MISMATCH;
-    case ClientLoadErrorReason::kDisabledByAdmin:
-      return Reason::DISABLED_BY_ADMIN;
-    case ClientLoadErrorReason::kOffline:
-      return Reason::OFFLINE;
-    case ClientLoadErrorReason::kSignIn:
-      return Reason::SIGN_IN;
-    case ClientLoadErrorReason::kCookieSyncFailed:
-      return Reason::COOKIE_SYNC_FAILED;
-    case ClientLoadErrorReason::kGuestLoadFailed:
-      return Reason::GUEST_LOAD_FAILED;
-    case ClientLoadErrorReason::kGuestProcessGone:
-      return Reason::GUEST_PROCESS_GONE;
-    case ClientLoadErrorReason::kClientError:
-      return Reason::CLIENT_ERROR;
-    case ClientLoadErrorReason::kClientLoadTimeout:
-      return Reason::CLIENT_LOAD_TIMEOUT;
-    case ClientLoadErrorReason::kWarmedTimeout:
-      return Reason::WARMED_TIMEOUT;
-    case ClientLoadErrorReason::kGuestOriginBlocked:
-      return Reason::GUEST_ORIGIN_BLOCKED;
-    case ClientLoadErrorReason::kGuestApiNotAllowed:
-      return Reason::GUEST_API_NOT_ALLOWED;
-    case ClientLoadErrorReason::kPendingProviderChange:
-      return Reason::PENDING_PROVIDER_CHANGE;
-    case ClientLoadErrorReason::kGuestHttpClientError:
-      return Reason::GUEST_HTTP_CLIENT_ERROR;
-    case ClientLoadErrorReason::kGuestHttpServerError:
-      return Reason::GUEST_HTTP_SERVER_ERROR;
-  }
-}
-// LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
-
 // Translates GlicInstanceMetrics::FreDecision into the structured metrics
 // enum; exhaustive so a new decision without a structured.xml variant fails
 // to compile.
@@ -1341,7 +1292,7 @@ void GlicInstanceMetrics::OnClientLoadError(ClientLoadErrorReason reason) {
   CancelNativeFreWait();
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
   metrics::structured::events::v2::glic::ClientLoadError event;
-  event.SetReason(ToStructuredReason(reason));
+  event.SetReason(ToStructuredClientLoadErrorReason(reason));
   if (active_invocation_id_.has_value()) {
     event.SetInvocationId(*active_invocation_id_);
     event.SetElapsedMs((base::TimeTicks::Now() - active_invocation_start_time_)

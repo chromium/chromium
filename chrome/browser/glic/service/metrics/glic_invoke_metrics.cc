@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
+#include "chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 
@@ -317,6 +318,10 @@ void GlicInvokeMetrics::RecordTerminated(
   if (client_load_state_at_start_.has_value()) {
     event.SetClientLoadStateAtStart(
         ToStructuredClientLoadState(*client_load_state_at_start_));
+  }
+  if (client_load_error_reason_.has_value()) {
+    event.SetClientLoadErrorReason(
+        ToStructuredClientLoadErrorReason(*client_load_error_reason_));
   }
   if (fre_state_at_start_.has_value()) {
     SetTerminatedFreMetrics(event, *fre_state_at_start_);

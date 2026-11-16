@@ -265,6 +265,60 @@ TEST(GlicInvokeMetricsTest,
   EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadStateAtStart"), std::nullopt);
 }
 
+TEST(GlicInvokeMetricsTest, InvokeTerminatedHasClientLoadErrorReason) {
+  struct {
+    ClientLoadErrorReason reason;
+    int wire_value;
+  } const kCases[] = {
+      {ClientLoadErrorReason::kUnknown, 0},
+      {ClientLoadErrorReason::kUnavailable, 1},
+      {ClientLoadErrorReason::kIneligibleAccount, 2},
+      {ClientLoadErrorReason::kLocationMismatch, 3},
+      {ClientLoadErrorReason::kDisabledByAdmin, 4},
+      {ClientLoadErrorReason::kOffline, 5},
+      {ClientLoadErrorReason::kSignIn, 6},
+      {ClientLoadErrorReason::kCookieSyncFailed, 7},
+      {ClientLoadErrorReason::kGuestLoadFailed, 8},
+      {ClientLoadErrorReason::kGuestProcessGone, 9},
+      {ClientLoadErrorReason::kClientError, 10},
+      {ClientLoadErrorReason::kClientLoadTimeout, 11},
+      {ClientLoadErrorReason::kWarmedTimeout, 12},
+      {ClientLoadErrorReason::kGuestOriginBlocked, 13},
+      {ClientLoadErrorReason::kGuestApiNotAllowed, 14},
+      {ClientLoadErrorReason::kPendingProviderChange, 15},
+      {ClientLoadErrorReason::kGuestHttpClientError, 16},
+      {ClientLoadErrorReason::kGuestHttpServerError, 17},
+  };
+  static_assert(std::size(kCases) ==
+                static_cast<size_t>(ClientLoadErrorReason::kMaxValue) + 1);
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.reason));
+    ScopedStructuredEventCapture capture;
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+    metrics.SetClientLoadErrorReason(test_case.reason);
+    metrics.RecordStarted();
+    metrics.RecordError(GlicInvokeError::kClientLoadError,
+                        GlicTaskType::kWaitForClientReady);
+
+    auto events = capture.GetEvents("InvokeTerminated");
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadErrorReason"),
+              test_case.wire_value);
+  }
+}
+
+TEST(GlicInvokeMetricsTest,
+     InvokeTerminatedOmitsClientLoadErrorReasonWhenNotSet) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+  metrics.RecordStarted();
+  metrics.RecordSuccess();
+
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadErrorReason"), std::nullopt);
+}
+
 // structured.xml GlicInvokeEntryPath wire values.
 constexpr int kEntryPathUnknownWireValue = 0;
 constexpr int kEntryPathToggleWireValue = 1;

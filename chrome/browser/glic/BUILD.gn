@@ -377,6 +377,8 @@ source_set("glic_metrics") {
     "service/metrics/glic_instance_metrics.h",
     "service/metrics/glic_metrics_session_manager.cc",
     "service/metrics/glic_metrics_session_manager.h",
+    "service/metrics/glic_structured_metrics_conversions.cc",
+    "service/metrics/glic_structured_metrics_conversions.h",
   ]
   public_deps = [ "//components/metrics/structured/buildflags" ]
   deps = [

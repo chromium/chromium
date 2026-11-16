@@ -270,7 +270,7 @@ enum class ClientLoadErrorReason {
 
   kMaxValue = kGuestHttpServerError,
 };
-// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml,//chrome/browser/glic/host/glic_page_handler.cc:ToClientLoadErrorReason,//chrome/browser/glic/service/metrics/glic_instance_metrics.cc:ToStructuredReason,//chrome/browser/glic/service/glic_invoke_handler.cc:ClientLoadErrorReasonToDiagnosticString)
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml,//chrome/browser/glic/host/glic_page_handler.cc:ToClientLoadErrorReason,//chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.cc:ToStructuredClientLoadErrorReason,//chrome/browser/glic/service/glic_invoke_handler.cc:ClientLoadErrorReasonToDiagnosticString)
 
 // Why a Glic instance was removed. Invocations still running on the instance
 // fail with the matching GlicInvokeError::kInstanceDestroyed* value.

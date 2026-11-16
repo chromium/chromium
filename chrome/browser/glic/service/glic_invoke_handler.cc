@@ -655,6 +655,13 @@ void GlicInvokeHandler::OnSuccess() {
     main_task_->NotifySequenceCompleted(/*success=*/true);
   }
 
+  // A show-only invocation completes when the host stops on the sign-in panel
+  // (`SignInBehavior::kCompletes`), leaving the host in `kError` (`kSignIn`).
+  if (instance_->host().client_load_state() == ClientLoadState::kError &&
+      instance_->host().client_load_error_reason().has_value()) {
+    metrics_->SetClientLoadErrorReason(
+        *instance_->host().client_load_error_reason());
+  }
   metrics_->RecordSuccess(GetLastActiveTaskType());
   instance_->instance_metrics().SetActiveInvocationId(std::nullopt);
 
@@ -689,6 +696,13 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
   }
 
   const std::optional<GlicTaskType> last_active_task = GetLastActiveTaskType();
+  const std::optional<ClientLoadErrorReason> client_load_error_reason =
+      instance_->host().client_load_state() == ClientLoadState::kError
+          ? instance_->host().client_load_error_reason()
+          : std::nullopt;
+  if (client_load_error_reason.has_value()) {
+    metrics_->SetClientLoadErrorReason(*client_load_error_reason);
+  }
   metrics_->RecordError(error, last_active_task);
   instance_->instance_metrics().SetActiveInvocationId(std::nullopt);
 
@@ -697,10 +711,6 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
         FROM_HERE, base::BindOnce(std::move(options_.on_error), error));
   }
   if (options_.on_error_with_diagnostics_) {
-    const std::optional<ClientLoadErrorReason> client_load_error_reason =
-        instance_->host().client_load_state() == ClientLoadState::kError
-            ? instance_->host().client_load_error_reason()
-            : std::nullopt;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(options_.on_error_with_diagnostics_), error,
