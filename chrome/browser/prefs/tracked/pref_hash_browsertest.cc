@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -27,6 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
@@ -40,6 +42,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_info.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -57,6 +64,7 @@
 #include "extensions/common/extension.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/features.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -2146,6 +2154,186 @@ class PrefHashBrowserTestDowngradeAttackPrevented
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestDowngradeAttackPrevented,
                        DowngradeAttackPrevented);
+
+namespace {
+
+constexpr char kForgedOriginUrl[] = "https://example.com";
+constexpr char kForgedOriginPattern[] = "https://example.com:443,*";
+
+// Must match the File System Access entries in `kTrackedPrefs`
+// (chrome_pref_service_factory.cc).
+struct TrackedFsaPref {
+  int reporting_id;
+  ContentSettingsType type;
+  bool is_default;
+  const char* path;
+};
+constexpr auto kTrackedFsaPrefs = std::to_array<TrackedFsaPref>({
+    {39, ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+     /*is_default=*/false,
+     "profile.content_settings.exceptions."
+     "file_system_access_extended_permission"},
+    {40, ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+     /*is_default=*/false,
+     "profile.content_settings.exceptions.file_system_access_chooser_data"},
+    {41, ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+     /*is_default=*/true,
+     "profile.default_content_setting_values."
+     "file_system_access_extended_permission"},
+    {42, ContentSettingsType::FILE_SYSTEM_READ_GUARD, /*is_default=*/false,
+     "profile.content_settings.exceptions.file_system_read_guard"},
+    {43, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, /*is_default=*/false,
+     "profile.content_settings.exceptions.file_system_write_guard"},
+    {44, ContentSettingsType::FILE_SYSTEM_READ_GUARD, /*is_default=*/true,
+     "profile.default_content_setting_values.file_system_read_guard"},
+    {45, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, /*is_default=*/true,
+     "profile.default_content_setting_values.file_system_write_guard"},
+});
+
+}  // namespace
+
+// Verifies that unauthenticated File System Access permission and guard
+// exceptions injected into unprotected `Preferences` on disk are ignored on
+// platforms that enforce tracked preferences (regression test for
+// https://crbug.com/584014474).
+class PrefHashBrowserTestFileSystemAccessUntrustedAdditionToPrefs
+    : public PrefHashBrowserTestBase {
+ public:
+  void SetupPreferences() override {
+    ASSERT_TRUE(HostContentSettingsMapFactory::GetForProfile(profile()));
+    for (const TrackedFsaPref& pref : kTrackedFsaPrefs) {
+      const content_settings::WebsiteSettingsInfo* info =
+          content_settings::WebsiteSettingsRegistry::GetInstance()->Get(
+              pref.type);
+      ASSERT_TRUE(info) << pref.path;
+      EXPECT_EQ(pref.path, pref.is_default ? info->default_value_pref_name()
+                                           : info->pref_name());
+      ASSERT_TRUE(profile()->GetPrefs()->FindPreference(pref.path))
+          << pref.path;
+      EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(pref.path))
+          << pref.path;
+    }
+  }
+
+  void AttackPreferencesOnDisk(
+      base::DictValue* unprotected_preferences,
+      base::DictValue* protected_preferences) override {
+    for (const TrackedFsaPref& pref : kTrackedFsaPrefs) {
+      // Default-value prefs hold a bare content setting. Use BLOCK: ALLOW is
+      // not a valid *default* for the guard types and would trip a DCHECK in
+      // DefaultProvider on platforms where the value is actually read.
+      if (pref.is_default) {
+        unprotected_preferences->SetByDottedPath(pref.path,
+                                                 CONTENT_SETTING_BLOCK);
+        continue;
+      }
+      base::DictValue forged_origin_entry;
+      if (pref.type == ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA) {
+        base::DictValue chooser_setting;
+        chooser_setting.Set("chosen-objects", base::ListValue());
+        forged_origin_entry.Set("setting", std::move(chooser_setting));
+      } else {
+        forged_origin_entry.Set("setting", CONTENT_SETTING_ALLOW);
+      }
+      base::DictValue forged_pref;
+      forged_pref.Set(kForgedOriginPattern, std::move(forged_origin_entry));
+      unprotected_preferences->SetByDottedPath(pref.path,
+                                               std::move(forged_pref));
+    }
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    HostContentSettingsMap* hcsm =
+        HostContentSettingsMapFactory::GetForProfile(profile());
+    ASSERT_TRUE(hcsm);
+    const GURL forged_url(kForgedOriginUrl);
+
+    if (protection_level_ >= PROTECTION_ENABLED_BASIC) {
+      // Values planted only in unprotected Preferences are never read for
+      // protected paths, so they are silently dropped and neither PrefService
+      // nor HostContentSettingsMap observes them.
+      for (const TrackedFsaPref& pref : kTrackedFsaPrefs) {
+        EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(pref.path))
+            << pref.path;
+        if (pref.is_default) {
+          EXPECT_EQ(CONTENT_SETTING_ASK,
+                    hcsm->GetDefaultContentSetting(pref.type))
+              << pref.path;
+        } else if (pref.type ==
+                   ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA) {
+          EXPECT_TRUE(hcsm->GetWebsiteSetting(forged_url, forged_url, pref.type)
+                          .is_none())
+              << pref.path;
+        } else {
+          EXPECT_EQ(CONTENT_SETTING_ASK,
+                    hcsm->GetContentSetting(forged_url, forged_url, pref.type))
+              << pref.path;
+        }
+      }
+      EXPECT_EQ(0, GetTrackedPrefHistogramCount(
+                       user_prefs::tracked::kTrackedPrefHistogramChanged,
+                       ALLOW_NONE));
+      EXPECT_EQ(
+          num_tracked_prefs(),
+          GetTrackedPrefHistogramCount(
+              user_prefs::tracked::kTrackedPrefHistogramUnchanged, ALLOW_ANY));
+      EXPECT_EQ(
+          0, GetTrackedPrefHistogramCount(
+                 user_prefs::tracked::kTrackedPrefHistogramReset, ALLOW_NONE));
+    } else if (protection_level_ == PROTECTION_DISABLED_FOR_GROUP) {
+      // When enforcement is disabled for the group (e.g. Linux), the planted
+      // Preferences values are loaded; verify both PrefService and
+      // HostContentSettingsMap observe them (proving the pref paths and forged
+      // payloads match what ContentSettings actually reads) and that tracking
+      // histograms report Changed + WantedReset for every reporting ID.
+      for (const TrackedFsaPref& pref : kTrackedFsaPrefs) {
+        const base::Value* user_val =
+            profile()->GetPrefs()->GetUserPrefValue(pref.path);
+        ASSERT_TRUE(user_val) << pref.path;
+        if (pref.is_default) {
+          EXPECT_EQ(base::Value(CONTENT_SETTING_BLOCK), *user_val) << pref.path;
+          EXPECT_EQ(CONTENT_SETTING_BLOCK,
+                    hcsm->GetDefaultContentSetting(pref.type))
+              << pref.path;
+        } else if (pref.type ==
+                   ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA) {
+          EXPECT_TRUE(user_val->is_dict()) << pref.path;
+          EXPECT_TRUE(hcsm->GetWebsiteSetting(forged_url, forged_url, pref.type)
+                          .is_dict())
+              << pref.path;
+        } else {
+          EXPECT_TRUE(user_val->is_dict()) << pref.path;
+          EXPECT_EQ(CONTENT_SETTING_ALLOW,
+                    hcsm->GetContentSetting(forged_url, forged_url, pref.type))
+              << pref.path;
+        }
+        histograms_.ExpectBucketCount(
+            user_prefs::tracked::kTrackedPrefHistogramChanged,
+            pref.reporting_id, 1);
+        histograms_.ExpectBucketCount(
+            user_prefs::tracked::kTrackedPrefHistogramWantedReset,
+            pref.reporting_id, 1);
+      }
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramChanged,
+          std::size(kTrackedFsaPrefs));
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramWantedReset,
+          std::size(kTrackedFsaPrefs));
+      EXPECT_EQ(
+          num_tracked_prefs() - static_cast<int>(std::size(kTrackedFsaPrefs)),
+          GetTrackedPrefHistogramCount(
+              user_prefs::tracked::kTrackedPrefHistogramUnchanged, ALLOW_ANY));
+      EXPECT_EQ(
+          0, GetTrackedPrefHistogramCount(
+                 user_prefs::tracked::kTrackedPrefHistogramReset, ALLOW_NONE));
+    }
+  }
+};
+
+PREF_HASH_BROWSER_TEST(
+    PrefHashBrowserTestFileSystemAccessUntrustedAdditionToPrefs,
+    FileSystemAccessUntrustedAdditionToPrefs);
 
 #if BUILDFLAG(IS_WIN)
 // Tests the enterprise-specific fallback logic when EncryptedPrefHashing is
