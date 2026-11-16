@@ -147,6 +147,14 @@ class SigninPrefsAccessor {
                  std::string_view key,
                  base::span<const std::string_view> parents = {});
 
+  // Removes `(parents, key)` across all accounts in `SigninPrefs` in a single
+  // pref update without creating missing dictionaries. `CHECK`-enforces that
+  // `(parents, key)` is registered in `SigninPrefsRegistry`. Returns the number
+  // of accounts from which the key was removed.
+  size_t ClearPrefForAllAccounts(
+      std::string_view key,
+      base::span<const std::string_view> parents = {});
+
   void SetDeprecatedPrefForTesting(const GaiaId& gaia_id);
   std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id) const;
 

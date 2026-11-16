@@ -258,6 +258,159 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   EXPECT_TRUE(manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin).IsEmpty());
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(PrimaryAccountManagerTest, ChromeLastSigninTime) {
+  CreatePrimaryAccountManager();
+  CoreAccountId first_account_id =
+      AddToAccountTracker(GaiaId("first_gaia"), "first@gmail.com");
+  CoreAccountInfo first_account_info =
+      account_tracker()->GetAccountInfo(first_account_id).GetCoreAccountInfo();
+
+  // Sign in at `ConsentLevel::kSignin`: `LastSigninTime` is recorded.
+  manager_->SetPrimaryAccountInfo(first_account_info, ConsentLevel::kSignin,
+                                  AccessPoint::kStartPage);
+  std::optional<base::Time> initial_signin_time =
+      SigninPrefs(*prefs()).GetChromeLastSigninTime(first_account_info.gaia);
+  ASSERT_TRUE(initial_signin_time.has_value());
+  EXPECT_LE(base::Time::Now() - *initial_signin_time, base::Seconds(10));
+
+  // Backdate the recorded timestamp to verify subsequent non-primary-change
+  // operations do not overwrite it.
+  const base::Time backdated_time = base::Time::Now() - base::Days(5);
+  SigninPrefs(*prefs()).SetChromeLastSigninTime(first_account_info.gaia,
+                                                backdated_time);
+
+  // Restarting `PrimaryAccountManager` preserves the recorded timestamp.
+  ShutDownManager();
+  CreatePrimaryAccountManager();
+  EXPECT_EQ(
+      SigninPrefs(*prefs()).GetChromeLastSigninTime(first_account_info.gaia),
+      backdated_time);
+
+  // Re-setting the same already-signed-in primary account at
+  // `ConsentLevel::kSignin` does not overwrite `LastSigninTime`.
+  manager_->SetPrimaryAccountInfo(first_account_info, ConsentLevel::kSignin,
+                                  AccessPoint::kStartPage);
+  EXPECT_EQ(
+      SigninPrefs(*prefs()).GetChromeLastSigninTime(first_account_info.gaia),
+      backdated_time);
+
+  // Switching directly to a second account at `ConsentLevel::kSignin` records
+  // `LastSigninTime` for the second account while leaving the first account
+  // timestamp intact.
+  CoreAccountId second_account_id =
+      AddToAccountTracker(GaiaId("second_gaia"), "second@gmail.com");
+  CoreAccountInfo second_account_info =
+      account_tracker()->GetAccountInfo(second_account_id).GetCoreAccountInfo();
+  manager_->SetPrimaryAccountInfo(second_account_info, ConsentLevel::kSignin,
+                                  AccessPoint::kStartPage);
+
+  EXPECT_EQ(
+      SigninPrefs(*prefs()).GetChromeLastSigninTime(first_account_info.gaia),
+      backdated_time);
+  std::optional<base::Time> second_signin_time =
+      SigninPrefs(*prefs()).GetChromeLastSigninTime(second_account_info.gaia);
+  ASSERT_TRUE(second_signin_time.has_value());
+  EXPECT_LE(base::Time::Now() - *second_signin_time, base::Seconds(10));
+}
+
+TEST_F(PrimaryAccountManagerTest, ChromeLastSigninTimeKillSwitchAndMigration) {
+  CoreAccountId account_id =
+      AddToAccountTracker(GaiaId("existing_gaia"), "existing@gmail.com");
+  token_service_->UpdateCredentials(account_id, "token");
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
+
+  // Simulate signing in and restarting while `kRecordChromeLastSigninTime` is
+  // disabled: no timestamp is recorded.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        switches::kRecordChromeLastSigninTime);
+
+    CreatePrimaryAccountManager();
+    manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
+                                    AccessPoint::kStartPage);
+    EXPECT_FALSE(SigninPrefs(*prefs())
+                     .GetChromeLastSigninTime(account_info.gaia)
+                     .has_value());
+
+    ShutDownManager();
+    CreatePrimaryAccountManager();
+    ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+    EXPECT_FALSE(SigninPrefs(*prefs())
+                     .GetChromeLastSigninTime(account_info.gaia)
+                     .has_value());
+    ShutDownManager();
+  }
+
+  // Transition off -> on: re-initializing `PrimaryAccountManager` with
+  // `kRecordChromeLastSigninTime` enabled migrates the already signed-in
+  // profile by stamping `Now()` once.
+  {
+    base::test::ScopedFeatureList enabled_feature_list{
+        switches::kRecordChromeLastSigninTime};
+
+    const base::Time before_migration = base::Time::Now();
+    CreatePrimaryAccountManager();
+    ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+    std::optional<base::Time> migrated_time =
+        SigninPrefs(*prefs()).GetChromeLastSigninTime(account_info.gaia);
+    ASSERT_TRUE(migrated_time.has_value());
+    EXPECT_GE(*migrated_time, before_migration);
+    EXPECT_LE(base::Time::Now() - *migrated_time, base::Seconds(10));
+
+    // Subsequent restarts preserve the migrated timestamp without overwriting
+    // it.
+    const base::Time backdated_time = base::Time::Now() - base::Days(14);
+    SigninPrefs(*prefs()).SetChromeLastSigninTime(account_info.gaia,
+                                                  backdated_time);
+    ShutDownManager();
+    CreatePrimaryAccountManager();
+    EXPECT_EQ(SigninPrefs(*prefs()).GetChromeLastSigninTime(account_info.gaia),
+              backdated_time);
+
+    // Also record a timestamp for a second account that then signs back out to
+    // `account_info` (or signs out completely), leaving its timestamp in
+    // `SigninPrefs` while it is no longer the primary account.
+    CoreAccountId second_account_id =
+        AddToAccountTracker(GaiaId("second_gaia"), "second@gmail.com");
+    token_service_->UpdateCredentials(second_account_id, "token");
+    CoreAccountInfo second_account_info =
+        account_tracker()
+            ->GetAccountInfo(second_account_id)
+            .GetCoreAccountInfo();
+    manager_->SetPrimaryAccountInfo(second_account_info, ConsentLevel::kSignin,
+                                    AccessPoint::kStartPage);
+    ASSERT_TRUE(SigninPrefs(*prefs())
+                    .GetChromeLastSigninTime(second_account_info.gaia)
+                    .has_value());
+    manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
+                                    AccessPoint::kStartPage);
+    ShutDownManager();
+  }
+
+  // Transition on -> off: re-initializing `PrimaryAccountManager` with
+  // `kRecordChromeLastSigninTime` disabled clears existing timestamps
+  // unconditionally across all accounts (both the active primary account and
+  // non-primary/signed-out accounts).
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        switches::kRecordChromeLastSigninTime);
+
+    CreatePrimaryAccountManager();
+    ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+    EXPECT_FALSE(SigninPrefs(*prefs())
+                     .GetChromeLastSigninTime(account_info.gaia)
+                     .has_value());
+    EXPECT_FALSE(SigninPrefs(*prefs())
+                     .GetChromeLastSigninTime(GaiaId("second_gaia"))
+                     .has_value());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   CreatePrimaryAccountManager();
   CoreAccountId main_account_id =

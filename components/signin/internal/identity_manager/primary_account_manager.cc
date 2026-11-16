@@ -267,6 +267,17 @@ PrimaryAccountManager::PrimaryAccountManager(
     // opted in to sync.
     scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
   }
+
+  if (base::FeatureList::IsEnabled(switches::kRecordChromeLastSigninTime)) {
+    const GaiaId& primary_gaia_id = GetPrimaryAccount().account_info.gaia;
+    SigninPrefs signin_prefs(*prefs);
+    if (!primary_gaia_id.empty() &&
+        !signin_prefs.GetChromeLastSigninTime(primary_gaia_id).has_value()) {
+      signin_prefs.SetChromeLastSigninTime(primary_gaia_id, base::Time::Now());
+    }
+  } else {
+    SigninPrefs(*prefs).ClearAllChromeLastSigninTime();
+  }
 #endif
 
   // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
@@ -861,11 +872,21 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   SetExplicitBrowserSigninPrefs(event_details, scoped_pref_commit);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      PrimaryAccountChangeEvent::Type::kCleared) {
-    SigninPrefs(*client_->GetPrefs())
-        .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
-                                  base::Time::Now());
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case PrimaryAccountChangeEvent::Type::kSet:
+      if (base::FeatureList::IsEnabled(switches::kRecordChromeLastSigninTime)) {
+        SigninPrefs(*client_->GetPrefs())
+            .SetChromeLastSigninTime(current_state.primary_account.gaia,
+                                     base::Time::Now());
+      }
+      break;
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      SigninPrefs(*client_->GetPrefs())
+          .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
+                                    base::Time::Now());
+      break;
   }
 #endif
 

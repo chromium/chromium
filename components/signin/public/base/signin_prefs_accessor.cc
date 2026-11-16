@@ -312,6 +312,43 @@ bool SigninPrefsAccessor::ClearPref(
   return dict->Remove(key);
 }
 
+size_t SigninPrefsAccessor::ClearPrefForAllAccounts(
+    std::string_view key,
+    base::span<const std::string_view> parents) {
+  CHECK(SigninPrefsRegistry::Find(base::PassKey<SigninPrefsAccessor>(), parents,
+                                  key))
+      << "Unregistered SigninPrefs key: "
+      << FormatPrefPathForCheck(parents, key);
+  if (!pref_service_->FindPreference(kSigninAccountPrefs)->IsUserControlled()) {
+    return 0;
+  }
+
+  std::vector<std::string> accounts_to_clear;
+  for (const auto [account_key, account_value] :
+       pref_service_->GetDict(kSigninAccountPrefs)) {
+    const base::DictValue* const_dict =
+        FindNestedDict(account_value.GetIfDict(), parents);
+    if (const_dict && const_dict->contains(key)) {
+      accounts_to_clear.push_back(account_key);
+    }
+  }
+  if (accounts_to_clear.empty()) {
+    return 0;
+  }
+
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  for (std::string_view account_key : accounts_to_clear) {
+    base::DictValue* dict = scoped_update->FindDict(account_key);
+    for (std::string_view parent : parents) {
+      CHECK(dict);
+      dict = dict->FindDict(parent);
+    }
+    CHECK(dict);
+    CHECK(dict->Remove(key));
+  }
+  return accounts_to_clear.size();
+}
+
 void SigninPrefsAccessor::SetDeprecatedPrefForTesting(const GaiaId& gaia_id) {
   CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
