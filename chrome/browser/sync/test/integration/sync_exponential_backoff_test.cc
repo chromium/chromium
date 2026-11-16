@@ -8,13 +8,13 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/exponential_backoff_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/network_change_notifier.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -118,7 +118,9 @@ IN_PROC_BROWSER_TEST_P(SyncExponentialBackoffTest, ServerRedirect) {
 
   // Add an item and ensure that sync is successful.
   ASSERT_TRUE(AddFolder(0, 0, u"folder1", GetBookmarksStoreType()));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{u"folder1", GURL()}},
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
 
   GetFakeServer()->SetHttpError(net::HTTP_USE_PROXY);
 
@@ -137,7 +139,9 @@ IN_PROC_BROWSER_TEST_P(SyncExponentialBackoffTest, InternalServerError) {
 
   // Add an item and ensure that sync is successful.
   ASSERT_TRUE(AddFolder(0, 0, u"folder1", GetBookmarksStoreType()));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{u"folder1", GURL()}},
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
 
   GetFakeServer()->SetHttpError(net::HTTP_INTERNAL_SERVER_ERROR);
 
@@ -156,7 +160,9 @@ IN_PROC_BROWSER_TEST_P(SyncExponentialBackoffTest, TransientErrorTest) {
 
   // Add an item and ensure that sync is successful.
   ASSERT_TRUE(AddFolder(0, 0, u"folder1", GetBookmarksStoreType()));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{u"folder1", GURL()}},
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
 
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::TRANSIENT_ERROR);
 
