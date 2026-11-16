@@ -164,6 +164,14 @@ void ToolbarGlicButton::UpdateStyle(bool should_match_toolbar) {
   UpdateColors();
 }
 
+void ToolbarGlicButton::SetIsSplit(bool is_split) {
+  if (is_split) {
+    SetSplitButtonCornerStyling();
+  } else {
+    ResetSplitButtonCornerStyling();
+  }
+}
+
 void ToolbarGlicButton::SetCloseButtonFocusBehavior(
     views::View::FocusBehavior focus_behavior) {}
 

@@ -38,6 +38,7 @@ source_set("toolbar") {
     "toolbar_controller.h",
     "toolbar_divider.h",
     "toolbar_glic_actor_task_icon.h",
+    "toolbar_glic_actor_task_icon_interface.h",
     "toolbar_glic_button.h",
     "toolbar_glic_button_interface.h",
     "toolbar_glic_constants.h",

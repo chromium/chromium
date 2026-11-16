@@ -36,6 +36,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
@@ -78,7 +79,7 @@ namespace glic {
 class ToolbarGlicButton;
 class ToolbarGlicButtonInterface;
 class ToolbarGlicActorTaskIcon;
-class GlicButtonInterface;
+class ToolbarGlicActorTaskIconInterface;
 class GlicSplitButtonController;
 }  // namespace glic
 
@@ -88,6 +89,12 @@ enum class ExpansionMode {
   kNone = 0,
   kWillShow,
   kWillHide,
+};
+
+// The toolbar Glic control that shows a nudge.
+enum class GlicNudgeTarget {
+  kGlicButton,
+  kActorTaskIcon,
 };
 
 // The Browser Window's toolbar.
@@ -225,7 +232,7 @@ class ToolbarView : public views::AccessiblePaneView,
   void DestroyWebUIToolbarWebContents();
 
   glic::ToolbarGlicActorTaskIcon* glic_secondary_button() {
-    return glic_secondary_button_;
+    return glic_secondary_button_view_;
   }
 
   // LocationBarView::Delegate:
@@ -361,12 +368,15 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
   void OnGlicButtonAnimationEnded();
-  void ShowToolbarNudge(glic::GlicButtonInterface* button);
-  void HideToolbarNudge(glic::GlicButtonInterface* button);
+  void ShowToolbarNudge(GlicNudgeTarget target);
+  void HideToolbarNudge(GlicNudgeTarget target);
   void ShowGlicSecondaryNudge(const std::u16string nudge_label);
-  void ExecuteShowToolbarNudge(glic::GlicButtonInterface* button);
-  void ExecuteHideToolbarNudge(glic::GlicButtonInterface* button);
+  void ExecuteShowToolbarNudge(GlicNudgeTarget target);
+  void ExecuteHideToolbarNudge(GlicNudgeTarget target);
   void UpdateGlicSecondaryButtonVisibility();
+  // Shows the activity list bubble at `anchor`, provided by the actor task
+  // icon.
+  void ShowActivityListBubbleAt(views::BubbleAnchor anchor);
   void UpdateGlicButtonVisibility();
   void SetGlicSecondaryButtonShowState(bool show);
   void UpdateGlicActorButtonContainerBorders();
@@ -377,10 +387,10 @@ class ToolbarView : public views::AccessiblePaneView,
   CreateGlicActorButtonContainer();
 
   // Update the expansion mode to be executed once the mouse is no longer over
-  // the nudge. This button will be what is expanded, either the glic button or
-  // actor button.
+  // the nudge. `target` is what will be expanded, either the glic button or
+  // actor button. It is nullopt when `mode` is `ExpansionMode::kNone`.
   void SetLockedExpansionMode(ExpansionMode mode,
-                              glic::GlicButtonInterface* button);
+                              std::optional<GlicNudgeTarget> target);
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -413,13 +423,16 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<MediaToolbarButton> media_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
 
-  // The button currently holding the lock to be shown/hidden.
-  raw_ptr<glic::GlicButtonInterface> locked_expansion_button_ = nullptr;
+  // The control currently holding the lock to be shown/hidden.
+  std::optional<GlicNudgeTarget> locked_expansion_target_;
   raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::ToolbarGlicButton> glic_button_view_ = nullptr;
   // An alias for `glic_button_view_` or `toolbar_webview_->GetGlicControl()`.
   raw_ptr<glic::ToolbarGlicButtonInterface> glic_button_ = nullptr;
-  raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_secondary_button_ = nullptr;
+  raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_secondary_button_view_ = nullptr;
+  // An alias for `glic_secondary_button_view_`.
+  raw_ptr<glic::ToolbarGlicActorTaskIconInterface> glic_secondary_button_ =
+      nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
   std::unique_ptr<glic::GlicActivityListBubble> activity_list_bubble_;
 
@@ -483,6 +496,8 @@ class ToolbarView : public views::AccessiblePaneView,
   bool should_show_glic_secondary_button_ = false;
 
   bool was_mouse_down_ = false;
+
+  base::WeakPtrFactory<ToolbarView> weak_ptr_factory_{this};
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

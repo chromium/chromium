@@ -20,6 +20,9 @@ class ToolbarGlicButtonInterface {
   virtual bool IsVisible() const = 0;
   virtual void SetGlicPanelIsOpen(bool open) = 0;
   virtual void UpdateStyle(bool should_match_toolbar) = 0;
+  // Sets whether the Glic button is joined with the actor task icon as a split
+  // button.
+  virtual void SetIsSplit(bool is_split) = 0;
 
  protected:
   ~ToolbarGlicButtonInterface() = default;

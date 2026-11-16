@@ -41,6 +41,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
@@ -182,7 +183,7 @@ class GlicActivityListBubbleTest : public ChromeViewsTestBase {
                                 base::Unretained(this)));
 
     bubble_ = std::make_unique<GlicActivityListBubble>(std::move(rows));
-    bubble_->Show(anchor_widget_->GetContentsView());
+    bubble_->Show(views::BubbleAnchor(anchor_widget_->GetContentsView()));
     return bubble_->widget();
   }
 
@@ -495,7 +496,7 @@ TEST_F(GlicActivityListBubbleActivityHubTest,
 
   bubble_ = std::make_unique<GlicActivityListBubble>(
       controller_->CreateRowViewModels());
-  bubble_->Show(anchor_widget_->GetContentsView());
+  bubble_->Show(views::BubbleAnchor(anchor_widget_->GetContentsView()));
   views::Widget* actor_task_list_bubble = bubble_->widget();
   ASSERT_TRUE(actor_task_list_bubble);
 

@@ -73,13 +73,15 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton>,
   bool IsVisible() const override;
   void SetGlicPanelIsOpen(bool open) override;
   void UpdateStyle(bool should_match_toolbar) override;
+  void SetIsSplit(bool is_split) override;
+
+  float GetWidthFactor() const override;
 
  private:
   void UpdateBackground();
   void UpdateInkDrop();
   void UpdateCloseButton();
 
-  float GetWidthFactor() const override;
   void SetWidthFactor(float factor) override;
 
   // GlicButton:

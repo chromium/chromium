@@ -40,6 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
@@ -99,7 +100,7 @@ class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
           base::BindRepeating(
               &GlicActivityListBubbleController::OnBubbleDestroyed,
               controller_->GetWeakPtr()));
-      bubble_->Show(anchor_view_);
+      bubble_->Show(views::BubbleAnchor(anchor_view_));
     }
   }
 

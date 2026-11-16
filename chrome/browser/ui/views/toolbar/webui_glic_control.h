@@ -40,13 +40,10 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   void OnThemeChanged();
   bool IsContextMenuShowingForTesting() const;
 
-  // Sets whether the Glic button is joined with the actor task icon as a split
-  // button. Mirrors GlicButton::SetSplitButtonCornerStyling() and
-  // ResetSplitButtonCornerStyling() in Views.
-  void SetIsSplit(bool is_split);
   bool GetIsSplit() const { return is_split_; }
 
   // glic::ToolbarGlicButtonInterface:
+  void SetIsSplit(bool is_split) override;
   void SetIsShowingNudge(bool is_showing) override;
   bool GetIsShowingNudge() const override;
   void SetNudgeLabel(std::string label) override;

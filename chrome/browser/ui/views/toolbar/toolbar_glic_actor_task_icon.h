@@ -7,12 +7,14 @@
 
 #include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_glic_actor_task_icon_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_constants.h"
 
 class BrowserWindowInterface;
 
 namespace glic {
-class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
+class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton>,
+                                 public ToolbarGlicActorTaskIconInterface {
   METADATA_HEADER(ToolbarGlicActorTaskIcon, ToolbarButton)
  public:
   explicit ToolbarGlicActorTaskIcon(
@@ -22,6 +24,17 @@ class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
   ToolbarGlicActorTaskIcon& operator=(const ToolbarGlicActorTaskIcon&) = delete;
   ~ToolbarGlicActorTaskIcon() override;
 
+  // ToolbarGlicActorTaskIconInterface:
+  void SetVisible(bool visible) override;
+  bool IsVisible() const override;
+  void SetIsShowingNudge(bool is_showing) override;
+  bool GetIsShowingNudge() const override;
+  void ShowNudgeLabel(const std::u16string& nudge_label) override;
+  void SetTaskIconToDefault() override;
+  void SetPressedState(bool is_pressed) override;
+  void GetBubbleAnchorAsync(
+      base::OnceCallback<void(views::BubbleAnchor)> callback) override;
+
   void AddedToWidget() override;
   gfx::Size GetMinimumSize() const override;
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override;
@@ -30,9 +43,6 @@ class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id) override;
   void UpdateColors() override;
   void UpdateColorsAndInsets() override;
-
-  bool GetIsShowingNudge() const override;
-  void SetIsShowingNudge(bool is_showing) override;
 
   void SetLeftRightCornerRadii(int left, int right) override;
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;

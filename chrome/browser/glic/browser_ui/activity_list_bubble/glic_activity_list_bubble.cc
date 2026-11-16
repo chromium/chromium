@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,7 +46,8 @@ GlicActivityListBubble::~GlicActivityListBubble() {
   Close();
 }
 
-void GlicActivityListBubble::Show(views::View* anchor_view) {
+void GlicActivityListBubble::Show(views::BubbleAnchor anchor) {
+  CHECK(anchor);
   auto contents_view = CreateContentsView();
 
   // If there are no rows, don't show the bubble.
@@ -73,7 +75,7 @@ void GlicActivityListBubble::Show(views::View* anchor_view) {
           .Build();
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble->set_margins(gfx::Insets::VH(kVerticalMargin, 0));

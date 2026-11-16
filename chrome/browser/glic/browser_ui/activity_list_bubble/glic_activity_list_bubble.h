@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -34,7 +35,7 @@ class GlicActivityListBubble : public views::WidgetObserver {
       base::RepeatingClosure on_destroyed = {});
   ~GlicActivityListBubble() override;
 
-  void Show(views::View* anchor_view);
+  void Show(views::BubbleAnchor anchor);
   void Close();
   bool IsShowing() const;
 

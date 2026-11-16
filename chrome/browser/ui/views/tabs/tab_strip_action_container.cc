@@ -50,6 +50,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/flex_layout.h"
@@ -485,7 +486,7 @@ void TabStripActionContainer::ShowActivityListBubble() {
         base::BindRepeating(
             &glic::GlicActivityListBubbleController::OnBubbleDestroyed,
             controller->GetWeakPtr()));
-    activity_list_bubble_->Show(glic_secondary_button_);
+    activity_list_bubble_->Show(views::BubbleAnchor(glic_secondary_button_));
   }
 }
 
