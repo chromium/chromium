@@ -74,9 +74,10 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_padding = 12;
-  int icon_text_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+  int icon_text_spacing = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_SEARCH_ICON_TEXT_SPACING);
   int horizontal_inset = icon_padding + icon_size + icon_text_spacing;
+  EXPECT_EQ(icon_text_spacing, 8);
   EXPECT_EQ(search_field->GetBorder()->GetInsets(),
             gfx::Insets::VH(6, horizontal_inset));
   EXPECT_EQ(search_field->GetPreferredSize().height(), 28);

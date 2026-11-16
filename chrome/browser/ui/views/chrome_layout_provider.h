@@ -236,6 +236,9 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN,
   // Bottom margin for the separator in the Action App Menu search bar.
   DISTANCE_ACTION_APP_MENU_SEARCH_SEPARATOR_BOTTOM_MARGIN,
+  // Horizontal spacing between the search icon and the text in the Action App
+  // Menu search bar.
+  DISTANCE_ACTION_APP_MENU_SEARCH_ICON_TEXT_SPACING,
   // Extra top margin for the block section when it follows the Action App Menu
   // search bar.
   DISTANCE_ACTION_APP_MENU_SEARCH_BLOCK_MARGIN,

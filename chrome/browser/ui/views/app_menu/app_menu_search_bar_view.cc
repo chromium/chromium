@@ -87,8 +87,8 @@ AppMenuSearchBarView::SearchField::SearchField() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
-  int icon_text_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+  int icon_text_spacing = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_SEARCH_ICON_TEXT_SPACING);
   // Leaves room for the leading icon and the clear button.
   int horizontal_inset = kIconPadding + icon_size + icon_text_spacing;
 
