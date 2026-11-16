@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/cpp/system/system_export.h"
 
@@ -31,10 +31,31 @@ inline MojoTimeTicks GetTimeTicksNow() {
 // process.
 //
 // This can be used to globally listen for reports of bad incoming IPCs.
+//
+// Note: New callers in tests should prefer
+// `ScopedDefaultProcessErrorHandlerForTesting` below so that the previous
+// handler is automatically restored when the test finishes.
 using DefaultProcessErrorHandler =
     base::RepeatingCallback<void(const std::string& error)>;
 void MOJO_CPP_SYSTEM_EXPORT
 SetDefaultProcessErrorHandler(DefaultProcessErrorHandler handler);
+
+// An RAII wrapper that installs `handler` as the default process error handler
+// on construction and restores the previous handler on destruction.
+class [[nodiscard]] MOJO_CPP_SYSTEM_EXPORT
+    ScopedDefaultProcessErrorHandlerForTesting {
+ public:
+  explicit ScopedDefaultProcessErrorHandlerForTesting(
+      DefaultProcessErrorHandler handler);
+  ScopedDefaultProcessErrorHandlerForTesting(
+      const ScopedDefaultProcessErrorHandlerForTesting&) = delete;
+  ScopedDefaultProcessErrorHandlerForTesting& operator=(
+      const ScopedDefaultProcessErrorHandlerForTesting&) = delete;
+  ~ScopedDefaultProcessErrorHandlerForTesting();
+
+ private:
+  DefaultProcessErrorHandler previous_handler_;
+};
 
 }  // namespace mojo
 

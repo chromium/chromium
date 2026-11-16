@@ -4,6 +4,9 @@
 
 #include "mojo/public/cpp/system/functions.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "mojo/public/c/system/invitation.h"
@@ -33,6 +36,19 @@ void SetDefaultProcessErrorHandler(DefaultProcessErrorHandler handler) {
   if (global_handler) {
     MojoSetDefaultProcessErrorHandler(&HandleError, nullptr);
   }
+}
+
+ScopedDefaultProcessErrorHandlerForTesting::
+    ScopedDefaultProcessErrorHandlerForTesting(
+        DefaultProcessErrorHandler handler)
+    : previous_handler_(std::move(GetDefaultProcessErrorHandler())) {
+  CHECK(handler);
+  SetDefaultProcessErrorHandler(std::move(handler));
+}
+
+ScopedDefaultProcessErrorHandlerForTesting::
+    ~ScopedDefaultProcessErrorHandlerForTesting() {
+  SetDefaultProcessErrorHandler(std::move(previous_handler_));
 }
 
 }  // namespace mojo

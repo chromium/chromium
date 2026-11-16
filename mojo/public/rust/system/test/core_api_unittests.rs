@@ -204,7 +204,7 @@ fn test_report_bad_message() {
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
     let err_msg_clone = err_msg.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
+    let _error_handler = test_util::set_default_process_error_handler(move |msg: &str| {
         *err_msg_clone.try_lock().unwrap() = msg.to_string()
     });
 
@@ -212,8 +212,6 @@ fn test_report_bad_message() {
 
     // SAFETY: We're single-threaded so this isn't racy
     expect_eq!("OH NO!".to_string(), (*err_msg.try_lock().unwrap()).clone());
-
-    test_util::set_default_process_error_handler(|_| {});
 }
 
 #[gtest(RustSystemAPITestSuite, TypestateTransitions)]

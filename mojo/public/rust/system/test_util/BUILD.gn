@@ -18,6 +18,7 @@ rust_static_library("test_util") {
 }
 
 source_set("cxx_shim") {
+  testonly = true
   sources = [ "cxx_shim.h" ]
   deps = [
     "//base",

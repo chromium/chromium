@@ -65,14 +65,7 @@ class ReportBadMessageTest : public BindingsTestBase {
   ReportBadMessageTest() = default;
 
   void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &ReportBadMessageTest::OnProcessError, base::Unretained(this)));
-
     impl_.Bind(remote_.BindNewPipeAndPassReceiver());
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   TestBadMessages* remote() { return remote_.get(); }
@@ -93,6 +86,9 @@ class ReportBadMessageTest : public BindingsTestBase {
   Remote<TestBadMessages> remote_;
   TestBadMessagesImpl impl_;
   base::OnceClosure error_handler_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting process_error_handler_{
+      base::BindRepeating(&ReportBadMessageTest::OnProcessError,
+                          base::Unretained(this))};
 };
 
 TEST_F(ReportBadMessageTest, Request) {
@@ -156,6 +152,27 @@ TEST_F(ReportBadMessageTest, ResponseAsync) {
   std::move(bad_message_callback)
       .Run("this message is bad and should feel bad");
   EXPECT_TRUE(error);
+}
+
+TEST_F(ReportBadMessageTest,
+       ScopedDefaultProcessErrorHandlerForTestingRestoresPrevious) {
+  bool outer_error = false;
+  SetErrorHandler(base::BindLambdaForTesting([&] { outer_error = true; }));
+
+  {
+    std::string inner_error;
+    ScopedDefaultProcessErrorHandlerForTesting inner_handler(
+        base::BindLambdaForTesting(
+            [&](const std::string& error) { inner_error = error; }));
+    EXPECT_TRUE(remote()->RejectSync());
+    EXPECT_EQ("go away", inner_error);
+    EXPECT_FALSE(outer_error);
+  }
+
+  // Verify the outer handler was restored when `inner_handler` went out of
+  // scope.
+  EXPECT_TRUE(remote()->RejectSync());
+  EXPECT_TRUE(outer_error);
 }
 
 }  // namespace

@@ -37,15 +37,30 @@ mod ffi {
     unsafe extern "C++" {
         include!("mojo/public/rust/system/test_util/cxx_shim.h");
 
+        type ScopedDefaultProcessErrorHandler;
+
         // This doesn't logically need to be boxed, but cxx requires it.
-        fn SetDefaultProcessErrorHandler(handler: Box<RustRepeatingStringCallback>);
+        fn SetDefaultProcessErrorHandler(
+            handler: Box<RustRepeatingStringCallback>,
+        ) -> UniquePtr<ScopedDefaultProcessErrorHandler>;
     }
 }
 
-/// Set the default behavior when mojo receives a report of a bad message.
-/// Wrapper around the function of the same name in
-/// //mojo/public/cpp/system/ functions.h
-pub fn set_default_process_error_handler(mut handler: impl FnMut(&str) + Send + 'static) {
+/// Guard that restores the previous default process error handler when dropped.
+#[must_use = "if unused, the process error handler will be immediately restored"]
+pub struct ScopedDefaultProcessErrorHandler(
+    #[allow(dead_code)] cxx::UniquePtr<ffi::ScopedDefaultProcessErrorHandler>,
+);
+
+/// Set the default behavior when mojo receives a report of a bad message,
+/// for the lifetime of the returned guard.
+/// Wrapper around `mojo::ScopedDefaultProcessErrorHandlerForTesting` in
+/// //mojo/public/cpp/system/functions.h.
+pub fn set_default_process_error_handler(
+    mut handler: impl FnMut(&str) + Send + 'static,
+) -> ScopedDefaultProcessErrorHandler {
     let cxx_closure = move |msg: &CxxString| handler(&msg.to_string_lossy());
-    ffi::SetDefaultProcessErrorHandler(Box::new(cxx_closure.into()));
+    ScopedDefaultProcessErrorHandler(ffi::SetDefaultProcessErrorHandler(Box::new(
+        cxx_closure.into(),
+    )))
 }

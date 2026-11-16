@@ -37,7 +37,9 @@ use crate::state_objects::*;
 fn test_watcher_basic() {
     // Exercise the various watcher methods so we have some coverage
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     use bindings::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
     use system::message::{ReadableWithHandlesMessage, WritableMessage};
@@ -93,7 +95,9 @@ fn test_watcher_basic() {
 #[gtest(RustBindingsAPI, MessagePipeWatcherDisconnectTests)]
 fn test_watcher_disconnect() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     use bindings::message_pipe_watcher::MessagePipeWatcher;
     use system::message_pipe::MessageEndpoint;
@@ -133,7 +137,9 @@ fn test_watcher_disconnect_immediately() {
     // Make sure things work fine if a watcher is constructed with an endpoint
     // whose counterpoint has already been dropped.
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     use bindings::message_pipe_watcher::MessagePipeWatcher;
     use system::message_pipe::MessageEndpoint;
@@ -169,7 +175,9 @@ fn test_watcher_disconnect_immediately() {
 #[gtest(RustBindingsAPI, RemoteReceiverWrapMathTest)]
 fn test_remote_receiver_wrapping() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -193,7 +201,9 @@ fn test_remote_receiver_wrapping() {
 #[gtest(RustBindingsAPI, RemoteReceiverSatMathTest)]
 fn test_remote_receiver_saturating() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     // We can use the same constructor call as in the previous test,
     // but for a different type of state object!
@@ -219,7 +229,9 @@ fn test_remote_receiver_saturating() {
 #[gtest(RustBindingsAPI, RemoteReceiverNotifMathTest)]
 fn test_remote_receiver_notifying() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -251,7 +263,9 @@ fn test_remote_receiver_notifying() {
 #[gtest(RustBindingsAPI, EmptyResponseTest)]
 fn test_empty_response() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -286,7 +300,9 @@ fn test_empty_response() {
 #[gtest(RustBindingsAPI, EmptyResponseCppReceiverTest)]
 fn test_empty_response_cpp_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -317,7 +333,9 @@ fn test_empty_response_cpp_receiver() {
 #[gtest(RustBindingsAPI, CppReceiverTest)]
 fn test_cpp_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -346,7 +364,9 @@ fn test_cpp_receiver() {
 #[gtest(RustBindingsAPI, CppRemoteTest)]
 fn test_cpp_remote() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -384,7 +404,9 @@ fn test_cpp_remote() {
 #[gtest(RustBindingsAPI, HandlePassingTest)]
 fn test_handle_passing() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (handle_pending_remote, handle_pending_receiver) =
         PendingRemote::<dyn test_mojom::HandleService>::new_pipe().unwrap();
@@ -473,7 +495,9 @@ fn test_handle_passing() {
 #[gtest(RustBindingsAPI, DisconnectHandlersTest)]
 fn test_disconnect_handlers() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     // Test Receiver disconnect handler
     let run_loop = RunLoop::new();
@@ -504,7 +528,9 @@ fn test_disconnect_handlers() {
 #[gtest(RustBindingsAPI, SelfOwnedReceiverTest)]
 fn test_self_owned_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
 
@@ -532,7 +558,9 @@ fn test_self_owned_receiver() {
 #[gtest(RustBindingsAPI, CppToRustHandoverTest)]
 fn test_cpp_to_rust_handover() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     // Create a PlusSevenMathService and bind it, all in C++.
     let mut _service = cxx::UniquePtr::null();
@@ -563,7 +591,9 @@ fn test_cpp_to_rust_handover() {
 #[gtest(RustBindingsAPI, TypemappingTest)]
 fn test_typemapping() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn TypemapService>::new_pipe().unwrap();
@@ -684,7 +714,9 @@ macro_rules! math_response_closure {
 #[gtest(RustBindingsAPI, TestAssociatedEndpoints)]
 fn test_associated_endpoints() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (_rem, _rec, assoc_impl, _assoc_p_rec_1, assoc_p_rem_2, assoc_p_rem_3, _assoc_p_rec_4) =
         init_associated_test();
@@ -725,7 +757,9 @@ fn test_associated_endpoints() {
 #[gtest(RustBindingsAPI, TestAssociatedLateBinding)]
 fn test_associated_late_binding() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (_rem, _rec, assoc_impl, _assoc_p_rec_1, assoc_p_rem_2, assoc_p_rem_3, _assoc_p_rec_4) =
         init_associated_test();
@@ -780,7 +814,9 @@ fn test_associated_late_binding() {
 #[gtest(RustBindingsAPI, TestCppAssociatedSender)]
 fn test_cpp_associated_sender() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     {
         let (pending_remote, pending_receiver) =
@@ -870,7 +906,9 @@ fn test_cpp_associated_sender() {
 #[gtest(RustBindingsAPI, TestAssociatedDisconnect)]
 fn test_associated_disconnect() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (
         _remote,
@@ -913,7 +951,7 @@ fn test_associated_disconnect() {
 #[gtest(RustBindingsAPI, TestBadControlMessage)]
 fn test_bad_control_message() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let bad_message_flag = capture_bad_messages();
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
@@ -958,12 +996,7 @@ fn test_bad_control_message() {
 #[gtest(RustBindingsAPI, TestBogusPeerClosedNotificationReportsBadMessage)]
 fn test_bogus_peer_closed_notification_reports_bad_message() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-
-    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
-    let bad_message_flag_clone = bad_message_flag.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
-        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
-    });
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     // Capture a genuine disconnect notification. The interface ID in it was
     // allocated by a remote, so it has the high bit set.
@@ -1016,8 +1049,6 @@ fn test_bogus_peer_closed_notification_reports_bad_message() {
         RunLoop::new().run_until_idle();
         expect_true!(bad_message_flag.lock().unwrap().take().is_some());
     }
-
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 /// Tests that we correctly report a bad message that is sent across a Rust
@@ -1025,7 +1056,7 @@ fn test_bogus_peer_closed_notification_reports_bad_message() {
 #[gtest(RustBindingsAPI, TestBadMessageToCppAssociatedReceiver)]
 fn test_bad_message_to_cpp_associated_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let bad_message_flag = capture_bad_messages();
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     {
         let (pending_remote, pending_receiver) =
@@ -1060,8 +1091,6 @@ fn test_bad_message_to_cpp_associated_receiver() {
 
     let run_loop_idle = RunLoop::new();
     run_loop_idle.run_until_idle();
-
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 /// Tests that we correctly report a bad message that is sent across a C++
@@ -1069,7 +1098,7 @@ fn test_bad_message_to_cpp_associated_receiver() {
 #[gtest(RustBindingsAPI, TestBadMessageToRustAssociatedReceiver)]
 fn test_bad_message_to_rust_associated_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let bad_message_flag = capture_bad_messages();
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     {
         ffi::TestBadMessageToRustReceiver();
@@ -1080,8 +1109,6 @@ fn test_bad_message_to_rust_associated_receiver() {
 
     let reported = bad_message_flag.lock().unwrap().take();
     expect_true!(reported.is_some());
-
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 /// Serialize `params` and send it on the provided remote,
@@ -1111,14 +1138,15 @@ fn send_request_with_flags<T: mojom_value_parser::MojomParse>(
 }
 
 /// Installs a process error handler that records the most recent bad-message
-/// report, and returns the slot it writes into.
-fn capture_bad_messages() -> Arc<Mutex<Option<String>>> {
+/// report, and returns the slot it writes into along with the scoped guard.
+fn capture_bad_messages(
+) -> (Arc<Mutex<Option<String>>>, test_util::ScopedDefaultProcessErrorHandler) {
     let reported = Arc::new(Mutex::new(None::<String>));
     let reported_clone = reported.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
+    let guard = test_util::set_default_process_error_handler(move |msg: &str| {
         *reported_clone.lock().unwrap() = Some(msg.to_string());
     });
-    reported
+    (reported, guard)
 }
 
 /// Make sure that we notice if we get a message
@@ -1126,7 +1154,7 @@ fn capture_bad_messages() -> Arc<Mutex<Option<String>>> {
 #[gtest(RustBindingsAPI, TestRequestMissingExpectsResponseFlag)]
 fn test_request_missing_expects_response_flag() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let reported = capture_bad_messages();
+    let (reported, _error_handler) = capture_bad_messages();
 
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
     let _receiver = pending_receiver.bind(WrappingMathService {});
@@ -1168,7 +1196,7 @@ fn test_request_missing_expects_response_flag() {
 #[gtest(RustBindingsAPI, TestMalformedInterfaceIdArrayRejected)]
 fn test_malformed_interface_id_array_rejected() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let bad_message_flag = capture_bad_messages();
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
@@ -1206,7 +1234,6 @@ fn test_malformed_interface_id_array_rejected() {
     let reported = bad_message_flag.lock().unwrap().take();
     expect_true!(reported.is_some());
     expect_eq!(reported.unwrap(), "Malformed message header");
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 // These types and functions provide us a way to set a disconnect handler for
@@ -1226,7 +1253,9 @@ pub extern "C" fn rust_on_cpp_associated_disconnect(handler_type: i32) {
 #[gtest(RustBindingsAPI, TestAssociatedDisconnectCpp)]
 fn test_associated_disconnect_cpp() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
     {
         // Set up the primary pipe
         let (pending_remote, pending_receiver) =
@@ -1341,7 +1370,9 @@ pub fn BindRustAssociatedSenderReceiver(adapter: cxx::UniquePtr<CxxPendingAssoci
 #[gtest(RustBindingsAPI, TestAssociatedInteropCppPrimaryReceiver)]
 fn test_associated_interop_cpp_primary_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1463,7 +1494,9 @@ fn test_associated_interop_cpp_primary_receiver() {
 #[gtest(RustBindingsAPI, TestAssociatedInteropCppPrimaryRemote)]
 fn test_associated_interop_cpp_primary_remote() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1569,7 +1602,9 @@ fn test_associated_interop_cpp_primary_remote() {
 #[gtest(RustBindingsAPI, TestGroupControllerIsShared)]
 fn test_group_controller_is_shared() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1624,7 +1659,9 @@ fn test_group_controller_is_shared() {
 #[gtest(RustBindingsAPI, TestAssociatedInteropRustPrimaryReceiver)]
 fn test_associated_interop_rust_primary_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     {
         let (pending_remote, pending_receiver) =
@@ -1662,7 +1699,9 @@ fn test_associated_interop_rust_primary_receiver() {
 #[gtest(RustBindingsAPI, TestAssociatedInteropRustPrimaryRemote)]
 fn test_associated_interop_rust_primary_remote() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1701,7 +1740,9 @@ fn test_associated_interop_rust_primary_remote() {
 #[gtest(RustBindingsAPI, TestAssociatedDisconnectRust)]
 fn test_associated_disconnect_rust() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1789,7 +1830,9 @@ fn test_associated_disconnect_rust() {
 #[gtest(RustBindingsAPI, TestFailedSendMessageNotifiesSerializedEndpoint)]
 fn test_failed_send_message_notifies_serialized_endpoint() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1815,7 +1858,9 @@ fn test_failed_send_message_notifies_serialized_endpoint() {
 #[gtest(RustBindingsAPI, TestDuplicateInterfaceIdRejected)]
 fn test_duplicate_interface_id_rejected() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, _pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1840,7 +1885,7 @@ fn test_duplicate_interface_id_rejected() {
 #[gtest(RustBindingsAPI, TestDuplicateInterfaceIdReportsBadMessage)]
 fn test_duplicate_interface_id_reports_bad_message() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    let bad_message_flag = capture_bad_messages();
+    let (bad_message_flag, _error_handler) = capture_bad_messages();
 
     // Create a message with interface IDs, that we'll send multiple times
     let message_bytes = {
@@ -1927,15 +1972,15 @@ fn test_duplicate_interface_id_reports_bad_message() {
 
     let run_loop_idle = RunLoop::new();
     run_loop_idle.run_until_idle();
-
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 /// SendMessage failing must perform all relevant cleanup on the C++ side
 #[gtest(RustBindingsAPI, TestFailedSendMessageReturnsError)]
 fn test_failed_send_message_returns_error() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1957,7 +2002,9 @@ fn test_failed_send_message_returns_error() {
 #[gtest(RustBindingsAPI, TestFailedSendMessageNotifiesSerializedEndpointPureRust)]
 fn test_failed_send_message_notifies_serialized_endpoint_pure_rust() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -1996,7 +2043,9 @@ fn test_failed_send_message_notifies_serialized_endpoint_pure_rust() {
 #[gtest(RustBindingsAPI, TestFailedSendOnCppAdapterNotifiesSerializedEndpoint)]
 fn test_failed_send_on_cpp_adapter_notifies_serialized_endpoint() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2052,7 +2101,9 @@ fn test_failed_send_on_cpp_adapter_notifies_serialized_endpoint() {
 #[gtest(RustBindingsAPI, TestNestedAssociatedReceiverCpp)]
 fn test_nested_associated_receiver_to_cpp() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     {
         let (pending_remote, pending_receiver) =
@@ -2102,7 +2153,9 @@ fn test_nested_associated_receiver_to_cpp() {
 #[gtest(RustBindingsAPI, TestNestedAssociatedReceiverFromCppToRust)]
 fn test_nested_associated_receiver_from_cpp_to_rust() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2141,7 +2194,9 @@ fn test_nested_associated_receiver_from_cpp_to_rust() {
 #[gtest(RustBindingsAPI, TestSendCppEndpointOverCppRouter)]
 fn test_send_cpp_endpoint_over_cpp_router() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2181,7 +2236,9 @@ fn test_send_cpp_endpoint_over_cpp_router() {
 #[gtest(RustBindingsAPI, TestBindCppEndpointBeforeAssociating)]
 fn test_bind_cpp_endpoint_before_associating() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2303,7 +2360,9 @@ fn test_ready_for_messages_when_created_from_cpp_pair() {
 #[gtest(RustBindingsAPI, TestSendEndpointWithClosedPeer)]
 fn test_send_endpoint_with_closed_peer() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_primary_remote, pending_primary_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2393,7 +2452,9 @@ fn test_send_endpoint_with_closed_peer() {
 #[gtest(RustBindingsAPI, TestDroppedIncomingMessageClosesAssociatedEndpoints)]
 fn test_dropped_incoming_message_closes_associated_endpoints() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_primary_remote, pending_primary_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
@@ -2429,7 +2490,9 @@ fn test_dropped_incoming_message_closes_associated_endpoints() {
 #[gtest(RustBindingsAPI, TestMessageForUndeserializedEndpointIsDelivered)]
 fn test_message_for_undeserialized_endpoint_is_delivered() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+    let _error_handler = test_util::set_default_process_error_handler(|msg: &str| {
+        panic!("Got a bad message: {}", msg)
+    });
 
     let (pending_primary_remote, pending_primary_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
