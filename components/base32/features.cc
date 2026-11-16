@@ -6,6 +6,6 @@
 
 namespace base32::features {
 
-BASE_FEATURE(kComponentsBase32InRust, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComponentsBase32InRust, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace base32::features
