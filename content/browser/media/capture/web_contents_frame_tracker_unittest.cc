@@ -173,14 +173,18 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     raw_context_->set_frame_sink_id(id);
   }
 
-  void StartTrackerOnUIThread(const gfx::Size& capture_size) {
+  void StartTrackerOnUIThread(
+      const gfx::Size& capture_size,
+      media::ResolutionChangePolicy resolution_change_policy =
+          media::ResolutionChangePolicy::FIXED_RESOLUTION) {
     // Using base::Unretained for the tracker is presumed safe due to using
     // RunAllTasksUntilIdle in TearDown.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsFrameTracker::WillStartCapturingWebContents,
                        base::Unretained(tracker_.get()), capture_size,
-                       true /* is_high_dpi_enabled */));
+                       true /* is_high_dpi_enabled */,
+                       resolution_change_policy));
   }
 
   void StopTrackerOnUIThread() {
@@ -343,6 +347,20 @@ TEST_F(WebContentsFrameTrackerTest, UpdatesPreferredSizeOnWebContents) {
   StopTrackerOnUIThread();
   RunAllTasksUntilIdle();
   EXPECT_EQ(kSize720p, context()->last_capture_size());
+  EXPECT_EQ(context()->capturer_count(), 0);
+}
+
+TEST_F(WebContentsFrameTrackerTest,
+       DoesNotOverridePreferredSizeForAnyWithinLimitPolicy) {
+  StartTrackerOnUIThread(gfx::Size(3840, 3840),
+                         media::ResolutionChangePolicy::ANY_WITHIN_LIMIT);
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(kSizeZero, context()->last_capture_size());
+  EXPECT_EQ(context()->capturer_count(), 1);
+
+  StopTrackerOnUIThread();
+  RunAllTasksUntilIdle();
   EXPECT_EQ(context()->capturer_count(), 0);
 }
 

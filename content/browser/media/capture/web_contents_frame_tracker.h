@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
+#include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -79,8 +80,11 @@ class CONTENT_EXPORT WebContentsFrameTracker final
 
   ~WebContentsFrameTracker() override;
 
-  void WillStartCapturingWebContents(const gfx::Size& capture_size,
-                                     bool is_high_dpi_enabled);
+  void WillStartCapturingWebContents(
+      const gfx::Size& capture_size,
+      bool is_high_dpi_enabled,
+      media::ResolutionChangePolicy resolution_change_policy =
+          media::ResolutionChangePolicy::FIXED_RESOLUTION);
   void DidStopCapturingWebContents();
 
   void SetCapturedContentSize(const gfx::Size& content_size);
