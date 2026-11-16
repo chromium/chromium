@@ -15917,21 +15917,6 @@
             ]
         }
     ],
-    "PlatformRuntimeComponentStudy": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260209",
-                    "enable_features": [
-                        "EnablePlatformRuntimeComponent"
-                    ]
-                }
-            ]
-        }
-    ],
     "PointerLockOnAndroid": [
         {
             "platforms": [

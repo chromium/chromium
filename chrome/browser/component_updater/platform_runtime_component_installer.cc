@@ -100,7 +100,7 @@ PlatformRuntimeComponentInstallerPolicy::
     ~PlatformRuntimeComponentInstallerPolicy() = default;
 
 BASE_FEATURE(kEnablePlatformRuntimeComponent,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool PlatformRuntimeComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
