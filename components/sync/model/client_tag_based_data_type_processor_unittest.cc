@@ -387,6 +387,8 @@ class FakeAttachmentUploader : public AttachmentUploader {
 
   bool HasPendingUpload() const { return !pending_uploads_.empty(); }
 
+  size_t pending_uploads_count() const { return pending_uploads_.size(); }
+
   base::FilePath GetFilePath() const {
     return HasPendingUpload() ? pending_uploads_.begin()->second.file_path
                               : base::FilePath();
@@ -4345,6 +4347,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->PutWithAttachment(
       kKey1, std::move(entity_data), file_path,
       std::make_unique<EmptyMetadataChangeList>().get());
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
 
   // Simulate a browser restart where the model encounters an error after
   // loading persisted metadata containing a pending attachment upload.
@@ -4356,6 +4359,75 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   OnSyncStarting();
   EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+}
+
+// Verifies that attachment uploads are not started until `ConnectSync()` has
+// connected `worker_`, even after `OnSyncStarting()` and `ModelReadyToSync()`
+// have completed.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldDeferAttachmentUploadUntilConnectSync) {
+  // Persist an existing pending attachment upload before starting Sync, and
+  // also queue a second attachment upload while connection is in flight.
+  InitializeToReadyState();
+  std::unique_ptr<EntityData> entity_data1 =
+      GeneratePrefEntityData(kKey1, kValue1);
+  db()->PutData(kKey1, *entity_data1);
+  type_processor()->PutWithAttachment(
+      kKey1, std::move(entity_data1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
+  ResetState(/*keep_db=*/true);
+
+  InitializeToMetadataLoaded();
+  DataTypeActivationRequest request;
+  request.error_handler = base::DoNothing();
+  request.cache_guid = kCacheGuid;
+  request.authenticated_gaia_id = kDefaultAuthenticatedGaiaId;
+  request.sync_mode = SyncMode::kFull;
+  request.configuration_start_time = base::Time::Now();
+  request.attachment_uploader = attachment_uploader();
+
+  base::test::TestFuture<std::unique_ptr<DataTypeActivationResponse>>
+      start_future;
+  type_processor()->OnSyncStarting(request, start_future.GetCallback());
+  std::unique_ptr<DataTypeActivationResponse> activation_response =
+      start_future.Take();
+  ASSERT_FALSE(type_processor()->IsConnected());
+
+  // Neither the persisted upload (`kKey1`) nor a newly queued upload (`kKey2`)
+  // should start while `!IsConnected()`.
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  type_processor()->PutWithAttachment(
+      kKey2, GeneratePrefEntityData(kKey2, kValue2), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+
+  // Completing `ConnectSync()` starts both pending attachment uploads.
+  OnReadyToConnect(std::move(activation_response));
+  ASSERT_TRUE(type_processor()->IsConnected());
+  EXPECT_EQ(attachment_uploader()->pending_uploads_count(), 2u);
+}
+
+// Verifies that calling `PutWithAttachment()` after `DisconnectSync()` queues
+// `pending_upload` in metadata without starting a network upload until Sync
+// reconnects.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldNotStartAttachmentUploadAfterDisconnectSync) {
+  InitializeToReadyState();
+  DisconnectSync();
+  ASSERT_FALSE(type_processor()->IsConnected());
+
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  ASSERT_THAT(GetEntityForStorageKey(kKey1), NotNull());
+  EXPECT_TRUE(GetEntityForStorageKey(kKey1)->HasPendingAttachmentUpload());
+
+  // Reconnecting Sync starts the queued attachment upload.
+  OnSyncStarting();
+  EXPECT_TRUE(attachment_uploader()->HasPendingUpload());
 }
 
 }  // namespace syncer

@@ -313,10 +313,6 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
                base::optional_ref<const base::FilePath> attachment_file_path,
                MetadataChangeList* metadata_change_list);
 
-  // Starts or resumes attachment uploads for all tracked entities that have a
-  // pending attachment upload.
-  void StartOrResumePendingAttachmentUploads();
-
   // Starts or resumes the attachment upload for `entity`.
   void StartOrResumeAttachmentUpload(ProcessorEntity& entity);
 

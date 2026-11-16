@@ -292,10 +292,6 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
 
   if (entity_tracker_) {
     activation_response->data_type_state = entity_tracker_->data_type_state();
-    // Safe to call synchronously even when `ConnectIfReady()` is reached from
-    // `ModelReadyToSync()`: `AttachmentUploader` guarantees that its callbacks
-    // are never invoked synchronously, so this never re-enters `bridge_`.
-    StartOrResumePendingAttachmentUploads();
   }
 
   CHECK_EQ(activation_response->data_type_state.cache_guid(),
@@ -507,7 +503,13 @@ void ClientTagBasedDataTypeProcessor::ConnectSync(
 
   worker_ = std::move(worker);
 
-  StartOrResumePendingAttachmentUploads();
+  if (entity_tracker_ && activation_request_.attachment_uploader) {
+    for (ProcessorEntity* entity :
+         entity_tracker_->GetEntitiesWithPendingAttachmentUploads()) {
+      StartOrResumeAttachmentUpload(*entity);
+    }
+  }
+
   NudgeForCommitIfNeeded();
 }
 
@@ -1931,28 +1933,13 @@ void ClientTagBasedDataTypeProcessor::
   }
 }
 
-void ClientTagBasedDataTypeProcessor::StartOrResumePendingAttachmentUploads() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (model_error_.has_value() || !entity_tracker_ ||
-      !activation_request_.attachment_uploader) {
-    return;
-  }
-
-  for (ProcessorEntity* entity :
-       entity_tracker_->GetEntitiesWithPendingAttachmentUploads()) {
-    if (!entity->HasAttachmentUploadInProgress()) {
-      StartOrResumeAttachmentUpload(*entity);
-    }
-  }
-}
-
 void ClientTagBasedDataTypeProcessor::StartOrResumeAttachmentUpload(
     ProcessorEntity& entity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity.HasPendingAttachmentUpload());
   CHECK(!entity.HasAttachmentUploadInProgress());
   CHECK(!entity.storage_key().empty());
-  if (!activation_request_.attachment_uploader) {
+  if (!IsConnected() || !activation_request_.attachment_uploader) {
     return;
   }
 
