@@ -10,9 +10,11 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +33,8 @@ public class FacilitatedPaymentsProgressScreen implements FacilitatedPaymentsSeq
                                 R.layout.facilitated_payments_progress_screen,
                                 viewContainer,
                                 false);
+        ImageView gpayIcon = mView.findViewById(R.id.gpay_icon);
+        gpayIcon.setImageResource(AutofillUiUtils.getGPayLogoDrawableId());
     }
 
     @Override

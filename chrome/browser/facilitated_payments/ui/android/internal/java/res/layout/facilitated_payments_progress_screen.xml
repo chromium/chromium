@@ -19,7 +19,6 @@ found in the LICENSE file.
         android:layout_height="@dimen/facilitated_payments_gpay_icon_height"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        app:srcCompat="@drawable/google_pay"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/facilitated_payments_google_pay"
         android:focusable="true" />
