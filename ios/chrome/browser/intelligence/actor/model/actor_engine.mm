@@ -204,10 +204,11 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
           owner_task_->policy_checker(),
           base::BindRepeating(&ActorTask::ConfirmNavigationToOrigin,
                               base::Unretained(owner_task_))),
-      form_filling_handler_(
-          ActorTaskFormFillingHandler::Create(base::PassKey<ActorEngine>(),
-                                              owner_task_->GetJournal(),
-                                              owner_task_->task_id())),
+      form_filling_handler_(ActorTaskFormFillingHandler::Create(
+          base::PassKey<ActorEngine>(),
+          owner_task_->GetJournal(),
+          owner_task_->task_id(),
+          owner_task_->profile_context_resolver().GetFaviconLoader())),
       tool_controller_(
           std::make_unique<ToolController>(/*tool_delegate=*/this)) {
   CHECK(execution_updates_delegate_);

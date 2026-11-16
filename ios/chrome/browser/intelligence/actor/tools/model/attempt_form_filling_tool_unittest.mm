@@ -126,7 +126,8 @@ class AttemptFormFillingToolTest : public PlatformTest {
     mock_form_filling_service_ptr_ = mock_service.get();
 
     auto form_filling_handler = ActorTaskFormFillingHandler::CreateForTesting(
-        ActorTaskId(1), /*login_service=*/nullptr, std::move(mock_service));
+        ActorTaskId(1), /*login_service=*/nullptr, std::move(mock_service),
+        /*favicon_loader=*/nullptr);
     form_filling_handler_ptr_ = form_filling_handler.get();
 
     intervention_delegate_ = [[FakeActorTaskInterventionDelegate alloc] init];

@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
@@ -20,6 +21,7 @@ ActorServiceFactory::ActorServiceFactory(PassKey key)
           "ActorService",
           ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
   DependsOn(origin_gating::OriginGatingServiceFactory::GetInstance());
 }
 

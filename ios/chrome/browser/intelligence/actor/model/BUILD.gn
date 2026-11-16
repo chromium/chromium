@@ -48,6 +48,7 @@ source_set("model") {
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
     "//ios/chrome/app/background_task",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",

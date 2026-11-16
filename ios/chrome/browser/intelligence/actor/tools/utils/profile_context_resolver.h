@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class BrowserList;
+class FaviconLoader;
 class ProfileIOS;
 class UrlLoadingBrowserAgent;
 
@@ -51,6 +52,9 @@ class ProfileContextResolver {
   // Resolves the given `tab_id` to its associated objects.
   base::expected<TabResolutionResult, ToolExecutionResult> ResolveTab(
       int32_t tab_id) const;
+
+  // Returns the `FaviconLoader` associated with the profile.
+  FaviconLoader* GetFaviconLoader() const;
 
   // Returns the OriginGatingService associated with the profile.
   origin_gating::OriginGatingService* GetOriginGatingService() const;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -79,6 +80,11 @@ ProfileContextResolver::ResolveTab(int32_t tab_id) const {
   result.web_state = web_state->GetWeakPtr();
   result.web_state_list = web_state_list->AsWeakPtr();
   return result;
+}
+
+FaviconLoader* ProfileContextResolver::GetFaviconLoader() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IOSChromeFaviconLoaderFactory::GetForProfile(profile_);
 }
 
 origin_gating::OriginGatingService*

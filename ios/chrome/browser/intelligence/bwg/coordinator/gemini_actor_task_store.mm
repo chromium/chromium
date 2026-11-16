@@ -38,16 +38,16 @@ using SuggestionSelectionCompletionHandler = void (
     ^)(ActorFormSuggestion* selectedSuggestion, BOOL shouldStorePermission);
 
 // Creates an `ActuationWorklogItem` card for a non-federated credential
-// suggestion.
+// `suggestion`.
 ActuationWorklogItem* CardItemForNonFederatedCredential(
-    FormSuggestion* suggestion) {
-  NSString* username = suggestion.value;
-  NSString* site = suggestion.displayDescription;
+    ActorFormSuggestion* suggestion) {
+  FormSuggestion* formSuggestion = suggestion.formSuggestion;
+  NSString* username = formSuggestion.value;
+  NSString* site = formSuggestion.displayDescription;
   UIImage* accessoryIcon = suggestion.icon;
   if (!accessoryIcon) {
-    // TODO(crbug.com/571139088): Use favicon loader to update favicon.
     accessoryIcon =
-        SymbolWithPointSize(SymbolPersonCropCircle, kAccessoryIconSize);
+        SymbolWithPointSize(SymbolGlobeAmericas, kAccessoryIconSize);
   }
 
   NSString* cardTitle =
@@ -157,8 +157,7 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
 ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
-    case autofill::SuggestionType::kIdentityCredential:
-      return CardItemForNonFederatedCredential(suggestion.formSuggestion);
+      return CardItemForNonFederatedCredential(suggestion);
     case autofill::SuggestionType::kAddressEntry:
       return CardItemForAddress(suggestion.formSuggestion);
     case autofill::SuggestionType::kCreditCardEntry:
@@ -301,6 +300,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
         completionHandler:
             (void (^)(ActorFormSuggestion* selectedSuggestion,
                       BOOL shouldStorePermission))completionHandler {
+  CHECK(!_intervention, base::NotFatalUntil::M165);
   CHECK(!_interventionCompletion, base::NotFatalUntil::M165);
 
   _selectedSuggestion = suggestions.firstObject;
@@ -309,7 +309,6 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   NSString* manuallyEnterButtonText;
   switch (_selectedSuggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
-    case autofill::SuggestionType::kIdentityCredential:
       manuallyEnterButtonText = l10n_util::GetNSString(
           IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_MANUAL_FILL_BUTTON);
       break;
@@ -323,13 +322,22 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
       break;
   }
 
+  // Start loading before building `cardItem`. The update handler may run
+  // synchronously on cache hits or asynchronously later; here `_intervention`
+  // is still nil so a synchronous call no-ops while `_selectedSuggestion.icon`
+  // is populated for `cardItem`.
+  __weak __typeof(self) weakSelf = self;
+  __weak ActorFormSuggestion* weakSuggestion = _selectedSuggestion;
+  [_selectedSuggestion loadIconWithUpdateHandler:^{
+    [weakSelf didUpdateIconForSuggestion:weakSuggestion];
+  }];
+
   ActuationWorklogItem* cardItem = CardItemForSuggestion(_selectedSuggestion);
   if (cardItem) {
     _suggestionsEntry = [self appendItem:cardItem toolType:std::nullopt];
     _suggestions = [suggestions copy];
   }
   if (completionHandler) {
-    __weak __typeof(self) weakSelf = self;
     _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
       [weakSelf resolveSuggestionsWithAction:actionIdentifier
                            completionHandler:completionHandler];
@@ -403,6 +411,37 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
       _entries.lastObject != _suggestionsEntry) {
     return;
   }
+  // Start loading before `-replaceSuggestionsCardWithSuggestion:` updates
+  // `_selectedSuggestion` so a cached favicon populates `suggestion.icon`
+  // immediately without a synchronous callback publishing a duplicate update;
+  // the handler may run either synchronously on cache hits or asynchronously
+  // later.
+  __weak __typeof(self) weakSelf = self;
+  __weak ActorFormSuggestion* weakSuggestion = suggestion;
+  [suggestion loadIconWithUpdateHandler:^{
+    [weakSelf didUpdateIconForSuggestion:weakSuggestion];
+  }];
+  [self replaceSuggestionsCardWithSuggestion:suggestion];
+}
+
+- (void)stopTask {
+  if (!_actorService) {
+    return;
+  }
+  _actorService->StopTask(_taskID,
+                          actor::ActorTaskStoppedReason::kStoppedByUser);
+}
+
+#pragma mark - Private
+
+// Replaces `_suggestionsEntry` with a card built for `suggestion`, updates
+// `_selectedSuggestion`, and publishes the new state.
+- (void)replaceSuggestionsCardWithSuggestion:(ActorFormSuggestion*)suggestion {
+  // While the task waits on the user, the suggestions card is the last entry.
+  if (!suggestion || !_suggestionsEntry ||
+      _entries.lastObject != _suggestionsEntry) {
+    return;
+  }
   ActuationWorklogItem* item = CardItemForSuggestion(suggestion);
   if (!item) {
     return;
@@ -415,15 +454,13 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [self publishState];
 }
 
-- (void)stopTask {
-  if (!_actorService) {
-    return;
+// Replaces the active suggestion card when `suggestion.icon` updates while
+// `suggestion` is the currently selected intervention suggestion.
+- (void)didUpdateIconForSuggestion:(ActorFormSuggestion*)suggestion {
+  if (suggestion && suggestion == _selectedSuggestion && _intervention) {
+    [self replaceSuggestionsCardWithSuggestion:suggestion];
   }
-  _actorService->StopTask(_taskID,
-                          actor::ActorTaskStoppedReason::kStoppedByUser);
 }
-
-#pragma mark - Private
 
 // Resolves the pending suggestions intervention with `action` through
 // `completionHandler`. The suggestions are already cleared by

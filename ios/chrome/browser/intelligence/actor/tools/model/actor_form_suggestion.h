@@ -9,27 +9,30 @@
 
 #import <optional>
 
+#import "base/ios/block_types.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
+
+@class FormSuggestion;
+@class UIImage;
+@protocol ActorFormSuggestionFaviconDataSource;
 
 namespace autofill {
 enum class ActorFormFillingRequestedData;
 enum class SuggestionType;
 struct ActorSuggestion;
 }  // namespace autofill
-@class FormSuggestion;
 
 // An Objective-C class used to convert actor types to FormSuggestion objects.
 @interface ActorFormSuggestion : NSObject
 
-// Designated initializer taking a credential.
-- (instancetype)initWithCredential:(const actor_login::Credential&)credential;
+// Data source for favicon loading. Should be set before
+// `-loadIconWithUpdateHandler:` is invoked.
+@property(nonatomic, weak) id<ActorFormSuggestionFaviconDataSource>
+    faviconDataSource;
 
-// Designated initializer taking an autofill suggestion.
-- (instancetype)
-    initWithActorSuggestion:(const autofill::ActorSuggestion&)suggestion
-                   dataType:(autofill::ActorFormFillingRequestedData)dataType;
-
-- (instancetype)init NS_UNAVAILABLE;
+// Icon associated with the suggestion (`formSuggestion.icon` if available, or
+// the loaded website favicon once fetched).
+@property(nonatomic, readonly) UIImage* icon;
 
 // The corresponding form suggestion.
 @property(nonatomic, readonly) FormSuggestion* formSuggestion;
@@ -46,6 +49,21 @@ struct ActorSuggestion;
 // or `kCreditCard`.
 @property(nonatomic, readonly) std::optional<autofill::ActorSuggestion>
     autofillSuggestion;
+
+// Designated initializer taking a credential.
+- (instancetype)initWithCredential:(const actor_login::Credential&)credential;
+
+// Designated initializer taking an autofill suggestion.
+- (instancetype)
+    initWithActorSuggestion:(const autofill::ActorSuggestion&)suggestion
+                   dataType:(autofill::ActorFormFillingRequestedData)dataType;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Lazily loads `icon` via `faviconDataSource` if not already available.
+// `handler` is invoked whenever `icon` updates, and may run either
+// synchronously on cache hits or asynchronously when fetched later.
+- (void)loadIconWithUpdateHandler:(ProceduralBlock)updateHandler;
 
 @end
 

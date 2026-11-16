@@ -1,10 +1,13 @@
 include_rules = [
+  # keep-sorted start
   "+components/actor/core",
   "+components/actor/public/mojom",
   "+components/origin_gating/core",
   "+ios/chrome/app/background_task",
   "+ios/chrome/browser/app_bar/ui/app_bar_constants.h",
+  "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/origin_gating/model",
   "+ios/chrome/browser/tab_insertion/model",
   "+third_party/perfetto",
+  # keep-sorted end
 ]

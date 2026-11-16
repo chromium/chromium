@@ -51,6 +51,7 @@ source_set("profile_context_resolver") {
   deps = [
     ":actor_browser_utils",
     "//base",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/origin_gating/model",
     "//ios/chrome/browser/shared/model/browser",

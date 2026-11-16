@@ -18,10 +18,12 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion_favicon_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_id.h"
@@ -97,6 +99,38 @@
                     finalState:(actor::ActorTaskState)finalState {
   _state = finalState;
   _stopped = YES;
+}
+
+@end
+
+// Fake favicon data source for `ActorFormSuggestion` in store tests.
+@interface FakeStoreFaviconDataSource
+    : NSObject <ActorFormSuggestionFaviconDataSource>
+@property(nonatomic, strong) UIImage* icon;
+@property(nonatomic, assign, getter=isSynchronous) BOOL synchronous;
+
+// Invokes the pending completion handler with `icon`.
+- (void)completeLoad;
+@end
+
+@implementation FakeStoreFaviconDataSource {
+  ActorFormSuggestionFaviconCompletion _completion;
+}
+
+- (void)completeLoad {
+  if (_completion) {
+    _completion(_icon);
+  }
+}
+
+- (BOOL)actorFormSuggestion:(ActorFormSuggestion*)suggestion
+    loadFaviconWithCompletion:(ActorFormSuggestionFaviconCompletion)completion {
+  if (self.isSynchronous) {
+    completion(_icon);
+    return YES;
+  }
+  _completion = [completion copy];
+  return YES;
 }
 
 @end
@@ -588,29 +622,6 @@ TEST_F(GeminiActorTaskStoreTest, SelectFromPayments) {
   EXPECT_NSEQ(item.accessoryItem.detailText, @"•••• 1234");
 }
 
-// Tests that federated credentials are displayed as credential cards.
-TEST_F(GeminiActorTaskStoreTest, SelectFromFederatedCredentials) {
-  AttachAndRegister();
-
-  ActorFormSuggestion* suggestion =
-      CreateCredentialSuggestion(u"user@example.com", u"example.com",
-                                 actor_login::CredentialType::kFederated);
-  ASSERT_EQ(suggestion.type, autofill::SuggestionType::kIdentityCredential);
-
-  [store_ actorTask:task_id_
-      selectFromSuggestions:@[ suggestion ]
-          completionHandler:nil];
-
-  EXPECT_NSEQ(observer_.items.lastObject.accessoryItem.title,
-              @"user@example.com");
-  ASSERT_NE(observer_.intervention, nil);
-  ASSERT_EQ(observer_.intervention.actions.count, 2u);
-  EXPECT_NSEQ(
-      observer_.intervention.actions[0].title,
-      l10n_util::GetNSString(
-          IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_MANUAL_FILL_BUTTON));
-}
-
 // Tests that selecting another suggestion replaces only the suggestions card in
 // a single state, and that allowing autofill resolves the intervention with it.
 TEST_F(GeminiActorTaskStoreTest, SelectSuggestionReplacesCard) {
@@ -714,6 +725,118 @@ TEST_F(GeminiActorTaskStoreTest,
   [store_
       resolveInterventionWithAction:observer_.intervention.actions.firstObject];
   EXPECT_TRUE(completion_called);
+}
+
+// Tests that a synchronously loaded credential favicon is displayed on the
+// initial card without replacing it afterward.
+TEST_F(GeminiActorTaskStoreTest,
+       SelectFromCredentialsUsesSynchronouslyLoadedFavicon) {
+  AttachAndRegister();
+  const NSUInteger initial_item_count = observer_.items.count;
+  const NSUInteger initial_update_count = observer_.updateCount;
+
+  FakeStoreFaviconDataSource* favicon_source =
+      [[FakeStoreFaviconDataSource alloc] init];
+  UIImage* favicon = [[UIImage alloc] init];
+  favicon_source.icon = favicon;
+  favicon_source.synchronous = YES;
+
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  suggestion.faviconDataSource = favicon_source;
+
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:nil];
+
+  EXPECT_EQ(observer_.updateCount, initial_update_count + 1);
+  ASSERT_EQ(observer_.items.count, initial_item_count + 1);
+  EXPECT_EQ(observer_.items.lastObject.accessoryItem.icon, favicon);
+}
+
+// Tests that an asynchronously loaded credential favicon replaces the initial
+// globe fallback icon on the active card and updates `suggestionsItem`.
+TEST_F(GeminiActorTaskStoreTest,
+       SelectFromCredentialsUpdatesFaviconAsynchronously) {
+  AttachAndRegister();
+
+  FakeStoreFaviconDataSource* favicon_source =
+      [[FakeStoreFaviconDataSource alloc] init];
+  UIImage* loaded_favicon = [[UIImage alloc] init];
+  favicon_source.icon = loaded_favicon;
+
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  suggestion.faviconDataSource = favicon_source;
+
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:nil];
+
+  const NSUInteger item_count = observer_.items.count;
+  const NSUInteger update_count = observer_.updateCount;
+  ActuationWorklogItem* initial_item = observer_.items.lastObject;
+  EXPECT_NSEQ(
+      initial_item.accessoryItem.icon,
+      SymbolWithConfiguration(SymbolGlobeAmericas,
+                              initial_item.accessoryItem.icon.configuration));
+
+  [favicon_source completeLoad];
+
+  EXPECT_EQ(observer_.updateCount, update_count + 1);
+  ASSERT_EQ(observer_.items.count, item_count);
+  EXPECT_NE(observer_.items.lastObject, initial_item);
+  EXPECT_EQ(observer_.items.lastObject.accessoryItem.icon, loaded_favicon);
+  EXPECT_EQ(observer_.suggestionsItem, observer_.items.lastObject);
+
+  FakeTaskDataSourceObserver* late_observer =
+      [[FakeTaskDataSourceObserver alloc] init];
+  [store_ addObserver:late_observer];
+  EXPECT_EQ(late_observer.items.lastObject.accessoryItem.icon, loaded_favicon);
+  EXPECT_EQ(late_observer.suggestionsItem, late_observer.items.lastObject);
+}
+
+// Tests that stale asynchronous favicon completions arriving after reselecting
+// another suggestion or resolving the intervention are ignored.
+TEST_F(GeminiActorTaskStoreTest,
+       SelectFromCredentialsIgnoresStaleAsyncFaviconUpdates) {
+  AttachAndRegister();
+
+  FakeStoreFaviconDataSource* favicon_source1 =
+      [[FakeStoreFaviconDataSource alloc] init];
+  favicon_source1.icon = [[UIImage alloc] init];
+  FakeStoreFaviconDataSource* favicon_source2 =
+      [[FakeStoreFaviconDataSource alloc] init];
+  favicon_source2.icon = [[UIImage alloc] init];
+  ActorFormSuggestion* suggestion1 =
+      CreateCredentialSuggestion(u"user1@example.com", u"example.com");
+  suggestion1.faviconDataSource = favicon_source1;
+  ActorFormSuggestion* suggestion2 =
+      CreateCredentialSuggestion(u"user2@example.com", u"example.com");
+  suggestion2.faviconDataSource = favicon_source2;
+
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion1, suggestion2 ]
+          completionHandler:^(ActorFormSuggestion*, BOOL){
+          }];
+
+  [store_ selectSuggestion:suggestion2];
+  const NSUInteger update_count_after_select = observer_.updateCount;
+  ActuationWorklogItem* second_item = observer_.items.lastObject;
+  EXPECT_NSEQ(second_item.accessoryItem.title, @"user2@example.com");
+
+  // Stale completion for `suggestion1` does not overwrite `suggestion2`'s card.
+  [favicon_source1 completeLoad];
+  EXPECT_EQ(observer_.updateCount, update_count_after_select);
+  EXPECT_EQ(observer_.items.lastObject, second_item);
+
+  // Resolving the intervention ignores a subsequent completion for
+  // `suggestion2`.
+  [store_ resolveInterventionWithAction:observer_.intervention.actions[1]];
+  const NSUInteger update_count_after_resolve = observer_.updateCount;
+  [favicon_source2 completeLoad];
+  EXPECT_EQ(observer_.updateCount, update_count_after_resolve);
+  EXPECT_EQ(observer_.items.lastObject, second_item);
 }
 
 // Tests that a confirmation interrupt is surfaced as an intervention card and

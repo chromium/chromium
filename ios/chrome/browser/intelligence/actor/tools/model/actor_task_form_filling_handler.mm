@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/actor_login/actor_login_service_impl.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion_favicon_loader.h"
 
 namespace actor {
 
@@ -23,11 +24,13 @@ namespace actor {
 std::unique_ptr<ActorTaskFormFillingHandler>
 ActorTaskFormFillingHandler::Create(base::PassKey<ActorEngine> pass_key,
                                     AggregatedJournal& journal,
-                                    ActorTaskId task_id) {
+                                    ActorTaskId task_id,
+                                    FaviconLoader* favicon_loader) {
   return base::WrapUnique(new ActorTaskFormFillingHandler(
       task_id, std::make_unique<actor_login::ActorLoginServiceImpl>(),
       std::make_unique<autofill::ActorFormFillingServiceImpl>(
-          journal.GetSafeRef(), task_id)));
+          journal.GetSafeRef(), task_id),
+      favicon_loader));
 }
 
 // static
@@ -35,20 +38,27 @@ std::unique_ptr<ActorTaskFormFillingHandler>
 ActorTaskFormFillingHandler::CreateForTesting(
     ActorTaskId task_id,
     std::unique_ptr<actor_login::ActorLoginService> login_service,
-    std::unique_ptr<autofill::ActorFormFillingService> form_filling_service) {
+    std::unique_ptr<autofill::ActorFormFillingService> form_filling_service,
+    FaviconLoader* favicon_loader) {
   return base::WrapUnique(new ActorTaskFormFillingHandler(
-      task_id, std::move(login_service), std::move(form_filling_service)));
+      task_id, std::move(login_service), std::move(form_filling_service),
+      favicon_loader));
 }
 
 ActorTaskFormFillingHandler::ActorTaskFormFillingHandler(
     ActorTaskId task_id,
     std::unique_ptr<actor_login::ActorLoginService> login_service,
-    std::unique_ptr<autofill::ActorFormFillingService> form_filling_service)
+    std::unique_ptr<autofill::ActorFormFillingService> form_filling_service,
+    FaviconLoader* favicon_loader)
     : task_id_(task_id),
       login_service_(std::move(login_service)),
-      form_filling_service_(std::move(form_filling_service)) {}
+      form_filling_service_(std::move(form_filling_service)),
+      favicon_loader_([[ActorFormSuggestionFaviconLoader alloc]
+          initWithFaviconLoader:favicon_loader]) {}
 
-ActorTaskFormFillingHandler::~ActorTaskFormFillingHandler() = default;
+ActorTaskFormFillingHandler::~ActorTaskFormFillingHandler() {
+  [favicon_loader_ disconnect];
+}
 
 void ActorTaskFormFillingHandler::PromptToSelectCredential(
     const std::vector<actor_login::Credential>& credentials,
@@ -74,8 +84,10 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
 
   NSMutableArray<ActorFormSuggestion*>* suggestions = [NSMutableArray array];
   for (const auto& credential : credentials) {
-    [suggestions
-        addObject:[[ActorFormSuggestion alloc] initWithCredential:credential]];
+    ActorFormSuggestion* suggestion =
+        [[ActorFormSuggestion alloc] initWithCredential:credential];
+    suggestion.faviconDataSource = favicon_loader_;
+    [suggestions addObject:suggestion];
   }
 
   credential_selected_callback_ = std::move(callback);

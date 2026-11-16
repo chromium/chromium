@@ -19,6 +19,11 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "url/origin.h"
 
+@class ActorFormSuggestion;
+@class ActorFormSuggestionFaviconLoader;
+@protocol ActorTaskInterventionDelegate;
+class FaviconLoader;
+
 namespace actor_login {
 class ActorLoginService;
 }  // namespace actor_login
@@ -28,10 +33,6 @@ class ActorFormFillingService;
 struct ActorFormFillingRequest;
 struct ActorSuggestion;
 }  // namespace autofill
-
-@class ActorFormSuggestion;
-@protocol ActorTaskInterventionDelegate;
-@class FormSuggestion;
 
 namespace actor {
 
@@ -52,14 +53,16 @@ class ActorTaskFormFillingHandler {
   static std::unique_ptr<ActorTaskFormFillingHandler> Create(
       base::PassKey<ActorEngine> pass_key,
       AggregatedJournal& journal,
-      ActorTaskId task_id);
+      ActorTaskId task_id,
+      FaviconLoader* favicon_loader);
 
   // Static constructor for testing purposes; this allows tests to override the
   // services.
   static std::unique_ptr<ActorTaskFormFillingHandler> CreateForTesting(
       ActorTaskId task_id,
       std::unique_ptr<actor_login::ActorLoginService> login_service,
-      std::unique_ptr<autofill::ActorFormFillingService> form_filling_service);
+      std::unique_ptr<autofill::ActorFormFillingService> form_filling_service,
+      FaviconLoader* favicon_loader);
 
   ~ActorTaskFormFillingHandler();
 
@@ -132,7 +135,8 @@ class ActorTaskFormFillingHandler {
   ActorTaskFormFillingHandler(
       ActorTaskId task_id,
       std::unique_ptr<actor_login::ActorLoginService> login_service,
-      std::unique_ptr<autofill::ActorFormFillingService> form_filling_service);
+      std::unique_ptr<autofill::ActorFormFillingService> form_filling_service,
+      FaviconLoader* favicon_loader);
 
   // TODO(crbug.com/472291829): Implement affiliation service related logic to
   // fetch affiliated domains so we can reuse the permission.
@@ -153,6 +157,10 @@ class ActorTaskFormFillingHandler {
   ActorTaskId task_id_;
   std::unique_ptr<actor_login::ActorLoginService> login_service_;
   std::unique_ptr<autofill::ActorFormFillingService> form_filling_service_;
+
+  // Data source for loading website favicons on prompted credential
+  // `ActorFormSuggestion`s.
+  ActorFormSuggestionFaviconLoader* favicon_loader_ = nil;
 
   // For multi-step login, these are the credentials that the user has chosen to
   // allow the actor to use in this task, as well as whether the user has given

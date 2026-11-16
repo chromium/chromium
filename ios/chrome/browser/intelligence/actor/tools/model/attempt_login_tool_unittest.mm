@@ -147,7 +147,8 @@ class AttemptLoginToolTest : public PlatformTest {
     fake_actor_login_service_ptr_ = fake_service.get();
 
     auto form_filling_handler = ActorTaskFormFillingHandler::CreateForTesting(
-        ActorTaskId(1), std::move(fake_service), nullptr);
+        ActorTaskId(1), std::move(fake_service), nullptr,
+        /*favicon_loader=*/nullptr);
     intervention_delegate_ = [[FakeActorTaskInterventionDelegate alloc] init];
     form_filling_handler->SetInterventionDelegateForTesting(
         intervention_delegate_);

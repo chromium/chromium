@@ -49,6 +49,9 @@ source_set("actor_tool_interface") {
   sources = [
     "actor_form_suggestion.h",
     "actor_form_suggestion.mm",
+    "actor_form_suggestion_favicon_data_source.h",
+    "actor_form_suggestion_favicon_loader.h",
+    "actor_form_suggestion_favicon_loader.mm",
     "actor_task_form_filling_handler.h",
     "actor_task_form_filling_handler.mm",
     "actor_tool.h",
@@ -60,17 +63,21 @@ source_set("actor_tool_interface") {
     "tool_delegate.h",
   ]
 
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser/actor_login:common",
+  ]
+
   deps = [
     ":action_target",
     ":actor_tool_constants",
-    "//base",
     "//components/actor/core:journal",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/actor",
     "//components/autofill/ios/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
-    "//components/password_manager/core/browser/actor_login:common",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -79,6 +86,8 @@ source_set("actor_tool_interface") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/web/public",
     "//url",
   ]
@@ -599,6 +608,8 @@ source_set("unit_tests") {
     "action_target_java_script_feature_unittest.mm",
     "action_target_js_unittest.mm",
     "action_target_unittest.mm",
+    "actor_form_suggestion_favicon_loader_unittest.mm",
+    "actor_form_suggestion_unittest.mm",
     "actor_tool_factory_unittest.mm",
     "actor_tool_java_script_feature_util_unittest.mm",
     "actor_tool_request_unittest.mm",
@@ -671,6 +682,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/autofill/core/common",
     "//components/autofill/core/common:features",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:autofill_js",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
@@ -686,6 +698,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/ios",
     "//components/tab_groups",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/model:test_support",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/test:test_support",
@@ -706,6 +720,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/test:ios_chrome_test_with_web_state",
     "//ios/web/common:features",
     "//ios/web/js_messaging:java_script_feature_manager_header",
