@@ -7,17 +7,19 @@
 #import <string>
 #import <string_view>
 
+#import "base/apple/foundation_util.h"
 #import "base/containers/fixed_flat_set.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
-#import "base/strings/escape.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 #import "components/variations/seed_response.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
@@ -27,7 +29,10 @@
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
 #import "net/http/http_status_code.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -63,11 +68,11 @@ std::string GetOsName(const std::string& forced_platform) {
   return "ios";
 }
 
-// Returns the trimmed and URL-escaped value of the given string.
-std::string GetEscapedValue(std::string_view value) {
-  return base::EscapeQueryParamValue(
-      base::TrimWhitespaceASCII(value, base::TrimPositions::TRIM_ALL),
-      /*use_plus=*/false);
+// Returns a copy of `value` with leading and trailing ASCII whitespace
+// removed.
+std::string TrimWhitespace(std::string_view value) {
+  return std::string(
+      base::TrimWhitespaceASCII(value, base::TrimPositions::TRIM_ALL));
 }
 
 }  // namespace
@@ -84,6 +89,11 @@ std::string GetEscapedValue(std::string_view value) {
   // Accessed on the main thread.
   std::string _forcedChannel;
   std::string _forcedPlatform;
+
+  // The `VariationsRestrictParameter` MDM policy value. Initialized on the
+  // main thread and read on the static serial queue
+  // `*.first_run_variations_seed_manager`.
+  std::string _restrictParameter;
 
   // The timestamp when the current seed request starts. This is used for metric
   // reporting, and will be reset to null value when the request finishes.
@@ -104,6 +114,19 @@ std::string GetEscapedValue(std::string_view value) {
     _variationsDomain = variations::kDefaultServerUrl;
     _forcedChannel = std::string();
     _forcedPlatform = std::string();
+    _restrictParameter = std::string();
+
+    NSDictionary* managedConfig = [[NSUserDefaults standardUserDefaults]
+        dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
+    if (managedConfig) {
+      NSString* restrictParam =
+          base::apple::ObjCCast<NSString>(managedConfig[base::SysUTF8ToNSString(
+              policy::key::kVariationsRestrictParameter)]);
+      if (restrictParam) {
+        _restrictParameter =
+            TrimWhitespace(base::SysNSStringToUTF8(restrictParam));
+      }
+    }
 
     std::string url_switch =
         base::StrCat({"--", variations::switches::kVariationsServerURL, "="});
@@ -123,9 +146,9 @@ std::string GetEscapedValue(std::string_view value) {
           _fetchingEnabled = YES;
         }
       } else if (base::StartsWith(arg, channel_switch)) {
-        _forcedChannel = GetEscapedValue(arg.substr(channel_switch.size()));
+        _forcedChannel = TrimWhitespace(arg.substr(channel_switch.size()));
       } else if (base::StartsWith(arg, platform_switch)) {
-        _forcedPlatform = GetEscapedValue(arg.substr(platform_switch.size()));
+        _forcedPlatform = TrimWhitespace(arg.substr(platform_switch.size()));
       }
     }
   }
@@ -170,23 +193,31 @@ std::string GetEscapedValue(std::string_view value) {
 // The URL of the variations server, including query parameters that identifies
 // the request initiator. Accessed in the static serial queue
 // "*.first_run_variations_seed_manager".
-- (NSURL*)variationsURL {
-  // Construct the variations seed request URL. The URL contains the "osname",
-  // "milestone", and "channel" as parameters. Dogfood experimenting is not
-  // supported on Chrome iOS, therefore we do not need the "restrict" parameter.
+- (GURL)variationsURL {
+  GURL URL(_variationsDomain);
+  if (!URL.is_valid()) {
+    return GURL();
+  }
+  // Construct the variations seed request URL with `osname` and `milestone`,
+  // plus optional `channel` and `restrict` (from the
+  // `VariationsRestrictParameter` MDM policy) parameters.
+  URL = net::AppendOrReplaceQueryParameter(URL, "osname",
+                                           GetOsName(_forcedPlatform));
+  URL = net::AppendOrReplaceQueryParameter(
+      URL, "milestone", version_info::GetMajorVersionNumber());
   const std::string channel =
       _forcedChannel.empty()
           ? (GetChannel() != version_info::Channel::UNKNOWN ? GetChannelString()
                                                             : "")
           : _forcedChannel;
-  std::string url =
-      base::StrCat({_variationsDomain, "?osname=", GetOsName(_forcedPlatform),
-                    "&milestone=", version_info::GetMajorVersionNumber()});
   if (!channel.empty()) {
-    base::StrAppend(&url, {"&channel=", channel});
+    URL = net::AppendOrReplaceQueryParameter(URL, "channel", channel);
   }
-
-  return [NSURL URLWithString:base::SysUTF8ToNSString(url)];
+  if (!_restrictParameter.empty()) {
+    URL =
+        net::AppendOrReplaceQueryParameter(URL, "restrict", _restrictParameter);
+  }
+  return URL;
 }
 
 // Helper method for `startSeedFetch` that initiates an HTTPS request to the
@@ -198,7 +229,7 @@ std::string GetEscapedValue(std::string_view value) {
 - (void)doActualFetch {
   g_seed_fetching_in_progress = YES;
   NSMutableURLRequest* request = [NSMutableURLRequest
-       requestWithURL:[self variationsURL]
+       requestWithURL:net::NSURLWithGURL([self variationsURL])
           cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
       timeoutInterval:kRequestTimeout.InSecondsF()];
   // Pass only "gzip" as an accepted format. Do not pass delta compression

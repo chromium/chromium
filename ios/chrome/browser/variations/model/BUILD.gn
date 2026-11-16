@@ -36,10 +36,13 @@ source_set("fetcher") {
     ":store_private",
     "//base",
     "//build:branding_buildflags",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
     "//components/variations",
     "//components/version_info",
     "//ios/chrome/common",
     "//net",
+    "//url",
   ]
 }
 
@@ -150,6 +153,8 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics:test_support",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/service",

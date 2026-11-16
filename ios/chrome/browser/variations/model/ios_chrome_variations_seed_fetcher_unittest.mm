@@ -10,6 +10,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 #import "components/variations/seed_response.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
@@ -42,7 +44,10 @@ constexpr char kSeedFetchTimeHistogram[] =
     "IOS.Variations.FirstRun.SeedFetchTime";
 
 // Fake server url.
-NSString* const kTestServerUrl = @"https://test.finch.server";
+NSString* const kTestServerUrl = @"https://test.finch.server/";
+
+// Fake channel value for testing.
+NSString* const kTestChannel = @"fake_channel";
 
 // Fake value for "Date" header for testing.
 NSString* const kTestDateHeaderValue = @"Tue, 15 Nov 1994 12:45:26 GMT";
@@ -71,10 +76,38 @@ MockValueForHTTPHeaderField GetMockMethodWithHeader(
 // Tests the IOSChromeVariationsSeedFetcher.
 class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
  protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+
   void TearDown() override {
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
     [IOSChromeVariationsSeedStore resetForTesting];
     [IOSChromeVariationsSeedFetcher resetFetchingStatusForTesting];
     PlatformTest::TearDown();
+  }
+
+  // Runs a synchronous fetch on `fetcher` using a mocked `NSURLSession` and
+  // returns the request URL passed to `dataTaskWithRequest:completionHandler:`.
+  NSURL* FetchVariationsURL(IOSChromeVariationsSeedFetcher* fetcher) {
+    __block NSURL* captured_url = nil;
+    id mock_url_session = OCMClassMock([NSURLSession class]);
+    OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+    OCMExpect([mock_url_session
+        dataTaskWithRequest:[OCMArg checkWithBlock:^BOOL(
+                                        NSMutableURLRequest* request) {
+          captured_url = request.URL;
+          return [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
+        }]
+          completionHandler:[OCMArg any]]);
+    [fetcher doActualFetch];
+    EXPECT_OCMOCK_VERIFY(mock_url_session);
+    [mock_url_session stopMocking];
+    [IOSChromeVariationsSeedFetcher resetFetchingStatusForTesting];
+    return captured_url;
   }
 };
 
@@ -235,6 +268,151 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   [fetcher doActualFetch];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
   EXPECT_OCMOCK_VERIFY(mock_url_session);
+}
+
+// Tests that the managed `VariationsRestrictParameter` policy value is appended
+// as the `restrict` query parameter to the variations seed request URL.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithRestrictParameter) {
+  NSString* policy_key =
+      base::SysUTF8ToNSString(policy::key::kVariationsRestrictParameter);
+  [[NSUserDefaults standardUserDefaults]
+      setObject:@{policy_key : @"restricted_corp"}
+         forKey:kPolicyLoaderIOSConfigurationKey];
+
+  NSString* test_channel_arg = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       kTestChannel];
+  IOSChromeVariationsSeedFetcher* fetcher_with_channel =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_arg ]];
+  NSURL* url_with_channel = FetchVariationsURL(fetcher_with_channel);
+  ASSERT_NSNE(nil, url_with_channel);
+  NSString* default_server_url = base::SysUTF8ToNSString(kDefaultServerUrl);
+  NSString* expected_url = [NSString
+      stringWithFormat:
+          @"%@?osname=ios&milestone=%@&channel=%@&restrict=restricted_corp",
+          default_server_url,
+          base::SysUTF8ToNSString(version_info::GetMajorVersionNumber()),
+          kTestChannel];
+  EXPECT_NSEQ(expected_url, url_with_channel.absoluteString);
+
+  IOSChromeVariationsSeedFetcher* default_fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] init];
+  NSURL* default_url = FetchVariationsURL(default_fetcher);
+  ASSERT_NSNE(nil, default_url);
+  NSString* default_url_string = default_url.absoluteString;
+  NSString* expected_prefix = [NSString
+      stringWithFormat:@"%@?osname=ios&milestone=", default_server_url];
+  EXPECT_TRUE([default_url_string hasPrefix:expected_prefix]);
+  EXPECT_TRUE([default_url_string hasSuffix:@"&restrict=restricted_corp"]);
+}
+
+// Tests that surrounding ASCII whitespace is trimmed and special or non-ASCII
+// characters in `VariationsRestrictParameter` and `kFakeVariationsChannel` are
+// URL-escaped when constructing the seed request URL via `GURL`.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithEscapedRestrictParameter) {
+  NSString* policy_key =
+      base::SysUTF8ToNSString(policy::key::kVariationsRestrictParameter);
+  [[NSUserDefaults standardUserDefaults]
+      setObject:@{policy_key : @"  corp&foo=bar baz+100%/é  "}
+         forKey:kPolicyLoaderIOSConfigurationKey];
+
+  NSString* fake_channel_switch =
+      base::SysUTF8ToNSString(kFakeVariationsChannel);
+  NSString* test_channel_arg =
+      [NSString stringWithFormat:@"--%@=%@", fake_channel_switch, kTestChannel];
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_arg ]];
+  NSURL* url = FetchVariationsURL(fetcher);
+  ASSERT_NSNE(nil, url);
+  NSString* milestone =
+      base::SysUTF8ToNSString(version_info::GetMajorVersionNumber());
+  NSString* expected_restrict = @"corp%26foo%3Dbar+baz%2B100%25%2F%C3%A9";
+  NSString* expected_url = [NSString
+      stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@&restrict=%@",
+                       base::SysUTF8ToNSString(kDefaultServerUrl), milestone,
+                       kTestChannel, expected_restrict];
+  EXPECT_NSEQ(expected_url, url.absoluteString);
+
+  // Verify escaping at URL construction time when `--variations-server-url`
+  // already carries a query parameter and `--fake-variations-channel` contains
+  // URL-escapable characters.
+  NSString* server_arg =
+      [NSString stringWithFormat:@"--%@=https://test.finch.server?existing=1",
+                                 base::SysUTF8ToNSString(kVariationsServerURL)];
+  NSString* escaped_channel_arg =
+      [NSString stringWithFormat:@"--%@=  dev&canary  ", fake_channel_switch];
+  IOSChromeVariationsSeedFetcher* custom_fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ server_arg, escaped_channel_arg ]];
+  NSURL* custom_url = FetchVariationsURL(custom_fetcher);
+  ASSERT_NSNE(nil, custom_url);
+  NSString* expected_custom_url =
+      [NSString stringWithFormat:@"https://test.finch.server/"
+                                 @"?existing=1&osname=ios&milestone=%@&channel="
+                                 @"dev%%26canary&restrict=%@",
+                                 milestone, expected_restrict];
+  EXPECT_NSEQ(expected_custom_url, custom_url.absoluteString);
+}
+
+// Tests that the `restrict` query parameter is omitted when
+// `VariationsRestrictParameter` is unset, empty, whitespace-only, or not an
+// `NSString`.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithoutRestrictParameterWhenEmptyOrInvalid) {
+  NSString* test_channel_arg = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       kTestChannel];
+  NSString* expected_unrestricted_url =
+      [NSString stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@",
+                                 base::SysUTF8ToNSString(kDefaultServerUrl),
+                                 base::SysUTF8ToNSString(
+                                     version_info::GetMajorVersionNumber()),
+                                 kTestChannel];
+
+  // Unset baseline (`kPolicyLoaderIOSConfigurationKey` removed in `SetUp()`).
+  IOSChromeVariationsSeedFetcher* baseline_fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_arg ]];
+  NSURL* baseline_url = FetchVariationsURL(baseline_fetcher);
+  ASSERT_NSNE(nil, baseline_url);
+  NSString* baseline_url_string = baseline_url.absoluteString;
+  EXPECT_NSEQ(expected_unrestricted_url, baseline_url_string);
+  EXPECT_FALSE([baseline_url_string containsString:@"restrict"]);
+
+  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
+
+  // Empty or non-dictionary top-level managed configuration entries.
+  for (id config in @[ @{}, @"not_a_dict" ]) {
+    [user_defaults setObject:config forKey:kPolicyLoaderIOSConfigurationKey];
+    IOSChromeVariationsSeedFetcher* fetcher =
+        [[IOSChromeVariationsSeedFetcher alloc]
+            initWithArguments:@[ test_channel_arg ]];
+    NSURL* url = FetchVariationsURL(fetcher);
+    ASSERT_NSNE(nil, url);
+    EXPECT_NSEQ(baseline_url_string, url.absoluteString);
+  }
+
+  // Empty, whitespace-only, or non-`NSString` policy values.
+  NSString* policy_key =
+      base::SysUTF8ToNSString(policy::key::kVariationsRestrictParameter);
+  NSArray* invalid_values =
+      @[ @"", @"   ", @42, @YES, @[ @"restricted" ], @{@"k" : @"restricted"} ];
+  for (id invalid_value in invalid_values) {
+    [user_defaults setObject:@{policy_key : invalid_value}
+                      forKey:kPolicyLoaderIOSConfigurationKey];
+    IOSChromeVariationsSeedFetcher* fetcher =
+        [[IOSChromeVariationsSeedFetcher alloc]
+            initWithArguments:@[ test_channel_arg ]];
+    NSURL* url = FetchVariationsURL(fetcher);
+    ASSERT_NSNE(nil, url);
+    EXPECT_NSEQ(baseline_url_string, url.absoluteString);
+  }
 }
 
 // Tests that the see won't be created when an HTTP timeout error occurs, and
