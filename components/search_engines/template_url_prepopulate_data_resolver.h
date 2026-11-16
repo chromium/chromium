@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_type.h"
 
 struct TemplateURLData;
 class PrefService;
@@ -70,6 +71,14 @@ class Resolver : public KeyedService {
   // known there.
   std::unique_ptr<TemplateURLData> GetEngineFromFullList(
       std::u16string_view keyword) const;
+
+  // Returns the prepopulated search engine with the given `engine_type` from
+  // the full list of known prepopulated search engines, or `nullptr` if it's
+  // not known there.
+  // TODO(crbug.com/531675190): Refactor the other `GetEngineFromFullList`
+  // overloads to also return `const PrepopulatedEngine*`.
+  const PrepopulatedEngine* GetEngineFromFullList(
+      SearchEngineType engine_type) const;
 
   // Returns the prepopulated engines from the profile country's list and from
   // all the other regional lists, deduplicated by ID. When several definitions

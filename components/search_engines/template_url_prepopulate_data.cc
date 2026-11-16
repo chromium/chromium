@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
@@ -267,6 +268,18 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
   return GetPrepopulatedEngineFromBuiltInDataImpl(
       [keyword](const PrepopulatedEngine* engine) {
         return keyword == engine->keyword;
+      },
+      regional_prepopulated_engines, regional_variants);
+}
+
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    SearchEngineType engine_type,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants) {
+  return GetPrepopulatedEngineFromBuiltInDataImpl(
+      [engine_type](const PrepopulatedEngine* engine) {
+        return engine->type == engine_type;
       },
       regional_prepopulated_engines, regional_variants);
 }

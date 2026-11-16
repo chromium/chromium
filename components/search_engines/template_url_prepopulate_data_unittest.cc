@@ -837,6 +837,21 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
           TemplateURLPrepopulateData::ecosia.keyword);
   ASSERT_TRUE(found_engine_by_keyword);
   ExpectSimilar(expected_engine.get(), found_engine_by_keyword.get());
+
+  // Also verify lookup by SearchEngineType, including regional priority.
+  EXPECT_EQ(&TemplateURLPrepopulateData::ecosia,
+            prepopulate_data_resolver().GetEngineFromFullList(
+                TemplateURLPrepopulateData::ecosia.type));
+  EXPECT_EQ(nullptr, prepopulate_data_resolver().GetEngineFromFullList(
+                         SEARCH_ENGINE_OTHER));
+  OverrideCountryId(CountryId("JP"));
+  EXPECT_EQ(
+      &TemplateURLPrepopulateData::yahoo_jp,
+      prepopulate_data_resolver().GetEngineFromFullList(SEARCH_ENGINE_YAHOO));
+  OverrideCountryId(CountryId("US"));
+  EXPECT_EQ(
+      &TemplateURLPrepopulateData::yahoo,
+      prepopulate_data_resolver().GetEngineFromFullList(SEARCH_ENGINE_YAHOO));
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, GetAllPrepopulatedEngines_UniqueIds) {

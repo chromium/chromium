@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/search_engines/search_engine_type.h"
 
 class PrefService;
 struct TemplateURLData;
@@ -129,6 +130,20 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
 // associated with a single search engine.
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     std::u16string_view keyword,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants);
+
+// Returns the prepopulated search engine with the given `engine_type`
+// from the full list of known prepopulated search engines, or `nullptr` if
+// it's not known there.
+// The region-specific list is used to ensure we prioritise returning a search
+// engine relevant for the given country, for cases where the `engine_type`
+// could be associated with multiple country-specific variants.
+// Important: Unlike other functions in this file, it does not look for the
+// potential presence of search providers overrides. Use with caution.
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    SearchEngineType engine_type,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
     const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants);

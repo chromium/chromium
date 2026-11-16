@@ -18,6 +18,7 @@
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "url/gurl.h"
@@ -58,6 +59,13 @@ std::unique_ptr<TemplateURLData> Resolver::GetEngineFromFullList(
       profile_prefs_.get(),
       regional_capabilities_->GetRegionalPrepopulatedEngines(),
       regional_capabilities_->GetRegionalVariants(), keyword);
+}
+
+const PrepopulatedEngine* Resolver::GetEngineFromFullList(
+    SearchEngineType engine_type) const {
+  return TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
+      engine_type, regional_capabilities_->GetRegionalPrepopulatedEngines(),
+      regional_capabilities_->GetRegionalVariants());
 }
 
 std::vector<raw_ptr<const PrepopulatedEngine>>
