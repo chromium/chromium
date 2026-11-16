@@ -10,9 +10,11 @@
 #include <sys/stat.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -327,16 +329,18 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
   // modifiers for now. See crbug.com/1445252, crbug.com/1458575
   // Also blocking |DRM_FORMAT_YVU420| for a specific modifier based a test
   // failing in minigbm. See b/289714323
-  const base::flat_set<std::pair<uint64_t, uint64_t>> modifier_block_list = {
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Yf_TILED_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_MC_CCS},
-      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC},
-      {DRM_FORMAT_YVU420, DRM_FORMAT_MOD_QCOM_COMPRESSED}};
+  static constexpr auto kModifierBlockList =
+      base::MakeFixedFlatSet<std::pair<uint32_t, uint64_t>>({
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Yf_TILED_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_MC_CCS},
+          {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC},
+          {DRM_FORMAT_YVU420, DRM_FORMAT_MOD_QCOM_COMPRESSED},
+      });
 
   size_t format_table_index = 0;
   for (const auto& [drm_format, modifiers] : caps.drm_formats_and_modifiers) {
@@ -345,8 +349,8 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
 
     for (uint64_t modifier : modifiers) {
       // Check for generic blocking first then format specific blocking.
-      if (!modifier_block_list.contains({DRM_FORMAT_INVALID, modifier}) &&
-          !modifier_block_list.contains({drm_format, modifier})) {
+      if (!kModifierBlockList.contains({DRM_FORMAT_INVALID, modifier}) &&
+          !kModifierBlockList.contains({drm_format, modifier})) {
         modifier_entries.emplace(format_table_index++, modifier);
       }
     }
