@@ -200,10 +200,25 @@ ContentAnalysisDelegate::~ContentAnalysisDelegate() {
     CopyWarningDelegateTracker::ClearIfMatches(web_contents_.get(), this);
   }
 #endif
+  // Followers would otherwise wait forever if this warning goes away without
+  // an answer, e.g. when its justification dialog is dismissed.
+  for (auto& follower : std::exchange(copy_warning_followers_, {})) {
+    if (follower) {
+      follower->Cancel(/*warning=*/true);
+      follower->Delete();
+    }
+  }
 }
 
 void ContentAnalysisDelegate::BypassWarnings(
     std::optional<std::u16string> user_justification) {
+  for (auto& follower : std::exchange(copy_warning_followers_, {})) {
+    if (follower) {
+      follower->BypassWarnings(user_justification);
+      follower->Delete();
+    }
+  }
+
   if (callback_.is_null()) {
     return;
   }
@@ -244,6 +259,13 @@ void ContentAnalysisDelegate::BypassWarnings(
 }
 
 void ContentAnalysisDelegate::Cancel(bool warning) {
+  for (auto& follower : std::exchange(copy_warning_followers_, {})) {
+    if (follower) {
+      follower->Cancel(warning);
+      follower->Delete();
+    }
+  }
+
   if (callback_.is_null()) {
     return;
   }
@@ -764,6 +786,14 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
           FillAllResultsWith(false);
           RunCallback();
           return false;
+        }
+        // Another format of this copy is already waiting on the warning, so
+        // follow the user's answer to it. Replacing it would decline it.
+        ContentAnalysisDelegate* leader =
+            CopyWarningDelegateTracker::GetDelegate(web_contents_.get());
+        if (leader && !is_new_copy) {
+          leader->copy_warning_followers_.push_back(GetWeakPtr());
+          return true;
         }
         // Closing the warning without "Copy anyway" declines the copy, so its
         // clipboard write doesn't stay pending and hold back later copies. A

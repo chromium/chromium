@@ -3021,7 +3021,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 }
 
 // Copying an image scans its bitmap and its `<img>` markup separately. Their
-// verdicts should show one toast, and a new copy should show it again.
+// verdicts should show one toast, whose "Copy anyway" applies to both, and a
+// new copy should show it again.
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyContentAnalysisWarning_ImageShowsOneToastPerCopy) {
   SetupDMToken();
@@ -3066,20 +3067,33 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   base::HistogramTester histogram_tester;
   for (int copies = 1; copies <= 2; ++copies) {
+    base::test::TestFuture<const ui::ClipboardFormatType&,
+                           const content::ClipboardPasteData&,
+                           std::optional<std::u16string>>
+        html_future;
+    base::test::TestFuture<const ui::ClipboardFormatType&,
+                           const content::ClipboardPasteData&,
+                           std::optional<std::u16string>>
+        bitmap_future;
     IsClipboardCopyAllowedByPolicy(
         source,
         {.size = html_data.size(),
          .format_type = ui::ClipboardFormatType::HtmlType()},
-        html_data, base::DoNothing());
+        html_data, html_future.GetCallback());
     IsClipboardCopyAllowedByPolicy(
         source,
         {.size = bitmap_data.size(),
          .format_type = ui::ClipboardFormatType::BitmapType()},
-        bitmap_data, base::DoNothing());
+        bitmap_data, bitmap_future.GetCallback());
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return verdict_count == 2 * copies; }));
     histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
                                        ToastId::kEnterpriseCopyWarning, copies);
+
+    enterprise_connectors::CopyWarningDelegateTracker::BypassAndClear(
+        contents());
+    EXPECT_FALSE(html_future.Get<2>().has_value());
+    EXPECT_FALSE(bitmap_future.Get<2>().has_value());
   }
 }
 

@@ -168,6 +168,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
+  // Must not delete `this`: CopyWarningDelegateTracker, and a copy warning for
+  // its `copy_warning_followers_`, call Delete() right after, which would then
+  // be a use-after-free.
   void BypassWarnings(
       std::optional<std::u16string> user_justification) override;
 
@@ -175,6 +178,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // upload to Chrome since the scan wasn't allowed to complete. If `warning` is
   // true, it means the user clicked Cancel after getting a warning, meaning the
   // "CancelledByUser" metrics should not be recorded.
+  // Must not delete `this`, for the same reason as BypassWarnings().
   void Cancel(bool warning) override;
 
   // Returns both rule-based and policy-based custom message without the prefix.
@@ -527,6 +531,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;
+
+  // Other formats of the same copy, like an image's markup and bitmap, whose
+  // warning verdict came in while this delegate's warning was showing. They get
+  // the user's answer to it.
+  std::vector<base::WeakPtr<ContentAnalysisDelegate>> copy_warning_followers_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };
