@@ -84,8 +84,8 @@
 
 # These cannot work because they rely on receiving key events during a DnD session, which isn't
 # possible on Linux Wayland.
--TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
--TabDragging/DetachToBrowserTabDragControllerTest.Revert*
+-TabDragging/DetachToBrowserTabDragController*Test.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragController*Test.Revert*
 
 # TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
 -EyeDropperViewAuraInteractiveTest.*

@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/url_constants.h"
 
 class BrowserList;
@@ -29,7 +31,7 @@ class GestureEvent;
 
 // TabDragControllerTest is the basis for the two tests that exercise
 // TabDragController.
-class TabDragControllerTest : public InProcessBrowserTest {
+class TabDragControllerTest : public InteractiveBrowserTest {
  public:
   TabDragControllerTest();
   TabDragControllerTest(const TabDragControllerTest&) = delete;
@@ -58,6 +60,11 @@ class TabDragControllerTest : public InProcessBrowserTest {
 
   const BrowserList* browser_list() const { return browser_list_; }
 
+  // Returns true if the tab dragging info is correctly set on / cleared from
+  // the window of `attached_tabstrip`. Always true outside ChromeOS.
+  bool IsTabDraggingInfoSet(TabStrip* attached_tabstrip) const;
+  bool IsTabDraggingInfoCleared(TabStrip* attached_tabstrip) const;
+
  protected:
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);
 
@@ -68,9 +75,22 @@ class TabDragControllerTest : public InProcessBrowserTest {
   // become visible before entering the window-move loop.
   bool IsWaitingForWindowToShow(TabStrip* tab_strip) const;
 
+  // Returns true if any browser's drag controller is actively dragging a
+  // detached window in a move loop or system DnD session (and has finished
+  // waiting for the window to show).
+  bool IsWindowDragLoopActive() const;
+
+  // Returns true if `tab_strip` owns an active drag controller in the
+  // `kDraggingTabs` state and is not inside a nested move loop.
+  bool IsDraggingTabsIn(TabStrip* tab_strip) const;
+
+  // Returns the native window of the widget currently attached to the active
+  // `TabDragController`, or null if no drag is active.
+  gfx::NativeWindow GetAttachedDragWindow() const;
+
   void SetTabDragPointResolver(TabDragPointResolver& resolver);
 
-  // InProcessBrowserTest:
+  // InteractiveBrowserTest:
   void SetUp() override;
 
  private:
@@ -93,6 +113,24 @@ void ResetIDs(TabStripModel* model, int start);
 // Returns a string representation of the ids of the tabs in `model`. Each id
 // is separated by a space.
 std::string IDString(TabStripModel* model);
+
+// Returns true if `tab_strip` owns an active drag controller.
+bool IsDragSessionActive(TabStrip* tab_strip);
+
+// Returns how far below `tab_strip` a drag has to go to detach.
+int GetDetachY(TabStrip* tab_strip);
+
+// Returns whether `browser`'s window is marked as dragged (ChromeOS only).
+bool GetIsDragged(BrowserWindowInterface* browser);
+
+// Returns a point within `target_bounds` to drag to, near `preferred_x` but
+// right of `source_bounds`, which can overlap the target on small screens.
+gfx::Point DragPointInTabStrip(const gfx::Rect& target_bounds,
+                               const gfx::Rect& source_bounds,
+                               int preferred_x);
+
+// If this returns false, tests must use mouse emulation to resize windows.
+bool PlatformSupportsScreenCoordinates();
 
 }  // namespace test
 

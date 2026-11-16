@@ -176,6 +176,8 @@ if (!is_chromeos_device) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "tab_drag_controller_interactive_steps_mixin.cc",
+      "tab_drag_controller_interactive_steps_mixin.h",
       "tab_drag_controller_interactive_uitest.cc",
       "tab_drag_controller_interactive_uitest.h",
     ]

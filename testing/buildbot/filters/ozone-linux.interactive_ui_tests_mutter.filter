@@ -36,8 +36,8 @@
 
 # These cannot work because they rely on receiving key events during a DnD session, which isn't
 # possible on Linux Wayland.
--TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
--TabDragging/DetachToBrowserTabDragControllerTest.Revert*
+-TabDragging/DetachToBrowserTabDragController*Test.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragController*Test.Revert*
 
 # TODO(crbug.com/334413759) The test can fail due to delays in omnibox popup
 # being launched when it is an accelerated bubble and so the subsequent click
