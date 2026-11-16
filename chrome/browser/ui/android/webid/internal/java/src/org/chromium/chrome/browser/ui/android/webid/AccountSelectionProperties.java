@@ -133,8 +133,15 @@ class AccountSelectionProperties {
                 new ReadableBooleanPropertyKey("is_multiple_account_chooser");
         static final ReadableObjectPropertyKey<@Nullable Callback<View>> SET_FOCUS_VIEW_CALLBACK =
                 new ReadableObjectPropertyKey<>("set_focus_view_callback");
+        // Whether the header is for multiple IDPs: the sheet lists accounts of more than one, or
+        // it is the loading sheet of a request with multiple IDPs. False once the user has picked
+        // an account.
         static final ReadableBooleanPropertyKey IS_MULTIPLE_IDPS =
                 new ReadableBooleanPropertyKey("is_multiple_idps");
+        // Whether the request involves multiple IDPs. Unlike IS_MULTIPLE_IDPS, it stays set after
+        // the user picks an account.
+        static final ReadableBooleanPropertyKey IS_MULTIPLE_IDPS_REQUEST =
+                new ReadableBooleanPropertyKey("is_multiple_idps_request");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -148,7 +155,8 @@ class AccountSelectionProperties {
             RP_MODE,
             IS_MULTIPLE_ACCOUNT_CHOOSER,
             SET_FOCUS_VIEW_CALLBACK,
-            IS_MULTIPLE_IDPS
+            IS_MULTIPLE_IDPS,
+            IS_MULTIPLE_IDPS_REQUEST
         };
 
         private HeaderProperties() {}

@@ -147,7 +147,9 @@ public class AccountSelectionJUnitTestBase {
     GURL mTestIdpBrandIconUrl;
     GURL mTestRpBrandIconUrl;
     GURL mTestConfigUrl;
+    GURL mTestConfigUrl2;
     GURL mTestLoginUrl;
+    GURL mTestLoginUrl2;
     GURL mTestIdpAccountManagementUrl;
     GURL mTestIdpPrivacyPolicyUrl;
     GURL mTestIdpTermsOfServiceUrl;
@@ -158,11 +160,14 @@ public class AccountSelectionJUnitTestBase {
     Account mAnaAccountWithoutBrandIcons;
     Account mBobAccount;
     Account mCarlAccount;
+    Account mDanAccount;
     Account mNewUserAccount;
     Account mNewUserAccountWithoutFields;
+    Account mNewUserAccountForIdp2;
     Account mNoOneAccount;
     Account mFilteredOutAccount;
     Account mFilteredOutAccountWithUseDifferentAccount;
+    Account mFilteredOutAccountForIdp2;
     Account mNicolasAccount;
     Account mSingleIdentifierAccount;
     Account mSingleIdentifierAccountFilteredOut;
@@ -177,6 +182,8 @@ public class AccountSelectionJUnitTestBase {
     IdentityProviderMetadata mIdpMetadata;
     IdentityProviderMetadata mIdpMetadataWithoutIcon;
     IdentityProviderData mIdpData;
+    // A second IDP, for multi IDP tests. It supports use a different account.
+    IdentityProviderData mIdpData2;
     IdentityProviderData mIdpDataWithoutIcons;
     IdentityProviderMetadata mIdpMetadataWithUseDifferentAccount;
     IdentityProviderData mIdpDataWithUseDifferentAccount;
@@ -200,7 +207,9 @@ public class AccountSelectionJUnitTestBase {
         mTestIdpBrandIconUrl = JUnitTestGURLs.RED_3;
         mTestRpBrandIconUrl = JUnitTestGURLs.RED_3;
         mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
+        mTestConfigUrl2 = new GURL("https://idp2.com/fedcm.json");
         mTestLoginUrl = new GURL("https://idp.com/login");
+        mTestLoginUrl2 = new GURL("https://idp2.com/login");
         mTestIdpAccountManagementUrl = new GURL("https://idp.com/account");
         mTestIdpPrivacyPolicyUrl = new GURL("https://idp.com/privacy");
         mTestIdpTermsOfServiceUrl = new GURL("https://idp.com/terms");
@@ -238,6 +247,27 @@ public class AccountSelectionJUnitTestBase {
                 new IdentityProviderData(
                         mTestEtldPlusOne2,
                         mIdpMetadata,
+                        new ClientIdMetadata(
+                                mTestUrlTermsOfService,
+                                mTestUrlPrivacyPolicy,
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)),
+                        RpContext.SIGN_IN,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        /* hasLoginStatusMismatch= */ false);
+
+        mIdpData2 =
+                new IdentityProviderData(
+                        mTestEtldPlusOne1,
+                        new IdentityProviderMetadata(
+                                Color.RED,
+                                Color.YELLOW,
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
+                                mTestConfigUrl2,
+                                mTestLoginUrl2,
+                                /* accountManagementUrl= */ GURL.emptyGURL(),
+                                /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                                /* termsOfServiceUrl= */ GURL.emptyGURL(),
+                                /* showUseDifferentAccountButton= */ true),
                         new ClientIdMetadata(
                                 mTestUrlTermsOfService,
                                 mTestUrlPrivacyPolicy,
@@ -348,6 +378,21 @@ public class AccountSelectionJUnitTestBase {
                         /* isFilteredOut= */ false,
                         /* fields= */ new int[0],
                         mIdpData);
+        mDanAccount =
+                new Account(
+                        "Dan",
+                        "dan@idp2.example",
+                        "Dan Doe",
+                        "Dan",
+                        /* secondaryDescription= */ mTestEtldPlusOne1,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
+                        /* isIdpClaimedSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        /* fields= */ new int[0],
+                        mIdpData2);
         mNewUserAccount =
                 new Account(
                         "602214076",
@@ -379,6 +424,22 @@ public class AccountSelectionJUnitTestBase {
                         /* isFilteredOut= */ false,
                         /* fields= */ new int[0],
                         mIdpData);
+
+        mNewUserAccountForIdp2 =
+                new Account(
+                        "Eve",
+                        "eve@idp2.example",
+                        "Eve Doe",
+                        "Eve",
+                        /* secondaryDescription= */ mTestEtldPlusOne1,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
+                        /* isIdpClaimedSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        mIdpData2);
 
         mNoOneAccount =
                 new Account(
@@ -422,6 +483,21 @@ public class AccountSelectionJUnitTestBase {
                         /* isFilteredOut= */ true,
                         /* fields= */ new int[0],
                         mIdpDataWithUseDifferentAccount);
+        mFilteredOutAccountForIdp2 =
+                new Account(
+                        "Fay",
+                        "fay@idp2.example",
+                        "Fay Doe",
+                        "Fay",
+                        /* secondaryDescription= */ mTestEtldPlusOne1,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
+                        /* isIdpClaimedSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ true,
+                        /* fields= */ new int[0],
+                        mIdpData2);
         mNicolasAccount =
                 new Account(
                         "NicoId",

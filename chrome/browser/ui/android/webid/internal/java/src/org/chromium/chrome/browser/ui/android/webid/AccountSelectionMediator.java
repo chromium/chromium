@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -106,7 +107,8 @@ class AccountSelectionMediator {
     private @MonotonicNonNull RelyingPartyData mRpData;
     private @Nullable String mIdpForDisplay;
     // The icon to be displayed in the title of the dialog. Corresponds to the IDP icon when one IDP
-    // is involved or the RP icon when multiple IDPs are involved.
+    // is involved or the RP icon when multiple IDPs are involved in passive mode. Null when
+    // multiple IDPs are involved in active mode, where the view binder shows a fallback icon.
     private @Nullable Bitmap mHeaderIcon;
     // The RP brand icon provided by the IDP. Used only in active mode.
     private @Nullable Bitmap mRpBrandIcon;
@@ -127,6 +129,11 @@ class AccountSelectionMediator {
 
     // Whether the current state of the dialog involves multiple IDPs.
     private boolean mIsMultipleIdps;
+
+    // Whether the request involves multiple IDPs: the IDPs requested while the loading sheet is
+    // shown, then the IDPs passed to showAccounts(). Unlike `mIsMultipleIdps`, it stays set after
+    // the user picks an account.
+    private boolean mIsMultipleIdpsRequest;
 
     // The account that the user has selected.
     private @Nullable Account mSelectedAccount;
@@ -442,6 +449,7 @@ class AccountSelectionMediator {
                         mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
                 .with(HeaderProperties.SET_FOCUS_VIEW_CALLBACK, this::setFocusView)
                 .with(HeaderProperties.IS_MULTIPLE_IDPS, isMultipleIdps)
+                .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, mIsMultipleIdpsRequest)
                 .build();
     }
 
@@ -644,6 +652,10 @@ class AccountSelectionMediator {
 
     boolean showRequestPermissionModalSheet(Account account) {
         mHeaderType = HeaderType.REQUEST_PERMISSION_MODAL;
+        if (TextUtils.isEmpty(mIdpForDisplay)) {
+            // The previous sheet had no IDP to display because the request has multiple IDPs.
+            mIdpForDisplay = account.getIdentityProviderData().getIdpForDisplay();
+        }
         if (!updateSheet(
                 Arrays.asList(account),
                 /* identityProviders= */ Collections.emptyList(),
@@ -672,6 +684,7 @@ class AccountSelectionMediator {
         mIdpDataListForShowAccounts = idpDataList;
         mIdpMetadataForLoginOrError = null;
         setIsMultipleIdps(mIdpDataListForShowAccounts.size() > 1);
+        mIsMultipleIdpsRequest = mIdpDataListForShowAccounts.size() > 1;
         mRpContext = mIdpDataListForShowAccounts.get(0).getRpContext();
         mSelectedAccount = null;
         mLoadingDialogState =
@@ -811,6 +824,8 @@ class AccountSelectionMediator {
             RelyingPartyData rpData, String idpForDisplay, @RpContext.EnumType int rpContext) {
         mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
+        // Content passes an empty IDP when the request has multiple IDPs.
+        mIsMultipleIdpsRequest = idpForDisplay.isEmpty();
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.LOADING;
         if (!updateSheet(
@@ -1010,23 +1025,33 @@ class AccountSelectionMediator {
                         && firstAccountIdp != null
                         && firstAccountIdp.getIdpMetadata().showUseDifferentAccountButton();
         // We add the add account button alongside the accounts if supported in passive mode and in
-        // the multi-account UI of active mode.
-        updateAccounts(
-                accounts,
-                identityProviders,
-                areAccountsClickable,
-                showUseDifferentAccountInSingleAccountChooserActiveMode);
-        Bitmap headerIcon =
-                uniqueIdp != null
-                        ? uniqueIdp.getIdpMetadata().getBrandIconBitmap()
-                        : (mIsMultipleIdps ? TabFavicon.getBitmap(mTab) : null);
-        assert mRpMode == RpMode.PASSIVE || !mIsMultipleIdps;
+        // the multi-account UI of active mode with a single IDP.
+        // TODO(crbug.com/581411351): With multiple IDPs in active mode, offer the IDPs that have
+        // no usable account in an IDP picker instead, as on desktop. When no IDP returns accounts,
+        // AccountSelectionBridge.showAccounts() also asserts `!accounts.isEmpty()` and must
+        // accept an empty list (crbug.com/586497366).
+        boolean skipAddAccountRows =
+                showUseDifferentAccountInSingleAccountChooserActiveMode
+                        || (mRpMode == RpMode.ACTIVE && mIsMultipleIdpsRequest);
+        updateAccounts(accounts, identityProviders, areAccountsClickable, skipAddAccountRows);
+        // TODO(crbug.com/575550088): Show the RP icon in active mode with multiple IDPs. Until
+        // then, the header shows a fallback icon, see AccountSelectionViewBinder.bindHeaderView().
+        Bitmap headerIcon = null;
+        if (uniqueIdp != null) {
+            headerIcon = uniqueIdp.getIdpMetadata().getBrandIconBitmap();
+        } else if (mIsMultipleIdps && mRpMode == RpMode.PASSIVE) {
+            headerIcon = TabFavicon.getBitmap(mTab);
+        }
+        // With multiple IDPs, the RP icon is the one the IDP of this sheet provides, e.g. the IDP
+        // of the account the user picked.
+        IdentityProviderData rpBrandIconIdp = uniqueIdp;
+        if (!mIsMultipleIdpsRequest) {
+            rpBrandIconIdp =
+                    mIdpDataListForShowAccounts != null ? mIdpDataListForShowAccounts.get(0) : null;
+        }
         Bitmap rpBrandIcon =
-                mRpMode == RpMode.ACTIVE && mIdpDataListForShowAccounts != null
-                        ? mIdpDataListForShowAccounts
-                                .get(0)
-                                .getClientMetadata()
-                                .getBrandIconBitmap()
+                mRpMode == RpMode.ACTIVE && rpBrandIconIdp != null
+                        ? rpBrandIconIdp.getClientMetadata().getBrandIconBitmap()
                         : null;
         // If there is a change in the header, setFocusView() will be called and focus will land on
         // the header when screen reader is on. Since the header is updated before any item is
@@ -1172,7 +1197,10 @@ class AccountSelectionMediator {
                         iframeForDisplay,
                         mIdpForDisplay,
                         mRpContext,
-                        mIsMultipleIdps);
+                        // The loading sheet has no accounts or IDPs to count.
+                        mHeaderType == HeaderType.LOADING
+                                ? mIsMultipleIdpsRequest
+                                : mIsMultipleIdps);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 

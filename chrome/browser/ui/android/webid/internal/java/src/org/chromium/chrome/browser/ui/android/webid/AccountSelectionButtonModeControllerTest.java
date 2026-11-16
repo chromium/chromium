@@ -17,10 +17,15 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS_REQUEST;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import android.content.Intent;
+import android.view.View;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -388,6 +393,156 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertEquals(-1, mMockModalDialogManager.getDialogType());
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
         assertTrue(mMediator.wasDismissed());
+    }
+
+    @Test
+    public void testMultiIdpAccountChooser() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        // The view binder shows a fallback icon.
+        assertNull(headerModel.get(HEADER_ICON));
+        assertTrue(headerModel.get(IS_MULTIPLE_IDPS_REQUEST));
+        verify(mMockDelegate).onAccountsDisplayed();
+
+        // `mIdpData2` supports use a different account, but there is no row for it.
+        assertEquals(2, mSheetAccountItems.size());
+        assertTrue(mSheetAccountItems.get(0).model.get(AccountProperties.SHOW_IDP));
+        assertTrue(mSheetAccountItems.get(1).model.get(AccountProperties.SHOW_IDP));
+        assertFalse(containsItemOfType(mModel, ItemProperties.ADD_ACCOUNT_BUTTON));
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    @Test
+    public void testMultiIdpSingleAccountNotAutoselected() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(1, mSheetAccountItems.size());
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        assertFalse(containsItemOfType(mModel, ItemProperties.ADD_ACCOUNT_BUTTON));
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    @Test
+    public void testMultiIdpSomeAccountsFilteredOutShowsAccountChooser() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mFilteredOutAccountForIdp2),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertTrue(mModel.get(ItemProperties.HEADER).get(IS_MULTIPLE_IDPS));
+        // TODO(crbug.com/581411351): `mIdpData2` has no row to use a different account until
+        // there is an IDP picker.
+        assertEquals(2, mSheetAccountItems.size());
+        // The filtered out account is not clickable.
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testMultiIdpRequestPermissionShowsSelectedAccountIdp() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccountWithoutBrandIcons, mNewUserAccountForIdp2),
+                Arrays.asList(mIdpDataWithoutIcons, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+        mMediator.setComponentShowTime(-1000);
+
+        mSheetAccountItems
+                .get(1)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mNewUserAccountForIdp2, /* idpMetadata= */ null));
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertEquals(mTestEtldPlusOne1, headerModel.get(IDP_FOR_DISPLAY));
+        assertNotNull(headerModel.get(HEADER_ICON));
+        assertNotNull(headerModel.get(RP_BRAND_ICON));
+    }
+
+    @Test
+    public void testMultiIdpLoadingDialog() {
+        // Content passes an empty IDP when there are multiple IDPs.
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                /* idpForDisplay= */ "",
+                RpContext.SIGN_IN);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.LOADING, headerModel.get(TYPE));
+        assertEquals("", headerModel.get(IDP_FOR_DISPLAY));
+        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Sign in to " + mTestEtldPlusOne, title.getText().toString());
+        assertEquals(View.GONE, subtitle.getVisibility());
+    }
+
+    @Test
+    public void testMultiIdpLoadingThenSingleIdpNewAccountShowsIdpOnPermissionSheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        // Content passes an empty IDP when there are multiple IDPs.
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                /* idpForDisplay= */ "",
+                RpContext.SIGN_IN);
+        // Only one IDP is left, and the user has signed in to it with a new account.
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                mNewAccountsSingleNewAccount);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertEquals(mIdpData.getIdpForDisplay(), headerModel.get(IDP_FOR_DISPLAY));
+    }
+
+    @Test
+    public void testSingleIdpSingleAccountWithUseDifferentAccountShowsButtons() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccountWithUseDifferentAccount),
+                Arrays.asList(mIdpDataWithUseDifferentAccount),
+                /* newAccounts= */ Collections.emptyList());
+
+        // The single account chooser keeps the use a different account secondary button.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertFalse(mModel.get(ItemProperties.HEADER).get(IS_MULTIPLE_IDPS));
+        assertEquals(1, mSheetAccountItems.size());
+        assertTrue(containsItemOfType(mModel, ItemProperties.ADD_ACCOUNT_BUTTON));
+        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
     }
 
     /**

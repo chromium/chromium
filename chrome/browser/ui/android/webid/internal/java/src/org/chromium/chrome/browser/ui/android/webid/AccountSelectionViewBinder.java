@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -995,7 +996,28 @@ class AccountSelectionViewBinder {
             // Do not crop the header icon when it is the RP icon, e.g. when there are multiple IDPs
             // in the current dialog.
             boolean shouldCircleCrop = !model.get(HeaderProperties.IS_MULTIPLE_IDPS);
+            ImageView headerIconView = view.findViewById(R.id.header_icon);
             if (brandIcon == null) {
+                if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
+                        && model.get(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST)) {
+                    // TODO(crbug.com/575550088): Show the RP icon instead of the fallback icon in
+                    // active mode with multiple IDPs.
+                    @HeaderProperties.HeaderType int headerType = model.get(HeaderProperties.TYPE);
+                    boolean showFallbackIcon =
+                            model.get(HeaderProperties.IS_MULTIPLE_IDPS)
+                                    && headerType == HeaderProperties.HeaderType.SIGN_IN;
+                    if (showFallbackIcon) {
+                        headerIconView.setImageDrawable(
+                                UiUtils.getTintedDrawable(
+                                        view.getContext(),
+                                        R.drawable.ic_globe_24dp,
+                                        R.color.default_icon_color_tint_list));
+                        headerIconView.setVisibility(View.VISIBLE);
+                    } else {
+                        // Hide the fallback icon in case the account chooser showed it.
+                        headerIconView.setVisibility(View.GONE);
+                    }
+                }
                 return;
             }
             int iconSize =
@@ -1003,7 +1025,6 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
                                     ? R.dimen.account_selection_active_mode_sheet_icon_size
                                     : R.dimen.account_selection_sheet_icon_size);
-            ImageView headerIconView = view.findViewById(R.id.header_icon);
             if (shouldCircleCrop) {
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
@@ -1017,6 +1038,8 @@ class AccountSelectionViewBinder {
                 headerIconView.setImageDrawable(new BitmapDrawable(resources, output));
             }
             headerIconView.setVisibility(View.VISIBLE);
+        } else if (key == HeaderProperties.IS_MULTIPLE_IDPS_REQUEST) {
+            // Read when HEADER_ICON is bound.
         } else if (key == HeaderProperties.RP_BRAND_ICON) {
             // RP icon is not shown in passive mode.
             if (model.get(HeaderProperties.RP_MODE) == RpMode.PASSIVE) return;
@@ -1086,10 +1109,16 @@ class AccountSelectionViewBinder {
             return "";
         }
         @StringRes int titleStringId;
-        // In single IDP active mode, show the title with RP and IDP.
+        String rpUrl = iframeUrl.isEmpty() ? topLevelUrl : iframeUrl;
         if (rpMode == RpMode.ACTIVE) {
-            // We do not currently support multiple IDPs in active mode.
-            assert !isMultipleIdps;
+            // If there are multiple IDPs, show the title with just the RP.
+            if (isMultipleIdps) {
+                return String.format(
+                        resources.getString(
+                                R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                        rpUrl);
+            }
+            // In single IDP active mode, show the title with RP and IDP.
             // If the iframe is not present, use only the IDP string in the title.
             if (iframeUrl.isEmpty()) {
                 switch (rpContext) {
@@ -1136,8 +1165,6 @@ class AccountSelectionViewBinder {
         if (rpMode == RpMode.PASSIVE && type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
-
-        String rpUrl = iframeUrl.isEmpty() ? topLevelUrl : iframeUrl;
 
         // If there are multiple IDPs, show the title with just the RP.
         if (isMultipleIdps) {
@@ -1187,7 +1214,12 @@ class AccountSelectionViewBinder {
                     rpUrl,
                     iframeUrl);
         }
-        if (rpMode == RpMode.PASSIVE || isMultipleIdps) return "";
+        if (rpMode == RpMode.PASSIVE) return "";
+        if (isMultipleIdps) {
+            if (type == HeaderProperties.HeaderType.LOADING) return "";
+            assert type == HeaderProperties.HeaderType.SIGN_IN;
+            return resources.getString(R.string.account_selection_multi_idp_sheet_subtitle);
+        }
 
         if (isMultipleAccountChooser) {
             return String.format(

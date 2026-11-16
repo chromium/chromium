@@ -920,10 +920,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
     @Test
     public void testMultipleIdentityProvidersSignInHeader() {
-        if (mRpMode == RpMode.ACTIVE) {
-            // Multiple identity providers are not supported in active mode right now.
-            return;
-        }
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 new RelyingPartyData(
@@ -944,9 +940,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
-        // Because of use a different account, size is 4: two accounts, separator, add account
-        // button.
-        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
                 mNewUserAccount,
@@ -957,6 +950,15 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccountWithUseDifferentAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ true);
+        if (mRpMode == RpMode.ACTIVE) {
+            // TODO(crbug.com/581411351): Active mode has no add account button with multiple
+            // identity providers until there is an IDP picker.
+            assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
+            return;
+        }
+        // Because of use a different account, size is 4: two accounts, separator, add account
+        // button.
+        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);

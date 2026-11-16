@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import static java.util.Arrays.asList;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -362,6 +365,131 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         assertFalse(idpBrandIcon.isShown());
         assertFalse(rpBrandIcon.isShown());
         assertFalse(arrowRangeIcon.isShown());
+    }
+
+    @Test
+    public void testMultiIdpAccountChooserHeader() {
+        mModel.set(ItemProperties.HEADER, buildMultiIdpHeader().build());
+
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Sign in to example.org", title.getText().toString());
+        assertEquals("Choose an account to continue", subtitle.getText().toString());
+        assertTrue(subtitle.isShown());
+    }
+
+    @Test
+    public void testMultiIdpHeaderShowsFallbackIcon() {
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader().with(HeaderProperties.HEADER_ICON, null).build());
+
+        ImageView headerIcon = mContentView.findViewById(R.id.header_icon);
+        assertTrue(headerIcon.isShown());
+        assertNotNull(headerIcon.getDrawable());
+    }
+
+    @Test
+    public void testMultiIdpAccountChooserHeaderWithIframe() {
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader()
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe.org")
+                        .build());
+
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Sign in to iframe.org", title.getText().toString());
+        assertEquals("example.org embeds content from iframe.org", subtitle.getText().toString());
+    }
+
+    @Test
+    public void testMultiIdpLoadingHeader() {
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader()
+                        .with(HeaderProperties.TYPE, HeaderType.LOADING)
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "")
+                        .with(HeaderProperties.HEADER_ICON, null)
+                        .build());
+
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Sign in to example.org", title.getText().toString());
+        // There is nothing to choose yet.
+        assertFalse(subtitle.isShown());
+        assertFalse(mContentView.findViewById(R.id.header_icon).isShown());
+    }
+
+    @Test
+    public void testMultiIdpFallbackIconHiddenOnNextSheetWithoutIcon() {
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader().with(HeaderProperties.HEADER_ICON, null).build());
+        ImageView headerIcon = mContentView.findViewById(R.id.header_icon);
+        assertTrue(headerIcon.isShown());
+
+        // The sheet for the picked account is about one IDP, which has no icon here.
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader()
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.HEADER_ICON, null)
+                        .build());
+        assertFalse(headerIcon.isShown());
+    }
+
+    @Test
+    public void testSingleIdpHeaderWithoutIconLeavesPreviousIconUntouched() {
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
+                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, false)
+                        .with(
+                                HeaderProperties.HEADER_ICON,
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
+                        .build());
+        ImageView headerIcon = mContentView.findViewById(R.id.header_icon);
+        assertTrue(headerIcon.isShown());
+        Drawable previousDrawable = headerIcon.getDrawable();
+        assertNotNull(previousDrawable);
+
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
+                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, false)
+                        .with(HeaderProperties.HEADER_ICON, null)
+                        .build());
+        assertTrue(headerIcon.isShown());
+        assertSame(previousDrawable, headerIcon.getDrawable());
+    }
+
+    private PropertyModel.Builder buildMultiIdpHeader() {
+        return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
+                .with(HeaderProperties.IDP_FOR_DISPLAY, null)
+                .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
+                .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
+                .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
+                .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, true);
     }
 
     private PropertyModel buildAddAccountButton() {

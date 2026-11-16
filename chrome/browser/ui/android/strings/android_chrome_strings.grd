@@ -7271,6 +7271,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_SIGNIN" desc="Header for sign in sheet. Sheet is shown to prompt user to sign in to a website using an account from one of several identity providers.">
         Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>
       </message>
+      <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_SUBTITLE" desc="Subtitle for the sign in sheet shown after the user clicks a sign in button on a website. Prompts the user to choose an account from one of several identity providers." translateable="false">
+        Choose an account to continue
+      </message>
 
       <!-- Settings Bottom Bar strings -->
       <message name="IDS_SETTINGS_SHOW_GEMINI_IN_BOTTOM_BAR_TITLE" desc="Title for the settings toggle to show or hide Gemini in the bottom bar. [CHAR_LIMIT=32]">
