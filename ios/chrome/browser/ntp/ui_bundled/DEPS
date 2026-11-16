@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/contextual_search/contextual_search_service.h",
   "+components/contextual_search/contextual_search_session_handle.h",
+  "+components/contextual_search/footprints/public/drive_disclaimer_controller.h",
   "+components/subscription_eligibility",
   "+ios/chrome/browser/aim/model",
   "+ios/chrome/browser/authentication/account_menu",

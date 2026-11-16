@@ -7,19 +7,20 @@
 #import <AVFoundation/AVFoundation.h>
 #import <PhotosUI/PhotosUI.h>
 
+#import <memory>
 #import <optional>
 #import <utility>
 
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #import "components/contextual_search/input_state_model.h"
-#import "components/contextual_search/pref_names.h"
 #import "components/lens/lens_features.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
@@ -69,14 +70,26 @@ constexpr int kChromeIOSProductId = 71720513;
 
   // Presents snackbars.
   ComposeboxSnackbarPresenter* _snackbarPresenter;
+
+  // Controller for checking the Drive disclaimer status.
+  std::unique_ptr<drive_picker::DriveDisclaimerController>
+      _driveDisclaimerController;
+
+  // Whether an asynchronous Drive disclaimer status check is currently in
+  // flight.
+  BOOL _isCheckingDriveDisclaimer;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                 driveDisclaimerController:
+                     (std::unique_ptr<drive_picker::DriveDisclaimerController>)
+                         driveDisclaimerController {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
     _browser = browser->AsWeakPtr();
+    _driveDisclaimerController = std::move(driveDisclaimerController);
   }
 
   return self;
@@ -174,6 +187,12 @@ constexpr int kChromeIOSProductId = 71720513;
 }
 
 - (void)presentDriveFilePicker {
+  // Ignore duplicate taps while a disclaimer check or ConsentKit flow is
+  // already in progress.
+  if (_isCheckingDriveDisclaimer || self.privacyPrimitiveService != nil) {
+    return;
+  }
+
   if (!_browser) {
     [self.metricsRecorder
         recordPickerOutcome:MobileFuseboxPickerOutcome::kLocalError
@@ -186,51 +205,99 @@ constexpr int kChromeIOSProductId = 71720513;
   id<SystemIdentity> identity = [self driveFilePickerIdentity];
   CHECK(identity);
 
-  PrefService* prefService = _browser->GetProfile()->GetPrefs();
-  auto consentState = static_cast<contextual_search::DriveConsentState>(
-      prefService->GetInteger(contextual_search::kDriveConsentState));
-
-  // TODO(crbug.com/551907302): Scope Drive consent state per GAIA ID or clear
-  // it on account switch so consent is not shared across accounts in the same
-  // Profile.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
-      !base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted) &&
-      consentState != contextual_search::DriveConsentState::kConsent) {
-    PrivacyPrimitiveConfiguration* config =
-        [[PrivacyPrimitiveConfiguration alloc] init];
-    config.identity = identity;
-    config.flowID = omnibox::kComposeboxDriveConsentFlowId.Get();
-    config.productID = kChromeIOSProductId;
-    config.productSurface =
-        omnibox::kComposeboxDriveConsentProductSurface.Get();
-
-    __weak __typeof(self) weakSelf = self;
-    config.openURLCallback = ^(NSURL* URL) {
-      [weakSelf privacyPrimitiveOpenURLInNewTab:URL];
-    };
-
-    self.privacyPrimitiveService =
-        ios::provider::CreatePrivacyPrimitiveService(config);
-    if (!self.privacyPrimitiveService) {
-      [self showDriveFilePickerInternal];
-      return;
-    }
-
-    [self.privacyPrimitiveService
-        showFlowWithPresentingViewController:_baseViewController
-                           completionHandler:^(BOOL success) {
-                             [weakSelf privacyPrimitiveFlowCompletedWithSuccess:
-                                           success];
-                           }];
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOptionDisclaimer)) {
+    [self showDriveFilePickerInternal];
     return;
   }
 
-  [self showDriveFilePickerInternal];
+  if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+    [self onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                       DisclaimerStatus::kAccepted];
+    return;
+  }
+
+  if (!_driveDisclaimerController) {
+    [self onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                       DisclaimerStatus::kRestricted];
+    return;
+  }
+
+  _isCheckingDriveDisclaimer = YES;
+  __weak __typeof(self) weakSelf = self;
+  _driveDisclaimerController->CheckDisclaimerStatusAsync(base::BindOnce(
+      [](__typeof(self) strongSelf,
+         drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+        [strongSelf onDriveDisclaimerChecked:status];
+      },
+      weakSelf));
 }
 
 - (void)dismissPicker {
   [self dismissPickerWithCompletion:nil];
+}
+
+- (void)onDriveDisclaimerChecked:
+    (drive_picker::DriveDisclaimerController::DisclaimerStatus)status {
+  _isCheckingDriveDisclaimer = NO;
+
+  // The browser may have been destroyed or the presenting UI dismissed while
+  // the async disclaimer check was in flight.
+  if (!_browser || !_baseViewController.view.window) {
+    return;
+  }
+
+  switch (status) {
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted:
+      [self showDriveFilePickerInternal];
+      break;
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::
+        kNotAccepted:
+      [self showDriveConsentFlow];
+      break;
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::kRestricted:
+      [self.metricsRecorder
+          recordPickerOutcome:MobileFuseboxPickerOutcome::kPermissionDenied
+            forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
+      [self createSnackbarPresenterIfNeeded];
+      [_snackbarPresenter showUnableToAddAttachmentSnackbarWithBottomOffset:0];
+      break;
+  }
+}
+
+- (void)showDriveConsentFlow {
+  id<SystemIdentity> identity = [self driveFilePickerIdentity];
+  // The primary identity may have signed out while the async disclaimer check
+  // was in flight.
+  if (!identity) {
+    return;
+  }
+
+  PrivacyPrimitiveConfiguration* config =
+      [[PrivacyPrimitiveConfiguration alloc] init];
+  config.identity = identity;
+  config.flowID = omnibox::kComposeboxDriveConsentFlowId.Get();
+  config.productID = kChromeIOSProductId;
+  config.productSurface = omnibox::kComposeboxDriveConsentProductSurface.Get();
+
+  __weak __typeof(self) weakSelf = self;
+  config.openURLCallback = ^(NSURL* URL) {
+    [weakSelf privacyPrimitiveOpenURLInNewTab:URL];
+  };
+
+  self.privacyPrimitiveService =
+      ios::provider::CreatePrivacyPrimitiveService(config);
+  if (!self.privacyPrimitiveService) {
+    [self showDriveFilePickerInternal];
+    return;
+  }
+
+  [self.privacyPrimitiveService
+      showFlowWithPresentingViewController:_baseViewController
+                         completionHandler:^(BOOL success) {
+                           [weakSelf privacyPrimitiveFlowCompletedWithSuccess:
+                                         success];
+                         }];
 }
 
 - (void)privacyPrimitiveFlowCompletedWithSuccess:(BOOL)success {
@@ -244,10 +311,6 @@ constexpr int kChromeIOSProductId = 71720513;
           forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
     return;
   }
-  PrefService* prefs = _browser->GetProfile()->GetPrefs();
-  prefs->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kConsent));
   [self showDriveFilePickerInternal];
 }
 

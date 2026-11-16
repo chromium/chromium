@@ -441,8 +441,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
     signin::IdentityManager* identityManager =
         _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
-    scoped_refptr<network::SharedURLLoaderFactory> urlLoaderFactory =
-        _profile ? _profile->GetSharedURLLoaderFactory() : nullptr;
     _stateManager = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:_webStateList
                    modeHolder:_modeHolder
@@ -452,8 +450,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
            templateURLService:_templateURLService
                 sessionHandle:_contextualSearchSession.get()
                    entrypoint:_entrypoint
-                  isIncognito:_isIncognito
-             urlLoaderFactory:urlLoaderFactory];
+                  isIncognito:_isIncognito];
     _stateManager.delegate = self;
     _stateManager.items = _items;
 

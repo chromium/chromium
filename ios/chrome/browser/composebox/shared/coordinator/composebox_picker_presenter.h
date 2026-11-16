@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
 #import <set>
 
 #import "base/ios/block_types.h"
@@ -19,6 +20,10 @@
 struct ComposeboxTabSelection;
 @class ComposeboxMetricsRecorder;
 @class ComposeboxPickerPresenter;
+
+namespace drive_picker {
+class DriveDisclaimerController;
+}  // namespace drive_picker
 
 /// Delegate for various picker events.
 @protocol ComposeboxPickerPresenterDelegate <NSObject>
@@ -90,9 +95,13 @@ struct ComposeboxTabSelection;
 /// The metrics recorder for tracking picker outcomes.
 @property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
-// Creates a new object of this type.
+// Creates a new object of this type with injected dependencies.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser;
+                                   browser:(Browser*)browser
+                 driveDisclaimerController:
+                     (std::unique_ptr<drive_picker::DriveDisclaimerController>)
+                         driveDisclaimerController NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Presents the camera picker.
 - (void)presentCameraPicker;

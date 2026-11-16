@@ -15,7 +15,6 @@
 #import <unordered_set>
 #import <vector>
 
-#import "base/memory/scoped_refptr.h"
 #import "components/contextual_search/input_state_model.h"
 #import "components/lens/lens_overlay_mime_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
@@ -33,14 +32,6 @@ class TemplateURLService;
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
-
-namespace drive_picker {
-class DriveDisclaimerController;
-}  // namespace drive_picker
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
 
 namespace signin {
 class IdentityManager;
@@ -95,9 +86,7 @@ class WebStateID;
 // The metrics recorder.
 @property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
-// Initializes the manager without a network URL loader factory.
-// Note: Drive disclaimer verification will be disabled if `urlLoaderFactory` is
-// not provided.
+// Initializes the manager.
 - (instancetype)
      initWithWebStateList:(WebStateList*)webStateList
                modeHolder:(ComposeboxModeHolder*)modeHolder
@@ -108,29 +97,9 @@ class WebStateID;
             sessionHandle:
                 (contextual_search::ContextualSearchSessionHandle*)sessionHandle
                entrypoint:(ComposeboxEntrypoint)entrypoint
-              isIncognito:(BOOL)isIncognito;
-
-// Initializes the manager with a network URL loader factory used for Drive
-// disclaimer verification.
-- (instancetype)
-     initWithWebStateList:(WebStateList*)webStateList
-               modeHolder:(ComposeboxModeHolder*)modeHolder
-              prefService:(PrefService*)prefService
-    aimEligibilityService:(AimEligibilityService*)aimEligibilityService
-          identityManager:(signin::IdentityManager*)identityManager
-       templateURLService:(TemplateURLService*)templateURLService
-            sessionHandle:
-                (contextual_search::ContextualSearchSessionHandle*)sessionHandle
-               entrypoint:(ComposeboxEntrypoint)entrypoint
-              isIncognito:(BOOL)isIncognito
-         urlLoaderFactory:
-             (scoped_refptr<network::SharedURLLoaderFactory>)urlLoaderFactory
-    NS_DESIGNATED_INITIALIZER;
+              isIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Returns the drive disclaimer controller.
-- (drive_picker::DriveDisclaimerController*)driveDisclaimerController;
 
 // Disconnects the manager and cleans up resources.
 - (void)disconnect;
