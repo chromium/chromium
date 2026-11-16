@@ -65,6 +65,12 @@ BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 // were enabled.
 BASE_FEATURE(kFedCmIdpLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Populates an opaque `initiator_origin` when Desktop FedCM opens modal dialog
+// popups (`FedCmModalDialogView::ShowPopupWindow()`) or info/policy link tabs
+// (`FedCmAccountSelectionView::ShowUrl()`). Kill switch for
+// crbug.com/415848455.
+BASE_FEATURE(kFedCmOpaqueInitiatorOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the request permission UI with a container for the disclosure text
 // in the FedCM modal permission dialog on desktop and the active mode bottom
 // sheet on Android.

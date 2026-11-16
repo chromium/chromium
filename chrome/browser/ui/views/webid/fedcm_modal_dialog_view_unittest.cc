@@ -8,6 +8,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "url/origin.h"
 
 namespace webid {
 
@@ -72,6 +75,7 @@ class TestDelegate : public content::WebContentsDelegate {
 
     opened_++;
     disposition_ = params.disposition;
+    initiator_origin_ = params.initiator_origin;
     return popup_window_to_return_ ? popup_window_to_return_.get() : source;
   }
 
@@ -131,6 +135,9 @@ class TestDelegate : public content::WebContentsDelegate {
   int opened() const { return opened_; }
   gfx::Rect bounds() const { return bounds_; }
   ui::mojom::WindowOpenDisposition disposition() const { return disposition_; }
+  const std::optional<url::Origin>& initiator_origin() const {
+    return initiator_origin_;
+  }
 
  private:
   int opened_ = 0;
@@ -144,6 +151,7 @@ class TestDelegate : public content::WebContentsDelegate {
   gfx::Rect bounds_;
   ui::mojom::WindowOpenDisposition disposition_{
       ui::mojom::WindowOpenDisposition::kUnknown};
+  std::optional<url::Origin> initiator_origin_;
 };
 
 class TestObserver : public FedCmModalDialogView::Observer {
@@ -171,6 +179,23 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(delegate.initiator_origin().has_value());
+  EXPECT_TRUE(delegate.initiator_origin()->opaque());
+}
+
+TEST_F(FedCmModalDialogViewTest, ShowPopupWindowKillswitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFedCmOpaqueInitiatorOrigin);
+
+  TestDelegate delegate(web_contents());
+  auto popup_window_view = std::make_unique<FedCmModalDialogView>(
+      web_contents(), /*observer=*/nullptr);
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
+
+  EXPECT_EQ(1, delegate.opened());
+  ASSERT_TRUE(web_contents);
+  EXPECT_FALSE(delegate.initiator_origin().has_value());
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowDeletesView) {
@@ -264,6 +289,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowInFullscreen) {
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             delegate.disposition());
+  ASSERT_TRUE(delegate.initiator_origin().has_value());
+  EXPECT_TRUE(delegate.initiator_origin()->opaque());
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {

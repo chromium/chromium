@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -20,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "url/origin.h"
 
 namespace webid {
 namespace {
@@ -79,6 +82,13 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url, disposition, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  // The URL comes from the identity provider, so the navigation must not look
+  // as if the user typed it (`SameSite=Strict` cookies,
+  // `Sec-Fetch-Site: none`). An opaque initiator matches the spec, which
+  // navigates a fresh top-level traversable, and Android's Custom Tabs.
+  if (base::FeatureList::IsEnabled(features::kFedCmOpaqueInitiatorOrigin)) {
+    params.initiator_origin = url::Origin();
+  }
   content::WebContents* popup_window = nullptr;
   if (!RunAndCheckAlive([&]() {
         popup_window = delegate->OpenURLFromTab(

@@ -40,6 +40,8 @@ BASE_DECLARE_FEATURE(kLegacySearchIntegrityCheck);
 
 BASE_DECLARE_FEATURE(kFedCmIdpLinks);
 
+BASE_DECLARE_FEATURE(kFedCmOpaqueInitiatorOrigin);
+
 BASE_DECLARE_FEATURE(kFedCmPermissionUiWithContainer);
 
 BASE_DECLARE_FEATURE(kFindInPageMatchCase);

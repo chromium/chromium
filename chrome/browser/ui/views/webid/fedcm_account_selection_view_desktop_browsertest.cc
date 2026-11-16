@@ -30,18 +30,24 @@
 #include "components/actor/core/task_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_switches.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -680,6 +686,283 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputEnabledForBubbleDialog) {
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
+}
+
+class FedCmRedirectCookieBrowserTest : public FedCmBrowserTest {
+ public:
+  FedCmRedirectCookieBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kFedCmOpaqueInitiatorOrigin);
+  }
+
+  void SetUpOnMainThread() override {
+    FedCmBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    Reset();
+    FedCmBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies the intended side effects of setting an opaque `initiator_origin` on
+// `FedCmModalDialogView` popup loads: the IdP's own `SameSite=Strict` cookie is
+// excluded on the popup's initial request and `Sec-Fetch-Site` is `cross-site`.
+IN_PROC_BROWSER_TEST_F(
+    FedCmRedirectCookieBrowserTest,
+    ShowModalDialogExcludesSameSiteStrictCookiesOnInitialRequest) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.com",
+                     "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+                     "&lax_cookie=1;SameSite=Lax;Secure")));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "a.com", "/echoheader?Cookie&Sec-Fetch-Site");
+
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  content::WebContents* popup_contents =
+      account_selection_view_->ShowModalDialog(
+          target_url, blink::mojom::RpMode::kPassive, base::DoNothing());
+  ASSERT_TRUE(popup_contents);
+
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ("lax_cookie=1\ncross-site",
+            content::EvalJs(popup_contents, "document.body.innerText"));
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_origin()->opaque());
+}
+
+// Regression test for https://crbug.com/415848455: `FedCmModalDialogView` popup
+// loads must set an opaque `initiator_origin` so a 301 redirect does not attach
+// `SameSite=Strict` cookies of the redirect target.
+IN_PROC_BROWSER_TEST_F(FedCmRedirectCookieBrowserTest,
+                       ShowModalDialogExcludesSameSiteStrictCookiesOnRedirect) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "b.com",
+                     "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+                     "&lax_cookie=1;SameSite=Lax;Secure")));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "b.com", "/echoheader?Cookie&Sec-Fetch-Site");
+  const GURL redirect_url = embedded_https_test_server().GetURL(
+      "a.com", "/server-redirect-301?" + target_url.spec());
+
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  content::WebContents* popup_contents =
+      account_selection_view_->ShowModalDialog(
+          redirect_url, blink::mojom::RpMode::kPassive, base::DoNothing());
+  ASSERT_TRUE(popup_contents);
+
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ("lax_cookie=1\ncross-site",
+            content::EvalJs(popup_contents, "document.body.innerText"));
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_origin()->opaque());
+}
+
+// Verifies that `FedCmAccountSelectionView::ShowUrl()` excludes
+// `SameSite=Strict` cookies and sends `Sec-Fetch-Site: cross-site` on the
+// initial link request while preserving `PAGE_TRANSITION_TYPED`.
+IN_PROC_BROWSER_TEST_F(FedCmRedirectCookieBrowserTest,
+                       ShowUrlExcludesSameSiteStrictCookiesOnInitialRequest) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.com",
+                     "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+                     "&lax_cookie=1;SameSite=Lax;Secure")));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "a.com", "/echoheader?Cookie&Sec-Fetch-Site");
+
+  content::WebContentsAddedObserver new_contents_observer;
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  account_selection_view_->ShowUrl(
+      content::IdentityRequestDialogController::LinkType::PRIVACY_POLICY,
+      target_url);
+
+  content::WebContents* link_contents = new_contents_observer.GetWebContents();
+  ASSERT_TRUE(link_contents);
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ("lax_cookie=1\ncross-site",
+            content::EvalJs(link_contents, "document.body.innerText"));
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_origin()->opaque());
+  ASSERT_TRUE(link_contents->GetController().GetLastCommittedEntry());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(link_contents->GetController()
+                                               .GetLastCommittedEntry()
+                                               ->GetTransitionType(),
+                                           ui::PAGE_TRANSITION_TYPED));
+}
+
+// Regression test for https://crbug.com/415848455: `FedCmAccountSelectionView`
+// link tabs opened via `ShowUrl()` must set an opaque `initiator_origin` so a
+// 301 redirect does not attach `SameSite=Strict` cookies of the redirect
+// target.
+IN_PROC_BROWSER_TEST_F(FedCmRedirectCookieBrowserTest,
+                       ShowUrlExcludesSameSiteStrictCookiesOnRedirect) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "b.com",
+                     "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+                     "&lax_cookie=1;SameSite=Lax;Secure")));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "b.com", "/echoheader?Cookie&Sec-Fetch-Site");
+  const GURL redirect_url = embedded_https_test_server().GetURL(
+      "a.com", "/server-redirect-301?" + target_url.spec());
+
+  content::WebContentsAddedObserver new_contents_observer;
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  account_selection_view_->ShowUrl(
+      content::IdentityRequestDialogController::LinkType::PRIVACY_POLICY,
+      redirect_url);
+
+  content::WebContents* link_contents = new_contents_observer.GetWebContents();
+  ASSERT_TRUE(link_contents);
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ("lax_cookie=1\ncross-site",
+            content::EvalJs(link_contents, "document.body.innerText"));
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_origin()->opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmRedirectCookieBrowserTest,
+                       ShowUrlIgnoresNonHttpOrHttpsUrls) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  account_selection_view_->ShowUrl(
+      content::IdentityRequestDialogController::LinkType::PRIVACY_POLICY,
+      GURL("chrome://settings"));
+  account_selection_view_->ShowUrl(
+      content::IdentityRequestDialogController::LinkType::TERMS_OF_SERVICE,
+      GURL("invalid"));
+  EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
+}
+
+class FedCmRedirectCookieKillswitchBrowserTest : public FedCmBrowserTest {
+ public:
+  FedCmRedirectCookieKillswitchBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kFedCmOpaqueInitiatorOrigin);
+  }
+
+  void SetUpOnMainThread() override {
+    FedCmBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    Reset();
+    FedCmBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that disabling `kFedCmOpaqueInitiatorOrigin` restores the legacy
+// behavior (`initiator_origin` unset, `SameSite=Strict` cookies attached, and
+// `Sec-Fetch-Site: none`) for both `FedCmModalDialogView` popups and
+// `FedCmAccountSelectionView::ShowUrl()` link tabs.
+IN_PROC_BROWSER_TEST_F(FedCmRedirectCookieKillswitchBrowserTest,
+                       DisabledKillswitchLeavesInitiatorOriginUnset) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.com",
+                     "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+                     "&lax_cookie=1;SameSite=Lax;Secure")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("b.com", "/title1.html")));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "a.com", "/echoheader?Cookie&Sec-Fetch-Site");
+
+  {
+    content::TestNavigationObserver nav_observer(target_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    content::WebContents* popup_contents =
+        account_selection_view_->ShowModalDialog(
+            target_url, blink::mojom::RpMode::kPassive, base::DoNothing());
+    ASSERT_TRUE(popup_contents);
+
+    nav_observer.Wait();
+    ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_FALSE(nav_observer.last_initiator_origin().has_value());
+    EXPECT_EQ("strict_cookie=1; lax_cookie=1\nnone",
+              content::EvalJs(popup_contents, "document.body.innerText"));
+  }
+
+  {
+    content::WebContentsAddedObserver new_contents_observer;
+    content::TestNavigationObserver nav_observer(target_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    account_selection_view_->ShowUrl(
+        content::IdentityRequestDialogController::LinkType::PRIVACY_POLICY,
+        target_url);
+
+    content::WebContents* link_contents =
+        new_contents_observer.GetWebContents();
+    ASSERT_TRUE(link_contents);
+    nav_observer.Wait();
+    ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_FALSE(nav_observer.last_initiator_origin().has_value());
+    EXPECT_EQ("strict_cookie=1; lax_cookie=1\nnone",
+              content::EvalJs(link_contents, "document.body.innerText"));
+    ASSERT_TRUE(link_contents->GetController().GetLastCommittedEntry());
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(link_contents->GetController()
+                                                 .GetLastCommittedEntry()
+                                                 ->GetTransitionType(),
+                                             ui::PAGE_TRANSITION_TYPED));
+  }
 }
 
 class FedCmAmbientBubbleBrowserTest : public FedCmBrowserTest {

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -24,11 +25,11 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -58,6 +59,8 @@
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_ui_types.h"
@@ -65,6 +68,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -691,14 +695,31 @@ bool FedCmAccountSelectionView::ShowNativeAppUi(
 }
 
 void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           delegate_->GetWebContents());
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  if (!browser) {
+    return;
+  }
 
-  CHECK(tab_strip_model, base::NotFatalUntil::M162);
   // Add a tab for the URL at the end of the tab strip, in the foreground.
-  tab_strip_model->delegate()->AddTabAt(url, -1, true);
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_TYPED);
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
+  // The URL comes from the identity provider (including the relying party's
+  // privacy policy and terms of service URLs, which can be on any site), so
+  // the navigation must not look as if the user typed it (`SameSite=Strict`
+  // cookies, `Sec-Fetch-Site: none`). An opaque initiator matches Android's
+  // Custom Tabs.
+  if (base::FeatureList::IsEnabled(features::kFedCmOpaqueInitiatorOrigin)) {
+    params.initiator_origin = url::Origin();
+  }
+  params.web_app_navigation_data.emplace();
+  params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
+  Navigate(&params);
 
   switch (link_type) {
     case LinkType::TERMS_OF_SERVICE:
