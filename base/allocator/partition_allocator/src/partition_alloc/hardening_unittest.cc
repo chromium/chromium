@@ -195,7 +195,7 @@ TEST(HardeningTest, PoolOffsetMetadataPointerCrashing) {
       FreelistEntry::EmplaceAndInitForTest(slot_start.value(), metadata, true),
       "");
 #else   // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
+  FreelistEntry::EmplaceAndInitForTest(slot_start.value(), metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize), "");
