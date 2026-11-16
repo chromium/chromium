@@ -125,4 +125,59 @@ TEST_F(OmniboxPopupNativeWidgetMacTest,
   EXPECT_EQ(GetNSWindow(browser.get()), ToggleFullScreen(popup_window));
 }
 
+// Detaches `child` from `parent`, gives it a frame whose top edge overlaps the
+// menu bar, and orders it front, as when a popup is shown before its parent's
+// fullscreen Space is active. Returns the requested frame, or NSZeroRect if the
+// screen has no menu bar inset to test against.
+NSRect ShowDetachedUnderMenuBar(NSWindow* parent, NSWindow* child) {
+  NSScreen* screen = parent.screen ?: NSScreen.mainScreen;
+  if (NSMaxY(screen.visibleFrame) >= NSMaxY(screen.frame)) {
+    return NSZeroRect;
+  }
+  [parent removeChildWindow:child];
+  [child orderOut:nil];
+  NSRect frame = NSMakeRect(NSMinX(screen.visibleFrame) + 10,
+                            NSMaxY(screen.frame) - 100, 200, 100);
+  [child setFrame:frame display:NO];
+  [child orderFront:nil];
+  return frame;
+}
+
+// AppKit keeps an unattached window's top edge below the menu bar. The popup
+// opts out, since it's always placed over its parent's location bar.
+TEST_F(OmniboxPopupNativeWidgetMacTest, UnattachedPopupNotConstrained) {
+  std::unique_ptr<views::Widget> browser = CreateWindowWidget();
+  std::unique_ptr<views::Widget> popup =
+      CreateChildWidget(browser.get(), /*popup=*/true);
+  NativeWidgetMacNSWindow* popup_window = GetNSWindow(popup.get());
+  NSRect frame =
+      ShowDetachedUnderMenuBar(GetNSWindow(browser.get()), popup_window);
+  if (NSIsEmptyRect(frame)) {
+    GTEST_SKIP() << "Screen has no menu bar inset.";
+  }
+  ASSERT_EQ(nil, popup_window.parentWindow);
+
+  EXPECT_TRUE(NSEqualRects(frame, popup_window.frame))
+      << NSStringFromRect(popup_window.frame).UTF8String;
+}
+
+// Control for the test above: the same setup moves a plain child window below
+// the menu bar.
+TEST_F(OmniboxPopupNativeWidgetMacTest, UnattachedNonPopupConstrained) {
+  std::unique_ptr<views::Widget> browser = CreateWindowWidget();
+  std::unique_ptr<views::Widget> child =
+      CreateChildWidget(browser.get(), /*popup=*/false);
+  NativeWidgetMacNSWindow* child_window = GetNSWindow(child.get());
+  NSRect frame =
+      ShowDetachedUnderMenuBar(GetNSWindow(browser.get()), child_window);
+  if (NSIsEmptyRect(frame)) {
+    GTEST_SKIP() << "Screen has no menu bar inset.";
+  }
+  ASSERT_EQ(nil, child_window.parentWindow);
+
+  EXPECT_LE(NSMaxY(child_window.frame),
+            NSMaxY(child_window.screen.visibleFrame))
+      << NSStringFromRect(child_window.frame).UTF8String;
+}
+
 }  // namespace
