@@ -29,9 +29,7 @@ enum SuggestionGroupVisibility {
   SHOWN = 2,
 };
 
-// Histograms being recorded when visibility of suggestion group IDs change.
-inline constexpr char kGroupIdToggledOffHistogram[] =
-    "Omnibox.GroupId.ToggledOff";
+// Histogram being recorded when visibility of suggestion group IDs changes.
 inline constexpr char kGroupIdToggledOnHistogram[] =
     "Omnibox.GroupId.ToggledOn";
 
