@@ -26,9 +26,6 @@ BASE_DECLARE_FEATURE(kGlicClearTurnIdOnPanelWillOpen);
 
 BASE_DECLARE_FEATURE(kGlicChromeStatusIconWin);
 
-BASE_DECLARE_FEATURE(kGlicOSIconVariant);
-extern const base::FeatureParam<int> kGlicOSIconVariantParam;
-
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kGlicInvoke);

@@ -4,10 +4,8 @@
 
 #import "chrome/browser/background/glic/os_icon_provider_mac.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/background/glic/glic_status_icon.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/public/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,18 +47,7 @@ TEST_F(OSIconProviderMacUnitTest, ClearsAltIconPrefOnConstruction) {
   EXPECT_FALSE(prefs_.GetBoolean(prefs::kGlicUseAltOSIcon));
 }
 
-TEST_F(OSIconProviderMacUnitTest, GetIconWithOSIconVariantEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicOSIconVariant);
-
-  OSIconProviderMac provider(prefs_, glic_status_icon_);
-  EXPECT_FALSE(provider.GetIcon().isNull());
-}
-
-TEST_F(OSIconProviderMacUnitTest, GetIconWithOSIconVariantDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kGlicOSIconVariant);
-
+TEST_F(OSIconProviderMacUnitTest, GetIcon) {
   OSIconProviderMac provider(prefs_, glic_status_icon_);
   EXPECT_FALSE(provider.GetIcon().isNull());
 }
