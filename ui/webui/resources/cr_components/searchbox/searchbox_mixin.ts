@@ -31,6 +31,9 @@ export enum ControlKeyState {
   DOWN_AND_CONSUMED,
 }
 
+const MODIFIER_KEYS =
+    ['Alt', 'AltGraph', 'CapsLock', 'Control', 'Meta', 'Shift'];
+
 type Constructor<T> = new (...args: any[]) => T;
 
 export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
@@ -679,8 +682,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // pending results the navigation is waiting for, causing the navigation
       // to never occur. But this is a hack; comparing `e.key !=== 'Enter'` is
       // only a semi-accurate heuristic for whether a navigation is about to
-      // occur.
-      if (e.key !== 'Enter') {
+      // occur. Pressing a modifier key by itself (e.g. the 'Shift' of
+      // 'Shift+Enter') doesn't change the input, so it doesn't freeze the
+      // results either; otherwise, fast modified-Enter navigations would use
+      // stale results.
+      if (e.key !== 'Enter' && !MODIFIER_KEYS.includes(e.key)) {
         this.activeQueryId = -1;
       }
       this.compositionCommitQueryId_ = null;
