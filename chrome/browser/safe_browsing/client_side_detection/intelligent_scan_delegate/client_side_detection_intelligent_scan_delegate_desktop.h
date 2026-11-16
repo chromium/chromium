@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_DESKTOP_H_
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -72,11 +74,13 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   // Starts listening to the on-device model update through OptimizationGuide.
   // This will be called when the user preferences change and the user is
   // subscribed to Enhanced Safe Browsing. Does nothing if it is already
-  // listening to the on-device model update.
+  // listening to the on-device model update or if the model is already
+  // available.
   void StartListeningToOnDeviceModelUpdate();
   // Stops listening to the on-device model update through OptimizationGuide.
   // Does nothing if it is not listening to the on-device model update.
   void StopListeningToOnDeviceModelUpdate();
+  void RequestOnDeviceModelAssets();
 
   // optimization_guide::OnDeviceModelAvailabilityObserver
   void OnDeviceModelAvailabilityChanged(

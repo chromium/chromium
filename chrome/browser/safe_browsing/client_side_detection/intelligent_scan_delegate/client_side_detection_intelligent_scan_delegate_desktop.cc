@@ -5,11 +5,14 @@
 #include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_util.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -32,16 +35,21 @@ constexpr auto kOnDeviceModelType =
 
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
-static constexpr auto kWaitableReasons =
-    base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kConfigNotAvailableForFeature,
-        optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kSafetyModelNotAvailable,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kLanguageDetectionModelNotAvailable,
-    });
+// `kNoOnDeviceFeatureUsed` is also waitable because `RequestAssetsFor()` is
+// posted asynchronously at `BEST_EFFORT` priority and queued behind
+// `BrokerInit`, so initial solution updates can transiently report it before
+// usage is recorded.
+static constexpr auto kWaitableReasons = base::MakeFixedFlatSet<
+    optimization_guide::OnDeviceModelEligibilityReason>({
+    optimization_guide::OnDeviceModelEligibilityReason::
+        kConfigNotAvailableForFeature,
+    optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
+    optimization_guide::OnDeviceModelEligibilityReason::
+        kSafetyModelNotAvailable,
+    optimization_guide::OnDeviceModelEligibilityReason::
+        kLanguageDetectionModelNotAvailable,
+    optimization_guide::OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed,
+});
 
 void LogOnDeviceModelSessionCreationSuccess(bool success) {
   base::UmaHistogramBoolean(
@@ -446,13 +454,13 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::ResetAllInquiries() {
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::
     StartListeningToOnDeviceModelUpdate() {
-  if (observing_on_device_model_availability_) {
+  if (observing_on_device_model_availability_ || on_device_model_available_) {
     return;
   }
 
-  auto session = GetModelExecutorSession();
-
-  if (session) {
+  if (opt_guide_->GetOnDeviceModelEligibility(
+          optimization_guide::mojom::OnDeviceFeature::kScamDetection) ==
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
     NotifyOnDeviceModelAvailable();
   } else {
     observing_on_device_model_availability_ = true;
@@ -460,6 +468,17 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
     opt_guide_->AddOnDeviceModelAvailabilityChangeObserver(
         optimization_guide::mojom::OnDeviceFeature::kScamDetection, this);
   }
+
+  // Request model assets without creating a session, which would unnecessarily
+  // load the on-device model onto the GPU before any inquiry occurs. Post at
+  // `BEST_EFFORT` priority so `ModelBrokerImpl::RequestAssetsFor()` does not
+  // bypass `ScopedBestEffortExecutionFence` during browser startup.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSideDetectionIntelligentScanDelegateDesktop::
+                             RequestOnDeviceModelAssets,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::
@@ -475,12 +494,22 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
       optimization_guide::mojom::OnDeviceFeature::kScamDetection, this);
 }
 
+void ClientSideDetectionIntelligentScanDelegateDesktop::
+    RequestOnDeviceModelAssets() {
+  if (!observing_on_device_model_availability_ && !on_device_model_available_) {
+    return;
+  }
+  opt_guide_->CreateModelBrokerClient()->RequestAssetsFor(
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection);
+}
+
 void ClientSideDetectionIntelligentScanDelegateDesktop::Shutdown() {
   client_side_detection::LogOnDeviceModelSessionAliveOnDelegateShutdown(
       !inquiries_.empty());
   StopListeningToOnDeviceModelUpdate();
   remote_model_executor_ = nullptr;
   pref_change_registrar_.RemoveAll();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::

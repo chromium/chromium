@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -25,6 +26,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::EqualsProto;
@@ -46,11 +48,37 @@ namespace safe_browsing {
 using IntelligentScanResult = IntelligentScanDelegate::IntelligentScanResult;
 using ModelType = IntelligentScanDelegate::ModelType;
 
+class MockModelBroker : public optimization_guide::mojom::ModelBroker {
+ public:
+  MOCK_METHOD(void,
+              Subscribe,
+              (optimization_guide::mojom::ModelSubscriptionOptionsPtr,
+               mojo::PendingRemote<optimization_guide::mojom::ModelSubscriber>),
+              (override));
+  MOCK_METHOD(void,
+              GetConfig,
+              (optimization_guide::mojom::OnDeviceFeature, GetConfigCallback),
+              (override));
+  MOCK_METHOD(void,
+              AddModelDownloadProgressObserver,
+              (const std::string&,
+               mojo::PendingRemote<on_device_model::mojom::DownloadObserver>),
+              (override));
+  MOCK_METHOD(void, RequestAssetsFor, (const std::string&), (override));
+};
+
 class ClientSideDetectionIntelligentScanDelegateDesktopTestBase
     : public testing::Test {
  public:
   ClientSideDetectionIntelligentScanDelegateDesktopTestBase() {
     RegisterProfilePrefs(pref_service_.registry());
+    ON_CALL(mock_opt_guide_, CreateModelBrokerClient()).WillByDefault([this]() {
+      mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
+      model_broker_receivers_.Add(&mock_model_broker_,
+                                  remote.InitWithNewPipeAndPassReceiver());
+      return std::make_unique<optimization_guide::ModelBrokerClient>(
+          std::move(remote), nullptr);
+    });
   }
 
  protected:
@@ -127,6 +155,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTestBase
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide_;
+  NiceMock<MockModelBroker> mock_model_broker_;
+  mojo::ReceiverSet<optimization_guide::mojom::ModelBroker>
+      model_broker_receivers_;
   testing::NiceMock<MockSession> session_;
   std::unique_ptr<ClientSideDetectionIntelligentScanDelegateDesktop> delegate_;
   base::HistogramTester histogram_tester_;
@@ -1064,6 +1095,7 @@ TEST_F(
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(mock_model_broker_, RequestAssetsFor("scam_detection")).Times(1);
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
           [&](optimization_guide::mojom::OnDeviceFeature feature,
@@ -1075,6 +1107,7 @@ TEST_F(
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer.Run();
+  task_environment_.RunUntilIdle();
   CHECK(availability_observer);
 
   // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
@@ -1100,6 +1133,11 @@ TEST_F(
       optimization_guide::OnDeviceModelEligibilityReason::
           kLanguageDetectionModelNotAvailable);
 
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kNoOnDeviceFeatureUsed);
+
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
 
@@ -1124,31 +1162,81 @@ TEST_F(
 
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateDesktopTestWithServerModelDisabled,
-    TestOnDeviceModelFetchSuccessImmediateSessionCreation) {
+    TestOnDeviceModelFetchSuccessAlreadyEligible) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
                 /*log_failed_eligibility_reason=*/true),
             ModelType::kNotSupportedOnDevice);
 
-  testing::NiceMock<MockSession> session;
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
+  EXPECT_CALL(mock_opt_guide_, CreateModelBrokerClient()).Times(1);
+  EXPECT_CALL(mock_model_broker_, RequestAssetsFor("scam_detection")).Times(1);
+  EXPECT_CALL(mock_opt_guide_,
+              GetOnDeviceModelEligibility(
+                  optimization_guide::mojom::OnDeviceFeature::kScamDetection))
       .WillOnce(
-          [&](optimization_guide::mojom::OnDeviceFeature feature,
-              const optimization_guide::SessionConfigParams& config_params,
-              base::WeakPtr<OptimizationGuideLogger> logger) {
-            return std::make_unique<NiceMock<MockSession>>(&session);
-          });
-  // No need to add the observer because the session is created immediately.
+          Return(optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  // Must not start a session (which loads the model onto the GPU) just to check
+  // availability.
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _)).Times(0);
+  // No need to add the observer because the model is already eligible.
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .Times(0);
 
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
+  task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
                 /*log_failed_eligibility_reason=*/true),
             ModelType::kOnDevice);
+}
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestWithServerModelDisabled,
+    TestOnDeviceModelAlreadyEligibleDisableAndReenable) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
+  EXPECT_CALL(mock_opt_guide_,
+              GetOnDeviceModelEligibility(
+                  optimization_guide::mojom::OnDeviceFeature::kScamDetection))
+      .Times(2)
+      .WillRepeatedly(
+          Return(optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  EXPECT_CALL(mock_model_broker_, RequestAssetsFor("scam_detection")).Times(2);
+  EXPECT_CALL(mock_opt_guide_,
+              RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
+      .Times(0);
+
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/false),
+            ModelType::kOnDevice);
+
+  SetEnhancedProtectionPrefForTests(&pref_service_, false);
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/false),
+            ModelType::kNotSupportedOnDevice);
+
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/false),
+            ModelType::kOnDevice);
+}
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestWithServerModelDisabled,
+    TestOnDeviceModelPendingAssetRequestCancelledOnDisable) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
+  EXPECT_CALL(mock_opt_guide_, CreateModelBrokerClient()).Times(0);
+  EXPECT_CALL(mock_model_broker_, RequestAssetsFor(_)).Times(0);
+
+  // Enable and immediately disable Enhanced Protection before the BEST_EFFORT
+  // asset-request task executes.
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
+  SetEnhancedProtectionPrefForTests(&pref_service_, false);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(
@@ -1199,13 +1287,13 @@ TEST_F(
     TestModelEligibilityReasonCheckAtFailedInquiry) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
 
-  // The below function is called by the delegate when calling
-  // GetIntelligentScanModelType, but the on device model is not available yet.
+  // Called once when checking initial availability on ESB enable and once when
+  // logging the eligibility reason at inquiry failure.
   EXPECT_CALL(mock_opt_guide_, GetOnDeviceModelEligibility(_))
-      .WillOnce([&](optimization_guide::mojom::OnDeviceFeature feature) {
-        return optimization_guide::OnDeviceModelEligibilityReason::
-            kModelToBeInstalled;
-      });
+      .Times(2)
+      .WillRepeatedly(
+          Return(optimization_guide::OnDeviceModelEligibilityReason::
+                     kModelToBeInstalled));
 
   // We will start listening to the on device model when enhanced protection is
   // enabled, so we expect the call below.
