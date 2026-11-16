@@ -11242,6 +11242,34 @@ TEST_F(AXPositionTest, OperatorEquals) {
   EXPECT_EQ(*text_position1, *text_position2);
 }
 
+TEST_F(AXPositionTest, CompareToPositionsNormalizedPastEndOfContent) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // ++1 kRootWebArea "<embedded_object><embedded_object>"
+  // ++++2 kGenericContainer (empty)
+  // ++++3 kGenericContainer
+  // ++++++4 kStaticText (empty)
+  Init(TestAXTreeUpdate(
+      {ax::mojom::Role::kRootWebArea,
+       {{ax::mojom::Role::kGenericContainer, {}},
+        {ax::mojom::Role::kGenericContainer, {TestAXTreeUpdateNode("")}}}}));
+  const AXNode& root = *GetTree()->root();
+
+  auto after_empty_object = CreateTextPosition(
+      *root.children()[0], 1, ax::mojom::TextAffinity::kDownstream);
+  auto empty_text = CreateTextPosition(*root.children()[1]->children()[0], 0,
+                                       ax::mojom::TextAffinity::kDownstream);
+  ASSERT_TRUE(after_empty_object->AsLeafTextPositionBeforeCharacter()
+                  ->IsNullPosition());
+  ASSERT_TRUE(
+      empty_text->AsLeafTextPositionBeforeCharacter()->IsNullPosition());
+
+  // The end of an empty object is before empty text in the next object.
+  EXPECT_LT(*after_empty_object, *empty_text);
+  EXPECT_GT(*empty_text, *after_empty_object);
+}
+
 TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetSameAnchorId) {
   TestPositionType text_position_one = CreateTextPosition(
       root_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);

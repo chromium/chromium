@@ -4343,25 +4343,12 @@ class AXPosition {
           normalized_other_position->AsLeafTextPositionBeforeCharacter();
     }
 
-    if (normalized_this_position->IsNullPosition()) {
-      if (normalized_other_position->IsNullPosition()) {
-        // CHECK-exclusion: since the slot path is not required (see the comment
-        // below), keep DCHECK_EQ() for fast path.
-        // Both positions normalized to a position past the end of the whole
-        // content. There is no way that they could be ancestors of one another,
-        // so using the slow path is not required.
-        DCHECK_EQ(SlowCompareTo(other).value(), 0);
-        return 0;
-      }
-      // |this| normalized to a position past the end of the whole content.
-      // Since we don't know if one position is the ancestor of the other, we
-      // need to use the slow path.
-      return SlowCompareTo(other);
-    }
-    if (normalized_other_position->IsNullPosition()) {
-      // |other| normalized to a position past the end of the whole content.
-      // Since we don't know if one position is the ancestor of the other, we
-      // need to use the slow path.
+    if (normalized_this_position->IsNullPosition() ||
+        normalized_other_position->IsNullPosition()) {
+      // One or both positions normalized to a position past the end of the
+      // whole content. Since we don't know if one position is the ancestor of
+      // the other, or if the two positions have different text offsets at
+      // their common ancestor, we need to use the slow path.
       return SlowCompareTo(other);
     }
 
