@@ -108,6 +108,30 @@ const char* invalid_attr_values[] = {
     // clang-format on
 };
 
+const char* valid_ident_values[] = {
+    // clang-format off
+    "ident(a)",
+    "ident(\"a\" 1)",
+    "ident(var(--x))",
+    "ident(ident(\"a\" 1))",
+    "ident({ a, b })",
+    "ident(rgb(1, 2, 3))",
+    "ident(5px)",
+    // clang-format on
+};
+
+const char* invalid_ident_values[] = {
+    // clang-format off
+    "ident()",
+    "ident(/**/)",
+    "ident(a, b)",
+    "ident(a; b)",
+    "ident(a !)",
+    "ident({})",
+    "ident(a {})",
+    // clang-format on
+};
+
 const char* valid_auto_base_values[] = {
     // clang-format off
     "-internal-auto-base(foo, bar)",
@@ -312,6 +336,46 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(invalid_attr_values));
 
 TEST_P(InvalidAttrTest, ContainsInvalidAttr) {
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
+}
+
+class ValidIdentTest : public testing::Test,
+                       public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ValidIdentTest,
+                         testing::ValuesIn(valid_ident_values));
+
+TEST_P(ValidIdentTest, ContainsValidIdent) {
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_TRUE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
+}
+
+class InvalidIdentTest : public testing::Test,
+                         public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InvalidIdentTest,
+                         testing::ValuesIn(invalid_ident_values));
+
+TEST_P(InvalidIdentTest, ContainsInvalidIdent) {
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -618,6 +682,32 @@ TEST(CSSVariableParserTest, ParseDeclarationValueWithInheritDisabled) {
       "inherit(--foo)",
       /*is_animation_tainted=*/false, *context);
   EXPECT_TRUE(value);
+}
+
+TEST(CSSVariableParserTest, IdentDisabled) {
+  ScopedCSSIdentFunctionForTest feature(false);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  // When disabled, ident() is not validated as a substitution function in
+  // custom properties.
+  CSSUnparsedDeclarationValue* custom_prop_value =
+      CSSVariableParser::ParseDeclarationValue("ident()",
+                                               /*is_animation_tainted=*/false,
+                                               *context);
+  ASSERT_TRUE(custom_prop_value);
+  EXPECT_FALSE(
+      custom_prop_value->VariableDataValue()->NeedsVariableResolution());
+
+  // And standard properties with ident() are not treated as unparsed
+  // declarations containing references.
+  CSSParserTokenStream stream("ident(a)");
+  bool important = false;
+  EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
 }
 
 }  // namespace blink

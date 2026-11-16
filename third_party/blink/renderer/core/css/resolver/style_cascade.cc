@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
@@ -1111,6 +1112,7 @@ static bool IsNonWhitespaceToken(const CSSParserToken& token) {
 
 bool StyleCascade::TokenSequence::Append(StringView str,
                                          bool is_attr_tainted,
+                                         bool is_animation_tainted,
                                          wtf_size_t byte_limit) {
   // https://drafts.csswg.org/css-variables/#long-variables
   if (original_text_.length() + str.length() > byte_limit) {
@@ -1147,23 +1149,22 @@ bool StyleCascade::TokenSequence::Append(StringView str,
   if (is_attr_tainted) {
     attr_taint_ranges_.emplace_back(std::make_pair(start, end));
   }
+  is_animation_tainted_ |= is_animation_tainted;
   return true;
 }
 
 bool StyleCascade::TokenSequence::Append(const CSSValue* value,
                                          bool is_attr_tainted,
                                          wtf_size_t byte_limit) {
-  return Append(value->CssText(), is_attr_tainted, byte_limit);
+  return Append(value->CssText(), is_attr_tainted,
+                /*is_animation_tainted=*/false, byte_limit);
 }
 
 bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
                                          bool is_attr_tainted,
                                          wtf_size_t byte_limit) {
-  if (!Append(data->OriginalText(), is_attr_tainted, byte_limit)) {
-    return false;
-  }
-  is_animation_tainted_ |= data->IsAnimationTainted();
-  return true;
+  return Append(data->OriginalText(), is_attr_tainted,
+                data->IsAnimationTainted(), byte_limit);
 }
 
 void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
@@ -1188,13 +1189,9 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
 bool StyleCascade::TokenSequence::Append(TokenSequence& sequence,
                                          bool is_attr_tainted,
                                          wtf_size_t byte_limit) {
-  if (!Append(sequence.OriginalText(),
-              is_attr_tainted || !sequence.GetAttrTaintedRanges()->empty(),
-              byte_limit)) {
-    return false;
-  }
-  is_animation_tainted_ |= sequence.is_animation_tainted_;
-  return true;
+  return Append(sequence.OriginalText(),
+                is_attr_tainted || !sequence.GetAttrTaintedRanges()->empty(),
+                sequence.is_animation_tainted_, byte_limit);
 }
 
 CSSVariableData* StyleCascade::TokenSequence::BuildVariableData() {
@@ -1707,6 +1704,11 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveIfInto(stream, tree_scope, resolver, context,
                                function_context, out);
+    } else if (token.FunctionId() == CSSValueID::kIdent &&
+               RuntimeEnabledFeatures::CSSIdentFunctionEnabled()) {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      success &= ResolveIdentInto(stream, tree_scope, resolver, context,
+                                  function_context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
@@ -2512,6 +2514,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     // empty string if omitted.
     // https://drafts.csswg.org/css-values-5/#attr-notation
     if (!fallback.Append(String("''"), /*is_attr_tainted=*/true,
+                         /*is_animation_tainted=*/false,
                          CSSVariableData::kMaxVariableBytes)) {
       return false;
     }
@@ -2955,6 +2958,79 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
   }
 
   return out.Append(if_result, is_attr_tainted);
+}
+
+bool StyleCascade::ResolveIdentInto(CSSParserTokenStream& stream,
+                                    const TreeScope* tree_scope,
+                                    CascadeResolver& resolver,
+                                    const CSSParserContext& context,
+                                    FunctionContext* function_context,
+                                    TokenSequence& out) {
+  DCHECK(RuntimeEnabledFeatures::CSSIdentFunctionEnabled());
+  TokenSequence resolved_args;
+  stream.ConsumeWhitespace();
+  if (stream.Peek().GetType() == kLeftBraceToken) {
+    CSSParserTokenStream::BlockGuard brace_guard(stream);
+    if (!ResolveTokensInto(stream, tree_scope, resolver, context,
+                           function_context,
+                           /*stop_type=*/kEOFToken, resolved_args)) {
+      return false;
+    }
+  } else if (!ResolveTokensInto(stream, tree_scope, resolver, context,
+                                function_context,
+                                /*stop_type=*/kEOFToken, resolved_args)) {
+    return false;
+  }
+
+  CSSParserTokenStream arg_stream(resolved_args.OriginalText());
+  arg_stream.ConsumeWhitespace();
+  if (arg_stream.AtEnd()) {
+    return false;
+  }
+
+  const CSSProperty* current_property = resolver.CurrentProperty();
+  std::optional<CSSPropertyName> current_property_name;
+  if (current_property) {
+    current_property_name = current_property->GetCSSPropertyName();
+  }
+  CSSParserLocalContext local_context = GetCSSParserLocalContext(
+      function_context, current_property_name.has_value()
+                            ? &current_property_name.value()
+                            : nullptr);
+  local_context.SetRandomValueCount(resolver.RandomValueCount());
+
+  StringBuilder result;
+  while (!arg_stream.AtEnd()) {
+    if (arg_stream.Peek().GetType() == kIdentToken ||
+        arg_stream.Peek().GetType() == kStringToken) {
+      result.Append(arg_stream.ConsumeIncludingWhitespace().Value());
+      continue;
+    }
+    if (CSSPrimitiveValue* integer_value = css_parsing_utils::ConsumeInteger(
+            arg_stream, context, local_context,
+            CSSPrimitiveValue::ValueRange::kInteger,
+            /*is_percentage_allowed=*/false)) {
+      if (!current_property && integer_value->HasRandomFunctions()) {
+        return false;
+      }
+      result.AppendNumber(
+          integer_value->ComputeInteger(state_.CssToLengthConversionData()));
+      continue;
+    }
+    return false;
+  }
+  if (result.empty()) {
+    return false;
+  }
+
+  resolver.SetRandomValueCount(local_context.RandomValueCount());
+
+  StringBuilder serialized_ident;
+  SerializeIdentifier(result.ReleaseString(), serialized_ident);
+  return out.Append(
+      StringView(serialized_ident),
+      /*is_attr_tainted=*/!resolved_args.GetAttrTaintedRanges()->empty(),
+      resolved_args.IsAnimationTainted(), CSSVariableData::kMaxVariableBytes);
 }
 
 CSSVariableData* StyleCascade::ResolveLikeVar(

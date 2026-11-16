@@ -342,6 +342,39 @@ static bool ConsumeInternalAutoBase(CSSParserTokenStream& stream,
   return stream.AtEnd();
 }
 
+// ident() = ident( <ident-arg>+ )
+// Argument grammar:
+// <ident-args> = ident( <declaration-value> )
+// https://drafts.csswg.org/css-values-5/#ident
+static bool ConsumeIdent(CSSParserTokenStream& stream,
+                         VariableDataFeatures& features,
+                         const CSSParserContext& context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  if (stream.AtEnd()) {
+    return false;
+  }
+  if (stream.Peek().GetType() == kLeftBraceToken) {
+    // https://drafts.csswg.org/css-values-5/#component-function-commas
+    CSSParserTokenStream::BlockGuard brace_guard(stream);
+    stream.ConsumeWhitespace();
+    if (stream.AtEnd()) {
+      return false;
+    }
+    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                              /*stop_type=*/kEOFToken, features, context) ||
+        !stream.AtEnd()) {
+      return false;
+    }
+  } else if (!ConsumeUnparsedValue(stream, /*restricted_value=*/true,
+                                   /*stop_type=*/kCommaToken, features,
+                                   context)) {
+    return false;
+  }
+  stream.ConsumeWhitespace();
+  return stream.AtEnd();
+}
+
 static bool IsCustomFunction(const CSSParserToken& token) {
   return RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
          css_parsing_utils::IsDashedFunctionName(token);
@@ -622,6 +655,19 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           if (!error) {
             context.Count(WebDXFeature::kIf);
+          }
+          features |= static_cast<VariableDataFeatures>(
+              VariableDataFeature::kHasReferences);
+          if (value_end_offset) {
+            *value_end_offset = stream.Offset();
+          }
+          continue;
+        case CSSValueID::kIdent:
+          if (!RuntimeEnabledFeatures::CSSIdentFunctionEnabled()) {
+            break;
+          }
+          if (!ConsumeIdent(stream, features, context)) {
+            error = true;
           }
           features |= static_cast<VariableDataFeatures>(
               VariableDataFeature::kHasReferences);

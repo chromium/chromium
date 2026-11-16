@@ -322,6 +322,7 @@ class CORE_EXPORT StyleCascade {
 
     bool Append(StringView str,
                 bool is_attr_tainted,
+                bool is_animation_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(CSSVariableData* data,
                 bool is_attr_tainted,
@@ -598,6 +599,12 @@ class CORE_EXPORT StyleCascade {
                      const CSSParserContext&,
                      FunctionContext*,
                      TokenSequence&);
+  bool ResolveIdentInto(CSSParserTokenStream&,
+                        const TreeScope*,
+                        CascadeResolver&,
+                        const CSSParserContext&,
+                        FunctionContext*,
+                        TokenSequence&);
 
   // Returns whatever var(`property_name`) would return (and triggers the same
   // side-effects). Useful for evaluating the left hand side of e.g.

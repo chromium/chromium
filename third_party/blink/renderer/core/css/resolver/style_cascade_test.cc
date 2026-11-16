@@ -1485,6 +1485,31 @@ TEST_F(StyleCascadeTest, AttrArgumentGrammarCycle) {
   EXPECT_FALSE(cascade.ComputedValue("--x"));
 }
 
+TEST_F(StyleCascadeTest, IdentFunction) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--y", "\"bar\" 2");
+  cascade.Add("--x", "ident(foo \"-\" var(--y))");
+  cascade.Add("--invalid", "ident(5px)");
+  cascade.Add("color", "ident(\"gre\" en)");
+  cascade.Apply();
+
+  EXPECT_EQ("foo-bar2", cascade.ComputedValue("--x"));
+  EXPECT_FALSE(cascade.ComputedValue("--invalid"));
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+}
+
+TEST_F(StyleCascadeTest, IdentFunctionDisabled) {
+  ScopedCSSIdentFunctionForTest scoped_feature(false);
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--y", "bar");
+  cascade.Add("--x", "ident(var(--y))");
+  cascade.Apply();
+
+  EXPECT_EQ("ident(bar)", cascade.ComputedValue("--x"));
+}
+
 TEST_F(StyleCascadeTest, EmUnit) {
   TestCascade cascade(GetDocument());
   cascade.Add("font-size", "10px");
