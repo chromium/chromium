@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 
+#include <limits>
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
@@ -56,6 +57,25 @@
 namespace blink {
 
 namespace {
+
+// Quantizes `raw_frame` up to a `render_quantum_frames` boundary, or returns
+// `std::nullopt` if the result cannot be represented as a `SuspendMap` key.
+std::optional<size_t> QuantizeSuspendFrame(double raw_frame,
+                                           size_t render_quantum_frames) {
+  if (!base::IsValueInRangeForNumericType<size_t>(raw_frame)) {
+    return std::nullopt;
+  }
+  const size_t frame = static_cast<size_t>(raw_frame);
+  if (frame > std::numeric_limits<size_t>::max() - render_quantum_frames) {
+    return std::nullopt;
+  }
+  const size_t rounded_frame =
+      audio_utilities::RoundUpToMultiple(frame, render_quantum_frames);
+  if (!OfflineAudioContext::SuspendMap::IsValidKey(rounded_frame)) {
+    return std::nullopt;
+  }
+  return rounded_frame;
+}
 
 OfflineAudioContext* CreateOfflineAudioContext(
     ExecutionContext* context,
@@ -431,9 +451,15 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
   // Find the sample frame and round up to the nearest render quantum
   // boundary.
-  size_t frame = when * sampleRate();
-  frame = audio_utilities::RoundUpToMultiple(
-      frame, GetDeferredTaskHandler().RenderQuantumFrames());
+  const std::optional<size_t> quantized_frame = QuantizeSuspendFrame(
+      when * sampleRate(), GetDeferredTaskHandler().RenderQuantumFrames());
+  if (!quantized_frame.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        Format("suspend time ({:g}) is out of range", when));
+    return EmptyPromise();
+  }
+  const size_t frame = quantized_frame.value();
 
   // The specified suspend time is in the past; reject the promise.
   if (frame < CurrentSampleFrame()) {
@@ -487,6 +513,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
     promise = resolver->Promise();
 
+    CHECK(SuspendMap::IsValidKey(frame));
     scheduled_suspends_.insert(frame, resolver);
   }
 
@@ -811,8 +838,13 @@ bool OfflineAudioContext::IsPullingAudioGraph() const {
 bool OfflineAudioContext::ShouldSuspend() {
   DCHECK(IsAudioThread());
 
+  const size_t frame = CurrentSampleFrame();
+  if (!SuspendMap::IsValidKey(frame)) {
+    return false;
+  }
+
   base::AutoLock locker(suspend_frames_lock_);
-  return scheduled_suspend_frames_.Contains(CurrentSampleFrame());
+  return scheduled_suspend_frames_.Contains(frame);
 }
 
 bool OfflineAudioContext::HasPendingActivity() const {

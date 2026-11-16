@@ -243,6 +243,45 @@ TEST_F(OfflineAudioContextTest, IndefiniteChunkSizeRoundingOverflow) {
             "The requested chunk size is too large.");
 }
 
+TEST_F(OfflineAudioContextTest, SuspendTimeOutOfRange) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest incremental_rendering(
+      true);
+  ScopedWebAudioConfigurableRenderQuantumForTest render_quantum(true);
+  V8TestingScope scope;
+
+  // Use a power-of-two sample rate and a quantum aligned with the upper
+  // `SuspendMap` key boundary so `when * sampleRate()` stays exact.
+  constexpr uint32_t kQuantum = sizeof(size_t) == 8 ? (1u << 21) - 1 : 1u;
+  constexpr float kSampleRate = 524288.0f;
+  constexpr size_t kSizeMax = std::numeric_limits<size_t>::max();
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setSampleRate(kSampleRate);
+  options->setRenderSizeHint(
+      MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
+          kQuantum));
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  constexpr double kOutOfRangeTimes[] = {
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::max(),
+      static_cast<double>(kSizeMax - kQuantum / 2) / kSampleRate,
+      static_cast<double>(kSizeMax - kQuantum) / kSampleRate,
+  };
+  for (double when : kOutOfRangeTimes) {
+    SCOPED_TRACE(when);
+    DummyExceptionStateForTesting exception_state;
+    context->suspendContext(scope.GetScriptState(), when, exception_state);
+    ASSERT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kInvalidStateError);
+  }
+}
+
 TEST_F(OfflineAudioContextTest, CloseBeforeRendering) {
   ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(true);
   V8TestingScope scope;
