@@ -342,6 +342,10 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     return Context2D()->GetState();
   }
 
+  CanvasHibernationHandler* GetHibernationHandler() const {
+    return Context2D()->GetHibernationHandler();
+  }
+
   void DrawSomething() {
     Context2D()->InitializeBacking();
     CanvasElement().DidDraw();
@@ -2146,7 +2150,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   ASSERT_FALSE(handler.IsHibernating());
 
   GetDocument().GetPage()->SetVisibilityState(
@@ -2170,7 +2174,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   ASSERT_FALSE(handler.IsHibernating());
   base::ByteSize active_size = Context2D()->AllocatedBufferSize();
   EXPECT_GT(active_size, base::ByteSize(0));
@@ -2258,7 +2262,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
   WaitForHibernation();
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_FALSE(Context2D()->clear_frame());
 
@@ -2293,7 +2297,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
   WaitForHibernation();
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_FALSE(Context2D()->clear_frame());
 
@@ -2312,7 +2316,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, NoHibernationForSmallCanvas) {
   canvas_element_->SetSize(gfx::Size(64, 64));
   Context2D()->InitializeBacking();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -2345,7 +2349,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, AlwaysHibernateLargeCanvas) {
   canvas_element_->SetSize(gfx::Size(200, 200));
   Context2D()->InitializeBacking();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
@@ -2361,7 +2365,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2402,7 +2406,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
   CreateContext();
   Context2D()->InitializeBacking();
-  CanvasHibernationHandler* handler = Context2D()->GetHibernationHandler();
+  CanvasHibernationHandler* handler = GetHibernationHandler();
   viz::TestContextSupport* context_support = test_context_provider_->support();
 
   EXPECT_FALSE(handler->IsHibernating());
@@ -2430,7 +2434,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
   CreateContext();
   Context2D()->InitializeBacking();
-  CanvasHibernationHandler* handler = Context2D()->GetHibernationHandler();
+  CanvasHibernationHandler* handler = GetHibernationHandler();
   viz::TestContextSupport* context_support = test_context_provider_->support();
 
   EXPECT_FALSE(handler->IsHibernating());
@@ -2477,7 +2481,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2545,7 +2549,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2588,7 +2592,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2669,7 +2673,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -2736,7 +2740,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2784,7 +2788,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 
   EXPECT_TRUE(Context2D()->IsBackingValid());
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Simulate GPU context loss.
@@ -2827,7 +2831,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -2868,7 +2872,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -2910,7 +2914,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -2953,7 +2957,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -2991,7 +2995,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -3020,7 +3024,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeEndsHibernation) {
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -3049,7 +3053,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
   const MemoryManagedPaintRecorder* initial_recorder = Context2D()->Recorder();
   ASSERT_NE(initial_recorder, nullptr);
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -3077,7 +3081,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeAbortsHibernation) {
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -3109,7 +3113,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetDoesntAbortHibernation) {
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
@@ -3245,7 +3249,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // is present, while GPU compositing is necessary for hibernation to succeed.
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement(), Context2D()));
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -3279,7 +3283,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
 
   EXPECT_FALSE(handler.is_encoded());
   EXPECT_FALSE(handler.IsHibernating());
@@ -3318,7 +3322,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(Context2D()->InitializeBacking());
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  auto& handler = CHECK_DEREF(GetHibernationHandler());
   ASSERT_FALSE(handler.is_encoded());
   ASSERT_FALSE(handler.IsHibernating());
 
@@ -3428,7 +3432,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
   Mock::VerifyAndClearExpectations(test_raster_interface());
-  EXPECT_TRUE(Context2D()->GetHibernationHandler()->IsHibernating());
+  EXPECT_TRUE(GetHibernationHandler()->IsHibernating());
   EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   // Hibernating should have rastered paint ops preceding `beginLayer`.
