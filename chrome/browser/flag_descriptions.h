@@ -6020,6 +6020,12 @@ inline constexpr char kContextualSearchSuppressShortViewName[] =
 inline constexpr char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
+inline constexpr char kControlsInBrowserName[] = "Controls in Browser";
+inline constexpr char kControlsInBrowserDescription[] =
+    "The browser process drives the browser controls position and snap "
+    "animations, and the renderer follows. The Android views for the browser "
+    "controls are kept visible and moved instead of a composited capture.";
+
 inline constexpr char kControlsInBrowserToolbarSwipeMockName[] =
     "Controls in Browser Toolbar Swipe Mock";
 inline constexpr char kControlsInBrowserToolbarSwipeMockDescription[] =

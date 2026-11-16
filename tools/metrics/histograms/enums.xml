@@ -10819,6 +10819,7 @@ from previous Chrome versions.
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259809702" label="Enable16Desks:enabled"/>
   <int value="-1259250875" label="WebAppPredictableAppUpdating:disabled"/>
+  <int value="-1259149517" label="ControlsInBrowser:enabled"/>
   <int value="-1258793847" label="MagicStackAndroid:disabled"/>
   <int value="-1258503827" label="NoPauseMediaOnHeadphoneUnplug:enabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
@@ -15765,6 +15766,7 @@ from previous Chrome versions.
   <int value="212959824" label="SafetyHubWeakAndReusedPasswords:disabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>
+  <int value="213743181" label="ControlsInBrowser:disabled"/>
   <int value="214809280"
       label="AutofillEnableNewStreetLevelFieldTypes:disabled"/>
   <int value="215090886" label="GlicActorEnableScriptTools:disabled"/>
