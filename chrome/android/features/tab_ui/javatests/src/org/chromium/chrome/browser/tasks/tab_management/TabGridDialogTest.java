@@ -184,6 +184,7 @@ import java.util.concurrent.TimeoutException;
 })
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175
+@DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "https://crbug.com/568493482")
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
@@ -1254,6 +1255,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
     public void testTabGroupNaming() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1294,6 +1296,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1433,6 +1436,7 @@ public class TabGridDialogTest {
     @DisableFeatures({DATA_SHARING, DATA_SHARING_JOIN_ONLY}) // Needs new goldens post-launch.
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
     public void testRenderDialog_3Tabs_Landscape_NewAspectRatio(boolean nightModeEnabled)
             throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
