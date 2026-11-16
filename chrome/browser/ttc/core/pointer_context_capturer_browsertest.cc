@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -80,9 +81,33 @@ IN_PROC_BROWSER_TEST_P(PointerContextCapturerScaleBrowserTest,
   // native density, which can round off by 1 ULP (e.g. 1.50000012 at 420dpi).
   ASSERT_NEAR(view->GetDeviceScaleFactor(), GetParam(), 0.001f);
 
+  // On Android the view can still be resized after the page has loaded, as
+  // the browser's UI settles: e.g. on a device that is offline, an indicator
+  // appears above the page a couple of seconds after startup. The screenshot
+  // of a capture during which that happens has the size that the view had
+  // when the capture began. So capture until the view kept its size
+  // throughout.
+  // TODO(crbug.com/586612559): Keep the offline indicator from showing in all
+  // TTC browser tests.
   PointerContextCapturer capturer(TestTimeouts::action_timeout());
   base::test::TestFuture<PointerContextCapturer::Result> future;
-  capturer.Capture(web_contents(), future.GetCallback());
+  gfx::Size view_size;
+  auto capture = [&]() {
+    view_size = view->GetViewBounds().size();
+    capturer.Capture(web_contents(), future.GetCallback());
+  };
+  capture();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    if (!future.IsReady()) {
+      return false;
+    }
+    if (view->GetViewBounds().size() == view_size) {
+      return true;
+    }
+    future.Clear();
+    capture();
+    return false;
+  })) << "No capture finished with the view at the size it began with.";
   PointerContextCapturer::Result result = future.Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_NEAR(result->scale_factor, GetParam(), 0.001f);
@@ -91,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(PointerContextCapturerScaleBrowserTest,
   const SkBitmap screenshot = gfx::JPEGCodec::Decode(result->screenshot);
   ASSERT_FALSE(screenshot.isNull());
   const gfx::Size expected_size =
-      gfx::ScaleToRoundedSize(view->GetViewBounds().size(), GetParam());
+      gfx::ScaleToRoundedSize(view_size, GetParam());
   EXPECT_NEAR(screenshot.width(), expected_size.width(), 1);
   EXPECT_NEAR(screenshot.height(), expected_size.height(), 1);
 
