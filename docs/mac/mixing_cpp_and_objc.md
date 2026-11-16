@@ -4,7 +4,9 @@ The Mac is in an unusual position of having most of its relevant UI APIs be in a
 different language than the one used for its core code. Navigating boundaries
 between C++ and Objective-C can be tricky.
 
-## Use Objective-C++
+## Approved methods
+
+### Use Objective-C++
 
 Using Objective-C++ works well for Mac-only implementation files. If a file is
 named with a `.mm` extension, then it will be compiled as an Objective-C++ file.
@@ -13,7 +15,7 @@ Within such a file usage of Objective-C and C++ can be intermixed.
 If Objective-C++ works in the context needed, it is the preferred way to
 accomplish mixing of C++ and Objective-C.
 
-## Use the pimpl idiom
+### Use the pimpl idiom
 
 The [pimpl idiom](https://en.wikipedia.org/wiki/Opaque_pointer#C++) is a
 standard way to hide the implementation of a C++ class from its users, exposing
@@ -57,7 +59,7 @@ UtilityObjectMac::UtilityObjectMac()
 This moves all of the Objective-C code into an Objective-C++ file at the cost of
 a secondary allocation and indirection on use.
 
-## Use `/base/apple/owned_objc.h` types
+### Use `/base/apple/owned_objc.h` types
 
 It is, unfortunately, a common pattern in Chromium code to use macros and
 typedefs to declare a platform-neutral name for a core platform UI type (e.g.
@@ -66,39 +68,38 @@ typedefs to declare a platform-neutral name for a core platform UI type (e.g.
 to pass those types around. For those cases, where the previous two approaches
 can’t be used, the wrappers in `/base/apple/owned_objc.h` can be used.
 
-## Double-declaration (dangerous)
+## Historical methods (dangerous and banned; do not use)
 
-If none of the previous techniques will work, a double-declaration can be used.
-An example can be seen in
+### Banned: Double-declaration
+
+There is a technique, historically used, called double-declaration. An example
+can be seen in
 [native_ui_types.h](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/native_ui_types.h):
 
 ```objectivec
 #ifdef __OBJC__
 @class NSImage;
-@class NSView;
-@class NSWindow;
 #else
 class NSImage;
-class NSView;
-class NSWindow;
 #endif  // __OBJC__
 ```
 
 With this double-declaration, these types can be used from both C++ and
-Objective-C. However, the price that is paid is that this is a (mostly) benign
-violation of the [ODR](https://en.wikipedia.org/wiki/One_Definition_Rule) and
-thus should be avoided if possible.
+Objective-C. However, the price that is paid is that this is a violation of the
+[ODR](https://en.wikipedia.org/wiki/One_Definition_Rule).
 
 Specifically, this can get dangerous with Objective-C ARC enabled, where a
 pointer to a type declared this way will be treated by C++ as a raw pointer
-while it will be treated by Objective-C as a smart pointer with retain/release
-semantics.
+while simultaneously being treated by Objective-C as a smart pointer with
+retain/release semantics.
 
 Because of Chromium’s history as a non-ARC app, the approach of using
 double-declarations was found to be more acceptable of a tradeoff than it is
-nowadays, so there is a lot of double-declaration. Revising code to remove
-double-declaration improves the code; please do so when it makes sense. There is
-a [bug](https://crbug.com/1433041) tracking this effort of eventual removal.
+nowadays, so there is some double-declaration. There is a
+[bug](https://crbug.com/40264240) tracking this effort of removal; if you find
+an opportunity to remove an instance of double-declaration, please take it.
+
+### Banned: Inclusion of `<objc/objc.h>`
 
 Do not include `<objc/objc.h>`. It has all the pitfalls of double-declaration
 for the `id` type (note that even though it defines `id` as `struct
