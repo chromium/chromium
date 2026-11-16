@@ -1479,6 +1479,62 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void testCreateListMenuModelList_JavascriptBookmarklet() {
+        doReturn(true).when(mIncognitoUtilsNatives).getIncognitoModeEnabled(/* profile= */ any());
+        doReturn(true).when(mBookmarkOpener).isOpenInNewWindowSupported();
+        finishLoading();
+        mMediator.openFolder(mFolderId2);
+
+        BookmarkId jsBookmarkId = new BookmarkId(/* id= */ 99, BookmarkType.NORMAL);
+        BookmarkItem jsBookmarkItem =
+                new BookmarkItem(
+                        jsBookmarkId,
+                        "JS Bookmark",
+                        new GURL("javascript:void(0)"),
+                        /* isFolder= */ false,
+                        mFolderId2,
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+        doReturn(jsBookmarkItem).when(mBookmarkModel).getBookmarkById(jsBookmarkId);
+
+        BookmarkListEntry entry =
+                BookmarkListEntry.createBookmarkEntry(
+                        jsBookmarkItem, /* meta= */ null, BookmarkRowDisplayPref.COMPACT);
+        ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
+
+        ListItem openInNewTab = null;
+        ListItem openInIncognito = null;
+        ListItem openInNewWindow = null;
+        ListItem edit = null;
+        ListItem copyLink = null;
+        for (ListItem item : modelList) {
+            int titleId = item.model.get(ListMenuItemProperties.TITLE_ID);
+            if (titleId == R.string.contextmenu_open_in_new_tab) openInNewTab = item;
+            if (titleId == R.string.contextmenu_open_in_incognito_tab) openInIncognito = item;
+            if (titleId == R.string.contextmenu_open_in_new_window) openInNewWindow = item;
+            if (titleId == R.string.bookmark_item_edit) edit = item;
+            if (titleId == R.string.bookmark_item_copy_link) copyLink = item;
+        }
+        assertNotNull(openInNewTab);
+        verifyBookmarkListMenuItem(
+                openInNewTab, R.string.contextmenu_open_in_new_tab, /* enabled= */ false);
+        assertNotNull(openInIncognito);
+        verifyBookmarkListMenuItem(
+                openInIncognito, R.string.contextmenu_open_in_incognito_tab, /* enabled= */ false);
+        assertNotNull(openInNewWindow);
+        verifyBookmarkListMenuItem(
+                openInNewWindow, R.string.contextmenu_open_in_new_window, /* enabled= */ false);
+        assertNotNull(edit);
+        verifyBookmarkListMenuItem(edit, R.string.bookmark_item_edit, /* enabled= */ true);
+        assertNotNull(copyLink);
+        verifyBookmarkListMenuItem(copyLink, R.string.bookmark_item_copy_link, /* enabled= */ true);
+    }
+
+    @Test
     public void testCreateListMenuModelList_ReadingList() {
         finishLoading();
         mMediator.openFolder(mReadingListFolderId);

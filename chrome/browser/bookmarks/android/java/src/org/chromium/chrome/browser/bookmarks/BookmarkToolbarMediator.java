@@ -66,6 +66,17 @@ class BookmarkToolbarMediator
                 }
             };
 
+    private final BookmarkModelObserver mBookmarkModelObserver =
+            new BookmarkModelObserver() {
+                @Override
+                public void bookmarkModelChanged() {
+                    if (mSelectionDelegate.isSelectionEnabled()) {
+                        updateSelectedMenuItemVisibility(
+                                mSelectionDelegate.getSelectedItemsAsList());
+                    }
+                }
+            };
+
     private final Context mContext;
     private final Profile mProfile;
     private final PropertyModel mModel;
@@ -119,6 +130,7 @@ class BookmarkToolbarMediator
         mSelectionDelegate = selectionDelegate;
         mSelectionDelegate.addObserver(this);
         mBookmarkModel = bookmarkModel;
+        mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkOpener = bookmarkOpener;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
@@ -243,20 +255,24 @@ class BookmarkToolbarMediator
                 RecordUserAction.record("MobileBookmarkManagerDeleteBulk");
             }
             return true;
-        } else if (id == R.id.selection_open_in_new_tab_id) {
-            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
-            RecordHistogram.recordCount1000Histogram(
-                    "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
-            mBookmarkOpener.openBookmarksInNewTabs(
-                    mSelectionDelegate.getSelectedItemsAsList(), /* incognito= */ false);
-            return true;
-        } else if (id == R.id.selection_open_in_incognito_tab_id) {
-            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
-            RecordHistogram.recordCount1000Histogram(
-                    "Bookmarks.Count.OpenInIncognito",
-                    mSelectionDelegate.getSelectedItems().size());
-            mBookmarkOpener.openBookmarksInNewTabs(
-                    mSelectionDelegate.getSelectedItemsAsList(), /* incognito= */ true);
+        } else if (id == R.id.selection_open_in_new_tab_id
+                || id == R.id.selection_open_in_incognito_tab_id) {
+            boolean isIncognito = id == R.id.selection_open_in_incognito_tab_id;
+            List<BookmarkId> selectedItems = mSelectionDelegate.getSelectedItemsAsList();
+            int count =
+                    BookmarkUtils.getOpenableInNewTabBookmarkCount(mBookmarkModel, selectedItems);
+            if (count > 0) {
+                RecordUserAction.record(
+                        isIncognito
+                                ? "MobileBookmarkManagerEntryOpenedInIncognito"
+                                : "MobileBookmarkManagerEntryOpenedInNewTab");
+                RecordHistogram.recordCount1000Histogram(
+                        isIncognito
+                                ? "Bookmarks.Count.OpenInIncognito"
+                                : "Bookmarks.Count.OpenInNewTab",
+                        count);
+                mBookmarkOpener.openBookmarksInNewTabs(selectedItems, isIncognito);
+            }
             return true;
         } else if (id == R.id.selection_mode_copy_link) {
             RecordUserAction.record("MobileBookmarkManagerCopyLink");
@@ -302,6 +318,7 @@ class BookmarkToolbarMediator
     public void onDestroy() {
         mDragTouchHandler.removeDragListener(this);
         mSelectionDelegate.removeObserver(this);
+        mBookmarkModel.removeObserver(mBookmarkModelObserver);
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
         if (mBookmarkDelegate != null) {
@@ -453,6 +470,7 @@ class BookmarkToolbarMediator
         boolean hasPartnerBookmark = false;
         boolean hasOnlyReadingListItems = true;
         boolean hasSelection = numSelected > 0;
+        boolean hasOpenableInNewTab = false;
         int numRead = 0;
 
         for (BookmarkId bookmark : selectedBookmarks) {
@@ -460,6 +478,7 @@ class BookmarkToolbarMediator
             if (item == null) continue;
 
             if (item.isFolder()) hasFolder = true;
+            if (BookmarkUtils.canOpenBookmarkInNewTab(item)) hasOpenableInNewTab = true;
             if (bookmark.getType() == BookmarkType.PARTNER) hasPartnerBookmark = true;
             if (bookmark.getType() == BookmarkType.READING_LIST) {
                 if (item.isRead()) numRead++;
@@ -474,13 +493,12 @@ class BookmarkToolbarMediator
         boolean showEdit = !hasPartnerBookmark && numSelected == 1;
         boolean showMove = !hasPartnerBookmark && numSelected > 0;
 
-        // It does not make sense to open a folder in new tab or copy a folder link, so do not show
-        // these options if any folder is part of the selection. Only one link can be copied at a
-        // time, but any amount can be opened; to open in incognito it must be enabled.
+        // It does not make sense to open a folder or javascript: bookmarklet in a new tab or copy a
+        // folder link, so hide open-in-new-tab unless at least one openable bookmark is selected
+        // without any folder.
         boolean showCopyLink = !hasFolder && numSelected == 1;
-        boolean showOpenInNewTab = !hasFolder && numSelected > 0;
-        boolean showOpenInIncognito =
-                !hasFolder && numSelected > 0 && mIncognitoEnabledSupplier.getAsBoolean();
+        boolean showOpenInNewTab = !hasFolder && hasOpenableInNewTab;
+        boolean showOpenInIncognito = showOpenInNewTab && mIncognitoEnabledSupplier.getAsBoolean();
 
         // Only show the "mark as" options when all selections are reading list items and
         // have the same read state; 'Read' when all items are unread, and vice versa.

@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -81,6 +82,7 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -763,6 +765,20 @@ public class BookmarkManagerCoordinatorTest {
         verify(mImageServiceBridgeJni, never()).init(mOtrProfile);
 
         BookmarkId bookmarkId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
+        BookmarkItem bookmarkItem =
+                new BookmarkItem(
+                        bookmarkId,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        /* isFolder= */ false,
+                        new BookmarkId(/* id= */ 0, BookmarkType.NORMAL),
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+        doReturn(bookmarkItem).when(mBookmarkModel).getBookmarkById(bookmarkId);
         otrCoordinator.openBookmark(bookmarkId);
         verify(mBookmarkOpener).openBookmarkInCurrentTab(bookmarkId, /* incognito= */ true);
 

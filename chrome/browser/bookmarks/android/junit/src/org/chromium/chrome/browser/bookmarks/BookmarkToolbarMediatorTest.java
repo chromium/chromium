@@ -44,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -65,6 +66,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
@@ -574,16 +576,30 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void testOnMenuItemClick_selectionOpenInNewTab() {
-        setCurrentSelection(new BookmarkId(7, BookmarkType.NORMAL));
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(/* id= */ 7, BookmarkType.NORMAL),
+                        /* index= */ 0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        setCurrentSelection(bookmarkId);
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_new_tab_id));
-        verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(false));
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(/* bookmarkIds= */ any(), /* incognito= */ eq(false));
     }
 
     @Test
     public void testOnMenuItemClick_selectionOpenInIncognitoTab() {
-        setCurrentSelection(new BookmarkId(7, BookmarkType.NORMAL));
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(/* id= */ 7, BookmarkType.NORMAL),
+                        /* index= */ 0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        setCurrentSelection(bookmarkId);
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
-        verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(true));
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(/* bookmarkIds= */ any(), /* incognito= */ eq(true));
     }
 
     @Test
@@ -952,6 +968,77 @@ public class BookmarkToolbarMediatorTest {
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_JavascriptBookmark() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getMobileFolderId(), /* index= */ 0, "Folder");
+        BookmarkId jsBookmark =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 0, "JS Bookmark", new GURL("javascript:void(0)"));
+
+        setCurrentSelection(jsBookmark);
+        mMediator.onSelectionStateChange(Collections.singletonList(jsBookmark));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
+
+        HistogramWatcher emptyOpenWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Bookmarks.Count.OpenInNewTab")
+                        .expectNoRecords("Bookmarks.Count.OpenInIncognito")
+                        .build();
+        assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_new_tab_id));
+        assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
+        emptyOpenWatcher.assertExpected();
+        verify(mBookmarkOpener, never())
+                .openBookmarksInNewTabs(/* bookmarkIds= */ any(), /* incognito= */ eq(false));
+        verify(mBookmarkOpener, never())
+                .openBookmarksInNewTabs(/* bookmarkIds= */ any(), /* incognito= */ eq(true));
+
+        mBookmarkModel.setBookmarkUrl(jsBookmark, JUnitTestGURLs.URL_1);
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        mBookmarkModel.setBookmarkUrl(jsBookmark, new GURL("javascript:void(0)"));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+
+        BookmarkId urlBookmark =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 1, "Normal Bookmark", JUnitTestGURLs.EXAMPLE_URL);
+
+        setCurrentSelection(jsBookmark, urlBookmark);
+        mMediator.onSelectionStateChange(Arrays.asList(jsBookmark, urlBookmark));
+
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+
+        HistogramWatcher mixedOpenWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Bookmarks.Count.OpenInNewTab", /* value= */ 1)
+                        .expectIntRecord("Bookmarks.Count.OpenInIncognito", /* value= */ 1)
+                        .build();
+        assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_new_tab_id));
+        assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
+        mixedOpenWatcher.assertExpected();
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        Arrays.asList(jsBookmark, urlBookmark), /* incognito= */ false);
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        Arrays.asList(jsBookmark, urlBookmark), /* incognito= */ true);
+
+        setCurrentSelection(jsBookmark);
+        mMediator.onSelectionStateChange(Collections.singletonList(jsBookmark));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        mMediator.onDestroy();
+        mBookmarkModel.setBookmarkUrl(jsBookmark, JUnitTestGURLs.URL_1);
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
     }
 
     @Test

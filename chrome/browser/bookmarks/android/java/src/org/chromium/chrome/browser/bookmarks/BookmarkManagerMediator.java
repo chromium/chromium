@@ -1738,13 +1738,26 @@ class BookmarkManagerMediator
         }
 
         if (!bookmarkItem.isFolder()) {
-            listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_new_tab));
+            boolean canOpenInNewTab = BookmarkUtils.canOpenBookmarkInNewTab(bookmarkItem);
+            listItems.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.contextmenu_open_in_new_tab)
+                            .withEnabled(canOpenInNewTab)
+                            .build());
             if (!mProfile.isOffTheRecord()
                     && IncognitoUtils.isIncognitoModeEnabled(mOriginalProfile)) {
-                listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_incognito_tab));
+                listItems.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.contextmenu_open_in_incognito_tab)
+                                .withEnabled(canOpenInNewTab)
+                                .build());
             }
             if (mBookmarkOpener.isOpenInNewWindowSupported()) {
-                listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_new_window));
+                listItems.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.contextmenu_open_in_new_window)
+                                .withEnabled(canOpenInNewTab)
+                                .build());
             }
         }
 
