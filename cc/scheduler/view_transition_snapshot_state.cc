@@ -56,6 +56,21 @@ void ViewTransitionSnapshotState::SetCapturing(bool capturing) {
   capturing_ = capturing;
 }
 
+void ViewTransitionSnapshotState::SetPauseRendering(bool pause_rendering) {
+  if (pause_rendering_ == pause_rendering) {
+    return;
+  }
+
+  pause_rendering_ = pause_rendering;
+  // When resuming rendering, main thread always commits at least one frame.
+  // Don't draw any impl frames until this commit is activated.
+  waiting_for_activation_after_rendering_resumed_ = !pause_rendering_;
+}
+
+void ViewTransitionSnapshotState::WillActivate() {
+  waiting_for_activation_after_rendering_resumed_ = false;
+}
+
 bool ViewTransitionSnapshotState::ShouldDeferSetVisible(bool visible) {
   if (visible) {
     deferred_hide_ = false;

@@ -60,6 +60,18 @@ class CC_EXPORT ViewTransitionSnapshotState {
   // (e.g. on an aborted draw or frame sink loss).
   void SetCapturing(bool capturing);
 
+  void SetPauseRendering(bool pause_rendering);
+  void WillActivate();
+
+  // Returns true if rendering is paused either explicitly via
+  // `SetPauseRendering(true)` or while a snapshot `kSave` directive is in
+  // flight (`capturing_`).
+  bool IsRenderingPaused() const { return pause_rendering_ || capturing_; }
+
+  bool waiting_for_activation_after_rendering_resumed() const {
+    return waiting_for_activation_after_rendering_resumed_;
+  }
+
   // Returns true if `SetVisible(visible)` should be deferred until the snapshot
   // `kSave` frame is drawn.
   bool ShouldDeferSetVisible(bool visible);
@@ -76,6 +88,8 @@ class CC_EXPORT ViewTransitionSnapshotState {
   bool TakeDeferredUnpause(bool& delay_until_visibility_change);
 
  private:
+  bool pause_rendering_ = false;
+  bool waiting_for_activation_after_rendering_resumed_ = false;
   bool capturing_ = false;
   bool deferred_hide_ = false;
   bool deferred_unpause_ = false;

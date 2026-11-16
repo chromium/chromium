@@ -298,12 +298,15 @@ void SchedulerStateMachine::AsProtozeroInto(
 bool SchedulerStateMachine::PendingDrawsShouldBeAborted() const {
   // Normally when |visible_| is false or |begin_frame_source_paused_| is true,
   // pending activations will be forced and draws will be aborted. However,
-  // when the embedder is Android WebView, software draws could be scheduled by
-  // the Android OS at any time and draws should not be aborted in this case.
+  // Android WebView software draws (`resourceless_draw_`) and cross-document
+  // ViewTransition snapshot `kSave` draws on the active tree
+  // (`IsCapturing() && !has_pending_tree_`) must still be drawn
+  // even if the external BeginFrameSource is paused.
   bool is_layer_tree_frame_sink_lost =
       (layer_tree_frame_sink_state_ == LayerTreeFrameSinkState::NONE);
-  if (resourceless_draw_)
+  if (resourceless_draw_ || ActiveTreeHasViewTransitionSnapshotSave()) {
     return is_layer_tree_frame_sink_lost || !can_draw_;
+  }
 
   // These are all the cases where we normally cannot or do not want
   // to draw but, if |needs_redraw_| is true and we do not draw to
@@ -314,7 +317,8 @@ bool SchedulerStateMachine::PendingDrawsShouldBeAborted() const {
   // the most recent commit.
   return is_layer_tree_frame_sink_lost || !can_draw_ || !visible_ ||
          begin_frame_source_paused_ ||
-         waiting_for_activation_after_rendering_resumed_;
+         view_transition_snapshot_state_
+             .waiting_for_activation_after_rendering_resumed();
 }
 
 bool SchedulerStateMachine::ShouldAbortCurrentFrame() const {
@@ -322,6 +326,13 @@ bool SchedulerStateMachine::ShouldAbortCurrentFrame() const {
   // activations, avoiding deadlock with the main thread.
   if (layer_tree_frame_sink_state_ == LayerTreeFrameSinkState::NONE)
     return true;
+
+  // Do not force-activate an unrasterized pending tree for a ViewTransition
+  // snapshot `kSave` frame even if Viz paused the BeginFrameSource after the
+  // Browser hid the outgoing widget.
+  if (view_transition_snapshot_state_.IsCapturing()) {
+    return false;
+  }
 
   // If we're not visible, we should just abort the frame. Since we
   // set RequiresHighResToDraw when becoming visible, we ensure that
@@ -496,9 +507,11 @@ bool SchedulerStateMachine::CouldSendBeginMainFrame() const {
   if (defer_begin_main_frame_)
     return false;
 
-  // Do not send begin main frames if we want to pause rendering.
-  if (pause_rendering_)
+  // Do not send begin main frames if we want to pause rendering or while a
+  // ViewTransition snapshot `kSave` directive is in flight.
+  if (view_transition_snapshot_state_.IsRenderingPaused()) {
     return false;
+  }
 
   return true;
 }
@@ -740,8 +753,9 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
 }
 
 bool SchedulerStateMachine::ShouldPerformImplSideInvalidation() const {
-  if (pause_rendering_)
+  if (view_transition_snapshot_state_.IsRenderingPaused()) {
     return false;
+  }
 
   if (begin_frame_is_animate_only_)
     return false;
@@ -994,7 +1008,7 @@ void SchedulerStateMachine::WillActivate() {
   needs_redraw_ = true;
   active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
   pending_tree_needs_first_draw_on_activation_ = false;
-  waiting_for_activation_after_rendering_resumed_ = false;
+  view_transition_snapshot_state_.WillActivate();
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
   current_pending_tree_is_impl_side_ = false;
@@ -1023,6 +1037,9 @@ void SchedulerStateMachine::WillDrawInternal() {
 }
 
 void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
+  if (!has_pending_tree_) {
+    view_transition_snapshot_state_.SetCapturing(false);
+  }
   switch (draw_result) {
     case DrawResult::kInvalidResult:
       NOTREACHED() << "Invalid return DrawResult:"
@@ -1139,8 +1156,9 @@ bool SchedulerStateMachine::BeginFrameNeeded() const {
   if (!ShouldSubscribeToBeginFrames())
     return false;
 
-  if (!pause_rendering_)
+  if (!view_transition_snapshot_state_.IsRenderingPaused()) {
     return true;
+  }
 
   // Drain any in-flight main frame updates before pausing impl frames.
   if (begin_main_frame_state_ != BeginMainFrameState::IDLE)
@@ -1156,6 +1174,12 @@ bool SchedulerStateMachine::BeginFrameNeeded() const {
     return true;
 
   return false;
+}
+
+bool SchedulerStateMachine::ShouldIssueBeginFrameForSnapshotSave() const {
+  return ActiveTreeHasViewTransitionSnapshotSave() &&
+         begin_impl_frame_state_ == BeginImplFrameState::IDLE &&
+         active_tree_needs_first_draw_ && !PendingDrawsShouldBeAborted();
 }
 
 bool SchedulerStateMachine::ShouldSubscribeToBeginFrames() const {
@@ -1183,14 +1207,7 @@ void SchedulerStateMachine::SetDeferBeginMainFrame(
 }
 
 void SchedulerStateMachine::SetPauseRendering(bool pause_rendering) {
-  if (pause_rendering_ == pause_rendering) {
-    return;
-  }
-
-  pause_rendering_ = pause_rendering;
-  // When resuming rendering, main thread always commits at least one frame.
-  // Dont draw any impl frames until this commit is activated.
-  waiting_for_activation_after_rendering_resumed_ = !pause_rendering_;
+  view_transition_snapshot_state_.SetPauseRendering(pause_rendering);
 }
 
 // These are the cases where we require a BeginFrame message to make progress
@@ -1504,7 +1521,13 @@ void SchedulerStateMachine::FrameIntervalUpdated(
 }
 
 bool SchedulerStateMachine::IsDrawThrottled() const {
-  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+  // Do not throttle a ViewTransition snapshot `kSave` draw on the active tree
+  // on a previous frame's `CompositorFrameAck`. The `kSave` frame is the final
+  // frame produced by the outgoing document before it is hidden, and Viz is
+  // waiting on the `kSave` directive to capture textures for the incoming
+  // page's transition.
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks) ||
+      ActiveTreeHasViewTransitionSnapshotSave()) {
     return false;
   }
   return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
@@ -1576,7 +1599,8 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
     // http://crbug.com/346931323
     // We should remove or change this once VRR support is implemented for
     // Windows and other platforms potentially.
-    if (!settings_.disable_frame_rate_limit) {
+    if (!settings_.disable_frame_rate_limit &&
+        !ActiveTreeHasViewTransitionSnapshotSave()) {
       DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
     }
 
@@ -1734,6 +1758,7 @@ void SchedulerStateMachine::DidLoseLayerTreeFrameSink() {
     return;
   layer_tree_frame_sink_state_ = LayerTreeFrameSinkState::NONE;
   needs_redraw_ = false;
+  view_transition_snapshot_state_.SetCapturing(false);
 }
 
 bool SchedulerStateMachine::NotifyReadyToActivate() {

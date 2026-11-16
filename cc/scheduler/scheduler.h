@@ -297,6 +297,16 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
     return state_machine_->consecutive_no_damage_main_frames();
   }
 
+  void SetViewTransitionSnapshotCapturing(bool capturing) {
+    state_machine_->SetViewTransitionSnapshotCapturing(capturing);
+  }
+  ViewTransitionSnapshotState& view_transition_snapshot_state() {
+    return state_machine_->view_transition_snapshot_state();
+  }
+  const ViewTransitionSnapshotState& view_transition_snapshot_state() const {
+    return state_machine_->view_transition_snapshot_state();
+  }
+
  protected:
   // Virtual for testing.
   virtual base::TimeTicks Now() const;
@@ -407,6 +417,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // scheduler knows about, so that the new BeginFrame is not dropped as a
   // duplicate.
   uint64_t NextManualSequenceNumber(uint64_t candidate) const;
+
+  // Issues a manual BeginFrame to draw a cross-document ViewTransition snapshot
+  // `kSave` frame if the state machine needs one. See
+  // `SchedulerStateMachine::ShouldIssueBeginFrameForSnapshotSave()`.
+  void MaybeIssueBeginFrameForSnapshotSave();
 
   void DrawIfPossible();
   void DrawForced();

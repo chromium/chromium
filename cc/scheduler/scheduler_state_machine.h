@@ -15,6 +15,7 @@
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
 #include "cc/scheduler/scheduler_settings.h"
+#include "cc/scheduler/view_transition_snapshot_state.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -401,6 +402,22 @@ class CC_EXPORT SchedulerStateMachine {
     return consecutive_no_damage_main_frames_;
   }
 
+  void SetViewTransitionSnapshotCapturing(bool capturing) {
+    view_transition_snapshot_state_.SetCapturing(capturing);
+  }
+  ViewTransitionSnapshotState& view_transition_snapshot_state() {
+    return view_transition_snapshot_state_;
+  }
+  const ViewTransitionSnapshotState& view_transition_snapshot_state() const {
+    return view_transition_snapshot_state_;
+  }
+
+  // Returns true if a cross-document ViewTransition snapshot `kSave` frame was
+  // activated while no impl frame is running, and it is ready to draw. The
+  // scheduler then issues a manual BeginFrame for it, because the external
+  // BeginFrameSource may already be paused.
+  bool ShouldIssueBeginFrameForSnapshotSave() const;
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
@@ -444,6 +461,9 @@ class CC_EXPORT SchedulerStateMachine {
   void DidDrawInternal(DrawResult draw_result);
   void UpdateConsecutiveNoDamageThrottlingInterval();
   bool DisableThrottlingDueToHighFramerateRequests() const;
+  bool ActiveTreeHasViewTransitionSnapshotSave() const {
+    return view_transition_snapshot_state_.IsCapturing() && !has_pending_tree_;
+  }
 
   const SchedulerSettings settings_;
 
@@ -519,8 +539,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
   bool defer_begin_main_frame_ = false;
-  bool pause_rendering_ = false;
-  bool waiting_for_activation_after_rendering_resumed_ = false;
   bool video_needs_begin_frames_ = false;
   bool last_commit_had_no_updates_ = false;
   bool active_tree_is_ready_to_draw_ = true;
@@ -550,6 +568,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool pending_tree_needs_first_draw_on_activation_ = false;
 
   bool draw_aborted_for_paused_begin_frame_ = false;
+  ViewTransitionSnapshotState view_transition_snapshot_state_;
 
   unsigned consecutive_cant_draw_count_ = 0u;
 

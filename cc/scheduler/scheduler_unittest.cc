@@ -170,6 +170,9 @@ class FakeSchedulerClient : public SchedulerClient,
   }
 
   void OnBeginImplFrameDeadline() override {}
+  void set_next_commit_has_save_directive_for_snapshot(bool has_save) {
+    next_commit_has_save_directive_for_snapshot_ = has_save;
+  }
   void DidChangeBeginFrameSourcePaused(bool paused) override {}
 
   const viz::BeginFrameArgs& last_begin_impl_frame_args() {
@@ -195,7 +198,6 @@ class FakeSchedulerClient : public SchedulerClient,
     num_draws_++;
     if (!draw_will_happen_)
       return DrawResult::kAbortedCheckerboardAnimations;
-
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
       SubmitInfo submit_info;
@@ -218,6 +220,10 @@ class FakeSchedulerClient : public SchedulerClient,
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
+    if (next_commit_has_save_directive_for_snapshot_) {
+      scheduler_->SetViewTransitionSnapshotCapturing(true);
+      next_commit_has_save_directive_for_snapshot_ = false;
+    }
     PushAction("ScheduledActionCommit");
   }
   void ScheduledActionPostCommit() override {
@@ -306,6 +312,7 @@ class FakeSchedulerClient : public SchedulerClient,
   raw_ptr<TestScheduler> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   std::optional<FrameSkippedReason> last_frame_skipped_reason_;
+  bool next_commit_has_save_directive_for_snapshot_ = false;
 };
 
 enum BeginFrameSourceType {
@@ -4312,6 +4319,367 @@ TEST_P(SchedulerTest, SchedulerClientShouldSendBeginMainFrameSourcePaused) {
   scheduler_->OnBeginFrameSourcePausedChanged(false);
   EXPECT_FALSE(client->is_paused());
   EXPECT_EQ(client->num_time_changed(), 2);
+}
+
+TEST_P(SchedulerTest,
+       ViewTransitionSaveDrawsWhenBeginFrameSourcePausedAndDrawThrottled) {
+  SetUpScheduler(EXTERNAL_BFS);
+  client_->SetAutomaticSubmitCompositorFrameAck(false);
+
+  // Start a BeginMainFrame for the ViewTransition kSave capture and draw the
+  // existing active tree in the same frame without receiving its
+  // CompositorFrameAck (`pending_submit_frames() == 1`).
+  scheduler_->SetNeedsBeginMainFrame();
+  scheduler_->SetNeedsRedraw();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+  client_->Reset();
+
+  // Commit the ViewTransition kSave frame while BeginImplFrameState is IDLE.
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  client_->Reset();
+
+  // Simulate the Browser hiding the old RenderWidgetHostView after early
+  // commit release, which pauses the external BeginFrameSource while the
+  // pending tree is waiting on tile rasterization.
+  scheduler_->OnBeginFrameSourcePausedChanged(true);
+  client_->Reset();
+
+  // Now pending tree tiles finish rasterizing and activate. Even though the
+  // BeginFrameSource is paused and a prior frame ack is still pending, the
+  // scheduler must not abort the draw (`DRAW_ABORT`), must bypass draw
+  // throttling, and must synthesize a BeginImplFrame to draw the kSave frame.
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+}
+
+// The manual BeginFrame that draws an activated snapshot `kSave` frame, and a
+// later early final BeginMainFrame, must keep BeginFrame frame times monotonic
+// (also relative to a BeginFrame that was used without starting an impl frame)
+// and must not reuse manual sequence numbers.
+TEST_P(SchedulerTest, ViewTransitionSaveBeginFrameKeepsBeginFramesMonotonic) {
+  SetUpScheduler(EXTERNAL_BFS);
+  const base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+
+  // Send the BeginMainFrame for the `kSave` capture, and finish the impl frame.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  const viz::BeginFrameArgs bmf_args = client_->last_begin_impl_frame_args();
+  client_->Reset();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  client_->Reset();
+
+  // Commit the `kSave` frame while IDLE.
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  client_->Reset();
+
+  // A MISSED BeginFrame with a different phase arrives after its deadline. The
+  // scheduler uses it, but drops it before it starts an impl frame.
+  const base::TimeTicks now = bmf_args.frame_time + interval * 2.45;
+  ASSERT_LT(task_runner_->NowTicks(), now);
+  task_runner_->AdvanceMockTickClock(now - task_runner_->NowTicks());
+  const base::TimeTicks missed_frame_time =
+      bmf_args.frame_time + interval * 2.4;
+  viz::BeginFrameArgs missed_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, fake_external_begin_frame_source_->source_id(),
+      bmf_args.frame_id.sequence_number + 2, missed_frame_time,
+      /*deadline=*/now - base::Microseconds(1), interval,
+      viz::BeginFrameArgs::MISSED);
+  fake_external_begin_frame_source_->TestOnBeginFrame(missed_args);
+  EXPECT_NO_ACTION();
+  EXPECT_EQ(scheduler_->LastUsedBeginFrameArgs().frame_id,
+            missed_args.frame_id);
+
+  // The `kSave` tree activates while IDLE, so the scheduler issues a manual
+  // BeginFrame to draw it. Its frame time must not be earlier than the frame
+  // time of the MISSED BeginFrame, and must not be in the future.
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  client_->Reset();
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  const viz::BeginFrameArgs save_args = client_->last_begin_impl_frame_args();
+  EXPECT_EQ(save_args.frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
+  EXPECT_GE(save_args.frame_time, missed_frame_time);
+  EXPECT_LE(save_args.frame_time, task_runner_->NowTicks());
+  client_->Reset();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+  client_->Reset();
+
+  // An early final BeginMainFrame after the `kSave` frame gets a later frame
+  // time and a larger manual sequence number, so it is not dropped as a
+  // duplicate.
+  scheduler_->SetNeedsBeginMainFrame();
+  client_->Reset();
+  scheduler_->SendEarlyFinalBeginMainFrame();
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  const viz::BeginFrameArgs early_args = client_->last_begin_impl_frame_args();
+  EXPECT_EQ(early_args.frame_id.source_id,
+            viz::BeginFrameArgs::kManualSourceId);
+  EXPECT_GT(early_args.frame_id.sequence_number,
+            save_args.frame_id.sequence_number);
+  EXPECT_GT(early_args.frame_time, save_args.frame_time);
+}
+
+TEST_P(
+    SchedulerTest,
+    ViewTransitionSaveOnPendingTreeAbortsStaleActiveTreeDrawAndSuppressesPostSaveRedraw) {
+  scheduler_settings_.main_frame_before_activation_enabled = true;
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // 1. Send BMF 1 (pre-snapshot frame), commit, and activate it into the active
+  // tree without drawing it yet (`active_tree_needs_first_draw() == true`),
+  // while sending BMF 2 (the snapshot `kSave` frame).
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  client_->Reset();
+
+  // Next BeginFrame sends BMF 2 while Frame 1 activates into `active_tree_`.
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  // 2. Commit BMF 2 with a snapshot `kSave` directive onto `pending_tree_`
+  // while Frame 1 on `active_tree_` still has `active_tree_needs_first_draw()`.
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  client_->Reset();
+
+  // 3. External BeginFrameSource is paused while `kSave` is still on
+  // `pending_tree_` (not yet ready to activate). Stale Frame 1 on
+  // `active_tree_` is immediately aborted (`DRAW_ABORT` clears
+  // `active_tree_needs_first_draw()`), while `pending_tree_` (`kSave`) is NOT
+  // force-activated or dropped prematurely.
+  scheduler_->OnBeginFrameSourcePausedChanged(true);
+  EXPECT_ACTIONS();
+  EXPECT_FALSE(scheduler_->state_machine().active_tree_needs_first_draw());
+  EXPECT_TRUE(scheduler_->state_machine().has_pending_tree());
+  EXPECT_TRUE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS();
+  client_->Reset();
+
+  // 4. Now `pending_tree_` (`kSave`) finishes rasterizing, activates into
+  // `active_tree_`, synthesizes a BeginImplFrame, and draws the `kSave` frame.
+  // Rendering is paused (`SetPauseRendering(true)`) as Blink does in
+  // `WillCommitCompositorFrame()` while waiting for `SetVisible(false)`.
+  scheduler_->SetPauseRendering(true);
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+  client_->Reset();
+
+  // 5. After `kSave` is drawn, rendering remains paused until
+  // `SetVisible(false)`. Any subsequent `SetNeedsRedraw()` or incoming
+  // `BeginFrame` before `SetVisible(false)` must NOT produce an extra frame
+  // after `kSave`.
+  EXPECT_FALSE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  scheduler_->OnBeginFrameSourcePausedChanged(false);
+  scheduler_->SetNeedsRedraw();
+  EXPECT_FALSE(scheduler_->BeginFrameNeeded());
+  SendNextBeginFrame();
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS();
+
+  // 6. Simulate BFCache store (`SetVisible(false)`, `SetPauseRendering(false)`)
+  // followed by BFCache restore (`SetVisible(true)`). Verify that the restored
+  // renderer cleanly processes new `BeginFrameArgs` and produces a frame.
+  scheduler_->SetVisible(false);
+  scheduler_->SetPauseRendering(false);
+  client_->Reset();
+
+  task_runner_->AdvanceMockTickClock(viz::BeginFrameArgs::DefaultInterval());
+  scheduler_->SetVisible(true);
+  scheduler_->SetNeedsBeginMainFrame();
+  // Flush the expired MISSED BeginFrame replayed by `AddObserver(this)`.
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("AddObserver(this)");
+  client_->Reset();
+
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit",
+                 "ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+}
+
+// If drawing an activated snapshot `kSave` frame aborts, the client drops the
+// `kSave` directive immediately and the scheduler does not retry or issue
+// additional manual BeginFrames.
+TEST_P(SchedulerTest,
+       ViewTransitionSaveAbortedDrawDropsDirectiveWithoutRetrying) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  client_->Reset();
+
+  // Commit the `kSave` frame while IDLE, and pause the BeginFrameSource.
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  scheduler_->OnBeginFrameSourcePausedChanged(true);
+  client_->Reset();
+
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  client_->Reset();
+  client_->SetDrawWillHappen(false);
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+  EXPECT_EQ(1, client_->num_draws());
+  EXPECT_FALSE(scheduler_->view_transition_snapshot_state().IsCapturing());
+
+  // No retry BeginFrame is queued after the aborted draw.
+  client_->Reset();
+  task_runner_->RunPendingTasks();
+  EXPECT_NO_ACTION();
+}
+
+// If `CanDraw()` becomes false or `WillBeginImplFrame()` aborts the draw while
+// a snapshot `kSave` directive is on the active tree, `AbortDraw()` clears the
+// snapshot capturing state so main frames can resume.
+TEST_P(SchedulerTest,
+       ViewTransitionSaveDrawAbortOnActiveTreeDropsDirectiveAndResumesBMF) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // 1. Commit and activate a snapshot `kSave` directive, then set `CanDraw` to
+  // false before the manual BeginFrame runs. `Action::DRAW_ABORT` must clear
+  // the active-tree `kSave` capturing state.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  client_->Reset();
+
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit");
+  EXPECT_TRUE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+
+  // Setting `CanDraw` to false while `kSave` is still on the pending tree must
+  // not abort or drop the directive, since activation may restore drawability.
+  scheduler_->SetCanDraw(false);
+  EXPECT_TRUE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  scheduler_->SetCanDraw(true);
+  client_->Reset();
+
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionActivateSyncTree");
+  EXPECT_TRUE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+
+  // Once `kSave` is on the active tree, `SetCanDraw(false)` triggers
+  // `Action::DRAW_ABORT`, clears capturing state, and cancels the queued manual
+  // BeginFrame.
+  scheduler_->SetCanDraw(false);
+  EXPECT_ACTIONS("RemoveObserver(this)");
+  EXPECT_FALSE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+  task_runner_->RunPendingTasks();
+  EXPECT_NO_ACTION();
+
+  // Main frames resume even while `CanDraw` is false so the page can recover.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
+                 "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  client_->Reset();
+  scheduler_->SetCanDraw(true);
+
+  // 2. Commit and activate a second snapshot `kSave` directive, and have
+  // `WillBeginImplFrame()` return false (e.g. awaiting a newer
+  // `target_local_surface_id_`). `BeginImplFrame()` calls `AbortDraw()`,
+  // clearing the capturing state without retrying.
+  client_->set_next_commit_has_save_directive_for_snapshot(true);
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit",
+                 "ScheduledActionActivateSyncTree");
+  EXPECT_TRUE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+
+  client_->SetWillBeginImplFrameMightHaveDamage(false);
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  EXPECT_FALSE(scheduler_->view_transition_snapshot_state().IsCapturing());
+  client_->Reset();
+
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_ACTIONS("RemoveObserver(this)");
+  client_->Reset();
+  task_runner_->RunPendingTasks();
+  EXPECT_NO_ACTION();
 }
 
 INSTANTIATE_TEST_SUITE_P(,

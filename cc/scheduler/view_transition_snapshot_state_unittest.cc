@@ -10,6 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
+#include "cc/scheduler/scheduler_settings.h"
+#include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -150,6 +152,100 @@ TEST(ViewTransitionSnapshotStateTest,
 
   state.SetCapturing(false);
   EXPECT_FALSE(state.HasReadyDeferredActions());
+}
+
+TEST(ViewTransitionSnapshotStateTest,
+     PauseRenderingAndWaitingForActivationAfterResume) {
+  ViewTransitionSnapshotState state;
+  EXPECT_FALSE(state.IsRenderingPaused());
+  EXPECT_FALSE(state.waiting_for_activation_after_rendering_resumed());
+
+  // Capturing pauses rendering without setting
+  // `waiting_for_activation_after_rendering_resumed()`.
+  state.SetCapturing(true);
+  EXPECT_TRUE(state.IsRenderingPaused());
+  EXPECT_FALSE(state.waiting_for_activation_after_rendering_resumed());
+  state.SetCapturing(false);
+  EXPECT_FALSE(state.IsRenderingPaused());
+
+  // Explicit `SetPauseRendering(true)` pauses rendering; resuming sets
+  // `waiting_for_activation_after_rendering_resumed()` until `WillActivate()`.
+  state.SetPauseRendering(true);
+  EXPECT_TRUE(state.IsRenderingPaused());
+  EXPECT_FALSE(state.waiting_for_activation_after_rendering_resumed());
+
+  state.SetPauseRendering(false);
+  EXPECT_FALSE(state.IsRenderingPaused());
+  EXPECT_TRUE(state.waiting_for_activation_after_rendering_resumed());
+
+  // Pausing again clears `waiting_for_activation_after_rendering_resumed()`.
+  state.SetPauseRendering(true);
+  EXPECT_TRUE(state.IsRenderingPaused());
+  EXPECT_FALSE(state.waiting_for_activation_after_rendering_resumed());
+
+  state.SetPauseRendering(false);
+  EXPECT_TRUE(state.waiting_for_activation_after_rendering_resumed());
+  state.WillActivate();
+  EXPECT_FALSE(state.waiting_for_activation_after_rendering_resumed());
+}
+
+TEST(ViewTransitionSnapshotStateTest,
+     BeginFrameForSnapshotSaveIssuedOnlyWhenActivatedWhileIdle) {
+  SchedulerSettings settings;
+  SchedulerStateMachine state_machine(settings);
+  state_machine.SetVisible(true);
+  state_machine.SetCanDraw(true);
+  state_machine.WillBeginLayerTreeFrameSinkCreation();
+  state_machine.DidCreateAndInitializeLayerTreeFrameSink();
+
+  base::TimeTicks now = base::TimeTicks() + base::Milliseconds(100);
+  viz::BeginFrameArgs last_bmf = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1, 5, now - base::Milliseconds(16), now,
+      base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
+
+  // Start a commit that places a snapshot `kSave` directive on `pending_tree_`.
+  state_machine.SetNeedsBeginMainFrame(/*now=*/false);
+  state_machine.OnBeginImplFrame(last_bmf);
+  state_machine.WillSendBeginMainFrame();
+  state_machine.OnBeginImplFrameDeadline();
+  state_machine.OnBeginImplFrameIdle();
+  state_machine.NotifyReadyToCommit();
+  state_machine.WillCommit(/*commit_had_no_updates=*/false);
+  state_machine.DidCommit();
+  state_machine.DidPostCommit();
+  state_machine.SetNeedsRedraw();
+  state_machine.SetViewTransitionSnapshotCapturing(true);
+
+  // While `kSave` is still on the pending tree, no BeginFrame is issued for it.
+  EXPECT_TRUE(state_machine.has_pending_tree());
+  EXPECT_FALSE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+
+  // Once `pending_tree_` activates into `active_tree_` while `IDLE`, a
+  // BeginFrame is issued.
+  state_machine.NotifyReadyToActivate();
+  state_machine.WillActivate();
+  EXPECT_FALSE(state_machine.has_pending_tree());
+  EXPECT_TRUE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+
+  // Not while an impl frame is running: that frame draws the `kSave` frame.
+  viz::BeginFrameArgs next_bmf = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1, 6, now, now + base::Milliseconds(16),
+      base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
+  state_machine.OnBeginImplFrame(next_bmf);
+  EXPECT_FALSE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+  state_machine.OnBeginImplFrameDeadline();
+  state_machine.OnBeginImplFrameIdle();
+  EXPECT_TRUE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+
+  // Not if the `kSave` frame cannot be drawn.
+  state_machine.SetCanDraw(false);
+  EXPECT_FALSE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+  state_machine.SetCanDraw(true);
+  EXPECT_TRUE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
+
+  // Not after the `kSave` directive was drawn and consumed.
+  state_machine.SetViewTransitionSnapshotCapturing(false);
+  EXPECT_FALSE(state_machine.ShouldIssueBeginFrameForSnapshotSave());
 }
 
 }  // namespace

@@ -1122,10 +1122,49 @@ void Scheduler::ProcessScheduledActions() {
     }
   } while (action != SchedulerStateMachine::Action::NONE);
 
+  MaybeIssueBeginFrameForSnapshotSave();
+
   ScheduleBeginImplFrameDeadline();
 
   PostPendingBeginFrameTask();
   StartOrStopBeginFrames();
+}
+
+// If the cross-document ViewTransition `kSave` tree activates after the
+// `BeginImplFrame` deadline has already passed (e.g. in high-latency mode
+// where `DeadlineMode::IMMEDIATE` already drew the previous active tree, or
+// when `pending_tree_` finishes rasterization while `IDLE`), the scheduler is
+// in `BeginImplFrameState::IDLE` with a `kSave` frame ready to draw.
+//
+// Because `POST_COMMIT` already released the navigation in the browser, Viz
+// may pause the external `BeginFrameSource` or the browser may tear down the
+// `LayerTreeFrameSink` (e.g. for BFCache) before the next vsync `BeginFrame`
+// arrives. Issue a manual `BeginFrame` so that `PostPendingBeginFrameTask()`
+// immediately enters a `BeginImplFrame` and submits the `kSave`
+// CompositorFrame without waiting for Viz.
+void Scheduler::MaybeIssueBeginFrameForSnapshotSave() {
+  if (settings_.using_synchronous_renderer_compositor ||
+      pending_begin_frame_args_.IsValid() ||
+      !state_machine_->ShouldIssueBeginFrameForSnapshotSave()) {
+    return;
+  }
+
+  // Use the frame time of the latest BeginFrame that the scheduler knows about
+  // and do not move it forward: a BeginFrame from the source that is already
+  // in flight must not be older than this one, and impl-side animations do not
+  // advance until the `kSave` frame is drawn (or dropped).
+  const viz::BeginFrameArgs latest = LatestKnownBeginFrameArgs();
+  const base::TimeTicks now = Now();
+  const base::TimeDelta interval =
+      latest.IsValid() && latest.interval.is_positive()
+          ? latest.interval
+          : viz::BeginFrameArgs::DefaultInterval();
+  const base::TimeTicks frame_time = latest.IsValid() ? latest.frame_time : now;
+  TRACE_EVENT_INSTANT("cc", "Scheduler::IssueBeginFrameForSnapshotSave");
+  OnBeginFrame(viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
+      NextManualSequenceNumber(viz::BeginFrameArgs::kStartingFrameNumber),
+      frame_time, now + interval, interval, viz::BeginFrameArgs::NORMAL));
 }
 
 void Scheduler::AsProtozeroInto(
