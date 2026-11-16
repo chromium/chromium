@@ -1,65 +1,105 @@
-ACM,acm.org
+&yet,andyet.net
+1Password,agilebits.com
+ACCESS,access-company.com
+ALT Linux,altlinux.org
 AMD,amd.com
 AMD,amd.corp-partner.google.com
 AMD,xilinx.com
 ANL,anl.gov
+AOSC,aosc.io
 ARM,arm.com
 Accenture,accenture.com
-Access Digital,accesssoftek.com
+Access Softek,accesssoftek.com
+Ada Logics,adalogics.com
 Adobe,adobe.com
+Agora,agora.io
+Airtop,switchboard.app
 Akamai,akamai.com
+Akvelon,akvelon.com
 Alibaba,alibaba-inc.com
 Alibaba,linux.alibaba.com
-Alif Type,aliftype.com
 Amazon,amazon.com
-Andes,andestech.com
+Andes Technology,andestech.com
+Ant Group,antgroup.com
 Antmicro,antmicro.com
+App Haus,apphaus.co.uk
 Apple,apple.com
+Arcane Four,arcanefour.com
 Arntzen Software,arntzen-software.no
+Arteris,arteris.com
+AuroraUX,auroraux.org
 Autodesk,autodesk.com
+Avast,avast.com
 Azul,azul.com
 Azul,azulsystems.com
-BDTi,bdti.com
+BDTI,bdti.com
 BEC,bec.de
+BlackBerry,blackberry.com
 BlackBerry,rim.com
-Blackberry,blackberry.com
+Blockcast,blockcast.net
 Bloomberg,bloomberg.net
+Bocoup,bocoup.com
+Bountyy,bountyy.fi
 Brave,brave.com
+BrightSign,brightsign.biz
 Broadcom,broadcom.com
 ByteDance,bytedance.com
 CERN,cern.ch
 Canonical,canonical.com
+Canva,canva.com
 Chinese Academy of Sciences,iscas.ac.cn
 Cisco,cisco.com
+CitroLabs,citrolabs.ai
+CloudMosa,cloudmosa.com
 Cloudflare,cloudflare.com
+CoDeTech,codetech.cc
+CoSMo Software,cosmosoftware.io
+CodeSourcery,codesourcery.com
+CodeWeavers,codeweavers.com
+Codedgers,codedgers.com
 Codeplay,codeplay.com
+Codimite,codimite.com
 Collabora,collabora.co.uk
 Collabora,collabora.com
 Collabora,collabora.corp-partner.google.com
-Colorado school of Mines,mines.edu
-Cornell university,csl.cornell.edu
 Debian,debian.org
 Dell,dell.com
 Dell,dell.corp-partner.google.com
 Digia,digia.com
+Dingdao,dingdao.com
 Dolby,dolby.com
-ENS Lyon,ens-lyon.org
-ENS Rennes,ens-rennes.fr
-Epitech,epitech.eu
+Dolby,theoplayer.com
+Dropbox,dropbox.com
+DuckDuckGo,duckduckgo.com
+ESWIN Computing,eswincomputing.com
+EXALT Technologies,exalt.ps
+Electron,electronjs.org
+Endless,endlessm.com
+EngFlow,engflow.com
+Epic,epic.com
 Ericsson,ericsson.com
+Estimote,estimote.com
+ForwardBias Technologies,forwardbias.in
 Foxit,foxitsoftware.com
 FreeBSD,freebsd.org
-Front Range Internet,frii.com
+GNOME,gnome.org
 GNU,gcc.gnu.org
 GNU,gnu.org
+Gener8,gener8ads.com
 Gentoo,gentoo.org
 Getdesigned,getdesigned.at
-Gnome,gnome.org
+GitHub,github.com
+GitStart,gitstart.com
+GitStart,gitstart.dev
+Google,.chromium.org
 Google,ad.corp.google.com
 Google,android.com
 Google,behemoth.cnc.corp.google.com
 Google,chaitanyag.mtv.corp.google.com
+Google,chromium.com
+Google,chromium.or
 Google,chromium.org
+Google,chromum.org
 Google,courtneygo1-w.ad.corp.google.com
 Google,google.co
 Google,google.com
@@ -69,11 +109,18 @@ Google,petermueller-macbookpro.roam.corp.google.com
 Google,prod.google.com
 Google,skia.org
 Google,webrtc.org
-GraphCore,graphcore.ai
-Harvard,alumni.harvard.edu
-Harvard,college.harvard.edu
+Google,xwf.google.com
+Grammarly,grammarly.com
+Graphcore,graphcore.ai
+Guru Labs,gurulabs.com
+HP,hp.com
+Here,here.io
+Here,openfin.co
+HireVue,hirevue.com
+Home Jinni,homejinni.com
 Huawei,huawei-partners.com
 Huawei,huawei.com
+Huawei,luliang14.huawei.com
 Hyperconnect,hpcnt.com
 IBM,ca.ibm.ca
 IBM,ca.ibm.com
@@ -87,126 +134,330 @@ IBM,linux.vnet.ibm.com
 IBM,uk.ibm.com
 IBM,us.ibm.com
 IBM,vnet.ibm.com
+Ideas on Board,ideasonboard.com
 Igalia,igalia.com
 Imagination,imagination.corp-partner.google.com
 Imagination,imgtec.com
-Individuals,163.com
-Individuals,2pi.dk
-Individuals,aaronballman.com
-Individuals,adenilson.org
-Individuals,alice-dsl.net
-Individuals,andric.com
-Individuals,antoniofrighetto.com
-Individuals,behdad.org
-Individuals,belkadan.com
-Individuals,berlin.de
-Individuals,carter.net
-Individuals,compnerd.org
-Individuals,dberlin.org
-Individuals,devlieghere.com
-Individuals,dreamwidth.org
-Individuals,efcs.ca
-Individuals,everburning.com
-Individuals,evlogimenos.com
-Individuals,exchange.microsoft.com
-Individuals,fhahn.com
-Individuals,filcab.net
-Individuals,foolip.org
-Individuals,free.fr
-Individuals,gmail.com
-Individuals,gmx.com
-Individuals,gmx.de
-Individuals,gmx.net
-Individuals,googlemail.com
-Individuals,greggman.com
-Individuals,grosser.es
-Individuals,gtempaccount.com
-Individuals,hahnjo.de
-Individuals,hanshq.net
-Individuals,hazardy.de
-Individuals,hotmail.co.uk
-Individuals,hotmail.com
-Individuals,icloud.com
-Individuals,jdoerfert.de
-Individuals,justinbogner.com
-Individuals,kendyck.com
-Individuals,kzar.co.uk
-Individuals,laposte.net
-Individuals,lenharth.org
-Individuals,live.cn
-Individuals,live.com
-Individuals,m-sp.org
-Individuals,mac.com
-Individuals,mail.ru
-Individuals,martin.st
-Individuals,maskray.me
-Individuals,me.com
-Individuals,meinersbur.de
-Individuals,metafoo.co.uk
-Individuals,mithis.com
-Individuals,msn.com
-Individuals,mwiacek.com
-Individuals,myhsu.dev
-Individuals,niedermayer.cc
-Individuals,noemail.net
-Individuals,outlook.com
-Individuals,ovi.com
-Individuals,piotrzegar.pl
-Individuals,playingwithpointers.com
-Individuals,playstation.sony.com
-Individuals,proton.me
-Individuals,protonmail.com
-Individuals,puyan.org
-Individuals,qq.com
-Individuals,redking.me.uk
-Individuals,reidspencer.com
-Individuals,robwu.nl
-Individuals,rotateright.com
-Individuals,sapo.pt
-Individuals,sonic.net
-Individuals,stdin.nl
-Individuals,tambre.ee
-Individuals,tianshilei.me
-Individuals,tsyrklevich.net
-Individuals,users.noreply.github.com
-Individuals,users.sourceforge.net
-Individuals,wanadoo.es
-Individuals,warlow.dev
-Individuals,xs4all.nl
-Individuals,ya.ru
-Individuals,yahoo.com
-Individuals,yahoo.fr
-Individuals,yandex.ru
-Individuals,yoav.ws
-Individuals,znu.io
-Individuals,zuster.org
+Individual,0.me.uk
+Individual,0x90.dk
+Individual,163.com
+Individual,1stprinciple.org
+Individual,2pi.dk
+Individual,a32f553a54.dev
+Individual,aaronballman.com
+Individual,acm.org
+Individual,acoomans.com
+Individual,adamyi.com
+Individual,addaleax.net
+Individual,adenilson.org
+Individual,alesandroortiz.com
+Individual,alice-dsl.net
+Individual,aliftype.com
+Individual,alumni.harvard.edu
+Individual,alumni.tohoku.ac.jp
+Individual,ameo.link
+Individual,andreubotella.com
+Individual,andric.com
+Individual,antoniofrighetto.com
+Individual,apap04.com
+Individual,aspiz.uk
+Individual,atanasyan.com
+Individual,avm99963.com
+Individual,behdad.org
+Individual,belkadan.com
+Individual,bennani.ma
+Individual,berlin.de
+Individual,brainoid.dev
+Individual,braunis.de
+Individual,brendanlong.com
+Individual,brettlewis.us
+Individual,bridgewater.de
+Individual,bromann.dev
+Individual,cadman.uk
+Individual,calyptus.eu
+Individual,carter.net
+Individual,ccs.neu.edu
+Individual,cis.udel.edu
+Individual,cl.cam.ac.uk
+Individual,code.berlin
+Individual,college.harvard.edu
+Individual,compnerd.org
+Individual,comstyle.com
+Individual,cs.uiuc.edu
+Individual,cs.uni-saarland.de
+Individual,cs.washington.edu
+Individual,cs.wisc.edu
+Individual,csl.cornell.edu
+Individual,cynthia.re
+Individual,dam.io
+Individual,danielbertalan.dev
+Individual,darkly.art
+Individual,davidjfox.com
+Individual,davidmanouchehri.com
+Individual,davidovic.io
+Individual,dberlin.org
+Individual,dempsky.org
+Individual,devlieghere.com
+Individual,devpeer.net
+Individual,dosowisko.net
+Individual,dpogue.ca
+Individual,dreamwidth.org
+Individual,duck.com
+Individual,dylanmckay.io
+Individual,efcs.ca
+Individual,electroly.com
+Individual,ens-lyon.org
+Individual,ens-rennes.fr
+Individual,epitech.eu
+Individual,esnx.xyz
+Individual,everburning.com
+Individual,evlogimenos.com
+Individual,fastmail.com
+Individual,fds-team.de
+Individual,fhahn.com
+Individual,fi.muni.cz
+Individual,filcab.net
+Individual,fim.uni-passau.de
+Individual,flygoat.com
+Individual,foolip.org
+Individual,foutrelis.com
+Individual,free.fr
+Individual,frii.com
+Individual,gabl.ink
+Individual,gachapin.jp
+Individual,gmail.com
+Individual,gmx.com
+Individual,gmx.de
+Individual,gmx.net
+Individual,gnzler.io
+Individual,googlemail.com
+Individual,greggman.com
+Individual,grosser.es
+Individual,gtempaccount.com
+Individual,guettler.io
+Individual,hack3r.moe
+Individual,hahnjo.de
+Individual,hanshq.net
+Individual,hauihau.de
+Individual,hazardy.de
+Individual,herrmann.io
+Individual,hotmail.co.uk
+Individual,hotmail.com
+Individual,hybridsource.org
+Individual,i.softbank.jp
+Individual,icloud.com
+Individual,id0r.com
+Individual,iddya.com
+Individual,illinois.edu
+Individual,impossibledreams.net
+Individual,inf.u-szeged.hu
+Individual,inglorion.net
+Individual,isaackhor.com
+Individual,itc.rwth-aachen.de
+Individual,jakehendy.com
+Individual,jansauer.de
+Individual,januschka.com
+Individual,jdoerfert.de
+Individual,jloeffler.com
+Individual,jns.io
+Individual,joachim-bauch.de
+Individual,jolt-lang.org
+Individual,jongma.org
+Individual,jordin.dev
+Individual,joshtriplett.org
+Individual,justinbogner.com
+Individual,justinribeiro.com
+Individual,jviotti.com
+Individual,keithcirkel.co.uk
+Individual,kendyck.com
+Individual,khu.ac.kr
+Individual,kl.wtf
+Individual,kodewerx.org
+Individual,kzar.co.uk
+Individual,labath.sk
+Individual,lanth.me
+Individual,laposte.net
+Individual,learner.manipal.edu
+Individual,lenharth.org
+Individual,lesnik.cc
+Individual,libstarrify.so
+Individual,lihotzki.de
+Individual,limhenry.xyz
+Individual,linux.com
+Individual,live.cn
+Individual,live.com
+Individual,luotianyi.me
+Individual,m-sp.org
+Individual,mac.com
+Individual,mail.ru
+Individual,makerville.io
+Individual,makusu.cc
+Individual,marcosc.com
+Individual,martijnc.be
+Individual,martin-aberer.at
+Individual,martin.st
+Individual,martinrogalla.com
+Individual,maskray.me
+Individual,math.spbu.ru
+Individual,me.com
+Individual,meinersbur.de
+Individual,metafoo.co.uk
+Individual,mforney.org
+Individual,michaelkohler.info
+Individual,mikepennisi.com
+Individual,mines.edu
+Individual,mithis.com
+Individual,mlocal.net
+Individual,molenda.com
+Individual,mostlystatic.com
+Individual,msn.com
+Individual,mwiacek.com
+Individual,my.bristol.ac.uk
+Individual,myhsu.dev
+Individual,narod.ru
+Individual,nasledov.com
+Individual,naver.com
+Individual,ncf.ca
+Individual,ndrwbrwn.au
+Individual,ngg.hu
+Individual,nh2.me
+Individual,niedermayer.cc
+Individual,niekvandermaas.nl
+Individual,nikwen.de
+Individual,nizipli.com
+Individual,noemail.net
+Individual,nondot.org
+Individual,nottheoilrig.com
+Individual,nyu.edu
+Individual,obbligato.org
+Individual,oliverdunk.com
+Individual,omaremara.dev
+Individual,osandov.com
+Individual,outlook.com
+Individual,ovi.com
+Individual,pcc.me.uk
+Individual,philipreames.com
+Individual,physik.fu-berlin.de
+Individual,piotrzegar.pl
+Individual,playingwithpointers.com
+Individual,pm.me
+Individual,privat.broulik.de
+Individual,probst.io
+Individual,proton.ch
+Individual,proton.me
+Individual,protonmail.com
+Individual,purdue.edu
+Individual,puyan.org
+Individual,qiwi.be
+Individual,qq.com
+Individual,queued.net
+Individual,radix.io
+Individual,redking.me.uk
+Individual,reedtribe.org
+Individual,refi64.dev
+Individual,reidspencer.com
+Individual,robwu.nl
+Individual,rockybars.com
+Individual,rojer.me
+Individual,rosedu.org
+Individual,rotateright.com
+Individual,rutgers.edu
+Individual,sapo.pt
+Individual,schmitt.mx
+Individual,selfisekai.rocks
+Individual,skip.org
+Individual,smathe.rs
+Individual,smockle.com
+Individual,sofaraway.org
+Individual,solscope.com
+Individual,sonic.net
+Individual,soppa.me
+Individual,spencerwilson.org
+Individual,stdin.nl
+Individual,students.uiuc.edu
+Individual,su-root.co.uk
+Individual,sudin.pro
+Individual,swan.ac.uk
+Individual,sweeting.me
+Individual,tabos.org
+Individual,tambre.ee
+Individual,tau.garden
+Individual,tbrindus.ca
+Individual,tecnico.ulisboa.pt
+Individual,theophil.us
+Individual,tianshilei.me
+Individual,tilloy.net
+Individual,trevp.net
+Individual,tsyrklevich.net
+Individual,tu-berlin.de
+Individual,tullo.ch
+Individual,typewritten.net
+Individual,tzik.jp
+Individual,ubercode.de
+Individual,ucla.edu
+Individual,ucsbalum.com
+Individual,uiuc.edu
+Individual,users.noreply.github.com
+Individual,users.sourceforge.net
+Individual,vivaldi.net
+Individual,vols.utk.edu
+Individual,wanadoo.es
+Individual,warlow.dev
+Individual,waters.io
+Individual,whitequark.org
+Individual,xs4all.nl
+Individual,ya.ru
+Individual,yahoo.com
+Individual,yahoo.fr
+Individual,yandex.ru
+Individual,yannic-bonenberger.com
+Individual,ylem.kim
+Individual,ymail.com
+Individual,yoav.ws
+Individual,yplam.com
+Individual,zanderz.com
+Individual,zips.uakron.edu
+Individual,znu.io
+Individual,zugelder.org
+Individual,zuster.org
 Intel,intel.com
 Intel,intel.corp-partner.google.com
 Intel,linux.intel.com
 Island,island.io
-Jetbrains,jetbrains.com
+JetBrains,jetbrains.com
 KDE,kde.org
+Kakao,kakaocorp.com
+Keeper Security,keepersecurity.com
 Khronos,khronosgroup.org
+Kuaishou,kuaishou.com
+KylinSoft,kylinos.cn
 LGE,lge.com
+LGE,lgepartner.com
 LLVM,llvm.org
 LLVM,llvm.org.cn
-LLVM,nondot.org
+Ledger,ledger.fr
 Linaro,linaro.org
 Linux Foundation,codeaurora.org
 Linux Kernel,kernel.org
 Logitech,logitech.com
 Loongson,loongson.cn
-LowRISK,lowrisc.org
-LunarG,LunarG.com
 LunarG,lunarg.com
 MIPS,mips.com
+Macadamian,macadamian.com
+Mathscribe,mathscribe.com
 MediaTek,mediatek.com
 MediaTek,mediatek.corp-partner.google.com
+Meituan,meituan.com
+Menlo Security,menlosecurity.com
+Mentor Graphics,mentor.com
 Meta,fb.com
 Meta,meta.com
-Metrix Constultants,mxc.ca
+Meta,oculus.com
+Metrix Consultants,mxc.ca
 Microchip,microchip.com
+Microsoft,exchange.microsoft.com
 Microsoft,microsoft.com
+Mighty,mightyapp.com
 Mobica,mobica.com
 Modular,modular.com
 Moritz Systems,moritz.systems
@@ -214,108 +465,128 @@ Motorola,motorola.com
 Mozilla,mozilla.com
 NEC,emea.nec.com
 NEC,nec.com
-NYU,nyu.edu
-Narod,narod.ru
+NXP,nxp.com
 Naver,navercorp.com
+Neo,neo.ai
 Netflix,netflix.com
+Neverware,neverware.com
 NextSilicon,nextsilicon.com
+Nike,nike.com
+Nod Labs,nod-labs.com
 Nokia,nokia.com
-Northeastern University,ccs.neu.edu
 Nuanti,nuanti.com
+Nutanix,nutanix.com
 Nvidia,nvidia.com
 Nvidia,nvidia.corp-partner.google.com
-Octopus Computing,octopus.com.au
+Oblong,oblong.com
+Ocado,ocado.com
+Octopus Deploy,octopus.com.au
+OpenAI,openai.com
+OpenBossa,openbossa.org
 Opera,opera.com
-Polymage Labs,polymagelabs.com
-Purdue University,purdue.edu
-Qiaxin,www.qianxin.com
+Optical Tone,opticaltone.com
+Palo Alto Networks,paloaltonetworks.com
+Palo Alto Networks,talon-sec.com
+Pengutronix,pengutronix.de
+Poly,poly.com
+PolyMage Labs,polymagelabs.com
+ProFUSION,profusion.mobi
+Promenade,promenade.co
+Provar,provartesting.com
+Pybricks,pybricks.com
+Qi An Xin,qianxin.com
+Qi An Xin,www.qianxin.com
+Qihoo 360,360.cn
 Qt,qt.io
-Qualcom,quincinc.com
+Qt,theqtcompany.com
+Qualcomm,qualcomm.com
 Qualcomm,quicinc.com
-Qualcoom,qualcomm.com
+Qualcomm,quincinc.com
+Quality First Software,qf-software.com
+RNC,rnc-ag.de
 RT-RK,rt-rk.com
-Redhat,redhat.com
+Rakuten Kobo,kobo.com
+Raptor Computing Systems,raptorcs.com
+Raspberry Pi,raspberrypi.com
+Razer,razer.com
+Red Hat,redhat.com
+Revolut,revolut.com
+Rive,rive.app
 Rivos,rivosinc.com
-Rutgers,rutgers.edu
-Rwthaachen University,itc.rwth-aachen.de
+Rockchip,rock-chips.com
+S57,s57.io
 SAP,sap.com
 SAS,sas.com
-SN Systems,sn.scee.net
-Saarland Informatics Campus,cs.uni-saarland.de
+SUSE,suse.cz
+SUSE,suse.de
 Salesforce,salesforce.com
 Samsung,osg.samsung.com
 Samsung,partner.samsung.com
 Samsung,samsung.com
 Samsung,samsung.corp-partner.google.com
 Samsung,sisa.samsung.com
+SberDevices,sberdevices.ru
+Semihalf,semihalf.com
+Sencha,sencha.com
+Shift,shift.com
 Shopify,shopify.com
 SiFive,sifive.com
-Sigma technology,sigmatechnology.se
+Sigma Technology,sigmatechnology.se
+SkyNav,skynav.com
 Slack,slack-corp.com
+Snap,snapchat.com
+Sogou,sogou-inc.com
+Sonocent,sonocent.com
+Sony,playstation.sony.com
+Sony,sn.scee.net
 Sony,sony.com
 Sony,sonymobile.com
-St Petersburg State University,math.spbu.ru
-Suse,suse.cz
-Swansea University,swan.ac.uk
+Soundtrap,soundtrap.com
+Spotify,spotify.com
+StarFive,starfivetech.com
+Stream Computing,streamcomputing.com
+StrongLoop,strongloop.com
+Suitable Technologies,suitabletech.com
+Synaptics,synaptics.com
 Synopsys,synopsys.com
-Szeged,inf.u-szeged.hu
+Telikin,venture3systems.com
 Tencent,tencent.com
 TensorFlow,tensorflow.org
-Técnico LISBOA,tecnico.ulisboa.pt
-UC Santa Barbara,ucsbalum.com
+The Aerospace Corporation,aero.org
+The Atlantic,theatlantic.com
+The Browser Company,thebrowser.company
+Torch Mobile,torchmobile.com
+Torch Mobile,torchmobile.com.cn
+TransGaming,transgaming.com
 Uber,uber.com
 Ubisoft,ubisoft.com
-University of Illinois,cs.uiuc.edu
-University of Illinois,illinois.edu
-University of Illinois,students.uiuc.edu
-University of Illinois,uiuc.edu
-University of Tenessee,vols.utk.edu
-University of Washington,cs.washington.edu
-University of Wisconsin,cs.wisc.edu
-Universität Passau,fim.uni-passau.de
-Unknown,0039d316-1c4b-4281-b951-d872f2087c98
-Unknown,2bbb7eff-a529-9590-31e7-b0007b416f81
-Unknown,aero.org
-Unknown,atanasyan.com
-Unknown,auroraux.org
-Unknown,bennani.ma
-Unknown,braunis.de
-Unknown,ce2b1a6d-e550-0410-aec6-3dcde31c8c00
-Unknown,cl.cam.ac.uk
-Unknown,codedgers.com
-Unknown,codesourcery.com
-Unknown,comstyle.com
-Unknown,dylanmckay.io
-Unknown,homejinni.com
-Unknown,inglorion.net
-Unknown,jolt-lang.org
-Unknown,labath.sk
-Unknown,martijnc.be
-Unknown,mentor.com
-Unknown,molenda.com
-Unknown,my.bristol.ac.uk
-Unknown,nod-labs.com
-Unknown,obbligato.org
-Unknown,openbossa.org
-Unknown,pcc.me.uk
-Unknown,philipreames.com
-Unknown,probst.io
-Unknown,reedtribe.org
-Unknown,semihalf.com
-Unknown,streamcomputing.com
-Unknown,su-root.co.uk
-Unknown,torchmobile.com.cn
-Unknown,transgaming.com
-Unknown,undefined
-Unknown,whitequark.org
+Ulteig,ulteig.com
+UnionTech,uniontech.com
+Upland Software,uplandsoftware.com
+Upwork,cloud.upwork.com
+VK,corp.mail.ru
 Valve,valvesoftware.com
 Vewd,vewd.com
 Vivaldi,vivaldi.com
+W3C,w3.org
 Wacom,wacom.com
+Wallpaper Engine,wallpaperengine.io
 WebKit,webkit.org
+Whist,whist.com
 Windfall,windfall.com
-X,x.team
+Workday,workday.com
+X-Team,x.team
 XMOS,xmos.com
 Xiaomi,xiaomi.com
+Xperi,xperi.com
+Yahoo,verizonmedia.com
 Yandex,yandex-team.ru
+Zappar,zappar.com
 Zilliqa,zilliqa.com
+Zoho,zohocorp.com
+basysKom,basyskom.com
+eInfochips,einfochips.com
+eyeo,eyeo.com
+imput,imput.net
+lowRISC,lowrisc.org
+vivo,vivo.com

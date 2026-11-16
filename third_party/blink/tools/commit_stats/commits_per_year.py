@@ -133,9 +133,7 @@ def get_commit_distribution(start_date, end_date):
             affiliation = ""
             override = get_affiliation_override(email, date)
             if override:
-                if override == 'Individual':
-                    affiliation = 'Individuals'
-                elif override == 'Undisclosed':
+                if override in ('Individual', 'Undisclosed'):
                     affiliation = override
                 else:
                     domain = override
