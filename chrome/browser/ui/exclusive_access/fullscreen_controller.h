@@ -174,6 +174,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessIfNecessary() override;
   // Callbacks /////////////////////////////////////////////////////////////////
 
+  // Invoked when the window starts transitioning between fullscreen states.
+  void WindowFullscreenStateChanging();
+
   // Invoked at the end of a fullscreen transition.
   void WindowFullscreenStateChanged();
 

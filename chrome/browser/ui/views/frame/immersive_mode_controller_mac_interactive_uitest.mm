@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -413,6 +414,59 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
   EXPECT_EQ(overlay_widget_window.contentView, overlay_widget_content_view);
+}
+
+// Regression test for https://crbug.com/584235044 verifying that exiting
+// content fullscreen directly via the NSWindow (e.g. clicking the green
+// fullscreen traffic-light button) restores the vertical tab strip immediately
+// upon transition completion.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ExitContentFullscreenViaNSWindowWithVerticalTabstrip) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+
+  VerticalTabStripRegionView* vertical_tabs =
+      browser_view->vertical_tab_strip_region_view_for_testing();
+  ASSERT_TRUE(vertical_tabs);
+  EXPECT_TRUE(vertical_tabs->GetVisible());
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  {
+    ui_test_utils::FullscreenWaiter enter_waiter(browser(),
+                                                 {.tab_fullscreen = true});
+    tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
+                                                  {});
+    enter_waiter.Wait();
+  }
+
+  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_TRUE(fullscreen_utils::IsInContentFullscreen(browser()));
+  EXPECT_FALSE(vertical_tabs->GetVisible());
+
+  NSWindow* ns_window =
+      browser_view->GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  ASSERT_TRUE(ns_window);
+
+  {
+    ui_test_utils::FullscreenWaiter exit_waiter(
+        browser(), {.browser_fullscreen = false, .tab_fullscreen = false});
+    [ns_window toggleFullScreen:nil];
+    exit_waiter.Wait();
+  }
+
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
+  EXPECT_EQ(browser_view, browser_view->top_container()->parent());
+  EXPECT_TRUE(vertical_tabs->GetVisible());
+  EXPECT_FALSE(vertical_tabs->bounds().IsEmpty());
 }
 
 // Tests that the browser does not crash when toggling between vertical and

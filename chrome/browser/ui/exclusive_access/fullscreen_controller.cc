@@ -428,6 +428,19 @@ void FullscreenController::OnTabClosing(WebContents* web_contents) {
   }
 }
 
+void FullscreenController::WindowFullscreenStateChanging() {
+  ExclusiveAccessContext* const exclusive_access_context =
+      exclusive_access_manager()->context();
+  bool exiting_fullscreen = !exclusive_access_context->IsFullscreen();
+  if (exiting_fullscreen) {
+    toggled_into_fullscreen_ = false;
+    extension_url_.reset();
+    // `NotifyTabExclusiveAccessLost()` is idempotent so it can be called both
+    // here and in `WindowFullscreenStateChanged()`.
+    NotifyTabExclusiveAccessLost();
+  }
+}
+
 void FullscreenController::WindowFullscreenStateChanged() {
   ExclusiveAccessContext* const exclusive_access_context =
       exclusive_access_manager()->context();

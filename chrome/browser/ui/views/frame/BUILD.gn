@@ -2346,6 +2346,7 @@ source_set("browser_tests") {
     deps += [
       ":browser_frame_view_mac",
       "//chrome/browser/ui:browser_commands_mac",
+      "//chrome/browser/ui:fullscreen_util_mac",
       "//ui/base:test_support",
       "//ui/events:test_support",
     ]
@@ -2527,6 +2528,7 @@ source_set("interactive_ui_tests") {
       ":browser_native_widget_mac",
       ":immersive_mode_controller_mac",
       "//chrome/browser/ui:browser_commands_mac",
+      "//chrome/browser/ui:fullscreen_util_mac",
       "//chrome/browser/ui/views:find_bar_views",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/common:mojo",

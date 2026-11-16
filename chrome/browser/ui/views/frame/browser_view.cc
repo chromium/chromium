@@ -2324,6 +2324,18 @@ void BrowserView::FullscreenStateChanging() {
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
+  // On Mac, AppKit can initiate a fullscreen exit directly (e.g. clicking the
+  // green traffic-light button) without going through
+  // FullscreenController::ExitFullscreenModeInternal(). Notify
+  // FullscreenController now so tab/content fullscreen state is cleared on exit
+  // before ProcessFullscreen() / PrepareFullscreen() updates immersive mode
+  // and layouts.
+  ExclusiveAccessManager::From(browser_)
+      ->fullscreen_controller()
+      ->WindowFullscreenStateChanging();
+#endif  // BUILDFLAG(IS_MAC)
+
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     PrepareFullscreen(IsFullscreen());
   } else {

@@ -16,10 +16,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -38,6 +42,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
@@ -245,4 +250,74 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripDoubleClickMacTest,
                            ns_point, NSEventTypeLeftMouseUp, ns_window, 2)];
 
   EXPECT_TRUE([ns_window isZoomed]);
+}
+
+using VerticalTabStripFullscreenMacTest =
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>;
+
+// Regression test for https://crbug.com/584235044 verifying that exiting
+// content fullscreen directly through the native NSWindow (simulating the macOS
+// green traffic-light button) with vertical tabs enabled clears fullscreen
+// state during windowWillExitFullScreen: and restores the vertical tab strip.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripFullscreenMacTest,
+                       ExitContentFullscreenViaNativeWindow) {
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  VerticalTabStripRegionView* vertical_tabs =
+      browser_view->vertical_tab_strip_region_view_for_testing();
+  ASSERT_TRUE(vertical_tabs);
+  ASSERT_TRUE(vertical_tabs->GetVisible());
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+  NSWindow* ns_window =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
+  ASSERT_TRUE(ns_window);
+
+  {
+    ui_test_utils::FullscreenWaiter enter_waiter(browser(),
+                                                 {.tab_fullscreen = true});
+    tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
+                                                  {});
+    enter_waiter.Wait();
+  }
+
+  EXPECT_TRUE(browser_view->IsFullscreen());
+  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_TRUE(fullscreen_utils::IsInContentFullscreen(browser()));
+  EXPECT_FALSE(vertical_tabs->GetVisible());
+
+  {
+    // Simulate the AppKit window delegate callbacks triggered by clicking the
+    // native green fullscreen traffic-light button, which bypass
+    // FullscreenController::ExitFullscreenModeInternal().
+    ui_test_utils::FullscreenWaiter exit_waiter(
+        browser(), {.browser_fullscreen = false, .tab_fullscreen = false});
+    id<NSWindowDelegate> delegate = [ns_window delegate];
+    ASSERT_TRUE(delegate);
+    [delegate
+        windowWillExitFullScreen:
+            [NSNotification
+                notificationWithName:NSWindowWillExitFullScreenNotification
+                              object:ns_window]];
+    EXPECT_FALSE(browser_view->IsFullscreen());
+    EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+    EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
+    [delegate windowDidExitFullScreen:
+                  [NSNotification
+                      notificationWithName:NSWindowDidExitFullScreenNotification
+                                    object:ns_window]];
+    exit_waiter.Wait();
+  }
+
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
+  EXPECT_EQ(browser_view, browser_view->top_container()->parent());
+  EXPECT_TRUE(vertical_tabs->GetVisible());
+  EXPECT_FALSE(vertical_tabs->bounds().IsEmpty());
 }
