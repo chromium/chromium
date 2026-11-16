@@ -85,6 +85,7 @@ GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
 
 bool IsEligibleForHibernation(const GlicInstanceImpl* instance) {
   return !instance->IsHibernated() && !instance->IsActuating() &&
+         !instance->HasActiveExperimentalTriggeringSession() &&
          !instance->IsShowing();
 }
 

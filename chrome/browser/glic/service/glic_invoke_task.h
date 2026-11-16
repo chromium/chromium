@@ -185,13 +185,13 @@ class SetupHiddenPanelTask : public GlicInvokeTask {
  public:
   std::optional<GlicTaskType> GetType() const override;
 
-  SetupHiddenPanelTask(GlicInstanceImpl& instance, tabs::TabInterface& tab);
+  SetupHiddenPanelTask(GlicInstanceImpl& instance, tabs::TabHandle tab_handle);
   ~SetupHiddenPanelTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
   const base::raw_ref<GlicInstanceImpl> instance_;
-  const base::raw_ref<tabs::TabInterface> tab_;
+  tabs::TabHandle tab_handle_;
 };
 
 class MaybeInitializeHiddenClientTask : public GlicInvokeTask {

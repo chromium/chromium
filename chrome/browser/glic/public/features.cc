@@ -365,4 +365,9 @@ const base::FeatureParam<base::TimeDelta>
         base::Seconds(10)};
 
 BASE_FEATURE(kGlicAskGeminiWayfinding, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind,
+             // Enabled on all platforms including BUILDFLAG(IS_ANDROID);
+             // cpp_feature_parser requires a literal FeatureState constant.
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

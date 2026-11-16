@@ -39,7 +39,8 @@ void GlicOffscreenRenderingController::UpdateState() {
 
   const bool should_render_offscreen =
       !delegate_->HasActiveEmbedder() &&
-      (is_hidden_initializing_ || delegate_->IsActuating());
+      (is_hidden_initializing_ || delegate_->IsActuating() ||
+       delegate_->HasActiveExperimentalTriggeringSession());
   if (!should_render_offscreen) {
     Stop();
     return;

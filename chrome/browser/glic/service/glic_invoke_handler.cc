@@ -484,8 +484,8 @@ void GlicInvokeHandler::Invoke() {
       maybe_enqueue_on_panel_opened();
     }
   } else if (IsTabTarget()) {
-    tasks.push_back(
-        std::make_unique<SetupHiddenPanelTask>(*instance_, GetTab()));
+    tasks.push_back(std::make_unique<SetupHiddenPanelTask>(
+        *instance_, GetTab().GetHandle()));
   }
   tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
       &*instance_, options_.GetInvocationSource(), options_.fre_override));

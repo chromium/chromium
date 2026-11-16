@@ -32,6 +32,10 @@ class GlicOffscreenRenderingController {
     // Returns true while an actor task is actuating.
     virtual bool IsActuating() const = 0;
 
+    // Returns true while an experimental triggering session is actively running
+    // on this instance.
+    virtual bool HasActiveExperimentalTriggeringSession() const = 0;
+
     // Returns the WebContents to render offscreen, or null if there is none.
     virtual content::WebContents* GetOffscreenRenderingContents() const = 0;
   };

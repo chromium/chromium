@@ -289,6 +289,11 @@ extern const base::FeatureParam<base::TimeDelta>
 // Highlights the Ask Gemini button when users who started from a secondary
 // entry point close the Glic panel.
 BASE_DECLARE_FEATURE(kGlicAskGeminiWayfinding);
+
+// Keeps a GlicInstance alive across side-panel embedder unbinds and blank
+// instance cleanup while an experimental triggering actuation session is
+// active, unless the last bound/pinned tab itself was closed (b/581951225).
+BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
