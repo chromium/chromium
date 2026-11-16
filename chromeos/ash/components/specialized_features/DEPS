@@ -13,6 +13,7 @@ specific_include_rules = {
   ".*_unittest.cc": [
     "+components/metrics/test/test_enabled_state_provider.h",
     "+components/session_manager/test",
+    "+components/user_manager/user.h",
   ],
 }
 

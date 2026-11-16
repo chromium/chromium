@@ -35,6 +35,7 @@ static_library("note_taking") {
     "//chromeos/ash/experiences/arc/session:connection_holder",
     "//components/prefs",
     "//components/services/app_service",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",

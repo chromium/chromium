@@ -20,9 +20,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/kiosk/kiosk_test_utils.h"  // nogncheck
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace ukm {
@@ -410,7 +410,11 @@ class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
         local_state_.registry());
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
-    chromeos::SetUpFakeChromeAppKioskSession();
+    const user_manager::User* kiosk_user =
+        user_session_test_environment_->AddKioskChromeAppUser(
+            "example@kiosk-apps.device-local.localhost");
+    ASSERT_TRUE(kiosk_user);
+    user_session_test_environment_->LogIn(kiosk_user->GetAccountId());
   }
 
   void TearDown() override {

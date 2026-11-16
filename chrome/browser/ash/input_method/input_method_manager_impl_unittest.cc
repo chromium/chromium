@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ime_controller.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -36,8 +37,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
@@ -1559,7 +1563,15 @@ class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
   }
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    chromeos::SetUpFakeChromeAppKioskSession(email);
+    const user_manager::User* user =
+        user_manager::TestHelper(user_manager::UserManager::Get())
+            .AddKioskChromeAppUser(email);
+    CHECK(user);
+    const AccountId& account_id = user->GetAccountId();
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
   }
 };
 

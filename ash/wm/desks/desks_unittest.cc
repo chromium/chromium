@@ -112,7 +112,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
@@ -124,6 +123,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -11427,7 +11427,11 @@ TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
 
 TEST_P(DesksTest, DeskCreationBlockedDuringKioskSession) {
   // Enter Kiosk session.
-  chromeos::SetUpFakeChromeAppKioskSession();
+  auto& user_session = ash_test_helper()->user_session_test_environment();
+  const user_manager::User* kiosk_user = user_session.AddKioskChromeAppUser(
+      "example@kiosk-apps.device-local.localhost");
+  ASSERT_TRUE(kiosk_user);
+  user_session.LogIn(kiosk_user->GetAccountId());
 
   DesksController* desks_controller = DesksController::Get();
   ASSERT_FALSE(desks_controller->CanCreateDesks());

@@ -31,3 +31,23 @@ static_library("test_support") {
 
   deps = [ ":core" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "session_manager_unittest.cc" ]
+
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/account_id",
+    "//components/account_id:test_support",
+    "//components/prefs:test_support",
+    "//components/session_manager/test:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//google_apis",
+    "//testing/gtest",
+  ]
+}

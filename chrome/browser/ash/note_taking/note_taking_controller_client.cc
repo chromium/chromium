@@ -4,19 +4,21 @@
 
 #include "chrome/browser/ash/note_taking/note_taking_controller_client.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
 NoteTakingControllerClient::NoteTakingControllerClient(NoteTakingHelper* helper)
     : helper_(helper) {
-  user_manager::UserManager::Get()->AddSessionStateObserver(this);
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 }
 
-NoteTakingControllerClient::~NoteTakingControllerClient() {
-  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-}
+NoteTakingControllerClient::~NoteTakingControllerClient() = default;
 
 bool NoteTakingControllerClient::CanCreateNote() {
   return profile_ && helper_->IsAppAvailable(profile_);
@@ -26,14 +28,14 @@ void NoteTakingControllerClient::CreateNote() {
   helper_->LaunchAppForNewNote(profile_);
 }
 
-void NoteTakingControllerClient::ActiveUserChanged(
-    user_manager::User* active_user) {
-  if (!active_user)
-    return;
-
-  active_user->AddProfileCreatedObserver(
+void NoteTakingControllerClient::OnActiveSessionSwitched(
+    const session_manager::Session& session) {
+  user_manager::User& active_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUserAndModify(
+          session.account_id()));
+  active_user.AddProfileCreatedObserver(
       base::BindOnce(&NoteTakingControllerClient::SetProfileByUser,
-                     weak_ptr_factory_.GetWeakPtr(), active_user));
+                     weak_ptr_factory_.GetWeakPtr(), &active_user));
 }
 
 void NoteTakingControllerClient::OnProfileWillBeDestroyed(Profile* profile) {

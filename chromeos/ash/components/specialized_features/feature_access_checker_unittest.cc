@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -27,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/user.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "crypto/hash.h"
@@ -470,7 +470,11 @@ TEST_F(FeatureAccessCheckerTest, KioskModeCheckFailIfInKioskMode) {
   ash::test::UserSessionTestEnvironment user_session_test_environment(
       &pref_service_);
 
-  chromeos::SetUpFakeChromeAppKioskSession();
+  const user_manager::User* kiosk_user =
+      user_session_test_environment.AddKioskChromeAppUser(
+          "example@kiosk-apps.device-local.localhost");
+  ASSERT_TRUE(kiosk_user);
+  user_session_test_environment.LogIn(kiosk_user->GetAccountId());
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(variations_service_.get(), &pref_,

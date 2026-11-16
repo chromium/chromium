@@ -12,13 +12,18 @@
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
 class NoteTakingControllerClient
     : public NoteTakingClient,
-      public user_manager::UserManager::UserSessionStateObserver,
+      public session_manager::SessionManagerObserver,
       public ProfileObserver {
  public:
   explicit NoteTakingControllerClient(NoteTakingHelper* helper);
@@ -33,8 +38,9 @@ class NoteTakingControllerClient
   bool CanCreateNote() override;
   void CreateNote() override;
 
-  // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(user_manager::User* active_user) override;
+  // session_manager::SessionManagerObserver:
+  void OnActiveSessionSwitched(
+      const session_manager::Session& session) override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -50,6 +56,10 @@ class NoteTakingControllerClient
   // Unowned pointer to the active profile.
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   base::WeakPtrFactory<NoteTakingControllerClient> weak_ptr_factory_{this};
 };

@@ -70,6 +70,7 @@
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/test_helper.h"
@@ -753,9 +754,11 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     CHECK_EQ(email, user_manager::kGuestUserName);
     auto* user = user_manager()->AddGuestUser();
-    user_manager()->UserLoggedIn(
-        user->GetAccountId(),
-        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
+    const AccountId& account_id = user->GetAccountId();
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

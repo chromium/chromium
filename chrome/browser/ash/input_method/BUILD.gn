@@ -371,7 +371,6 @@ source_set("unit_tests") {
     "//chromeos/ash/services/ime:constants",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ash/services/ime/public/mojom",
-    "//chromeos/components/kiosk:test_support",
     "//chromeos/constants",
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//chromeos/ui/base",

@@ -112,6 +112,9 @@ class USER_MANAGER_EXPORT UserManager {
   class UserSessionStateObserver : public base::CheckedObserver {
    public:
     // Called when active user has changed.
+    // DEPRECATED: Use session_manager::SessionManagerObserver::
+    // OnActiveSessionSwitched() instead.
+    // TODO(crbug.com/278643115): Remove this after migrating all the callers.
     virtual void ActiveUserChanged(User* active_user) {}
 
     // Called when login state is updated.

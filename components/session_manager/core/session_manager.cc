@@ -14,6 +14,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager_delegate.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace session_manager {
@@ -85,6 +86,7 @@ void SessionManager::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
   user_manager_ = user_manager;
   user_manager_observation_.Observe(user_manager_);
+  user_session_state_observation_.Observe(user_manager_);
 }
 
 bool SessionManager::IsSessionStarted() const {
@@ -202,6 +204,13 @@ void SessionManager::OnUserProfileCreated(const user_manager::User& user) {
     user_manager_->SwitchActiveUser(
         std::exchange(pending_active_account_id_, EmptyAccountId()));
   }
+}
+
+void SessionManager::ActiveUserChanged(user_manager::User* active_user) {
+  CHECK(active_user);
+  const Session& session =
+      CHECK_DEREF(FindSession(active_user->GetAccountId()));
+  observers_.Notify(&SessionManagerObserver::OnActiveSessionSwitched, session);
 }
 
 // static

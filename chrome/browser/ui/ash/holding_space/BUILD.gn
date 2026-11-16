@@ -105,6 +105,7 @@ source_set("unit_tests") {
     "//chromeos/ui/base",
     "//components/account_id",
     "//components/pref_registry",
+    "//components/session_manager/core",
     "//components/sync_preferences",
     "//components/user_manager",
     "//components/vector_icons",

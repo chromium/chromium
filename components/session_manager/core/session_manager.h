@@ -23,7 +23,8 @@ class Session;
 class SessionManagerObserver;
 
 class SESSION_EXPORT SessionManager
-    : public user_manager::UserManager::Observer {
+    : public user_manager::UserManager::Observer,
+      public user_manager::UserManager::UserSessionStateObserver {
  public:
   explicit SessionManager(
       std::unique_ptr<session_manager::SessionManagerDelegate> delegate);
@@ -116,6 +117,11 @@ class SESSION_EXPORT SessionManager
   // user_manager::UserManager::Observer:
   void OnUserProfileCreated(const user_manager::User& user) override;
 
+  // user_manager::UserManager::UserSessionStateObserver:
+  // TODO(crbug.com/278643115): Remove this when the active session management
+  // is moved from UserManager to SessionManager.
+  void ActiveUserChanged(user_manager::User* active_user) override;
+
   // Various helpers to notify observers.
   void NotifyUserProfileLoaded(const AccountId& account_id);
   void NotifyNetworkErrorScreenShown();
@@ -153,6 +159,9 @@ class SESSION_EXPORT SessionManager
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observation_{this};
 
   SessionState session_state_ = SessionState::UNKNOWN;
 
