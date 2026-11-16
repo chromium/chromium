@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/base64.h"
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
@@ -23,34 +25,36 @@ ReaderModeDistillerPage::~ReaderModeDistillerPage() = default;
 
 void ReaderModeDistillerPage::DistillPageImpl(const GURL& url,
                                               const std::string& script) {
-  if (!url.is_valid() || !script.length()) {
+  if (!url.is_valid() || !web_state_) {
+    OnDistillationDone(url, nullptr);
     return;
   }
   web::WebFramesManager* web_frames_manager =
       ReaderModeJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state_);
   if (!web_frames_manager) {
+    OnDistillationDone(url, nullptr);
     return;
   }
   web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
-  if (!main_frame) {
-    return;
-  }
-  if (!main_frame->GetSecurityOrigin().IsSameOriginWith(url)) {
+  if (!main_frame || !main_frame->GetSecurityOrigin().IsSameOriginWith(url)) {
+    OnDistillationDone(url, nullptr);
     return;
   }
 
+  // The error-aware overload always runs its callback, so distillation
+  // completes even when `WKWebView` reports an `NSError`.
   main_frame->ExecuteJavaScript(
       base::UTF8ToUTF16(script),
       base::BindOnce(&ReaderModeDistillerPage::HandleJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
 
-void ReaderModeDistillerPage::HandleJavaScriptResult(
-    const GURL& url,
-    const base::Value* result) {
+void ReaderModeDistillerPage::HandleJavaScriptResult(const GURL& url,
+                                                     const base::Value* result,
+                                                     NSError* error) {
   base::Value result_as_value;
-  if (result) {
+  if (result && !error) {
     result_as_value = result->Clone();
   }
   OnDistillationDone(url, &result_as_value);

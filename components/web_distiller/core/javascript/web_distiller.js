@@ -101,11 +101,15 @@ try {
     clonedDoc = document.cloneNode(/*deep=*/ true);
   } else {
     // A shallow clone keeps the document's URL, content type and compatibility
-    // mode. Its children (the doctype and <html>) are then cloned with open
-    // shadow roots inlined.
+    // mode. Only the document element can host shadow roots, so it alone is
+    // flattened; the other top-level nodes (doctype, comments) are cloned
+    // natively because WebKit's `importNode()` rejects `DocumentType` nodes.
     clonedDoc = document.cloneNode(/*deep=*/ false);
     for (const child of document.childNodes) {
-      clonedDoc.appendChild(cloneFlattenedTree(child, clonedDoc));
+      clonedDoc.appendChild(
+          child === document.documentElement ?
+              cloneFlattenedTree(child, clonedDoc) :
+              child.cloneNode(/*deep=*/ true));
     }
   }
   return new Readability(clonedDoc, options).parse();
