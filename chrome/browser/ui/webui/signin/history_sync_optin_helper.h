@@ -239,6 +239,11 @@ class HistorySyncOptinHelper {
   // Virtual methods for context-specific logic.
   virtual void DetermineManagementStatusAndShowManagementScreens() = 0;
   virtual base::TimeDelta GetSyncStartupDelay() = 0;
+  // Shows the sign-in celebration if the context has one for this flow. In all
+  // cases, the flow then continues with
+  // `AwaitSyncStartupAndShowHistorySyncScreen()`.
+  virtual void MaybeShowSignInCelebration(
+      signin::Tribool maybe_managed_account) = 0;
 
   void ShowHistorySyncOptinScreen();
 
@@ -250,8 +255,6 @@ class HistorySyncOptinHelper {
       HistorySyncSkipReason skip_reason);
 
   void AwaitSyncStartupAndShowHistorySyncScreen();
-
-  void MaybeShowSignInCelebration(signin::Tribool maybe_managed_account);
 
   // Accessors.
   Profile* profile() { return profile_.get(); }
@@ -302,6 +305,8 @@ class HistorySyncOptinHelperInBrowser : public HistorySyncOptinHelper {
   // HistorySyncOptinHelper implementation:
   void DetermineManagementStatusAndShowManagementScreens() override;
   base::TimeDelta GetSyncStartupDelay() override;
+  void MaybeShowSignInCelebration(
+      signin::Tribool maybe_managed_account) override;
 
   void OnManagementAccepted(Profile* chosen_profile,
                             bool management_required_by_policy);
@@ -331,6 +336,8 @@ class HistorySyncOptinHelperInProfilePicker : public HistorySyncOptinHelper {
   // HistorySyncOptinHelper implementation:
   void DetermineManagementStatusAndShowManagementScreens() override;
   base::TimeDelta GetSyncStartupDelay() override;
+  void MaybeShowSignInCelebration(
+      signin::Tribool maybe_managed_account) override;
 
   void MaybeShowAccountManagementScreen(bool is_managed_account);
   void ShowAccountManagementScreen();
