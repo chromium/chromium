@@ -481,7 +481,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling crabbyavif
   # and whatever else without interference from each other.
-  'crabbyavif_revision': 'ba164a558214d95ad204c725a7fb871923ff37ed',
+  'crabbyavif_revision': 'ccd56291b1820d6c7684eecf5f23e27d39b17916',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling openh264rs
   # and whatever else without interference from each other.
