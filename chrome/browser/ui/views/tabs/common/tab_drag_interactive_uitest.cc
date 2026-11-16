@@ -1817,6 +1817,42 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachTabPreservesActiveTab) {
                   2));
 }
 
+IN_PROC_BROWSER_TEST_P(TabDragTest, DetachCollapsedGroupIntoNewWindow) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddTabsToNewGroup({0, 1}), CollapseGroup(0),
+      CheckResult(
+          [this]() {
+            TabStripModel* model = browser()->GetTabStripModel();
+            std::vector<tab_groups::TabGroupId> groups =
+                model->group_model()->ListTabGroups();
+            return groups.size() == 1 && model->IsGroupCollapsed(groups[0]);
+          },
+          true),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      NameDescendantViewByType<TabGroupHeaderView>(kBrowserViewElementId,
+                                                   "Group to drag", 0),
+      MoveMouseTo("Group to drag"),
+      ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
+      MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
+      WaitForDetachedWindowVisible(), ReleaseMouse(),
+      WaitForState(kDragStatePoller, false),
+      CheckResult(
+          []() { return GetLatestBrowser().GetTabStripModel()->count(); }, 2),
+      CheckResult(
+          []() {
+            TabStripModel* model = GetLatestBrowser().GetTabStripModel();
+            std::vector<tab_groups::TabGroupId> groups =
+                model->group_model()->ListTabGroups();
+            return groups.size() == 1 && !model->IsGroupCollapsed(groups[0]);
+          },
+          true),
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
+                  1));
+}
+
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
 
 class VerticalTabDragTest : public TabDragTest {

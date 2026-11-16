@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_strip_overflow_indicator_view.h"
 #include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
@@ -468,32 +469,37 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
 }
 
 void TabStripView::OnActiveTabChanged(const tabs::TabInterface* active_tab) {
-  if (!active_tab || is_first_window_presentation_) {
-    return;
-  }
-
-  if (collection_node_->GetController()->GetDragHandler().IsDragging()) {
+  if (!active_tab) {
     return;
   }
 
   // Expand group if the activated tab is within a collapsed group unless
   // we are header dragging the collapsed group.
-  if (active_tab->GetGroup().has_value()) {
+  TabStripCollectionController* const controller =
+      collection_node_->GetController();
+  const TabDragController* const drag_controller =
+      controller->GetDragHandler().GetDragController();
+  if (active_tab->GetGroup().has_value() &&
+      (!drag_controller ||
+       drag_controller->group_header_id() != active_tab->GetGroup())) {
     const TabGroup* const tab_group =
         active_tab->GetBrowserWindowInterface()
             ->GetTabStripModel()
             ->group_model()
             ->GetTabGroup(active_tab->GetGroup().value());
     if (tab_group && tab_group->visual_data()->is_collapsed()) {
-      collection_node_->GetController()->ToggleTabGroupCollapsedState(
+      controller->ToggleTabGroupCollapsedState(
           tab_group, ToggleTabGroupCollapsedStateOrigin::kTabsSelected);
     }
   }
 
-  TabCollectionNode* activated_node =
-      collection_node_->GetNodeForHandle(active_tab->GetHandle());
-  CHECK(activated_node);
-  ScrollToFitViews(activated_node->view(), nullptr);
+  if (!is_first_window_presentation_ &&
+      !controller->GetDragHandler().IsDragging()) {
+    TabCollectionNode* activated_node =
+        collection_node_->GetNodeForHandle(active_tab->GetHandle());
+    CHECK(activated_node);
+    ScrollToFitViews(activated_node->view(), nullptr);
+  }
 }
 
 void TabStripView::ScrollToFitTabs(const tabs::TabInterface* active_tab,
