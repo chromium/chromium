@@ -57,8 +57,11 @@ NavigateParams CreateNavigateParams(Profile* profile,
 
 TargetHandler::TargetHandler(protocol::UberDispatcher* dispatcher,
                              bool is_trusted,
-                             bool may_read_local_files)
-    : is_trusted_(is_trusted), may_read_local_files_(may_read_local_files) {
+                             bool may_read_local_files,
+                             content::DevToolsAgentHostClientChannel* channel)
+    : is_trusted_(is_trusted),
+      may_read_local_files_(may_read_local_files),
+      channel_(channel) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -233,6 +236,10 @@ protocol::Response TargetHandler::CreateTarget(
   Navigate(&params);
   if (!params.navigated_or_inserted_contents) {
     return protocol::Response::ServerError("Failed to open a new tab");
+  }
+  if (ChromeDevToolsManagerDelegate* delegate =
+          ChromeDevToolsManagerDelegate::GetInstance()) {
+    delegate->OnTargetCreated(channel_, params.navigated_or_inserted_contents);
   }
 
   if (set_window_position) {

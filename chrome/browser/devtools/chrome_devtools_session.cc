@@ -113,7 +113,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandler>(
         dispatcher(), channel->GetClient()->IsTrusted(),
-        channel->GetClient()->MayReadLocalFiles());
+        channel->GetClient()->MayReadLocalFiles(), channel);
   }
   if (IsDomainAvailableToUntrustedClient<BrowserHandler>() ||
       channel->GetClient()->IsTrusted()) {

@@ -331,6 +331,16 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
   it->second->HandleCommand(message, std::move(callback));
 }
 
+void ChromeDevToolsManagerDelegate::OnTargetCreated(
+    content::DevToolsAgentHostClientChannel* channel,
+    content::WebContents* web_contents) {
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (cdp_actor_session_tracker_) {
+    cdp_actor_session_tracker_->OnCommandHandled(channel, web_contents);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+}
+
 std::string ChromeDevToolsManagerDelegate::GetTargetType(
     content::WebContents* web_contents) {
   if (webui_browser::IsBrowserUIWebContents(web_contents)) {

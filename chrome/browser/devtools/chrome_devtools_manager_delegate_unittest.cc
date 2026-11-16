@@ -260,6 +260,19 @@ TEST_F(ChromeDevToolsManagerDelegateTest,
       initiator->external_process_info().external_processes(0).transport_type(),
       chrome::cros::reporting::proto::ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
 
+  AddTab();
+  content::WebContents* created_web_contents = tab_strip()->GetWebContentsAt(1);
+  ASSERT_NE(created_web_contents, web_contents);
+  EXPECT_FALSE(
+      enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+          created_web_contents)
+          .has_value());
+  delegate_->OnTargetCreated(&channel, created_web_contents);
+  EXPECT_TRUE(
+      enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+          created_web_contents)
+          .has_value());
+
   manager_delegate->ClientDetached(&channel);
 }
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)

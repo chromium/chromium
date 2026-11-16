@@ -7,8 +7,13 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/target.h"
 #include "net/base/host_port_pair.h"
+
+namespace content {
+class DevToolsAgentHostClientChannel;
+}  // namespace content
 
 using RemoteLocations = std::set<net::HostPortPair>;
 
@@ -16,7 +21,8 @@ class TargetHandler : public protocol::Target::Backend {
  public:
   TargetHandler(protocol::UberDispatcher* dispatcher,
                 bool is_trusted,
-                bool may_read_local_files);
+                bool may_read_local_files,
+                content::DevToolsAgentHostClientChannel* channel = nullptr);
 
   TargetHandler(const TargetHandler&) = delete;
   TargetHandler& operator=(const TargetHandler&) = delete;
@@ -49,6 +55,7 @@ class TargetHandler : public protocol::Target::Backend {
   RemoteLocations remote_locations_;
   const bool is_trusted_;
   const bool may_read_local_files_;
+  const raw_ptr<content::DevToolsAgentHostClientChannel> channel_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_TARGET_HANDLER_H_

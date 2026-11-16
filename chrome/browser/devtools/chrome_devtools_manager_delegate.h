@@ -64,6 +64,10 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
   // Release browser keep alive allowing browser to close.
   static void AllowBrowserToClose();
 
+  // Attributes `web_contents` to `channel` when `channel` creates a new tab.
+  void OnTargetCreated(content::DevToolsAgentHostClientChannel* channel,
+                       content::WebContents* web_contents);
+
  private:
   friend class DevToolsManagerDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(DevToolsRemoteServerInfobarBrowserTest,
